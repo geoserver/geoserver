@@ -1069,7 +1069,6 @@ public class ExecuteTest extends WPSTestSupport {
     
     /**
      * https://osgeo-org.atlassian.net/browse/GEOS-5208
-     * @throws Exception
      */
     @Test
     public void testChainedProgress() throws Exception {
@@ -1136,7 +1135,6 @@ public class ExecuteTest extends WPSTestSupport {
     
     /**
      * https://osgeo-org.atlassian.net/browse/GEOS-5208
-     * @throws Exception
      */
     @Test
     public void testTripleChainedProgress() throws Exception {
@@ -1806,7 +1804,6 @@ public class ExecuteTest extends WPSTestSupport {
      * Checks the bounds process returned the expected envelope
      * @param request
      * @param id
-     * @throws Exception
      */
     void executeState1BoundsTest(String request, String id) throws Exception {
         if (!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {

@@ -62,7 +62,7 @@ public class PNGJWriter {
      * empirically it provides better compression at lower effort
      * 
      * @param mapContent
-     * @return
+     *
      */
     private FilterType getFilterType(WMSMapContent mapContent) {
         RasterSymbolizerVisitor visitor = new RasterSymbolizerVisitor();

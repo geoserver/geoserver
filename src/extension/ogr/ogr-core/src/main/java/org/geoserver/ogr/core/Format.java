@@ -112,7 +112,7 @@ public class Format {
 
     /**
      * Returns the configured format adapters, or an empty list if none was setup
-     * @return
+     *
      */
     public List<FormatAdapter> getFormatAdapters() {
         if(formatAdapters == null) {

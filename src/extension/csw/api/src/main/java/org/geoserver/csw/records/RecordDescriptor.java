@@ -28,14 +28,14 @@ public interface RecordDescriptor {
     
     /**
      * The GeoTools feature type representing this kind of record
-     * @return
+     *
      */
     FeatureType getFeatureType();
     
     /**
      * The GeoTools descriptor representing this kind of record
      * 
-     * @return
+     *
      */
     AttributeDescriptor getFeatureDescriptor();
     
@@ -54,7 +54,7 @@ public interface RecordDescriptor {
     
     /**
      * Provides the namespace support needed to handle all schemas used/referenced by this record 
-     * @return
+     *
      */
     NamespaceSupport getNamespaceSupport();
     
@@ -64,7 +64,7 @@ public interface RecordDescriptor {
      * something that we cannot readily represent in GeoTools
      * 
      * @param query
-     * @return
+     *
      */
     Query adaptQuery(Query query);
              

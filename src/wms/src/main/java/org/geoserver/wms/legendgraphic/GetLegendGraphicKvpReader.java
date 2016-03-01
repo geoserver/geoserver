@@ -549,7 +549,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      *            style.
      * @param styles
      *            non null, non empty, list of styles
-     * @return
+     *
      * @throws NoSuchElementException
      *             if no style named <code>styleName</code> is found in <code>styles</code>
      */

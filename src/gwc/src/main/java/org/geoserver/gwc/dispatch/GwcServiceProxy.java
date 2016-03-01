@@ -64,7 +64,7 @@ public class GwcServiceProxy {
      * {@link GWCServiceEnablementInterceptor service interceptor} aspect that decorates specific
      * gwc services to check for enablement.
      * 
-     * @return
+     *
      */
     public ServiceInfo getServiceInfo() {
         return serviceInfo;
@@ -81,8 +81,7 @@ public class GwcServiceProxy {
      * 
      * @param rawRequest
      * @param rawRespose
-     * @return
-     * @throws Exception
+     *
      * @see GwcOperationProxy
      * @see GwcResponseProxy
      */

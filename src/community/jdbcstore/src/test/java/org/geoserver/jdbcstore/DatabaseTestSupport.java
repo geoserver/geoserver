@@ -19,7 +19,6 @@ public interface DatabaseTestSupport extends AutoCloseable {
     
     /** 
      * Ensure the database in initialised with the JDBCStore schema 
-     * @throws Exception
      */
     public void initialize() throws Exception;
     
@@ -49,13 +48,13 @@ public interface DatabaseTestSupport extends AutoCloseable {
     
     /**
      * Get the data source
-     * @return
+     *
      */
     public DataSource getDataSource();
     
     /**
      * Get a connection to the data source
-     * @return
+     *
      * @throws SQLException
      */
     public Connection getConnection() throws SQLException;

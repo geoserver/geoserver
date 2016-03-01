@@ -33,7 +33,7 @@ public class WCSDimensionsValueParser {
     /**
      * Parse a string value as a {@link Date}
      * @param value
-     * @return
+     *
      */
     public Date parseDateTime(String value) {
         return XML_CONVERTER.parseDateTime(value).getTime();
@@ -42,7 +42,7 @@ public class WCSDimensionsValueParser {
     /**
      * Parse a string value as a {@link Double}
      * @param value
-     * @return
+     *
      */
     public Double parseDouble(String value) {
         return XML_CONVERTER.parseDouble(value);
@@ -52,7 +52,7 @@ public class WCSDimensionsValueParser {
      * Set the slicePoint string as an {@link Integer}. Return true in case of success
      * @param slicePointS
      * @param selectedValues
-     * @return
+     *
      */
     public boolean setAsInteger(String slicePointS, List<Object> selectedValues) {
         final Integer slicePoint = parseAsInteger(slicePointS);
@@ -68,7 +68,7 @@ public class WCSDimensionsValueParser {
      * @param low
      * @param high
      * @param selectedValues
-     * @return
+     *
      */
     public boolean setAsIntegerRange(String low, String high, List<Object> selectedValues) {
         final Integer l = parseAsInteger(low);
@@ -87,7 +87,7 @@ public class WCSDimensionsValueParser {
      * Set the slicePoint string as an {@link Double}. Return true in case of success
      * @param slicePointS
      * @param selectedValues
-     * @return
+     *
      */
     public boolean setAsDouble(String slicePointS, List<Object> selectedValues) {
         final Double slicePoint = parseAsDouble(slicePointS);
@@ -103,7 +103,7 @@ public class WCSDimensionsValueParser {
      * @param low
      * @param high
      * @param selectedValues
-     * @return
+     *
      */
     public boolean setAsDoubleRange(String low, String high, List<Object> selectedValues) {
         final Double l = parseAsDouble(low);
@@ -123,7 +123,7 @@ public class WCSDimensionsValueParser {
      * Set the slicePoint string as an {@link Date}. Return true in case of success
      * @param slicePointS
      * @param selectedValues
-     * @return
+     *
      */
     public boolean setAsDate(String slicePointS, List<Object> selectedValues) {
         final Date slicePoint = parseAsDate(slicePointS);
@@ -139,7 +139,7 @@ public class WCSDimensionsValueParser {
      * @param low
      * @param high
      * @param selectedValues
-     * @return
+     *
      */
     public boolean setAsDateRange(String low, String high, List<Object> selectedValues) {
         final Date l = parseAsDate(low);
@@ -157,7 +157,7 @@ public class WCSDimensionsValueParser {
     /**
      * Parse a String as a Double or return null if impossible.
      * @param text
-     * @return
+     *
      */
     public static Double parseAsDouble(String text) {
         try {
@@ -174,7 +174,7 @@ public class WCSDimensionsValueParser {
     /**
      * Parse a String as a Range of Double or return null if impossible.
      * @param text
-     * @return
+     *
      */
     public static NumberRange<Double> parseAsDoubleRange(String text) {
         try {
@@ -199,7 +199,7 @@ public class WCSDimensionsValueParser {
     /**
      * Parse a String as an Integer or return null if impossible.
      * @param text
-     * @return
+     *
      */
     public Integer parseAsInteger(String text) {
         try {
@@ -216,7 +216,7 @@ public class WCSDimensionsValueParser {
     /**
      * Parse a String as a Date or return null if impossible.
      * @param text
-     * @return
+     *
      */
     public static Date parseAsDate(String text) {
         try {
@@ -273,7 +273,7 @@ public class WCSDimensionsValueParser {
     /**
      * Get the domain set as a set of number.
      * @param domain
-     * @return
+     *
      */
     public TreeSet<Double> getDomainNumber(TreeSet<Object> domain) {
         TreeSet<Double> results = new TreeSet<Double>();

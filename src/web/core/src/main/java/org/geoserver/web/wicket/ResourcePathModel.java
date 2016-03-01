@@ -35,7 +35,7 @@ public class ResourcePathModel extends LoadableDetachableModel<Resource> {
     /**
      * Returns the main {@link ResourceStore} for GeoServer. Subclasses can override in case
      * they are using a different resource store
-     * @return
+     *
      */
     protected ResourceStore getResourceStore() {
         ResourceStore store = (ResourceStore) GeoServerApplication.get().getBean("resourceStore");

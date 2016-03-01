@@ -58,7 +58,6 @@ public abstract class JMSFactory implements DisposableBean {
      * Starts an embedded broker
      * 
      * @param configuration
-     * @throws Exception
      */
     public boolean startEmbeddedBroker(Properties configuration) throws Exception {
         throw new UnsupportedOperationException("This functionality is not implemented");
@@ -68,7 +67,7 @@ public abstract class JMSFactory implements DisposableBean {
      * check the status of the embedded broker
      * 
      * @param configuration
-     * @return
+     *
      */
     public boolean isEmbeddedBrokerStarted() {
         return false;
@@ -77,7 +76,6 @@ public abstract class JMSFactory implements DisposableBean {
     /**
      * Stops the embedded broker
      * 
-     * @throws Exception
      */
     public boolean stopEmbeddedBroker() throws Exception {
         throw new UnsupportedOperationException("This functionality is not implemented");

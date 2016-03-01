@@ -31,7 +31,7 @@ public class GetRepositoryItem {
      * Returns the requested RepositoryItem
      * 
      * @param request
-     * @return
+     *
      */
     public RepositoryItem run(GetRepositoryItemType request)  {
         try {

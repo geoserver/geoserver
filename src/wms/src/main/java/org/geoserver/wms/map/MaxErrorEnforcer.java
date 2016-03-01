@@ -54,7 +54,7 @@ public class MaxErrorEnforcer {
 
     /**
      * True if the max error threshold was exceeded
-     * @return
+     *
      */
     public boolean exceedsMaxErrors() {
         return maxErrors > 0 && errors > maxErrors;
@@ -62,7 +62,7 @@ public class MaxErrorEnforcer {
     
     /**
      * Returns the last exception occurred (or null if none happened)
-     * @return
+     *
      */
     public Exception getLastException() {
         return lastException;

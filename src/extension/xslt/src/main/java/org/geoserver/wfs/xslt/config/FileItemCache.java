@@ -67,7 +67,7 @@ abstract class FileItemCache<T> {
      * different behavior
      * 
      * @param file
-     * @return
+     *
      */
     protected String getFileKey(Resource file) {
         return file.name();
@@ -77,7 +77,7 @@ abstract class FileItemCache<T> {
      * Loads an item from the file
      * 
      * @param file
-     * @return
+     *
      */
     protected abstract T loadItem(Resource file) throws IOException;
 

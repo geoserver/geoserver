@@ -37,11 +37,9 @@ import org.springframework.web.context.WebApplicationContext;
  * Utility class uses to process GeoServer extension points.
  * <p>
  * An instance of this class needs to be registered in spring context as follows.
- * <code>
- *         <pre>
+ * <pre><code>
  *         &lt;bean id="geoserverExtensions" class="org.geoserver.GeoServerExtensions"/&gt;
- *         </pre>
- * </code>
+ * </code></pre>
  * It must be a singleton, and must not be loaded lazily. Furthermore, this
  * bean must be loaded before any beans that use it.
  * 
@@ -280,7 +278,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * Returns a specific bean given its name
      * @param name
-     * @return
+     *
      */
     public static final Object bean(String name) {
         return bean(name, context);

@@ -8,18 +8,16 @@ package org.geoserver.security;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The security filter filter chain.
  * <p>
- * The content of {@link #antPatterns} must be equal to the keys of {@link #filterMap}.
+ * The content of {code antPatterns} must be equal to the keys of {code filterMap}.
+ * #
  * </p>
  * <p>
- * The order of {@link #antPatterns} determines the order of ant pattern matching used by 
+ * The order of {code antPatterns} determines the order of ant pattern matching used by 
  * GeoServerSecurityFilterChainProxy.
  * </p>
  * @author christian
@@ -148,7 +146,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     /**
      * Create the initial {@link GeoServerSecurityFilterChain} 
      * 
-     * @return
+     *
      */
     public static GeoServerSecurityFilterChain createInitialChain() {
         return new GeoServerSecurityFilterChain(new ArrayList<RequestFilterChain>(INITIAL));

@@ -314,7 +314,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
      * looking at the sql and the first row of its output
      * 
      * @param newSchema
-     * @return
+     *
      * @throws IOException
      */
     protected SimpleFeatureType testViewDefinition(boolean guessGeometrySrid) throws IOException {
@@ -366,7 +366,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
      * looking at the sql and the first row of its output
      * 
      * @param newSchema
-     * @return
+     *
      * @throws IOException
      */
     protected SimpleFeatureType testViewDefinition(VirtualTable virtualTable, boolean guessGeometrySrid) throws IOException {
@@ -399,7 +399,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
      * srids
      * 
      * @param schema
-     * @return
+     *
      */
     SimpleFeatureType guessFeatureType(JDBCDataStore store, String vtName, boolean guessGeometrySrid) throws IOException {
         SimpleFeatureType base = store.getSchema(vtName);
@@ -489,7 +489,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
      * the db is in the cause. This method extracts the first not null message in the cause chain
      * 
      * @param t
-     * @return
+     *
      */
     protected String getFirstErrorMessage(Throwable t) {
         Throwable original = t;

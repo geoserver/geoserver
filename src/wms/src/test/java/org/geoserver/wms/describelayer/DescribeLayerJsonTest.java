@@ -39,7 +39,6 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
     /**
      * Tests jsonp with custom callback function
      * 
-     * @throws Exception
      */
     @Test
     public void testCustomJSONP() throws Exception {
@@ -60,7 +59,6 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
     /**
      * Tests JSON
      * 
-     * @throws Exception
      */
     @Test
     public void testSimpleJSON() throws Exception {
@@ -93,7 +91,6 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
     /**
      * Tests jsonp with custom callback function
      * 
-     * @throws Exception
      */
     @Test
     public void testJSONLayerGroup() throws Exception {

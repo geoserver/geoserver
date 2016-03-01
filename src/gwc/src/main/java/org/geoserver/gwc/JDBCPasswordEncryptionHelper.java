@@ -36,7 +36,7 @@ class JDBCPasswordEncryptionHelper {
      * 
      * @param configuration A deep copy of the configuration with the unencrypted password, if the
      *        password was encrypted, or the original one, if the password was plaintext
-     * @return
+     *
      */
     public JDBCConfiguration unencryptPassword(JDBCConfiguration configuration) {
         if (configuration.getConnectionPool() != null
@@ -60,7 +60,7 @@ class JDBCPasswordEncryptionHelper {
      * Encrypts the connection pool password, if not null, using the GeoServer password encoders.
      * 
      * @param configuration A deep copy ofthe configuration, with the password encoded
-     * @return
+     *
      */
     public JDBCConfiguration encryptPassword(JDBCConfiguration configuration) {
         ConnectionPoolConfiguration pool = configuration.getConnectionPool();

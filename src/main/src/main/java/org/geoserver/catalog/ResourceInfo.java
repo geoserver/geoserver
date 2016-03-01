@@ -110,7 +110,7 @@ public interface ResourceInfo extends CatalogInfo {
      * return getNamespace().getPrefix() + ":" + getName();
      * </pre>
      * </p>
-     * @return
+     *
      */
     String prefixedName();
 
@@ -418,7 +418,7 @@ public interface ResourceInfo extends CatalogInfo {
     
     /**
      * Returns true if the resource existence should be advertised (true by default, unless otherwise set)
-     * @return
+     *
      */
     boolean isAdvertised();
     

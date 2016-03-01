@@ -48,8 +48,6 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class NativeTypeBinding extends AbstractComplexBinding {

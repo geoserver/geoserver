@@ -194,7 +194,7 @@ public class CoverageUtils {
      * @param paramValues
      * @param key
      * @param param
-     * @return
+     *
      */
     public static Object getCvParamValue(final String key, ParameterValue param,
         final List paramValues, final int index) {
@@ -265,7 +265,7 @@ public class CoverageUtils {
      * @param params
      * @param key
      * @param param
-     * @return
+     *
      */
     public static Object getCvParamValue(final String key, ParameterValue param, final Map params) {
         Object value = null;
@@ -397,7 +397,7 @@ public class CoverageUtils {
      * @param readParameters The current set of reader parameters
      * @param value
      * @param parameterAliases
-     * @return
+     *
      */
     public static GeneralParameterValue[] mergeParameter(List<GeneralParameterDescriptor> parameterDescriptors, 
             GeneralParameterValue[] readParameters, Object value, String... parameterAliases) {

@@ -174,7 +174,6 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
      * versions is removed
      * </p>
      * 
-     * @throws Exception
      */
     @Test 
     public void testRequestVersionNumberNegotiation() throws Exception {

@@ -128,14 +128,12 @@ public abstract class OneTimeSetupTest extends TestCase {
     
     /**
      * Per method setup (fixture can be stored in non static fields)
-     * @throws Exception
      */
     protected void setUpInternal() throws Exception {
     }
     
     /**
      * Per method tear down 
-     * @throws Exception
      */
     protected void tearDownInternal() throws Exception {
         

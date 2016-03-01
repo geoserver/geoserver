@@ -54,7 +54,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDynamicDimensionTestS
      * @param x
      * @param y
      * @param layerName TODO
-     * @return
+     *
      */
     Double getValueAt(String baseFeatureInfo, int x, int y) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(baseFeatureInfo

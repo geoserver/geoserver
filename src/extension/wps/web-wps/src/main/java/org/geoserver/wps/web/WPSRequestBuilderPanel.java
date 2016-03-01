@@ -344,7 +344,7 @@ public class WPSRequestBuilderPanel extends Panel {
     /**
      * Builds a list of process ids
      * 
-     * @return
+     *
      */
     List<String> buildProcessList() {
         List<String> result = new ArrayList<String>();

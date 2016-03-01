@@ -181,7 +181,7 @@ public class GeoTiffPPIO extends BinaryPPIO {
      * Returns true if the coverage has not been processed in any way since it has been read
      * 
      * @param coverage
-     * @return
+     *
      */
     private boolean isUnprocessed(GridCoverage2D coverage) {
         RenderedImage ri = coverage.getRenderedImage();

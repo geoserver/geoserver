@@ -104,7 +104,7 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
      * Returns <code>true</code> if the current {@link HttpServletRequest}
      * has traveled through a security filter chain. 
      * 
-     * @return
+     *
      */
     static public boolean isSecurityEnabledForCurrentRequest() {
         
@@ -211,7 +211,7 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
      * the specified {@link RequestFilterChain}
      * 
      * @param chain
-     * @return
+     *
      */
     public GeoServerRequestMatcher matcherForChain(RequestFilterChain chain) {
         

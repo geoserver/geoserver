@@ -61,7 +61,7 @@ public class FakeHttpServletResponse implements HttpServletResponse {
     /**
      * Returns the response code (usually 200, but might be 204 or another one)
      * 
-     * @return
+     *
      */
     public int getResponseCode() {
         return responseCode;

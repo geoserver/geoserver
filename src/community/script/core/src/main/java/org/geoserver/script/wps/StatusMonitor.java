@@ -37,7 +37,7 @@ public class StatusMonitor {
     /**
      * Returns the wrapped listener
      * 
-     * @return
+     *
      */
     public ProgressListener getListener() {
         return listener;

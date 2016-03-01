@@ -61,7 +61,7 @@ public interface ExtendedCapabilitiesProvider extends org.geoserver.ExtendedCapa
      * 
      * @param layer
      * @param scaleDenominators
-     * @return
+     *
      */
     NumberRange<Double> overrideScaleDenominators(PublishedInfo layer,
             NumberRange<Double> scaleDenominators);

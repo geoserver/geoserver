@@ -87,7 +87,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
      * @param request
      * @param ns
      * @param typeName
-     * @return
+     *
      */
     private QName checkDefaultNamespace(Request request, NamespaceInfo ns,
             QName typeName) {

@@ -277,7 +277,7 @@ public class GetRecords {
      * is found
      * 
      * @param request
-     * @return
+     *
      */
     private RecordDescriptor getRecordDescriptor(Name typeName) {
         if (typeName == null) {
@@ -299,7 +299,7 @@ public class GetRecords {
      * is found
      * 
      * @param request
-     * @return
+     *
      */
     private RecordDescriptor getRecordDescriptor(GetRecordsType request) {
         String outputSchema = request.getOutputSchema();

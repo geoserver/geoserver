@@ -16,7 +16,7 @@ public interface ObjectSizeEstimator {
      * estimation can not be performed
      * 
      * @param object
-     * @return
+     *
      */
     public long getSizeOf(Object object);
 }

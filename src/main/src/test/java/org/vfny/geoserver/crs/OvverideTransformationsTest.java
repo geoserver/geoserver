@@ -104,7 +104,6 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
     
     /**
      * See if we can use the stgeorge grid shift files as the ESPG db would like us to
-     * @throws Exception
      */
     @Test
     public void testNadCon() throws Exception {

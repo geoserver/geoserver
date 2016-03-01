@@ -37,7 +37,7 @@ public interface DimensionInfo extends Serializable {
     /**
      * The attribute on which the dimension is based. Used only for vector data
      * 
-     * @return
+     *
      */
     public String getAttribute();
 
@@ -46,7 +46,7 @@ public interface DimensionInfo extends Serializable {
     /**
      * The attribute on which the end of the dimension is based. Used only for vector data.
      * This attribute is optional.
-     * @return
+     *
      */
     public String getEndAttribute();
     
@@ -55,7 +55,7 @@ public interface DimensionInfo extends Serializable {
     /**
      * The way the dimension is going to be presented in the capabilities documents
      * 
-     * @return
+     *
      */
     public DimensionPresentation getPresentation();
 
@@ -66,7 +66,7 @@ public interface DimensionInfo extends Serializable {
      * has been chosen (it can be a representation of a elevation resolution or a time interval in
      * milliseconds)
      * 
-     * @return
+     *
      */
     public BigDecimal getResolution();
 

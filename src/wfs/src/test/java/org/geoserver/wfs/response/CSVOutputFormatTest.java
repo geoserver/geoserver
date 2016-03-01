@@ -143,7 +143,7 @@ public class CSVOutputFormatTest extends WFSTestSupport {
     /**
      * Convenience to read the csv content and 
      * @param csvContent
-     * @return
+     *
      * @throws IOException
      */
     private List<String[]> readLines(String csvContent) throws IOException  {

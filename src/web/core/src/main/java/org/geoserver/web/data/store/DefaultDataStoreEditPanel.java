@@ -143,7 +143,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
      * properties.
      * 
      * @param paramMetadata
-     * @return
+     *
      */
     private Panel getInputComponent(final String componentId, final IModel paramsModel,
             final ParamInfo paramMetadata) {

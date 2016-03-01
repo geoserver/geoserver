@@ -128,8 +128,8 @@ public interface LayerInfo extends PublishedInfo {
     /**
      * Sets the queryable status
      *
-     * @param {@code true} to set this Layer as queryable and subject of GetFeatureInfo requests,
-     *        {@code false} to make the layer not queryable.
+     * @param queryable {@code true} to set this Layer as queryable and subject of
+     *        GetFeatureInfo requests, {@code false} to make the layer not queryable.
      */
     void setQueryable(boolean queryable);
 
@@ -144,8 +144,7 @@ public interface LayerInfo extends PublishedInfo {
     /**
      * Sets the opaque status
      * 
-     * @param {@code true} to set this Layer as opaque,
-     *        {@code false} to make the layer not opaque.
+     * @param opaque {@code true} to set this Layer as opaque, {@code false} to make the layer not opaque.
      */
     void setOpaque(boolean opaque);
 
@@ -158,7 +157,7 @@ public interface LayerInfo extends PublishedInfo {
     boolean isOpaque();    
     /**
      * Returns true if the layer existence should be advertised (true by default, unless otherwise set)
-     * @return
+     *
      */
     boolean isAdvertised();
     

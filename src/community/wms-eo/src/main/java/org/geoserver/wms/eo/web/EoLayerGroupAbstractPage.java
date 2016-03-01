@@ -313,7 +313,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
     /**
      * True if we already have an outline layer, false otherwise
      * @param items
-     * @return
+     *
      */
     private boolean outlinesPresent(List<EoLayerGroupEntry> items) {
         for (EoLayerGroupEntry entry : items) {

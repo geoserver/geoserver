@@ -109,7 +109,7 @@ class TimeDimensionHelper {
     /**
      * Formats a Date into ISO86011 
      * @param time
-     * @return
+     *
      */
     public String format(Date time) {
         if (time != null) {
@@ -122,7 +122,7 @@ class TimeDimensionHelper {
     /**
      * Returns the type of presentation for the time dimension
      * 
-     * @return
+     *
      */
     public DimensionPresentation getPresentation() {
         return timeDimension.getPresentation();
@@ -132,7 +132,7 @@ class TimeDimensionHelper {
      * Returns the resolution unit, choosing among "year", "month", "day", "hour", "minute",
      * "second"
      * 
-     * @return
+     *
      */
     public String getResolutionUnit() {
         return resolutionUnit;
@@ -141,7 +141,7 @@ class TimeDimensionHelper {
     /**
      * The resolution value, expressed in the unit returned by {@link #getResolutionUnit()}
      * 
-     * @return
+     *
      */
     public long getResolutionValue() {
         return resolutionValue;
@@ -149,7 +149,7 @@ class TimeDimensionHelper {
 
     /**
      * The coverage identifier
-     * @return
+     *
      */
     public String getCoverageId() {
         return coverageId;

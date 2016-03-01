@@ -20,20 +20,19 @@ interface InputProvider {
      * Returns the value associated with this provider
      * 
      * @param subListener
-     * @return
-     * @throws Exception
+     *
      */
     public Object getValue(ProgressListener subListener) throws Exception;
 
     /**
      * Returns the input id for this value
-     * @return
+     *
      */
     public String getInputId();
 
     /**
      * Returns true if the value has already been parsed 
-     * @return
+     *
      */
     public boolean resolved();
 
@@ -41,7 +40,7 @@ interface InputProvider {
      * Returns the number of "long" steps to be carried out in order to get this input. A long step
      * is either executing a sub-process, or having to fetch a remote data set
      * 
-     * @return
+     *
      */
     int longStepCount();
 }

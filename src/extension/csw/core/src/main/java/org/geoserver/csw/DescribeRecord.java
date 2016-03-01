@@ -68,9 +68,6 @@ public class DescribeRecord {
 
     /**
      * Returns the requested feature types
-     * 
-     * @param request
-     * @return
      */
     public AttributeDescriptor[] run(DescribeRecordType request) {
         try {

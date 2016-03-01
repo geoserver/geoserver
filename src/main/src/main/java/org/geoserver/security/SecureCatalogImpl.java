@@ -498,7 +498,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * Given a {@link FeatureTypeInfo} and a user, returns it back if the user
      * can access it in write mode, makes it read only if the user can access it
      * in read only mode, returns null otherwise
-     * @return
+     *
      */
     protected <T extends ResourceInfo> T checkAccess(Authentication user,
             T info, MixedModeBehavior mixedModeBehavior) {
@@ -550,7 +550,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Given a store and a user, returns it back if the user can access its
      * workspace in read mode, null otherwise
-     * @return
+     *
      */
     protected <T extends StoreInfo> T checkAccess(Authentication user, T store, MixedModeBehavior mixedModeBehavior) {
         if (store == null)
@@ -584,7 +584,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Given a layer and a user, returns it back if the user can access it, null
      * otherwise
-     * @return
+     *
      */
     protected LayerInfo checkAccess(Authentication user, LayerInfo layer, MixedModeBehavior mixedModeBehavior) {
         if (layer == null)
@@ -607,7 +607,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Given a layer group and a user, returns it back if the user can access
      * it, null otherwise
-     * @return
+     *
      */
     protected LayerGroupInfo checkAccess(Authentication user, LayerGroupInfo group, MixedModeBehavior mixedModeBehavior) {
         if (group == null)
@@ -645,7 +645,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Given a namespace and user, returns it back if the user can access it,
      * null otherwise
-     * @return
+     *
      */
     protected <T extends NamespaceInfo> T checkAccess(Authentication user, T ns, MixedModeBehavior mixedModeBehavior) {
         if(ns == null)
@@ -669,7 +669,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     /**
      * Given a workspace and user, returns it back if the user can access it,
      * null otherwise
-     * @return
+     *
      */
     protected <T extends WorkspaceInfo> T checkAccess(Authentication user, T ws, MixedModeBehavior mixedModeBehavior) {
         if (ws == null)
@@ -764,7 +764,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * @param canRead
      * @param canWrite
      * @param resourceName
-     * @return
+     *
      */
     public WrapperPolicy buildWrapperPolicy(Authentication user,
             CatalogInfo info, String resourceName, MixedModeBehavior mixedModeBehavior) {
@@ -913,7 +913,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * @param user
      * @param resources
      * 
-     * @return
+     *
      */
     protected <T extends ResourceInfo> List<T> filterResources(Authentication user,
             List<T> resources) {
@@ -933,7 +933,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * @param user
      * @param resources
      * 
-     * @return
+     *
      */
     protected <T extends StoreInfo> List<T> filterStores(Authentication user, List<T> resources) {
         List<T> result = new ArrayList<T>();
@@ -952,7 +952,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * @param user
      * @param groups
      * 
-     * @return
+     *
      */
     protected List<LayerGroupInfo> filterGroups(Authentication user, List<LayerGroupInfo> groups) {
         List<LayerGroupInfo> result = new ArrayList<LayerGroupInfo>();
@@ -971,7 +971,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * @param user
      * @param layers
      * 
-     * @return
+     *
      */
     protected List<LayerInfo> filterLayers(Authentication user, List<LayerInfo> layers) {
         List<LayerInfo> result = new ArrayList<LayerInfo>();
@@ -1004,7 +1004,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * @param user
      * @param namespaces
      * 
-     * @return
+     *
      */
     protected <T extends NamespaceInfo> List<T> filterNamespaces(Authentication user,
             List<T> namespaces) {
@@ -1024,7 +1024,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * @param user
      * @param namespaces
      * 
-     * @return
+     *
      */
     protected <T extends WorkspaceInfo> List<T> filterWorkspaces(Authentication user,
             List<T> workspaces) {

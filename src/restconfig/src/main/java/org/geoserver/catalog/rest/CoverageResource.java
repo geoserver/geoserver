@@ -120,7 +120,7 @@ public class CoverageResource extends AbstractCatalogResource {
      * when configuring a new coverage which has just been harvested. 
      * 
      * @param coverage
-     * @return
+     *
      */
     private boolean isNewCoverage(CoverageInfo coverage) {
         return coverage.getName() != null && (coverage.isAdvertised()) && (!coverage.isEnabled())

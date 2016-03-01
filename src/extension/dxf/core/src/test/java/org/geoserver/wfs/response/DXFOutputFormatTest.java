@@ -59,7 +59,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     
     /**
      * Test a request with two queries.
-     * @throws Exception
      */
     @Test
     public void testMultiLayer() throws Exception {
@@ -70,7 +69,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test DXF-ZIP format.
-     * @throws Exception
      */
     @Test
     public void testZipOutput() throws Exception {
@@ -81,7 +79,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test a Point geometry.
-     * @throws Exception
      */
     @Test
     public void testPoints() throws Exception {
@@ -94,7 +91,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     }
     /**
      * Test a MultiPoint geometry.
-     * @throws Exception
      */
     @Test
     public void testMultiPoints() throws Exception {
@@ -108,7 +104,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test a LineString geometry.
-     * @throws Exception
      */
     @Test
     public void testLines() throws Exception {
@@ -121,7 +116,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test a MultiLineString geometry.
-     * @throws Exception
      */
     @Test
     public void testMultiLines() throws Exception {
@@ -135,7 +129,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test a Polygon geometry.
-     * @throws Exception
      */
     @Test
     public void testPolygons() throws Exception {
@@ -149,7 +142,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     
     /**
      * Test writeattributes option.
-     * @throws Exception
      */
     @Test
     public void testWriteAttributes() throws Exception {
@@ -163,7 +155,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test a MultiPolygon geometry.
-     * @throws Exception
      */
     @Test
     public void testMultiPolygons() throws Exception {
@@ -178,7 +169,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     /**
      * Test format option asblocks.
      * 
-     * @throws Exception
      */
     @Test
     public void testGeometryAsBlock() {
@@ -203,7 +193,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     /**
      * Test format option version support.
      * 
-     * @throws Exception
      */
     @Test
     public void testVersion() throws Exception {
@@ -230,8 +219,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * not empty output generation. 
      * @param resp
      * @param featureName
-     * @return
-     * @throws Exception
+     *
      */
     public String testBasicResult(MockHttpServletResponse resp, String featureName)
             throws Exception {
@@ -249,7 +237,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test the ltypes format option.
-     * @throws Exception
      */
     @Test
     public void testCustomLineTypes() throws Exception {
@@ -259,7 +246,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     }
     /**
      * Test the colors format option.
-     * @throws Exception
      */
     @Test
     public void testCustomColors() throws Exception {
@@ -270,7 +256,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     
     /**
      * Test custom naming for layers.
-     * @throws Exception
      */
     @Test
     public void testLayerNames() throws Exception {
@@ -281,7 +266,6 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     
     /**
      * Test fix for GEOS-6402.
-     * @throws Exception
      */
     @Test
     public void testLayerNamesParsing() throws Exception {
@@ -300,7 +284,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     /**
      * Get a search starting point.
      * @param response
-     * @return
+     *
      */
     private int getGeometrySearchStart(String response) {
         return response.indexOf("BLOCKS");

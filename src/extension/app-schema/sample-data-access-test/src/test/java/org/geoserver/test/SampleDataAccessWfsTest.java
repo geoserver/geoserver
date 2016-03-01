@@ -59,7 +59,6 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
     /**
      * Test whether GetCapabilities returns wfs:WFS_Capabilities.
      * 
-     * @throws Exception
      */
     @Test
     public void testGetCapabilities() throws Exception {
@@ -71,7 +70,6 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
     /**
      * Test whether DescribeFeatureType returns xsd:schema.
      * 
-     * @throws Exception
      */
     @Test
     public void testDescribeFeatureType() throws Exception {
@@ -83,7 +81,6 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
     /**
      * Test whether GetFeature returns wfs:FeatureCollection.
      * 
-     * @throws Exception
      */
     @Test
     public void testGetFeature() throws Exception {
@@ -95,7 +92,6 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
     /**
      * Test content of GetFeature response.
      * 
-     * @throws Exception
      */
     @Test
     public void testGetFeatureContent() throws Exception {
@@ -138,7 +134,6 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
      *            xpath expression
      * @param doc
      *            document under test
-     * @throws Exception
      */
     public void assertXpathCount(int count, String xpath, Document doc) throws Exception {
         XpathEngine engine = XMLUnit.newXpathEngine();
@@ -150,8 +145,7 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
      * Return {@link Document} as a pretty-printed string.
      * 
      * @param doc
-     * @return
-     * @throws Exception
+     *
      */
     public String prettyString(Document doc) throws Exception {
         OutputStream out = new ByteArrayOutputStream();
@@ -164,7 +158,6 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
      * 
      * @param doc
      * @param out
-     * @throws Exception
      */
     public void prettyPrint(Document doc, OutputStream out) throws Exception {
         Transformer tx = TransformerFactory.newInstance().newTransformer();

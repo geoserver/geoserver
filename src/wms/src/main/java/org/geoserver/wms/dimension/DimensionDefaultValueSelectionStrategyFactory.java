@@ -24,7 +24,7 @@ public interface DimensionDefaultValueSelectionStrategyFactory {
      * @param resource
      * @param dimensionName
      * @param dimension
-     * @return
+     *
      */
     public DimensionDefaultValueSelectionStrategy getStrategy(ResourceInfo resource, String dimensionName, DimensionInfo dimension);
       

@@ -153,9 +153,8 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
      * This method doesn't not handle paging therefore care must be taken when dealing with large
      * dataset.
      * 
-     * @param sql
+     * @param sql statement
      * @return CachedRowSetImpl the result from the execution of the sql
-     * @throws Exception
      */
     public CachedRowSetImpl runWithResult(String sql) throws Exception {
         // connect

@@ -171,7 +171,7 @@ public class WMSMapContent extends MapContent {
     /**
      * The clockwise rotation angle of the map, in degrees
      * 
-     * @return
+     *
      */
     public double getAngle() {
         return angle;
@@ -229,7 +229,7 @@ public class WMSMapContent extends MapContent {
      * Returns the transformation going from the map area space to the screen space taking into
      * account map rotation
      * 
-     * @return
+     *
      */
     public AffineTransform getRenderingTransform() {
         Rectangle paintArea = new Rectangle(0, 0, getMapWidth(), getMapHeight());
@@ -251,7 +251,7 @@ public class WMSMapContent extends MapContent {
      * Returns the actual area that should be drawn taking into account the map rotation account map
      * rotation
      * 
-     * @return
+     *
      */
     public ReferencedEnvelope getRenderingArea() {
         ReferencedEnvelope dataArea = getViewport().getBounds(); 
@@ -394,7 +394,7 @@ public class WMSMapContent extends MapContent {
      * Computes the StreamingRenderer scale computation method hint based on the current request
      * 
      * @param request
-     * @return
+     *
      */
     public String getRendererScaleMethod() {
         if (request.getScaleMethod() == ScaleComputationMethod.Accurate) {

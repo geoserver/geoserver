@@ -84,7 +84,6 @@ public class MockCreator implements Callback {
      * 
      * @param testData Used to access base directory
      * @return GeoServerResourceLoader (registered with GeoServerExtensions)
-     * @throws Exception
      */
     public GeoServerResourceLoader createResourceLoader(MockTestData testData) throws Exception {
         File data = testData.getDataDirectoryRoot();

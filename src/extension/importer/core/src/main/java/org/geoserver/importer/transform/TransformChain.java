@@ -88,7 +88,6 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
      * 
      * @param item
      * @param data
-     * @throws Exception
      */
     public void pre(ImportTask item, ImportData data) throws Exception {
         for (PreTransform tx : filter(transforms, PreTransform.class)) {
@@ -105,7 +104,6 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
      * 
      * @param item
      * @param data
-     * @throws Exception
      */
     public void post(ImportTask task, ImportData data) throws Exception {
         for (PostTransform tx : filter(transforms, PostTransform.class)) {

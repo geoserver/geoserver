@@ -20,9 +20,8 @@ public interface FlowController {
     /**
      * Called when a new request is passed into the Dispatcher
      * 
-     * @param request
-     * @param the
-     *            maximum time the request can be blocked
+     * @param request new request
+     * @param timeout maximum time the request can be blocked
      * @return True if the request was processed successfully, false if the request timed out during
      *         the wait
      */
@@ -31,7 +30,7 @@ public interface FlowController {
     /**
      * Called when the request is done its processing
      * 
-     * @param request
+     * @param request the request
      */
     public void requestComplete(Request request);
 
@@ -40,7 +39,7 @@ public interface FlowController {
      * controllers that limit the number of incoming requests by using a blocing queue it is advised
      * to use the queue size itself as the controller priority.
      * 
-     * @return
+     *
      */
     public int getPriority();
 }

@@ -47,7 +47,7 @@ public class CoverageResponseDelegateFinder implements ApplicationContextAware {
     
     /**
      * Returns the list of all the supported output formats
-     * @return
+     *
      */
     public List<String> getOutputFormats() {
         Set<String> formats = new HashSet<String>();

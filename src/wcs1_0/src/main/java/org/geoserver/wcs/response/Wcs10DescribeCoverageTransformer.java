@@ -448,8 +448,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
          * 
          * @param ci
          * @param elevationMetadata 
-         * @throws Exception
-         */
+             */
         private void handleGrid(CoverageInfo ci) throws Exception {
         	final GridGeometry originalGrid = ci.getGrid();
         	final GridEnvelope gridRange=originalGrid.getGridRange();
@@ -611,8 +610,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
          * DOCUMENT ME!
          * 
          * @param ci
-         * @throws Exception
-         */
+             */
         private void handleSupportedCRSs(CoverageInfo ci) throws Exception {
             Set supportedCRSs = new LinkedHashSet();
             if (ci.getRequestSRS() != null)
@@ -641,8 +639,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
          * DOCUMENT ME!
          * 
          * @param ci
-         * @throws Exception
-         */
+             */
         private void handleSupportedFormats(CoverageInfo ci) throws Exception {
             final String nativeFormat = (((ci.getNativeFormat() != null) && ci.getNativeFormat()
                     .equalsIgnoreCase("GEOTIFF")) ? "GeoTIFF" : ci.getNativeFormat());

@@ -206,7 +206,7 @@ public class StatusPage extends ServerAdminPage {
 
     /**
      * Retrieves the GeoServer data directory
-     * @return
+     *
      */
     private String getDataDirectory() {
         GeoServerDataDirectory dd = getGeoServerApplication().getBeanOfType(GeoServerDataDirectory.class);

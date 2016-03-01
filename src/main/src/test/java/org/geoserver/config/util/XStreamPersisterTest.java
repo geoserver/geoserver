@@ -783,7 +783,6 @@ public class XStreamPersisterTest {
     
     /**
      * Test for GEOS-6052
-     * @throws Exception
      */
     @Test
     public void testVirtualTableMissingEscapeSql() throws Exception {
@@ -814,7 +813,6 @@ public class XStreamPersisterTest {
     
     /**
      * Another Test for GEOS-6052
-     * @throws Exception
      */
     @Test
     public void testVirtualTableMissingEscapeSqlDoesntSkipElements() throws Exception {

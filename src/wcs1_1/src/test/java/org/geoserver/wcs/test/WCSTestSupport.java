@@ -91,7 +91,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
     /**
      * Parses a multipart message from the response
      * @param response
-     * @return
+     *
      * @throws MessagingException
      * @throws IOException
      */

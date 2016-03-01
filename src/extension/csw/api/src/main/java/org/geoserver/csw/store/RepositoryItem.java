@@ -18,14 +18,13 @@ public interface RepositoryItem {
     /**
      * The MIME type describing the repository item contents
      * 
-     * @return
+     *
      */
     public String getMime();
     
     
     /**
      * The repository item contents
-     * @throws IOException 
      */
     public InputStream getContents() throws IOException;
 }

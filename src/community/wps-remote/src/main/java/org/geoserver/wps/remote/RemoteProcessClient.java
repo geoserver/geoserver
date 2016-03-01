@@ -85,14 +85,12 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
     /**
      * Initialization method
      * 
-     * @throws Exception
      */
     public abstract void init(SSLContext customSSLContext) throws Exception;
 
     /**
      * Destroy method
      * 
-     * @throws Exception
      */
     public abstract void destroy() throws Exception;
 
@@ -120,7 +118,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
     /**
      * Whether the plugin is enabled or not.
      * 
-     * @return
+     *
      */
     public boolean isEnabled() {
         return this.enabled;
@@ -183,8 +181,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
      * @param input
      * @param metadata
      * @param monitor
-     * @return
-     * @throws Exception
+     *
      */
     public abstract String execute(Name name, Map<String, Object> input,
             Map<String, Object> metadata, ProgressListener monitor) throws Exception;
@@ -207,7 +204,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
      * 
      * @param wsName
      * @param dsName
-     * @return
+     *
      */
     public DataStoreInfo createH2DataStore(String wsName, String dsName) {
         // create a datastore to import into
@@ -237,7 +234,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
     /**
      * @param metadata
      * @param value
-     * @return
+     *
      * @throws IOException
      */
     public LayerInfo importLayer(File file, DataStoreInfo store, String name, String title,

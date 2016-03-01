@@ -1247,7 +1247,6 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
 
     /**
      * Test FeatureCollection is encoded with multiple featureMember elements
-     * @throws Exception
      */
     @Test
     public void testEncodeFeatureMember() throws Exception {
@@ -1311,7 +1310,6 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
 
     /**
      * Test FeatureCollection is encoded with one featureMembers element
-     * @throws Exception
      */
     @Test
     public void testEncodeFeatureMembers() throws Exception {

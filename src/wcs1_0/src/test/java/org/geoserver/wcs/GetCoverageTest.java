@@ -405,7 +405,7 @@ public class GetCoverageTest extends WCSTestSupport {
     /**
      * Parses teh TIFF contained in the response as a {@link RenderedImage}
      * @param response
-     * @return
+     *
      * @throws IOException
      */
     RenderedImage readTiff(MockHttpServletResponse response) throws IOException {

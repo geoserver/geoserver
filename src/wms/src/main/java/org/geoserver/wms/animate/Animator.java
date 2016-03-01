@@ -81,8 +81,7 @@ public class Animator {
      * @param request
      * @param wms
      * @param wmsConfiguration
-     * @return
-     * @throws Exception
+     *
      */
     public static org.geoserver.wms.WebMap produce(GetMapRequest request, WebMapService wms,
             WMS wmsConfiguration) throws Exception {
@@ -140,7 +139,7 @@ public class Animator {
      * 
      * @param request
      * @param wmsConfiguration 
-     * @return
+     *
      */
     private static FrameCatalog initRequestManager(GetMapRequest request, WebMapService wms, WMS wmsConfiguration) {
         return new FrameCatalog(request, wms, wmsConfiguration);

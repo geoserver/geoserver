@@ -103,7 +103,7 @@ public class ReaderDimensionsAccessor {
     /**
      * True if the reader has a time dimension
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public boolean hasTime() throws IOException {
@@ -115,7 +115,7 @@ public class ReaderDimensionsAccessor {
      * They are either {@link Date} objects, or {@link DateRange} objects, according to what
      * the underlying reader provides.
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public TreeSet<Object> getTimeDomain() throws IOException {
@@ -141,7 +141,7 @@ public class ReaderDimensionsAccessor {
      * Parses either a time expression in ISO format, or a time period in start/end format
      * @param df
      * @param timeOrRange
-     * @return
+     *
      * @throws ParseException
      */
     private Object parseTimeOrRange(SimpleDateFormat df, String timeOrRange) throws ParseException {
@@ -158,7 +158,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Parses the specified value as a NumberRange if it's in the min/max form, as a Double otherwise
      * @param val
-     * @return
+     *
      */
     private Object parseNumberOrRange(String val) {
         if(val.contains("/")) {
@@ -175,7 +175,7 @@ public class ReaderDimensionsAccessor {
      * Returns the max value for the time, either as a single {@link Date} or {@link DateRange} 
      * according to what the underlying reader provides
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public Date getMaxTime() throws IOException {
@@ -197,7 +197,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Returns the min value for the time
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public Date getMinTime() throws IOException {
@@ -219,7 +219,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Returns a {@link SimpleDateFormat} using the UTC_PATTERN and the UTC time zone
      * 
-     * @return
+     *
      */
     public SimpleDateFormat getTimeFormat() {
         final SimpleDateFormat df = new SimpleDateFormat(UTC_PATTERN);
@@ -230,7 +230,7 @@ public class ReaderDimensionsAccessor {
     /**
      * True if the reader has a elevation dimension
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public boolean hasElevation() throws IOException {
@@ -240,7 +240,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Returns the full set of elevation values (either as Double or NumberRange), sorted from smaller to higher
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public TreeSet<Object> getElevationDomain() throws IOException {
@@ -266,7 +266,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Returns the max value for the elevation (as a Double, or as a NumberRange)
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public Double getMaxElevation() throws IOException {
@@ -288,7 +288,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Returns the min value for the elevation (as a Double, or as a NumbeRange)
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public Double getMinElevation() throws IOException {
@@ -309,7 +309,7 @@ public class ReaderDimensionsAccessor {
     
     /**
      * Lists the custom domains of a raster data set
-     * @return
+     *
      */
     public List<String> getCustomDomains() {
         if (metadataNames.isEmpty()) {
@@ -333,7 +333,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Return the domain datatype (if available)
      * @param domainName
-     * @return
+     *
      * @throws IOException 
      */
     public String getDomainDatatype(final String domainName) throws IOException {
@@ -364,7 +364,7 @@ public class ReaderDimensionsAccessor {
 
     /**
      * Extracts the custom domain lowest value (using String sorting)
-     * @return
+     *
      * @throws IOException 
      */
     public String getCustomDomainDefaultValue(String name) throws IOException {
@@ -388,7 +388,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Checks if this dimension has a range (min/max) or just a domain
      * @param domain
-     * @return
+     *
      */
     public boolean hasRange(String domain) {
         return metadataNames.contains(domain + "_DOMAIN_MAXIMUM") && metadataNames.contains(domain + "_DOMAIN_MINIMUM");
@@ -397,7 +397,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Checks if this dimension has a resolution
      * @param domain
-     * @return
+     *
      */
     public boolean hasResolution(String domain) {
         Utilities.ensureNonNull("name", domain);

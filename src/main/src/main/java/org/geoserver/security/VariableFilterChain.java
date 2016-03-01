@@ -44,7 +44,7 @@ public abstract class VariableFilterChain extends RequestFilterChain {
      * list the filter names which can be added to this chain
      * 
      * @param m
-     * @return
+     *
      */
     public abstract SortedSet<String> listFilterCandidates(GeoServerSecurityManager m) throws IOException;
         

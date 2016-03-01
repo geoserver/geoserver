@@ -62,7 +62,7 @@ public interface ResourceAccessManager {
      * the manager's other methods.
      * @param user
      * @param clazz
-     * @return
+     *
      */
     public @Nullable Filter getSecurityFilter(Authentication user, final Class<? extends CatalogInfo> clazz);
 

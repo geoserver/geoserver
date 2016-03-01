@@ -256,7 +256,7 @@ public class SextanteProcessFactory implements ProcessFactory {
      * Map Sextante common types into GeoTools common types
      * 
      * @param parameterClass
-     * @return
+     *
      */
     protected Class mapToGeoTools(Class parameterClass) {
         if (IVectorLayer.class.isAssignableFrom(parameterClass)) {

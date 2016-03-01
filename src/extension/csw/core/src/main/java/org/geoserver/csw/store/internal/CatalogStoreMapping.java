@@ -142,7 +142,7 @@ public class CatalogStoreMapping {
      * 
      * @param properties list of property names to be included in submapping
      * @param rd Record Descriptor
-     * @return
+     *
      */
     public CatalogStoreMapping subMapping(List<PropertyName> properties, RecordDescriptor rd) {
         Set<String> paths = new HashSet<String>();
@@ -179,9 +179,6 @@ public class CatalogStoreMapping {
      * The textual representation is a set of key-value pairs, where the key represents the mapped key and the value is an OGC expression
      * representing the mapped content. Furthermore, if the key starts with @ it also defines the ID element and if the key starts with $
      * it is a required property.
-     * 
-     * @param mappingSource
-     * @return
      */
     public static CatalogStoreMapping parse(Map<String, String> mappingSource) {
 

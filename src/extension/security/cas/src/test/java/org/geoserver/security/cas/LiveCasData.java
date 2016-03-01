@@ -51,7 +51,7 @@ public class LiveCasData extends LiveSystemTestData {
      * The property file containing the token -> value pairs used to get
      * a CAS server Url
      * 
-     * @return
+     *
      */
     protected File fixture;
     protected URL serverURLPrefix, serviceURL,loginURL, proxyCallbackURLPrefix;    
@@ -113,7 +113,7 @@ public class LiveCasData extends LiveSystemTestData {
     /**
      * Looks up the fixture file in the home directory provided that the 
      * @param fixtureId
-     * @return
+     *
      */
     private File lookupFixture(String fixtureId) {
         // first of all, make sure the fixture was not disabled using a system

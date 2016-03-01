@@ -5,7 +5,6 @@
  */
 package org.geoserver.flow.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -50,7 +49,7 @@ public class IpBlacklistFilter implements GeoServerFilter {
     /**
      * Constructor used for testing purposes
      * 
-     * @param props
+     * @param props configuraiton properties
      */
     public IpBlacklistFilter(Properties props) {
         this.blackListedAddresses = loadConfiguration(props, BLPROPERTY);

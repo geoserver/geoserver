@@ -50,21 +50,19 @@ public interface Resource extends Serializable {
     public interface Lock {
         /**
          * Releases the lock on the specified key
-         * 
-         * @param lockKey
          */
         public void release();
     }
 
     /**
-     * Resource path used by {@link ResourceStore.get}.
+     * Resource path used by {@link ResourceStore#get(String)}.
      * 
      * @return resource path
      */
     String path();
 
     /**
-     * Name of the resource denoted by {@link #getPath()} . This is the last name in the path name sequence corresponding to {@link File#getName()}.
+     * Name of the resource denoted by {@link #path()} . This is the last name in the path name sequence corresponding to {@link File#getName()}.
      * 
      * @return Resource name
      */
@@ -81,8 +79,7 @@ public interface Resource extends Serializable {
      * 
      * Registers listener with ResourceNotificationDispatcher.
      * 
-     * @See ResourceNotificationDispatcher.addListener
-     * 
+     * @see ResourceNotificationDispatcher#addListener(String, ResourceListener)
      */
     void addListener( ResourceListener listener);
     
@@ -90,8 +87,7 @@ public interface Resource extends Serializable {
      * 
      * Removes listener from ResourceNotificationDispatcher.
      * 
-     * @See ResourceNotificationDispatcher.addListener.addListener
-     *      
+     * @see ResourceNotificationDispatcher#removeListener(String, ResourceListener)
      */
     void removeListener( ResourceListener listener);
     
@@ -173,7 +169,7 @@ public interface Resource extends Serializable {
      * @see File#exists()
      * @see File#isDirectory()
      * @see File#isFile()
-     * @return
+     *
      */
     Type getType();
     
@@ -187,7 +183,7 @@ public interface Resource extends Serializable {
     /**
      * Move the resource to the specified location.
      * @see File#renameTo(File)
-     * @return
+     *
      */
     boolean renameTo(Resource dest);
 }

@@ -34,8 +34,8 @@ public class CatalogStoreCapabilities {
      * Returns the list of queriable properties supported by this implementation for the given type
      * name (empty by default)
      * 
-     * @param typeName
-     * @return
+     * @param typeName Qualified name (with namespace)
+     *
      */
     public List<Name> getQueriables(Name typeName) {
         return descriptors.get(typeName).getQueryables();
@@ -44,17 +44,17 @@ public class CatalogStoreCapabilities {
     /**
      * Returns the list of queriable properties for which an enumeration of the domain makes sense
      * 
-     * @param typeName
-     * @return
+     * @param typeName Qualified name (with namespace)
+     *
      */
-    public List<Name> getDomainQueriables(Name typeName) {        
+    public List<Name> getDomainQueriables(Name typeName) {
         return descriptors.get(typeName).getQueryables();
     }
     
     /**
      * Returns true if GetRepositoryItem is supported on the specified type
-     * @param typeName
-     * @return
+     * @param typeName Qualified name (with namespace)
+     *
      */
     public boolean supportsGetRepositoryItem(Name typeName) {
         return false;

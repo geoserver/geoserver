@@ -32,8 +32,6 @@ import org.geotools.xml.InstanceComponent;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class OperationTypeBinding extends AbstractSimpleBinding {

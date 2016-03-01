@@ -89,7 +89,7 @@ public class XMLSchemaTranslator extends NameSpaceTranslator {
      *
      * @see org.vfny.geoserver.global.xml.NameSpaceTranslator#getElements()
      *
-     * @return
+     *
      */
     public Set getElements() {
         return elements;
@@ -100,7 +100,7 @@ public class XMLSchemaTranslator extends NameSpaceTranslator {
      *
      * @see org.vfny.geoserver.global.xml.NameSpaceTranslator#getNameSpace()
      *
-     * @return
+     *
      */
     public String getNameSpace() {
         return "http://www.w3.org/2001/XMLSchema";

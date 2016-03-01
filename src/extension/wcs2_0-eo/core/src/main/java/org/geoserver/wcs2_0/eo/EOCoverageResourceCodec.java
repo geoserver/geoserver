@@ -59,7 +59,7 @@ public class EOCoverageResourceCodec {
      * and time dimension, and has a structured grid coverage reader backing it
      * 
      * @param ci
-     * @return
+     *
      */
     public boolean isValidDataset(CoverageInfo ci) {
         Boolean dataset = ci.getMetadata().get(WCSEOMetadata.DATASET.key, Boolean.class);
@@ -104,7 +104,7 @@ public class EOCoverageResourceCodec {
 
     /**
      * Builds the identifier for a granule inside a coverage
-     * @return
+     *
      */
     public String getGranuleId(CoverageInfo coverage, String featureId) {
         return NCNameResourceCodec.encode(coverage) + GRANULE_SEPARATOR + featureId;
@@ -142,7 +142,7 @@ public class EOCoverageResourceCodec {
     /**
      * Given a valid granule id returns a Filter to extract it from the structured grid coverage reader
      * @param coverageId
-     * @return
+     *
      */
     public Filter getGranuleFilter(String granuleId) {
         // does it have the expected lexical structure?

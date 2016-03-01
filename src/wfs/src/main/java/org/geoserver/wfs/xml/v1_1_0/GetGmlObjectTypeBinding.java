@@ -76,8 +76,6 @@ import org.opengis.filter.identity.GmlObjectId;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class GetGmlObjectTypeBinding extends AbstractComplexBinding {

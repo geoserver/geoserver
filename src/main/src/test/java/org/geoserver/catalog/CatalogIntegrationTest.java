@@ -214,7 +214,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
      * Serializes and de-serializes the provided object
      * 
      * @param object
-     * @return
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */

@@ -42,7 +42,7 @@ public abstract class GeoServerJ2eeBaseAuthenticationFilter extends
      * 
      * @param request
      * @param principal
-     * @return
+     *
      * @throws IOException
      */
     protected Collection<GeoServerRole> getRolesFromJ2EE(

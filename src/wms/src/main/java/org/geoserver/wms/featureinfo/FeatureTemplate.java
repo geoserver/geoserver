@@ -374,7 +374,7 @@ public class FeatureTemplate {
      * @param featureType
      * @param template
      * @param lookup
-     * @return
+     *
      * @throws IOException 
      */
     public boolean isTemplateEmpty(SimpleFeatureType featureType, String template,

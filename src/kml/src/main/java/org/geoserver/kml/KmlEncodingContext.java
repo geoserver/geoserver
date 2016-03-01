@@ -164,7 +164,7 @@ public class KmlEncodingContext {
     /**
      * Force the output to be in WGS84
      * @param mc
-     * @return
+     *
      */
     private WMSMapContent fixViewport(WMSMapContent mc) {
         MapViewport viewport = mc.getViewport();
@@ -189,7 +189,7 @@ public class KmlEncodingContext {
      * Returns the the kmplacemark value (either specified in the request, or the default one)
      * 
      * @param mapContent
-     * @return
+     *
      */
     boolean computeKmplacemark() {
         Object kmplacemark = request.getFormatOptions().get("kmplacemark");
@@ -205,7 +205,7 @@ public class KmlEncodingContext {
      * Returns the the kmattr value (either specified in the request, or the default one)
      * 
      * @param mapContent
-     * @return
+     *
      */
     boolean computeKMAttr() {
         Object kmattr = request.getFormatOptions().get("kmattr");
@@ -233,7 +233,7 @@ public class KmlEncodingContext {
     /**
      * Checks if the extended data is enabled or not
      * @param request
-     * @return
+     *
      */
     boolean computeExtendedDataEnabled() {
         Map formatOptions = request.getFormatOptions();
@@ -248,7 +248,7 @@ public class KmlEncodingContext {
     /**
      * Checks if the superoverlay is enabled or not
      * @param request
-     * @return
+     *
      */
     boolean computeSuperOverlayEnabled() {
         Map formatOptions = request.getFormatOptions();
@@ -263,7 +263,7 @@ public class KmlEncodingContext {
     
     /**
      * Returns the superoverlay mode (either specified in the request, or the default one)
-     * @return
+     *
      */
     String computeSuperOverlayMode() {
         String overlayMode = (String) request.getFormatOptions().get("superoverlay_mode");
@@ -282,7 +282,7 @@ public class KmlEncodingContext {
     /**
      * Returns the {@link KmlDecorator} objects for the specified Feature class
      * 
-     * @return
+     *
      */
     public List<KmlDecorator> getDecoratorsForClass(Class<? extends Feature> clazz) {
         List<KmlDecoratorFactory> factories = GeoServerExtensions
@@ -424,7 +424,7 @@ public class KmlEncodingContext {
 
     /**
      * Returns the list of ground overlay layers to be included in the KMZ response
-     * @return
+     *
      */
     public Map<String, Layer> getKmzGroundOverlays() {
         return kmzGroundOverlays;
@@ -465,7 +465,7 @@ public class KmlEncodingContext {
     /**
      * Returns a list of the feature types to be encoded. Will provide a feature type only for the
      * vector layers, a null will be placed where a layer of different nature is found
-     * @return
+     *
      */
     public List<SimpleFeatureType> getFeatureTypes() {
         List<SimpleFeatureType> results = new ArrayList<SimpleFeatureType>();
@@ -482,7 +482,7 @@ public class KmlEncodingContext {
 
     /**
      * Returns the current feature type is the current layer is made of vector features, null otherwise
-     * @return
+     *
      */
     public SimpleFeatureType getCurrentFeatureType() {
         if(currentLayer instanceof FeatureLayer) {
@@ -494,7 +494,7 @@ public class KmlEncodingContext {
 
     /**
      * Returns the current layer index in the request
-     * @return
+     *
      */
     public int getCurrentLayerIndex() {
         return layerIndex;

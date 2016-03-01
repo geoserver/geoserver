@@ -84,8 +84,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {

@@ -78,7 +78,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
 
     /**
      * Returns the connection timeout to the mapper web service (in seconds).
-     * @return
+     *
      */
     public int getConnectTimeout() {
         return connectTimeout;
@@ -86,7 +86,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
 
     /**
      * Sets the connection timeout to the mapper web service (in seconds).
-     * @param connectTimeout
+     * @param connectTimeout timeout in seconds 
      */
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
@@ -94,7 +94,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
 
     /**
      * Returns the read timeout to the mapper web service (in seconds).
-     * @return
+     *
      */
     public int getReadTimeout() {
         return readTimeout;
@@ -103,7 +103,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
     /**
      * Sets the read timeout to the mapper web service (in seconds).
      * 
-     * @param readTimeout
+     * @param readTimeout read timeout in seconds
      */
     public void setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
@@ -111,7 +111,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
 
     /**
      * Returns the web service url
-     * @return
+     *
      */
     public String getWebServiceUrl() {
         return webServiceUrl;
@@ -119,7 +119,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
 
     /**
      * Sets the web service url (must contain the {key} placeholder for the authkey parameter).
-     * @param webServiceUrl
+     * @param webServiceUrl service url (must contain {key} placeholder for authkey)
      */
     public void setWebServiceUrl(String webServiceUrl) {
         this.webServiceUrl = webServiceUrl;
@@ -127,7 +127,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
     
     /**
      * Returns the regular expression used to extract the user name from the webservice response.
-     * @return
+     *
      */
     public String getSearchUser() {
         return searchUser;
@@ -135,7 +135,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
 
     /**
      * Sets the regular expression used to extract the user name from the webservice response.
-     * @param searchUser
+     * @param searchUser search user
      */
     public void setSearchUser(String searchUser) {
         this.searchUser = searchUser;
@@ -144,8 +144,6 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
 
     /**
      * Configures the HTTPClient implementation to be used to connect to the web service.
-     * 
-     * @param httpClient
      */
     public void setHttpClient(HTTPClient httpClient) {
         this.httpClient = httpClient;
@@ -187,7 +185,7 @@ public class WebServiceAuthenticationKeyMapper extends AbstractAuthenticationKey
      * to extract the userName.
      * 
      * @param key
-     * @return
+     *
      */
     private String callWebService(String key) {
         String url = webServiceUrl.replace("{key}", key);

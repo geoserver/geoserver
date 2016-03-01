@@ -16,7 +16,6 @@ import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.geometry.MismatchedDimensionException;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
 
@@ -52,10 +51,8 @@ public class RecordsTest extends TestCase {
           </ows:WGS84BoundingBox>
         </Record>
        </code>
-     * @throws Exception 
-     * @throws MismatchedDimensionException 
      */
-    public void testBuildCSWRecord() throws MismatchedDimensionException, Exception {
+    public void testBuildCSWRecord() throws Exception {
         CSWRecordBuilder rb = new CSWRecordBuilder();
         rb.addElement("identifier", "00180e67-b7cf-40a3-861d-b3a09337b195");
         rb.addElement("title", "Image2000 Product 1 (at1) Multispectral");
@@ -78,6 +75,7 @@ public class RecordsTest extends TestCase {
     private void assertBBox(Feature f, ReferencedEnvelope... envelopes) throws Exception {
         Property p = f.getProperty(CSWRecordDescriptor.RECORD_BBOX_NAME);
         MultiPolygon geometry = (MultiPolygon) p.getValue();
+        @SuppressWarnings("unchecked")
         List<ReferencedEnvelope> featureEnvelopes = (List<ReferencedEnvelope>) p.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
         ReferencedEnvelope total = null;
         for (int i = 0; i < envelopes.length; i++) {

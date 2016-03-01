@@ -82,7 +82,7 @@ public class GeoserverWicketEncrypterFactory implements ICryptFactory {
      * Look up in the Spring Context for an implementation
      * of {@link ICryptFactory}
      * if nothing found use this default.
-     * @return
+     *
      */
     public static ICryptFactory get() {
         if (Factory!=null) return Factory;

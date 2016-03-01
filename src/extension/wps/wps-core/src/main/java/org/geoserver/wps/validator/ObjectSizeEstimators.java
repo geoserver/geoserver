@@ -29,7 +29,7 @@ public class ObjectSizeEstimators implements ApplicationContextAware {
      * {@link ObjectSizeEstimator#UNKNOWN_SIZE} if none returns a positive value
      * 
      * @param object
-     * @return
+     *
      */
     public static long getSizeOf(Object object) {
 

@@ -36,7 +36,7 @@ public class GdalWrapper extends AbstractToolWrapper {
     /**
      * Returns a list of the gdal_translate supported formats (i.e. what must be passed to gdal_translate via its -of parameter)
      * 
-     * @return
+     *
      */
     public Set<String> getSupportedFormats() {
         try {
@@ -85,7 +85,7 @@ public class GdalWrapper extends AbstractToolWrapper {
      * Returns true if gdal_translate is available, that is, if executing
      * "gdal_translate --version" returns 0 as the exit code.
      * 
-     * @return
+     *
      */
     public boolean isAvailable() {
         List<String> commands = new ArrayList<String>();

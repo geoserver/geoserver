@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -34,8 +33,8 @@ public class ResponseUtils {
     
     /**
      * Parses the passed string, and encodes the special characters (used in
-     * xml for special purposes) with the appropriate codes. e.g. '<' is
-     * changed to '&lt;'
+     * xml for special purposes) with the appropriate codes. e.g. '&lt;' is
+     * changed to '&amp;lt;'
      *
      * @param inData The string to encode into xml.
      *
@@ -93,7 +92,7 @@ public class ResponseUtils {
     }
 
     /**
-     * Writes <CODE>string</CODE> into writer, escaping &, ', ", <, and >
+     * Writes <code>string</code> into writer, escaping &amp;, ', ", ^lt;, and &gt;
      * with the XML excape strings.
      */
     public static void writeEscapedString(Writer writer, String string)
@@ -121,10 +120,10 @@ public class ResponseUtils {
      * Appends a query string to a url.
      * <p>
      * This method checks <code>url</code> to see if the appended query string requires a '?' or
-     * '&' to be prepended.
+     * '&amp;' to be prepended.
      * </p>
      * <p>
-     * This code can be used to make sure the url ends with ? or & by calling appendQueryString(url, "")
+     * This code can be used to make sure the url ends with ? or &amp; by calling appendQueryString(url, "")
      * </p>
      *
      * @param url The base url.
@@ -188,12 +187,12 @@ public class ResponseUtils {
      * Returns the parent url of a url.
      * <p>
      * Examples:
-     * <ul>
-     *   <li>http://foo.com/bar/foo -> http://foo.com/bar
-     *   <li>http://foo.com/bar/ -> http://foo.com
-     *   <li>http://foo.com/bar -> http://foo.com
-     * </ul>
      * </p>
+     * <ul>
+     *   <li>http://foo.com/bar/foo --&gt; http://foo.com/bar</li>
+     *   <li>http://foo.com/bar/ --&gt; http://foo.com</li>
+     *   <li>http://foo.com/bar --&gt; http://foo.com</li>
+     * </ul>
      */
     public static String getParentUrl( String url ) {
         if ( url.endsWith( "/" ) ) {
@@ -210,7 +209,7 @@ public class ResponseUtils {
 
     /**
      * Given a set of path components a full path is built
-     * @param pathComponent the set of path components
+     * @param pathComponents The set of path components
      *
      * @return The full url with the path appended.
      * TODO: remove this and replace with Requetss.appendContextPath
@@ -235,14 +234,12 @@ public class ResponseUtils {
     /**
      * Strips any remaining part from a path, returning only the first component.
      * <p>
-     * Examples: 
-     * <ul>
-     *   <li>foo/bar -> foo
-     *   <li>/foo/bar -> /foo
-     * </ul>
+     * Examples:
      * </p>
-     * @param url
-     * @return
+     * <ul>
+     *   <li>foo/bar --&gt; foo</li>
+     *   <li>/foo/bar --&gt; /foo</li>
+     * </ul>
      */
     public static String stripRemainingPath(String path) {
         int i = 0;
@@ -261,13 +258,13 @@ public class ResponseUtils {
      * Strips off the first compontent of a path.
      * <p>
      * Examples: 
-     * <ul>
-     *   <li>foo/bar -> bar
-     *   <li>/foo/bar -> bar
-     *   <li>/foo/bar/foobar -> bar/foobar
-     *   <li>/foo -> ""
-     * </ul>
      * </p>
+     * <ul>
+     *   <li>foo/bar --gt; bar</li>
+     *   <li>/foo/bar --gt; bar</li>
+     *   <li>/foo/bar/foobar --gt; bar/foobar</li>
+     *   <li>/foo --gt; ""</li>
+     * </ul>
      */
     public static String stripBeginningPath(String path ) {
         int i = 0;
@@ -286,13 +283,14 @@ public class ResponseUtils {
     /**
      * Strips off the extension of a path.
      * <p>
-     * Examples: 
+     * Examples:
+     * </p> 
      * <ul>
-     *   <li>foo/bar.xml -> foo/bar
-     *   <li>bar.xml -> bar
-     *   <li>foo/bar -> foo/bar
+     *   <li>foo/bar.xml --gt; foo/bar</li>
+     *   <li>bar.xml --gt; bar</li>
+     *   <li>foo/bar --gt; foo/bar</li>
      * </ul>
-     * </p>
+     * 
      * @return the path minus the extension.
      */
     public static String stripExtension( String path ) {
@@ -307,14 +305,14 @@ public class ResponseUtils {
      * Returns the last component of a path. 
      * <p>
      * Examples:
-     * <ul>
-     *   <li>/foo/bar -> bar
-     *   <li>foo/bar/ -> bar
-     *   <li>/foo -> foo
-     *   <li>foo -> foo
-     *   <li>
-     * </ul>
      * </p>
+     * <ul>
+     *   <li>/foo/bar --&gt; bar</li>
+     *   <li>foo/bar/ --&gt; bar</li>
+     *   <li>/foo --&gt; foo</li>
+     *   <li>foo --&gt; foo</li>
+     * </ul>
+     * 
      * @param path the Path
      * 
      * @return the last component of the path
@@ -368,17 +366,13 @@ public class ResponseUtils {
     }
     
     /**
-     * Builds and mangles a URL given its constitutent components. The components will be eventually
-     * modified by registered {@link URLMangler} instances to handle proxies or add security tokens
+     * Builds and mangles a URL given its constitutent components. The components will be eventually modified by registered {@link URLMangler}
+     * instances to handle proxies or add security tokens
      * 
-     * @param baseURL
-     *            the base URL, containing host, port and application
-     * @param path
-     *            the path after the application name
-     * @param kvp
-     *            the GET request parameters
-     * @param the
-     *            URL type
+     * @param baseURL the base URL, containing host, port and application
+     * @param path the path after the application name
+     * @param kvp the GET request parameters
+     * @param type URL type
      */
     public static String buildURL(String baseURL, String path, Map<String, String> kvp, URLType type) {
         // prepare modifiable parameters
@@ -417,10 +411,8 @@ public class ResponseUtils {
     /**
      * Builds and mangles a URL for a schema contained in GeoServer
      * 
-     * @param baseURL
-     *            the base URL, containing host, port and application
-     * @param path
-     *            the path inside the schema location (.../geoserver/schemas/...)
+     * @param baseURL the base URL, containing host, port and application
+     * @param path the path inside the schema location (.../geoserver/schemas/...)
      */
     public static String buildSchemaURL(String baseURL, String path) {
         return buildURL(baseURL, appendPath(SCHEMAS, path), null, URLType.RESOURCE);
@@ -429,8 +421,7 @@ public class ResponseUtils {
     /**
      * Pulls out the base url ( from the client point of view ), from the given request object.
      * 
-     * @return A String of the form "<scheme>://<server>:<port>/<context>/"
-     * 
+     * @return A String of the form "&lt;scheme&gt;://&lt;server&gt;:&lt;port&gt;/&lt;context&gt;/"
      */
     public static String baseURL(HttpServletRequest req) {
         StringBuffer sb = new StringBuffer(req.getScheme());
@@ -442,7 +433,6 @@ public class ResponseUtils {
     /**
      * Convenience method to build a KVP parameter map
      * @param parameters sequence of keys and values
-     * @return
      */
     public static Map<String, String> params(String... parameters) {
         Map<String, String> result = new LinkedHashMap<String, String>();
@@ -488,8 +478,6 @@ public class ResponseUtils {
     
     /**
      * URL decods the value using ISO-8859-1 as the reference charset
-     * @param value
-     * @return
      */
     public static String urlDecode(String value) {
         try {

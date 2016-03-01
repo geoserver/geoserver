@@ -25,7 +25,7 @@ public class GdalTranslateTransform extends AbstractCommandLineTransform impleme
     /**
      * Checks if gdal_translate is available
      * 
-     * @return
+     *
      * @throws IOException
      */
     public static boolean isAvailable() throws IOException {

@@ -529,7 +529,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     /**
      * Gathers the most specific CatalogInfo sub-interface from the specified class object
      * @param class1
-     * @return
+     *
      */
     private Class getCatalogInfoInterface(Class<? extends CatalogInfo> clazz) {
         Class result = CatalogInfo.class;

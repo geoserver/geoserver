@@ -20,7 +20,7 @@ public class JulianDate {
     /**
      * Converts a Date to JD format.
      * @param dt
-     * @return
+     *
      */
     public static double toJulian(Date dt) {
         Calendar calendar = new GregorianCalendar();

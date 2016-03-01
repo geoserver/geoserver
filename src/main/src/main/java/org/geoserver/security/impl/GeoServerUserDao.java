@@ -165,7 +165,7 @@ public class GeoServerUserDao implements UserDetailsService {
     /**
      * Returns the list of users. To be used for UI editing of users, it's a live map
      * 
-     * @return
+     *
      */
     public List<User> getUsers() {
         checkUserMap();
@@ -202,7 +202,7 @@ public class GeoServerUserDao implements UserDetailsService {
     /**
      * Removes the specified user from the users list
      * @param username
-     * @return
+     *
      */
     public boolean removeUser(String username) {
         checkUserMap();
@@ -278,7 +278,7 @@ public class GeoServerUserDao implements UserDetailsService {
      * Stores the provided user map into a properties object
      * 
      * @param userMap
-     * @return
+     *
      */
     Properties storeUsersToProperties(Map<String, User> userMap) {
         Properties p = new Properties();
@@ -292,7 +292,7 @@ public class GeoServerUserDao implements UserDetailsService {
      * Turns the users password, granted authorities and enabled state into a property file value
      * 
      * @param user
-     * @return
+     *
      */
     String serializeUser(User user) {
         StringBuffer sb = new StringBuffer();

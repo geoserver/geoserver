@@ -41,8 +41,6 @@ import org.opengis.feature.type.Name;
  * </code>
  *	 </pre>
  * 
- * </p>
- * 
  * @generated
  */
 public class FeatureReferenceTypeBinding extends AbstractComplexBinding {

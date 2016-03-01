@@ -71,7 +71,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     
     /**
      * Returns true if this data provider is setup for editing (it will reuse models). Defaults to false
-     * @return
+     *
      */
     public boolean isEditable() {
         return editable;
@@ -88,7 +88,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     /**
      * Returns the current filtering keywords
      * 
-     * @return
+     *
      */
     public String[] getKeywords() {
         return keywords;
@@ -136,7 +136,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * Escape any character that's special for the regex api
      * 
      * @param keyword
-     * @return
+     *
      */
     private String escape(String keyword) {
         final String escapeSeq = "\\";
@@ -177,7 +177,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * Provides catalog access for the provider (cannot be stored as a field, this class is going to
      * be serialized)
      * 
-     * @return
+     *
      */
     protected Catalog getCatalog() {
         return getApplication().getCatalog();
@@ -210,7 +210,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * Returns a filtered list of items. Subclasses can override if they have a more efficient way
      * of filtering than in memory keyword comparison
      * 
-     * @return
+     *
      */
     protected List<T> getFilteredItems() {
         List<T> items = getItems();
@@ -237,7 +237,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     /**
      * Returns the global size of the collection, without filtering it
      * 
-     * @return
+     *
      */
     public int fullSize() {
         return getItems().size();
@@ -275,7 +275,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
     /**
      * Returns only the properties that have been marked as visible
      * 
-     * @return
+     *
      */
     List<Property<T>> getVisibleProperties() {
         List<Property<T>> results = new ArrayList<Property<T>>();
@@ -291,14 +291,14 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * establish the layer sorting, whilst the Property itself is used to extract the value of the
      * property from the item.
      * 
-     * @return
+     *
      */
     protected abstract List<Property<T>> getProperties();
 
     /**
      * Returns a non filtered list of all the items the provider must return
      * 
-     * @return
+     *
      */
     protected abstract List<T> getItems();
 
@@ -306,7 +306,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * Returns a comparator given the sort property.
      * 
      * @param sort
-     * @return
+     *
      */
     protected Comparator<T> getComparator(SortParam<?> sort) {
         if(sort == null) {
@@ -386,7 +386,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
      * Simply wraps the object into a Model assuming the Object is serializable. Subclasses
      * can override this
      * @param object
-     * @return
+     *
      */
     @SuppressWarnings("unchecked")
     protected IModel<T> newModel(T object) {
@@ -409,7 +409,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
          * Given the item, returns the property
          * 
          * @param item
-         * @return
+         *
          */
         public Object getPropertyValue(T item);
 
@@ -417,14 +417,14 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
          * Given the item model, returns a model for the property value
          * 
          * @param itemModel
-         * @return
+         *
          */
         public IModel<?> getModel(IModel<T> itemModel);
 
         /**
          * Allows for sorting the property
          * 
-         * @return
+         *
          */
         public Comparator<T> getComparator();
 
@@ -436,7 +436,7 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
 
         /**
          * Returns true if it makes sense to search over this property
-         * @return
+         *
          */
         public boolean isSearchable();
     }

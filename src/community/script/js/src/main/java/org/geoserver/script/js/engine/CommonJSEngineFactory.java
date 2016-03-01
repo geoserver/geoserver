@@ -69,7 +69,7 @@ public class CommonJSEngineFactory implements ScriptEngineFactory {
 
     /**
      * Create a new require function using the shared global.
-     * @return
+     *
      */
     @SuppressWarnings("unused")
     private Require createRequire() {
@@ -171,7 +171,7 @@ public class CommonJSEngineFactory implements ScriptEngineFactory {
      * modules to be cached.  The require builder is constructed with a module
      * provider that reloads modules only when they have changed on disk (with
      * a 60 second interval).  This require builder will be configured with
-     * the module paths returned by {@link getModulePahts()}.
+     * the module paths returned by {@link #getModulePahts()}.
      * 
      * @return a shared require builder
      */

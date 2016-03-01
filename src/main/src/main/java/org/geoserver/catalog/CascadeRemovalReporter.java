@@ -75,7 +75,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
      * @param modification
      *            The kind of modification to be searched for, or null if no modification type
      *            filtering is desired
-     * @return
+     *
      */
     public <T> List<T> getObjects(Class<T> catalogClass, ModificationType... modifications) {
         List<T> result = new ArrayList<T>();

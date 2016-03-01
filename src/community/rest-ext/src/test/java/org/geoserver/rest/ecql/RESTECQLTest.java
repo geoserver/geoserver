@@ -121,7 +121,6 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
      * @param coverageStore
      * @param fileName
      * @throws IOException
-     * @throws Exception
      * @throws ParserConfigurationException
      * @throws SAXException
      */
@@ -177,7 +176,7 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
      * @param expression
      * @param cs
      * @param filename
-     * @return
+     *
      * @throws CQLException
      */
     private File extractFile(String expression, CoverageStoreInfo cs, String itemPath, String filename)
@@ -198,7 +197,6 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
      * Creation of a new workspace defined by the input "workspace" name
      * 
      * @param workspace
-     * @throws Exception
      */
     private void createWorkSpace(String workspace) throws Exception {
         // Check if the workspace is already present

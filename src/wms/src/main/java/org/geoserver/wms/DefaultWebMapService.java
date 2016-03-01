@@ -253,7 +253,7 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
      * Checks wheter the line width optimization is enabled, or not (defaults to true unless the
      * user sets the OPTIMIZE_LINE_WIDTH property to false)
      * 
-     * @return
+     *
      */
     public static boolean isLineWidthOptimizationEnabled() {
         return OPTIMIZE_LINE_WIDTH;
@@ -263,7 +263,7 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
      * If true (default) use the sld rule filters to compose the query to the DB, otherwise don't
      * and get down only with the bbox and eventual definition filter)
      * 
-     * @return
+     *
      */
     public static int getMaxFilterRules() {
         return MAX_FILTER_RULES;
@@ -271,7 +271,7 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     
     /**
      * If true (default) the direct raster rendering path is enabled
-     * @return
+     *
      */
     public static boolean isDirectRasterPathEnabled() {
         return !BYPASS_DIRECT;
@@ -672,7 +672,7 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     /**
      * Returns a app wide cached rendering pool that can be used for parallelized rendering
      * 
-     * @return
+     *
      */
     public static ExecutorService getRenderingPool() {
         if(USE_GLOBAL_RENDERING_POOL && RENDERING_POOL == null) {

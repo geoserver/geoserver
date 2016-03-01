@@ -227,7 +227,6 @@ public class AccessManagerTest extends GeofenceBaseTest
      * This test is very similar to testAreaLimited(), but the source resource is set to have the 900913 SRS.
      * We expect that the allowedarea is projected into the resource CRS.
      *
-     * @throws Exception
      */
     public void testArea900913() throws Exception
     {

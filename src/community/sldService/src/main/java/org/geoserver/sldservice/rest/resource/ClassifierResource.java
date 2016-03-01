@@ -490,9 +490,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 
 		/**
 		 * 
-		 * @seecom.thoughtworks.xstream.converters.Converter#unmarshal(com.
-		 * thoughtworks.xstream.io. HierarchicalStreamReader,
-		 * com.thoughtworks.xstream.converters.UnmarshallingContext)
+		 * @see com.thoughtworks.xstream.converters.Converter#unmarshal(com.thoughtworks.xstream.io. HierarchicalStreamReader,com.thoughtworks.xstream.converters.UnmarshallingContext)
 		 */
 		public Object unmarshal(HierarchicalStreamReader arg0,
 				UnmarshallingContext arg1) {

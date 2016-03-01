@@ -72,7 +72,7 @@ public abstract class AbstractHttpClient implements HTTPClient {
     }
 
     /**
-     * @return
+     *
      * @see org.geotools.data.ows.HTTPClient#isTryGzip()
      */
     @Override

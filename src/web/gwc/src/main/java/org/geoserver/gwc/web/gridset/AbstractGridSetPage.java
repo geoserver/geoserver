@@ -282,7 +282,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     /**
      * @param model
-     * @return
+     *
      */
     private GridSetCRSPanel crs(IModel<GridSetInfo> model) {
         GridSetCRSPanel crsPanel = new GridSetCRSPanel("crs", model);

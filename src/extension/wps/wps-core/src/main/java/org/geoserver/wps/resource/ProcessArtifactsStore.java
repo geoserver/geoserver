@@ -24,14 +24,14 @@ public interface ProcessArtifactsStore {
      * 
      * @param executionId
      * @param outputName
-     * @return
+     *
      */
     Resource getArtifact(String executionId, ArtifactType type, String name);
 
     /**
      * Lists all known directories containing process artifacts
      * 
-     * @return
+     *
      */
     List<Resource> listExecutionResourcess();
 

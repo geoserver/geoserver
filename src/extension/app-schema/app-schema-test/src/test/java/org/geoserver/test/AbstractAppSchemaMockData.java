@@ -469,7 +469,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *            feature types base directory
      * @param dataStoreName
      *            data store name
-     * @return
+     *
      */
     @SuppressWarnings("serial")
     private static Map<String, Serializable> buildAppSchemaDatastoreParams(
@@ -541,7 +541,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     /**
      * Determine which setup class to use based on the fixture id specified in the vm arg.
      * 
-     * @throws Exception
      */
     private void createTablesInTestDatabase() throws Exception {
         AbstractReferenceDataSetup setup = null;
@@ -565,8 +564,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     /**
      * Adds the specified style to the data directory
      * @param styleId the style id
-     * @param filename filename of SLD file in test-data to be copied into the data directory
-     * @throws IOException
+     * @param fileName filename of SLD file in test-data to be copied into the data directory
      */
     public void addStyle(String styleId, String fileName) {
         layerStyles.put(styleId, styleId + ".sld");

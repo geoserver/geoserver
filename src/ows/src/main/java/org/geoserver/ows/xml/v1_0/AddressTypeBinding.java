@@ -16,8 +16,6 @@ import org.geotools.xml.Node;
 
 /**
  * Binding object for the type http://www.opengis.net/ows:AddressType.
- *
- * <p>
  *        <pre>
  *         <code>
  *  &lt;complexType name="AddressType"&gt;
@@ -62,7 +60,6 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
- * </p>
  *
  * @generated
  */

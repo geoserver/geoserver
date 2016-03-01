@@ -145,14 +145,14 @@ public interface LayerGroupInfo extends PublishedInfo {
     
     /**
      * 
-     * @return
+     *
      */
     List<LayerInfo> layers();
 
     /**
      * 
      * 
-     * @return
+     *
      */
     List<StyleInfo> styles();  
         

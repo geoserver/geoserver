@@ -20,12 +20,11 @@ import java.util.List;
  * A listener to path="user_projections/epsg.properties" receive notification on change to the <b>epsg.properties</b> file. This notification will
  * consist of of delta=<code>user_projections/epsg.properties</code></li>
  * <li>Listeners on a directory will be notified on any resource change in the directory. The delta will include any modified directories.
- * 
  * A listener on path="style" is notified on change to <b>style/pophatch.sld</b> and <b>style/icons/city.png</b>. The change to these two files is
  * represented with delta consisting of delta=<code>style,style/icons,style/icons/city.png,style/pophatch.sld</code></li>
- * </ul>
  * <li>Removed resources may be represented in notification, but will have reverted to {@link Resource.Type#UNDEFINED} since the content is no longer
- * present.</li> </ul>
+ * present.</li>
+ * </ul>
  * 
  * @author Jody Garnett (Boundless)
  */
@@ -50,9 +49,17 @@ public class ResourceNotification {
             this.path = path;
             this.kind = kind;
         }
+        /**
+         * Nature of change
+         * @return nature of change
+         */
         public Kind getKind() {
             return kind;
         }
+        /**
+         * Resource path changed 
+         * @return resource path changed
+         */
         public String getPath() {
             return path;
         }
@@ -138,8 +145,9 @@ public class ResourceNotification {
     /**
      * Notification of a change to a single resource.
      * 
-     * @param store
-     * @param path
+     * @param path resource path changed
+     * @param kind nature of change
+     * @param timestamp local time stamp of change
      */
     ResourceNotification(String path, Kind kind, long timestamp) {
         this.path = path;
@@ -151,9 +159,10 @@ public class ResourceNotification {
     /**
      * Notification changes to directory contents.
      * 
-     * @see #notification(ResourceStore, File, String, List, List, List)
-     * @param store
-     * @param delta
+     * @param path resource path changed
+     * @param kind nature of change
+     * @param timestamp local time stamp of change
+     * @param delta List of changes
      */
     @SuppressWarnings("unchecked")
     public ResourceNotification( String path, Kind kind, long timestamp, List<Event> delta ){

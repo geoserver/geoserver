@@ -69,7 +69,6 @@ public interface ProcessManager {
      *        pace) or a foreground one. This is used to differentiate between a synchronous WPS
      *        request, that has a time sensitive HTTP connection associated to it, and a
      *        asynchronous one, in which the client will poll the server for updates
-     * @return The execution id
      * @throws ProcessException
      */
     void submit(String executionId, Name processName, Map<String, Object> inputs,
@@ -83,7 +82,7 @@ public interface ProcessManager {
      * 
      * @param executionId
      * @param timeout
-     * @return
+     *
      */
     Map<String, Object> getOutput(String executionId, long timeout) throws ProcessException;
 

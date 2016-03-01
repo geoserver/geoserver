@@ -104,8 +104,6 @@ class NetCDFCRSWriter {
      * Setup lat,lon dimension (or y,x)  and related coordinates variable and add them
      * to the provided dimensionsManager
      * @param dimensionsManager 
-     * @return 
-     * @return 
      */
     public Map<String, NetCDFDimensionMapping> initialize2DCoordinatesDimensions() {
         final RenderedImage image = sampleGranule.getRenderedImage();

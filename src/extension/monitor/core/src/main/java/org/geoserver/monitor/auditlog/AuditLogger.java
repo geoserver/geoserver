@@ -305,7 +305,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
          * Performs log-rolling if necessary
          * 
          * @param writer
-         * @return
+         *
          * @throws IOException
          */
         BufferedWriter rollWriter(BufferedWriter writer) throws Exception {

@@ -78,7 +78,7 @@ public class HolesRemover {
 	 * Gets a new polygon without holes from the given
 	 * polygon.
 	 * @param poly
-	 * @return
+	 *
 	 */
 	public static Polygon removeHoles(Polygon poly,double scale) {
 		GeometryFactory gFac=new GeometryFactory(poly.getPrecisionModel(),poly.getSRID());
@@ -114,7 +114,7 @@ public class HolesRemover {
 
 	/**
 	 * Cuts the configured polygon with the hole. 
-	 * @return
+	 *
 	 */
 	private LineString cutHole() {
 		// boundary must be counterclockwise

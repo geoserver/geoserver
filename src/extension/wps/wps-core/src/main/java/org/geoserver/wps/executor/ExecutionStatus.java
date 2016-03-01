@@ -212,7 +212,7 @@ public class ExecutionStatus implements Serializable {
     /**
      * Returns the progress percentage, as a number between 0 and 100
      * 
-     * @return
+     *
      */
     public float getProgress() {
         return progress;
@@ -263,7 +263,7 @@ public class ExecutionStatus implements Serializable {
      * The original request. This field is available only while the request is being processed, on
      * the node that's processing it. For all other nodes, a copy of the request is stored on disk
      * 
-     * @return
+     *
      */
     public ExecuteType getRequest() {
         return request;

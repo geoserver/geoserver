@@ -18,17 +18,14 @@ import org.geotools.util.Version;
 /**
  * Creates a request bean from xml.
  * <p>
- * A request bean is an object which captures the parameters of an operation
- * being requested to a service.
+ * A request bean is an object which captures the parameters of an operation being requested to a service.
  * </p>
  * <p>
- * An xml request reader must declare the root element of xml documents that it
- * is capable of reading. This is accomplished with {@link #getNamespace()} and
- * {@link #getElement()}.
+ * An xml request reader must declare the root element of xml documents that it is capable of reading. This is accomplished with {@link #getElement()}
+ * and {@link QName#getNamespaceURI()}.
  * </p>
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public abstract class XmlRequestReader {
     /**

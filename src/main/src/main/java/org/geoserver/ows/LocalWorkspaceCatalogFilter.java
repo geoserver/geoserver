@@ -97,7 +97,7 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
     /**
      * Returns true if the sublayers of a layer group are all hidden.
      * @param layerGroup
-     * @return
+     *
      */
     protected boolean subLayersHidden(LayerGroupInfo layerGroup) {
         boolean anySublayersVisible=false;

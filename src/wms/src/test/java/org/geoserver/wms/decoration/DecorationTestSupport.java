@@ -61,7 +61,7 @@ public class DecorationTestSupport {
      * @param i
      * @param j
      * @param color
-     * @return
+     *
      */
     protected Color getPixelColor(BufferedImage image, int i, int j) {
         ColorModel cm = image.getColorModel();

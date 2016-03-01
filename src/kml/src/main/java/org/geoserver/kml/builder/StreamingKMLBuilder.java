@@ -29,7 +29,7 @@ public class StreamingKMLBuilder {
      * Builds a lazily evaluated KML document given a encoding context
      * 
      * @param context
-     * @return
+     *
      */
     public Kml buildKMLDocument(KmlEncodingContext context) {
         // prepare kml, document and folder

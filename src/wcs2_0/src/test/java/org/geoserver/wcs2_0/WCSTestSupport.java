@@ -377,7 +377,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     /**
      * Parses a multipart message from the response
      * @param response
-     * @return
+     *
      * @throws MessagingException
      * @throws IOException
      */

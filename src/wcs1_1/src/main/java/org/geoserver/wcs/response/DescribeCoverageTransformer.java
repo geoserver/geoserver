@@ -337,7 +337,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
          * if all sample dimensions have one, otherwise null
          * 
          * @param dimensions
-         * @return
+         *
          */
         protected NumberRange getCoverageRange(List<CoverageDimensionInfo> dimensions) {
             NumberRange range = null;

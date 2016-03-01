@@ -36,7 +36,7 @@ public class DecodingUserDetailsService implements UserDetailsService {
     /**
      * Creates a new Instance
      * @param service
-     * @return
+     *
      * @throws IOException
      */
     public static DecodingUserDetailsService newInstance(GeoServerUserGroupService service) throws IOException {

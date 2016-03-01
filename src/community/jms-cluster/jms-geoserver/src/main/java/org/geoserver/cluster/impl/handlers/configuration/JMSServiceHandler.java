@@ -97,7 +97,7 @@ public class JMSServiceHandler extends JMSConfigurationHandler<JMSServiceModifyE
      * 
      * @param geoServer
      * @param ev
-     * @return
+     *
      */
     public static ServiceInfo getLocalService(final GeoServer geoServer,
             final JMSServiceModifyEvent ev) {

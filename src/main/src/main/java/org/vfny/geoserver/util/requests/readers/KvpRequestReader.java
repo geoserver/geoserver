@@ -394,7 +394,7 @@ abstract public class KvpRequestReader implements ApplicationContextAware {
     /**
      * Parses an OGC filter
      * @param filter
-     * @return
+     *
      * @throws ServiceException
      *
      *
@@ -423,7 +423,7 @@ abstract public class KvpRequestReader implements ApplicationContextAware {
     /**
      * Parses a CQL filter
      * @param filter
-     * @return
+     *
      * @throws ServiceException
      *
      * @deprecated use {@link CQLFilterKvpParser}
@@ -439,7 +439,7 @@ abstract public class KvpRequestReader implements ApplicationContextAware {
     /**
      * Parses fid filters
      * @param fid
-     * @return
+     *
      */
     protected List readFidFilter(String fid) {
         List filters = new ArrayList();

@@ -25,7 +25,7 @@ public interface ProcessInfo extends Info, Cloneable {
     /**
      * The name of the process
      * 
-     * @return
+     *
      */
     Name getName();
 
@@ -39,7 +39,7 @@ public interface ProcessInfo extends Info, Cloneable {
     /**
      * Whether the process is enabled or disabled
      * 
-     * @return
+     *
      */
     boolean isEnabled();
 
@@ -64,7 +64,7 @@ public interface ProcessInfo extends Info, Cloneable {
      * The metadata map, can contain any sort of information that non core plugins might use to
      * handle information related to this factory
      * 
-     * @return
+     *
      */
     MetadataMap getMetadata();
 }

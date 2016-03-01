@@ -133,7 +133,7 @@ public class GeoServerMetaTile extends MetaTile {
 
     /**
      * Checks if this meta tile has a gutter, or not
-     * @return
+     *
      */
     private boolean metaHasGutter() {
         if(this.gutter == null) {

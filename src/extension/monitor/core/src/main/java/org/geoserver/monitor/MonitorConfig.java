@@ -5,7 +5,6 @@
  */
 package org.geoserver.monitor;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -186,11 +185,10 @@ public class MonitorConfig implements ApplicationContextAware {
      * Allows to retrieve a generic property from the configuration. Extensions and plugins are
      * supposed to use the plugin.property naming convention, passing both a prefix and a name
      * 
-     * @param <T>
-     * @param prefix
-     * @param name
-     * @param target
-     * @return
+     * @param prefix namespace prefix
+     * @param name name
+     * @param target Class for conversion
+     *
      */
     public <T> T getProperty(String prefix, String name, Class<T> target) {
         String key = prefix == null ? name : prefix + "." + name;

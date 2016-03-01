@@ -1189,7 +1189,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * other layer groups
          * 
          * @param allGroups
-         * @return
+         *
          */
         private List<LayerGroupInfo> filterNestedGroups(List<LayerGroupInfo> allGroups) {
             LinkedHashSet<LayerGroupInfo> result = new LinkedHashSet<LayerGroupInfo>(allGroups);

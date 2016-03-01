@@ -8,7 +8,7 @@ package org.geoserver.map.turbojpeg;
 
 import java.util.Collection;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;

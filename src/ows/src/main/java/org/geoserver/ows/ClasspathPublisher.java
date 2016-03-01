@@ -44,8 +44,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * </code>
  * </pre>
  * 
- * </p>
- * 
  * @author Justin Deoliveira, The Open Planning Project
  * @author Andrea Aime - GeoSolutions
  */

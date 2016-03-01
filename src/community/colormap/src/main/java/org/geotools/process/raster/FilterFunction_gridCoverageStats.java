@@ -52,9 +52,6 @@ public class FilterFunction_gridCoverageStats extends FunctionExpressionImpl {
 
     /**
      * Evaluating the filter function based on the provided coverage and the requested statName (minimum, maximum, ...)
-     * @param coverage
-     * @param statName
-     * @return
      */
     public Object evaluate (final GridCoverage2D coverage, final String statName) {
         Utilities.ensureNonNull("coverage", coverage);

@@ -136,7 +136,7 @@ public class WPSExecutionManager implements ApplicationContextAware,
      * 
      * @param request
      * @param listener
-     * @return
+     *
      */
     Map<String, Object> submitChained(ExecuteRequest request, ProgressListener listener) {
         Name processName = request.getProcessName();
@@ -235,7 +235,7 @@ public class WPSExecutionManager implements ApplicationContextAware,
     /**
      * Returns the HTTP connection timeout for remote resource fetching
      * 
-     * @return
+     *
      */
     public int getConnectionTimeout() {
         return connectionTimeout;

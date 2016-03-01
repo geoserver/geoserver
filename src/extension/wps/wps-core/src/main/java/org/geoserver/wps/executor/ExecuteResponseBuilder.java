@@ -360,7 +360,7 @@ public class ExecuteResponseBuilder {
      * Gets the mime type for the specified output
      * 
      * @param key
-     * @return
+     *
      */
     private String getOutputMimeType(String key) {
         // lookup for the OutputDefinitionType

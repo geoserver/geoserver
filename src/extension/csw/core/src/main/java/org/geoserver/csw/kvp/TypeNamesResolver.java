@@ -31,8 +31,7 @@ class TypeNamesResolver {
      *        prefix:name,prefix:name,...
      * 
      * @param namespaces Binds prefixes with namespace URIs
-     * @return
-     * @throws Exception
+     *
      */
     public List<QName> parseQNames(String qualifiedString, NamespaceSupport namespaces) {
         // simplify the algorithm below so that it does not have to care for NPE

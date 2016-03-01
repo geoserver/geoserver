@@ -109,9 +109,9 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
      *   
      * (Note: do not confuse the creation of notification events with propagation of notifications).
      * 
-     * @param resource
-     * @param kind
-     * @return
+     * @param resource Resource being changed
+     * @param kind Nature of resource change
+     * @return List of notification events covering change
      */
     public static List<Event> createEvents(Resource resource, Kind kind) {
         List<Event> events = new ArrayList<Event>();
@@ -144,9 +144,9 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
      * 
      * Rename/move causes children to be moved as well.
      * 
-     * @param resource
-     * @param kind
-     * @return
+     * @param src Resource being renamed
+     * @param dest Target resource after renatmed 
+     * @return List of notification events covering all the modified Resources
      */
     public static List<Event> createRenameEvents(Resource src, Resource dest) {
         List<Event> events = new ArrayList<Event>();

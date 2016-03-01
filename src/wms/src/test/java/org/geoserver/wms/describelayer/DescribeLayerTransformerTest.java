@@ -164,7 +164,6 @@ public class DescribeLayerTransformerTest {
      * transformer, so it'll return an empty root element in this case.
      * </p>
      * 
-     * @throws Exception
      */
     @Test
     public void testRootElement() throws Exception {

@@ -107,7 +107,6 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
     /**
      * Checks what happens when the data bbox is at the crossing of a parent tile
      * that is two levels above the bbox itself
-     * @throws Exception
      */
     @Test
     public void testCrossingSuperoverlay() throws Exception {

@@ -603,7 +603,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * Creates a {@link StreamingRenderer} instance (subclasses can provide
      * their own specialized subclasses of {@link StreamingRenderer}
      * 
-     * @return
+     *
      */
     protected StreamingRenderer buildRenderer() {
         return new StreamingRenderer();
@@ -639,7 +639,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * If both are zero then there is no timeout
      * 
      * @param localMaxRenderingTime
-     * @return
+     *
      */
     public int getMaxRenderingTime(int localMaxRenderingTime) {
         
@@ -774,7 +774,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @param width
      * @param height
      * @param paletteInverter
-     * @return
+     *
      */
     protected RenderedImage prepareImage(int width, int height, IndexColorModel palette,
             boolean transparent) {
@@ -818,7 +818,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @param height
      * @param palette
      * @param transparent
-     * @return
+     *
      */
     protected long getDrawingSurfaceMemoryUse(int width, int height, IndexColorModel palette,
             boolean transparent) {
@@ -832,7 +832,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * if the palette only has 2 colors)
      * 
      * @param source
-     * @return
+     *
      */
     private static RenderedImage optimizeSampleModel(RenderedImage source) {
         int w = source.getWidth();
@@ -1343,7 +1343,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * color returns the appropriate background color to be used in the mosaic operation
      * @param red
      * @param cm
-     * @return
+     *
      */
     double mapToGrayColor(Color gray, ComponentColorModel cm) {
         double[] rescaleFactors = new double[DataBuffer.TYPE_UNDEFINED + 1];
@@ -1360,7 +1360,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     /**
      * Returns true if the color is a level of gray
      * @param color
-     * @return
+     *
      */
     private static boolean isLevelOfGray(Color color) {
         return color.getRed() == color.getBlue() && color.getRed() == color.getGreen();
@@ -1391,7 +1391,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @param params
      * @param requestedRasterArea
      * @param interpolation
-     * @return
+     *
      * @throws IOException
      */
     private static GridCoverage2D readBestCoverage(

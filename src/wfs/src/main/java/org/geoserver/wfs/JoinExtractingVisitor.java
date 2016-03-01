@@ -274,7 +274,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
      * the same order as the joins (which might have been reordered to locate the center of the star
      * join)
      * 
-     * @return
+     *
      */
     public List<FeatureTypeInfo> getFeatureTypes() {
         if (primaryFeatureType == null) {
@@ -398,7 +398,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
      * Builds a map going from alias, prefixed type name and simple type name to FeatureTypeInfo. In
      * case of conflicts aliases will override the type names
      *
-     * @return
+     *
      */
     private Map<String, FeatureTypeInfo> buildTypeMap() {
         Map<String, FeatureTypeInfo> typeMap = new HashMap<>();
@@ -418,7 +418,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
     /**
      * Builds a map going from type name, qualified or unqualified, to alias
      * 
-     * @return
+     *
      */
     private Map<String, String> buildNameToAlias() {
         Map<String, String> nameToAlias = new HashMap<>();
@@ -439,7 +439,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
      * we don't have one.
      * 
      * @param filters2
-     * @return
+     *
      */
     private int getPrimaryFeatureTypeIndex(List<Filter> filters) {
         if (featureTypes.size() == 2) {

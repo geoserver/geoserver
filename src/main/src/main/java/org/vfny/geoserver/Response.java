@@ -194,7 +194,7 @@ public interface Response {
      * In particular, a WMS might wish to have some external caching information added
      * to the HTTP response, so that caches can hang onto this map for a while and ligten
      * the load on geoserver.
-     * @return
+     *
      */
     public HashMap<String, String> getResponseHeaders();
 

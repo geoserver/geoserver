@@ -281,7 +281,7 @@ public class GeofencePage extends GeoServerSecuredPage {
     /**
      * Creates a new wicket model from the configuration object.
      *
-     * @return
+     *
      */
     private IModel<GeoFenceConfiguration> getGeoFenceConfigModel() {
         return new Model<GeoFenceConfiguration>(config);
@@ -290,7 +290,7 @@ public class GeofencePage extends GeoServerSecuredPage {
     /**
      * Creates a new wicket model from the configuration object.
      *
-     * @return
+     *
      */
     private IModel<CacheConfiguration> getCacheConfigModel() {
         return new Model<CacheConfiguration>(cacheParams);

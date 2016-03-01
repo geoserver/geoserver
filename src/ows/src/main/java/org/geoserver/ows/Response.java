@@ -18,13 +18,12 @@ import org.geoserver.platform.ServiceException;
  * Response to an operation, which serializes the result of the operation to an
  * output stream.
  * <p>
- * A response must specify the following information:
+ * A response must specify the following information:</p>
  * <ul>
  *  <li>The type of object it is capable of serializing, the class is bound to.
  *  See {@link #getBinding()}.
- *  <li>The mime-type of the resulting response. See {@link #getMimeType()}.
+ *  <li>The mime-type of the resulting response. See {@link #getMimeType(Object, Operation)}.
  * </ul>
- * </p>
  * <p>
  * Optionally, a response may declare a well-known name for it. This well
  * known name corresponds to the "outputFormat" parameter which is supported
@@ -42,7 +41,7 @@ public abstract class Response {
     /**
      * Class of object to serialize
      */
-    final Class binding;
+    final Class<?> binding;
 
     /**
      * The well known "outputFormat" of the response
@@ -54,8 +53,8 @@ public abstract class Response {
      *
      * @param binding The class of object the response serializes.
      */
-    public Response(Class binding) {
-        this(binding, (Set)null);
+    public Response(Class<?> binding) {
+        this(binding, (Set<String>) null);
     }
 
     /**
@@ -66,7 +65,7 @@ public abstract class Response {
      * @param outputFormat A common name for the response.
      *
      */
-    public Response(Class binding, String outputFormat) {
+    public Response(Class<?> binding, String outputFormat) {
        this( binding, outputFormat == null ? null : Collections.singleton(outputFormat));
     }
 
@@ -77,13 +76,13 @@ public abstract class Response {
      * @param binding The class of object the response serializes
      * @param outputFormats A set of common names for the response.
      */
-    public Response(Class binding, Set<String> outputFormats) {
+    public Response(Class<?> binding, Set<String> outputFormats) {
         if (binding == null) {
             throw new NullPointerException("binding may not be null");
         }
         
         if (outputFormats == null ) {
-            outputFormats = Collections.EMPTY_SET;
+            outputFormats = Collections.emptySet();
         }
         
         this.binding = binding;
@@ -93,7 +92,7 @@ public abstract class Response {
     /**
      * @return The type of object the response can handle.
      */
-    public final Class getBinding() {
+    public final Class<?> getBinding() {
         return binding;
     }
 
@@ -185,7 +184,7 @@ public abstract class Response {
      * Get the preferred Content-Disposition header for this response.
      * The default is inline. Subclasses can prefer attachment.
      * @param value The value that will be serialized
-     * @param value The operation which resulted in <code>value</code>
+     * @param operation The operation which resulted in <code>value</code>
      * @return inline or attachment
      */
     public String getPreferredDisposition(Object value, Operation operation) {

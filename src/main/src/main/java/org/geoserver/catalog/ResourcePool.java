@@ -959,7 +959,7 @@ public class ResourcePool {
      * @param info
      * @param dataAccess
      * @param initializer
-     * @return
+     *
      */
     FeatureTypeCallback getFeatureTypeInitializer(FeatureTypeInfo info,
             DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
@@ -1030,7 +1030,7 @@ public class ResourcePool {
      * cache the result of computations made against a dirty object, nor the ones made against an 
      * object that still haven't been saved
      * @param info
-     * @return
+     *
      */
     boolean isCacheable(CatalogInfo info) {
         // saved?
@@ -1701,7 +1701,7 @@ public class ResourcePool {
     /**
      * Locates and returns a WMS {@link Layer} based on the configuration stored in WMSLayerInfo 
      * @param info
-     * @return
+     *
      */
     public Layer getWMSLayer(WMSLayerInfo info) throws IOException {
      // check which actual name we have to use

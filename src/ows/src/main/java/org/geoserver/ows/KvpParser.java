@@ -13,17 +13,20 @@ import org.geotools.util.Version;
 /**
  * Parses a key-value pair into a key-object pair.
  * <p>
- * This class is intended to be subclassed. Subclasses need declare the key in
- * which they parse, and the type of object they parse into.
+ * This class is intended to be subclassed. Subclasses need declare the key in which they parse, and the type of object they parse into.
  * </p>
  * <p>
  * Instances need to be declared in a spring context like the following:
+ * </p>
+ * 
  * <pre>
  *         <code>
  *  &lt;bean id="myKvpParser" class="org.xzy.MyKvpParser"/&gt;
  *         </code>
  * </pre>
+ * 
  * Where <code>com.xzy.MyKvpParser</code> could be something like:
+ * 
  * <pre>
  *         <code>
  *  public class MyKvpParser extends KvpParser {
@@ -38,35 +41,34 @@ import org.geotools.util.Version;
  *  }
  *         </code>
  * </pre>
- * </p>
+ * <p><b>Operation Binding</b></p>
  * <p>
- * <h4>Operation Binding</h4>
- * In the normal case, a kvp parser is engaged when a request specifies a name
- * which matches the name declared by the kvp parser. It is also possible to attach 
- * a kvp parser so that it only engages on a particular operation. This is done by 
- * declaring the one or more of the following:
+ * In the normal case, a kvp parser is engaged when a request specifies a name which matches the name declared by the kvp
+ * parser. It is also possible to attach a kvp parser so that it only engages on a particular operation. This is done by declaring the one or more of
+ * the following:</p>
  * <ul>
- *   <li>service
- *   <li>version
- *   <li>request
- *  </ul>
- * When a kvp parser declares one or more of these properties, it will only 
- * be engaged if an incoming request specicfies matching values of the properties. 
+ * <li>service</li>
+ * <li>version</li>
+ * <li>request</li>
+ * </ul>
+ * <p>
+ * When a kvp parser declares one or more of these properties, it will only be engaged if an incoming request specicfies matching values of the
+ * properties.
  * </p>
  * <p>
- * The following bean declaration would create the above kvp parser so that it
- * only engages when the service is "MyService", and the request is "MyRequest".
+ * The following bean declaration would create the above kvp parser so that it only engages when the service is "MyService", and the request is
+ * "MyRequest".
+ * </p>
  * <pre>
  *         <code>
- *  &lt;bean id="myKvpParser" class="org.xzy.MyKvpParser">
- *    &lt;property name="service">MyService&lt;/property>
- *    &lt;property name="request">MyRequest&lt;/property>
- *  &lt;bean>
+ *  &lt;bean id="myKvpParser" class="org.xzy.MyKvpParser"&gt;
+ *    &lt;property name="service"&gt;MyService&lt;/property&gt;
+ *    &lt;property name="request"&gt;MyRequest&lt;/property&gt;
+ *  &lt;bean&gt;
  *         </code>
  * </pre>
- * </p>
+ * 
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public abstract class KvpParser {
     /**

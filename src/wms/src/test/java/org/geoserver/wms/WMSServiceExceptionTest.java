@@ -39,7 +39,6 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
     /**
      * Ask for png8 image and error in image, check that the content type of the response png,
      * see https://osgeo-org.atlassian.net/browse/GEOS-3018
-     * @throws Exception
      */
     @Test
     public void testPng8InImageFormat111() throws Exception {
@@ -53,7 +52,6 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
     /**
      * Ask for png8 image and error in image, check that the content type of the response png,
      * see https://osgeo-org.atlassian.net/browse/GEOS-3018
-     * @throws Exception
      */
     @Test
     public void testPng8InImageFormat130() throws Exception {
@@ -118,7 +116,6 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
 
     /**
      * @param path
-     * @throws Exception
      * 
      */
     private static void testJson(String content) {

@@ -18,7 +18,7 @@ public interface WPSInputValidator extends Validator, Serializable {
     /**
      * Creates a copy of this validator
      * 
-     * @return
+     *
      */
     public WPSInputValidator copy();
 
@@ -26,7 +26,7 @@ public interface WPSInputValidator extends Validator, Serializable {
      * Returns true if the validator is unset, that is, does not have valid configuration to operate
      * onto. In this case any attempt to run a validation will be ignored silently
      * 
-     * @return
+     *
      */
     public boolean isUnset();
 

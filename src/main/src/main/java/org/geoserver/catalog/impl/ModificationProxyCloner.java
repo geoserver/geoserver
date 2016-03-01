@@ -61,7 +61,7 @@ class ModificationProxyCloner {
      * copying the catalog, and re-attaching to it, in there)
      * 
      * @param source
-     * @return
+     *
      */
     static <T> T clone(T source) {
         // null?
@@ -187,7 +187,7 @@ class ModificationProxyCloner {
      * @param source
      * @param deepCopy If true, a deep copy will be done, otherwise the cloned collection will
      *        contain the exact same objects as the source
-     * @return
+     *
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
@@ -229,7 +229,7 @@ class ModificationProxyCloner {
      * @param source
      * @param deepCopy If true, a deep copy will be done, otherwise the cloned collection will
      *        contain the exact same objects as the source
-     * @return
+     *
      * @throws InstantiationException
      * @throws IllegalAccessException
      */

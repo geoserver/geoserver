@@ -22,7 +22,6 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
     /**
      * Tests ContentDisposition
      * 
-     * @throws Exception
      */
     @Test
     public void testSimple() throws Exception {

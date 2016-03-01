@@ -20,7 +20,7 @@ interface GeoServerNodeInfo {
      * The node id, displayed as a label in the GUI. If null is returned, the element will be
      * hidden.
      * 
-     * @return
+     *
      */
     String getId();
 
@@ -31,7 +31,7 @@ interface GeoServerNodeInfo {
      * {@link DefaultGeoServerNodeInfo} for the default implementation of the visibility logic
      * 
      * @param parent
-     * @return
+     *
      */
     void customize(WebMarkupContainer nodeInfoContainer);
 }

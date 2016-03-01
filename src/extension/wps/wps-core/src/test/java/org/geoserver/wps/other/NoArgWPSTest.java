@@ -31,7 +31,6 @@ public class NoArgWPSTest extends WPSTestSupport {
     /**
      * This test runs a no-argument WPS Process and checks the result.
      * 
-     * @throws Exception
      */
     @Test
     public void NoArgumentProcessTest() throws Exception {

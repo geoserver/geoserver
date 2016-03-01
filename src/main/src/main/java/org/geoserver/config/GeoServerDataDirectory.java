@@ -675,11 +675,11 @@ public class GeoServerDataDirectory {
     /**
      * Styles directory (using StyleInfo).
      * 
-     * Package visibility {@link GeoServerPersister#dir(StyleInfo).
+     * Package visibility {@link GeoServerPersister#dir(StyleInfo)}.
      * 
      * @param create Create if needed
      * @param styleInfo
-     * @return
+     *
      * @throws IOException
      * 
      * @deprecated As of GeoServer 2.6, replaced by {@link #get(StyleInfo, String...)}

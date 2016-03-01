@@ -151,7 +151,7 @@ public abstract class MapResource extends AbstractResource {
      * This avoids wrapping a meaningful restlet exception into a generic one.
      * 
      * @param ex
-     * @return
+     *
      */
     protected RestletException createRestletException (Exception ex) {
         if (ex instanceof RestletException) {

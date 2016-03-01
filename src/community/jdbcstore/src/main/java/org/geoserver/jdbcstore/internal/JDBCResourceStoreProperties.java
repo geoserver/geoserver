@@ -38,7 +38,7 @@ public class JDBCResourceStoreProperties extends JDBCLoaderProperties {
      * Directories that are to be ignored by the JDBCStore: they will not be imported and they will be retrieved
      * from the file system.  
      * 
-     * @return
+     *
      */
     public String[] getIgnoreDirs() {
         return getProperty("ignoreDirs", "").split(",");

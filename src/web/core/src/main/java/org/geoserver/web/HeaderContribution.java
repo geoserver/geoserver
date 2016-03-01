@@ -118,7 +118,7 @@ public class HeaderContribution {
     /**
      * Returns the resource reference to a replacement favicon for the header contribution,
      * or null if there is no favicon replacement
-     * @return
+     *
      */
     public PackageResourceReference getFavicon() {
         if( scope != null && faviconFilename != null) {

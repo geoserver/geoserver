@@ -185,7 +185,7 @@ public class GetCoverage {
      * Return true in case the specified format supports Multidimensional Output
      * TODO: Consider adding a method to CoverageResponseDelegate returning this information
      * @param format
-     * @return
+     *
      */
     public static boolean formatSupportMDOutput(String format) {
         return mdFormats.contains(format);
@@ -323,8 +323,7 @@ public class GetCoverage {
      * @param extensions 
      * @param coverageFactory 
      * @param dimensions 
-     * @return
-     * @throws Exception
+     *
      */
     private GridCoverage2D setupCoverage(
             final WCSDimensionsSubsetHelper helper, 
@@ -618,8 +617,7 @@ public class GetCoverage {
      * @param coverage
      * @param hints
      * @param outputCRS
-     * @return
-     * @throws Exception
+     *
      */
     private GridCoverage2D enforceLatLongOrder(GridCoverage2D coverage, final Hints hints,
             final CoordinateReferenceSystem outputCRS) throws Exception {
@@ -717,8 +715,7 @@ public class GetCoverage {
      * @param cinfo
      * @param reader
      * @param hints
-     * @return
-     * @throws Exception
+     *
      */
     private List<GridCoverage2D> readCoverage(
             WCSDimensionsSubsetHelper helper,
@@ -988,7 +985,7 @@ public class GetCoverage {
      * @param subset
      * @param nativeResX
      * @param nativeResY
-     * @return
+     *
      */
     private double[] computeRequestedResolution(ScalingType scaling, Envelope subset,
             double nativeResX, double nativeResY) {
@@ -1163,7 +1160,7 @@ public class GetCoverage {
     /**
      * @param reader 
      * @param extensions
-     * @return
+     *
      */
     private Map<String,InterpolationPolicy> extractInterpolation(GridCoverage2DReader reader, Map<String, ExtensionItemType> extensions) {
         // preparation
@@ -1518,7 +1515,7 @@ public class GetCoverage {
         /**
          * Return the total size accumulated
          * 
-         * @return
+         *
          */
         public long finalSize() {
             return incrementalSize;
@@ -1545,7 +1542,7 @@ public class GetCoverage {
          * (code from WCSUtils)
          * @param envelope
          * @param sm
-         * @return
+         *
          */
         private static long getCoverageSize(GridEnvelope2D envelope, SampleModel sm) {
             // === compute the coverage memory usage and compare with limit

@@ -530,7 +530,7 @@ public abstract class GeoServerLoader {
      * identify them so that we don't log complaints about their existence
      *  
      * @param f
-     * @return
+     *
      */
     private boolean isConfigDirectory(Resource dir) {
         String name = dir.name();

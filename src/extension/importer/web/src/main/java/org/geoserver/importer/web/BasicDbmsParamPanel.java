@@ -71,7 +71,7 @@ class BasicDbParamPanel extends Panel {
     /**
      * Toggles the connection pool param panel
      * 
-     * @return
+     *
      */
     Component toggleConnectionPoolLink() {
         AjaxLink connPoolLink = new AjaxLink("connectionPoolLink") {

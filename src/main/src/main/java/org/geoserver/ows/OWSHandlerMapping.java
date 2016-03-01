@@ -12,22 +12,23 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 
 /**
  * Handler mapping for OWS services. 
- * </p>
+ * <p>
  * This handler mapping extends a set of mappings to allow for a request to specifying a 
- * local workspace. Consider the following mappings:
+ * local workspace. Consider the following mappings:</p>
  * <pre>
- *   &lt;property name="mappings">
- *      &lt;props>
- *              &lt;prop key="/wfs">dispatcher&lt;/prop>
- *              &lt;prop key="/wfs/*">dispatcher&lt;/prop>
- *      &lt;/props>
- *    &lt;/property>
+ *   &lt;property name="mappings"&gt;
+ *      &lt;props&gt;
+ *              &lt;prop key="/wfs"&gt;dispatcher&lt;/prop&gt;
+ *              &lt;prop key="/wfs/*"&gt;dispatcher&lt;/prop&gt;
+ *      &lt;/props&gt;
+ *    &lt;/property&gt;
  * </pre>
- * This handler will allow the above mappings to match "workspace prefixed" requests such as:
+ * <p>This handler will allow the above mappings to match "workspace prefixed" requests such as:</p>
  * <pre>
  *   /topp/wfs?...
  *   /nurc/wfs?...
  * </pre>
+ * <p>
  * Where "topp" and "nurc" are workspaces.
  *  </p>
  * @author Justin Deoliveira, OpenGeo

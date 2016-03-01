@@ -18,7 +18,7 @@ public interface FixedValueStrategyFactory {
      * Returns a fixed default value strategy.
      * 
      * @param value
-     * @return
+     *
      */
     public DimensionDefaultValueSelectionStrategy createFixedValueStrategy(Object value);
 
@@ -27,7 +27,7 @@ public interface FixedValueStrategyFactory {
      * 
      * @param value The value
      * @param fixedCapabilitiesValue Its capabilities representation
-     * @return
+     *
      */
     public DimensionDefaultValueSelectionStrategy createFixedValueStrategy(Object value, String fixedCapabilitiesValue);
         

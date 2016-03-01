@@ -6,6 +6,20 @@
 
 package org.geoserver.security.validation;
 
+import static org.geoserver.security.validation.RoleServiceException.ADMIN_ROLE_NOT_REMOVABLE_$1;
+import static org.geoserver.security.validation.RoleServiceException.ALREADY_EXISTS;
+import static org.geoserver.security.validation.RoleServiceException.ALREADY_EXISTS_IN;
+import static org.geoserver.security.validation.RoleServiceException.CANNOT_CHECK_ROLE_IN_SERVICE;
+import static org.geoserver.security.validation.RoleServiceException.GROUPNAME_NOT_FOUND_$1;
+import static org.geoserver.security.validation.RoleServiceException.GROUPNAME_REQUIRED;
+import static org.geoserver.security.validation.RoleServiceException.GROUP_ADMIN_ROLE_NOT_REMOVABLE_$1;
+import static org.geoserver.security.validation.RoleServiceException.NAME_REQUIRED;
+import static org.geoserver.security.validation.RoleServiceException.NOT_FOUND;
+import static org.geoserver.security.validation.RoleServiceException.RESERVED_NAME;
+import static org.geoserver.security.validation.RoleServiceException.ROLE_IN_USE_$2;
+import static org.geoserver.security.validation.RoleServiceException.USERNAME_NOT_FOUND_$1;
+import static org.geoserver.security.validation.RoleServiceException.USERNAME_REQUIRED;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,22 +29,18 @@ import java.util.SortedSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.event.RoleLoadedListener;
 import org.geoserver.security.impl.DataAccessRule;
-import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.ServiceAccessRule;
-import org.geoserver.security.impl.ServiceAccessRuleDAO;
 import org.geotools.util.logging.Logging;
 import org.springframework.util.StringUtils;
-
-import static org.geoserver.security.validation.RoleServiceException.*;
 
 /**
  * 
@@ -147,7 +157,7 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator impl
      * Checks if the roles is mapped to a system role, see
      * 
      * {@link SecurityRoleServiceConfig#getAdminRoleName()}
-     * {@link SecurityRoleServiceConfig#getGroupAdminRoleName()()}
+     * {@link SecurityRoleServiceConfig#getGroupAdminRoleName()}
      * 
      * @param role
      * @throws IOException
@@ -352,7 +362,7 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator impl
      * 
      * @param errorid
      * @param args
-     * @return
+     *
      */
     protected IOException createSecurityException (String errorid, Object ...args) {
         RoleServiceException ex =  new RoleServiceException(errorid,args);

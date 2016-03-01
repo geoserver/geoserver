@@ -66,7 +66,7 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
     /**
      * see interface for details.
      * @param fc
-     * @return
+     *
      * @throws IOException
      */
     public List<FeatureId> addFeatures(FeatureCollection<SimpleFeatureType, SimpleFeature> fc) throws IOException {

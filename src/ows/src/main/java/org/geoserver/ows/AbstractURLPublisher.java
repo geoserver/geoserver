@@ -48,8 +48,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * </code>
  * </pre>
  * 
- * </p>
- * 
  * @author Justin Deoliveira, The Open Planning Project
  * @author Andrea Aime - GeoSolutions
  */
@@ -174,7 +172,7 @@ public abstract class AbstractURLPublisher extends AbstractController {
     /**
      * Retrieves the resource URL from the specified request
      * @param request
-     * @return
+     *
      * @throws IOException 
      */
     protected abstract URL getUrl(HttpServletRequest request) throws IOException;

@@ -141,7 +141,7 @@ public class GeoServerRoleConverterImpl implements GeoServerRoleConverter {
      * 
      * @param theString
      * @param delim
-     * @return
+     *
      */
     protected List<String> splitString(String theString, String delim) {
                 

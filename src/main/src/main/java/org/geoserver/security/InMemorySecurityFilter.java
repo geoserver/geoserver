@@ -31,7 +31,7 @@ public class InMemorySecurityFilter extends InternalVolatileFunction {
      * 
      * @param resourceAccesssManager
      * @param user
-     * @return
+     *
      */
     public static Filter buildUserAccessFilter(ResourceAccessManager resourceAccesssManager,
             Authentication user) {

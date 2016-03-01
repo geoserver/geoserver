@@ -1014,7 +1014,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
 
     /**
      * @param sldName
-     * @return
+     *
      * @throws IOException
      */
     private Style readSLD(String sldName) throws IOException {

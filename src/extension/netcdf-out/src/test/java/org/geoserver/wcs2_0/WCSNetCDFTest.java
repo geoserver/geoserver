@@ -63,7 +63,6 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
      * This test checks if an exception is not thrown when is requested an image with a total size lower than the maximum 
      * geoserver output size.
      * 
-     * @throws Exception
      */
     @Test
     public void testOutputMemoryNotExceeded() throws Exception {
@@ -84,7 +83,6 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
      * This test checks if an exception is thrown when is requested an image with a total size greater than the maximum
      * geoserver output memory allowed.
      * 
-     * @throws Exception
      */
     @Test
     public void testOutputMemoryExceeded() throws Exception {
@@ -103,7 +101,6 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
      * This test checks if an exception is not thrown when is requested an image with a total size lower than the maximum 
      * geoserver input size.
      * 
-     * @throws Exception
      */
     @Test
     public void testInputMemoryCorrect() throws Exception {
@@ -124,7 +121,6 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
      * This test checks if an exception is thrown when is requested an image with a total size greater than the maximum
      * geoserver input memory allowed.
      * 
-     * @throws Exception
      */
     @Test
     public void testInputMemoryExceeded() throws Exception {

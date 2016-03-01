@@ -348,7 +348,6 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
     /**
      * Tests we can build properly the WMS store and the WMS layer
      * 
-     * @throws Exception
      */
     @Test
     public void testWMS() throws Exception {

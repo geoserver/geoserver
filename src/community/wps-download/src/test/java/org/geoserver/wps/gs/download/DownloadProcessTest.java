@@ -344,7 +344,7 @@ public class DownloadProcessTest extends WPSTestSupport {
      * This method is used for extracting only the xml file from a GML output file
      * 
      * @param gml2Zip
-     * @return
+     *
      * @throws IOException
      */
     private File[] exctractGMLFile(File gml2Zip) throws IOException {
@@ -363,7 +363,7 @@ public class DownloadProcessTest extends WPSTestSupport {
      * This method is used for extracting only the json file from a JSON output file
      * 
      * @param jsonZip
-     * @return
+     *
      * @throws IOException
      */
     private File[] exctractJSONFile(File jsonZip) throws IOException {
@@ -382,7 +382,7 @@ public class DownloadProcessTest extends WPSTestSupport {
      * This method is used for extracting only the tiff file from a Tiff/GeoTiff output file
      * 
      * @param gtiffZip
-     * @return
+     *
      * @throws IOException
      */
     private File[] extractTIFFFile(final File gtiffZip) throws IOException {

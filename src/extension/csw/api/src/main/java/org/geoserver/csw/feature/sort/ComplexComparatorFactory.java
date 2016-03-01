@@ -23,8 +23,15 @@ public class ComplexComparatorFactory {
 
     /**
      * Builds a composite comparator matching the specified sortBy array
-     * @param sortBy
-     * @return
+     *  
+     * <ul>
+     * <li>{@link SortBy#NATURAL_ORDER}: sort by feature id (acceding)</li>
+     * <li>{@link SortBy#REVERSE_ORDER}: sort by feature id (descending)</li>
+     * <li>sort by supplied property name, and sort order</li>
+     * </ul>
+     * 
+     * @param sortBy sort order (defined in order of precidence)
+     *
      */
     public static Comparator<Feature> buildComparator(SortBy... sortBy) {
         if (sortBy.length == 0) {
@@ -46,13 +53,20 @@ public class ComplexComparatorFactory {
     }
 
     /**
-     * Builds a single comparator based on the sortBy specification
-     * @param sortBy
-     * @return
+     * Builds a single comparator based on the sortBy specification.
+     * 
+     * <ul>
+     * <li>{@link SortBy#NATURAL_ORDER}: sort by feature id (acceding)</li>
+     * <li>{@link SortBy#REVERSE_ORDER}: sort by feature id (descending)</li>
+     * <li>sort by supplied property name, and sort order</li>
+     * </ul>
+     * 
+     * @param sortBy indication of sort order
+     * @return Comparator used to determine sort order
      */
     public static Comparator<Feature> buildComparator(SortBy sortBy) {
         if (sortBy == null) {
-            throw new NullPointerException("The sortBy argument must be not null");
+            throw new NullPointerException("The sortBy argument must be not null (consider SortBy.UNSORTED)");
         }
 
         if (sortBy == SortBy.NATURAL_ORDER) {

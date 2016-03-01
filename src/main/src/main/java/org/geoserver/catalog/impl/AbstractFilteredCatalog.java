@@ -408,7 +408,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
      * Given a {@link FeatureTypeInfo}, returns it back if the user
      * can access it in write mode, makes it read only if the user can access it
      * in read only mode, returns null otherwise
-     * @return
+     *
      */
     protected abstract <T extends ResourceInfo> T checkAccess(T info);
 
@@ -422,35 +422,35 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     /**
      * Given a store, returns it back if the user can access its
      * workspace in read mode, null otherwise
-     * @return
+     *
      */
     protected abstract <T extends StoreInfo> T checkAccess(T store);
 
     /**
      * Given a layer, returns it back if the user can access it, null
      * otherwise
-     * @return
+     *
      */
     protected abstract LayerInfo checkAccess(LayerInfo layer);
 
     /**
      * Given a layer group, returns it back if the user can access
      * it, null otherwise
-     * @return
+     *
      */
     protected abstract LayerGroupInfo checkAccess(LayerGroupInfo group);
 
     /**
      * Given a namespace, returns it back if the user can access it,
      * null otherwise
-     * @return
+     *
      */
     protected abstract <T extends NamespaceInfo> T checkAccess(T ns);
 
     /**
      * Given a workspace, returns it back if the user can access it,
      * null otherwise
-     * @return
+     *
      */
     protected abstract <T extends WorkspaceInfo> T checkAccess(T ws);
 
@@ -460,7 +460,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
      * 
      * @param resources
      * 
-     * @return
+     *
      */
     protected abstract <T extends ResourceInfo> List<T> filterResources(List<T> resources);
 
@@ -470,7 +470,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
      * 
      * @param resources
      * 
-     * @return
+     *
      */
     protected abstract <T extends StoreInfo> List<T> filterStores(List<T> resources);
 
@@ -480,7 +480,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
      * 
      * @param groups
      * 
-     * @return
+     *
      */
     protected abstract List<LayerGroupInfo> filterGroups(List<LayerGroupInfo> groups);
 
@@ -490,7 +490,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
      * 
      * @param layers
      * 
-     * @return
+     *
      */
     protected abstract List<LayerInfo> filterLayers(List<LayerInfo> layers);
 
@@ -505,7 +505,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
      * 
      * @param namespaces
      * 
-     * @return
+     *
      */
     protected abstract <T extends NamespaceInfo> List<T> filterNamespaces(List<T> namespaces);
 
@@ -515,7 +515,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
      * 
      * @param namespaces
      * 
-     * @return
+     *
      */
     protected abstract <T extends WorkspaceInfo> List<T> filterWorkspaces(List<T> workspaces);
     

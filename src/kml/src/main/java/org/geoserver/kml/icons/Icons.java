@@ -72,7 +72,7 @@ public class Icons {
     /**
      * Find the scale factor needed for a square to accommodate a rotated square.
      * @param rotation the angle in degrees
-     * @return
+     *
      */
     public static double rotationScaleFactor(double rotation) {
         return Math.abs(Math.sin(Math.toRadians(rotation))) +
@@ -83,7 +83,7 @@ public class Icons {
      * Get the rotation of the given graphic when applied to the given feature
      * @param g
      * @param f
-     * @return
+     *
      */
     public static @Nullable Double getRotation(Graphic g, @Nullable Feature f) {
         return g.getRotation().evaluate(f, Double.class);
@@ -93,7 +93,7 @@ public class Icons {
      * Get the size of the given graphic when applied to the given feature
      * @param g
      * @param f
-     * @return
+     *
      */
     public static @Nullable Double getSpecifiedSize(Graphic g, @Nullable Feature f){
         return g.getSize().evaluate(f, Double.class);
@@ -126,7 +126,7 @@ public class Icons {
      * Get the largest dimension of an external graphic
      * @param eg
      * @param f
-     * @return
+     *
      */
     public static @Nullable Integer getExternalSize(ExternalGraphic eg, @Nullable Feature f) {
         Icon i = getIcon(eg, f);
@@ -144,7 +144,7 @@ public class Icons {
      * to accomodate the rotated square.  If {@code null} the rotation will be calculated based on 
      * the feature.
      * @param f
-     * @return
+     *
      */
     public static @Nullable Double graphicSize(Graphic g, @Nullable Double rotation, @Nullable Feature f) {
         Double size = getSpecifiedSize(g, f);
@@ -188,7 +188,7 @@ public class Icons {
      * @param f rotation Treat the graphic as a square and rotate it, then find a square big enough 
      * to accomodate the rotated square.  If {@code null} the rotation will be calculated based on 
      * the feature.
-     * @return
+     *
      */
     public static @Nullable Double graphicScale(Graphic g, @Nullable Feature f) {
         Double size = graphicSize(g, null, f);

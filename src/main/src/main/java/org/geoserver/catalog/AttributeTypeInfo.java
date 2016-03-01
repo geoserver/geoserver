@@ -109,7 +109,7 @@ public interface AttributeTypeInfo extends Serializable {
     /**
      * Returns the length of this attribute. It's usually non null only for string and 
      * numeric types
-     * @return
+     *
      */
     Integer getLength();
     

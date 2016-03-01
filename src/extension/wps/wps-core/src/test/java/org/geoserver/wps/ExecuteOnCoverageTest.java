@@ -56,7 +56,6 @@ public class ExecuteOnCoverageTest extends WPSTestSupport {
     
     /**
      * We use the crop process as a simple test to see if we requesting a coverage using different WCS versions works.
-     * @throws Exception
      */
     @Test
     public void testCrop() throws Exception {

@@ -112,7 +112,7 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
     /**
      * Returns the gdal_translate executable full path.
      * 
-     * @return
+     *
      */
     @Override
     public String getExecutable() {
@@ -132,7 +132,7 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
     /**
      * Returns the environment variables that are set prior to invoking gdal_translate.
      * 
-     * @return
+     *
      */
     @Override
     public Map<String, String> getEnvironment() {
@@ -372,7 +372,7 @@ public class GdalCoverageResponseDelegate implements CoverageResponseDelegate, F
      *  
      * @param tempDir
      * @param coverage
-     * @return
+     *
      */
     private File writeToDisk(File tempDir, GridCoverage2D coverage) throws Exception {
         // create the temp file for this output

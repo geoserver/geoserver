@@ -50,7 +50,7 @@ public class PDFMaxSizeEnforcer {
 
     /**
      * True if the memory used by the PDF buffer exceeds the max memory settings
-     * @return
+     *
      */
     public boolean exceedsMaxSize() {
         return maxSize > 0 && pdfBytes.size() >  maxSize;
@@ -58,7 +58,7 @@ public class PDFMaxSizeEnforcer {
     
     /**
      * Returns the amount of memory currently used by the 
-     * @return
+     *
      */
     public long memoryUsed() {
         return pdfBytes.size();

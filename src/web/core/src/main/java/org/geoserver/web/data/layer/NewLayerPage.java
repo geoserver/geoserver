@@ -330,7 +330,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
      * Turns a resource name into a full {@link ResourceInfo}
      * 
      * @param resource
-     * @return
+     *
      */
     LayerInfo buildLayerInfo(Resource resource) {
         Catalog catalog = getCatalog();
@@ -369,7 +369,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
     /**
      * Returns the storeId provided during construction, or the one pointed
      * by the drop down if none was provided during construction
-     * @return
+     *
      */
     String getSelectedStoreId() {
         // the provider is always up to date 

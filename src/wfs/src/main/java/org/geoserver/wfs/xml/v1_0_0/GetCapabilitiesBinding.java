@@ -32,8 +32,6 @@ import org.geotools.xml.AbstractComplexEMFBinding;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class GetCapabilitiesBinding extends AbstractComplexEMFBinding {

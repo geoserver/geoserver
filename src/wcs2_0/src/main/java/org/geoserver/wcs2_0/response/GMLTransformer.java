@@ -388,7 +388,7 @@ class GMLTransformer extends TransformerBase {
          * @param name the name of the custom dimension 
          * @param dimension the custom dimension {@link DimensionInfo} instance
          * @param helper the {@link WCSDimensionsHelper} instance used to parse default values
-         * @return
+         *
          * @throws IOException
          */
         private String initStartMetadataTag(final String dimensionTag, final String name, final DimensionInfo dimension,
@@ -655,7 +655,7 @@ class GMLTransformer extends TransformerBase {
          * 
          * @param crs
          * @param uom
-         * @return
+         *
          */
         public String extractUoM (CoordinateReferenceSystem crs, Unit<?> uom) {
             // special handling for Degrees

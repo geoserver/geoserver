@@ -18,9 +18,7 @@ import org.geotools.xml.Node;
 /**
  * Binding object for the type http://www.opengis.net/ows:AcceptFormatsType.
  *
- * <p>
- *        <pre>
- *         <code>
+ * <pre><code>
  *  &lt;complexType name="AcceptFormatsType"&gt;
  *      &lt;annotation&gt;
  *          &lt;documentation&gt;Prioritized sequence of zero or more GetCapabilities operation response formats desired by client, with preferred formats listed first. Each response format shall be identified by its MIME type. See AcceptFormats parameter use subclause for more information. &lt;/documentation&gt;
@@ -29,10 +27,7 @@ import org.geotools.xml.Node;
  *          &lt;element maxOccurs="unbounded" minOccurs="0" name="OutputFormat" type="ows:MimeType"/&gt;
  *      &lt;/sequence&gt;
  *  &lt;/complexType&gt;
- *
- *          </code>
- *         </pre>
- * </p>
+ * </code></pre>
  *
  * @generated
  */

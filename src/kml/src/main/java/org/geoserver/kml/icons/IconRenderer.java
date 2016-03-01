@@ -77,7 +77,7 @@ public final class IconRenderer {
      * and IconPropertyInjector.
      * 
      * @param style
-     * @return
+     *
      */
     public static BufferedImage renderIcon(Style style) {
         int size = findIconSize(style)+2; // size is an int because icons are always square

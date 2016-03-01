@@ -414,8 +414,7 @@ public class LegacyCatalogImporter {
      * TODO: code smell: no method should be this long
      * 
      * @param ftInfoReader
-     * @return
-     * @throws Exception
+     *
      */
     FeatureTypeInfo readFeatureType(LegacyFeatureTypeInfoReader ftInfoReader, File ftDirectory) throws Exception {
         CatalogFactory factory = catalog.getFactory();

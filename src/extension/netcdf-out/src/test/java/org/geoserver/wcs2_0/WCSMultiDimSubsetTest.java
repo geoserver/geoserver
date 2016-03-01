@@ -70,7 +70,6 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest{
     
     /**
      * Tests if we can select a single pixel value using a WCS request
-     * @throws Exception
      */
     @Test
     public void sliceLambert() throws Exception {

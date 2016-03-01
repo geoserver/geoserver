@@ -97,7 +97,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
      * 
      * @param roleString1
      * @param roleString2
-     * @return
+     *
      */
     boolean checkRolesStringsForEquality(String roleString1, String roleString2) {
         String[] roleArray1=roleString1.split(",");

@@ -34,12 +34,10 @@ public interface ResourceNotificationDispatcher {
     
     /**
      * Remove resource store content listener.
-     * @param path
-     * @param listener
      * 
      * @param resource path to resource to listen to
      * @param listener Listener to stop receiving change notification
-     * @return true iff successful 
+     * @return true iff successful
      */
     public boolean removeListener(String resource, ResourceListener listener);
     
@@ -51,7 +49,7 @@ public interface ResourceNotificationDispatcher {
      * (Delete notifications are propagated to their children. All operations are propagated to their parents.)
      * See {@link SimpleResourceNotificationDispatcher} for an example.
      * 
-     * @param notification
+     * @param notification notification of resource change (may be for a single resource or a directory)
      */
     public void changed(ResourceNotification notification);
 

@@ -147,7 +147,7 @@ class OpenLayersMapPanel extends Panel implements IHeaderContributor {
      * "http://localhost:8080/geoserver//wms?LAYERS=..." and Jetty 6.1 won't digest them...
      * 
      * @param baseUrl
-     * @return
+     *
      */
     private String canonicUrl(String baseUrl) {
         if (baseUrl.endsWith("/")) {

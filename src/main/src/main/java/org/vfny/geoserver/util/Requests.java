@@ -211,7 +211,7 @@ public final class Requests {
      *
      * @param request HttpServletRequest providing current Session
      *
-     * @return
+     *
      */
     public static boolean isLoggedIn(HttpServletRequest request) {
         // check the user is not the anonymous one

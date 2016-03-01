@@ -174,7 +174,7 @@ public class GeoServerDialog extends Panel {
     /**
      * Submit link that will forward to the {@link DialogDelegate}
      *
-     * @return
+     *
      */
     AjaxSubmitLink sumbitLink(Component contents) {
         AjaxSubmitLink link = new AjaxSubmitLink("submit") {
@@ -197,7 +197,7 @@ public class GeoServerDialog extends Panel {
     /**
      * Link that will forward to the {@link DialogDelegate}
      *
-     * @return
+     *
      */
     Component cancelLink() {
         return new AjaxLink<Void>("cancel") {
@@ -262,7 +262,7 @@ public class GeoServerDialog extends Panel {
          * Builds the contents for this dialog
          *
          * @param id
-         * @return
+         *
          */
         protected abstract Component getContents(String id);
 

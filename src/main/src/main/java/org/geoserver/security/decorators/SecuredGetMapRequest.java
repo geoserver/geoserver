@@ -94,7 +94,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
     /**
      * Checks security and build the eventual CQL filter to cascade
      * @param layerFilters
-     * @return
+     *
      */
     public String buildCQLFilter() {
         List<Filter> layerFilters = new ArrayList<Filter>();

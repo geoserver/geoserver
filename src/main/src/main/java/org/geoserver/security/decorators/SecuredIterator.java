@@ -21,7 +21,7 @@ import org.opengis.filter.Filter;
  * @author Andrea Aime - GeoSolutions
  *
  * @deprecated This class is not longer used, {@link SecuredFeatureIterator} and 
- *      {@ SecuredSimpleFeatureIterator} are used instead.
+ *      {@link SecuredSimpleFeatureIterator} are used instead.
  */
 public class SecuredIterator extends AbstractDecorator<Iterator> implements Iterator,FeatureIterator {
     WrapperPolicy policy;

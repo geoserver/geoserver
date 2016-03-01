@@ -51,7 +51,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
  * Describes the CSW records and provides some handy constants to help building features
  * representing CSW:Record.
  * 
- * A few remarks about the {@link #RECORD} feature type:
+ * A few remarks about the {@link #RECORD_TYPE} feature type:
  * <ul>
  * <li>The SimpleLiterals are complex elements with simple contents, which we cannot properly
  * represent in GeoTools as the moment, the adopted solution is to have SimpleLiteral sport two
@@ -59,7 +59,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
  * to be adapted from <code>dc(t):elementName</code> to <code>dc(t):elementName/dc:value</code>
  * <li>The ows:BoundingBox element can be repeated multiple times and can have different SRS in each
  * instance, to deal with that we build a single geometry, a multipolygon, and keep the original
- * bounding boxes in the attribute user data, under the {@link #ORIGINAL_BBOXES} key</li>
+ * bounding boxes in the attribute user data, under the {@link #RECORD_BBOX_DESCRIPTOR} key</li>
  * </ul>
  * 
  * @author Andrea Aime - GeoSolutions
@@ -195,7 +195,7 @@ public class CSWRecordDescriptor extends AbstractRecordDescriptor {
      * Checks if a field is public static final
      * 
      * @param field
-     * @return
+     *
      */
     static boolean isConstant(Field field) {
         int modifier = field.getModifiers();
@@ -264,9 +264,6 @@ public class CSWRecordDescriptor extends AbstractRecordDescriptor {
     
     /**
      * Locates the AttributeDescriptor corresponding to the specified element name 
-     * 
-     * @param elementName
-     * @return
      */    
     public static AttributeDescriptor getDescriptor(String elementName) {
         return (AttributeDescriptor) Types.findDescriptor(RECORD_TYPE, elementName);

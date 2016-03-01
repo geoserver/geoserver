@@ -57,7 +57,7 @@ class AttributeDescription implements Serializable {
      * Returns the localized named of the attribute type
      * 
      * @param binding
-     * @return
+     *
      */
     static String getLocalizedName(Class<?> binding) {
         if (binding == null) {

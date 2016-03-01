@@ -87,7 +87,7 @@ public abstract class StoreEditPanel extends Panel {
     
     /**
      * Gives an option to store panels to raise an opinion before saving
-     * @return
+     *
      */
     public boolean onSave() {
         return true;

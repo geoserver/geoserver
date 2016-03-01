@@ -242,7 +242,7 @@ public class WCSDimensionsHelper {
      * Return the default value of the specified additional domain
      * 
      * @param domainName
-     * @return
+     *
      * @throws IOException
      */
     public String getDefaultValue(String domainName) throws IOException {
@@ -255,7 +255,7 @@ public class WCSDimensionsHelper {
     /**
      * Formats a Date into ISO86011 
      * @param time
-     * @return
+     *
      */
     public String format(Date time) {
         if (time != null) {
@@ -269,7 +269,7 @@ public class WCSDimensionsHelper {
      * Returns the time resolution unit, choosing among "year", "month", "day", "hour", "minute",
      * "second"
      * 
-     * @return
+     *
      */
     public String getTimeResolutionUnit() {
         return timeResolutionUnit;
@@ -278,7 +278,7 @@ public class WCSDimensionsHelper {
     /**
      * The time resolution value, expressed in the unit returned by {@link #getTimeResolutionUnit()}
      * 
-     * @return
+     *
      */
     public long getTimeResolutionValue() {
         return timeResolutionValue;
@@ -287,7 +287,7 @@ public class WCSDimensionsHelper {
     /**
      * Returns the elevation resolution unit
      * 
-     * @return
+     *
      */
     public String getElevationResolutionUnit() {
         return elevationResolutionUnit;
@@ -295,7 +295,7 @@ public class WCSDimensionsHelper {
 
     /**
      * The elevation resolution value
-     * @return
+     *
      */
     public double getElevationResolutionValue() {
         return elevationResolutionValue;
@@ -303,7 +303,7 @@ public class WCSDimensionsHelper {
 
     /**
      * The coverage identifier
-     * @return
+     *
      */
     public String getCoverageId() {
         return coverageId;
@@ -314,7 +314,7 @@ public class WCSDimensionsHelper {
      * return a dimensions Map. Return an empty map if no dimensions are found.
      * 
      * @param metadata
-     * @return
+     *
      */
     public static Map<String, DimensionInfo> getDimensionsFromMetadata(MetadataMap metadata) {
         Map<String, DimensionInfo> dimensionsMap = new HashMap<String, DimensionInfo>();
@@ -359,7 +359,7 @@ public class WCSDimensionsHelper {
     /**
      * Return {@code true} in case the specified Key refers to a Dimension.
      * @param key
-     * @return
+     *
      */
     private final static boolean isADimension(final String key) {
         return key != null && (key.equals(ResourceInfo.TIME) || key.equals(ResourceInfo.ELEVATION) || key

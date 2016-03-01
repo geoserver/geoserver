@@ -163,7 +163,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
      * first not null message in the cause chain
      * 
      * @param t
-     * @return
+     *
      */
     protected String getFirstErrorMessage(Throwable t) {
         Throwable original = t;

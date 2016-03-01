@@ -172,7 +172,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
      * @param baseURL
      * @param xmppClient
      * @param publish
-     * @return
+     *
      * @throws IOException
      */
     private Object encodeAsPlainRawData(Object value, String type, String pID, String baseURL,
@@ -220,7 +220,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
      * @param baseURL
      * @param xmppClient
      * @param publish
-     * @return
+     *
      * @throws IOException
      */
     private Object encodeAsPlainOWCMapContext(Object value, String type, String pID, String baseURL,
@@ -281,7 +281,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
      * @param xmppClient
      * @param wmc
      * @param baseURL
-     * @return
+     *
      * @throws IOException
      */
     private Object getWmc(XMPPClient xmppClient, List<LayerInfo> wmc, String type, String pID,
@@ -348,7 +348,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
      * @param xmppClient
      * @param baseURL
      * @param layer
-     * @return
+     *
      */
     private static WmcFeature wrapFeature(XMPPClient xmppClient, String baseURL, LayerInfo layer) {
         GeoServer geoserver = xmppClient.getGeoServer();
@@ -399,7 +399,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
      * 
      * @param ft
      * @param string
-     * @return
+     *
      */
     private static String owcTemplate(WmcFeature ft, String srcMetadata) {
         String trgMetadata = srcMetadata;
@@ -422,7 +422,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
     /**
      * 
      * @param refEnvelope
-     * @return
+     *
      */
     private static String bboxToJSON(ReferencedEnvelope refEnvelope) {
         if (refEnvelope == null)
@@ -441,7 +441,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
     /**
      * 
      * @param refEnvelope
-     * @return
+     *
      */
     private static String bboxToString(ReferencedEnvelope refEnvelope) {
         double minx = refEnvelope.getLowerCorner().getOrdinate(0);
@@ -458,7 +458,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
      * digest them...
      * 
      * @param baseUrl
-     * @return
+     *
      */
     private static String canonicUrl(String baseUrl) {
         if (baseUrl.endsWith("/")) {

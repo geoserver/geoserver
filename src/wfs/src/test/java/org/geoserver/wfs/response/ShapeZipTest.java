@@ -700,7 +700,7 @@ public class ShapeZipTest extends WFSTestSupport {
     }
 
     /**
-     * @return
+     *
      */
     private String get4326_ESRI_WKTContent() {
         return "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\","

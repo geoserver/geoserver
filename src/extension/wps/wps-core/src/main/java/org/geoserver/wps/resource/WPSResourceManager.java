@@ -111,7 +111,7 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
      * Create a new unique id for the process. All resources linked to the process should use this
      * token to register themselves against the manager
      * 
-     * @return
+     *
      */
     public String getExecutionId(Boolean synch) {
         String id = executionId.get();
@@ -145,7 +145,7 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
      * Returns the executionId bound to this thread, if any
      * 
      * @param executionId
-     * @return
+     *
      */
     String getCurrentExecutionId() {
         return this.executionId.get();
@@ -173,7 +173,7 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
      * 
      * @param executionId - can be null
      * @param fileName
-     * @return
+     *
      */
     public Resource getOutputResource(String executionId, String fileName) {
         executionId = getExecutionId(executionId);
@@ -187,7 +187,7 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
      * 
      * @param name The file name
      * @param mimeType the
-     * @return
+     *
      */
     public String getOutputResourceUrl(String name, String mimeType) {
         return getOutputResourceUrl(null, name, null, mimeType);
@@ -202,7 +202,7 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
      * @param baseUrl - optional, if you don't have it the resource manager will pick one from
      *        Dispatcher.REQUEST
      * @param mimeType
-     * @return
+     *
      */
     public String getOutputResourceUrl(String executionId, String name, String baseUrl,
             String mimeType) {
@@ -230,7 +230,7 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
      * 
      * @param executionId
      * @param fileName
-     * @return
+     *
      * @throws IOException
      */
     public Resource getTemporaryResource(String extension) throws IOException {
@@ -246,7 +246,7 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
     /**
      * Gets the stored response file for the specified execution id
      * @param executionId
-     * @return
+     *
      */
     public Resource getStoredResponse(String executionId) {
         return artifactsStore.getArtifact(executionId, ArtifactType.Response, null);
@@ -257,7 +257,7 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
      * process is executing asynchronously
      * 
      * @param executionId
-     * @return
+     *
      */
     public Resource getStoredRequest(String executionId) {
         return artifactsStore.getArtifact(executionId, ArtifactType.Request, null);
@@ -267,7 +267,7 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
      * Gets the stored request as a parsed object
      * 
      * @param executionId
-     * @return
+     *
      * @throws IOException
      */
     public ExecuteType getStoredRequestObject(String executionId) throws IOException {
@@ -289,7 +289,7 @@ public class WPSResourceManager extends ProcessListenerAdapter implements Dispat
      * Stores the request in a binary resource for efficient later retrieval
      * 
      * @param executionId
-     * @return
+     *
      * @throws IOException
      */
     public void storeRequestObject(ExecuteType execute, String executionId) throws IOException {

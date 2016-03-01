@@ -629,7 +629,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * to screen coordinates it's possible that many world points collapse to a single screen point.
          * Those colliding points are simplified to a single point.   
          * @param geom
-         * @return
+         *
          */
         Geometry decimate(Geometry geom) {
         	DefaultMathTransformFactory f= new DefaultMathTransformFactory();

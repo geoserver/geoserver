@@ -22,8 +22,7 @@ public class QNameResolver {
      * @param qualifiedString a string in the form prefix:localName
      * 
      * @param namespaces Binds prefixes with namespace URIs
-     * @return
-     * @throws Exception
+     *
      */
     public QName parseQName(String qualifiedString, NamespaceSupport namespaces) {
         int idx = qualifiedString.indexOf(":");

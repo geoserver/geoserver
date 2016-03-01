@@ -52,7 +52,7 @@ public class HzCluster implements DisposableBean, InitializingBean {
      * classpath if it doesn't exist.
      * @param fileName Name of the file
      * @param scope Scope for looking up a default if the file doesn't exist.
-     * @return
+     *
      * @throws IOException
      */
     public Resource getConfigFile(String fileName, Class<?> scope) throws IOException {
@@ -70,7 +70,7 @@ public class HzCluster implements DisposableBean, InitializingBean {
     
     /**
      * Is clustering enabled
-     * @return
+     *
      */
     public boolean isEnabled() {
         return hz!=null;
@@ -82,7 +82,7 @@ public class HzCluster implements DisposableBean, InitializingBean {
     
     /**
      * Is session sharing enabled.  Only true if clustering in general is enabled.
-     * @return
+     *
      */
     public boolean isSessionSharing() {
         return isEnabled() &&
@@ -91,7 +91,7 @@ public class HzCluster implements DisposableBean, InitializingBean {
     
     /**
      * Is session sharing sticky.  See Hazelcast documentation for details.
-     * @return
+     *
      */
     public boolean isStickySession() {
         return Boolean.parseBoolean(getClusterConfig().getProperty("session_sticky", "false"));
@@ -107,7 +107,7 @@ public class HzCluster implements DisposableBean, InitializingBean {
     
     /**
      * Get the HazelcastInstance being used for clustering
-     * @return
+     *
      * @throws IllegalStateException if clustering is not enabled
      */
     public HazelcastInstance getHz() {

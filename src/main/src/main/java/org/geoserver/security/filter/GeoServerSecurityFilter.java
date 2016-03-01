@@ -81,7 +81,7 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
      * 
      * @param filter
      * @param request
-     * @return
+     *
      */
     protected String authenticateFromCache(AuthenticationCachingFilter filter,HttpServletRequest request) {
     

@@ -572,7 +572,6 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
      * One of the cite tests ensures that WMTVER is recognized as VERSION and the server does not
      * complain
      * 
-     * @throws Exception
      */
     public void testWmtVer() throws Exception {
         dispatcher.setCiteCompliant(true);

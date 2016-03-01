@@ -425,7 +425,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
 	/**
      * @param resource
      * @param rule
-     * @return
+     *
      */
     DataAccessLimits buildAccessLimits(ResourceInfo resource, AccessInfo rule)
     {
@@ -558,7 +558,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
      *
      * @param filter
      * @param areaFilter
-     * @return
+     *
      */
     private Filter mergeFilter(Filter filter, Filter areaFilter) {
         if ((filter == null) || (filter == Filter.INCLUDE)) {
@@ -575,7 +575,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
      *
      * @param attributes
      * @param mode
-     * @return
+     *
      */
     private List<PropertyName> toPropertyNames(Set<LayerAttribute> attributes,
             PropertyAccessMode mode) {

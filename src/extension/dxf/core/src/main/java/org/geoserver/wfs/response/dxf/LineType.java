@@ -33,7 +33,7 @@ public class LineType {
 
     /**
      * Gets the DXF name of the line type.
-     * @return
+     *
      */
     public String getName() {
         return name;
@@ -49,7 +49,7 @@ public class LineType {
 
     /**
      * Gets the pattern description for the line type.
-     * @return
+     *
      */
     public String getDescription() {
         return description;
@@ -65,7 +65,7 @@ public class LineType {
 
     /**
      * Gets the pattern items.
-     * @return
+     *
      */
     public LineTypeItem[] getItems() {
         return items;
@@ -81,7 +81,7 @@ public class LineType {
 
     /**
      * Gets the complete length of the pattern.
-     * @return
+     *
      */
     public double getLength() {
         double len = 0.0;
@@ -100,7 +100,7 @@ public class LineType {
  *    of the repeatable part of the line pattern, as a sequence of - (solid line),
  *    * (dot) and _ (empty space).
      * @param ltype 
-     * @return
+     *
      */
     public static LineType parse(String ltype) {
         // split the descriptor in 2/3 parts

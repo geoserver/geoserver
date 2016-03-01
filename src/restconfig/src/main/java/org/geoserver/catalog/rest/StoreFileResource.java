@@ -153,7 +153,7 @@ public abstract class StoreFileResource extends Resource {
      * @param store
      * @param format
      * @param directory
-     * @return
+     *
      */
     protected List<org.geoserver.platform.resource.Resource> handleFileUpload(String store, String workspace, String format, 
             org.geoserver.platform.resource.Resource directory) {
@@ -250,7 +250,7 @@ public abstract class StoreFileResource extends Resource {
      * 
      * @param directory
      * @param format
-     * @return
+     *
      */
     protected org.geoserver.platform.resource.Resource findPrimaryFile(
             org.geoserver.platform.resource.Resource directory, String format) {

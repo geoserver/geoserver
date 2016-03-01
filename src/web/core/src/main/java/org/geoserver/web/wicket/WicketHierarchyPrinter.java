@@ -166,7 +166,7 @@ public class WicketHierarchyPrinter {
 
     /**
      * If the page relative path dumping is enabled
-     * @return
+     *
      */
     public boolean isPathDumpEnabled() {
         return pathDumpEnabled;

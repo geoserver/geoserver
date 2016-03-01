@@ -86,7 +86,6 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
     /**
      * Tests initializing page to specific process via name request parameter.
      * 
-     * @throws Exception
      */
     @Test
     public void testNameRequest() throws Exception {

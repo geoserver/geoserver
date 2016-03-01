@@ -31,7 +31,7 @@ public class LDAPUtils {
      * Creates an LdapContext from a configuration object.
      * 
      * @param ldapConfig
-     * @return
+     *
      */
     public static LdapContextSource createLdapContext(
             LDAPBaseSecurityServiceConfig ldapConfig) {
@@ -63,7 +63,7 @@ public class LDAPUtils {
      * 
      * @param ctx
      * @param template
-     * @return
+     *
      */
     public static SpringSecurityLdapTemplate getLdapTemplateInContext(
             final DirContext ctx,final SpringSecurityLdapTemplate template) {

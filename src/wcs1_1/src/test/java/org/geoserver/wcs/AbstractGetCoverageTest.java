@@ -72,7 +72,7 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
     /**
      * Prepares the basic KVP map (service, version, request)
      * 
-     * @return
+     *
      */
     protected Map<String, Object> baseMap() {
         Map<String, Object> raw = new HashMap<String, Object>();

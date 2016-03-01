@@ -94,7 +94,7 @@ class LayerTree {
 
     /**
      * @param string
-     * @return
+     *
      */
     public LayerTree getNode(String name) {
         for (LayerTree tmpNode : this.childrens) {

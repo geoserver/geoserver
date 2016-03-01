@@ -28,7 +28,7 @@ public enum GridType {
 
     /**
      * Returns the full fledges xml constant associated to the specified grid type
-     * @return
+     *
      */
     public String getXmlConstant() {
         return xmlConstant;
@@ -36,7 +36,7 @@ public enum GridType {
 
     /**
      * Returns the expected size of the offsets array for this grid type
-     * @return
+     *
      */
     public int getOffsetArrayLength() {
         return offsetArrayLength;
@@ -45,7 +45,7 @@ public enum GridType {
     
     /**
      * Returns the expected size of the origin array for this grid type
-     * @return
+     *
      */
     public int getOriginArrayLength() {
         return originArrayLength;

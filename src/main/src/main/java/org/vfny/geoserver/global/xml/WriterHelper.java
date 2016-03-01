@@ -295,7 +295,7 @@ public class WriterHelper {
      * Escapes the provided text with XML entities, 
      * see (http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references#Character_entities_in_XML)
      * @param text
-     * @return
+     *
      */
     private String escape(String text) {
         String s = new String(text);

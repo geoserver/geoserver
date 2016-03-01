@@ -161,7 +161,7 @@ public class DefaultGeoServerNodeInfo implements GeoServerNodeInfo {
     /**
      * The element is visible if an admin is logged in, and the id is not null
      * @param parent
-     * @return
+     *
      */
     protected boolean isNodeIdVisible(WebMarkupContainer parent) {
         if (NODE_ID == null) {

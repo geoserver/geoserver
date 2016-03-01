@@ -127,6 +127,7 @@ public class GenericRecordBuilder implements RecordBuilder {
         fb = new ComplexFeatureBuilder(recordDescriptor.getFeatureDescriptor());
 
         for (PropertyDescriptor descriptor : recordDescriptor.getFeatureType().getDescriptors()) {
+            @SuppressWarnings("unchecked")
             List<AttributeDescriptor> substitutionGroup = (List<AttributeDescriptor>) descriptor.getUserData().get("substitutionGroup");
             if (substitutionGroup != null) {
                 for (Iterator<AttributeDescriptor> it = substitutionGroup.iterator(); it.hasNext();) {
@@ -278,7 +279,7 @@ public class GenericRecordBuilder implements RecordBuilder {
     /**
      * Builds a record and sets up to work on the next one
      * 
-     * @param id
+     * @param id record id
      * @return the Feature
      */
     public Feature build(String id) {
@@ -305,7 +306,7 @@ public class GenericRecordBuilder implements RecordBuilder {
             geom = geom.getFactory().createMultiPolygon(new Polygon[] { (Polygon) geom });
         }
 
-        Map<Object, Object> userData = Collections.singletonMap((Object) ORIGINAL_BBOXES, (Object) new ArrayList(boxes));
+        Map<Object, Object> userData = Collections.singletonMap((Object) ORIGINAL_BBOXES, (Object) new ArrayList<ReferencedEnvelope>(boxes));
         addElement( recordDescriptor.getBoundingBoxPropertyName(), Collections.singletonList((Object)geom), userData, -1);
         
                    

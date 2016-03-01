@@ -121,7 +121,7 @@ public class UTFGridMap extends RawMap {
      * @param pw
      * @param image
      * @param entries
-     * @return
+     *
      */
     private List<UTFGridEntry> writeGrid(PrintWriter pw, RenderedImage image,
             UTFGridEntries entries) {

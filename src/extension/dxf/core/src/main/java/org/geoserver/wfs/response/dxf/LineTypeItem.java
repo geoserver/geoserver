@@ -54,7 +54,7 @@ public class LineTypeItem {
      *  - 0 if it's a DOT
      *  - positive if it's a DASH
      *  - negative if it's a EMPTY
-     * @return
+     *
      */
     public double getLength() {
         switch (type) {

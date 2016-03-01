@@ -347,7 +347,7 @@ abstract class DimensionHelper {
      * 
      * @param dimension
      * @param values
-     * @return
+     *
      */
     String getTemporalDomainRepresentation(DimensionInfo dimension, TreeSet<? extends Object> values) {
         String timeMetadata = null;
@@ -407,7 +407,7 @@ abstract class DimensionHelper {
     /**
      * Builds a single time range from the domain, be it made of Date or TimeRange objects
      * @param values
-     * @return
+     *
      */
     private DateRange getMinMaxTimeInterval(TreeSet<? extends Object> values) {
         Object minValue = values.first();
@@ -429,7 +429,7 @@ abstract class DimensionHelper {
     /**
      * Builds a single Z range from the domain, be it made of Double or NumberRange objects
      * @param values
-     * @return
+     *
      */
     private NumberRange<Double> getMinMaxZInterval(TreeSet<? extends Object> values) {
         Object minValue = values.first();
@@ -453,7 +453,7 @@ abstract class DimensionHelper {
      * Returns true if all the values in the set are Date instances
      * 
      * @param values
-     * @return
+     *
      */
     private boolean allDates(TreeSet<? extends Object> values) {
         for(Object value : values) {
@@ -469,7 +469,7 @@ abstract class DimensionHelper {
      * Returns true if all the values in the set are Double instances
      * 
      * @param values
-     * @return
+     *
      */
     private boolean allDoubles(TreeSet<? extends Object> values) {
         for(Object value : values) {
@@ -487,7 +487,7 @@ abstract class DimensionHelper {
      * 
      * @param dimension
      * @param values
-     * @return
+     *
      */
     String getCustomDomainRepresentation(DimensionInfo dimension, List<String> values) {
         String metadata = null;

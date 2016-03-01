@@ -440,7 +440,7 @@ enum ScalingPolicy {
     /**
      * Retrieve the {@link ScalingPolicy} from the provided {@link ScalingType}
      * @param scaling
-     * @return
+     *
      */
     public static ScalingPolicy getPolicy(ScalingType scaling) {
         if (scaling != null) {
@@ -469,7 +469,7 @@ enum ScalingPolicy {
      * supported one.
      *
      * @param scaling
-     * @return
+     *
      */
     public static int[] getTargetSize(ScalingType scaling) {
         final ScaleToSizeType scaleType = scaling.getScaleToSize();
@@ -513,7 +513,7 @@ enum ScalingPolicy {
      * supported one.
      *
      * @param scaling
-     * @return
+     *
      */
     public static double[] getScaleFactors(ScalingType scaling) {
         ScalingPolicy policy = getPolicy(scaling);

@@ -531,7 +531,6 @@ public class GeoJSONTest extends WFSTestSupport {
      * <li>the default geometry is never contained within the properties, as duplicate</li>
      * </ul>
      * 
-     * @throws Exception
      */
     @Test
     public void testGeometryAndGeometryNameConsistency() throws Exception {

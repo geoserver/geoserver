@@ -1063,12 +1063,12 @@
       <id>netcdf</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-netcdf</artifactId>
           <version>${gs.version}</version>
         </dependency>
       </dependencies>
-		</profile>
+    </profile>
     <profile>
       <id>importer</id>
       <dependencies>
@@ -1148,7 +1148,7 @@
       <id>grib</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-grib</artifactId>
           <version>${project.version}</version>
         </dependency>

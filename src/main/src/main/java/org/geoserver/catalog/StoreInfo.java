@@ -158,7 +158,7 @@ public interface StoreInfo extends CatalogInfo {
     /**
      * Associates an error with the store.
      *
-     * @see {@link #getError()}
+     * @see #getError()
      */
     void setError(Throwable t);
     

@@ -6,7 +6,7 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>cluster/activemqBroker/target</directory>
+      <directory>jms-cluster/activemqBroker/target</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
         <include>activemqBroker-*.war</include>

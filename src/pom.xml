@@ -1352,7 +1352,6 @@
       <descriptor>release/ext-ogr-wfs.xml</descriptor>
       <descriptor>release/ext-ogr-wps.xml</descriptor>
       <descriptor>release/ext-excel.xml</descriptor>
-      <descriptor>release/ext-geosearch.xml</descriptor>
       <descriptor>release/ext-charts.xml</descriptor>
       <descriptor>release/ext-app-schema.xml</descriptor>
       <descriptor>release/ext-control-flow.xml</descriptor>

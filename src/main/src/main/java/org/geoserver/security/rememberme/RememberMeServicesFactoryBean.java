@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
@@ -92,17 +93,14 @@ public class RememberMeServicesFactoryBean implements FactoryBean<RememberMeServ
 
             RememberMeServicesConfig rmsConfig = securityManager.getSecurityConfig().getRememberMeService();
             try {
-                rms = (RememberMeServices) Class.forName(rmsConfig.getClassName()).newInstance();
+                Class<RememberMeServices> rmsClass = (Class<RememberMeServices>) Class.forName(rmsConfig.getClassName());
+                rms = rmsClass.getConstructor(String.class, UserDetailsService.class)
+                    .newInstance(rmsConfig.getKey(), new RememberMeUserDetailsService(securityManager));
             }
             catch(Exception e) {
                 throw new RuntimeException(e);
             }
 
-            if (rms instanceof AbstractRememberMeServices) {
-                AbstractRememberMeServices arms = (AbstractRememberMeServices) rms; 
-                arms.setUserDetailsService(new RememberMeUserDetailsService(securityManager));
-                arms.setKey(rmsConfig.getKey());
-            }
 //            if (rms instanceof GeoServerTokenBasedRememberMeServices) {
 //                ((GeoServerTokenBasedRememberMeServices) rms).setUserGroupServiceName(rmsConfig.getUserGroupService());
 //            }

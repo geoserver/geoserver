@@ -99,7 +99,7 @@ import org.geotools.xml.XSD;
 import org.junit.After;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.web.context.WebApplicationContext;
@@ -704,7 +704,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     // authentication/security helpers
     //
     /**
-     * Sets the authentication for this test run (will be removed during {@link #tearDownInternal()}
+     * Sets the authentication for this test run (will be removed during {@link #tearDown()}
      * ). Use a null user name to turn off authentication again.
      * <p>
      * Remember to override the getFilters() method so that Spring Security filters are enabled
@@ -753,7 +753,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         SecurityContextHolder.setContext(new SecurityContextImpl());
         List<GrantedAuthority> l= new ArrayList<GrantedAuthority>();
         for (String role : roles) {
-            l.add(new GrantedAuthorityImpl(role));
+            l.add(new SimpleGrantedAuthority(role));
         }
 
         SecurityContextHolder.getContext().setAuthentication(
@@ -1177,8 +1177,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * 
      * @param path The portion of the request after the context, 
      *      example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param the list of validation errors encountered during document parsing (validation
-     *        will be activated only if this list is non null)
      * 
      * @return A result of the request parsed into a dom.
      * 
@@ -1277,8 +1275,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      *
      * @param path The porition of the request after hte context, 
      *      example: 'wms?request=GetMap&version=1.1.1&..."
-     * @param the list of validation errors encountered during document parsing (validation
-     *        will be activated only if this list is non null)     
      * 
      * @return An input stream which is the result of the request.
      * 
@@ -1576,7 +1572,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * Given a dom and a schema, checks that the dom validates against the schema 
      * of the validation errors instead
-     * @param validationErrors
      * @throws IOException 
      * @throws SAXException 
      */
@@ -1850,7 +1845,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     /**
      * Parses a raw set of kvp's into a parsed set of kvps.
      *
-     * @param kvp Map of String,String.
+     * @param raw Map of String,String.
      */
     protected Map parseKvp(Map /*<String,String>*/ raw)
         throws Exception {

@@ -81,7 +81,7 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
 
         filter.setPasswordParameter(upConfig.getPasswordParameterName());
         filter.setUsernameParameter(upConfig.getUsernameParameterName());
-        filter.setAuthenticationManager(getSecurityManager());
+        filter.setAuthenticationManager(getSecurityManager().authenticationManager());
 
         filter.setRememberMeServices(rms);
         GeoServerWebAuthenticationDetailsSource s = new GeoServerWebAuthenticationDetailsSource();

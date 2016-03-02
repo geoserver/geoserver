@@ -37,9 +37,9 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         
         FilterSecurityInterceptor filter = new FilterSecurityInterceptor();
 
-        filter.setAuthenticationManager(getSecurityManager());
+        filter.setAuthenticationManager(getSecurityManager().authenticationManager());
         
-        List<AccessDecisionVoter> voters = new ArrayList<AccessDecisionVoter>();
+        List<AccessDecisionVoter<?>> voters = new ArrayList<>();
         RoleVoter roleVoter = new RoleVoter();
         roleVoter.setRolePrefix("");
         voters.add(roleVoter);

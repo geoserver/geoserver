@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.web.util.RequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 

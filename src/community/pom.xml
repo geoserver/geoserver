@@ -186,6 +186,7 @@
         <module>sldService</module>
         <module>params-extractor</module>
         <module>wps-remote</module>
+        <module>wps-jdbc</module>
         <module>release</module>
 	<module>gwc-distributed</module>
 	<module>jdbcstore</module>

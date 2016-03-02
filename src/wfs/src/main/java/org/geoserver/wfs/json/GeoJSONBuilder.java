@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,6 +7,8 @@ package org.geoserver.wfs.json;
 
 import java.io.Writer;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import net.sf.json.JSONException;
@@ -286,19 +288,65 @@ public class GeoJSONBuilder extends JSONBuilder {
                 "Unable to determine geometry type " + geometry.getClass());
         }
     }
-    
+
     /**
-     * Overrides to handle the case of encoding {@code java.util.Date} and its date/time/timestamp
+     * Write a java.util.List out as a JSON Array. The values of the array will be converted
+     * using ike standard primitive conversions. If the list contains List or Map objects, they
+     * will be serialized as JSON Arrays and JSON Objects respectively.
+     *
+     * @param list a java.util.List to be serialized as JSON Array
+     */
+    public JSONBuilder writeList(final List list) {
+        this.array();
+        for (final Object o: list) {
+            this.value(o);
+        }
+        return this.endArray();
+    }
+
+    /**
+     * Write a java.util.Map out as a JSON Object. Keys are serialized using the toString method
+     * of the object and values are serialized using primitives conversions. If a value in the map
+     * is a List or Map object, it will be serialized as JSON Array or JSON Object respectively.
+     *
+     * @param map a java.util.Map object to be serialized as a JSON Object
+     */
+    public JSONBuilder writeMap(final Map map) {
+        this.object();
+        for (final Object k: map.keySet()) {
+            this.key(k.toString());
+            this.value(map.get(k));
+        }
+        return this.endObject();
+    }
+
+    /**
+     * Overrides handling of specialized types.
+     *
+     * Overrides the encoding {@code java.util.Date} and its date/time/timestamp
      * descendants, as well as {@code java.util.Calendar} instances as ISO 8601 strings.
-     * 
+     *
+     * Overrides the handling of java.util.Map, java.util.List, and Geometry objects
+     * as well.
+     *
      * @see net.sf.json.util.JSONBuilder#value(java.lang.Object)
      */
     @Override
     public GeoJSONBuilder value(Object value) {
-        if (value instanceof java.util.Date || value instanceof Calendar) {
-            value = Converters.convert(value, String.class);
+        if (value == null) {
+            super.value(value);
+        } else if (value instanceof Geometry) {
+            this.writeGeom((Geometry) value);
+        } else if (value instanceof List) {
+            this.writeList((List)value);
+        } else if (value instanceof Map) {
+            this.writeMap((Map)value);
+        } else {
+            if (value instanceof java.util.Date || value instanceof Calendar) {
+                value = Converters.convert(value, String.class);
+            }
+            super.value(value);
         }
-        super.value(value);
         return this;
     }
     

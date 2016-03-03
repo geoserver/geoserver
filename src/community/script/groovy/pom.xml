@@ -24,7 +24,20 @@
   <dependency>
    <groupId>org.geoscript</groupId>
    <artifactId>geoscript-groovy</artifactId>
-   <version>1.2-SNAPSHOT</version>
+   <version>1.7-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+    <!-- this dependency taken from geoscript-groovy pom but upgraded to 1.0.8 -->
+    <groupId>no.ecc.vectortile</groupId>
+    <artifactId>java-vector-tile</artifactId>
+    <version>1.0.8</version>
+    <!-- Exclude protobuf here so gt-geobuf can pull in a more recent version -->
+    <exclusions>
+      <exclusion>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+      </exclusion>
+    </exclusions>
   </dependency>
   <dependency>
    <groupId>net.sf.json-lib</groupId>

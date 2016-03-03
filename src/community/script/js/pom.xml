@@ -26,6 +26,23 @@
             <artifactId>geoscript-js</artifactId>
             <version>1.1.0-SNAPSHOT</version>
         </dependency>
+        <!-- these dependencies override transitive geoscript-js dependencies on version 12.0 -->
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geopkg</artifactId>
+            <version>${gt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.jdbc</groupId>
+            <artifactId>gt-jdbc-spatialite</artifactId>
+            <version>${gt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-swing</artifactId>
+            <version>${gt.version}</version>
+        </dependency>
+        <!-- end of dependency overrides -->
         <dependency>
             <groupId>org.geoserver.script</groupId>
             <artifactId>gs-script-core</artifactId>

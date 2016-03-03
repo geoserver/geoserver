@@ -180,20 +180,20 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
 
     protected void setupCommandLine(boolean inline, CommandLine cmd) {
         for (String option : options) {
-            cmd.addArgument(option);
+            cmd.addArgument(option, false);
         }
 
         // setup input and output files
         if (inline) {
-            cmd.addArgument("${input}");
+            cmd.addArgument("${input}", false);
         } else {
 
             if (isOutputAfterInput()) {
-                cmd.addArgument("${input}");
-                cmd.addArgument("${output}");
+                cmd.addArgument("${input}", false);
+                cmd.addArgument("${output}", false);
             } else {
-                cmd.addArgument("${output}");
-                cmd.addArgument("${input}");
+                cmd.addArgument("${output}", false);
+                cmd.addArgument("${input}", false);
             }
         }
     }

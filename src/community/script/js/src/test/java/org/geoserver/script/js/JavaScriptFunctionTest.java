@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,6 +13,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.script.function.ScriptFunctionFactory;
+import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -35,7 +36,7 @@ public class JavaScriptFunctionTest extends ScriptIntTestSupport {
     
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        File fromDir = new File(getClass().getResource("scripts").getFile());
+        File fromDir = DataUtilities.urlToFile(getClass().getResource("scripts"));
         File toDir = new File(dataDirectory.getDataDirectoryRoot(), "scripts");
         IOUtils.deepCopy(fromDir, toDir);
         super.populateDataDirectory(dataDirectory);

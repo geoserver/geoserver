@@ -26,7 +26,7 @@ import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geoserver.wms.map.GIFMapResponse;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
 

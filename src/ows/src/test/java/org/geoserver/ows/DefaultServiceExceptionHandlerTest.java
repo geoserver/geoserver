@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,24 +6,26 @@
 package org.geoserver.ows;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 
+import javax.servlet.ServletOutputStream;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import junit.framework.TestCase;
 
 import org.apache.xpath.XPathAPI;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
+import org.springframework.mock.web.DelegatingServletOutputStream;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockServletOutputStream;
+import org.springframework.mock.web.MockHttpServletResponse;
+
+import junit.framework.TestCase;
 
 
 public class DefaultServiceExceptionHandlerTest extends TestCase {
@@ -50,7 +52,6 @@ public class DefaultServiceExceptionHandlerTest extends TestCase {
 
         request.setContextPath("geoserver");
 
-        MockServletOutputStream output = new MockServletOutputStream();
         response = new MockHttpServletResponse();
 
         handler = new DefaultServiceExceptionHandler();
@@ -69,7 +70,7 @@ public class DefaultServiceExceptionHandlerTest extends TestCase {
         exception.getExceptionText().add("helloText");
         handler.handleServiceException(exception, requestInfo);
 
-        InputStream input = new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+        InputStream input = new ByteArrayInputStream(response.getContentAsString().getBytes());
 
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilderFactory.setNamespaceAware(true);
@@ -87,7 +88,7 @@ public class DefaultServiceExceptionHandlerTest extends TestCase {
 
         handler.handleServiceException(exception, requestInfo);
 
-        InputStream input = new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+        InputStream input = new ByteArrayInputStream(response.getContentAsString().getBytes());
 
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilderFactory.setNamespaceAware(true);
@@ -110,7 +111,7 @@ public class DefaultServiceExceptionHandlerTest extends TestCase {
 
         handler.handleServiceException(exception, requestInfo);
 
-        InputStream input = new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+        InputStream input = new ByteArrayInputStream(response.getContentAsString().getBytes());
 
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilderFactory.setNamespaceAware(true);
@@ -135,7 +136,7 @@ public class DefaultServiceExceptionHandlerTest extends TestCase {
         serviceException.initCause(ioException);
         handler.handleServiceException(serviceException, requestInfo);
 
-        InputStream input = new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+        InputStream input = new ByteArrayInputStream(response.getContentAsString().getBytes());
 
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilderFactory.setNamespaceAware(true);
@@ -160,7 +161,7 @@ public class DefaultServiceExceptionHandlerTest extends TestCase {
         serviceException.initCause(npe);
         handler.handleServiceException(serviceException, requestInfo);
 
-        InputStream input = new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+        InputStream input = new ByteArrayInputStream(response.getContentAsString().getBytes());
 
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilderFactory.setNamespaceAware(true);

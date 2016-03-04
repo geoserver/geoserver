@@ -19,7 +19,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GeoTiffGetCoverageTest extends WCSTestSupport {
 

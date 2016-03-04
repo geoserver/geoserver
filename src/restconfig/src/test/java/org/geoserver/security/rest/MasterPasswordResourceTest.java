@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -46,7 +46,7 @@ public class MasterPasswordResourceTest extends SecurityRESTTestSupport {
     @Test
     public void testGetAsXMLNotAuthorized() throws Exception {  
         logout();
-        assertEquals( 403, getAsServletResponse(MP_URI_XML).getStatusCode() );
+        assertEquals( 403, getAsServletResponse(MP_URI_XML).getStatus() );
     }
     
     @Test
@@ -69,30 +69,30 @@ public class MasterPasswordResourceTest extends SecurityRESTTestSupport {
     public void testPutUnauthorized() throws Exception {
         logout();
         String body = MessageFormat.format(xmlTemplate, "geoserver", "abc");
-        assertEquals( 405, putAsServletResponse(MP_URI_XML,body,"text/xml").getStatusCode() );
+        assertEquals( 405, putAsServletResponse(MP_URI_XML,body,"text/xml").getStatus() );
     }
     
     @Test
     public void testPutInvalidNewPassword() throws Exception {
         String body = MessageFormat.format(xmlTemplate, "geoserver", "abc");
-        assertEquals( 422, putAsServletResponse(MP_URI_XML,body,"text/xml").getStatusCode() );
+        assertEquals( 422, putAsServletResponse(MP_URI_XML,body,"text/xml").getStatus() );
     }
     
     @Test
     public void testPutInvalidCurrentPassword() throws Exception {
         String body = MessageFormat.format(xmlTemplate, "geoserverXY", "geoserver1");
-        assertEquals( 422, putAsServletResponse(MP_URI_XML,body,"text/xml").getStatusCode() );
+        assertEquals( 422, putAsServletResponse(MP_URI_XML,body,"text/xml").getStatus() );
     }
 
     @Test
     public void testPutAsXML() throws Exception {
         
         String body = MessageFormat.format(xmlTemplate, "geoserver", "geoserver1");
-        assertEquals( 200, putAsServletResponse(MP_URI_XML,body,"text/xml").getStatusCode() );        
+        assertEquals( 200, putAsServletResponse(MP_URI_XML,body,"text/xml").getStatus() );        
         assertTrue(getSecurityManager().checkMasterPassword("geoserver1"));
         
         body = MessageFormat.format(xmlTemplate, "geoserver1", "geoserver");
-        assertEquals( 200, putAsServletResponse(MP_URI_XML,body,"text/xml").getStatusCode() );
+        assertEquals( 200, putAsServletResponse(MP_URI_XML,body,"text/xml").getStatus() );
         assertTrue(getSecurityManager().checkMasterPassword("geoserver"));
     }
     
@@ -100,11 +100,11 @@ public class MasterPasswordResourceTest extends SecurityRESTTestSupport {
     public void testPutAsJSON() throws Exception {
         
         String body = String.format(jsonTemplate, "geoserver", "geoserver1");
-        assertEquals( 200, putAsServletResponse(MP_URI_JSON,body,"text/json").getStatusCode() );        
+        assertEquals( 200, putAsServletResponse(MP_URI_JSON,body,"text/json").getStatus() );        
         assertTrue(getSecurityManager().checkMasterPassword("geoserver1"));  
         
         body = String.format(jsonTemplate, "geoserver1", "geoserver");
-        assertEquals( 200, putAsServletResponse(MP_URI_JSON,body,"text/json").getStatusCode() );
+        assertEquals( 200, putAsServletResponse(MP_URI_JSON,body,"text/json").getStatus() );
         assertTrue(getSecurityManager().checkMasterPassword("geoserver"));
     }
 

@@ -11,10 +11,10 @@ import javax.servlet.ServletResponse;
 
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockFilterConfig;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class FlushSafeFilterTest {
     
@@ -50,7 +50,7 @@ public class FlushSafeFilterTest {
             ServletOutputStream os;
 
             @Override
-            public ServletOutputStream getOutputStream() throws IOException {
+            public ServletOutputStream getOutputStream() {
                 if (os == null) {
                     final ServletOutputStream wrapped = super.getOutputStream();
                     os = new ServletOutputStream() {
@@ -101,6 +101,6 @@ public class FlushSafeFilterTest {
         filter.doFilter(request, response, chain);
         
         // if we got here without exception, it's already a good sign. Let's check the output
-        assertEquals("Some random text", response.getOutputStreamContent());
+        assertEquals("Some random text", response.getContentAsString());
     }
 }

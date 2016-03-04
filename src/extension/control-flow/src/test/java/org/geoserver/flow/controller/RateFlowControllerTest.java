@@ -8,7 +8,7 @@ import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class RateFlowControllerTest extends AbstractFlowControllerTest {
 
@@ -24,7 +24,7 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
 
         // grab the cookie
         Cookie cookie = (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse())
-                .getCookies().get(0);
+                .getCookies()[0];
         String cookieValue = cookie.getValue();
 
         // second request
@@ -65,7 +65,7 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
 
         // grab the cookie
         Cookie cookie = (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse())
-                .getCookies().get(0);
+                .getCookies()[0];
         String cookieValue = cookie.getValue();
 
         // second request

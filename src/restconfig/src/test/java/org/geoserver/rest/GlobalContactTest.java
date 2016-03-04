@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 public class GlobalContactTest extends CatalogRESTTestSupport {
 
     protected GeoServer geoServer;
@@ -88,7 +88,7 @@ public class GlobalContactTest extends CatalogRESTTestSupport {
                 "    'addressElectronicMailAddress':'info@whitehouse.gov'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/settings/contact",
                 inputJson, "text/json");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON("/rest/settings/contact.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
@@ -117,7 +117,7 @@ public class GlobalContactTest extends CatalogRESTTestSupport {
                 + "<contactPosition>Chief Geographer</contactPosition> </contact>";
         MockHttpServletResponse response = putAsServletResponse("/rest/settings/contact", xml,
                 "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         JSON json = getAsJSON("/rest/settings/contact.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);

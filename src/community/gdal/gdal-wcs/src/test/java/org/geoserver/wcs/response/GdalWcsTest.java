@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GdalWcsTest extends WCSKVPTestSupport {
     

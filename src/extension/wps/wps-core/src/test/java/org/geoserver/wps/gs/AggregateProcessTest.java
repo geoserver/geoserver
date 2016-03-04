@@ -10,7 +10,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertFalse;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -299,7 +299,7 @@ public class AggregateProcessTest extends WPSTestSupport {
 
     private JSONObject executeJsonRequest(String wpsRequest) throws Exception {
         MockHttpServletResponse response = postAsServletResponse("wps?", wpsRequest);
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         assertFalse(content.isEmpty());
         Object jsonObject = new JSONParser().parse(content);
         assertNotNull(jsonObject);

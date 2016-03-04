@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -45,7 +45,7 @@ import org.opengis.coverage.grid.GridCoverage;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
 
@@ -213,7 +213,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         long start = System.currentTimeMillis();
         while ((((System.currentTimeMillis() - start) / 1000) < maxWaitSeconds)) {
             MockHttpServletResponse response = getAsServletResponse(statusLocation);
-            String contents = response.getOutputStreamContent();
+            String contents = response.getContentAsString();
             // super weird... and I believe related to the testing harness... just ignoring it
             // for the moment.
             if ("".equals(contents)) {
@@ -253,7 +253,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         long start = System.currentTimeMillis();
         while ((((System.currentTimeMillis() - start) / 1000) < maxWaitSeconds)) {
             MockHttpServletResponse response = getAsServletResponse(statusLocation);
-            String contents = response.getOutputStreamContent();
+            String contents = response.getContentAsString();
             // super weird... and I believe related to the testing harness... just ignoring it
             // for the moment.
             if ("".equals(contents)) {
@@ -280,7 +280,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         long start = System.currentTimeMillis();
         while ((((System.currentTimeMillis() - start) / 1000) < maxWaitSeconds)) {
             MockHttpServletResponse response = getAsServletResponse(statusLocation);
-            String contents = response.getOutputStreamContent();
+            String contents = response.getContentAsString();
             // super weird... and I believe related to the testing harness... just ignoring it
             // for the moment.
             if ("".equals(contents)) {

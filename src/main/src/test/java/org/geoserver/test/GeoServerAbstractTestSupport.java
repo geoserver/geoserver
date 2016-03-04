@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,14 +7,13 @@ package org.geoserver.test;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
-import java.lang.reflect.Field;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,9 +44,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONSerializer;
-
 import org.apache.commons.codec.binary.Base64;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -72,6 +68,12 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.XSD;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.mock.web.MockServletConfig;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -83,13 +85,10 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockHttpSession;
-import com.mockrunner.mock.web.MockServletConfig;
-import com.mockrunner.mock.web.MockServletContext;
-import com.mockrunner.mock.web.MockServletOutputStream;
+import org.springframework.mock.web.MockHttpServletResponse;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONSerializer;
 
 /**
  * Base test class for GeoServer unit tests.
@@ -198,18 +197,21 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
 
         // if we have data, create a mock servlet context and start up the spring configuration
         if (testData.isTestDataAvailable()) {
-            MockServletContext servletContext = new MockServletContext();
-            servletContext.setInitParameter("GEOSERVER_DATA_DIR", testData.getDataDirectoryRoot()
-                    .getPath());
-            servletContext.setInitParameter("serviceStrategy", "PARTIAL-BUFFER2");
-            
-            //set up a fake WEB-INF directory
+            org.springframework.core.io.ResourceLoader rl;
             if (testData.getDataDirectoryRoot().canWrite()) {
                 File webinf = new File(testData.getDataDirectoryRoot(), "WEB-INF");
                 webinf.mkdir();
                 
-                servletContext.setRealPath("WEB-INF", webinf.getAbsolutePath());
+                rl = new DirectoryResourceLoader(testData.getDataDirectoryRoot());
+            } else {
+                rl = new DefaultResourceLoader();
             }
+            MockServletContext servletContext = new MockServletContext(rl);
+            servletContext.setInitParameter("GEOSERVER_DATA_DIR", testData.getDataDirectoryRoot()
+                    .getPath());
+            // we are on servlet 2.4
+            servletContext.setMinorVersion(4);
+            servletContext.setInitParameter("serviceStrategy", "PARTIAL-BUFFER2");            
             
             applicationContext = new GeoServerTestApplicationContext(getSpringContextLocations(),
                     servletContext);
@@ -505,7 +507,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         request.setContextPath("/geoserver");
         request.setRequestURI(ResponseUtils.stripQueryString(ResponseUtils.appendPath(
                     "/geoserver/", path)));
-        request.setRequestURL(ResponseUtils.appendPath("http://localhost/geoserver", path ) );
+        // request.setRequestURL(ResponseUtils.appendPath("http://localhost/geoserver", path ) );
         request.setQueryString(ResponseUtils.getQueryString(path));
         request.setRemoteAddr("127.0.0.1");
         request.setServletPath(ResponseUtils.makePathAbsolute( ResponseUtils.stripRemainingPath(path)) );
@@ -523,8 +525,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         
         kvp(request, path);
 
-        MockHttpSession session = new MockHttpSession();
-        session.setupServletContext(new MockServletContext());
+        MockHttpSession session = new MockHttpSession(new MockServletContext());
         request.setSession(session);
 
         request.setUserPrincipal(null);
@@ -573,7 +574,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      */
     protected InputStream get( String path ) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
-        return new ByteArrayInputStream( response.getOutputStreamContent().getBytes() );
+        return new ByteArrayInputStream( response.getContentAsString().getBytes() );
     }
     
     /**
@@ -601,7 +602,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     protected MockHttpServletResponse getAsServletResponse( String path, String charset ) throws Exception {
         MockHttpServletRequest request = createRequest( path ); 
         request.setMethod( "GET" );
-        request.setBodyContent(new byte[]{});
+        request.setContent(new byte[]{});
         
         return dispatch( request, charset );
     }
@@ -620,10 +621,10 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         MockHttpServletRequest request = createRequest( path ); 
         request.setMethod( "POST" );
         request.setContentType( "application/x-www-form-urlencoded" );
-        request.setBodyContent(new byte[]{});
+        request.setContent(new byte[]{});
         
         MockHttpServletResponse response = dispatch( request );
-        return new ByteArrayInputStream( response.getOutputStreamContent().getBytes() );
+        return new ByteArrayInputStream( response.getContentAsString().getBytes() );
     }
 
     /**
@@ -673,7 +674,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      */
     protected InputStream put(String path, byte[] body, String contentType) throws Exception {
         MockHttpServletResponse response = putAsServletResponse(path, body, contentType);
-        return new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+        return new ByteArrayInputStream(response.getContentAsString().getBytes());
     }
     
     protected MockHttpServletResponse putAsServletResponse(String path) throws Exception {
@@ -691,8 +692,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("PUT");
         request.setContentType(contentType);
-        request.setBodyContent(body);
-        request.setHeader( "Content-type", contentType );
+        request.setContent(body);
+        request.addHeader("Content-type", contentType);
 
         return dispatch(request);
     }
@@ -710,7 +711,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      */
     protected InputStream post( String path , String xml ) throws Exception {
         MockHttpServletResponse response = postAsServletResponse(path, xml);
-        return new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+        return new ByteArrayInputStream(response.getContentAsString().getBytes());
     }
 
     /**
@@ -740,16 +741,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      *
      */
     protected ByteArrayInputStream getBinaryInputStream(MockHttpServletResponse response) {
-        try {
-            MockServletOutputStream os = (MockServletOutputStream) response.getOutputStream();
-            final Field field = os.getClass().getDeclaredField("buffer");
-            field.setAccessible(true);
-            ByteArrayOutputStream bos = (ByteArrayOutputStream) field.get(os);
-            return new ByteArrayInputStream(bos.toByteArray());
-        } catch (Exception e) {
-            throw new RuntimeException("Whoops, did you change the MockRunner version? "
-                    + "If so, you might want to change this method too");
-        }
+        return new ByteArrayInputStream(response.getContentAsByteArray());
     }
             
             
@@ -770,15 +762,15 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      */
     protected InputStream post(String path, String body, String contentType) throws Exception{
         MockHttpServletResponse response = postAsServletResponse(path, body, contentType);
-        return new ByteArrayInputStream(response.getOutputStreamContent().getBytes());
+        return new ByteArrayInputStream(response.getContentAsString().getBytes());
     }
     
     protected MockHttpServletResponse postAsServletResponse(String path, String body, String contentType) throws Exception {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("POST");
         request.setContentType(contentType);
-        request.setBodyContent(body);
-        request.setHeader("Content-type",  contentType );
+        request.setContent(body.getBytes("UTF-8"));
+        request.addHeader("Content-type", contentType);
 
         return dispatch(request);
     }
@@ -826,8 +818,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         return json(response);
     }
     
-    protected JSON json(MockHttpServletResponse response) {
-        String content = response.getOutputStreamContent();
+    protected JSON json(MockHttpServletResponse response) throws UnsupportedEncodingException {
+        String content = response.getContentAsString();
         return JSONSerializer.toJSON(content);
     }
 
@@ -1150,11 +1142,11 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
          for (String key : params.keySet()) {
             Object value = params.get(key);
             if(value instanceof String) {
-                request.setupAddParameter(key, (String) value);
+                request.addParameter(key, (String) value);
             } else {
                 String[] values = (String[]) value;
                 for (String v: values) {
-                    request.setupAddParameter(key, v);
+                    request.addParameter(key, v);
                 }
             }
             
@@ -1189,9 +1181,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         // create an instance of the spring dispatcher
         ServletContext context = applicationContext.getServletContext();
         
-        MockServletConfig config = new MockServletConfig();
-        config.setServletContext(context);
-        config.setServletName("dispatcher");
+        MockServletConfig config = new MockServletConfig(context, "dispatcher");
         
         DispatcherServlet dispatcher = new DispatcherServlet();
         
@@ -1205,14 +1195,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         final DispatcherServlet dispatcher = getDispatcher();
         
         // build a filter chain so that we can test with filters as well
-        MockFilterChain chain = new MockFilterChain();
-        List<Filter> filters = getFilters();
-        if(filters != null) {
-            for (Filter filter : filters) {
-                chain.addFilter(filter);
-            }
-        }
-        chain.setServlet(new HttpServlet() {
+        HttpServlet servlet = new HttpServlet() {
             @Override
             protected void service(HttpServletRequest request, HttpServletResponse response)
                     throws ServletException, IOException {
@@ -1244,7 +1227,14 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                     throw (IOException) new IOException("Failed to handle the request").initCause(e);
                 }
             }
-        });
+        };
+        List<Filter> filterList = getFilters();
+        MockFilterChain chain;
+        if(filterList != null) {
+            chain = new MockFilterChain(servlet, (Filter[]) filterList.toArray(new Filter[filterList.size()]));
+        } else {
+            chain = new MockFilterChain(servlet);
+        }
         
         chain.doFilter(request, response);
         
@@ -1322,7 +1312,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     protected void assertStatusCodeForRequest(int code, String method, String path, String body, String type) throws Exception {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod(method);
-        request.setBodyContent(body);
+        request.setContent(body.getBytes("UTF-8"));
         request.setContentType(type);
 
         CodeExpectingHttpServletResponse response = new CodeExpectingHttpServletResponse(new MockHttpServletResponse());
@@ -1333,27 +1323,35 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     public static class GeoServerMockHttpServletRequest extends MockHttpServletRequest {
         private byte[] myBody;
         
+        public GeoServerMockHttpServletRequest() {
+            super();
+        }
+
+        public GeoServerMockHttpServletRequest(String method, String requestURI) {
+            super(method, requestURI);
+        }
+
         @Override
-        public void setBodyContent(byte[] body) {
+        public void setContent(byte[] body) {
             myBody = body;
         }
         
-        @Override
-        public void setBodyContent(String body) {
-            myBody = body.getBytes();
-        }
+//        @Override
+//        public void setContent(String body) {
+//            myBody = body.getBytes();
+//        }
         
         public ServletInputStream getInputStream(){
-            return new GeoServerMockServletInputStream(myBody);
+            return new GeoServerDelegatingServletInputStream(myBody);
         }
     }
 
-    private static class GeoServerMockServletInputStream extends ServletInputStream {
+    private static class GeoServerDelegatingServletInputStream extends ServletInputStream {
         private byte[] myBody;
         private int myOffset = 0;
         private int myMark = -1;
 
-        public GeoServerMockServletInputStream(byte[] body){
+        public GeoServerDelegatingServletInputStream(byte[] body){
             myBody = body;
         }
         

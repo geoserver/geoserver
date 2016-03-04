@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class KMLWFSTest extends WFSTestSupport {
     
@@ -56,9 +56,9 @@ public class KMLWFSTest extends WFSTestSupport {
         MockHttpServletResponse response = getAsServletResponse("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName="
                 + getLayerId(MockData.AGGREGATEGEOFEATURE) + "&outputFormat="
                 + KMLMapOutputFormat.MIME_TYPE.replace("+", "%2B"));
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         assertEquals("inline; filename=" + MockData.AGGREGATEGEOFEATURE.getLocalPart() + ".kml", response.getHeader("Content-Disposition"));
-        Document doc = dom(new ByteArrayInputStream( response.getOutputStreamContent().getBytes()));
+        Document doc = dom(new ByteArrayInputStream( response.getContentAsString().getBytes()));
         checkAggregateGeoFeatureKmlContents(doc);
     }
     

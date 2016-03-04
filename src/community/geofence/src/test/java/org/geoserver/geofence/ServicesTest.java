@@ -3,7 +3,7 @@ package org.geoserver.geofence;
 import java.util.Collections;
 import java.util.List;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
@@ -60,19 +60,19 @@ public class ServicesTest extends GeofenceBaseTest
 
         // try a getmap/reflector on a sf layer, should work
         MockHttpServletResponse response = getAsServletResponse("wms/reflect?layers=" + getLayerId(MockData.BASIC_POLYGONS));
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
 
         // try a getmap/reflector on a sf layer, should work
         response = getAsServletResponse("wms/reflect?layers=" + getLayerId(MockData.GENERICENTITY));
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
 
         // try a getfeature on a sf layer
         response = getAsServletResponse("wfs?service=wfs&version=1.0.0&request=getfeature&typeName=" + getLayerId(MockData.GENERICENTITY));
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         assertEquals("text/xml", response.getContentType());
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         LOGGER.info("Content: " + content);
 //        assertTrue(content.contains("Unknown namespace [sf]"));
         assertTrue(content.contains("Feature type sf:GenericEntity unknown"));

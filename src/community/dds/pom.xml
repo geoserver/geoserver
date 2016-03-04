@@ -80,9 +80,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.mockrunner</groupId>
-			<artifactId>mockrunner</artifactId>
-			<version>0.3.1</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GlobalSettingsTest extends CatalogRESTTestSupport {
 
@@ -94,7 +94,7 @@ public class GlobalSettingsTest extends CatalogRESTTestSupport {
                 + "'globalServices': 'true'," + "'xmlPostRequestLogBufferSize': '2048'" + "}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/settings/", inputJson,
                 "text/json");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         JSON json = getAsJSON("/rest/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
@@ -146,7 +146,7 @@ public class GlobalSettingsTest extends CatalogRESTTestSupport {
                 + "<xmlPostRequestLogBufferSize>2048</xmlPostRequestLogBufferSize>" + "</global>";
 
         MockHttpServletResponse response = putAsServletResponse("/rest/settings/", xml, "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM("/rest/settings.xml");
         assertEquals("global", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("false", "/global/globalServices", dom);

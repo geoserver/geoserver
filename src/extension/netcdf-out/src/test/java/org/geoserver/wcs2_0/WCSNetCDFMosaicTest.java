@@ -59,7 +59,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 @TestSetup(run=TestSetupFrequency.ONCE)
 public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {

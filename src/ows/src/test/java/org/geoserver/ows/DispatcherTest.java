@@ -6,6 +6,7 @@
 package org.geoserver.ows;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,9 +35,9 @@ import org.geotools.util.Version;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockServletInputStream;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.DelegatingServletInputStream;
 
 
 public class DispatcherTest extends TestCase {
@@ -107,7 +108,7 @@ public class DispatcherTest extends TestCase {
 
         String body = "<Hello service=\"hello\"/>";
 
-        MockServletInputStream input = new MockServletInputStream(body.getBytes());
+        DelegatingServletInputStream input = new DelegatingServletInputStream(new ByteArrayInputStream(body.getBytes()));
 
         Dispatcher dispatcher = new Dispatcher();
 
@@ -131,9 +132,9 @@ public class DispatcherTest extends TestCase {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setContextPath("/geoserver");
 
-        request.setupAddParameter("service", "hello");
-        request.setupAddParameter("request", "Hello");
-        request.setupAddParameter("message", "Hello world!");
+        request.addParameter("service", "hello");
+        request.addParameter("request", "Hello");
+        request.addParameter("message", "Hello world!");
 
         request.setQueryString("service=hello&request=hello&message=Hello World!");
 
@@ -208,10 +209,10 @@ public class DispatcherTest extends TestCase {
 
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        request.setupAddParameter("service", "hello");
-        request.setupAddParameter("request", "Hello");
-        request.setupAddParameter("version", "1.0.0");
-        request.setupAddParameter("message", "Hello world!");
+        request.addParameter("service", "hello");
+        request.addParameter("request", "Hello");
+        request.addParameter("version", "1.0.0");
+        request.addParameter("message", "Hello world!");
 
         request.setRequestURI(
             "http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
@@ -229,7 +230,7 @@ public class DispatcherTest extends TestCase {
         });
 
         dispatcher.handleRequest(request, response);
-        assertEquals("Hello world!", response.getOutputStreamContent());
+        assertEquals("Hello world!", response.getContentAsString());
     }
 
     public void testHelloOperationPost() throws Exception {
@@ -255,7 +256,7 @@ public class DispatcherTest extends TestCase {
                     this.encoding = encoding;
                 }
 
-                public ServletInputStream getInputStream() throws IOException{
+                public ServletInputStream getInputStream() {
                     final ServletInputStream stream = super.getInputStream();
                     return new ServletInputStream(){
                         public int read() throws IOException{
@@ -275,12 +276,12 @@ public class DispatcherTest extends TestCase {
         request.setMethod("POST");
         request.setRequestURI("http://localhost/geoserver/ows");
         request.setContentType("application/xml");
-        request.setBodyContent(body);
+        request.setContent(body.getBytes("UTF-8"));
 
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         dispatcher.handleRequest(request, response);
-        assertEquals("Hello world!", response.getOutputStreamContent());
+        assertEquals("Hello world!", response.getContentAsString());
     }
     
     /**
@@ -310,7 +311,7 @@ public class DispatcherTest extends TestCase {
                     this.encoding = encoding;
                 }
                 
-                public ServletInputStream getInputStream() throws IOException{
+                public ServletInputStream getInputStream() {
                     final ServletInputStream stream = super.getInputStream();
                     return new ServletInputStream(){
                         public int read() throws IOException{
@@ -330,14 +331,14 @@ public class DispatcherTest extends TestCase {
         request.setMethod("POST");
         request.setRequestURI("http://localhost/geoserver/ows");
         request.setContentType("application/xml");
-        request.setBodyContent(body);
+        request.setContent(body.getBytes("UTF-8"));
 
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        request.setupAddParameter("strict", "true");
+        request.addParameter("strict", "true");
 
         dispatcher.handleRequest(request, response);
-        assertEquals("Hello world!", response.getOutputStreamContent());
+        assertEquals("Hello world!", response.getContentAsString());
     }
     
     public void testHttpErrorCodeException() throws Exception {
@@ -379,9 +380,9 @@ public class DispatcherTest extends TestCase {
 
         CodeExpectingHttpServletResponse response = new CodeExpectingHttpServletResponse(new MockHttpServletResponse());
 
-        request.setupAddParameter("service", "hello");
-		request.setupAddParameter("request", requestType);
-        request.setupAddParameter("version", "1.0.0");
+        request.addParameter("service", "hello");
+		request.addParameter("request", requestType);
+        request.addParameter("version", "1.0.0");
 
         request.setRequestURI(
             "http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
@@ -468,17 +469,17 @@ public class DispatcherTest extends TestCase {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         request.setContentType("application/xml");
-        request.setBodyContent("<h:Hello service='hello' message='Hello world!' xmlns:h='http://hello.org' />");
+        request.setContent("<h:Hello service='hello' message='Hello world!' xmlns:h='http://hello.org' />".getBytes("UTF-8"));
         request.setRequestURI("http://localhost/geoserver/hello");
         
         dispatcher.handleRequest(request, response);
-        assertEquals("Hello world!", response.getOutputStreamContent());
+        assertEquals("Hello world!", response.getContentAsString());
 
-        request.setBodyContent("<h:Hello service='hello' message='Hello world!' xmlns:h='http://hello.org/v2' />");
+        request.setContent("<h:Hello service='hello' message='Hello world!' xmlns:h='http://hello.org/v2' />".getBytes("UTF-8"));
 
         response = new MockHttpServletResponse();
         dispatcher.handleRequest(request, response);
-        assertEquals("Hello world!:V2", response.getOutputStreamContent());
+        assertEquals("Hello world!:V2", response.getContentAsString());
     }
     
     public MockHttpServletRequest setupRequest() {
@@ -504,10 +505,10 @@ public class DispatcherTest extends TestCase {
         request.setContextPath("/geoserver");
         request.setMethod("GET");
         
-        request.setupAddParameter("service", "hello");
-        request.setupAddParameter("request", "Hello");
-        request.setupAddParameter("version", "1.0.0");
-        request.setupAddParameter("message", "Hello world!");
+        request.addParameter("service", "hello");
+        request.addParameter("request", "Hello");
+        request.addParameter("version", "1.0.0");
+        request.addParameter("message", "Hello world!");
     
         request.setRequestURI(
             "http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
@@ -529,7 +530,7 @@ public class DispatcherTest extends TestCase {
         dispatcher.callbacks.add(callback);
 
         dispatcher.handleRequest(request, response);
-        assertEquals("Hello world!", response.getOutputStreamContent());
+        assertEquals("Hello world!", response.getContentAsString());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback.dispatcherStatus.get());
     }
     
@@ -559,7 +560,7 @@ public class DispatcherTest extends TestCase {
         
         dispatcher.handleRequest(request, response);
         
-        assertTrue(response.getOutputStreamContent().contains("ows:ExceptionReport"));
+        assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -589,7 +590,7 @@ public class DispatcherTest extends TestCase {
         
         dispatcher.handleRequest(request, response);
         
-        assertTrue(response.getOutputStreamContent().contains("ows:ExceptionReport"));
+        assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -619,7 +620,7 @@ public class DispatcherTest extends TestCase {
         
         dispatcher.handleRequest(request, response);
         
-        assertTrue(response.getOutputStreamContent().contains("ows:ExceptionReport"));
+        assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -649,7 +650,7 @@ public class DispatcherTest extends TestCase {
         
         dispatcher.handleRequest(request, response);
         
-        assertTrue(response.getOutputStreamContent().contains("ows:ExceptionReport"));
+        assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -679,7 +680,7 @@ public class DispatcherTest extends TestCase {
         
         dispatcher.handleRequest(request, response);
         
-        assertTrue(response.getOutputStreamContent().contains("ows:ExceptionReport"));
+        assertTrue(response.getContentAsString().contains("ows:ExceptionReport"));
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -715,7 +716,7 @@ public class DispatcherTest extends TestCase {
             dispatcher.callbacks.add(callback2);
             
             dispatcher.handleRequest(request, response);
-            assertEquals("Hello world!", response.getOutputStreamContent());
+            assertEquals("Hello world!", response.getContentAsString());
             assertTrue(firedCallback.get());
             assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
             assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
@@ -819,7 +820,7 @@ public class DispatcherTest extends TestCase {
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         request.setContentType("application/xml");
-        request.setBodyContent("<h:Hello xmlns:h='http:/hello.org' />");
+        request.setContent("<h:Hello xmlns:h='http:/hello.org' />".getBytes("UTF-8"));
         request.setRequestURI("http://localhost/geoserver/hello");
 
         response = new MockHttpServletResponse();
@@ -829,7 +830,7 @@ public class DispatcherTest extends TestCase {
         // Service exception, null is returned.
         assertNull(mov);
         // Check the response
-        assertTrue(response.getOutputStreamContent().contains("Could not parse the XML"));
+        assertTrue(response.getContentAsString().contains("Could not parse the XML"));
     }
 
     public void testDispatchKVPException() throws Exception {
@@ -865,7 +866,7 @@ public class DispatcherTest extends TestCase {
         request.setMethod("GET");
 
         // request.setupAddParameter("service", "hello");
-        request.setupAddParameter("request", "Hello");
+        request.addParameter("request", "Hello");
         // request.setupAddParameter("message", "Hello world!");
         request.setRequestURI("http://localhost/geoserver/hello");
 
@@ -880,7 +881,7 @@ public class DispatcherTest extends TestCase {
         // Service exception, null is returned.
         assertNull(mov);
         // Check the response
-        assertTrue(response.getOutputStreamContent().contains("Could not parse the KVP"));
+        assertTrue(response.getContentAsString().contains("Could not parse the KVP"));
     }
 
     public void testMultiPartFormUpload() throws Exception {
@@ -902,7 +903,7 @@ public class DispatcherTest extends TestCase {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         body.writeTo(bout);
 
-        request.setBodyContent(bout.toByteArray());
+        request.setContent(bout.toByteArray());
 
         MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -911,7 +912,7 @@ public class DispatcherTest extends TestCase {
         Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
         dispatcher.handleRequestInternal(request, response);
 
-        assertEquals("Hello world!", response.getOutputStreamContent());
+        assertEquals("Hello world!", response.getContentAsString());
     }
 
     public void testMultiPartFormUploadWithBodyField() throws Exception {
@@ -933,7 +934,7 @@ public class DispatcherTest extends TestCase {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         body.writeTo(bout);
 
-        request.setBodyContent(bout.toByteArray());
+        request.setContent(bout.toByteArray());
 
         MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -942,6 +943,6 @@ public class DispatcherTest extends TestCase {
         Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
         dispatcher.handleRequestInternal(request, response);
 
-        assertEquals("Hello world!", response.getOutputStreamContent());
+        assertEquals("Hello world!", response.getContentAsString());
     }
 }

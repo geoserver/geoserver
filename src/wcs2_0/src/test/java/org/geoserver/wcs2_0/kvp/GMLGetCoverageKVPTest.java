@@ -13,7 +13,7 @@ import org.geotools.util.NumberRange;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 /**
  * Testing {@link GMLCoverageResponseDelegate}
  * 
@@ -31,7 +31,7 @@ public class GMLGetCoverageKVPTest extends WCSTestSupport {
         "&coverageId=wcs__BlueMarble&format=application%2Fgml%2Bxml");
 
         assertEquals("application/gml+xml", response.getContentType());
-        Document dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));     
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));     
     }
 
     @Test
@@ -63,7 +63,7 @@ public class GMLGetCoverageKVPTest extends WCSTestSupport {
 
         MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
                 + "&coverageId=wcs__BlueMarble&format=application%2Fgml%2Bxml");
-        Document dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         String name = xpath.evaluate("//swe:field/@name", dom);
         assertEquals("Band1", name);
         String interval = xpath.evaluate("//swe:interval", dom);

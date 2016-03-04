@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,14 +8,15 @@ package org.geoserver.printing;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.InputStream;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
-
+import org.apache.commons.io.FileUtils;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockServletContext;
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 
 
 public class SmokeTest extends GeoServerSystemTestSupport
@@ -24,7 +25,11 @@ public class SmokeTest extends GeoServerSystemTestSupport
     @Test
     public void testServiceExists() throws Exception
     {
-        ((MockServletContext)applicationContext.getServletContext()).setRealPath("test.yaml", new File(getClass().getResource("/test.yaml").toURI()).getAbsolutePath());
+        // place the configuration file in the data dir (whicih is also used as the servlet context lookup)
+        GeoServerDataDirectory dd = getDataDirectory();
+        try(InputStream is = getClass().getResourceAsStream("/test.yaml")) {
+            FileUtils.copyInputStreamToFile(is, new File(dd.root(), "test.yaml"));
+        }
         JSON json = getAsJSON("/pdf/info.json?app=test");
 
         assertTrue(json instanceof JSONObject);

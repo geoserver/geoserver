@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,7 +20,7 @@ import org.geoserver.wms.wms_1_1_1.GetFeatureInfoTest;
 import org.geotools.util.NumberRange;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     
@@ -47,7 +47,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertTrue("UTF-8".equals(response.getCharacterEncoding()));
         
         // Content
-        String result = response.getOutputStreamContent();
+        String result = response.getContentAsString();
 
         assertNotNull(result);
 
@@ -88,7 +88,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertTrue("UTF-8".equals(response.getCharacterEncoding()));
         
         // Content
-        String result = response.getOutputStreamContent();
+        String result = response.getContentAsString();
         // System.out.println(result);
         assertNotNull(result);
         
@@ -127,7 +127,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertTrue("UTF-8".equals(response.getCharacterEncoding()));
         
         // Content
-        String result = response.getOutputStreamContent();
+        String result = response.getContentAsString();
 
         assertNotNull(result);
 
@@ -157,7 +157,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertTrue("UTF-8".equals(response.getCharacterEncoding()));
         
         // Content
-        String result = response.getOutputStreamContent();
+        String result = response.getContentAsString();
 
         assertNotNull(result);
 

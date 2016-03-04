@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,7 +18,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WMSSettingsTest extends CatalogRESTTestSupport {
     
@@ -56,7 +56,7 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
         String json = "{'wms': {'id':'wms','enabled':'false','name':'WMS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings/",
                 json, "text/json");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON("/rest/services/wms/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
@@ -76,7 +76,7 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
                 + "</wms>";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings", xml,
                 "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         Document dom = getAsDOM("/rest/services/wms/settings.xml");
         assertXpathEvaluatesTo("false", "/wms/enabled", dom);
@@ -86,7 +86,7 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
 
     @Test
     public void testDelete() throws Exception {
-        assertEquals(405, deleteAsServletResponse("/rest/services/wms/settings").getStatusCode());
+        assertEquals(405, deleteAsServletResponse("/rest/services/wms/settings").getStatus());
     }
     
 }

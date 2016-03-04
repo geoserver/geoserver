@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,7 +21,7 @@ import org.geoserver.script.ScriptIntTestSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class ScriptFinderTest extends ScriptIntTestSupport {
 
@@ -40,14 +40,14 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
 
     public void testGetApp() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
         File dir = scriptMgr.script("apps/app1").dir();
         FileUtils.writeStringToFile(new File(dir, "main.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
-        assertEquals(200, resp.getStatusCode());
-        assertEquals("print 'foo'", resp.getOutputStreamContent());
+        assertEquals(200, resp.getStatus());
+        assertEquals("print 'foo'", resp.getContentAsString());
     }
 
     public void testPutApp() throws Exception {
@@ -56,7 +56,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         String body = "print 'hello';";
         MockHttpServletResponse resp = putAsServletResponse("/rest/scripts/apps/app1/main.py",
                 body, "text/plain");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
 
         assertNotNull(scriptMgr.findScriptFile("apps/app1/main.py"));
     }
@@ -105,20 +105,20 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
 
     public void testDeleteApp() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
         File dir = scriptMgr.script("apps/app1").dir();
         FileUtils.writeStringToFile(new File(dir, "main.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
-        assertEquals(200, resp.getStatusCode());
-        assertEquals("print 'foo'", resp.getOutputStreamContent());
+        assertEquals(200, resp.getStatus());
+        assertEquals("print 'foo'", resp.getContentAsString());
 
         resp = deleteAsServletResponse("/rest/scripts/apps/app1/main.py");
-        assertEquals(200, resp.getStatusCode());
+        assertEquals(200, resp.getStatus());
 
         resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
         assertFalse(dir.exists());
     }
 
@@ -126,14 +126,14 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
 
     public void testGetWfsTx() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
         File dir = scriptMgr.script("wfs/tx").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
-        assertEquals(200, resp.getStatusCode());
-        assertEquals("print 'foo'", resp.getOutputStreamContent());
+        assertEquals(200, resp.getStatus());
+        assertEquals("print 'foo'", resp.getContentAsString());
     }
 
     public void testPutWfsTx() throws Exception {
@@ -142,7 +142,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         String body = "print 'hello';";
         MockHttpServletResponse resp = putAsServletResponse("/rest/scripts/wfs/tx/bar.py", body,
                 "text/plain");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
 
         assertNotNull(scriptMgr.findScriptFile("wfs/tx/bar.py"));
     }
@@ -191,34 +191,34 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
 
     public void testDeleteWfsTx() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
         File dir = scriptMgr.script("wfs/tx").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
-        assertEquals(200, resp.getStatusCode());
-        assertEquals("print 'foo'", resp.getOutputStreamContent());
+        assertEquals(200, resp.getStatus());
+        assertEquals("print 'foo'", resp.getContentAsString());
 
         resp = deleteAsServletResponse("/rest/scripts/wfs/tx/foo.py");
-        assertEquals(200, resp.getStatusCode());
+        assertEquals(200, resp.getStatus());
 
         resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
     }
 
     // Function
 
     public void testGetFunction() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/function/foo.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
         File dir = scriptMgr.script("function").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/function/foo.py");
-        assertEquals(200, resp.getStatusCode());
-        assertEquals("print 'foo'", resp.getOutputStreamContent());
+        assertEquals(200, resp.getStatus());
+        assertEquals("print 'foo'", resp.getContentAsString());
     }
 
     public void testPutFunction() throws Exception {
@@ -227,7 +227,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         String body = "print 'hello';";
         MockHttpServletResponse resp = putAsServletResponse("/rest/scripts/function/bar.py", body,
                 "text/plain");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
 
         assertNotNull(scriptMgr.findScriptFile("function/bar.py"));
     }
@@ -276,47 +276,47 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
 
     public void testDeleteFunction() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/function/foo.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
         File dir = scriptMgr.script("function").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/function/foo.py");
-        assertEquals(200, resp.getStatusCode());
-        assertEquals("print 'foo'", resp.getOutputStreamContent());
+        assertEquals(200, resp.getStatus());
+        assertEquals("print 'foo'", resp.getContentAsString());
 
         resp = deleteAsServletResponse("/rest/scripts/function/foo.py");
-        assertEquals(200, resp.getStatusCode());
+        assertEquals(200, resp.getStatus());
 
         resp = getAsServletResponse("/rest/scripts/function/foo.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
     }
 
     // WPS
 
     public void testGetWps() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/foo.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
         File dir = scriptMgr.script("wps").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/wps/foo.py");
-        assertEquals(200, resp.getStatusCode());
-        assertEquals("print 'foo'", resp.getOutputStreamContent());
+        assertEquals(200, resp.getStatus());
+        assertEquals("print 'foo'", resp.getContentAsString());
     }
 
     public void testGetWpsWithNamespace() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/foo.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
         File dir = scriptMgr.script("wps").dir();
         File nsDir = new File(dir, "bar");
         FileUtils.writeStringToFile(new File(nsDir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/wps/bar:foo.py");
-        assertEquals(200, resp.getStatusCode());
-        assertEquals("print 'foo'", resp.getOutputStreamContent());
+        assertEquals(200, resp.getStatus());
+        assertEquals("print 'foo'", resp.getContentAsString());
     }
     
     public void testPutWps() throws Exception {
@@ -325,7 +325,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         String body = "print 'hello';";
         MockHttpServletResponse resp = putAsServletResponse("/rest/scripts/wps/bar.py", body,
                 "text/plain");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
 
         assertNotNull(scriptMgr.findScriptFile("wps/bar.py"));
     }
@@ -336,7 +336,7 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         String body = "print 'hello';";
         MockHttpServletResponse resp = putAsServletResponse("/rest/scripts/wps/foo:bar.py", body,
                 "text/plain");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
 
         assertNotNull(scriptMgr.findScriptFile("wps/foo/bar.py"));
     }
@@ -389,39 +389,39 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
 
     public void testDeleteWps() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/foo.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
         File dir = scriptMgr.script("wps").dir();
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/wps/foo.py");
-        assertEquals(200, resp.getStatusCode());
-        assertEquals("print 'foo'", resp.getOutputStreamContent());
+        assertEquals(200, resp.getStatus());
+        assertEquals("print 'foo'", resp.getContentAsString());
 
         resp = deleteAsServletResponse("/rest/scripts/wps/foo.py");
-        assertEquals(200, resp.getStatusCode());
+        assertEquals(200, resp.getStatus());
 
         resp = getAsServletResponse("/rest/scripts/wps/foo.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
     }
     
     public void testDeleteWpsWithNamespace() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/bar:foo.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
         File dir = scriptMgr.script("wps").dir();
         File nsDir = new File(dir, "bar");
         FileUtils.writeStringToFile(new File(nsDir, "foo.py"), "print 'foo'");
 
         resp = getAsServletResponse("/rest/scripts/wps/bar:foo.py");
-        assertEquals(200, resp.getStatusCode());
-        assertEquals("print 'foo'", resp.getOutputStreamContent());
+        assertEquals(200, resp.getStatus());
+        assertEquals("print 'foo'", resp.getContentAsString());
 
         resp = deleteAsServletResponse("/rest/scripts/wps/bar:foo.py");
-        assertEquals(200, resp.getStatusCode());
+        assertEquals(200, resp.getStatus());
 
         resp = getAsServletResponse("/rest/scripts/wps/bar:foo.py");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
     }
 }

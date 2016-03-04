@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.io.WKTReader;
 

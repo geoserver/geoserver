@@ -34,7 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * 
@@ -152,7 +152,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         Assert.assertEquals("http://localhost:8080/geoserver/rest/resource/mydir2", 
                 response.getHeader("Resource-Parent"));
         Assert.assertEquals("resource", response.getHeader("Resource-Type"));
-        Assert.assertEquals("image/png", response.getHeader("Content-Type"));
+        assertContentType("image/png", response);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
                 "/ResourceDirectory/children/child/atom:link/@href", doc);
 
         MockHttpServletResponse response = getAsServletResponse("/rest/resource/po%c3%abzie/caf%c3%a9?format=xml");
-        Assert.assertEquals(200, response.getStatusCode());
+        Assert.assertEquals(200, response.getStatus());
         Assert.assertEquals("resource", response.getHeader("Resource-Type"));
         Assert.assertEquals("http://localhost:8080/geoserver/rest/resource/po%C3%ABzie", 
                 response.getHeader("Resource-Parent"));
@@ -235,7 +235,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         Assert.assertEquals("http://localhost:8080/geoserver/rest/resource/",
                 response.getHeader("Resource-Parent"));
         Assert.assertEquals("directory", response.getHeader("Resource-Type"));
-        Assert.assertEquals("application/xml", response.getHeader("Content-Type"));
+        assertContentType("application/xml", response);
     }
     
     @Test
@@ -318,31 +318,31 @@ public class ResourceTest extends GeoServerSystemTestSupport {
                 
         //get resource that doesn't exist
         response = getAsServletResponse("/rest/resource/doesntexist");
-        Assert.assertEquals(404, response.getStatusCode());
+        Assert.assertEquals(404, response.getStatus());
         
         //delete resource that doesn't exist
         response = deleteAsServletResponse("/rest/resource/doesntexist");
-        Assert.assertEquals(404, response.getStatusCode());
+        Assert.assertEquals(404, response.getStatus());
         
         //upload to dir
         response = putAsServletResponse("/rest/resource/mydir");
-        Assert.assertEquals(405, response.getStatusCode());
+        Assert.assertEquals(405, response.getStatus());
 
         //copy dir
         response = putAsServletResponse("/rest/resource/mynewdir?operation=copy", "/mydir", "text/plain");
-        Assert.assertEquals(405, response.getStatusCode());
+        Assert.assertEquals(405, response.getStatus());
 
         //copy resource that doesn't exist
         response = putAsServletResponse("/rest/resource/mynewres?operation=copy", "/doesntexist", "text/plain");
-        Assert.assertEquals(404, response.getStatusCode());
+        Assert.assertEquals(404, response.getStatus());
 
         //move resource that doesn't exist
         response = putAsServletResponse("/rest/resource/mynewres?operation=move", "/doesntexist", "text/plain");
-        Assert.assertEquals(404, response.getStatusCode());
+        Assert.assertEquals(404, response.getStatus());
         
         //post
         response = postAsServletResponse("/rest/resource/mydir", "blabla");
-        Assert.assertEquals(405, response.getStatusCode());
+        Assert.assertEquals(405, response.getStatus());
         
     }
 

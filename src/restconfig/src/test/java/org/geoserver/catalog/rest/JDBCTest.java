@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
@@ -106,7 +106,7 @@ public class JDBCTest extends CatalogRESTTestSupport {
             "</dataStore>";
         MockHttpServletResponse resp = 
             postAsServletResponse("/rest/workspaces/gs/datastores", xml );
-        assertEquals(resp.getOutputStreamContent(), 201, resp.getStatusCode() );
+        assertEquals(resp.getContentAsString(), 201, resp.getStatus() );
         
         assertNotNull( catalog.getDataStoreByName( "gs", "acme") );
     }
@@ -124,7 +124,7 @@ public class JDBCTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse resp = 
             postAsServletResponse("/rest/workspaces/gs/datastores/acme/featuretypes", xml );
-        assertEquals( 201, resp.getStatusCode() );
+        assertEquals( 201, resp.getStatus() );
         
         assertNotNull( catalog.getFeatureTypeByDataStore(ds, "widgets"));
         
@@ -174,7 +174,7 @@ public class JDBCTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse resp = 
             postAsServletResponse("/rest/workspaces/gs/datastores/acme/featuretypes", xml );
-        assertEquals( 201, resp.getStatusCode() );
+        assertEquals( 201, resp.getStatus() );
         
         assertNotNull( catalog.getFeatureTypeByDataStore(dsinfo, "widgetsNG"));
         
@@ -218,7 +218,7 @@ public class JDBCTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse resp = 
             postAsServletResponse("/rest/workspaces/gs/datastores/acme/featuretypes", xml );
-        assertEquals( 201, resp.getStatusCode() );
+        assertEquals( 201, resp.getStatus() );
         
         assertNotNull( catalog.getFeatureTypeByDataStore(ds, "sqlview"));
         assertNotNull( catalog.getFeatureTypeByName("gs:sqlview"));
@@ -243,8 +243,8 @@ public class JDBCTest extends CatalogRESTTestSupport {
                     dataToUpload, "application/zip");
 
         // Upload data, will be imported into DB table named "pds"
-        assertEquals("Upload into database datastore failed: " + resp.getOutputStreamContent(),
-                201, resp.getStatusCode());
+        assertEquals("Upload into database datastore failed: " + resp.getContentAsString(),
+                201, resp.getStatus());
         // Now we expect one featuretype since we just imported it
         assertXpathEvaluatesTo("1", "count(/featureTypes/featureType)",
                 getAsDOM("/rest/workspaces/gs/datastores/acme/featuretypes.xml"));
@@ -252,15 +252,15 @@ public class JDBCTest extends CatalogRESTTestSupport {
         // Rename the published resource - note the underlying DB table is still named "pds"
         resp = putAsServletResponse("/rest/workspaces/gs/datastores/acme/featuretypes/pds.xml",
                 "<featureType><name>pds_alt</name></featureType>", "application/xml");
-        assertEquals("Couldn't update featuretype settings: " + resp.getOutputStreamContent(),
-                200, resp.getStatusCode());
+        assertEquals("Couldn't update featuretype settings: " + resp.getContentAsString(),
+                200, resp.getStatus());
 
         // Upload data to be imported into "pds" again. Should simply append to
         // the table and not change the resource configuration
         resp = putAsServletResponse("/rest/workspaces/gs/datastores/acme/file.properties",
                 dataToUpload, "application/zip");
-        assertEquals("Second upload to database datastore failed: " + resp.getOutputStreamContent(),
-                201, resp.getStatusCode());
+        assertEquals("Second upload to database datastore failed: " + resp.getContentAsString(),
+                201, resp.getStatus());
 
         // We expect one featuretype again since we should have appended data to the existing
         // featuretype this time

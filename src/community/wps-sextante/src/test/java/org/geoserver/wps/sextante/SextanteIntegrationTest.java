@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,7 +10,7 @@ import static junit.framework.Assert.assertEquals;
 import org.geoserver.wps.WPSTestSupport;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class SextanteIntegrationTest extends WPSTestSupport {
 

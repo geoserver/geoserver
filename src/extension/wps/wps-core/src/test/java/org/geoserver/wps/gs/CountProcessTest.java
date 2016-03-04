@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,7 +11,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wps.WPSTestSupport;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CountProcessTest extends WPSTestSupport {
 
@@ -35,7 +35,7 @@ public class CountProcessTest extends WPSTestSupport {
 
         MockHttpServletResponse resp = postAsServletResponse(root(), xml);
         assertEquals("text/plain", resp.getContentType());
-        assertEquals("5", resp.getOutputStreamContent());
+        assertEquals("5", resp.getContentAsString());
         resp = postAsServletResponse(root() + "content-disposition=attachment",xml);
         assertEquals("attachment; filename=result.txt",resp.getHeader("Content-Disposition"));
         

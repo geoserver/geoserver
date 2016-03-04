@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,7 +13,7 @@ import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.script.ScriptManager;
 import org.geoserver.test.GeoServerTestSupport;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class PyAppTest extends ScriptIntTestSupport {
 
@@ -31,8 +31,8 @@ public class PyAppTest extends ScriptIntTestSupport {
             getClass().getResource("main-helloWorld.py"), new File(app, "main.py"));
 
         MockHttpServletResponse resp = getAsServletResponse("/script/apps/foo/main.py");
-        assertEquals(200, resp.getStatusCode());
-        assertEquals("Hello World!", resp.getOutputStreamContent());
+        assertEquals(200, resp.getStatus());
+        assertEquals("Hello World!", resp.getContentAsString());
     }
 
     public void testContentType() throws Exception {
@@ -40,7 +40,7 @@ public class PyAppTest extends ScriptIntTestSupport {
             getClass().getResource("main-helloWorldJSON.py"), new File(app, "main.py"));
 
         MockHttpServletResponse resp = getAsServletResponse("/script/apps/foo/main.py");
-        assertEquals(200, resp.getStatusCode());
+        assertEquals(200, resp.getStatus());
         assertEquals("application/json", resp.getContentType());
     }
 }

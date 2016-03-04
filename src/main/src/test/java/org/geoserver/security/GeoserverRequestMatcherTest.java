@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 /**
  * @author christian

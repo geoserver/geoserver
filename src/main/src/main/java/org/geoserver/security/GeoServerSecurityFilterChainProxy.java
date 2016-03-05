@@ -29,6 +29,7 @@ import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerSecurityContextPersistenceFilter;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -38,7 +39,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-public class GeoServerSecurityFilterChainProxy implements SecurityManagerListener, ApplicationContextAware, Filter {
+public class GeoServerSecurityFilterChainProxy implements SecurityManagerListener, ApplicationContextAware, InitializingBean, Filter {
     
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 

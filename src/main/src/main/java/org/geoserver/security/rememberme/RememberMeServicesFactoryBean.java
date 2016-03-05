@@ -28,6 +28,7 @@ import org.springframework.security.web.authentication.rememberme.AbstractRememb
  */
 public class RememberMeServicesFactoryBean implements FactoryBean<RememberMeServices> {
 
+    static final String PARAMETER_NAME = "_spring_security_remember_me";
     GeoServerSecurityManager securityManager;
 
     public RememberMeServicesFactoryBean(GeoServerSecurityManager securityManager) {
@@ -96,6 +97,9 @@ public class RememberMeServicesFactoryBean implements FactoryBean<RememberMeServ
                 Class<RememberMeServices> rmsClass = (Class<RememberMeServices>) Class.forName(rmsConfig.getClassName());
                 rms = rmsClass.getConstructor(String.class, UserDetailsService.class)
                     .newInstance(rmsConfig.getKey(), new RememberMeUserDetailsService(securityManager));
+                if (rms instanceof AbstractRememberMeServices) {
+                    ((AbstractRememberMeServices)rms).setParameter(PARAMETER_NAME);
+                }
             }
             catch(Exception e) {
                 throw new RuntimeException(e);

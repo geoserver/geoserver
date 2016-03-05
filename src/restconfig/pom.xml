@@ -93,6 +93,11 @@
      <artifactId>commons-lang</artifactId>
    </dependency>
    <dependency>
+     <groupId>javax.servlet</groupId>
+     <artifactId>javax.servlet-api</artifactId>
+     <scope>provided</scope>
+   </dependency>
+   <dependency>
     <groupId>org.geotools</groupId>
     <artifactId>gt-app-schema</artifactId>
     <version>${gt.version}</version>

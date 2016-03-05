@@ -189,18 +189,18 @@
 
   <!-- Definition of how often the scheduled task runs -->
   <bean id="wcs111TempStorageCleanerTask"
-    class="org.springframework.scheduling.timer.ScheduledTimerTask">
+    class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
     <!-- wait 10 seconds before starting repeated execution -->
     <property name="delay" value="10000" />
     <!-- run every 60 seconds -->
     <property name="period" value="60000" />
-    <property name="timerTask" ref="wcs111TempStorageCleaner" />
+    <property name="runnable" ref="wcs111TempStorageCleaner" />
   </bean>
 
   <!-- And finally the class that instantiates the scheduled tasks and makes them run -->
-  <bean id="wcs111timerFactory" class="org.springframework.scheduling.timer.TimerFactoryBean"
+  <bean id="wcs111timerFactory" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean"
     lazy-init="false">
-    <property name="scheduledTimerTasks">
+    <property name="scheduledExecutorTasks">
       <list>
         <ref bean="wcs111TempStorageCleanerTask" />
       </list>

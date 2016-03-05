@@ -38,6 +38,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 
 @Category(SystemTest.class)
 public class RememberMeTest extends GeoServerSecurityTestSupport {
@@ -111,7 +112,7 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
     @Test
     public void testRememberMeLogin() throws Exception {
         
-        MockHttpServletRequest request = createRequest("/j_spring_security_check");
+        MockHttpServletRequest request = createRequest("/login");
         request.addParameter("username", "admin");
         request.addParameter("password", "geoserver");
         request.setMethod("POST");
@@ -119,7 +120,7 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
         assertLoginOk(response);
         assertEquals(0, response.getCookies().length);
 
-        request = createRequest("/j_spring_security_check");
+        request = createRequest("/login");
         request.addParameter("username", "admin");
         request.addParameter("password", "geoserver");
         request.addParameter("_spring_security_remember_me", "yes");

@@ -60,7 +60,7 @@
 
   <bean id="wcs20GetCapabilitiesResponse"
     class="org.geoserver.wcs2_0.response.WCS20GetCapabilitiesResponse"
-    singleton="false" />
+    scope="prototype" />
 
   <!-- DescribeCoverage -->
   <bean id="wcs20describeCoverageIdKvpParser" class="org.geoserver.ows.FlatKvpParser">
@@ -81,7 +81,7 @@
 
   <bean id="wcs20DescribeCoverageResponse"
     class="org.geoserver.wcs2_0.response.WCS20DescribeCoverageResponse"
-    singleton="false" />
+    scope="prototype" />
 
   <!-- GetCoverage -->
   <bean id="wcs20subsetKvpParser" class="org.geoserver.wcs2_0.kvp.SubsetKvpParser" />

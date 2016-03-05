@@ -154,18 +154,18 @@
 
   <!-- responses -->
   <bean id="wcs111GetCapabilitiesResponse"
-    class="org.geoserver.wcs.response.GetCapabilitiesResponse" singleton="false" />
+    class="org.geoserver.wcs.response.GetCapabilitiesResponse" scope="prototype" />
 
   <bean id="wcs111DescribeCoverageResponse"
-    class="org.geoserver.wcs.response.DescribeCoverageResponse" singleton="false" />
+    class="org.geoserver.wcs.response.DescribeCoverageResponse" scope="prototype" />
 
   <bean id="wcs111GetCoverageMultipartResponse"
-    class="org.geoserver.wcs.response.WCSMultipartResponse" singleton="false">
+    class="org.geoserver.wcs.response.WCSMultipartResponse" scope="prototype">
     <constructor-arg ref="catalog" />
     <constructor-arg ref="coverageResponseDelegateFactory"/>
   </bean>
   <bean id="wcs111GetCoverageStoreResponse"
-    class="org.geoserver.wcs.response.WCSGetCoverageStoreResponse" singleton="false">
+    class="org.geoserver.wcs.response.WCSGetCoverageStoreResponse" scope="prototype">
     <constructor-arg ref="geoServer" />
     <constructor-arg ref="coverageResponseDelegateFactory"/>
   </bean>

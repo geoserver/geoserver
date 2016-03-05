@@ -87,7 +87,7 @@ public class FakeHttpServletResponse implements HttpServletResponse {
     }
 
     public boolean containsHeader(String arg0) {
-        throw new ServletDebugException();
+        return headers.containsKey(arg0);
     }
 
     public String encodeRedirectURL(String arg0) {

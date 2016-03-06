@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -142,6 +142,18 @@ public class DefaultDataAccessManagerAuthTest extends AbstractAuthorizationTest 
         DataAccessManager wo = buildAccessManager("lockedDownUnknown.properties");
         // should fall back on the default and complain in the logger
         assertEquals(CatalogMode.HIDE, wo.getMode());
+    }
+    
+    @Test
+    public void testOverride() throws Exception {
+        DataAccessManager manager = buildAccessManager("override-ws.properties");
+        // since the use can read states, it can read its container ws oo
+        assertTrue(manager.canAccess(roUser, statesLayer, AccessMode.READ));
+        assertTrue(manager.canAccess(roUser, toppWs, AccessMode.READ));
+        // no access for this one
+        assertFalse(manager.canAccess(milUser, statesLayer, AccessMode.READ));
+        assertFalse(manager.canAccess(milUser, toppWs, AccessMode.READ));
+
     }
     
 }

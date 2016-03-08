@@ -1,10 +1,12 @@
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps;
 
 import static org.easymock.classextension.EasyMock.createMock;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -17,6 +19,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -118,7 +122,7 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         wps.getProcessGroups().add(geoGroup);
         wps.getProcessGroups().add(rasGroup);
 
-        loader.save(wps, null, root);
+        loader.save(wps, getGeoServer(), root);
 
         // check the xml
         String xml = FileUtils.readFileToString(new File(root, "wps.xml"));
@@ -147,7 +151,7 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
                 + "/validators/entry[@key='levels']/rangeValidator/range/maxValue", dom);
 
         // check unmarshalling
-        WPSInfo wps2 = loader.load(null, root);
+        WPSInfo wps2 = loader.load(getGeoServer(), root);
         assertEquals(wps, wps2);
     }
 
@@ -159,14 +163,42 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
     
     @Test
     public void testLoadFromXML() throws Exception {
+        WPSInfo wpsInfo = loadFromXml("wps-test.xml");
+        assertNotNull(wpsInfo);
+    }
+
+    @Test
+    public void testLoadFromXMLWithWorkSpace() throws Exception {
+        // creating a workspace with same ID was the one in the wps-test-workspace.xml file
+        WorkspaceInfoImpl workspace = new WorkspaceInfoImpl();
+        workspace.setId("wps-load-test-workspace-id");
+        workspace.setName("wps-load-test-workspace-name");
+        workspace.setDefault(false);
+        catalog.add(workspace);
+        // we parse the wps info that contains the workspace
+        WPSInfo wpsInfo = loadFromXml("wps-test-workspace.xml");
+        assertNotNull(wpsInfo);
+        assertNotNull(wpsInfo.getWorkspace());
+        assertTrue(wpsInfo.getWorkspace().getId().equals("wps-load-test-workspace-id"));
+        // if the workspace was correctly retrieved from the catalog it should have the name property available
+        try {
+            assertTrue(wpsInfo.getWorkspace().getName().equals("wps-load-test-workspace-name"));
+        } catch (NullPointerException exception) {
+            // this is a proxy that only know the workspace id
+            fail("NULL proxy");
+        }
+    }
+
+    /**
+     * Helper method tha reads a WPS configuration from a XML file and return that info.
+     */
+    private WPSInfo loadFromXml(String resource) throws Exception {
         XStreamPersisterFactory factory = GeoServerExtensions.bean(XStreamPersisterFactory.class);
         XStreamPersister xp = factory.createXMLPersister();
         WPSXStreamLoader loader = GeoServerExtensions.bean(WPSXStreamLoader.class);
         loader.initXStreamPersister(xp, getGeoServer());
-        try (InputStream is = getClass().getResourceAsStream("wps-test.xml")) {
-            xp.load(is, WPSInfo.class);
+        try (InputStream is = getClass().getResourceAsStream(resource)) {
+            return xp.load(is, WPSInfo.class);
         }
-
     }
-
 }

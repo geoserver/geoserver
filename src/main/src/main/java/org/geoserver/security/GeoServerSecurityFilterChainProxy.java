@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -278,5 +278,9 @@ public class GeoServerSecurityFilterChainProxy implements SecurityManagerListene
 
         //do some cleanup
         securityManager.removeListener(this);
+    }
+    
+    public List<SecurityFilterChain> getFilterChains() {
+        return proxy.getFilterChains();
     }
 }

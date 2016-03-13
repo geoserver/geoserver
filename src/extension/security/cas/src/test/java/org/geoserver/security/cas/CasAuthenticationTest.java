@@ -69,7 +69,7 @@ import com.sun.net.httpserver.HttpsServer;
  * key password "changeit"
  * 
  * Create self signing certificate keytool -genkey -alias mc-home.local -keystore rsa-keystore
- * -keyalg RSA -sigalg MD5withRSA
+ * -keyalg RSA -sigalg MD5withRSA -validity 365000
  * 
  * Only the cn must be set to the full server name "ux-desktop03.mc-home.local"
  * 
@@ -205,8 +205,10 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         loginUrl = td.getLoginURL();
         serviceUrl = td.getServiceURL();
         proxyCallbackUrlPrefix = td.getProxyCallbackURLPrefix();
-        if (httpsServer == null)
+        if (httpsServer == null) {
             httpsServer = createAndStartHttpsServer();
+            td.checkSSLServer();
+        }
 
     }
 
@@ -220,7 +222,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
                 new SingleSignOutHandler("/j_spring_cas_security_check"));
         httpsServer.createContext(createRequest("/wms").getRequestURI(), new SingleSignOutHandler(
                 "/wms"));
-        httpsServer.start();
+        httpsServer.start();        
         return httpsServer;
     }
 
@@ -240,7 +242,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         return null;
     }
 
-    // disabled
+
     @Test
     public void testCASLogin() throws Exception {
 
@@ -275,8 +277,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         // test success
         String username = "castest";
         String password = username;
-        CasFormAuthenticationHelper helper = new CasFormAuthenticationHelper(casServerURLPrefix,
-                username, password);
+        CasFormAuthenticationHelper helper = new CasFormAuthenticationHelper(casServerURLPrefix,username,password);
         helper.ssoLogin();
         
         request = createRequest("/foo/bar");
@@ -956,7 +957,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
                 "fail", "abc");
         assertFalse(helper.ssoLogin());
 
-        helper = new CasFormAuthenticationHelper(casServerURLPrefix, "success", "success");
+        helper = new CasFormAuthenticationHelper(casServerURLPrefix,"success","success");
         assertTrue(helper.ssoLogin());
         assertNotNull(helper.getTicketGrantingCookie());
         LOGGER.info("TGC after login : " + helper.getTicketGrantingCookie());

@@ -147,6 +147,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
 
         FeatureCollection match;
         System.out.println(q);
+        LOGGER.log(Level.DEBUG, q);
         match = featureSource.getFeatures(q);
 
         // if we could not include the rules filter into the query, post process in

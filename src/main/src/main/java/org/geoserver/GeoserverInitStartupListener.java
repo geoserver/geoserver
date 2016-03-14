@@ -378,7 +378,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 System.gc();
                 System.runFinalization();
             } catch(Throwable t) {
-                System.out.println("Failed to perform closing up finalization");
+                LOGGER.error("Failed to perform closing up finalization");
                 t.printStackTrace();
             }
         } catch(Throwable t) {

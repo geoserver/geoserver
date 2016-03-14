@@ -66,14 +66,13 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
             final File tempDir = new File(GeoServerExtensions.getProperty("user.home"),".geoserver");
             if (!tempDir.exists() ) {
                 if(!tempDir.mkdir())
-                System.out
-                        .println("Unable to create debug dir, exiting application!!!");
+                LOGGER.error("Unable to create debug dir, exiting application!!!");
                 DEBUG=false;
                 DEBUG_DIR = null;
             } else
                {
                         DEBUG_DIR = tempDir.getAbsolutePath();
-                         System.out.println("MetatileMapOutputFormat debug dir "+DEBUG_DIR);
+                         LOGGER.debug("MetatileMapOutputFormat debug dir "+DEBUG_DIR);
                }
         }
 

@@ -133,7 +133,7 @@ public class XMPPCompletedMessage implements XMPPMessage {
                                         pID, baseURL, xmppClient, publish, layerName, title,
                                         description, defaultStyle, targetWorkspace, metadata);
 
-                                LOGGER.info(" - TEST - [XMPPCompletedMessage] wpsOutputValue:"
+                                LOGGER.finest("[XMPPCompletedMessage] wpsOutputValue:"
                                         + wpsOutputValue);
 
                                 // add the transformed result to the process outputs

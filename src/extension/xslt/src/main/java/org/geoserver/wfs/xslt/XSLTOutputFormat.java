@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -80,7 +80,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
     public boolean canHandle(Operation operation) {
         // if we don't have formats configured, we cannot respond
         if(formats.isEmpty()) {
-            System.out.println("Empty formats");
+            LOGGER.log(Level.FINE, "Empty formats");
             return false;
         }
         
@@ -92,7 +92,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
         // but WFS is supposed to be case sensitive and so is the XSLT code
         Request request = Dispatcher.REQUEST.get();
         if(request != null && (request.getOutputFormat() == null || !formats.containsKey(request.getOutputFormat()))) {
-            System.out.println("Formats are: " + formats);
+            LOGGER.log(Level.FINE, "Formats are: " + formats);
             return false;
         } else {
             return true;

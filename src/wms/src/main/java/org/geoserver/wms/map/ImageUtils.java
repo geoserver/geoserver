@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -58,14 +58,13 @@ public class ImageUtils {
 	        final File tempDir = new File(GeoServerExtensions.getProperty("user.home"),".geoserver");
 	        if (!tempDir.exists() ) {
 	            if(!tempDir.mkdir())
-	            System.out
-	                    .println("Unable to create debug dir, exiting application!!!");
+	            LOGGER.severe("Unable to create debug dir, exiting application!!!");
 	            DEBUG=false;
 	            DEBUG_DIR = null;
 	        } else
 	           {
 	                    DEBUG_DIR = tempDir.getAbsolutePath();
-	                     System.out.println("MetatileMapOutputFormat debug dir "+DEBUG_DIR);
+	                     LOGGER.fine("MetatileMapOutputFormat debug dir "+DEBUG_DIR);
 	           }
 	    }
 	

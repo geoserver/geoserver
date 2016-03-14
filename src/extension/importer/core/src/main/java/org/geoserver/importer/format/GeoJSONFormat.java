@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -158,7 +158,7 @@ public class GeoJSONFormat extends VectorFormat {
 
         // get the composite feature type
         SimpleFeatureType featureType = new FeatureJSON().readFeatureCollectionSchema(file, false);
-        System.out.println(featureType);
+        LOG.log(Level.FINE, featureType.toString());
 
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.init(featureType);

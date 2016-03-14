@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -146,7 +146,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         }
 
         FeatureCollection match;
-        System.out.println(q);
+        LOGGER.log(Level.FINE, q.toString());
         match = featureSource.getFeatures(q);
 
         // if we could not include the rules filter into the query, post process in

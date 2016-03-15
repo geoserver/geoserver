@@ -101,6 +101,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
     private static final String NAMESPACE = "http://www.opengis.net/wms";
 
+    /** fixed schemaLocation URI */
+    private static final String SCHEMALOCATION_OPENGIS_URI = "http://schemas.opengis.net";
+
     /** fixed MIME type for the returned capabilities document */
     public static final String WMS_CAPS_MIME = "text/xml";
 
@@ -275,7 +278,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
         private String buildSchemaLocation() {
             StringBuffer schemaLocation = new StringBuffer();
-            schemaLocation.append(schemaLocation(NAMESPACE, "wms/1.3.0/capabilities_1_3_0.xsd"));
+            schemaLocation.append(schemaLocationNoBaseURL(NAMESPACE, "wms/1.3.0/capabilities_1_3_0.xsd"));
 
             for (ExtendedCapabilitiesProvider cp : extCapsProviders) {
                 String[] locations = cp.getSchemaLocations(schemaBaseURL);
@@ -303,6 +306,24 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             } catch (MalformedURLException e) {
                 // means the url is relative
                 location = buildSchemaURL(schemaBaseURL, uri);
+            }
+
+            return namespace + " " + location;
+        }
+
+        /**
+         * Creates a new schemaLocation using the SCHEMALOCATION_OPENGIS_URI instead of the baseURL
+         */
+        String schemaLocationNoBaseURL(String namespace, String uri) {
+            String location = null;
+            try {
+                new URL(uri);
+
+                // external location
+                location = uri;
+            } catch (MalformedURLException e) {
+                // means the url is relative
+                location = SCHEMALOCATION_OPENGIS_URI + "/" + uri;
             }
 
             return namespace + " " + location;

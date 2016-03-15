@@ -74,7 +74,7 @@ public class MockHttpClient extends AbstractHttpClient {
     private HTTPResponse getResponse(Request request) {
         HTTPResponse response = expectedRequests.get(request);
         if (response == null) {
-            StringBuilder sb = new StringBuilder("Unexepected request \n" + request + "\nNo response is bound to it. Bound urls are: ");
+            StringBuilder sb = new StringBuilder("Unexpected request \n" + request + "\nNo response is bound to it. Bound urls are: ");
             for (Request r : expectedRequests.keySet()) {
                 sb.append("\n").append(r);
             }

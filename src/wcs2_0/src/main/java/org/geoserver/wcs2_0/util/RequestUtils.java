@@ -372,7 +372,7 @@ public class RequestUtils {
             throw new WCS20Exception("Missing service name", OWS20Exception.OWSExceptionCode.MissingParameterValue, "service");
         }
         if( ! "WCS".equals(serviceName)) {
-            throw new WCS20Exception("Error in service name, epected value: WCS", OWS20Exception.OWSExceptionCode.InvalidParameterValue, serviceName);
+            throw new WCS20Exception("Error in service name, expected value: WCS", OWS20Exception.OWSExceptionCode.InvalidParameterValue, serviceName);
         }
     }
 }

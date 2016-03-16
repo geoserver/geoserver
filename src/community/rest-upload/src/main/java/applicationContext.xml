@@ -65,20 +65,20 @@
 
     <!-- Definition of how often the scheduled task runs -->
     <bean id="resumableUploadStorageCleanerTask"
-        class="org.springframework.scheduling.timer.ScheduledTimerTask">
+        class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
         <!-- wait 10 seconds before starting repeated execution -->
         <property name="delay" value="10000" />
         <!-- run every 60 seconds -->
         <property name="period" value="60000" />
-        <property name="timerTask" ref="resumableUploadStorageCleaner" />
+        <property name="runnable" ref="resumableUploadStorageCleaner" />
     </bean>
 
     <!-- And finally the class that instantiates the scheduled tasks and
         makes them run -->
     <bean id="resumableUploadTimerFactory"
-        class="org.springframework.scheduling.timer.TimerFactoryBean"
+        class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean"
         lazy-init="false">
-        <property name="scheduledTimerTasks">
+        <property name="scheduledExecutorTasks">
             <list>
                 <ref bean="resumableUploadStorageCleanerTask" />
             </list>

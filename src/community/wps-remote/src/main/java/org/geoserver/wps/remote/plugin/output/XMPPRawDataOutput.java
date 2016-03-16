@@ -85,8 +85,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                 final String fileName = FilenameUtils.getBaseName(((String) value)) + "_" + pID
                         + "." + ((StreamRawData) sample).getFileExtension();
 
-                LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] StreamRawData:"
-                        + fileName);
+                LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] StreamRawData:" + fileName);
 
                 value = new StreamRawData(((StreamRawData) sample).getMimeType(),
                         new FileInputStream(((String) value)),
@@ -181,8 +180,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         final String fileName = "wps-remote-str-rawdata_" + pID + extension;
         final String content = FileUtils.readFileToString(new File((String) value));
 
-        LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] encodeAsPlainRawData:"
-                + fileName);
+        LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] encodeAsPlainRawData:" + fileName);
 
         value = new StringRawData(content,
                 ((String) ((Object[]) XMPPClient.PRIMITIVE_NAME_TYPE_MAP.get(type))[3])
@@ -286,8 +284,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
             String baseURL, String metadata) throws IOException {
         final String wmcTemplatePath = xmppClient.getConfiguration().get("owc_wms_json_template");
 
-        LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] wmcTemplatePath:"
-                + wmcTemplatePath);
+        LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] wmcTemplatePath:" + wmcTemplatePath);
 
         String content = "";
         if (wmcTemplatePath != null) {
@@ -324,8 +321,8 @@ public class XMPPRawDataOutput implements XMPPOutputType {
 
                 content = buff.toString();
 
-                LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] wmcTemplate Processed:"
-                                + content);
+                LOGGER.finest(
+                        "[XMPP Raw Data Output - ProduceOutput] wmcTemplate Processed:" + content);
 
             } catch (Exception e) {
                 StringWriter errors = new StringWriter();

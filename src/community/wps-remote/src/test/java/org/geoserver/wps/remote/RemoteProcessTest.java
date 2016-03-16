@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,6 +44,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.remote.plugin.MockRemoteClient;
 import org.geoserver.wps.remote.plugin.XMPPClient;
+import org.geoserver.wps.remote.plugin.XMPPLoadAverageMessage;
 import org.geoserver.wps.remote.plugin.XMPPMessage;
 import org.geoserver.wps.remote.plugin.XMPPRegisterMessage;
 import org.geotools.factory.FactoryIteratorProvider;
@@ -259,6 +261,58 @@ public class RemoteProcessTest extends WPSTestSupport {
             }
         };
         msg.handleSignal(xmppRemoteClient, packet, null, signalArgs);
+    }
+
+    @Test
+    public void testLoadAverageMessage() {
+        // /
+        XMPPClient xmppRemoteClient = (XMPPClient) applicationContext
+                .getBean("xmppRemoteProcessClient");
+        assertNotNull(xmppRemoteClient);
+
+        
+        List<RemoteMachineDescriptor> registeredProcessingMachines = new ArrayList<RemoteMachineDescriptor>();
+        registeredProcessingMachines.add(new RemoteMachineDescriptor("test@geoserver.org", new NameImpl("test", "Service"), true, 90.0, 90.0));
+        xmppRemoteClient.setRegisteredProcessingMachines(registeredProcessingMachines);
+        
+        XMPPMessage msg = new XMPPLoadAverageMessage();
+
+        // build register body
+        Map<String, String> signalArgs = new HashMap<String, String>();
+        signalArgs.put("topic", "loadavg");
+        signalArgs.put("message", "loadavg");
+        signalArgs.put("service", "test.Service");
+        signalArgs.put("id", "master");
+
+        /**
+         * JSON URL Encoded Body
+         * 
+         * { "title": "test.Service", "description": "This is a test Service!", "input": [ ["simpleType",
+         * "{\"type\": \"string\", \"description\": \"A simple string parameter\", \"max\": 1}"], ["complexType",
+         * "{\"type\": \"complex\", \"description\": \"A complex parameter\", \"min\": 1, \"max\": 10}"] ] }
+         */
+        signalArgs.put("result_vmem",
+                "%7B%22vmem_value%22%3A%2089.3%2C%20%22vmem_description%22%3A%20%22Percentage%20of%20Memory%20used%20by%20the%20server.%22%7D");
+        signalArgs.put("result_loadavg",
+                "%7B%22loadavg_description%22%3A%20%22Average%20Load%20on%20CPUs%20during%20the%20last%2015%20minutes.%22%2C%20%22loadavg_value%22%3A%2014.6%7D");
+
+        // handle signal
+        Packet packet = new Packet() {
+
+            @Override
+            public String getFrom() {
+                return "test@geoserver.org";
+            }
+
+            @Override
+            public CharSequence toXML() {
+                return null;
+            }
+        };
+        msg.handleSignal(xmppRemoteClient, packet, null, signalArgs);
+        
+        assertTrue("LoadAverage does not match!", registeredProcessingMachines.get(0).getLoadAverage().equals(14.6));
+        assertTrue("MemoryPerc does not match!", registeredProcessingMachines.get(0).getMemPercUsed().equals(89.3));
     }
 
     /**

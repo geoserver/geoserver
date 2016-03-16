@@ -13,6 +13,13 @@ import java.util.Map;
  * 
  */
 public interface RemoteProcessClientListener {
+    
+    /**
+     * Returns the assigned unique @param pId of the {@link RemoteProcess}
+     * 
+     * @return
+     */
+    public String getPID();
 
     /**
      * Sets the progress of the {@link RemoteProcess} associated to the remote service with the unique @param pId

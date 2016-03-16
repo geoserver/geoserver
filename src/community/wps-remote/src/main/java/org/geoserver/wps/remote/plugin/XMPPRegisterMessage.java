@@ -11,10 +11,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
 import org.geoserver.wps.remote.RemoteProcessClientListener;
 import org.geoserver.wps.remote.RemoteProcessFactoryListener;
 import org.geoserver.wps.remote.RemoteServiceDescriptor;
@@ -26,6 +22,10 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 /**
  * Listens for "REGISTER" messages from XMPP service channels and takes action accordingly.
@@ -71,24 +71,26 @@ public class XMPPRegisterMessage implements XMPPMessage {
             Map<String, Parameter<?>> inputs = new HashMap<String, Parameter<?>>();
             if (input != null) {
                 for (int ii = 0; ii < input.size(); ii++) {
-                    Object obj = input.get(ii);
+                    final Object obj = input.get(ii);
                     if (obj instanceof JSONArray) {
-                        JSONArray jsonArray = (JSONArray) obj;
+                        final JSONArray jsonArray = (JSONArray) obj;
 
-                        String paramName = (String) jsonArray.get(0);
+                        final String paramName = (String) jsonArray.get(0);
                         String ss = ((String) jsonArray.get(1));
                         ss = ss.substring(1, ss.length() - 1);
-                        JSONObject paramType = (JSONObject) JSONSerializer.toJSON(ss);
-                        String className = (String) paramType.get("type");
+                        final JSONObject paramType = (JSONObject) JSONSerializer.toJSON(ss);
+                        final String className = (String) paramType.get("type");
 
-                        ParameterTemplate paramTemplate = xmppClient.convertToJavaClass(className,
-                                XMPPClient.class.getClassLoader(), paramType.get("default"));
+                        final ParameterTemplate paramTemplate = xmppClient.convertToJavaClass(
+                                className, XMPPClient.class.getClassLoader(),
+                                paramType.get("default"));
 
-                        InternationalString inputTitle = (paramType.get("title") != null
+                        final InternationalString inputTitle = (paramType.get("title") != null
                                 && paramType.get("title") instanceof String
                                         ? Text.text((String) paramType.get("title"))
                                         : Text.text(paramName));
-                        InternationalString inputDescription = (paramType.get("description") != null
+                        final InternationalString inputDescription = (paramType
+                                .get("description") != null
                                 && paramType.get("description") instanceof String
                                         ? Text.text((String) paramType.get("description"))
                                         : Text.text(paramName));
@@ -111,13 +113,13 @@ public class XMPPRegisterMessage implements XMPPMessage {
                 for (int oo = 0; oo < output.size(); oo++) {
                     Object obj = output.get(oo);
                     if (obj instanceof JSONArray) {
-                        JSONArray jsonArray = (JSONArray) obj;
+                        final JSONArray jsonArray = (JSONArray) obj;
 
-                        String paramName = (String) jsonArray.get(0);
+                        final String paramName = (String) jsonArray.get(0);
                         String ss = ((String) jsonArray.get(1));
                         ss = ss.substring(1, ss.length() - 1);
-                        JSONObject paramType = (JSONObject) JSONSerializer.toJSON(ss);
-                        String className = (String) paramType.get("type");
+                        final JSONObject paramType = (JSONObject) JSONSerializer.toJSON(ss);
+                        final String className = (String) paramType.get("type");
 
                         ParameterTemplate paramTemplate = xmppClient.convertToJavaClass(className,
                                 XMPPClient.class.getClassLoader(), paramType.get("default"));
@@ -136,11 +138,11 @@ public class XMPPRegisterMessage implements XMPPMessage {
                             inputs.put(choosenOutputMimeTypeParam, outputChoosenMimeTypeParam);
                         }
 
-                        InternationalString outputTitle = (paramType.get("title") != null
+                        final InternationalString outputTitle = (paramType.get("title") != null
                                 && paramType.get("title") instanceof String
                                         ? Text.text((String) paramType.get("title"))
                                         : Text.text(paramName));
-                        InternationalString outputDescription = (paramType
+                        final InternationalString outputDescription = (paramType
                                 .get("description") != null
                                 && paramType.get("description") instanceof String
                                         ? Text.text((String) paramType.get("description"))

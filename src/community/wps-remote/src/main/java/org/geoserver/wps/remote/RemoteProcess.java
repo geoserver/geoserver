@@ -7,6 +7,7 @@ package org.geoserver.wps.remote;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +27,9 @@ public class RemoteProcess implements Process, RemoteProcessClientListener {
 
     /** The LOGGER. */
     private static final Logger LOGGER = Logging.getLogger(RemoteProcess.class);
+
+    /** Check execution status every 10 seconds */
+    private static final long SIGNAL_TIMEOUT = 10;
 
     /** The Process Name; declared by the remote service */
     private Name name;
@@ -75,6 +79,11 @@ public class RemoteProcess implements Process, RemoteProcessClientListener {
     }
 
     @Override
+    public String getPID() {
+        return this.pid;
+    }
+
+    @Override
     public Map<String, Object> execute(Map<String, Object> input, ProgressListener monitor) {
 
         try {
@@ -97,13 +106,14 @@ public class RemoteProcess implements Process, RemoteProcessClientListener {
             pid = remoteClient.execute(name, input, metadata, monitor);
             LOGGER.info("Starting the execution of Remote Process with pId [" + pid + "]");
             running = pid != null;
-            if (running && (listener != null && !listener.isCanceled())) {
-                remoteClient.registerProcessClientListener(this);
-
-                // doneSignal.await(timeout, unit); // TIMEOUT TODO
-                doneSignal.await();
+            remoteClient.registerProcessClientListener(this);
+            while (running && (listener != null && !listener.isCanceled())) {
+                doneSignal.await(SIGNAL_TIMEOUT, TimeUnit.SECONDS);
             }
             LOGGER.info("Stopping the execution of Remote Process with pId [" + pid + "]");
+            
+            // TODO: Forward Cancel/Expiration signal to RemoteClient
+            
         } catch (Exception e) {
             if (listener != null) {
                 listener.exceptionOccurred(e);
@@ -218,5 +228,4 @@ public class RemoteProcess implements Process, RemoteProcessClientListener {
         }
         doneSignal.countDown();
     }
-
 }

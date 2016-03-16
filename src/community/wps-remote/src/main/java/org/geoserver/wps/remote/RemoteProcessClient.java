@@ -6,8 +6,11 @@ package org.geoserver.wps.remote;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,7 +64,13 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
     /** The registered {@link RemoteProcessClientListener} */
     private Set<RemoteProcessClientListener> remoteClientListeners = Collections
             .newSetFromMap(new ConcurrentHashMap<RemoteProcessClientListener, Boolean>());
-
+    
+    /** The available Registered Processing Machines */
+    protected List<RemoteMachineDescriptor> registeredProcessingMachines = Collections.synchronizedList(new ArrayList<RemoteMachineDescriptor>());
+    
+    /** */
+    protected List<RemoteRequestDescriptor> pendingRequests = Collections.synchronizedList(new LinkedList<RemoteRequestDescriptor>());
+    
     /**
      * The default Cosntructor
      * 
@@ -113,6 +122,20 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    /**
+     * @return the registeredProcessingMachines
+     */
+    public List<RemoteMachineDescriptor> getRegisteredProcessingMachines() {
+        return registeredProcessingMachines;
+    }
+
+    /**
+     * @param registeredProcessingMachines the registeredProcessingMachines to set
+     */
+    public void setRegisteredProcessingMachines(List<RemoteMachineDescriptor> registeredProcessingMachines) {
+        this.registeredProcessingMachines = registeredProcessingMachines;
     }
 
     /**

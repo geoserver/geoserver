@@ -39,6 +39,9 @@
 	<!-- COMPLETED Signal -->
 	<bean id="xmppCompletedMessage" class="org.geoserver.wps.remote.plugin.XMPPCompletedMessage" />
 
+	<!-- LOADAVG Signal -->
+	<bean id="xmppLoadAverageMessage" class="org.geoserver.wps.remote.plugin.XMPPLoadAverageMessage" />
+	
 	<!-- ERROR Signal -->
 	<bean id="xmppErrorMessage" class="org.geoserver.wps.remote.plugin.XMPPErrorMessage" />
 	

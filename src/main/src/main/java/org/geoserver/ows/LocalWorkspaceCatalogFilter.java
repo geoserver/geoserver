@@ -1,13 +1,18 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.ows;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
@@ -48,13 +53,28 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
     }
 
     public boolean hideLayer(LayerInfo layer) {
-        return LocalLayer.get() != null && !LocalLayer.get().equals(layer);
+        PublishedInfo local = LocalPublished.get();
+        if(local == null) {
+            return false;
+        } else if(local instanceof LayerInfo) {
+            return !local.equals(layer);
+        } else if(local instanceof LayerGroupInfo) {
+            LayerGroupInfo lg = (LayerGroupInfo) local;
+            Request request = Dispatcher.REQUEST.get();
+            if(request != null && "WMS".equalsIgnoreCase(request.getService()) && "GetCapabilities".equals(request.getRequest()) && lg.getMode() == Mode.SINGLE) {
+                return true;
+            } else {
+                return !new LayerGroupHelper(lg).allLayers().contains(layer);
+            }
+        } else {
+            throw new RuntimeException("Unknown PublishedInfo of type " + local.getClass());
+        }
     }
 
     public boolean hideResource(ResourceInfo resource) {
-        if (LocalLayer.get() != null) {
+        if (LocalPublished.get() != null) {
             for (LayerInfo l : resource.getCatalog().getLayers(resource)) {
-                if (!l.equals(LocalLayer.get())) {
+                if (hideLayer(l)) {
                     return true;
                 }
             }
@@ -81,6 +101,17 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
 
     @Override
     public boolean hideLayerGroup(LayerGroupInfo layerGroup) {
+        PublishedInfo local = LocalPublished.get();
+        if(local != null && local instanceof LayerGroupInfo) {
+            LayerGroupInfo lg = (LayerGroupInfo) local;
+            Request request = Dispatcher.REQUEST.get();
+            if(request != null && "WMS".equalsIgnoreCase(request.getService()) && "GetCapabilities".equals(request.getRequest()) && lg.getMode() == Mode.SINGLE) {
+                return !lg.equals(layerGroup);
+            } else if(!lg.equals(layerGroup) && !new LayerGroupHelper(lg).allGroups().contains(layerGroup)) {
+                return true;
+            } 
+        }
+
         if (layerGroup.getWorkspace() == null) {
             //global layer group, hide it if a local workspace layer group shared the same name, ie 
             // overrides it
@@ -143,14 +174,14 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
     @Override
     public Filter getSecurityFilter(final Class<? extends CatalogInfo> clazz) {
         WorkspaceInfo localWS = LocalWorkspace.get();
-        LayerInfo localLayer = LocalLayer.get();
-        if(localWS==null && localLayer==null) {
+        PublishedInfo localPublished = LocalPublished.get();
+        if(localWS == null && localPublished == null) {
             return Predicates.acceptAll();
         }
         if(ResourceInfo.class.isAssignableFrom(clazz)) {
             // Show if it's in a visible workspace or used by the local layer
             Filter localLayerFilter;
-            if(localLayer==null) {
+            if(localPublished == null) {
                 localLayerFilter=Predicates.acceptAll();
             } else {
                 // TODO Well known check if it's used by the local layer
@@ -164,34 +195,62 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
         } else if(LayerGroupInfo.class.isAssignableFrom(clazz)) {
             Filter filter = standardFilter(clazz);
             
-            // TODO Need a well known recursive filter for layer groups instead of using an 
-            // InternalVolatileFunction, KS
-            Function subLayersHidden = new InternalVolatileFunction() {
-                @Override
-                public Boolean evaluate(Object object) {
-                    return !subLayersHidden((LayerGroupInfo) object);
-                }
-            };
-            FilterFactory factory = Predicates.factory;
-
-            // hide the layer if its sublayers are hidden
-            filter = Predicates.and(filter, 
-                    factory.equals(factory.literal(Boolean.TRUE), subLayersHidden));
-
             // Only show a layer group in a layer local request if it is the local layer
-            if(localLayer!=null) {
-                filter = Predicates.and(filter,
-                        Predicates.equal("id", localLayer.getId()));
+            if(localPublished != null) {
+                if(localPublished instanceof LayerInfo) {
+                 // TODO Need a well known recursive filter for layer groups instead of using an 
+                    // InternalVolatileFunction, KS
+                    Function subLayersHidden = new InternalVolatileFunction() {
+                        @Override
+                        public Boolean evaluate(Object object) {
+                            return !subLayersHidden((LayerGroupInfo) object);
+                        }
+                    };
+                    FilterFactory factory = Predicates.factory;
+
+                    // hide the layer if its sublayers are hidden
+                    filter = Predicates.and(filter, 
+                            factory.equals(factory.literal(Boolean.TRUE), subLayersHidden));
+
+                    Predicates.and(filter,
+                            Predicates.equal("id", localPublished.getId()));
+                } else if(localPublished instanceof LayerGroupInfo) {
+                    LayerGroupInfo lg = (LayerGroupInfo) localPublished;
+                    List<LayerGroupInfo> groups = new LayerGroupHelper(lg).allGroups();
+                    List<Filter> groupIdFilters = new ArrayList<>();
+                    for (LayerGroupInfo group : groups) {
+                        groupIdFilters.add(Predicates.equal("id", group.getId()));
+                    }
+                    return Predicates.or(groupIdFilters);
+                }
             }
             return filter;
         } else if(StyleInfo.class.isAssignableFrom(clazz)) {
             return standardFilter(clazz);
         } else if(LayerInfo.class.isAssignableFrom(clazz)) {
             // If there's a local Layer, only show that layer, otherwise show all.
-            if(localLayer==null) {
+            if(localPublished == null) {
                 return Predicates.acceptAll();
+            } else if(localPublished instanceof LayerInfo){
+                return Predicates.equal("id", localPublished.getId());
+            } else if(localPublished instanceof LayerGroupInfo) {
+                LayerGroupInfo lg = (LayerGroupInfo) localPublished;
+                Request request = Dispatcher.REQUEST.get();
+                if(request != null && "WMS".equalsIgnoreCase(request.getService()) && "GetCapabilities".equals(request.getRequest()) && lg.getMode() == Mode.SINGLE) {
+                    // wms GetCapabilies with a group in "single" mode, meaning the layers are also showing up stand alone
+                    // but we only asked for the group, so don't accept any sub-layer
+                    return Predicates.acceptNone();
+                } else {
+                    // not a WMS capabilities or not a "single" mode layer group, allow any layer in the group,
+                    List<LayerInfo> layers = new LayerGroupHelper(lg).allLayers();
+                    List<Filter> layersIdFilters = new ArrayList<>();
+                    for (LayerInfo layer : layers) {
+                        layersIdFilters.add(Predicates.equal("id", layer.getId()));
+                    }
+                    return Predicates.or(layersIdFilters);
+                }
             } else {
-                return Predicates.equal("id", localLayer.getId());
+                throw new RuntimeException("Unexpected local published reference of type " + localPublished.getClass());
             }
         } else if(NamespaceInfo.class.isAssignableFrom(clazz)) {
             // TODO

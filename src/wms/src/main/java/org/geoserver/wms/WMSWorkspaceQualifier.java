@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,7 +8,7 @@ package org.geoserver.wms;
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.WorkspaceQualifyingCallback;
@@ -23,7 +23,7 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     }
 
     @Override
-    protected void qualifyRequest(WorkspaceInfo ws, LayerInfo l, Service service, Request request) {
+    protected void qualifyRequest(WorkspaceInfo ws, PublishedInfo l, Service service, Request request) {
         if (WebMapService.class.isInstance(service.getService())) {
             String layers = (String) request.getRawKvp().get("LAYERS");
             if (layers != null) {
@@ -52,7 +52,7 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
         }
     }
 
-    protected void qualifyRequest(WorkspaceInfo ws, LayerInfo l, Operation operation,
+    protected void qualifyRequest(WorkspaceInfo ws, PublishedInfo l, Operation operation,
             Request request) {
         GetCapabilitiesRequest gc = parameter(operation, GetCapabilitiesRequest.class);
         if (gc != null) {

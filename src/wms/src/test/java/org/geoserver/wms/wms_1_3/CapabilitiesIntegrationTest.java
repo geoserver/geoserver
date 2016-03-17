@@ -1,23 +1,19 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.wms_1_3;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-
-import static junit.framework.Assert.assertTrue;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -187,14 +183,15 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
     @org.junit.Test 
     public void testLayerQualified() throws Exception {
         // Qualify the request with a layer.  Other layers should not be included.
-        Document dom = dom(get("cite/Forests/wms?request=getCapabilities&version=1.3.0"), true);
+        Document dom = dom(get("cite/Forests/wms?service=WMS&request=getCapabilities&version=1.3.0"), true);
+        // print(dom);
         Element e = dom.getDocumentElement();
         assertEquals("WMS_Capabilities", e.getLocalName());
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertTrue(xpath
-                .getMatchingNodes("//wms:Layer/wms:Name[starts-with(., cite:Forests)]", dom)
-                .getLength() == 1);
-        assertEquals(1, xpath.getMatchingNodes("//wms:Layer/wms:Layer", dom).getLength());
+        assertEquals(0, xpath
+                .getMatchingNodes("//wms:Layer/wms:Name[starts-with(., 'cite:Forests')]", dom)
+                .getLength());
+        assertEquals(2, xpath.getMatchingNodes("//wms:Layer/wms:Layer", dom).getLength());
 
         NodeList nodes = xpath.getMatchingNodes("//wms:Layer//wms:OnlineResource", dom);
         assertTrue(nodes.getLength() > 0);

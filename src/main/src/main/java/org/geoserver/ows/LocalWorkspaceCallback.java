@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,6 +6,7 @@
 package org.geoserver.ows;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -17,7 +18,7 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.feature.NameImpl;
 
 /**
- * Dispatcher callback that sets and clears the {@link LocalWorkspace} and {@link LocalLayer}
+ * Dispatcher callback that sets and clears the {@link LocalWorkspace} and {@link LocalPublished}
  * thread locals.
  * 
  * @author Justin Deoliveira, OpenGeo
@@ -35,6 +36,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
     
     public Request init(Request request) {
         WorkspaceInfo ws = null;
+        LayerGroupInfo lg = null;
         if (request.context != null) {
             String first = request.context;
             String last = null;
@@ -47,6 +49,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
             
             //check if the context matches a workspace
             ws = catalog.getWorkspaceByName(first);
+            lg = catalog.getLayerGroupByName(first);
             if (ws != null) {
                 LocalWorkspace.set(ws);
                 
@@ -57,14 +60,20 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
                     if (ns != null) {
                         LayerInfo l = catalog.getLayerByName(new NameImpl(ns.getURI(), last));
                         if (l != null) {
-                            LocalLayer.set(l);
-                        }
-                        else {
-                            //TODO: perhaps throw an exception?
+                            LocalPublished.set(l);
+                        } else {
+                            lg = catalog.getLayerGroupByName(ws, last);
+                            if(lg != null) {
+                                LocalPublished.set(lg);
+                            } else {
+                                // TODO: perhaps throw an exception?
+                            }
                         }
                     }
                     
                 }
+            } else if(lg != null && lg.getWorkspace() == null) {
+                LocalPublished.set(lg);
             }
             else {
                 //if no workspace context specified and server configuration not allowing global
@@ -100,7 +109,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
     
     public void finished(Request request) {
         LocalWorkspace.remove();
-        LocalLayer.remove();
+        LocalPublished.remove();
     }
 
     public int getPriority() {

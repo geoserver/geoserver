@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,7 +9,7 @@ import static org.geoserver.ows.util.ResponseUtils.stripRemainingPath;
 import java.util.Map;
 
 /**
- * Mangles service URL's based on teh presence of a {@link LocalWorkspace} and {@link LocalLayer}.
+ * Mangles service URL's based on teh presence of a {@link LocalWorkspace} and {@link LocalPublished}.
  * <p>
  * When the local workspace and layer are present this mangler will turns urls of the form:</p>
  * <pre>
@@ -41,9 +41,9 @@ public class LocalWorkspaceURLMangler implements URLMangler {
             if (LocalWorkspace.get() != null) {
                 path.insert(0, LocalWorkspace.get().getName()+"/");
                 
-                if (LocalLayer.get() != null) {
+                if (LocalPublished.get() != null) {
                     int i = LocalWorkspace.get().getName().length()+1;
-                    path.insert(i, LocalLayer.get().getName()+"/");
+                    path.insert(i, LocalPublished.get().getName()+"/");
                 }
             }
         }

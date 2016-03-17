@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,6 +8,7 @@ package org.geoserver.ows;
 import javax.servlet.http.HttpServletRequest;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 
 /**
@@ -54,7 +55,7 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
                 String last = urlPath.substring(j);
                 
                 if (catalog.getWorkspaceByName(first) != null) {
-                    
+                    String wsName = first;
                     //check for a layer being specified as well
                     j = last.indexOf("/", 1);
                     if (j != -1) {
@@ -62,9 +63,15 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
                         if (catalog.getLayerByName(first) != null) {
                             //found, strip off layer and allow call to fall through
                             last = last.substring(j);
+                        } else if(catalog.getLayerGroupByName(wsName, first) != null) {
+                            //found, strip off layer and allow call to fall through
+                            last = last.substring(j);
                         }
                     }
                     
+                    h = super.lookupHandler(last, request);
+                } else if(catalog.getLayerGroupByName(first) != null) {
+                    LayerGroupInfo lg = catalog.getLayerGroupByName(first);
                     h = super.lookupHandler(last, request);
                 }
                 

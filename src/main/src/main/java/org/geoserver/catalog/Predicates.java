@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -238,7 +238,13 @@ public class Predicates {
      * 
      */
     public static Filter and(List<Filter> operands) {
-        return factory.and(operands);
+        if(operands.size() == 0) {
+            return Filter.INCLUDE;
+        } else if (operands.size() == 1) {
+            return operands.get(0);
+        } else {
+            return factory.and(operands);
+        }
     }
 
     /**
@@ -269,7 +275,13 @@ public class Predicates {
     }
 
     public static Filter or(List<Filter> operands) {
-        return factory.or(operands);
+        if(operands.size() == 0) {
+            return Filter.EXCLUDE;
+        } else if (operands.size() == 1) {
+            return operands.get(0);
+        } else {
+            return factory.or(operands);
+        }
     }
 
     public static Filter isNull(final String propertyName) {

@@ -1308,5 +1308,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>excel</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-excel</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
  </profiles>
 </project>

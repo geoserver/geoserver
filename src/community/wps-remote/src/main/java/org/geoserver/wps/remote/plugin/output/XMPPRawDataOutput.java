@@ -73,7 +73,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
             XMPPClient xmppClient, boolean publish, String name, String title, String description,
             String defaultStyle, String targetWorkspace, String metadata) throws Exception {
 
-        LOGGER.info(" - TEST - [XMPP Raw Data Output - ProduceOutput] " + value + " - type:" + type
+        LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] " + value + " - type:" + type
                 + " - pID:" + pID + " - name:" + name + " - title:" + title + " - description:"
                 + description + " - style:" + defaultStyle + " - workspace:" + targetWorkspace
                 + " - metadata:" + metadata);
@@ -85,8 +85,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                 final String fileName = FilenameUtils.getBaseName(((String) value)) + "_" + pID
                         + "." + ((StreamRawData) sample).getFileExtension();
 
-                LOGGER.info(" - TEST - [XMPP Raw Data Output - ProduceOutput] StreamRawData:"
-                        + fileName);
+                LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] StreamRawData:" + fileName);
 
                 value = new StreamRawData(((StreamRawData) sample).getMimeType(),
                         new FileInputStream(((String) value)),
@@ -111,15 +110,14 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                             ((StreamRawData) sample).getFileExtension());
                 }
 
-                LOGGER.info(" - TEST - [XMPP Raw Data Output - ProduceOutput] Value:" + value);
+                LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] Value:" + value);
 
                 return value;
             } else if (sample instanceof ResourceRawData) {
                 final String fileName = FilenameUtils.getBaseName(((String) value)) + "_" + pID
                         + "." + ((ResourceRawData) sample).getFileExtension();
 
-                LOGGER.info(
-                        " - TEST - [XMPP Raw Data Output - ProduceOutput] FileRawData:" + fileName);
+                LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] FileRawData:" + fileName);
 
                 value = new ResourceRawData(Files.asResource(new File(((String) value))),
                         ((ResourceRawData) sample).getMimeType(),
@@ -138,13 +136,12 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                     }
                 }
 
-                LOGGER.info(" - TEST - [XMPP Raw Data Output - ProduceOutput] Value:" + value);
+                LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] Value:" + value);
 
                 return value;
             } else if (sample instanceof StringRawData) {
 
-                LOGGER.info(
-                        " - TEST - [XMPP Raw Data Output - ProduceOutput] StringRawData:" + type);
+                LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] StringRawData:" + type);
 
                 if (type.equals("application/owc")) {
                     value = encodeAsPlainOWCMapContext(value, type, pID, baseURL, xmppClient,
@@ -156,7 +153,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                             metadata);
                 }
 
-                LOGGER.info(" - TEST - [XMPP Raw Data Output - ProduceOutput] Value:" + value);
+                LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] Value:" + value);
 
                 return value;
             }
@@ -183,8 +180,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         final String fileName = "wps-remote-str-rawdata_" + pID + extension;
         final String content = FileUtils.readFileToString(new File((String) value));
 
-        LOGGER.info(" - TEST - [XMPP Raw Data Output - ProduceOutput] encodeAsPlainRawData:"
-                + fileName);
+        LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] encodeAsPlainRawData:" + fileName);
 
         value = new StringRawData(content,
                 ((String) ((Object[]) XMPPClient.PRIMITIVE_NAME_TYPE_MAP.get(type))[3])
@@ -192,7 +188,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         if (publish) {
             final File tempFile = new File(FileUtils.getTempDirectory(), fileName);
 
-            LOGGER.info(" - TEST - [XMPP Raw Data Output - ProduceOutput] encodeAsPlainRawData:"
+            LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] encodeAsPlainRawData:"
                     + tempFile.getAbsolutePath());
 
             FileUtils.writeStringToFile(tempFile, ((StringRawData) value).getData());
@@ -230,7 +226,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         String[] styles = (defaultStyle != null ? defaultStyle.split(";") : null);
         String[] workspaces = (targetWorkspace != null ? targetWorkspace.split(";") : null);
 
-        LOGGER.info(" - TEST - [XMPP Raw Data Output - ProduceOutput] encodeAsPlainOWCMapContext:"
+        LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] encodeAsPlainOWCMapContext:"
                 + layerToPublish);
 
         List<LayerInfo> wmc = new ArrayList<LayerInfo>();
@@ -288,8 +284,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
             String baseURL, String metadata) throws IOException {
         final String wmcTemplatePath = xmppClient.getConfiguration().get("owc_wms_json_template");
 
-        LOGGER.info(" - TEST - [XMPP Raw Data Output - ProduceOutput] wmcTemplatePath:"
-                + wmcTemplatePath);
+        LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] wmcTemplatePath:" + wmcTemplatePath);
 
         String content = "";
         if (wmcTemplatePath != null) {
@@ -326,9 +321,8 @@ public class XMPPRawDataOutput implements XMPPOutputType {
 
                 content = buff.toString();
 
-                LOGGER.info(
-                        " - TEST - [XMPP Raw Data Output - ProduceOutput] wmcTemplate Processed:"
-                                + content);
+                LOGGER.finest(
+                        "[XMPP Raw Data Output - ProduceOutput] wmcTemplate Processed:" + content);
 
             } catch (Exception e) {
                 StringWriter errors = new StringWriter();

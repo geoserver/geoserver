@@ -35,9 +35,12 @@ import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.process.StreamRawData;
 import org.geoserver.wps.process.StringRawData;
+import org.geoserver.wps.remote.RemoteMachineDescriptor;
 import org.geoserver.wps.remote.RemoteProcessClient;
+import org.geoserver.wps.remote.RemoteProcessClientListener;
 import org.geoserver.wps.remote.RemoteProcessFactoryConfigurationWatcher;
 import org.geoserver.wps.remote.RemoteProcessFactoryListener;
+import org.geoserver.wps.remote.RemoteRequestDescriptor;
 import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
 import org.jivesoftware.smack.Chat;
@@ -136,21 +139,26 @@ public class XMPPClient extends RemoteProcessClient {
     /** Primitive type name -> class map. */
     public static final Map<String, Object> PRIMITIVE_NAME_TYPE_MAP = new HashMap<String, Object>();
 
+    /** Default Thresholds indicating overloaded resources */
+    private static double DEFAULT_CPU_PERCENT_THRESHOLD = 82.0;
+
+    private static double DEFAULT_MEM_PERCENT_THRESHOLD = 82.0;
+
     /** Setup the primitives map. */
     static enum CType {
         SIMPLE, COMPLEX
     }
-    
+
     /**
      * 
      * STATIC MAP of the available mime-types.
      * 
-     * Those are the available key-strigns which the remote client can specify on the XMPP message in order
-     * to declare which kind of output objects it is able to produce.
+     * Those are the available key-strigns which the remote client can specify on the XMPP message in order to declare which kind of output objects it
+     * is able to produce.
      * 
      * 
      */
-    
+
     static {
         // ----
         PRIMITIVE_NAME_TYPE_MAP.put("string",
@@ -219,13 +227,13 @@ public class XMPPClient extends RemoteProcessClient {
         // ----
         PRIMITIVE_NAME_TYPE_MAP.put("application/zip",
                 new Object[] { RawData.class, CType.COMPLEX,
-                        new ResourceRawData(null, "application/zip", "zip"),
-                        "application/zip", ".zip" });
+                        new ResourceRawData(null, "application/zip", "zip"), "application/zip",
+                        ".zip" });
         PRIMITIVE_NAME_TYPE_MAP.put("application/zip;stream",
                 new Object[] { RawData.class, CType.COMPLEX,
                         new StreamRawData("application/zip", null, "zip"), "application/zip",
                         ".zip" });
-        
+
         // ----
         PRIMITIVE_NAME_TYPE_MAP.put("application/x-netcdf",
                 new Object[] { RawData.class, CType.COMPLEX,
@@ -242,7 +250,7 @@ public class XMPPClient extends RemoteProcessClient {
         PRIMITIVE_NAME_TYPE_MAP.put("video/mp4;stream", new Object[] { RawData.class, CType.COMPLEX,
                 new StreamRawData("video/mp4", null, "mp4"), "video/mp4", ".mp4" });
     }
-    
+
     /**
      * Default Constructor
      * 
@@ -272,7 +280,9 @@ public class XMPPClient extends RemoteProcessClient {
     @Override
     public void init(SSLContext customSSLContext) throws Exception {
 
-        // Initializes the XMPP Client and starts the communication. It also register GeoServer as "manager" to the service channels on the MUC (Multi
+        // Initializes the XMPP Client and starts the communication. It also
+        // register GeoServer as "manager" to the service channels on the MUC
+        // (Multi
         // User Channel) Rooms
         LOGGER.info(
                 String.format("Initializing connection to server %1$s port %2$d", server, port));
@@ -299,7 +309,8 @@ public class XMPPClient extends RemoteProcessClient {
 
         LOGGER.info("Connected: " + connection.isConnected());
 
-        // Check if the connection to the XMPP server is successful; the login and registration is not yet performed at this time
+        // Check if the connection to the XMPP server is successful; the login
+        // and registration is not yet performed at this time
         if (connection.isConnected()) {
             chatManager = ChatManager.getInstanceFor(connection);
             discoStu = ServiceDiscoveryManager.getInstanceFor(connection);
@@ -316,66 +327,96 @@ public class XMPPClient extends RemoteProcessClient {
 
             // Send invitation to the registered endpoints
             sendInvitations();
+
+            //
+            getEndpointsLoadAverages();
+
+            //
+            checkPendingRequests();
         } else {
             setEnabled(false);
         }
     }
 
     @Override
-    public String execute(Name name, Map<String, Object> input, Map<String, Object> metadata,
+    public String execute(Name serviceName, Map<String, Object> input, Map<String, Object> metadata,
             ProgressListener monitor) throws Exception {
 
         // Check for a free machine...
-        final String serviceJID = getFlattestMachine(name, (String) metadata.get("serviceJID"));
 
-        LOGGER.info("XMPPClient::execute - trying to send a request message to the service JID ["
-                + serviceJID + "]");
+        LOGGER.info("XMPPClient::execute - searching available remote process machine for service ["
+                + serviceName + "]");
 
-        if (metadata != null && serviceJID != null) {
-        	
-            // Extract the PID
+        /**
+         * Sanity Checks
+         */
+        if (metadata == null) {
+            throw new Exception("Could not send a Request Message to the Remote XMPP Client!");
+        }
+
+        /**
+         * Collecting Request Info and Inputs
+         */
+        // Extract the process inputs
+        final Object fixedInputs = getFixedInputs(input);
+
+        // Generate a unique pID to be used to identify the endpoint
+        final String pid = md5Java(serviceName.getNamespaceURI() + "." + serviceName.getLocalPart()
+                + System.nanoTime() + byteArrayToURLString(pickle(fixedInputs)));
+
+        // Try to retrieve the base URL from the request and send to the
+        // endpoint as parameter
+        Request request = Dispatcher.REQUEST.get();
+        metadata.put("request", request);
+        String baseURL = getGeoServer().getGlobal().getSettings().getProxyBaseUrl();
+
+        try {
+            if (baseURL == null) {
+                baseURL = RequestUtils.baseURL(request.getHttpRequest());
+            }
+
+            baseURL = ResponseUtils.buildURL(baseURL, "/", null, URLType.SERVICE);
+        } catch (Exception e) {
+            LOGGER.warning("Could not acquire the GeoServer Base URL!");
+        }
+
+        // Build and send the REUQEST message
+
+        /**
+         * topic = request id = pid baseURL = geoserver url message = <pickled WPS inputs>
+         */
+
+        final String msg = "topic=request&id=" + pid + "&baseURL=" + baseURL + "&message="
+                + byteArrayToURLString(pickle(fixedInputs));
+
+        /**
+         * Looking for an available remote processing node
+         */
+
+        final String serviceJID = getFlattestMachine(serviceName);
+
+        if (serviceJID != null) {
+            /**
+             * We have a JID to an available processing node; send the request message to it...
+             */
+
+            // Update Metadata
             metadata.put("serviceJID", serviceJID);
-
-            // Extract the process inputs
-            final Object fixedInputs = getFixedInputs(input);
 
             LOGGER.info("XMPPClient::execute - extracting the PID for the service JID ["
                     + serviceJID + "] with inputs [" + fixedInputs + "]");
 
-            // Generate a unique pID to be used to identify the endpoint
-            final String pid = md5Java(
-                    serviceJID + System.nanoTime() + byteArrayToURLString(pickle(fixedInputs)));
-
-            // Try to retrieve the base URL from the request and send to the endpoint as parameter
-            Request request = Dispatcher.REQUEST.get();
-            metadata.put("request", request);
-            String baseURL = getGeoServer().getGlobal().getSettings().getProxyBaseUrl();
-
-            try {
-                if (baseURL == null) {
-                    baseURL = RequestUtils.baseURL(request.getHttpRequest());
-                }
-
-                baseURL = ResponseUtils.buildURL(baseURL, "/", null, URLType.SERVICE);
-            } catch (Exception e) {
-                LOGGER.warning("Could not acquire the GeoServer Base URL!");
-            }
-            
-            // Build and send the REUQEST message
-            /**
-             * topic = request
-             * id = pid
-             * baseURL = geoserver url
-             * message = <pickled WPS inputs>
-             */
-            String msg = "topic=request&id=" + pid + "&baseURL=" + baseURL + "&message="
-                    + byteArrayToURLString(pickle(fixedInputs));
             sendMessage(serviceJID, msg);
+        } else {
+            /**
+             * We could not find a suitable processing node to serve the request; queue it for later checks...
+             */
 
-            return pid;
+            pendingRequests
+                    .add(new RemoteRequestDescriptor(serviceName, input, metadata, pid, baseURL));
         }
 
-        throw new Exception("Could not send a Request Message to the Remote XMPP Client!");
+        return pid;
     }
 
     /**
@@ -440,21 +481,22 @@ public class XMPPClient extends RemoteProcessClient {
             // Create a MultiUserChat using a XMPPConnection for a room
 
             // User joins the new room using a password and specifying
-            // the amount of history to receive. In this example we are requesting the last 5 messages.
+            // the amount of history to receive. In this example we are
+            // requesting the last 5 messages.
             DiscussionHistory history = new DiscussionHistory();
             history.setMaxStanzas(5);
 
             mucManagementChannel = new MultiUserChat(connection,
                     managementChannel + "@" + bus + "." + domain);
             mucManagementChannel.join(getJID(username), managementChannelPassword); /*
-                                                                                     * , history, connection.getPacketReplyTimeout());
+                                                                                     * , history, connection. getPacketReplyTimeout());
                                                                                      */
 
             for (String channel : serviceChannels) {
                 MultiUserChat serviceChannel = new MultiUserChat(connection,
                         channel + "@" + bus + "." + domain);
                 serviceChannel.join(getJID(username), managementChannelPassword); /*
-                                                                                   * , history, connection.getPacketReplyTimeout());
+                                                                                   * , history, connection. getPacketReplyTimeout());
                                                                                    */
                 mucServiceChannels.add(serviceChannel);
             }
@@ -600,7 +642,7 @@ public class XMPPClient extends RemoteProcessClient {
      * 
      *
      */
-    static NameImpl extractServiceName(String person) throws Exception {
+    public static NameImpl extractServiceName(String person) throws Exception {
         String occupantFlatName = null;
         if (person.lastIndexOf("@") < person.indexOf("/")) {
             occupantFlatName = person.substring(person.indexOf("/") + 1);
@@ -638,6 +680,98 @@ public class XMPPClient extends RemoteProcessClient {
                     if (!registeredServices.contains(serviceName)) {
                         registeredServices.add(serviceName);
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Scan Remote Processing Machines availability and average load
+     * 
+     * @throws Exception
+     */
+    protected void getEndpointsLoadAverages() throws Exception {
+        synchronized (registeredProcessingMachines) {
+            List<String> nodeJIDs = new ArrayList<String>();
+            for (RemoteMachineDescriptor node : registeredProcessingMachines) {
+                nodeJIDs.add(node.getNodeJID());
+                node.setAvailable(false);
+            }
+
+            for (MultiUserChat mucServiceChannel : mucServiceChannels) {
+                for (String occupant : mucServiceChannel.getOccupants()) {
+                    if (!nodeJIDs.contains(occupant)) {
+                        registeredProcessingMachines.add(new RemoteMachineDescriptor(occupant,
+                                extractServiceName(occupant), false, 0.0, 0.0));
+                    }
+
+                    // send invitation and register source JID
+                    String[] serviceJIDParts = occupant.split("/");
+                    if (serviceJIDParts.length == 3 && (serviceJIDParts[2].startsWith("master")
+                            || serviceJIDParts[2].indexOf("@") < 0)) {
+                        sendMessage(occupant, "topic=getloadavg");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Scan pending requests queue; try to find a free remote node suitable for processing or abort the request if expired.
+     * 
+     * @throws Exception
+     */
+    protected void checkPendingRequests() throws Exception {
+        synchronized (pendingRequests) {
+            for (RemoteRequestDescriptor request : pendingRequests) {
+
+                // Check if the request is still valid
+                final String pid = request.getPid();
+                boolean isRequestValid = false;
+                for (RemoteProcessClientListener process : getRemoteClientListeners()) {
+                    if (process.getPID().equals(pid)) {
+                        isRequestValid = true;
+                        break;
+                    }
+                }
+
+                if (!isRequestValid) {
+                    // Remove the request from the queue
+                    pendingRequests.remove(request);
+                    continue;
+                }
+
+                // Check if the request can be executed by a remote processing node
+                final Name serviceName = request.getServicename();
+                final String serviceJID = getFlattestMachine(serviceName);
+
+                if (serviceJID != null) {
+                    // Extract the process inputs
+                    final Object fixedInputs = getFixedInputs(request.getInput());
+
+                    // Build and send the REUQEST message
+                    /**
+                     * topic = request id = pid baseURL = geoserver url message = <pickled WPS inputs>
+                     */
+                    final String msg = "topic=request&id=" + pid + "&baseURL="
+                            + request.getBaseURL() + "&message="
+                            + byteArrayToURLString(pickle(fixedInputs));
+
+                    /**
+                     * We have a JID to an available processing node; send the request message to it...
+                     */
+
+                    // Update Metadata
+                    request.getMetadata().put("serviceJID", serviceJID);
+
+                    LOGGER.info("XMPPClient::execute - extracting the PID for the service JID ["
+                            + serviceJID + "] with inputs [" + fixedInputs + "]");
+
+                    sendMessage(serviceJID, msg);
+
+                    // Remove the request from the queue
+                    pendingRequests.remove(request);
+                    continue;
                 }
             }
         }
@@ -698,87 +832,50 @@ public class XMPPClient extends RemoteProcessClient {
      * 
      *
      */
-    private String getFlattestMachine(Name name, String candidateServiceJID) {
-        final String serviceName = name.getLocalPart();
+    private String getFlattestMachine(Name serviceName) {
+        // The candidate remote processing node
+        RemoteMachineDescriptor candidateNode = null;
 
-        LOGGER.info("XMPPClient::getFlattestMachine - scanning the connected remote services...");
+        /** Thresholds indicating overloaded resources */
+        Double cpuLoadPercThreshold = DEFAULT_CPU_PERCENT_THRESHOLD;
+        Double vmemPercThreshold = DEFAULT_MEM_PERCENT_THRESHOLD;
+        
+        if (getConfiguration().get("xmpp_cpu_perc_threshold") != null) {
+            cpuLoadPercThreshold = Double.valueOf(getConfiguration().get("xmpp_cpu_perc_threshold"));
+        }
+        
+        if (getConfiguration().get("xmpp_mem_perc_threshold") != null) {
+            vmemPercThreshold = Double.valueOf(getConfiguration().get("xmpp_mem_perc_threshold"));
+        }
 
-        Map<String, List<String>> availableServices = new HashMap<String, List<String>>();
-        Map<String, List<String>> availableServiceJIDs = new HashMap<String, List<String>>();
+        synchronized (registeredProcessingMachines) {
+            LOGGER.info(
+                    "XMPPClient::getFlattestMachine - scanning the connected remote services...");
 
-        for (MultiUserChat muc : this.mucServiceChannels) {
+            for (RemoteMachineDescriptor node : registeredProcessingMachines) {
+                if (node.getAvailable() && node.getServiceName().equals(serviceName)) {
 
-            for (String occupant : muc.getOccupants()) {
+                    if (node.getLoadAverage() >= cpuLoadPercThreshold
+                            || node.getMemPercUsed() >= vmemPercThreshold) {
+                        continue;
+                    }
 
-                LOGGER.info("XMPPClient::getFlattestMachine - looking for service [" + serviceName
-                        + "] @occupant [" + occupant + "]");
-
-                if (occupant.toLowerCase().contains(serviceName.toLowerCase())) {
-
-                    // extracting the machine name
-                    String[] serviceJIDParts = occupant.split("/");
-                    if (serviceJIDParts.length > 1) {
-                        String[] localizedServiceJID = serviceJIDParts[1].split("@");
-
-                        LOGGER.info(
-                                "XMPPClient::getFlattestMachine - [localizedServiceJID.length] -> "
-                                        + localizedServiceJID.length);
-                        LOGGER.info(
-                                "XMPPClient::getFlattestMachine - [localizedServiceJID[0].contains(serviceName)] -> "
-                                        + localizedServiceJID[0].contains(serviceName));
-                        LOGGER.info("XMPPClient::getFlattestMachine - [localizedServiceJID] -> "
-                                + localizedServiceJID[0] + " @ " + localizedServiceJID[1]);
-
-                        if (localizedServiceJID.length == 2 && localizedServiceJID[0].toLowerCase()
-                                .contains(serviceName.toLowerCase())) {
-                            // final String machine = localizedServiceJID[1];
-                            final String machine = occupant
-                                    .substring(occupant.lastIndexOf("@") + 1);
-
-                            if (availableServices.get(machine) == null) {
-                                availableServices.put(machine, new ArrayList<String>());
-                            }
-                            if (availableServiceJIDs.get(machine) == null) {
-                                availableServiceJIDs.put(machine, new ArrayList<String>());
-                            }
-
-                            availableServices.get(machine).add(occupant);
-                            if (serviceJIDParts.length == 3
-                                    && (serviceJIDParts[2].startsWith("master")
-                                            || serviceJIDParts[2].indexOf("@") < 0)) {
-                                availableServiceJIDs.get(machine).add(occupant);
-                            }
-                        }
+                    if (candidateNode == null || (node.getLoadAverage() <= candidateNode
+                            .getLoadAverage()
+                            && (node.getLoadAverage() < candidateNode.getLoadAverage()
+                                    || node.getMemPercUsed() < candidateNode.getMemPercUsed()))) {
+                        candidateNode = node;
                     }
                 }
             }
         }
 
-        if (availableServices == null || availableServices.isEmpty()) {
-
-            LOGGER.info(
-                    "XMPPClient::getFlattestMachine - no suitable target JID found, using the default candidate ["
-                            + candidateServiceJID + "]");
-
-            return candidateServiceJID;
+        // Return the candidate remote processing node JID or null
+        if (candidateNode != null) {
+            return candidateNode.getNodeJID();
         }
 
-        String targetMachine = null;
-        String targetServiceJID = null;
-        int targetMachineCounter = Integer.MAX_VALUE;
-        for (String machine : availableServices.keySet()) {
-            if (targetMachine == null
-                    || targetMachineCounter > availableServices.get(machine).size()) {
-                targetMachine = machine;
-                targetServiceJID = availableServiceJIDs.get(machine).get(0);
-                targetMachineCounter = availableServices.get(machine).size();
-            }
-        }
-
-        LOGGER.info("XMPPClient::getFlattestMachine - target JID found, using the target ["
-                + targetServiceJID + "]");
-
-        return targetServiceJID;
+        return null;
     }
 
     /**
@@ -898,8 +995,16 @@ public class XMPPClient extends RemoteProcessClient {
                             } catch (NotConnectedException e) {
                                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
                             }
+                        } else {
+                            //
+                            getEndpointsLoadAverages();
+
+                            //
+                            checkPendingRequests();
                         }
                     } catch (NotConnectedException e) {
+                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    } catch (Exception e) {
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
                     }
                 } else {
@@ -910,7 +1015,9 @@ public class XMPPClient extends RemoteProcessClient {
 
                         LOGGER.info("Connected: " + connection.isConnected());
 
-                        // check if the connection to the XMPP server is successful; the login and registration is not yet performed at this time
+                        // check if the connection to the XMPP server is
+                        // successful; the login and registration is not yet
+                        // performed at this time
                         if (connection.isConnected()) {
                             chatManager = ChatManager.getInstanceFor(connection);
                             discoStu = ServiceDiscoveryManager.getInstanceFor(connection);
@@ -927,6 +1034,12 @@ public class XMPPClient extends RemoteProcessClient {
 
                             //
                             sendInvitations();
+
+                            //
+                            getEndpointsLoadAverages();
+
+                            //
+                            checkPendingRequests();
                         } else {
                             setEnabled(false);
                         }
@@ -945,7 +1058,6 @@ public class XMPPClient extends RemoteProcessClient {
         }
     }
 
-
     /**
      * Utility method to "pickle" (compress) the input parameters to be attached to the XMPP message
      * 
@@ -958,7 +1070,7 @@ public class XMPPClient extends RemoteProcessClient {
         Pickler p = new Pickler();
         return p.dumps(unpickled);
     }
-    
+
     /**
      * Utility method to "un-pickle" (decompress) the input parameters attached to the XMPP message
      * 
@@ -1183,8 +1295,7 @@ public class XMPPClient extends RemoteProcessClient {
 /**
  * Actual implementation of a "PacketListener".
  * 
- * Listen to the service channels and handles the "registration" and "de-registration" of the 
- * available services (alias available WPS Processes)
+ * Listen to the service channels and handles the "registration" and "de-registration" of the available services (alias available WPS Processes)
  * 
  * @author Alessio Fabiani, GeoSolutions
  * 
@@ -1216,8 +1327,8 @@ class XMPPPacketListener implements PacketListener {
                         final String channel = p.getFrom().substring(0, p.getFrom().indexOf("@"));
                         /*
                          * if (xmppClient.occupantsList.get(channel) == null) { xmppClient.occupantsList.put(channel, new ArrayList<String>()); } if
-                         * (xmppClient.occupantsList.get(channel) != null) { if (!xmppClient.occupantsList.get(channel).contains(p.getFrom()))
-                         * xmppClient.occupantsList.get(channel).add(p.getFrom()); }
+                         * (xmppClient.occupantsList.get(channel) != null) { if (!xmppClient.occupantsList.get(channel).contains(p. getFrom()))
+                         * xmppClient.occupantsList.get(channel).add(p.getFrom() ); }
                          */
 
                         if (xmppClient.serviceChannels.contains(channel))
@@ -1237,7 +1348,8 @@ class XMPPPacketListener implements PacketListener {
                                         final Name occupantServiceName = xmppClient
                                                 .extractServiceName(occupant);
 
-                                        // send invitation and register source JID
+                                        // send invitation and register source
+                                        // JID
                                         String[] serviceJIDParts = occupant.split("/");
                                         if (serviceJIDParts.length == 3
                                                 && (serviceJIDParts[2].startsWith("master")

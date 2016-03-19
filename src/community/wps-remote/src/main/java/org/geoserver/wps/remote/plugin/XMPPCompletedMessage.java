@@ -12,15 +12,15 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.razorvine.pickle.PickleException;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-
 import org.geoserver.wps.remote.RemoteProcessClientListener;
 import org.geoserver.wps.remote.plugin.output.XMPPOutputDefaultProducer;
 import org.geotools.util.logging.Logging;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+
+import net.razorvine.pickle.PickleException;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 /**
  * Listens for "COMPLETE" messages from XMPP service channels and takes action accordingly.
@@ -51,19 +51,22 @@ public class XMPPCompletedMessage implements XMPPMessage {
 
         // NOTIFY THE LISTENERS
         if (msg != null && msg.equals("completed")) {
-            Map<String, Object> outputs = new HashMap<String, Object>();
+            final Map<String, Object> outputs = new HashMap<String, Object>();
             try {
                 for (Entry<String, String> result : signalArgs.entrySet()) {
                     if (result.getKey().startsWith("result")) {
-                        String serviceResultString = URLDecoder.decode(result.getValue(), "UTF-8");
-                        JSONObject serviceResultJSON = (JSONObject) JSONSerializer
+                        final String serviceResultString = URLDecoder.decode(result.getValue(),
+                                "UTF-8");
+                        final JSONObject serviceResultJSON = (JSONObject) JSONSerializer
                                 .toJSON(serviceResultString);
-                        Object output = xmppClient.unPickle(xmppClient.pickle(serviceResultJSON));
+                        final Object output = xmppClient
+                                .unPickle(xmppClient.pickle(serviceResultJSON));
 
                         // XMPP Output Visitor
                         if (output instanceof Map) {
-                            Map<String, Object> resultParams = (Map<String, Object>) output;
-                            // transform the textual value into a real WPS output
+                            final Map<String, Object> resultParams = (Map<String, Object>) output;
+                            // transform the textual value into a real WPS
+                            // output
                             try {
                                 final Object value = (resultParams
                                         .get(result.getKey() + "_value") != null
@@ -133,15 +136,18 @@ public class XMPPCompletedMessage implements XMPPMessage {
                                         pID, baseURL, xmppClient, publish, layerName, title,
                                         description, defaultStyle, targetWorkspace, metadata);
 
-                                LOGGER.info(" - TEST - [XMPPCompletedMessage] wpsOutputValue:"
-                                        + wpsOutputValue);
+                                LOGGER.finest(
+                                        "[XMPPCompletedMessage] wpsOutputValue:" + wpsOutputValue);
 
-                                // add the transformed result to the process outputs
+                                // add the transformed result to the process
+                                // outputs
                                 if (wpsOutputValue != null) {
                                     outputs.put(result.getKey(), wpsOutputValue);
                                     continue;
                                 } else {
-                                    // throw new Exception("All the Oputput Producres failed transforming the WPS Output!");
+                                    // throw new Exception("All the Oputput
+                                    // Producres failed transforming the WPS
+                                    // Output!");
                                     LOGGER.warning(
                                             "At least one of the Oputput Producres failed transforming the WPS Output!");
                                 }

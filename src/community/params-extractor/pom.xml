@@ -12,7 +12,6 @@
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-params-extractor</artifactId>
     <packaging>jar</packaging>
-    <version>2.9-SNAPSHOT</version>
     <name>Parameters Extractor</name>
 
     <dependencies>

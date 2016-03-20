@@ -6,13 +6,12 @@
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>community</artifactId>
-        <version>2.7-SNAPSHOT</version>
+        <version>2.8-SNAPSHOT</version>
     </parent>
 
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-params-extractor</artifactId>
     <packaging>jar</packaging>
-    <version>2.8-SNAPSHOT</version>
     <name>Parameters Extractor</name>
 
     <dependencies>

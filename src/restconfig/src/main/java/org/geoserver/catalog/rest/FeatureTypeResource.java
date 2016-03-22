@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -243,9 +244,10 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByDataStore( ds,  featuretype );
         Map<String, Serializable> parametersCheck = featureTypeInfo.getStore().getConnectionParameters();
         
+        calculateOptionalFields(featureTypeUpdate, featureTypeInfo);
         CatalogBuilder helper = new CatalogBuilder(catalog);
         helper.updateFeatureType(featureTypeInfo,featureTypeUpdate);
-        calculateOptionalFields(featureTypeUpdate, featureTypeInfo);
+        
         catalog.validate(featureTypeInfo, false).throwIfInvalid();
         catalog.save( featureTypeInfo );
         catalog.getResourcePool().clear(featureTypeInfo);
@@ -303,6 +305,21 @@ public class FeatureTypeResource extends AbstractCatalogResource {
             persister.setHideFeatureTypeAttributes();
         }
         persister.setCallback( new XStreamPersister.Callback() {
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                String workspace = getAttribute("workspace");
+                String datastore = getAttribute("datastore");
+                String featuretype = getAttribute("featuretype");
+                
+                if (workspace == null || datastore == null || featuretype == null) {
+                    return null;
+                }
+                DataStoreInfo ds = catalog.getDataStoreByName(workspace, datastore);
+                if (ds == null) {
+                    return null;
+                }
+                return catalog.getFeatureTypeByDataStore( ds,  featuretype );
+            }
             @Override
             protected void postEncodeReference(Object obj, String ref, String prefix,
                     HierarchicalStreamWriter writer, MarshallingContext context) {

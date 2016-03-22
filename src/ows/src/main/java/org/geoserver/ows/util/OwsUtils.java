@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -416,21 +416,27 @@ public class OwsUtils {
 
     /**
      * Helper method for updating a collection based property.
+     * Only used if setter is null.
      */
     static void updateCollectionProperty(Object object, Collection newValue, Method getter)
             throws Exception {
         Collection oldValue = (Collection) getter.invoke(object, null);
-        oldValue.clear();
-        oldValue.addAll(newValue);
+        if (oldValue != null) {
+            oldValue.clear();
+            oldValue.addAll(newValue);
+        }
     }
 
     /**
      * Helper method for updating a map based property.
+     * Only used if setter is null.
      */
     static void updateMapProperty(Object object, Map newValue, Method getter) throws Exception {
         Map oldValue = (Map) getter.invoke(object, null);
-        oldValue.clear();
-        oldValue.putAll(newValue);
+        if (oldValue != null) {
+            oldValue.clear();
+            oldValue.putAll(newValue);
+        }
     }
 
 }

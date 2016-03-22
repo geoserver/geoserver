@@ -292,6 +292,23 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         assertTrue( ds.getConnectionParameters().containsKey( "one" ) );
         assertTrue( ds.getConnectionParameters().containsKey( "two" ) );
     }
+    
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        DataStoreInfo ds = catalog.getDataStoreByName( "sf", "sf");
+        assertTrue(ds.isEnabled());
+        
+        String xml = 
+        "<dataStore>" + 
+         "<name>sf</name>" + 
+        "</dataStore>";
+        
+        MockHttpServletResponse response = 
+            putAsServletResponse( "/rest/workspaces/sf/datastores/sf", xml, "text/xml");
+        assertEquals( 200, response.getStatus() );
+        
+        assertTrue(ds.isEnabled());
+    }
 
     @Test
     public void testPutNonExistant() throws Exception {

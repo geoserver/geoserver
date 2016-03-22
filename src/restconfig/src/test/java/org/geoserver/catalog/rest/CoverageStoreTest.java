@@ -272,6 +272,25 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         
         assertFalse( catalog.getCoverageStoreByName( "wcs", "BlueMarble").isEnabled() );
     }
+    
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        CoverageStoreInfo cs = catalog.getCoverageStoreByName( "wcs", "BlueMarble");
+        
+        assertTrue(cs.isEnabled());
+        
+        String xml = 
+        "<coverageStore>" + 
+         "<name>BlueMarble</name>" + 
+        "</coverageStore>";
+        
+        MockHttpServletResponse response = 
+            putAsServletResponse( "/rest/workspaces/wcs/coveragestores/BlueMarble", xml, "text/xml");
+        assertEquals( 200, response.getStatus() );
+        
+        cs = catalog.getCoverageStoreByName( "wcs", "BlueMarble");
+        assertTrue(cs.isEnabled());
+    }
 
     @Test
     public void testPutEmptyAndHarvest() throws Exception {

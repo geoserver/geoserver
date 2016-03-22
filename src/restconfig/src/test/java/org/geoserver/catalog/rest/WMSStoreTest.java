@@ -16,6 +16,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -212,23 +213,52 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPut() throws Exception {
-        Document dom = getAsDOM( "/rest/workspaces/sf/datastores/sf.xml");
-        assertXpathEvaluatesTo("true", "/dataStore/enabled", dom );
+        Document dom = getAsDOM( "/rest/workspaces/sf/wmsstores/demo.xml");
+        assertXpathEvaluatesTo("true", "/wmsStore/enabled", dom );
         
         String xml = 
-        "<dataStore>" + 
-         "<name>sf</name>" + 
+        "<wmsStore>" + 
+         "<name>demo</name>" + 
          "<enabled>false</enabled>" + 
-        "</dataStore>";
+        "</wmsStore>";
         
         MockHttpServletResponse response = 
-            putAsServletResponse( "/rest/workspaces/sf/datastores/sf", xml, "text/xml");
+            putAsServletResponse( "/rest/workspaces/sf/wmsstores/demo", xml, "text/xml");
         assertEquals( 200, response.getStatus() );
 
-        dom = getAsDOM( "/rest/workspaces/sf/datastores/sf.xml");
-        assertXpathEvaluatesTo("false", "/dataStore/enabled", dom );
+        dom = getAsDOM( "/rest/workspaces/sf/wmsstores/demo.xml");
+        assertXpathEvaluatesTo("false", "/wmsStore/enabled", dom );
         
-        assertFalse( catalog.getDataStoreByName( "sf", "sf").isEnabled() );
+        assertFalse( catalog.getStoreByName("sf", "demo", WMSStoreInfo.class).isEnabled() );
+    }
+    
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        WMSStoreInfo wsi = catalog.getStoreByName("sf", "demo", WMSStoreInfo.class);
+        wsi.setEnabled(true);
+        catalog.save(wsi);
+        assertTrue(wsi.isEnabled());
+        int maxConnections = wsi.getMaxConnections();
+        int readTimeout = wsi.getReadTimeout();
+        int connectTimeout = wsi.getConnectTimeout();
+        boolean useConnectionPooling = wsi.isUseConnectionPooling();
+        
+        String xml = 
+            "<wmsStore>" + 
+            "<name>demo</name>" + 
+            "</wmsStore>";
+
+        MockHttpServletResponse response = 
+            putAsServletResponse("/rest/workspaces/sf/wmsstores/demo", xml, "text/xml" );
+        assertEquals( 200, response.getStatus() );
+        
+        wsi = catalog.getStoreByName("sf", "demo", WMSStoreInfo.class);
+        
+        assertTrue(wsi.isEnabled());
+        assertEquals(maxConnections, wsi.getMaxConnections());
+        assertEquals(readTimeout, wsi.getReadTimeout());
+        assertEquals(connectTimeout, wsi.getConnectTimeout());
+        assertEquals(useConnectionPooling, wsi.isUseConnectionPooling());
     }
 
     @Test

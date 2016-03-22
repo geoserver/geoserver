@@ -347,6 +347,35 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertEquals( "new title", ft.getTitle() );
     }
     
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        FeatureTypeInfo ft = catalog.getFeatureTypeByName( "sf", "PrimitiveGeoFeature");
+        assertTrue(ft.isEnabled());
+        boolean isAdvertised = ft.isAdvertised();
+        int maxFeatures = ft.getMaxFeatures();
+        int numDecimals = ft.getNumDecimals();
+        boolean isOverridingServiceSRS = ft.isOverridingServiceSRS();
+        boolean getSkipNumberMatched = ft.getSkipNumberMatched();
+        boolean isCircularArcPresent = ft.isCircularArcPresent();
+        
+        String xml = 
+          "<featureType>" + 
+            "<title>new title</title>" +  
+          "</featureType>";
+        MockHttpServletResponse response = 
+            putAsServletResponse("/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature", xml, "text/xml");
+        assertEquals( 200, response.getStatus() );
+        
+        ft = catalog.getFeatureTypeByName( "sf", "PrimitiveGeoFeature");
+        assertTrue(ft.isEnabled());
+        assertEquals(isAdvertised, ft.isAdvertised());
+        assertEquals(maxFeatures, ft.getMaxFeatures());
+        assertEquals(numDecimals, ft.getNumDecimals());
+        assertEquals(isOverridingServiceSRS, ft.isOverridingServiceSRS());
+        assertEquals(getSkipNumberMatched, ft.getSkipNumberMatched());
+        assertEquals(isCircularArcPresent, ft.isCircularArcPresent());
+    }
+    
     /**
      * Check feature type modification involving calculation of bounds.
      * 

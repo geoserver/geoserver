@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -60,7 +60,6 @@ import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.logging.Logging;
-import org.opengis.parameter.ParameterValueGroup;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -185,8 +184,8 @@ public class NetCDFOutputManager {
     public NetCDFOutputManager(GranuleStack granuleStack, File file,
             Map<String, String> encodingParameters, String outputFormat) throws IOException {
         this.granuleStack = granuleStack;
-        this.writer = getWriter(file, outputFormat);
         parseParams(encodingParameters);
+        this.writer = getWriter(file, outputFormat);
         collectCoverageDimensions();
         initializeNetCDF();
     }

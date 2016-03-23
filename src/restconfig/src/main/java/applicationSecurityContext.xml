@@ -48,13 +48,13 @@
 </property>
 </bean>
 
-  <bean id="masterPasswordResource" class="org.geoserver.security.rest.MasterPasswordResource" singleton="false">
+  <bean id="masterPasswordResource" class="org.geoserver.security.rest.MasterPasswordResource" scope="prototype">
   </bean>
 
-  <bean id="dataAccessControlResource" class="org.geoserver.security.rest.DataAccessControlResource" singleton="false"/>
-  <bean id="restAccessControlResource" class="org.geoserver.security.rest.RESTAccessControlResource" singleton="false"/>
-  <bean id="serviceAccessControlResource" class="org.geoserver.security.rest.ServiceAccessControlResource" singleton="false"/>
-  <bean id="catalogModeResource" class="org.geoserver.security.rest.CatalogModeResource" singleton="false"/>
+  <bean id="dataAccessControlResource" class="org.geoserver.security.rest.DataAccessControlResource" scope="prototype"/>
+  <bean id="restAccessControlResource" class="org.geoserver.security.rest.RESTAccessControlResource" scope="prototype"/>
+  <bean id="serviceAccessControlResource" class="org.geoserver.security.rest.ServiceAccessControlResource" scope="prototype"/>
+  <bean id="catalogModeResource" class="org.geoserver.security.rest.CatalogModeResource" scope="prototype"/>
   
   
 </beans>

@@ -154,18 +154,18 @@
 
   <!-- responses -->
   <bean id="wcs111GetCapabilitiesResponse"
-    class="org.geoserver.wcs.response.GetCapabilitiesResponse" singleton="false" />
+    class="org.geoserver.wcs.response.GetCapabilitiesResponse" scope="prototype" />
 
   <bean id="wcs111DescribeCoverageResponse"
-    class="org.geoserver.wcs.response.DescribeCoverageResponse" singleton="false" />
+    class="org.geoserver.wcs.response.DescribeCoverageResponse" scope="prototype" />
 
   <bean id="wcs111GetCoverageMultipartResponse"
-    class="org.geoserver.wcs.response.WCSMultipartResponse" singleton="false">
+    class="org.geoserver.wcs.response.WCSMultipartResponse" scope="prototype">
     <constructor-arg ref="catalog" />
     <constructor-arg ref="coverageResponseDelegateFactory"/>
   </bean>
   <bean id="wcs111GetCoverageStoreResponse"
-    class="org.geoserver.wcs.response.WCSGetCoverageStoreResponse" singleton="false">
+    class="org.geoserver.wcs.response.WCSGetCoverageStoreResponse" scope="prototype">
     <constructor-arg ref="geoServer" />
     <constructor-arg ref="coverageResponseDelegateFactory"/>
   </bean>
@@ -189,18 +189,18 @@
 
   <!-- Definition of how often the scheduled task runs -->
   <bean id="wcs111TempStorageCleanerTask"
-    class="org.springframework.scheduling.timer.ScheduledTimerTask">
+    class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
     <!-- wait 10 seconds before starting repeated execution -->
     <property name="delay" value="10000" />
     <!-- run every 60 seconds -->
     <property name="period" value="60000" />
-    <property name="timerTask" ref="wcs111TempStorageCleaner" />
+    <property name="runnable" ref="wcs111TempStorageCleaner" />
   </bean>
 
   <!-- And finally the class that instantiates the scheduled tasks and makes them run -->
-  <bean id="wcs111timerFactory" class="org.springframework.scheduling.timer.TimerFactoryBean"
+  <bean id="wcs111timerFactory" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean"
     lazy-init="false">
-    <property name="scheduledTimerTasks">
+    <property name="scheduledExecutorTasks">
       <list>
         <ref bean="wcs111TempStorageCleanerTask" />
       </list>

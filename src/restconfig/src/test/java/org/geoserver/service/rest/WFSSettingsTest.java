@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WFSSettingsTest extends CatalogRESTTestSupport {
     
@@ -54,7 +54,7 @@ public class WFSSettingsTest extends CatalogRESTTestSupport {
         String json = "{'wfs': {'id':'wfs','enabled':'false','name':'WFS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/settings/",
                 json, "text/json");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON("/rest/services/wfs/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
@@ -73,7 +73,7 @@ public class WFSSettingsTest extends CatalogRESTTestSupport {
                 + "</wfs>";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/settings", xml,
                 "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM("/rest/services/wfs/settings.xml");
         assertXpathEvaluatesTo("false", "/wfs/enabled", dom);
         assertXpathEvaluatesTo("WFS", "/wfs/name", dom);
@@ -81,6 +81,6 @@ public class WFSSettingsTest extends CatalogRESTTestSupport {
 
     @Test
     public void testDelete() throws Exception {
-        assertEquals(405, deleteAsServletResponse("/rest/services/wfs/settings").getStatusCode());
+        assertEquals(405, deleteAsServletResponse("/rest/services/wfs/settings").getStatus());
     }
 }

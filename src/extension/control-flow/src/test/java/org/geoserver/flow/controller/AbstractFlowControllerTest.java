@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,8 +14,8 @@ import javax.servlet.http.Cookie;
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Base class providing utilities to test flow controllers
@@ -97,7 +97,7 @@ public abstract class AbstractFlowControllerTest {
         request.setHttpResponse(new MockHttpServletResponse());
         
         if(gsCookieValue != null) {
-            httpRequest.addCookie(new Cookie(CookieKeyGenerator.COOKIE_NAME, gsCookieValue));
+            httpRequest.setCookies(new Cookie(CookieKeyGenerator.COOKIE_NAME, gsCookieValue));
         }
         return request;
     }
@@ -114,7 +114,7 @@ public abstract class AbstractFlowControllerTest {
             httpRequest.setRemoteAddr("127.0.0.1");
         }
         if (!proxyIp.equals("")) {
-            httpRequest.setHeader("x-forwarded-for", proxyIp + ", " + ipAddress);
+            httpRequest.addHeader("x-forwarded-for", proxyIp + ", " + ipAddress);
         }
         return request;
     }

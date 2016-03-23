@@ -37,6 +37,11 @@
       <artifactId>commons-collections</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
@@ -56,8 +61,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-       <groupId>com.mockrunner</groupId>
-       <artifactId>mockrunner</artifactId>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-test</artifactId>
        <scope>test</scope>
     </dependency>
     <dependency>

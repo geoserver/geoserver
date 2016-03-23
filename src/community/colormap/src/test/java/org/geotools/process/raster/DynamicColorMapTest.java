@@ -33,7 +33,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DynamicColorMapTest extends GeoServerSystemTestSupport {
 
@@ -95,7 +95,7 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse response = putAsServletResponse(
                 "rest/workspaces/gs/coveragestores/watertemp_dynamic/file.imagemosaic", bytes,
                 "application/zip");
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         
         // Configuring read as immediate instead of using JAI
 //        LayerInfo layer = catalog.getLayerByName("watertemp_dynamic");
@@ -148,7 +148,7 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
         assertEquals(max, 20.665, TOLERANCE);
         ImageIOUtilities.disposeImage(gridCoverage.getRenderedImage());
         MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/gs/coveragestores/watertemp_dynamic?recurse=true");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
     }
 
     @Test

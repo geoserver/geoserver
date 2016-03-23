@@ -35,8 +35,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.restlet.data.Status;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Test class for checking REST resumable upload
@@ -110,11 +110,11 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         request.setMethod("PUT");
         request.setContentType("application/octet-stream");
         byte[] bigFile = generateFileAsBytes();
-        request.setBodyContent(bigFile);
-        request.setHeader("Content-type", "application/octet-stream");
-        request.setHeader("Content-Length", String.valueOf(bigFile.length));
+        request.setContent(bigFile);
+        request.addHeader("Content-type", "application/octet-stream");
+        request.addHeader("Content-Length", String.valueOf(bigFile.length));
         MockHttpServletResponse response = dispatch(request);
-        assertEquals(Status.SUCCESS_OK.getCode(), response.getStatusCode());
+        assertEquals(Status.SUCCESS_OK.getCode(), response.getStatus());
         assertFalse(uploadedFile.exists());
         File destinationFile = new File(FilenameUtils.concat(root, fileName.replaceAll("^/", "")));
         assertTrue(destinationFile.exists());
@@ -123,7 +123,7 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         boolean checkBytes = Arrays.equals(bigFile, toBytes(new FileInputStream(destinationFile)));
         assertTrue(checkBytes);
         // Check response content
-        String restUrl = response.getOutputStreamContent();
+        String restUrl = response.getContentAsString();
         assertEquals(fileName.replaceAll("^/", ""), restUrl);
     }
 
@@ -152,12 +152,12 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         request.setContentType("application/octet-stream");
         byte[] bigFile = generateFileAsBytes();
         byte[] partialFile = ArrayUtils.subarray(bigFile, 0, (int) partialSize);
-        request.setBodyContent(partialFile);
-        request.setHeader("Content-type", "application/octet-stream");
-        request.setHeader("Content-Length", String.valueOf(bigFile.length));
+        request.setContent(partialFile);
+        request.addHeader("Content-type", "application/octet-stream");
+        request.addHeader("Content-Length", String.valueOf(bigFile.length));
         MockHttpServletResponse response = dispatch(request);
         assertEquals(ResumableUploadCatalogResource.RESUME_INCOMPLETE.getCode(),
-                response.getStatusCode());
+                response.getStatus());
         assertEquals(null, response.getHeader("Content-Length"));
         assertEquals("0-" + (partialSize - 1), response.getHeader("Range"));
         File uploadedFile = getTempPath(uploadId);
@@ -177,9 +177,9 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         MockHttpServletRequest request = createRequest("/rest/resumableupload/" + uploadId);
         request.setMethod("PUT");
         request.setContentType("application/octet-stream");
-        request.setBodyContent(partialFile1);
-        request.setHeader("Content-type", "application/octet-stream");
-        request.setHeader("Content-Length", String.valueOf(bigFile.length));
+        request.setContent(partialFile1);
+        request.addHeader("Content-type", "application/octet-stream");
+        request.addHeader("Content-Length", String.valueOf(bigFile.length));
         dispatch(request);
 
         // Resume upload
@@ -188,14 +188,14 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         request.setContentType("application/octet-stream");
         byte[] partialFile2 = ArrayUtils
                 .subarray(bigFile, (int) partialSize, (int) partialSize * 2);
-        request.setBodyContent(partialFile2);
-        request.setHeader("Content-type", "application/octet-stream");
-        request.setHeader("Content-Length", String.valueOf(partialFile2.length));
-        request.setHeader("Content-Range", "bytes " + partialSize + "-" + partialSize * 2 + "/"
-                + bigFile.length);
+        request.setContent(partialFile2);
+        request.addHeader("Content-type", "application/octet-stream");
+        request.addHeader("Content-Length", String.valueOf(partialFile2.length));
+        request.addHeader("Content-Range", "bytes " + partialSize + "-" + partialSize * 2 + "/"
+        + bigFile.length);
         MockHttpServletResponse response = dispatch(request);
         assertEquals(ResumableUploadCatalogResource.RESUME_INCOMPLETE.getCode(),
-                response.getStatusCode());
+                response.getStatus());
         assertEquals(null, response.getHeader("Content-Length"));
         assertEquals("0-" + (partialSize * 2 - 1), response.getHeader("Range"));
         File uploadedFile = getTempPath(uploadId);
@@ -217,9 +217,9 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         MockHttpServletRequest request = createRequest("/rest/resumableupload/" + uploadId);
         request.setMethod("PUT");
         request.setContentType("application/octet-stream");
-        request.setBodyContent(partialFile1);
-        request.setHeader("Content-type", "application/octet-stream");
-        request.setHeader("Content-Length", String.valueOf(bigFile.length));
+        request.setContent(partialFile1);
+        request.addHeader("Content-type", "application/octet-stream");
+        request.addHeader("Content-Length", String.valueOf(bigFile.length));
         dispatch(request);
 
         // Resume upload
@@ -227,13 +227,13 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         request.setMethod("PUT");
         request.setContentType("application/octet-stream");
         byte[] partialFile2 = ArrayUtils.subarray(bigFile, (int) partialSize, bigFile.length);
-        request.setBodyContent(partialFile2);
-        request.setHeader("Content-type", "application/octet-stream");
-        request.setHeader("Content-Length", String.valueOf(partialFile2.length));
-        request.setHeader("Content-Range", "bytes " + partialSize + "-" + bigFile.length + "/"
-                + bigFile.length);
+        request.setContent(partialFile2);
+        request.addHeader("Content-type", "application/octet-stream");
+        request.addHeader("Content-Length", String.valueOf(partialFile2.length));
+        request.addHeader("Content-Range", "bytes " + partialSize + "-" + bigFile.length + "/"
+        + bigFile.length);
         MockHttpServletResponse response = dispatch(request);
-        assertEquals(Status.SUCCESS_OK.getCode(), response.getStatusCode());
+        assertEquals(Status.SUCCESS_OK.getCode(), response.getStatus());
 
         File uploadedFile = getTempPath(uploadId);
 
@@ -245,7 +245,7 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         boolean checkBytes = Arrays.equals(bigFile, toBytes(new FileInputStream(destinationFile)));
         assertTrue(checkBytes);
         // Check response content
-        String restUrl = response.getOutputStreamContent();
+        String restUrl = response.getContentAsString();
         assertEquals(fileName.replaceAll("^/", ""), restUrl);
     }
 
@@ -262,9 +262,9 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         MockHttpServletRequest request = createRequest("/rest/resumableupload/" + uploadId);
         request.setMethod("PUT");
         request.setContentType("application/octet-stream");
-        request.setBodyContent(partialFile);
-        request.setHeader("Content-type", "application/octet-stream");
-        request.setHeader("Content-Length", String.valueOf(bigFile.length));
+        request.setContent(partialFile);
+        request.addHeader("Content-type", "application/octet-stream");
+        request.addHeader("Content-Length", String.valueOf(bigFile.length));
         dispatch(request);
 
         File uploadedFile = getTempPath(uploadId);
@@ -290,9 +290,9 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         MockHttpServletRequest request = createRequest("/rest/resumableupload/" + uploadId);
         request.setMethod("PUT");
         request.setContentType("application/octet-stream");
-        request.setBodyContent(bigFile);
-        request.setHeader("Content-type", "application/octet-stream");
-        request.setHeader("Content-Length", String.valueOf(bigFile.length));
+        request.setContent(bigFile);
+        request.addHeader("Content-type", "application/octet-stream");
+        request.addHeader("Content-Length", String.valueOf(bigFile.length));
         dispatch(request);
 
         File uploadedFile = getTempPath(uploadId);
@@ -310,7 +310,7 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         // Test GET after sidecar cleanup
         MockHttpServletResponse response = getAsServletResponse(
                 "/rest/resumableupload/" + uploadId, "text/plain");
-        assertEquals(Status.CLIENT_ERROR_NOT_FOUND.getCode(), response.getStatusCode());
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND.getCode(), response.getStatus());
 
         cleaner.setExpirationDelay(300000);
     }
@@ -325,9 +325,9 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         MockHttpServletRequest request = createRequest("/rest/resumableupload/" + uploadId);
         request.setMethod("PUT");
         request.setContentType("application/octet-stream");
-        request.setBodyContent(partialFile);
-        request.setHeader("Content-type", "application/octet-stream");
-        request.setHeader("Content-Length", String.valueOf(bigFile.length));
+        request.setContent(partialFile);
+        request.addHeader("Content-type", "application/octet-stream");
+        request.addHeader("Content-Length", String.valueOf(bigFile.length));
         dispatch(request);
         File uploadedFile = getTempPath(uploadId);
         assertTrue(uploadedFile.exists());
@@ -335,7 +335,7 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = getAsServletResponse(
                 "/rest/resumableupload/" + uploadId, "text/plain");
         assertEquals(ResumableUploadCatalogResource.RESUME_INCOMPLETE.getCode(),
-                response.getStatusCode());
+                response.getStatus());
         assertEquals(null, response.getHeader("Content-Length"));
         assertEquals("0-" + (partialSize - 1), response.getHeader("Range"));
     }
@@ -349,11 +349,11 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         request.setMethod("PUT");
         request.setContentType("application/octet-stream");
         byte[] bigFile = generateFileAsBytes();
-        request.setBodyContent(bigFile);
-        request.setHeader("Content-type", "application/octet-stream");
-        request.setHeader("Content-Length", String.valueOf(bigFile.length));
+        request.setContent(bigFile);
+        request.addHeader("Content-type", "application/octet-stream");
+        request.addHeader("Content-Length", String.valueOf(bigFile.length));
         MockHttpServletResponse response = dispatch(request);
-        assertEquals(Status.SUCCESS_OK.getCode(), response.getStatusCode());
+        assertEquals(Status.SUCCESS_OK.getCode(), response.getStatus());
         File sidecarFile = new File(FilenameUtils.concat(tmpUploadFolder.dir().getCanonicalPath(),
                 uploadId + ".sidecar"));
         assertTrue(sidecarFile.exists());
@@ -388,11 +388,11 @@ public class ResumableUploadTest extends CatalogRESTTestSupport {
         MockHttpServletRequest request = createRequest("/rest/resumableupload/");
         request.setMethod("POST");
         request.setContentType("text/plain");
-        request.setBodyContent(fileName);
-        request.setHeader("Content-type", "text/plain");
+        request.setContent(fileName.getBytes("UTF-8"));
+        request.addHeader("Content-type", "text/plain");
         MockHttpServletResponse response = dispatch(request);
-        assertEquals(Status.SUCCESS_CREATED.getCode(), response.getStatusCode());
-        String responseBody = response.getOutputStreamContent();
+        assertEquals(Status.SUCCESS_CREATED.getCode(), response.getStatus());
+        String responseBody = response.getContentAsString();
         String url = responseBody.split("\\r?\\n")[1];
         String uploadId = FilenameUtils.getBaseName(url);
         return uploadId;

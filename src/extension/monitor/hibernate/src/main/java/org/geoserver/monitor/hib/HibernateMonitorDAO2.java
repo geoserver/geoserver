@@ -238,11 +238,11 @@ public class HibernateMonitorDAO2 implements MonitorDAO , DisposableBean {
 //    }
     
     @SuppressWarnings("unchecked")
-    protected <T> List<T> query(final Query q) {
+    protected List<RequestData> query(final Query q) {
         //TODO: handle the case of when the user specifies properties,
-        return hib.executeFind(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                List<Object> objs = new ArrayList();
+        return hib.execute(new HibernateCallback<List<RequestData>>() {
+            public List<RequestData> doInHibernate(Session session) throws HibernateException, SQLException {
+                List objs = new ArrayList<>();
                 org.hibernate.Query query = toQuery(q, objs);
                 
                 List list = query.list(); 
@@ -251,7 +251,7 @@ public class HibernateMonitorDAO2 implements MonitorDAO , DisposableBean {
                     return list;
                 }
                 
-                List<RequestData> results = new ArrayList(list.size());
+                List<RequestData> results = new ArrayList<>(list.size());
                 Iterator it = list.iterator();
                 while(it.hasNext()) {
                     Object next = it.next();
@@ -329,8 +329,8 @@ public class HibernateMonitorDAO2 implements MonitorDAO , DisposableBean {
     
     @SuppressWarnings("unchecked")
     protected <T> List<T> all(final Class<T> clazz, final String orderBy) {
-        return hib.executeFind(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+        return hib.execute(new HibernateCallback<List<T>>() {
+            public List<T> doInHibernate(Session session) throws HibernateException, SQLException {
                 StringBuffer sb = new StringBuffer();
                 sb.append("SELECT x ");
                 sb.append("FROM ").append(clazz.getSimpleName()).append(" x ");

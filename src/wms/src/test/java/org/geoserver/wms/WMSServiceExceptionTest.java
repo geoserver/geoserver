@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,7 +19,7 @@ import org.geoserver.wfs.json.JSONType;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.imageio.ImageIO;
 
@@ -64,7 +64,7 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
     
     void assertResponse111(String path) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
-        String content = response.getOutputStreamContent(); 
+        String content = response.getContentAsString(); 
         assertTrue(content.contains(
             "<!DOCTYPE ServiceExceptionReport SYSTEM \"http://localhost:8080/geoserver/schemas/wms/1.1.1/WMS_exception_1_1_1.dtd\">"));
         
@@ -81,7 +81,7 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
     
     void assertResponse130(String path) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         assertTrue(content.contains(
             "xsi:schemaLocation=\"http://www.opengis.net/ogc http://localhost:8080/geoserver/schemas/wms/1.3.0/exceptions_1_3_0.xsd\""));
         
@@ -98,7 +98,7 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
         JSONType.setJsonpEnabled(true);
         MockHttpServletResponse response = getAsServletResponse(path);
         JSONType.setJsonpEnabled(false);
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         testJson(testJsonP(content));
         
     }
@@ -142,7 +142,7 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
         String path = "wms?request=%22%3E%3Ca%20xmlns:a=%27http://www.w3.org/1999/xhtml%27%3E%3C"
                 + "a:body%20onload=%22alert%28%27xss%27%29%22/%3E%3C/a%3E%3C";
         MockHttpServletResponse response = getAsServletResponse(path);
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         // sanity
         assertTrue(content.contains("<ServiceExceptionReport "));
         assertTrue(content.contains("</ServiceExceptionReport>"));

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,7 +13,7 @@ import java.io.PrintStream;
 import org.junit.Test;
 import org.vfny.geoserver.util.PartialBufferedOutputStream2;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class PartialBufferOutputStream2Test {
 
@@ -27,6 +27,6 @@ public class PartialBufferOutputStream2Test {
         
         // check the in memory buffer has been flushed to the target output stream
         // close
-        assertEquals("Hello world!", mockResponse.getOutputStreamContent());
+        assertEquals("Hello world!", mockResponse.getContentAsString());
     }
 }

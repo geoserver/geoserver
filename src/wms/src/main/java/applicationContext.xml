@@ -586,13 +586,13 @@
     
 
 	<bean id="AtomGeoRSSMapProducer"
-		singleton="true"
+		scope="prototype"
 		class="org.geoserver.wms.georss.AtomGeoRSSMapOutputFormat">
         <constructor-arg index="0" ref="wms"/>
 	</bean>
 
 	<bean id="RSSGeoRSSMapProducer"
-		singleton="true"
+		scope="prototype"
 		class="org.geoserver.wms.georss.RSSGeoRSSMapOutputFormat">
         <constructor-arg index="0" ref="wms"/>
 	</bean>
@@ -640,28 +640,28 @@
     <!-- Default Decoration Plugins -->
     <bean id="image" 
           class="org.geoserver.wms.decoration.WatermarkDecoration"
-          singleton="false"
+          scope="prototype"
      />
 
     <bean id="legend" 
           class="org.geoserver.wms.decoration.LegendDecoration"
-          singleton="false">
+          scope="prototype">
        <constructor-arg ref="wms"/>
     </bean>
 
     <bean id="scaleratio" 
           class="org.geoserver.wms.decoration.ScaleRatioDecoration"
-          singleton="false"
+          scope="prototype"
     />
     
     <bean id="scaleline" 
           class="org.geoserver.wms.decoration.ScaleLineDecoration"
-          singleton="false"
+          scope="prototype"
     />
     
     <bean id="text" 
           class="org.geoserver.wms.decoration.TextDecoration"
-          singleton="false"
+          scope="prototype"
     />
     
     <bean id="wmsWorkspaceQualifier" class="org.geoserver.wms.WMSWorkspaceQualifier">

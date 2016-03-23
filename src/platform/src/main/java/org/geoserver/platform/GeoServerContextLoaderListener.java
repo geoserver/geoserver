@@ -21,7 +21,7 @@ public class GeoServerContextLoaderListener extends ContextLoaderListener {
     @Override
     public void contextInitialized(ServletContextEvent event) {
         super.contextInitialized(event);
-        ApplicationContext appContext = getContextLoader().getCurrentWebApplicationContext();
+        ApplicationContext appContext = getCurrentWebApplicationContext();
         if (appContext != null) {
             appContext.publishEvent(new ContextLoadedEvent(appContext));
         }

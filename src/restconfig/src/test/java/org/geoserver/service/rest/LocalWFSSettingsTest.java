@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,7 +22,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
     
@@ -79,7 +79,7 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
         String input = "{'wfs': {'id' : 'wfs', 'name' : 'WFS', 'workspace': {'name': 'sf'},'enabled': 'true'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/workspaces/sf/settings/",
                 input, "text/json");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         JSON json = getAsJSON("/rest/services/wfs/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
@@ -98,7 +98,7 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
                 + "</wfs>";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/workspaces/sf/settings",
                 xml, "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         Document dom = getAsDOM("/rest/services/wfs/workspaces/sf/settings.xml");
         assertEquals("wfs", dom.getDocumentElement().getLocalName());
@@ -112,7 +112,7 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
         String json = "{'wfs': {'id':'wfs','workspace':{'name':'sf'},'enabled':'false','name':'WFS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/workspaces/sf/settings/",
                 json, "text/json");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON("/rest/services/wfs/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
@@ -126,14 +126,14 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
                 + "</workspace>" + "<enabled>false</enabled>" + "</wfs>";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/workspaces/sf/settings",
                 xml, "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM("/rest/services/wfs/workspaces/sf/settings.xml");
         assertXpathEvaluatesTo("false", "/wfs/enabled", dom);
     }
 
     @Test
     public void testDelete() throws Exception {
-        assertEquals(200, deleteAsServletResponse("/rest/services/wfs/workspaces/sf/settings").getStatusCode());
+        assertEquals(200, deleteAsServletResponse("/rest/services/wfs/workspaces/sf/settings").getStatus());
         boolean thrown = false;
         try {
             JSON json = getAsJSON("/rest/services/wfs/workspaces/sf/settings.json");

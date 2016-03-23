@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,7 +22,7 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Base support class for NetCDF wcs tests.
@@ -72,7 +72,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
         MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
                 "&coverageId=wcs__NO2&format=application/x-netcdf&subset=http://www.opengis.net/def/axis/OGC/0/elevation(450)");
         // The status code should be correct
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         // The output format should be netcdf
         assertEquals("application/x-netcdf", response.getContentType());
         // Reset output limit
@@ -110,7 +110,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
         MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
                 "&coverageId=wcs__NO2&format=application/x-netcdf&subset=http://www.opengis.net/def/axis/OGC/0/elevation(450)");
         // The status code should be correct
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         // The output format should be netcdf
         assertEquals("application/x-netcdf", response.getContentType());
         // Reset input limit

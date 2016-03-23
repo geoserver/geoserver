@@ -105,10 +105,10 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
     static class LazyBeanDefinitionDocumentReader extends DefaultBeanDefinitionDocumentReader {
 
         @Override
-        protected BeanDefinitionParserDelegate createHelper(XmlReaderContext readerContext,
+        protected BeanDefinitionParserDelegate createDelegate(XmlReaderContext readerContext,
                 Element root, BeanDefinitionParserDelegate parentDelegate) {
             root.setAttribute("default-lazy-init", "true");
-            BeanDefinitionParserDelegate delegate = super.createHelper(readerContext, root,
+            BeanDefinitionParserDelegate delegate = super.createDelegate(readerContext, root,
                     parentDelegate);
             return delegate;
         }

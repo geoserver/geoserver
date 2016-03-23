@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,7 +12,7 @@ import javax.servlet.http.Cookie;
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class UserFlowControllerTest extends AbstractFlowControllerTest {
     public void testConcurrentRequestsSingleUser() {
@@ -25,7 +25,7 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
         tSample.start();
         waitTerminated(tSample, MAX_WAIT);
         
-        Cookie cookie = (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies().get(0);
+        Cookie cookie = (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
         String cookieValue = cookie.getValue();
         
         // make three testing threads that will "process" forever, and will use the cookie to identify themselves

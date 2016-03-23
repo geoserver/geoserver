@@ -249,7 +249,7 @@ public class ConfigDatabase {
             final Map<String, Object> namedParameters = sqlBuilder.getNamedParameters();
             logStatement(sql, namedParameters);
 
-            count = template.queryForInt(sql.toString(), namedParameters);
+            count = template.queryForObject(sql.toString(), namedParameters, Integer.class);
         } else {
             LOGGER.fine("Filter is not fully supported, doing scan of supported part to return the number of matches");
             // going the expensive route, filtering as much as possible
@@ -716,7 +716,7 @@ public class ConfigDatabase {
         final String oidQuery = "select oid from object where id = :id";
         Map<String, ?> params = params("id", id);
         logStatement(oidQuery, params);
-        final Integer objectId = template.queryForInt(oidQuery, params);
+        final Integer objectId = template.queryForObject(oidQuery, params, Integer.class);
         Preconditions.checkState(objectId != null, "Object not found: " + id);
         return objectId;
     }

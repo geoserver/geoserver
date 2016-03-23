@@ -8,6 +8,7 @@ package org.geoserver.security.filter;
 
 import java.io.IOException;
 
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 
@@ -27,9 +28,10 @@ public class GeoServerRememberMeAuthenticationFilter extends GeoServerCompositeF
 //       not needed at the moment        
 //        RememberMeAuthenticationFilterConfig authConfig = 
 //                (RememberMeAuthenticationFilterConfig) config;
-        
+
+        GeoServerSecurityManager secMgr = getSecurityManager();
         RememberMeAuthenticationFilter filter = new RememberMeAuthenticationFilter(
-                getSecurityManager(),getSecurityManager().getRememberMeService());
+            secMgr.authenticationManager(), secMgr.getRememberMeService());
         filter.afterPropertiesSet();
         getNestedFilters().add(filter);        
     }

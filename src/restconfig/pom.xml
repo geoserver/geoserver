@@ -70,8 +70,8 @@
    <scope>test</scope>
   </dependency>
   <dependency>
-   <groupId>com.mockrunner</groupId>
-   <artifactId>mockrunner</artifactId>
+   <groupId>org.springframework</groupId>
+   <artifactId>spring-test</artifactId>
    <scope>test</scope>
   </dependency>
   <dependency>
@@ -91,6 +91,11 @@
    <dependency>
      <groupId>commons-lang</groupId>
      <artifactId>commons-lang</artifactId>
+   </dependency>
+   <dependency>
+     <groupId>javax.servlet</groupId>
+     <artifactId>javax.servlet-api</artifactId>
+     <scope>provided</scope>
    </dependency>
    <dependency>
     <groupId>org.geotools</groupId>

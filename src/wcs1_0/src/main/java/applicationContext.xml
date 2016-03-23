@@ -172,19 +172,19 @@
 
   <bean id="wcs100GetCapabilitiesResponse"
 
-    class="org.geoserver.wcs.response.Wcs10GetCapabilitiesResponse" singleton="false" />
+    class="org.geoserver.wcs.response.Wcs10GetCapabilitiesResponse" scope="prototype" />
 
 
 
   <bean id="wcs100DescribeCoverageResponse"
 
-    class="org.geoserver.wcs.response.Wcs10DescribeCoverageResponse" singleton="false" />
+    class="org.geoserver.wcs.response.Wcs10DescribeCoverageResponse" scope="prototype"/>
 
 
 
   <bean id="wcs100GetCoverageResponse" 
 
-	class="org.geoserver.wcs.response.Wcs10GetCoverageResponse" singleton="false"> 
+	class="org.geoserver.wcs.response.Wcs10GetCoverageResponse" scope="prototype"> 
 
     <constructor-arg ref="catalog" />
     <constructor-arg ref="coverageResponseDelegateFactory" />

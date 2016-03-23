@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,6 +14,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,7 +46,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
     
@@ -225,9 +226,9 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         return putAsServletResponse(url, srsRequest, "application/json");
     }
     
-    protected void assertErrorResponse(MockHttpServletResponse resp, String... errs) {
-        assertEquals(400, resp.getStatusCode());
-        JSONObject json = JSONObject.fromObject(resp.getOutputStreamContent());
+    protected void assertErrorResponse(MockHttpServletResponse resp, String... errs) throws UnsupportedEncodingException {
+        assertEquals(400, resp.getStatus());
+        JSONObject json = JSONObject.fromObject(resp.getContentAsString());
         JSONArray errors = json.getJSONArray("errors");
         assertNotNull("Expected error array", errors);
         assertEquals(errs.length, errors.size());

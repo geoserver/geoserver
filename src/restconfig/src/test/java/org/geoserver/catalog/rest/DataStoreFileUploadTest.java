@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -49,7 +49,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
@@ -166,11 +166,11 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     	byte[] bytes = shpChineseZipAsBytes();
         MockHttpServletResponse response = 
              putAsServletResponse("/rest/workspaces/gs/datastores/chinese_poly/file.shp?charset=UTF-8", bytes, "application/zip");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
          
         MockHttpServletResponse response2 = 
             getAsServletResponse("wfs?request=getfeature&typename=gs:chinese_poly", "GB18030");
-        assertTrue(response2.getOutputStreamContent().contains("\u951f\u65a4\u62f7"));
+        assertTrue(response2.getContentAsString().contains("\u951f\u65a4\u62f7"));
      }    
         
     byte[] shpZipAsBytes() throws IOException {
@@ -214,7 +214,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
             MockHttpServletResponse resp = putAsServletResponse(
                     "/rest/workspaces/gs/datastores/pds/external.shp", new File(f, "pds.shp")
                             .toURL().toString(), "text/plain");
-            assertEquals(201, resp.getStatusCode());
+            assertEquals(201, resp.getStatus());
 
             dom = getAsDOM("wfs?request=getfeature&typename=gs:pds");
             assertFeatures(dom);
@@ -234,7 +234,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         String body = url.toExternalForm();
         MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/gs/datastores/pds/external.shp", 
                 body, "text/plain");
-        assertEquals(400, response.getStatusCode());
+        assertEquals(400, response.getStatus());
     }
     
     @Test
@@ -316,13 +316,13 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     @Test
     public void testGet() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/workspaces/gs/datastores/pds/file.properties");
-        assertEquals( 404, resp.getStatusCode() );
+        assertEquals( 404, resp.getStatus() );
         
         byte[] bytes = propertyFile();
         put( "/rest/workspaces/gs/datastores/pds/file.properties", bytes, "text/plain");
         
         resp = getAsServletResponse("/rest/workspaces/gs/datastores/pds/file.properties");
-        assertEquals( 200, resp.getStatusCode() );
+        assertEquals( 200, resp.getStatus() );
         assertEquals( "application/zip", resp.getContentType() );
         
         ByteArrayInputStream bin = getBinaryInputStream(resp);

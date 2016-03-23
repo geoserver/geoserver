@@ -252,21 +252,21 @@
   
     <!-- Definition of how often the scheduled task runs -->
     <bean id="wpsStorageCleanerTask"
-      class="org.springframework.scheduling.timer.ScheduledTimerTask">
+      class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
       <!-- wait 10 seconds before starting repeated execution -->
       <property name="delay" value="10000" />
       <!-- run every 60 seconds -->
       <property name="period" value="60000" />
-      <property name="timerTask" ref="wpsStorageCleaner" />
+      <property name="runnable" ref="wpsStorageCleaner" />
     </bean>
   
     <!--
       And finally the class that instantiates the scheduled tasks and
       makes them run
     -->
-    <bean id="wpstimerFactory" class="org.springframework.scheduling.timer.TimerFactoryBean"
+    <bean id="wpstimerFactory" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean"
       lazy-init="false">
-      <property name="scheduledTimerTasks">
+      <property name="scheduledExecutorTasks">
         <list>
           <ref bean="wpsStorageCleanerTask" />
         </list>

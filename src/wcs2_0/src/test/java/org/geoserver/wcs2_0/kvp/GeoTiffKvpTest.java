@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GeoTiffKvpTest extends WCSKVPTestSupport {
 

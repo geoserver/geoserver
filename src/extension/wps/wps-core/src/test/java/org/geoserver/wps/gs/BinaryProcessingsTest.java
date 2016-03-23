@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,7 +19,7 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
@@ -205,7 +205,7 @@ public class BinaryProcessingsTest extends WPSTestSupport {
                 + "  </wps:ResponseForm>\n" + "</wps:Execute>\n" + "\n" + "";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         assertTrue(content.contains(BaseCoverageAlgebraProcess.MISMATCHING_ENVELOPE_MESSAGE));
     }
 }

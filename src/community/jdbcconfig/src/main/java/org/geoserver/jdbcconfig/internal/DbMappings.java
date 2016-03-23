@@ -468,7 +468,7 @@ public class DbMappings {
                 + "where type_id = :objectType and name = :propName";
         params = params("objectType", typeId, "propName", propertyName);
         logStatement(query, params);
-        final int exists = template.queryForInt(query, params);
+        final int exists = template.queryForObject(query, params, Integer.class);
 
         PropertyType pType;
 

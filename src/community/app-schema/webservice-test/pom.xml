@@ -71,8 +71,8 @@
 		    <artifactId>log4j</artifactId>
 	    </dependency> 
 	    <dependency>
-			<groupId>com.mockrunner</groupId>
-			<artifactId>mockrunner</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 	     <dependency>

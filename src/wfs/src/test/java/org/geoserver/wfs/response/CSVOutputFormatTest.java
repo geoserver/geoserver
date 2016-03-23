@@ -6,7 +6,7 @@
 package org.geoserver.wfs.response;
 
 import au.com.bytecode.opencsv.CSVReader;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
@@ -58,7 +58,7 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         assertEquals("attachment; filename=PrimitiveGeoFeature.csv", resp.getHeader("Content-Disposition"));
         
         // read the response back with a parser that can handle escaping, newlines and what not
-        List<String[]> lines = readLines(resp.getOutputStreamContent());
+        List<String[]> lines = readLines(resp.getContentAsString());
         
         // we should have one header line and then all the features in that feature type
         assertEquals(fs.getCount(Query.ALL) + 1, lines.size());

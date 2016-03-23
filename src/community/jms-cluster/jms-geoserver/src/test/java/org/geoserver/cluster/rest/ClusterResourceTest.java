@@ -6,9 +6,8 @@ import static org.junit.Assert.assertEquals;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-
-import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class ClusterResourceTest extends GeoServerSystemTestSupport {
     
@@ -29,7 +28,7 @@ public class ClusterResourceTest extends GeoServerSystemTestSupport {
     public void testUpdateConfiguration() throws Exception {
         String config = "<properties><property name=\"toggleSlave\" value=\"false\"/></properties>";
         MockHttpServletResponse response = postAsServletResponse("rest/cluster.xml", config);
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         Document dom = getAsDOM("rest/cluster.xml");
         // print(dom);
         // checking the property just modified

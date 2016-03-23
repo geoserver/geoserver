@@ -18,7 +18,7 @@
       <constructor-arg ref="wms" />
     </bean>
 	<bean id="DDSMapResponse"
-		singleton="false"
+		scope="prototype"
 		class="org.geoserver.wms.worldwind.DDSMapResponse">
 		<constructor-arg index="0" ref="wms"/>
 	</bean>
@@ -39,7 +39,7 @@
       <constructor-arg ref="wms" />
     </bean>
 	<bean id="BilMapResponse"
-		singleton="false"
+		scope="prototype"
 		class="org.geoserver.wms.worldwind.BilMapResponse">
 		<constructor-arg index="0" ref="wms"/>
 	</bean>

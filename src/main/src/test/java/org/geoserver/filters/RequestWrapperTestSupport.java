@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,13 +7,14 @@ package org.geoserver.filters;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpSession;
-import com.mockrunner.mock.web.MockServletContext;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.mock.web.MockServletContext;
 
 public class RequestWrapperTestSupport {
 
@@ -24,7 +25,7 @@ public class RequestWrapperTestSupport {
         "test\ncontaining\nnewlines"
 	};
 	
-    protected MockHttpServletRequest makeRequest(String body, String queryString) {
+    protected MockHttpServletRequest makeRequest(String body, String queryString) throws UnsupportedEncodingException {
 		MockHttpServletRequest request = new MockHttpServletRequest();
         request.setScheme("http");
         request.setServerName("localhost");
@@ -36,10 +37,9 @@ public class RequestWrapperTestSupport {
         request.setContentType("application/x-www-form-urlencoded");
 
 		request.setMethod("POST");
-		request.setBodyContent(body);
+		request.setContent(body.getBytes("UTF-8"));
 
-        MockHttpSession session = new MockHttpSession();
-        session.setupServletContext(new MockServletContext());
+        MockHttpSession session = new MockHttpSession(new MockServletContext());
         request.setSession(session);
 
         request.setUserPrincipal(null);

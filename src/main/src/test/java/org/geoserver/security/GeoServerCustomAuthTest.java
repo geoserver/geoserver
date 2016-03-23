@@ -41,7 +41,7 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
         UsernamePasswordAuthenticationToken upAuth = 
             new UsernamePasswordAuthenticationToken("foo", "bar");
         try {
-            getSecurityManager().authenticate(upAuth);            
+            getSecurityManager().authenticationManager().authenticate(upAuth);            
         }
         catch(BadCredentialsException e) {}
         catch(ProviderNotFoundException e) {}
@@ -63,7 +63,7 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
         secMgr.saveSecurityConfig(mgrConfig);
 
         Authentication auth = new UsernamePasswordAuthenticationToken("foo", "bar");
-        auth = getSecurityManager().authenticate(auth);
+        auth = getSecurityManager().authenticationManager().authenticate(auth);
         assertTrue(auth.isAuthenticated());
     }
     

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -32,7 +32,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
@@ -642,7 +642,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines and what not
-        List<String[]> lines = CSVOutputFormatTest.readLines(resp.getOutputStreamContent());
+        List<String[]> lines = CSVOutputFormatTest.readLines(resp.getContentAsString());
 
         // we should have one header line and then all the features in that feature type
         assertEquals(2, lines.size());

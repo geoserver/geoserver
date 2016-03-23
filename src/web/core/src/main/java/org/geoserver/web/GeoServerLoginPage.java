@@ -29,8 +29,11 @@ public class GeoServerLoginPage extends GeoServerBasePage {
         
         TextField field = new TextField("username");
         HttpSession session = ((HttpServletRequest) ((WebRequest) getRequest()).getContainerRequest()).getSession();
-        String lastUserName = (String) session.getAttribute(UsernamePasswordAuthenticationFilter.SPRING_SECURITY_LAST_USERNAME_KEY);
-        field.setModel(new Model(lastUserName));
+
+        // TODO: (from the spring security sources):  @deprecated If you want to retain the username, cache it in a customized {@code AuthenticationFailureHandler}
+        //String lastUserName = (String) session.getAttribute(UsernamePasswordAuthenticationFilter.SPRING_SECURITY_LAST_USERNAME_KEY);
+        //field.setModel(new Model(lastUserName));
+        field.setModel(new Model());
         add(field);
         
         try {

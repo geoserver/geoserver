@@ -33,7 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.thoughtworks.xstream.XStream;
 
 public class WPSOgrTest extends WPSTestSupport {
@@ -122,7 +122,7 @@ public class WPSOgrTest extends WPSTestSupport {
             MockHttpServletResponse r = postAsServletResponse("wps",
                     getWpsRawXML("application/vnd.google-earth.kml; subtype=OGR-KML"));
             assertEquals("application/vnd.google-earth.kml; subtype=OGR-KML", r.getContentType());
-            assertTrue(r.getOutputStreamContent().length() > 0);
+            assertTrue(r.getContentAsString().length() > 0);
 
         } catch (IOException e) {
             System.err.println(e.getStackTrace());
@@ -164,8 +164,8 @@ public class WPSOgrTest extends WPSTestSupport {
             MockHttpServletResponse r = postAsServletResponse("wps",
                     getWpsRawXML("text/csv; subtype=OGR-CSV"));
             assertEquals("text/csv; subtype=OGR-CSV", r.getContentType());
-            assertTrue(r.getOutputStreamContent().length() > 0);
-            assertTrue(r.getOutputStreamContent().contains("WKT,gml_id,STATE_NAME"));
+            assertTrue(r.getContentAsString().length() > 0);
+            assertTrue(r.getContentAsString().contains("WKT,gml_id,STATE_NAME"));
         } catch (IOException e) {
             System.err.println(e.getStackTrace());
         } finally {

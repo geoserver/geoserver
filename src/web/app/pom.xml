@@ -187,7 +187,7 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
+      <version>${jetty.servlet-api.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -296,7 +296,7 @@
 		<configuration>
 			<warName>geoserver</warName>
 			<webappDirectory>${project.build.directory}/geoserver</webappDirectory>
-			<packagingExcludes>WEB-INF/lib/servlet-api*.jar</packagingExcludes>
+			<packagingExcludes>WEB-INF/lib/javax.servlet-api*.jar</packagingExcludes>
 			<archive>
 				<manifest>
 					<addDefaultImplementationEntries>true</addDefaultImplementationEntries>

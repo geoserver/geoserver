@@ -58,7 +58,6 @@
    <!-- contains snapshot and release (including third-party-dependences)               -->
    <!-- Restlet maven Repository (http://maven.restlet.org)                             -->
    <!-- ucar (https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases) -->
-   <!-- geosolutions (http://maven.geo-solutions.it/)                                   -->
    <snapshots>
      <enabled>true</enabled>
    </snapshots>
@@ -93,6 +92,18 @@
       <enabled>true</enabled>
     </snapshots>
    </repository>
+
+   <repository>
+      <id>geosolutions</id>
+      <name>geosolutions repository</name>
+      <url>http://maven.geo-solutions.it/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+     <releases>
+       <enabled>true</enabled>
+     </releases>
+    </repository>
  </repositories>
 
  <dependencyManagement>

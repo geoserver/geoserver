@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,7 +6,7 @@
 package org.geoserver.test.onlineTest.setup;
 
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
@@ -40,22 +40,10 @@ public class ReferenceDataPostgisSetup extends AbstractReferenceDataSetup {
 
     protected void runSqlInsertScript() throws Exception {
         DatabaseUtil du = new DatabaseUtil();
-        ArrayList<String> sqls = du.splitPostgisSQLScript(script);
-        // run the script as a single shot, going back and forth line
-        // by line takes forever to run (more than a minute)
-        String pgScript = rebuildAsSingle(sqls);
-        this.run(pgScript);
-        this.setDataVersion(this.scriptVersion);
-
-    }
-
-    private String rebuildAsSingle(ArrayList<String> sqls) {
-        StringBuilder sb = new StringBuilder();
-        for (String sql : sqls) {
-            sb.append(sql).append("\n");
-        }
-        
-        return sb.toString();
+        List<String> sqls = du.splitPostgisSQLScript(script);
+        sqls.add("set search_path = public;");
+        run(du.rebuildAsSingle(sqls));
+        setDataVersion(scriptVersion);
     }
 
     // these private helper class might be useful in the future. feel free to change its access

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 
 /**
@@ -34,8 +35,7 @@ public class DatabaseUtil {
      * @return
      * @throws Exception
      */
-
-    public ArrayList<String> splitPostgisSQLScript(InputStream inputStream) throws Exception {
+    public List<String> splitPostgisSQLScript(InputStream inputStream) throws Exception {
 
         StringBuilder contents = new StringBuilder();
 
@@ -102,6 +102,20 @@ public class DatabaseUtil {
             idx += sub.length();
         }
         return count;
+    }
+
+    /**
+     * Return a list of SQL statements as a single string including a newline after each statement.
+     * 
+     * @param sqls list of SQL statements
+     * @return string of statements with newline after each
+     */
+    public String rebuildAsSingle(List<String> sqls) {
+        StringBuilder sb = new StringBuilder();
+        for (String sql : sqls) {
+            sb.append(sql).append("\n");
+        }
+        return sb.toString();
     }
 
     /**
@@ -195,12 +209,10 @@ public class DatabaseUtil {
     /**
      * Splits the oracle sql script file into individual statements.
      * 
-     * @param f
-     *            - The oracle sql script
-     * @return - the list of sql statement
-     * @throws Exception
+     * @param inputStream The oracle sql script
+     * @return list of sql statements
      */
-    public ArrayList<String> splitOracleSQLScript(InputStream inputStream) throws Exception {
+    public List<String> splitOracleSQLScript(InputStream inputStream) throws Exception {
 
         StringBuilder contents = new StringBuilder();
 

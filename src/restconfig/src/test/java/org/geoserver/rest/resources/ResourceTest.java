@@ -148,7 +148,9 @@ public class ResourceTest extends GeoServerSystemTestSupport {
     @Test
     public void testResourceHeaders() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("/rest/resource/mydir2/fake.png");
-        Assert.assertEquals(FORMAT_HEADER.format(myRes.lastmodified()), response.getHeader("Last-Modified"));
+        Assert.assertEquals(
+                FORMAT_HEADER.format(getDataDirectory().get("/mydir2/fake.png").lastmodified()),
+                response.getHeader("Last-Modified"));
         Assert.assertEquals("http://localhost:8080/geoserver/rest/resource/mydir2", 
                 response.getHeader("Resource-Parent"));
         Assert.assertEquals("resource", response.getHeader("Resource-Type"));

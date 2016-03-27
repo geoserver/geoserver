@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,6 +20,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
@@ -28,6 +29,9 @@ public class GWCConfigPersisterTest {
     private GeoServerResourceLoader resourceLoader;
 
     private GWCConfigPersister persister;
+    
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Before
     public void setUp() throws Exception {
@@ -72,8 +76,6 @@ public class GWCConfigPersisterTest {
         assertEquals(config, persister.getConfig());
 
         // provoque a IOException
-        TemporaryFolder tempFolder = new TemporaryFolder();
-        tempFolder.create();
         when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE))).thenReturn(
                 Files.asResource(tempFolder.newFile("shall_not_exist")));
         persister = new GWCConfigPersister(new XStreamPersisterFactory(), resourceLoader);

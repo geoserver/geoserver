@@ -1,14 +1,16 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.test;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.io.FileUtils;
 import org.geoserver.data.util.IOUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -37,15 +39,15 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
     ServletContext servletContext;
 
     boolean useLegacyGeoServerLoader = true;
+    
+    final File contextTmp;
 
     public GeoServerTestApplicationContext(String[] configLocation, ServletContext servletContext)
         throws BeansException {
         super(configLocation, false);
         try {
-            servletContext.setAttribute(
-                "javax.servlet.context.tempdir", 
-                IOUtils.createRandomDirectory("./target", "mock", "tmp")
-            );
+            contextTmp = IOUtils.createRandomDirectory("./target", "mock", "tmp");
+            servletContext.setAttribute("javax.servlet.context.tempdir", contextTmp);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -112,6 +114,12 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
                     parentDelegate);
             return delegate;
         }
+    }
+    
+    @Override
+    protected void onClose() {
+        super.onClose();
+        FileUtils.deleteQuietly(contextTmp);
     }
 
 }

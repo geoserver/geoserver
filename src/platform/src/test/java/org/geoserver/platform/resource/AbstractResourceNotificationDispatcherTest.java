@@ -13,6 +13,7 @@ import java.util.List;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
@@ -23,6 +24,9 @@ import org.junit.rules.TemporaryFolder;
  */
 public abstract class AbstractResourceNotificationDispatcherTest {
         
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+    
     protected FileSystemResourceStore store;
     protected ResourceNotificationDispatcher watcher;
     
@@ -48,9 +52,6 @@ public abstract class AbstractResourceNotificationDispatcherTest {
     
     @Before
     public void setup() throws Exception {
-        TemporaryFolder folder = new TemporaryFolder();
-
-        folder.create();
         File dirA = folder.newFolder("DirA");
         File dirB = folder.newFolder("DirB");
         File dirC = new File(dirA, "DirC");

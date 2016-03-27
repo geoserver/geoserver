@@ -1461,6 +1461,23 @@
        <failOnNoGitDirectory>false</failOnNoGitDirectory>
        <skipPoms>false</skipPoms>
        <verbose>false</verbose>
+       <injectAllReactorProjects>true</injectAllReactorProjects>
+       <runOnlyOnce>true</runOnlyOnce>
+       <!--
+       In order to use native git (3+ times faster) add the following in ~/.m2/settings.xml
+       <profiles>
+         <profile>
+           <id>gitNative</id>
+           <properties>
+             <git.commit.useNative>true</git.commit.useNative>
+           </properties>
+         </profile>
+       <profiles>
+       <activeProfiles>
+         <activeProfile>gitNative</activeProfile>
+       </activeProfiles>
+       -->
+       <useNativeGit>${git.commit.useNative}</useNativeGit>
      </configuration>
    </plugin>
 
@@ -1668,6 +1685,7 @@
   <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
   <hibernate-spatial-version>1.1.1</hibernate-spatial-version>
   <hibernate-spatial-h2-version>1.1.1</hibernate-spatial-h2-version>
+  <git.commit.useNative>false</git.commit.useNative>
  </properties>
 
  <profiles>

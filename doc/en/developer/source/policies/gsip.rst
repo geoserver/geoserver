@@ -30,16 +30,42 @@ Voting on a GSIP
 One of the duties of the GeoServer Project Steering Committee is to vote on 
 GSIPs. The voting process works as follows:
 
-* Each PSC member gets a single vote, which can be one of +1, -1, 0
-* Any PSC member that votes negatively against a proposal must provide a
+* Each active PSC member gets a single vote, which can be one of "+1", "+0", "0", "-0", or "-1":
+
+    * A vote of "+1" means support for a proposal
+
+    * The neutral votes "+0", "0", and "-0" all count the same as "0" but permit PSC members
+      to indicate a slight tendency for, neutral, or against a proposal respectively
+
+    * A vote of "-1" means opposition to  a proposal
+
+* Voting remains open for seven days or until all active PSC members have cast their vote
+
+* Any active PSC member can during these seven days request an extension of voting for
+  an additional seven days; the voting period can only be extended once
+
+* Any PSC member who votes "-1" against a proposal must provide a
   reasonable explanation as to why
-* Any PSC member that votes negatively against a proposal has a limited time to
+
+* Any PSC member who votes "-1" against a proposal has a limited time to
   provide constructive feedback as to how the vote can be turned
+
 * The GSIP author must incorporate any reasonable feedback into the proposal
-* Any negative vote is reviewed to determine if criteria has been met to turn
-  it to a positive vote
-* The proposal is considered successful after a majority of positive votes is 
-  a achieved **and** all feedback from any negative votes has been addressed
+
+* PSC members who voted "-1" consider whether their feedback has been addressed
+  and whether they wish to change their vote
+
+* Only active PSC members are counted for determining vote percentages
+
+* A GSIP is accepted if it receives:
+
+    * at least 30% "+1" votes, and
+
+    * a quorum of at least 50% "+1"/"+0"/"0"/"-0" votes, and
+
+    * no "-1" votes (or all feedback from any "-1" votes has been addressed
+      and any "-1" voters have changed their votes)
+
 
 Implementing a GSIP
 -------------------

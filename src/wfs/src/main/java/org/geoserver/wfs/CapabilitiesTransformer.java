@@ -2038,8 +2038,6 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 //TODO: make whether to support stored queries optional like transations
                 listStoredQueries();
                 describeStoredQueries();
-                createStoredQuery();
-                dropStoredQuery();
 
 //                getGmlObject();
 //                

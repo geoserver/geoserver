@@ -50,6 +50,8 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
         configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext.getBean("geofence-configurer");
         configurer.setLocation(new UrlResource(this.getClass().getResource("/test-cache-config.properties")));
+
+        realReader = applicationContext.getBean("remoteReaderService", RuleReaderService.class);
     }
 
     static class CustomTicker extends Ticker {

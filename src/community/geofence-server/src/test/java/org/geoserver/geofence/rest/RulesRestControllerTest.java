@@ -5,12 +5,12 @@
 package org.geoserver.geofence.rest;
 
 import org.geoserver.geofence.GeofenceBaseTest;
+import org.geoserver.geofence.core.dao.DuplicateKeyException;
 import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.rest.xml.JaxbRule;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.junit.Test;
-import org.springframework.dao.DuplicateKeyException;
 
 public class RulesRestControllerTest extends GeofenceBaseTest {
 

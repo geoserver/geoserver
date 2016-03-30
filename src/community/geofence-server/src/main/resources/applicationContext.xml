@@ -149,14 +149,8 @@
        <bean class="org.geoserver.geofence.rest.GeofenceSecurityInterceptor"/>    
     </mvc:interceptors>      
   
-	<bean id="geofenceViewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
-	     <property name="order" value="1" />  
-        <property name="mediaTypes">
-            <map>
-                <entry key="xml" value="application/xml" />
-                <entry key="json" value="application/json" />
-            </map>
-        </property>
+    <bean id="geofenceViewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="order" value="1" />
         <property name="defaultViews">
             <list>
                 <!-- XML view using a JAXB marshaller -->

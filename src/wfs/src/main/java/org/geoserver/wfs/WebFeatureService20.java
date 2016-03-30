@@ -138,16 +138,6 @@ public interface WebFeatureService20 {
         throws WFSException;
 
     /**
-     * WFS create stored query operation. 
-     */
-    CreateStoredQueryResponseType createStoredQuery(CreateStoredQueryType request) throws WFSException;
-    
-    /**
-     * WFS drop stored query operation. 
-     */
-    ExecutionStatusType dropStoredQuery(DropStoredQueryType request) throws WFSException;
-
-    /**
      * Release lock operation.
      * <p>
      * This is not an official operation of the spec.

@@ -131,8 +131,6 @@
             <value>Transaction</value>
             <value>ListStoredQueries</value>
             <value>DescribeStoredQueries</value>
-            <value>CreateStoredQuery</value>
-            <value>DropStoredQuery</value>
           </list>
         </constructor-arg>
     </bean>
@@ -226,16 +224,6 @@
     
     <bean id="describeStoredQueriesResponse-2.0" 
        class="org.geoserver.wfs.response.v2_0.DescribeStoredQueriesResponse">
-        <constructor-arg ref="geoServer"/>
-    </bean>
-    
-	<bean id="createStoredQueryResponse-2.0" 
-	   class="org.geoserver.wfs.response.v2_0.CreateStoredQueryResponse">
-	    <constructor-arg ref="geoServer"/>
-	</bean>
-	
-	<bean id="dropStoredQueryResponse-2.0" 
-       class="org.geoserver.wfs.response.v2_0.DropStoredQueryResponse">
         <constructor-arg ref="geoServer"/>
     </bean>
 	

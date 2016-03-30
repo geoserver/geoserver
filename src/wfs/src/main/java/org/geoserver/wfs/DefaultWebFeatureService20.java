@@ -132,15 +132,6 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
         return new DescribeStoredQueries(getServiceInfo(), getStoredQueryProvider()).run(request);
     }
     
-    public CreateStoredQueryResponseType createStoredQuery(CreateStoredQueryType request)
-            throws WFSException {
-        return new CreateStoredQuery(getServiceInfo(), getStoredQueryProvider()).run(request);
-    }
-    
-    public ExecutionStatusType dropStoredQuery(DropStoredQueryType request) throws WFSException {
-        return new DropStoredQuery(getServiceInfo(), getStoredQueryProvider()).run(request);
-    }
-    
     //the following operations are not part of the spec
     public void releaseLock(String lockId) throws WFSException {
         new LockFeature(getServiceInfo(), getCatalog()).release(lockId);

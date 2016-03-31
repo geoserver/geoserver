@@ -695,7 +695,7 @@ public class XMPPClient extends RemoteProcessClient {
             List<String> nodeJIDs = new ArrayList<String>();
             for (RemoteMachineDescriptor node : registeredProcessingMachines) {
                 nodeJIDs.add(node.getNodeJID());
-                node.setAvailable(false);
+                //node.setAvailable(false);
             }
 
             for (MultiUserChat mucServiceChannel : mucServiceChannels) {

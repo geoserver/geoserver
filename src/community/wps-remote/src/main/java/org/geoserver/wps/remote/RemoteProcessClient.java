@@ -19,10 +19,15 @@ import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
@@ -32,7 +37,10 @@ import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wps.remote.plugin.XMPPClient;
+import org.geotools.coverage.grid.io.DimensionDescriptor;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.util.logging.Logging;
+import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.Name;
 import org.opengis.util.ProgressListener;
 import org.springframework.beans.factory.DisposableBean;
@@ -64,13 +72,15 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
     /** The registered {@link RemoteProcessClientListener} */
     private Set<RemoteProcessClientListener> remoteClientListeners = Collections
             .newSetFromMap(new ConcurrentHashMap<RemoteProcessClientListener, Boolean>());
-    
+
     /** The available Registered Processing Machines */
-    protected List<RemoteMachineDescriptor> registeredProcessingMachines = Collections.synchronizedList(new ArrayList<RemoteMachineDescriptor>());
-    
+    protected List<RemoteMachineDescriptor> registeredProcessingMachines = Collections
+            .synchronizedList(new ArrayList<RemoteMachineDescriptor>());
+
     /** */
-    protected List<RemoteRequestDescriptor> pendingRequests = Collections.synchronizedList(new LinkedList<RemoteRequestDescriptor>());
-    
+    protected List<RemoteRequestDescriptor> pendingRequests = Collections
+            .synchronizedList(new LinkedList<RemoteRequestDescriptor>());
+
     /**
      * The default Cosntructor
      * 
@@ -134,7 +144,8 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
     /**
      * @param registeredProcessingMachines the registeredProcessingMachines to set
      */
-    public void setRegisteredProcessingMachines(List<RemoteMachineDescriptor> registeredProcessingMachines) {
+    public void setRegisteredProcessingMachines(
+            List<RemoteMachineDescriptor> registeredProcessingMachines) {
         this.registeredProcessingMachines = registeredProcessingMachines;
     }
 
@@ -260,9 +271,9 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
      *
      * @throws IOException
      */
-    public LayerInfo importLayer(File file, DataStoreInfo store, String name, String title,
-            String description, String defaultStyle, String targetWorkspace, String metadata)
-                    throws Exception {
+    public LayerInfo importLayer(File file, String type, DataStoreInfo store, String name,
+            String title, String description, String defaultStyle, String targetWorkspace,
+            String metadata) throws Exception {
         Importer importer = getImporter();
 
         LOGGER.fine(" - [Remote Process Client - importLayer] Importer Context from Spatial File:"
@@ -328,6 +339,77 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
                     // assertEquals("the layer name", task.getLayer().getResource().getName());
 
                     task = context.getTasks().get(0);
+
+                    // WARNING: The Importer Configures Just The First Layer
+                    if (task.getLayer().getResource() instanceof CoverageInfo) {
+                        CoverageInfo ci = ((CoverageInfo) task.getLayer().getResource());
+
+                        GridCoverageReader reader = null;
+                        try {
+                            reader = ci.getGridCoverageReader(null, null);
+
+                            String[] cvNames = reader.getGridCoverageNames();
+
+                            if (cvNames != null && cvNames.length > 0) {
+                                final String nativeCoverageName = cvNames[0];
+
+                                ci.setNativeCoverageName(nativeCoverageName);
+
+                                // if(type.equals("application/x-netcdf")) Set Dimensions
+                                if (reader instanceof StructuredGridCoverage2DReader) {
+                                    StructuredGridCoverage2DReader structuredReader = ((StructuredGridCoverage2DReader) reader);
+
+                                    // Getting dimension descriptors
+                                    final List<DimensionDescriptor> dimensionDescriptors = structuredReader
+                                            .getDimensionDescriptors(nativeCoverageName);
+                                    DimensionDescriptor timeDimension = null;
+                                    DimensionDescriptor elevationDimension = null;
+                                    final List<DimensionDescriptor> customDimensions = new ArrayList<DimensionDescriptor>();
+
+                                    // Collect dimension Descriptor info
+                                    for (DimensionDescriptor dimensionDescriptor : dimensionDescriptors) {
+                                        if (dimensionDescriptor.getName()
+                                                .equalsIgnoreCase(ResourceInfo.TIME)) {
+                                            timeDimension = dimensionDescriptor;
+                                        } else if (dimensionDescriptor.getName()
+                                                .equalsIgnoreCase(ResourceInfo.ELEVATION)) {
+                                            elevationDimension = dimensionDescriptor;
+                                        } else {
+                                            customDimensions.add(dimensionDescriptor);
+                                        }
+                                    }
+
+                                    final boolean defaultTimeNeeded = timeDimension != null;
+                                    final boolean defaultElevationNeeded = elevationDimension != null;
+
+                                    // Create Default Time Dimension If Needed
+                                    if (defaultTimeNeeded) {
+                                        DimensionInfo di = new DimensionInfoImpl();
+                                        di.setEnabled(true);
+                                        di.setPresentation(DimensionPresentation.LIST);
+                                        di.setAttribute(timeDimension.getStartAttribute());
+                                        ci.getMetadata().put(ResourceInfo.TIME, di);
+                                    }
+
+                                    // Create Default Elevation Dimension If Needed
+                                    if (defaultElevationNeeded) {
+                                        DimensionInfo di = new DimensionInfoImpl();
+                                        di.setEnabled(true);
+                                        di.setPresentation(DimensionPresentation.LIST);
+                                        di.setUnits("EPSG:5030");
+                                        di.setUnitSymbol("m");
+                                        di.setAttribute(elevationDimension.getStartAttribute());
+                                        ci.getMetadata().put(ResourceInfo.ELEVATION, di);
+                                    }
+                                }
+                            }
+                        } finally {
+                            // WARNING: Disposing The Reader Causes The Catalog To Fail
+                            /*if (reader != null) {
+                                reader.dispose();
+                            }*/
+                        }
+                    }
 
                     LOGGER.fine(
                             " - [Remote Process Client - importLayer] The Importer has finished correctly for Spatial File:"

@@ -96,7 +96,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                             tempFile);
 
                     try {
-                        xmppClient.importLayer(tempFile, null, name + "_" + pID, title, description,
+                        xmppClient.importLayer(tempFile, type, null, name + "_" + pID, title, description,
                                 defaultStyle, targetWorkspace, metadata);
                     } catch (Exception e) {
                         LOGGER.log(Level.WARNING,
@@ -127,7 +127,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                     FileUtils.copyFile(((ResourceRawData) value).getResource().file(), tempFile);
 
                     try {
-                        xmppClient.importLayer(tempFile, null, name + "_" + pID, title, description,
+                        xmppClient.importLayer(tempFile, type, null, name + "_" + pID, title, description,
                                 defaultStyle, targetWorkspace, metadata);
                     } catch (Exception e) {
                         LOGGER.log(Level.WARNING,
@@ -198,7 +198,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                     FilenameUtils.getBaseName(fileName));
 
             try {
-                xmppClient.importLayer(tempFile, h2DataStore, name + "_" + pID, title, description,
+                xmppClient.importLayer(tempFile, type, h2DataStore, name + "_" + pID, title, description,
                         defaultStyle, targetWorkspace, metadata);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING,

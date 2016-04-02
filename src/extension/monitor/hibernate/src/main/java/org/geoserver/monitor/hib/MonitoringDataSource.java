@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
@@ -115,10 +116,13 @@ public class MonitoringDataSource extends BasicDataSource implements DisposableB
             dbprops = new File(monitoringDir, "db.properties");
             
             //use a default, and copy the template over
-            InputStream in = getClass().getResourceAsStream("db.properties");
-            IOUtils.copy(in, new FileOutputStream(dbprops));
+            try (InputStream in = getClass().getResourceAsStream("db.properties"); OutputStream out = new FileOutputStream(dbprops)) {
+                IOUtils.copy(in, out);
+            }
             
-            db.load(getClass().getResourceAsStream("db.properties"));
+            try (InputStream in = getClass().getResourceAsStream("db.properties")) {
+                db.load(in);
+            }
         }
         else {
             FileInputStream in = new FileInputStream(dbprops);

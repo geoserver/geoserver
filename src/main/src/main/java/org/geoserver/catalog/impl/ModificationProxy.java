@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,6 +7,7 @@ package org.geoserver.catalog.impl;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -144,6 +145,15 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
         try{
             Object result = method.invoke( proxyObject, args ); 
+            
+            // in case this is a live indirection, resolve it. Typically this means
+            // the reference is dangling, and we are going to avoid a wrapper around null
+            if (result instanceof Proxy && Proxy.getInvocationHandler(result) instanceof ResolvingProxy) {
+                ResolvingProxy rp = ProxyUtils.handler(result, ResolvingProxy.class);
+                // try to resolve, and return null if the reference is dangling
+                final Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
+                result = rp.resolve(catalog, result);
+            }
 
             //intercept result and wrap it in a proxy if it is another Info object
             if ( result != null && shouldProxyProperty(result.getClass())) {

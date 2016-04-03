@@ -99,6 +99,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("squares","squares.sld",GetFeatureInfoTest.class,catalog);
         testData.addStyle("point_test","point_test.sld",GetFeatureInfoTest.class,catalog);
         testData.addStyle("scaleBased","scaleBased.sld",GetFeatureInfoTest.class,catalog);
+        testData.addStyle("stacker","stacker.sld",GetFeatureInfoTest.class,catalog);
         testData.addVectorLayer(SQUARES,Collections.EMPTY_MAP,"squares.properties",
                 GetFeatureInfoTest.class,catalog);
         Map propertyMap = new HashMap<SystemTestData.LayerProperty, Object>();
@@ -144,10 +145,10 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 .getFeatureTypeByName(MockData.CITE_URI, "point_test_3d");
 
         ReferencedEnvelope b = info.getLatLonBoundingBox();
-        String bbox = b.minX() + "," + b.minY() + "," + b.maxX() + "," + b.maxY()
+        String bbox = b.getMinX() + "," + b.getMinY() + "," + b.getMaxX() + "," + b.getMaxY()
                 + "&srs=EPSG:4326";
 
-        // first request against 2D dataset
+        // first request against 2D dataset with the stacker transformation
         String layer2d = getLayerId(POINT_TEST_2D);
         String base2d = "wms?version=1.1.1&format=png&info_format=text/html&request=GetFeatureInfo&layers="
                 + layer2d
@@ -176,6 +177,22 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("11", "count(/html/body/table/tr)", dom3d);
 
     }
+    
+    @Test
+    public void testPointStacker() throws Exception {
+        String layerName = getLayerId(MockData.BRIDGES);
+
+        // first request against 2D dataset
+        String base2d = "wms?version=1.1.1&format=png&info_format=text/html&request=GetFeatureInfo&layers="
+                + layerName + "&query_layers=" + layerName + "&styles=stacker&bbox=-1,-1,1,1&srs=EPSG:4326&feature_count=10";
+
+        Document dom2d = getAsDOM(
+                base2d + "&width=" + 100 + "&height=" + 100 + "&x=" + 50 + "&y=" + 50);
+        print(dom2d);
+        // used to throw an exception and fail
+        XMLAssert.assertXpathEvaluatesTo("2", "count(/html/body/table/tr)", dom2d);
+    }
+
 
 
 	/**

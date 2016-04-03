@@ -30,12 +30,15 @@ public class CatalogProxiesTest extends GeoServerSystemTestSupport {
         
         LayerInfo li = getCatalog().getLayerByName(getLayerId(SystemTestData.BUILDINGS));
         Resource resource = getDataDirectory().config(li);
-        try(InputStream is = resource.in(); OutputStream os = resource.out()) {
-            Document dom = dom(resource.in());
-            Element defaultStyle = (Element) dom.getElementsByTagName("defaultStyle").item(0);
-            Element defaultStyleId = (Element) defaultStyle.getElementsByTagName("id").item(0);
-            defaultStyleId.setTextContent("danglingReference");
-            print(dom, os);
+        Document dom;
+        try(InputStream is = resource.in()) {
+            dom = dom(resource.in());
+        }
+        Element defaultStyle = (Element) dom.getElementsByTagName("defaultStyle").item(0);
+        Element defaultStyleId = (Element) defaultStyle.getElementsByTagName("id").item(0);
+        defaultStyleId.setTextContent("danglingReference");
+        try(OutputStream os = resource.out()) {
+            print(dom, os);            
         }
         getGeoServer().reload();
     }

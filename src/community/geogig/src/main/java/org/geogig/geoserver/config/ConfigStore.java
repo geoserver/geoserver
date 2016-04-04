@@ -94,9 +94,7 @@ public class ConfigStore {
     public RepositoryInfo save(RepositoryInfo info) {
         checkNotNull(info, "null RepositoryInfo");
         ensureIdPresent(info);
-
-        checkNotNull(info.getName(), "null name: %s", info);
-        checkNotNull(info.getParentDirectory(), "null parent directory: %s", info);
+        checkNotNull(info.getLocation(), "null location URI: %s", info);
 
         lock.writeLock().lock();
         try (OutputStream out = resource(info.getId()).out()) {
@@ -148,8 +146,8 @@ public class ConfigStore {
     }
 
     /**
-     * Loads and returns all <b>valid</b> {@link RepositoryInfo}'s from
-     * {@code <data-dir>/geogig/config/repos/}; any xml file that can't be parsed is ignored.
+     * Loads and returns all <b>valid</b> {@link RepositoryInfo}'s from {@code 
+     * <data-dir>/geogig/config/repos/}; any xml file that can't be parsed is ignored.
      */
     public List<RepositoryInfo> getRepositories() {
         lock.writeLock().lock();
@@ -245,7 +243,7 @@ public class ConfigStore {
             LOGGER.log(Level.WARNING, msg, e);
             throw new IOException(msg, e);
         }
-        if (info.getName() == null || info.getParentDirectory() == null) {
+        if (info.getLocation() == null) {
             throw new IOException("Repository info has incomplete information: " + info);
         }
         return info;

@@ -78,7 +78,7 @@ public class RepositoriesPage extends GeoServerSecuredPage {
                         // clear the raw input of the field won't show the new model value
                         RepositoryManager manager = RepositoryManager.get();
                         RepositoryInfo info = new RepositoryInfo();
-                        info.setLocation(file.getAbsolutePath());
+                        info.setLocation(file.getAbsoluteFile().toURI());
                         manager.save(info);
                         repoChooserWindow.close(target);
                         target.addComponent(table);

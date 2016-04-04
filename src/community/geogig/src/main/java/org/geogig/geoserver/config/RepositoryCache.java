@@ -6,7 +6,6 @@ package org.geogig.geoserver.config;
 
 import static java.lang.String.format;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.ExecutionException;
@@ -16,6 +15,8 @@ import java.util.logging.Logger;
 
 import org.geotools.util.logging.Logging;
 import org.locationtech.geogig.api.GeoGIG;
+import org.locationtech.geogig.repository.Repository;
+import org.locationtech.geogig.repository.RepositoryResolver;
 
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
@@ -40,14 +41,14 @@ class RepositoryCache {
                 if (geogig != null) {
                     try {
                         URI location = geogig.getRepository().getLocation();
-                        LOGGER.fine(format("Closing cached GeoGig repository instance %s", location));
+                        LOGGER.fine(
+                                format("Closing cached GeoGig repository instance %s", location));
                         geogig.close();
-                        LOGGER.finer(format("Closed cached GeoGig repository instance %s", location));
+                        LOGGER.finer(
+                                format("Closed cached GeoGig repository instance %s", location));
                     } catch (RuntimeException e) {
-                        LOGGER.log(
-                                Level.WARNING,
-                                format("Error disposing GeoGig repository instance for id %s",
-                                        repoId), e);
+                        LOGGER.log(Level.WARNING, format(
+                                "Error disposing GeoGig repository instance for id %s", repoId), e);
                     }
                 }
             }
@@ -60,14 +61,15 @@ class RepositoryCache {
             public GeoGIG load(final String repoId) throws Exception {
                 try {
                     RepositoryInfo repoInfo = manager.get(repoId);
-                    String repoLocation = repoInfo.getLocation();
-                    File repoDir = new File(repoLocation);
-                    GeoGIG geogig = new GeoGIG(repoDir);
+                    URI repoLocation = repoInfo.getLocation();
+                    Repository repo = RepositoryResolver.load(repoLocation);
+                    GeoGIG geogig = new GeoGIG(repo);
                     geogig.getRepository();
                     return geogig;
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING,
-                            format("Error loading GeoGig repository instance for id %s", repoId), e);
+                            format("Error loading GeoGig repository instance for id %s", repoId),
+                            e);
                     throw e;
                 }
             }
@@ -85,8 +87,8 @@ class RepositoryCache {
             return repoCache.get(repositoryId);
         } catch (ExecutionException e) {
             Throwables.propagateIfInstanceOf(e.getCause(), IOException.class);
-            throw new IOException(
-                    "Error obtaining cached geogig instance for repo " + repositoryId, e.getCause());
+            throw new IOException("Error obtaining cached geogig instance for repo " + repositoryId,
+                    e.getCause());
         }
     }
 

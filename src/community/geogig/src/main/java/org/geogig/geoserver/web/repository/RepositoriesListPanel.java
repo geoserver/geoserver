@@ -108,8 +108,8 @@ public class RepositoriesListPanel extends GeoServerTablePanel<RepositoryInfo> {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 GeoServerDialog dialog = RepositoriesListPanel.this.dialog;
-                dialog.setTitle(new ParamResourceModel(
-                        "RepositoriesListPanel.confirmRemoval.title", this));
+                dialog.setTitle(
+                        new ParamResourceModel("RepositoriesListPanel.confirmRemoval.title", this));
 
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
                     private static final long serialVersionUID = -450822090965263894L;
@@ -146,9 +146,9 @@ public class RepositoriesListPanel extends GeoServerTablePanel<RepositoryInfo> {
         public ConfirmRemovePanel(String id, IModel<RepositoryInfo> repo) {
             super(id);
 
+            final String repoName = RepositoryManager.getRepoName(repo.getObject());
             add(new Label("aboutRemoveMsg", new ParamResourceModel(
-                    "RepositoriesListPanel$ConfirmRemovePanel.aboutRemove", this, repo.getObject()
-                            .getName())));
+                    "RepositoriesListPanel$ConfirmRemovePanel.aboutRemove", this, repoName)));
 
             final String repoId = repo.getObject().getId();
             final List<? extends CatalogInfo> stores;

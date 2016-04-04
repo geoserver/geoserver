@@ -18,6 +18,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.format.FreemarkerFormat;
+import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.rest.JettisonRepresentation;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -47,13 +48,14 @@ public class RepositoryListResource extends Resource {
 
     @Override
     public Variant getPreferredVariant() {
-        List<MediaType> acceptedMediaTypes = Lists.transform(getRequest().getClientInfo()
-                .getAcceptedMediaTypes(), new Function<Preference<MediaType>, MediaType>() {
-            @Override
-            public MediaType apply(Preference<MediaType> input) {
-                return input.getMetadata();
-            }
-        });
+        List<MediaType> acceptedMediaTypes = Lists.transform(
+                getRequest().getClientInfo().getAcceptedMediaTypes(),
+                new Function<Preference<MediaType>, MediaType>() {
+                    @Override
+                    public MediaType apply(Preference<MediaType> input) {
+                        return input.getMetadata();
+                    }
+                });
         if (acceptedMediaTypes.contains(MediaType.TEXT_HTML)) {
             return HTML;
         }
@@ -99,9 +101,10 @@ public class RepositoryListResource extends Resource {
 
     private List<RepositoryInfo> getRepositories() {
         Request request = getRequest();
-        GeoServerRepositoryProvider repoFinder = (GeoServerRepositoryProvider) repositoryProvider(request);
+        GeoServerRepositoryProvider repoFinder = (GeoServerRepositoryProvider) repositoryProvider(
+                request);
 
-        List<RepositoryInfo> repos = new ArrayList<>(repoFinder.findRepositories());
+        List<RepositoryInfo> repos = new ArrayList<>(repoFinder.getRepositoryInfos());
 
         return repos;
     }
@@ -128,7 +131,9 @@ public class RepositoryListResource extends Resource {
         private void write(XMLStreamWriter w, RepositoryInfo repo) throws XMLStreamException {
             w.writeStartElement("repository");
             element(w, "id", repo.getId());
-            element(w, "name", repo.getName());
+            RepositoryResolver uriResolver = RepositoryResolver.lookup(repo.getLocation());
+            String name = uriResolver.getName(repo.getLocation());
+            element(w, "name", name);
             encodeAlternateAtomLink(w, repo.getId());
             w.writeEndElement();
         }

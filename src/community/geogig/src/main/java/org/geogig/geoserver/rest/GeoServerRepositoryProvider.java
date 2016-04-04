@@ -7,6 +7,7 @@ package org.geogig.geoserver.rest;
 import static org.locationtech.geogig.rest.repository.RESTUtils.getStringAttribute;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -18,7 +19,9 @@ import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.Iterators;
 
 /**
  * {@link RepositoryProvider} that looks up the coresponding {@link GeoGIG} instance to a given
@@ -47,8 +50,30 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         }
     }
 
-    public List<RepositoryInfo> findRepositories() {
+    public List<RepositoryInfo> getRepositoryInfos() {
         return RepositoryManager.get().getAll();
+    }
+
+    @Override
+    public void delete(Request request) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void invalidate(String repoName) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public Iterator<String> findRepositories() {
+        List<RepositoryInfo> infos = getRepositoryInfos();
+        return Iterators.transform(infos.iterator(), new Function<RepositoryInfo, String>() {
+            @Override
+            public String apply(RepositoryInfo input) {
+                return input.getId();
+            }
+        });
     }
 
     @Override

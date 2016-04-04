@@ -59,7 +59,7 @@ public class AbstractLogStoreTest {
 
     protected LogStore logStore;
 
-    protected String repoUrl = "/home/testuser/repos/myrepo";
+    protected String repoUrl = "file:/home/testuser/repos/myrepo";
 
     @Before
     public void before() {

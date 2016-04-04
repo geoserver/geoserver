@@ -4,7 +4,7 @@
  */
 package org.geogig.geoserver.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.REPOSITORY;
@@ -13,6 +13,7 @@ import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.RESOL
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.Map;
 
 import org.geogig.geoserver.GeoGigTestData;
@@ -56,13 +57,13 @@ public class GeoGigGeoServerRESTntegrationTest extends CatalogRESTTestSupport {
                 .commit("created type trees")//
                 .get();
 
-        geogigData.insert("points",//
-                "p1=geom:POINT(0 0)",//
-                "p2=geom:POINT(1 1)",//
+        geogigData.insert("points", //
+                "p1=geom:POINT(0 0)", //
+                "p2=geom:POINT(1 1)", //
                 "p3=geom:POINT(2 2)");
 
-        geogigData.insert("lines",//
-                "l1=geom:LINESTRING(-10 0, 10 0)",//
+        geogigData.insert("lines", //
+                "l1=geom:LINESTRING(-10 0, 10 0)", //
                 "l2=geom:LINESTRING(0 0, 180 0)");
 
         geogigData.add().commit("Added test features");
@@ -176,7 +177,8 @@ public class GeoGigGeoServerRESTntegrationTest extends CatalogRESTTestSupport {
 
         String locationHeader = response.getHeader("Location");
         assertNotNull(locationHeader);
-        assertTrue(locationHeader.endsWith("/workspaces/gigws/datastores/repo_old_config_new_repo"));
+        assertTrue(
+                locationHeader.endsWith("/workspaces/gigws/datastores/repo_old_config_new_repo"));
 
         // DataStoreInfo created, the catalog listener DeprecatedDataStoreConfigFixer should have
         // forced the creation of the repo and updated the DataStoreInfo connection parameters with
@@ -198,7 +200,7 @@ public class GeoGigGeoServerRESTntegrationTest extends CatalogRESTTestSupport {
         // make sure a repository is configured in geoserver for that location
         final File repo = geogigData.repoDirectory();
         RepositoryInfo info = new RepositoryInfo();
-        info.setLocation(repo.getAbsolutePath());
+        info.setLocation(repo.toURI());
         info = RepositoryManager.get().save(info);
 
         final String repository = repo.getAbsolutePath();
@@ -253,7 +255,7 @@ public class GeoGigGeoServerRESTntegrationTest extends CatalogRESTTestSupport {
         try {
             geogig.command(InitOp.class).call();
             File repo = geogig.command(ResolveGeogigDir.class).getFile().get();
-            final String location = repo.getParentFile().getAbsolutePath();
+            final URI location = repo.getParentFile().getAbsoluteFile().toURI();
             RepositoryManager manager = RepositoryManager.get();
             RepositoryInfo info = new RepositoryInfo();
             info.setLocation(location);

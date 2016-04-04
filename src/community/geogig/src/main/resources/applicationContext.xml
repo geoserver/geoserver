@@ -49,10 +49,11 @@
   <bean id="geogigDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="geogig"/>
     <property name="factoryClass" value="org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory"/>
-    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
-    <property name="icon" value="img/icons/geosilk/database_vector.png"/>
+    <property name="iconBase" value="org.geogig.geoserver.web.RepositoriesPage"/>
+    <property name="icon" value="geogig_16x16_babyblue.png"/>
     <property name="componentClass" value="org.geogig.geoserver.web.data.store.geogig.GeoGigDataStoreEditPanel"/>
   </bean>
+  
   
   <bean id="geogigCategory" class="org.geoserver.web.Category">
     <property name="nameKey" value="category.geogig" />

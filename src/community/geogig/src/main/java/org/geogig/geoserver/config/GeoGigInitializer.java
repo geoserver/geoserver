@@ -9,7 +9,9 @@ import static java.lang.String.format;
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.REPOSITORY;
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.RESOLVER_CLASS_NAME;
 
+import java.io.File;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,7 @@ import org.geoserver.config.GeoServerInitializer;
 import org.geotools.util.logging.Logging;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
@@ -44,20 +47,20 @@ public class GeoGigInitializer implements GeoServerInitializer {
         // create RepositoryInfos for each datastore that doesn't have it to preserve backwards
         // compatibility
         Catalog catalog = geoServer.getCatalog();
-        Map<String, RepositoryInfo> allByLocation = getAllByLocation();
+        Map<URI, RepositoryInfo> allByLocation = getAllByLocation();
 
-        Multimap<String, DataStoreInfo> byRepo = storesByRepository(catalog);
+        Multimap<URI, DataStoreInfo> byRepo = storesByRepository(catalog);
 
-        for (String repoDirectory : byRepo.keySet()) {
+        for (URI repoURI : byRepo.keySet()) {
 
-            if (!allByLocation.containsKey(repoDirectory)) {
+            if (!allByLocation.containsKey(repoURI)) {
 
-                final RepositoryInfo info = create(repoDirectory);
+                final RepositoryInfo info = create(repoURI);
 
-                for (DataStoreInfo store : byRepo.get(repoDirectory)) {
-                    LOGGER.info(format(
-                            "Upgrading config for GeoGig store %s to refer to GeoServer's RepositoryInfo %s",
-                            store.getName(), info.getId()));
+                for (DataStoreInfo store : byRepo.get(repoURI)) {
+                    LOGGER.info(
+                            format("Upgrading config for GeoGig store %s to refer to GeoServer's RepositoryInfo %s",
+                                    store.getName(), info.getId()));
                     Map<String, Serializable> params = store.getConnectionParameters();
                     params.put(REPOSITORY.key, info.getId());
                     params.put(RESOLVER_CLASS_NAME.key, REPO_RESOLVER_CLASSNAME);
@@ -69,18 +72,19 @@ public class GeoGigInitializer implements GeoServerInitializer {
         catalog.addListener(new DeprecatedDataStoreConfigFixer());
     }
 
-    private Map<String, RepositoryInfo> getAllByLocation() {
-        Map<String, RepositoryInfo> byLocation = new HashMap<>();
+    private Map<URI, RepositoryInfo> getAllByLocation() {
+        Map<URI, RepositoryInfo> byLocation = new HashMap<>();
         for (RepositoryInfo info : store.getRepositories()) {
             byLocation.put(info.getLocation(), info);
         }
         return byLocation;
     }
 
-    private RepositoryInfo create(String repoDirectory) {
+    private RepositoryInfo create(URI repoURI) {
         RepositoryInfo info = new RepositoryInfo();
-        info.setLocation(repoDirectory);
+        info.setLocation(repoURI);
         store.save(info);
+        Preconditions.checkState(info.getId() != null);
         return info;
     }
 
@@ -89,14 +93,14 @@ public class GeoGigInitializer implements GeoServerInitializer {
      * {@link GeoGigDataStoreFactory#RESOLVER_CLASS_NAME} set to GeoServerStoreRepositoryResolver's
      * class name, in order to upgrade its configuration for the geoserver resolver to take place
      */
-    private Multimap<String, DataStoreInfo> storesByRepository(Catalog catalog) {
+    private Multimap<URI, DataStoreInfo> storesByRepository(Catalog catalog) {
         List<DataStoreInfo> stores;
         stores = RepositoryManager.findGeogigStoresWithOldConfiguration(catalog);
 
-        ListMultimap<String, DataStoreInfo> multimap = ArrayListMultimap.create();
+        ListMultimap<URI, DataStoreInfo> multimap = ArrayListMultimap.create();
         for (DataStoreInfo ds : stores) {
-            Serializable configuredResolver = ds.getConnectionParameters().get(
-                    RESOLVER_CLASS_NAME.key);
+            Serializable configuredResolver = ds.getConnectionParameters()
+                    .get(RESOLVER_CLASS_NAME.key);
             if (!REPO_RESOLVER_CLASSNAME.equals(configuredResolver)) {
                 multimap.put(repo(ds), ds);
             }
@@ -104,12 +108,13 @@ public class GeoGigInitializer implements GeoServerInitializer {
         return multimap;
     }
 
-    private String repo(DataStoreInfo ds) {
+    private URI repo(DataStoreInfo ds) {
         Serializable value = ds.getConnectionParameters()
                 .get(GeoGigDataStoreFactory.REPOSITORY.key);
         checkArgument(value != null, "%s not present in %s", GeoGigDataStoreFactory.REPOSITORY.key,
                 ds);
-        return String.valueOf(value);
+
+        return new File(String.valueOf(value)).getAbsoluteFile().toURI();
     }
 
 }

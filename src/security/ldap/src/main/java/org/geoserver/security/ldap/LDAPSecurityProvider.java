@@ -118,6 +118,7 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
                     }
                 };
             } else {
+                ldapContext.setAnonymousReadOnly(true);
                 authPopulator = new DefaultLdapAuthoritiesPopulator(
                         ldapContext, ldapConfig.getGroupSearchBase());
 

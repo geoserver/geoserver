@@ -405,5 +405,11 @@
         <module>wps-remote</module>
       </modules>
     </profile>
+    <profile>
+      <id>dem</id>
+      <modules>
+        <module>dem</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

@@ -32,6 +32,9 @@ import org.w3c.dom.Document;
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class SecurityLoggerTestIntegrationTest extends GeoServerSystemTestSupport {
 
+    /**
+     * {@code /geogig/repos/<repoId>}
+     */
     private String BASE_URL;
 
     @Rule
@@ -69,7 +72,7 @@ public class SecurityLoggerTestIntegrationTest extends GeoServerSystemTestSuppor
         info.setLocation(repoURL);
         info = repositoryManager.save(info);
 
-        BASE_URL = "/geogig/" + info.getId();
+        BASE_URL = "/geogig/repos/" + info.getId();
 
         logStore = GeoServerExtensions.bean(LogStore.class);
         assertNotNull(logStore);

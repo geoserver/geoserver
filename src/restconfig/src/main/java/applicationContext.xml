@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2014 - 2015 Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-
+<bean class="org.geoserver.platform.ModuleStatusImpl">
+  <constructor-arg index="0" value="gs-restconfig"/>
+  <constructor-arg index="1" value="GeoServer REST Configuration"/>
+</bean>
 <bean id="restConfigMapping" class="org.geoserver.rest.RESTMapping">
 <property name="routes">
   <map> 
@@ -334,6 +337,14 @@
           <key><value>/about/version</value></key>
           <value>aboutVersionFinder</value>
         </entry>
+        <entry>
+          <key><value>/about/status</value></key>
+          <value>aboutStatusFinder</value>
+        </entry>
+        <entry>
+          <key><value>/about/status.{format}</value></key>
+          <value>aboutStatusFinder</value>
+        </entry>
         
         <entry>
           <key><value>/fonts.{format}</value></key>
@@ -574,5 +585,5 @@
 
   <bean id="aboutManifestFinder" class="org.geoserver.rest.AboutManifestFinder" />
   <bean id="aboutVersionFinder" class="org.geoserver.rest.AboutVersionFinder" />
-
+  <bean id="aboutStatusFinder" class="org.geoserver.rest.AboutStatusFinder" />
 </beans>

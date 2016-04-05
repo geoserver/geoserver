@@ -8,7 +8,7 @@ Policies and Procedures
 
    committing.rst
    patches.rst
-   code-review.rst
+   review.rst
    community-process.rst
    gsip.rst
    community-modules.rst

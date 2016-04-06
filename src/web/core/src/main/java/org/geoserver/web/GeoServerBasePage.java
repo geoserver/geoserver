@@ -21,6 +21,7 @@ import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -56,7 +57,7 @@ import org.springframework.security.core.Authentication;
  * @author Justin Deoliveira, The Open Planning Project
  */
 public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
-    
+
     /**
      * The id of the panel sitting in the page-header, right below the page description
      */
@@ -223,6 +224,11 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
     @Override
     public void renderHead(IHeaderResponse response) {
+
+        // includes jquery, required by the placeholder plugin (wicket only include jquery if he need it)
+        response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(
+                getApplication().getJavaScriptLibrarySettings().getJQueryReference())));
+
         List<HeaderContribution> cssContribs = getGeoServerApplication()
                 .getBeansOfType(HeaderContribution.class);
         for (HeaderContribution csscontrib : cssContribs) {

@@ -3,13 +3,13 @@
 GeoServer Improvement Proposals
 ===============================
 
-GeoServer Improvements Proposals (GSIP) are the formal mechanism used to manage
-any sort of major change to GeoServer. Examples of changes which are managed by
+GeoServer Improvements Proposals (GSIP) are the formal mechanism used to manage major changes to GeoServer in a responsible fashion. Examples of changes which are managed by
 the GSIP process include:
 
 * major features
 * code re-architecture
 * community process improvements
+* upgrading key dependencies
 * intellectual property
 
 How a GSIP works
@@ -24,6 +24,33 @@ The typical life cycle of a GSIP is as follows:
 #. The PSC votes on the GSIP
 #. Developer commits changes upon receiving a positive vote
 
+Writing a GSIP
+--------------
+   
+GSIPs are written up on the 
+`Proposals <https://github.com/geoserver/geoserver/wiki/Proposals>`_ wiki page.
+
+If you have write access login and follow the steps below. If you do not have write access GitHub will automatically create a fork for you as you edit individual pages.
+
+To make a GSIP:
+
+#. Navigate to the wiki: https://github.com/geoserver/geoserver/wiki/
+#. Select and copy the proposal template to your clipboard. (Template is available `here <https://github.com/geoserver/geoserver/wiki/GSIP-XXXX>`_)
+#. Navigate to the proposals page: https://github.com/geoserver/geoserver/wiki/Proposals
+#. Edit the page with a new link under *Proposals Under Discussion*:
+   
+   ```
+   [GSIP 116 - Use Apache Style Contributor Agreement](GSIP 116)
+   ```
+ 
+   #. The number should be the next "available" GSIP number.
+   #. The title should be short and descriptive
+
+#. Save your change to the *Proposal* page, and click on your new link to create a new page.
+#. Click on your new link to create the page, fill in the page contents by pasting the proposal page template from your clipboard.
+#. Fill in the information in the page template, and click ``Save`` when
+   complete.
+   
 Voting on a GSIP
 ----------------
 
@@ -65,35 +92,6 @@ GSIPs. The voting process works as follows:
 
     * no "-1" votes (or all feedback from any "-1" votes has been addressed
       and any "-1" voters have changed their votes)
-
-
-Implementing a GSIP
--------------------
-   
-GSIPs are written up on the 
-`Proposals <https://github.com/geoserver/geoserver/wiki/Proposals>`_ wiki page.
-
-If you have write access login and follow the steps below. If you do not have write access GitHub will automatically create a fork for you as you edit individual pages.
-
-To make a GSIP:
-
-#. Navigate to the wiki: https://github.com/geoserver/geoserver/wiki/
-#. Select and copy the proposal template to your clipboard. (Template is available `here <https://github.com/geoserver/geoserver/wiki/GSIP-XXXX>`_)
-#. Navigate to the proposals page: https://github.com/geoserver/geoserver/wiki/Proposals
-#. Edit the page with a new link under *Proposals Under Discussion*:
-   
-   ```
-   [GSIP 116 - Use Apache Style Contributor Agreement](GSIP 116)
-   ```
- 
-   #. The number should be the next "available" GSIP number.
-   #. The title should be short and descriptive
-
-#. Save your change to the *Proposal* page, and click on your new link to create a new page.
-#. Click on your new link to create the page, fill in the page contents by pasting the proposal page template from your clipboard.
-#. Fill in the information in the page template, and click ``Save`` when
-   complete.
-
 
 GSIP FAQ
 --------

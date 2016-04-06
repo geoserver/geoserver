@@ -3,8 +3,7 @@
 Review
 ======
 
-Reviewing code is an invaluable process that is used to ensure that the highest
-quality code possible gets committed into GeoServer at all times. 
+Reviewing code is an invaluable process that is used to ensure that the highest quality code possible gets committed into GeoServer at all times. 
 
 Informal Code Review
 --------------------

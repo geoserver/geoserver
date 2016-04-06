@@ -5,7 +5,7 @@ Web archive
 
 GeoServer is packaged as a standalone servlet for use with existing application servers such as `Apache Tomcat <http://tomcat.apache.org/>`_ and `Jetty <http://eclipse.org/jetty/>`_.
 
-.. note:: GeoServer has been mostly tested using Tomcat, and so is the recommended application server. Other application servers have been known to work, but are not guaranteed.
+.. note:: GeoServer has been mostly tested using Tomcat, and so is the recommended application server. GeoServer requires a newer version of Tomcat (7.0.65 or later) that implements Servlet 3 and annotation processing. Other application servers have been known to work, but are not guaranteed.
  
 Installation
 ------------

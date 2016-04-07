@@ -18,7 +18,7 @@
             <!-- GeoGig uses SQLite JDBC drivers by default -->
             <include>sqlite-jdbc-*.jar</include>
             <!-- Hikari DB connection pool libs -->
-            <!--include>HikariCP-*.jar</include-->
+            <include>HikariCP-*.jar</include>
             <!-- the plugin uses Logback for LogStore -->
             <include>logback*.jar</include>
             <!-- Guice injection libs -->

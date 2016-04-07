@@ -235,6 +235,26 @@
       </modules>
     </profile>
     <profile>
+      <id>script-py</id>
+      <activation>
+        <property><name>script-py</name></property>
+      </activation> 
+      <modules>
+        <module>script/core</module>
+        <module>script/py</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>script-web</id>
+      <activation>
+        <property><name>script-web</name></property>
+      </activation> 
+      <modules>
+        <module>script/core</module>
+        <module>script/web</module>
+      </modules>
+    </profile>
+    <profile>
       <id>pgraster</id>
       <activation>
         <property><name>pgraster</name></property>

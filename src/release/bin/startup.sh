@@ -5,6 +5,11 @@
 # $Id$
 # -----------------------------------------------------------------------------
 
+# Determine JAVA_HOME on Debian/Ubuntu
+if [ -z "$JAVA_HOME" ]; then
+  JAVA_HOME=$(readlink -fe /usr/bin/java | sed "s:bin/java::")
+fi
+
 # Make sure prerequisite environment variables are set
 if [ -z "$JAVA_HOME" ]; then
   echo "The JAVA_HOME environment variable is not defined"

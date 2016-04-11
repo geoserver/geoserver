@@ -69,6 +69,7 @@
           <descriptor>release/ext-vectortiles.xml</descriptor>
           <descriptor>release/ext-params-extractor.xml</descriptor>
           <descriptor>release/ext-wps-remote.xml</descriptor>
+          <descriptor>release/ext-python.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>

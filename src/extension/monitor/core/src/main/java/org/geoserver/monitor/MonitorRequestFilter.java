@@ -58,9 +58,11 @@ public class MonitorRequestFilter {
         if (LOGGER.isLoggable(Level.FINER)) {
             LOGGER.finer("Testing " + path + " for monitor filtering");
         }
-        for (Filter f : filters) {
-            if (f.matches(path)) {
-                return true;
+        if(filters != null) {
+            for (Filter f : filters) {
+                if (f.matches(path)) {
+                    return true;
+                }
             }
         }
         

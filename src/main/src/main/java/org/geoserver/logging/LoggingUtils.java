@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,7 +6,6 @@
 package org.geoserver.logging;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +25,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resources;
 import org.geoserver.platform.resource.Resource.Type;
 import org.vfny.geoserver.global.ConfigurationException;
 
@@ -176,18 +174,17 @@ public class LoggingUtils {
                     "this failed as well.  Is your data dir writeable?");
         }
         
-        // reconfiguring log4j logger levels by resetting and loading a new set of configuration properties
-        InputStream loggingConfigStream = resource.in();
-        if (loggingConfigStream == null) {
-            LoggingInitializer.LOGGER.warning("Couldn't open Log4J configuration file '" + resource);
-            return;
-        } else {
-            LoggingInitializer.LOGGER.fine("GeoServer logging profile '" + resource.name() + "' enabled.");
-        }
-    
-        configureGeoServerLogging(resourceLoader, loggingConfigStream, suppressStdOutLogging, false, 
-                                logFileName);
+        try(InputStream loggingConfigStream = resource.in()) {
+            if (loggingConfigStream == null) {
+                LoggingInitializer.LOGGER.warning("Couldn't open Log4J configuration file '" + resource);
+                return;
+            } else {
+                LoggingInitializer.LOGGER.fine("GeoServer logging profile '" + resource.name() + "' enabled.");
+            }
         
+            configureGeoServerLogging(resourceLoader, loggingConfigStream, suppressStdOutLogging, false, 
+                                    logFileName);
+        }
         
     }
 

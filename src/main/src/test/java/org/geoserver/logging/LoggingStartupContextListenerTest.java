@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.InputStream;
 
 import javax.servlet.ServletContextEvent;
 
@@ -19,9 +20,11 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.MemoryLockProvider;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.mockrunner.mock.web.MockServletContext;
 
 public class LoggingStartupContextListenerTest {
@@ -63,5 +66,22 @@ public class LoggingStartupContextListenerTest {
         assertTrue(appender instanceof FileAppender);
 
         assertEquals(new File(tmp, "foo.log").getCanonicalPath().toLowerCase(), ((FileAppender)appender).getFile().toLowerCase());
+    }
+    
+    @Test
+    public void testInitLoggingLock() throws Exception {
+        
+        final File target = new File("./target");
+        FileUtils.deleteQuietly(new File(target, "logs"));
+        FileSystemResourceStore store = new FileSystemResourceStore(target);
+        store.setLockProvider(new MemoryLockProvider());
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(store);
+        
+        // make it copy the log files
+        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, null);
+        // init once from default logging
+        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, null);
+        // init twice, here it used to lock up
+        LoggingUtils.initLogging(loader, "DEFAULT_LOGGING.properties", false, null);
     }
 }

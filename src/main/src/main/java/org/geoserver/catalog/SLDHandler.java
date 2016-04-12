@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -144,28 +145,38 @@ public class SLDHandler extends StyleHandler {
     StyledLayerDescriptor parse10(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
         throws IOException {
 
-        SLDParser p = createSld10Parser(input, resourceLocator, entityResolver);
-        StyledLayerDescriptor sld = p.parseSLD();
-        if (sld.getStyledLayers().length == 0) {
-            //most likely a style that is not a valid sld, try to actually parse out a
-            // style and then wrap it in an sld
-            Style[] style = p.readDOM();
-            if (style.length > 0) {
-                NamedLayer l = styleFactory.createNamedLayer();
-                l.addStyle(style[0]);
-                sld.addStyledLayer(l);
+        Reader reader = null;
+        try {
+            // we need to close the reader if we grab one, but if it's a file it has
+            // to stay as such to allow relative resource resolution during the parse
+            if(!(input instanceof File)) {
+                reader = toReader(input);
+                input = reader;
             }
+            SLDParser p = createSld10Parser(input, resourceLocator, entityResolver);
+            StyledLayerDescriptor sld = p.parseSLD();
+            if (sld.getStyledLayers().length == 0) {
+                //most likely a style that is not a valid sld, try to actually parse out a
+                // style and then wrap it in an sld
+                Style[] style = p.readDOM();
+                if (style.length > 0) {
+                    NamedLayer l = styleFactory.createNamedLayer();
+                    l.addStyle(style[0]);
+                    sld.addStyledLayer(l);
+                }
+            }
+            return sld;
+        } finally {
+           IOUtils.closeQuietly(reader);
         }
-
-        return sld;
     }
 
     StyledLayerDescriptor parse11(Object input, ResourceLocator resourceLocator, EntityResolver entityResolver)
         throws IOException {
         Parser parser = createSld11Parser(input, resourceLocator, entityResolver);
-        try {
+        try(Reader reader = toReader(input)) {
             parser.setEntityResolver(entityResolver);
-            return (StyledLayerDescriptor) parser.parse(toReader(input));
+            return (StyledLayerDescriptor) parser.parse(reader);
         }
         catch(Exception e) {
             throw new IOException(e);
@@ -267,16 +278,17 @@ public class SLDHandler extends StyleHandler {
     }
 
     List<Exception> validate10(Object input, EntityResolver entityResolver) throws IOException {
-        return new SLDValidator().validateSLD(new InputSource(toReader(input)));
+        try(Reader reader = toReader(input)) {
+            return new SLDValidator().validateSLD(new InputSource(reader));
+        }
     }
 
     List<Exception> validate11(Object input, EntityResolver entityResolver) throws IOException {
         Parser p = createSld11Parser(input, null, entityResolver);
-        try {
-            p.validate(toReader(input));
+        try (Reader reader = toReader(input)) {
+            p.validate(reader);
             return p.getValidationErrors();
-        }
-        catch(Exception e) {
+        } catch(Exception e) {
             throw new IOException(e);
         }
     }

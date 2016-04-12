@@ -7,6 +7,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.GlobalLockProvider;
 import org.geoserver.platform.resource.LockProvider;
 import org.geoserver.platform.resource.MemoryLockProvider;
+import org.geoserver.platform.resource.NullLockProvider;
 
 /**
  * Initializes LockProvider based on configuration settings.
@@ -50,8 +51,9 @@ public class LockProviderInitializer implements GeoServerInitializer {
     
     public static void setLockProvider( String lockProviderName ){
         LockProvider delegate;
-        if( lockProviderName == null ){
-            delegate = new MemoryLockProvider();
+        if( lockProviderName == null ) {
+            // for backwards compatibility
+            delegate = new NullLockProvider();
         } else {
             Object provider = GeoServerExtensions.bean(lockProviderName);
             if( provider == null ){

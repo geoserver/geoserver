@@ -1,3 +1,7 @@
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.catalog;
 
 import static org.junit.Assert.assertNotNull;
@@ -9,8 +13,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Properties;
 
+import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.MemoryLockProvider;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.SLDParser;
@@ -62,6 +70,17 @@ public class StylesTest extends GeoServerSystemTestSupport {
         StyledLayerDescriptor sld = parser.parseSLD();
 
         assertNull(Styles.style(sld));
+    }
+    
+    @Test
+    public void testParseStyleTwiceLock() throws Exception {
+        StyleInfo style = getCatalog().getStyles().get(0);
+        FileSystemResourceStore store = (FileSystemResourceStore) getDataDirectory().getResourceStore();
+        store.setLockProvider(new MemoryLockProvider());
+        // parse twice to check we are not locking on it
+        Resource resource = getDataDirectory().style(style);
+        Styles.handler(style.getFormat()).parse(resource, style.getFormatVersion(), new DefaultResourceLocator(), null);
+        Styles.handler(style.getFormat()).parse(resource, style.getFormatVersion(), new DefaultResourceLocator(), null);
     }
 
 }

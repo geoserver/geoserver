@@ -1,17 +1,31 @@
 package org.geoserver.catalog;
 
-import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.*;
-import org.geotools.util.Version;
-import org.opengis.filter.FilterFactory;
-import org.xml.sax.EntityResolver;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.Mark;
+import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.PolygonSymbolizer;
+import org.geotools.styling.RasterSymbolizer;
+import org.geotools.styling.ResourceLocator;
+import org.geotools.styling.Rule;
+import org.geotools.styling.SLD;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
+import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.styling.Symbolizer;
+import org.geotools.styling.UserLayer;
+import org.geotools.util.Version;
+import org.opengis.filter.FilterFactory;
+import org.xml.sax.EntityResolver;
 
 /**
  * Test style handler based on properties format.
@@ -44,7 +58,9 @@ public class PropertyStyleHandler extends StyleHandler {
     public StyledLayerDescriptor parse(Object input, Version version, ResourceLocator resourceLocator,
        EntityResolver enityResolver) throws IOException {
         Properties p = new Properties();
-        p.load(toReader(input));
+        try(Reader reader = toReader(input)) {
+            p.load(reader);
+        }
 
         Color color = color(p.getProperty("color"), Color.BLACK);
         Symbolizer sym = null;

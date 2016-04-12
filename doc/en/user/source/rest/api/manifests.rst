@@ -7,6 +7,7 @@ GeoServer provides a REST service to expose a listing of all loaded JARs and res
 
 * ``about/manifest``—Retrieves details on all loaded JARs
 * ``about/version``—Retrieves details for the high-level components: GeoSever, GeoTools, and GeoWebCache
+* ``about/status``-Retrieves details for the status of all loaded and configured modules
 
 
 ``/about/manifest[.<format>]``
@@ -126,7 +127,46 @@ This endpoint shows only the details for the high-level components: GeoServer, G
      - HTML
      - :ref:`manifest <rest_api_manifests_manifest>`, :ref:`key <rest_api_manifests_key>`, :ref:`value <rest_api_manifests_value>`
    * - POST
-     - 
+     -
+     - 405
+     -
+     -
+     -
+   * - PUT
+     -
+     - 405
+     -
+     -
+     -
+   * - DELETE
+     -
+     - 405
+     -
+     -
+     -
+
+``/about/status[.<format>]``
+-----------------------------
+
+This endpoint shows the status details of all installed and configured modules.Status details always include human readable name, and module name. Optional details include version, availability, status message, and links to documentation.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Status Code
+     - Formats
+     - Default Format
+     - Parameters
+   * - GET
+     - List module statuses
+     - 200
+     - HTML, XML, JSON
+     - HTML
+     -
+   * - POST
+     -
      - 405
      - 
      - 

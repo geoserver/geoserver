@@ -69,7 +69,7 @@ public class SextanteIntegrationTest extends WPSTestSupport {
         		"0.5 1.0\n" + 
         		"0.75 1.0\n";
 
-        String actual = sr.getOutputStreamContent();
+        String actual = sr.getContentAsString();
         actual = actual.replace("\r", "");
 
         assertEquals(expected, actual);

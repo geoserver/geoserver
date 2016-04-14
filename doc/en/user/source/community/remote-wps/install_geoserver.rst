@@ -146,7 +146,7 @@ Set the ownership of the ``geoserver/`` related directories to user tomcat
     #JAVA_OPTS="-Xminf0.1 -Xmaxf0.3"
     # Use JAVA_OPTS to set java.library.path for libtcnative.so
     #JAVA_OPTS="-Djava.library.path=/usr/lib"
-    JAVA_OPTS="-server -XX:SoftRefLRUPolicyMSPerMB=36000 -Xms1024m -Xmx2048m -XX:MaxPermSize=128m
+    JAVA_OPTS="-server -XX:SoftRefLRUPolicyMSPerMB=36000 -Xms1024m -Xmx2048m
     -XX:PermSize=64m -XX:+UseConcMarkSweepGC -XX:NewSize=48m -DGEOSERVER_DATA_DIR=/storage/data/
     -DENABLE_ADVANCED_PROJECTION=false -Dorg.geotools.shapefile.datetime=true -Duser.timezone=GMT
     -Dorg.geotools.filter.function.simplify=true -DGEOMETRY_COLLECT_MAX_COORDINATES=50000"

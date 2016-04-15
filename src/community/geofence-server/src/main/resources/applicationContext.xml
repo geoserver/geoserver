@@ -20,8 +20,8 @@
           
     <!-- ================================================================ -->
     <!-- =============== Property override ============================== -->
-    <!-- ================================================================ -->	
-    
+    <!-- ================================================================ -->
+
     <bean id="geofence-server-configurer" class="org.geoserver.geofence.config.GeoFencePropertyPlaceholderConfigurer">
        <property name="order" value="4"/>
         
@@ -43,12 +43,15 @@
                 <!-- The frontend will be injected in the access manager. -->
                 <!-- You may replace the cachedRuleReader ref with ruleReaderService in order to disable the caching -->
                 <!--<prop key="ruleReaderFrontend">ruleReaderService</prop>-->
+                <prop key="ruleReaderFrontend">cachedRuleReader</prop>
                 
                 <!-- the default user/group service name -->
                 <prop key="defaultUserGroupServiceName">default</prop>
             </props>
         </property>
 	</bean>
+
+    <alias name="geofence-server-configurer" alias="geofence-configurer"/>
        
     <bean class="org.geoserver.config.GeoServerPropertyOverrideConfigurer" >
         <constructor-arg ref="dataDirectory"/>

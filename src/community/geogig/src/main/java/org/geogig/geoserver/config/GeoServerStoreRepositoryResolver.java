@@ -10,7 +10,6 @@ import java.net.URI;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 
 import com.google.common.base.Throwables;
-import java.io.File;
 
 public class GeoServerStoreRepositoryResolver implements GeoGigDataStoreFactory.RepositoryLookup {
 
@@ -19,12 +18,10 @@ public class GeoServerStoreRepositoryResolver implements GeoGigDataStoreFactory.
         RepositoryManager repositoryManager = RepositoryManager.get();
         try {
             RepositoryInfo info = repositoryManager.get(repository);
-            File locFile = new File(info.getLocation());
-            return locFile.toURI();
+            return info.getLocation();
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
     }
-
 
 }

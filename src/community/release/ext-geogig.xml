@@ -45,8 +45,6 @@
             <include>jcommander-*.jar</include>
             <!-- jansi libs -->
             <include>jansi-*.jar</include>
-            <!-- BoneCP libs. Maybe replace this with HikariCP? -->
-            <include>bonecp-*.jar</include>
         </includes>
         <excludes>
             <exclude>*test*</exclude>

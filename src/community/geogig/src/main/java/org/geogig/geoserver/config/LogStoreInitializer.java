@@ -46,8 +46,8 @@ import com.google.common.base.Throwables;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Resources;
 import com.google.common.reflect.Reflection;
-import com.jolbox.bonecp.BoneCPConfig;
-import com.jolbox.bonecp.BoneCPDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
  * Helper class to create the default {@code <data-dir>/geogig/config/security/logstore.properties}
@@ -61,8 +61,8 @@ class LogStoreInitializer {
     private static final Logger LOGGER = Logging.getLogger(LogStoreInitializer.class);
 
     static void dispose(DataSource dataSource) {
-        if (dataSource instanceof BoneCPDataSource) {
-            ((BoneCPDataSource) dataSource).close();
+        if (dataSource instanceof HikariDataSource) {
+            ((HikariDataSource) dataSource).close();
         } else if (dataSource instanceof SingleConnectionDataSource) {
             try {
                 ((SingleConnectionDataSource) dataSource).conn.close();
@@ -78,8 +78,8 @@ class LogStoreInitializer {
         try {
             Class.forName(driverName);
         } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException(String.format(
-                    "JDBC Driver '%s' does not exist in the classpath", driverName));
+            throw new IllegalArgumentException(
+                    String.format("JDBC Driver '%s' does not exist in the classpath", driverName));
         }
 
         final String jdbcUrl = properties.getProperty(PROP_URL);
@@ -94,8 +94,8 @@ class LogStoreInitializer {
                 checkArgument(maxConnections > 0, "maxConnections must be an integer > 0: %s",
                         maxConnections);
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Can't parse maxConnections as an int: "
-                        + maxConnectionsProp, e);
+                throw new IllegalArgumentException(
+                        "Can't parse maxConnections as an int: " + maxConnectionsProp, e);
             }
         }
 
@@ -110,13 +110,13 @@ class LogStoreInitializer {
             }
             dataSource = new SingleConnectionDataSource(connection);
         } else {
-            BoneCPConfig config = new BoneCPConfig();
+            HikariConfig config = new HikariConfig();
             config.setJdbcUrl(jdbcUrl);
             config.setUsername(username);
             config.setPassword(password);
-            config.setMaxConnectionsPerPartition(maxConnections);
+            config.setMaximumPoolSize(maxConnections);
 
-            dataSource = new BoneCPDataSource(config);
+            dataSource = new HikariDataSource(config);
         }
         return dataSource;
     }
@@ -163,29 +163,27 @@ class LogStoreInitializer {
 
     private static String configComments() {
         String comments = new StringBuilder(
-                "Connection information for the geogig security logs database.\n#")
-                .append("enabled true|false whether to enable security logging\n#")
-                .append(PROP_DRIVER_CLASS)
-                .append(": JDBC Driver class name\n#")
-                .append(PROP_URL)
-                .append(": JDBC URL for the connections\n#")
-                .append(PROP_USER)
-                .append(": database user name\n#")
-                .append(PROP_PASSWORD)
-                .append(": database user password\n#")
-                .append(PROP_MAX_CONNECTIONS)
-                .append(": max number of connections in the pool\n#")
-                .append(PROP_SCRIPT)
-                .append(": Database initialization DDL script file\n#")
-                .append(PROP_RUN_SCRIPT)
-                .append(": Boolean indicating whether to execute the init script. If true, and succeeded, its value will automatically be set to false afterwards\n#")
-                .append("If using SQLite, the ")
-                .append(PROP_MAX_CONNECTIONS)
-                .append(" option has no effect and a single connection is used among all threads.\n")
-                .append("If not using SQLite (for which the tables are created automatically), make sure to first run the\n#")//
-                .append("appropriate DDL script on the database. Some sample ones accompany this file. There are\n#")//
-                .append("more init scripts at https://github.com/qos-ch/logback/tree/master/logback-classic/src/main/resources/ch/qos/logback/classic/db/script")//
-                .toString();
+                "Connection information for the geogig security logs database.\n#")//
+                        .append("enabled true|false whether to enable security logging\n#")
+                        .append(PROP_DRIVER_CLASS)//
+                        .append(": JDBC Driver class name\n#").append(PROP_URL)//
+                        .append(": JDBC URL for the connections\n#").append(PROP_USER)//
+                        .append(": database user name\n#")//
+                        .append(PROP_PASSWORD)//
+                        .append(": database user password\n#")//
+                        .append(PROP_MAX_CONNECTIONS)//
+                        .append(": max number of connections in the pool\n#")//
+                        .append(PROP_SCRIPT)//
+                        .append(": Database initialization DDL script file\n#")//
+                        .append(PROP_RUN_SCRIPT)//
+                        .append(": Boolean indicating whether to execute the init script. If true, and succeeded, its value will automatically be set to false afterwards\n#")//
+                        .append("If using SQLite, the ")//
+                        .append(PROP_MAX_CONNECTIONS)//
+                        .append(" option has no effect and a single connection is used among all threads.\n")//
+                        .append("If not using SQLite (for which the tables are created automatically), make sure to first run the\n#")//
+                        .append("appropriate DDL script on the database. Some sample ones accompany this file. There are\n#")//
+                        .append("more init scripts at https://github.com/qos-ch/logback/tree/master/logback-classic/src/main/resources/ch/qos/logback/classic/db/script")//
+                        .toString();
         return comments;
     }
 

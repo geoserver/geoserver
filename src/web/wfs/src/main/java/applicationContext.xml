@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-web-wfs"/>
+    <constructor-arg index="1" value="GeoServer Web UI Web Feature Service"/>
+  </bean>
   <bean id="wfsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="wfs"/>
     <property name="titleKey" value="wfs.title"/>

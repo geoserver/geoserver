@@ -11,18 +11,14 @@ All contributors are asked to provide an assignment agreement for working on the
 * `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.txt>`__
 * `individual_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`__
 
-
-This agreement can be printed, signed, scanned and emailed to `info@osgeo.org <mailto:info@osgeo.org>`_ at Open Source Geospatial Foundation (OSGeo). `OSGeo <http://www.osgeo.org/content/foundation/about.html>`_
-is the  non-profit which holds the GeoServer codebase for the community.
+This agreement can be printed, signed, scanned and emailed to `info@osgeo.org <mailto:info@osgeo.org>`_ at Open Source Geospatial Foundation (OSGeo). `OSGeo <http://www.osgeo.org/content/foundation/about.html>`_ is the  non-profit which holds the GeoServer codebase for the community.
 
 The `contribution licenses <http://www.osgeo.org/content/foundation/legal/licenses.html>`_ are used by OSGeo projects seeking to assign copyright directly to the foundation. These licenses are directly derived from the Apache code contribution licenses (CLA V2.0 and CCLA v r190612).
    
 Community commit access
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The first stage of access allows a developer to commit only to the community
-module or extension for which they are the maintainer. This stage of access can
-be obtained quite easily.
+The first stage of access allows a developer to commit only to the community module or extension for which they are the maintainer. This stage of access can be obtained quite easily.
 
 The process of getting community commit access is as follows:
 

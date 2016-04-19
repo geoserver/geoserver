@@ -19,6 +19,64 @@ The PSC is made up of individuals who are intended to represent the various comm
 
 Turnover is allowed and expected to accommodate people only able to become active on the project in intervals. A PSC member may step down at any time.
 
+Current PSC
+-----------
+
+* Alessio Fabiani
+* Andrea Aime
+* Ben Caradoc-Davies
+* Brad Hards
+* Christian Mueller
+* Ian Turton
+* Jody Garnett
+* Jukka Rahkonen
+* Kevin Smith
+* Simone Giannecchini
+
+We would like to thank prior PSC members:
+
+* Rob Atkinson
+* Justin Deoliveira
+* Chris Holmes
+* Brent Owens
+* Gabriel Roldan
+* Phil Scadden
+
+PSC Membership
+--------------
+
+New PSC members
+^^^^^^^^^^^^^^^
+
+A new PSC member can be nominated at any time.  Voting for a new PSC is done by current active PSC members.  There is no hard limit to the number of PSC members, but we want a relatively active PSC.  PSC nominations are generally given in recognition to very significant contributions to the project.  Membership is open to non-technical people, for example if someone is to make huge advances to the documentation or marketing of GeoServer, for example.  
+
+Since we demand a fairly active PSC we expect turnover may be high compared to other projects, so initially we will aim to keep it around 7 PSC members.  But given sufficient reason we will expand that.  
+
+Nominated PSC members must recieve a majority of +1 vote's from the PSC, and no -1's.  
+
+PSC Chair is nominated following the same procedures as PSC members.
+
+Stepping Down
+^^^^^^^^^^^^^
+
+If you find you cannot make meetings for a month or two, by all means step aside. Thank you so much for your time, if you want to groom a successor and then nominate them that is cool, but the nomination process still applies.  
+
+If we do not hear from you for six months we will assume you lost, send out a search party and nominate your replacement.  
+
+That is to say, status on PSC is lost if not active at all in a two month period of time.  Of course you can come back on to the PSC if you become active again, but a new nomination procedure will be needed.  
+
+Bootstrapping
+^^^^^^^^^^^^^
+
+First a chair is chosen by the current group of "active" committers. The Chair is then removed from the nominee list.
+
+Everyone on the email lists gets 5 votes for PSC,. Once the list is accepted by those nominated, a volunteer will privately gather the votes posting the results. The 7 nominees receiving the most 5 votes will be selected as the PSC.
+
+Dissolution of PSC
+^^^^^^^^^^^^^^^^^^
+
+If there are no suitable replacements, the PSC can decide to go down in number.  If the number of active PSC members drops below 5, however, then we may wish to ask the OSGeo Board for assistance. For more information check out the `OSGeo Governance FAQ <http://www.osgeo.org/faq>`_.
+
 Process
 -------
 
@@ -126,61 +184,3 @@ The PSC is responsible for defining project policies and practiced. Examples inc
    * Frequency 
    * Version numbering
    * Stable vs R&D
-
-Current PSC
------------
-
-* Alessio Fabiani
-* Andrea Aime
-* Ben Caradoc-Davies
-* Brad Hards
-* Christian Mueller
-* Ian Turton
-* Jody Garnett
-* Jukka Rahkonen
-* Kevin Smith
-* Simone Giannecchini
-
-We would like to thank prior PSC members:
-
-* Rob Atkinson
-* Justin Deoliveira
-* Chris Holmes
-* Brent Owens
-* Gabriel Roldan
-* Phil Scadden
-
-PSC Voting procedure
---------------------
-
-Bootstrapping
-^^^^^^^^^^^^^
-
-First a chair is chosen by the current group of "active" committers. The Chair is then removed from the nominee list.
-
-Everyone on the email lists gets 5 votes for PSC,. Once the list is accepted by those nominated, a volunteer will privately gather the votes posting the results. The 7 nominees receiving the most 5 votes will be selected as the PSC.
-
-Future PSC members
-^^^^^^^^^^^^^^^^^^
-
-A new PSC member can be nominated at any time.  Voting for a new PSC is done by current active PSC members.  There is no hard limit to the number of PSC members, but we want a relatively active PSC.  PSC nominations are generally given in recognition to very significant contributions to the project.  Membership is open to non-technical people, for example if someone is to make huge advances to the documentations or marketing of GeoServer, for example.  
-
-Since we demand a fairly active PSC we expect turnover may be high compared to other projects, so initially we will aim to keep it around 7 PSC members.  But given sufficient reason we will expand that.  
-
-Nominated PSC members must recieve a majority of +1 vote's from the PSC, and no -1's.  
-
-PSC Chair is nominated following the same procedures as PSC members.
-
-Stepping Down
--------------
-
-If you find you cannot make meetings for a month or two, by all means step aside. Thank you so much for your time, if you want to groom a successor and then nominate them that is cool, but the nomination process still applies.  
-
-If we do not hear from you for six months we will assume you lost, send out a search party and nominate your replacement.  
-
-That is to say, status on PSC is lost if not active at all in a two month period of time.  Of course you can come back on to the PSC if you become active again, but a new nomination procedure will be needed.  
-
-Dissolution of PSC
-------------------
-
-If there are no suitable replacements, the PSC can decide to go down in number.  If the number of active PSC members drops below 5, however, then we may wish to ask the OSGeo Board for assistance. For more information check out the `OSGeo Governance FAQ <http://www.osgeo.org/faq>`_.

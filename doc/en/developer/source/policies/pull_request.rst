@@ -94,7 +94,7 @@ The core developers review community patches in spare time. Be cognizant of this
 as you are contributing your own free time to the project, so is the developer who is reviewing and 
 applying your patch.
 
-We understand professionals working on the code base may meet a customer or contractual obligation, please review `commercial support <http://geoserver.org/support/>`__ options if you are not in a position to wait for a volunteer.
+We understand professionals working on the code base may need to meet customer or contractual obligations. You may wish to review `commercial support <http://geoserver.org/support/>`__ options if you are not in a position to wait for a volunteer. We ask that professionals take an extra level of pride in their work, it embarrassing make your customers wait over common mistakes. 
 
 Test Case
 ^^^^^^^^^

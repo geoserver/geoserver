@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -28,6 +28,8 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
@@ -113,6 +115,12 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
     protected SecureCatalogImpl sc;
 
+    protected LayerInfo cascadedLayer;
+
+    protected WMSLayerInfo cascaded;
+
+    protected List<WMSLayerInfo> wmsLayers;
+
     @Before
     public void setUp() throws Exception {
         rwUser = new TestingAuthenticationToken("rw", "supersecret", Arrays.asList(new GrantedAuthority[] {
@@ -162,6 +170,10 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         layerGroupGlobal = buildLayerGroup("layerGroup", pointStyle, null, arcGridLayer);
         layerGroupTopp = buildLayerGroup("layerGroupTopp", lineStyle, toppWs, statesLayer);
         layerGroupWithSomeLockedLayer = buildLayerGroup("layerGroupWithSomeLockedLayer", lineStyle, toppWs, statesLayer, roadsLayer);
+
+        // cascaded WMS layer
+        cascadedLayer = buildLayer("cascaded", toppWs, WMSLayerInfo.class);
+        cascaded = (WMSLayerInfo) cascadedLayer.getResource();
     }
 
     protected LayerInfo buildLayer(String name, WorkspaceInfo ws,
@@ -181,6 +193,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         StoreInfo store;
         if (resourceClass.equals(CoverageInfo.class)) {
             store = createNiceMock(CoverageStoreInfo.class);
+        } else if (resourceClass.equals(WMSLayerInfo.class)) {
+            store = createNiceMock(WMSStoreInfo.class);
         } else {
             store = createNiceMock(DataStoreInfo.class);
             expect((DataStore)((DataStoreInfo) store).getDataStore(null)).andReturn(dstore);
@@ -281,20 +295,30 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
      */
     protected void populateCatalog() {
         // build resource collections
-        layers = Arrays.asList(statesLayer, roadsLayer, landmarksLayer, basesLayer, arcGridLayer);
-        featureTypes = new ArrayList<FeatureTypeInfo>();
-        coverages = new ArrayList<CoverageInfo>();
+        layers = Arrays.asList(statesLayer, roadsLayer, landmarksLayer, basesLayer, arcGridLayer, cascadedLayer);
+        featureTypes = new ArrayList<>();
+        coverages = new ArrayList<>();
+        wmsLayers = new ArrayList<>();
         for (LayerInfo layer : layers) {
-            if (layer.getResource() instanceof FeatureTypeInfo)
+            if (layer.getResource() instanceof FeatureTypeInfo) {
                 featureTypes.add((FeatureTypeInfo) layer.getResource());
-            else
+            }
+            else if (layer.getResource() instanceof WMSLayerInfo) {
+                wmsLayers.add((WMSLayerInfo) layer.getResource());
+            }
+            else {
                 coverages.add((CoverageInfo) layer.getResource());
+            }
         }
         workspaces = Arrays.asList(toppWs, nurcWs);
 
         // prime the catalog
         catalog = createNiceMock(Catalog.class);
         expect(catalog.getFeatureTypeByName("topp:states")).andReturn(states)
+                .anyTimes();
+        expect(catalog.getLayerByName("topp:cascaded")).andReturn(cascadedLayer)
+                .anyTimes();
+        expect(catalog.getResourceByName("topp:cascaded", WMSLayerInfo.class)).andReturn(cascaded)
                 .anyTimes();
         expect(catalog.getResourceByName("topp:states", FeatureTypeInfo.class)).andReturn(
                 states).anyTimes();

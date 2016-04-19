@@ -182,7 +182,7 @@
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-wps-jdbc</artifactId>
      <version>${project.version}</version>
-   </dependency>   
+   </dependency>  
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-ysld</artifactId>
@@ -192,7 +192,12 @@
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-geogig</artifactId>
      <version>${project.version}</version>
-   </dependency>
+   </dependency>   
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-jdbcstore</artifactId>
+     <version>${project.version}</version>
+   </dependency> 
  </dependencies>
  <build>
   <plugins>

@@ -9,15 +9,15 @@ This document is a guide designed to help contributors in successfully submittin
 
 .. note:: 
 
-   We ask all fixes applied to master first, and then back ported to the stable and maintenance branches. 
+   We ask that all fixes applied to master first, and then back ported to the stable and maintenance branches. 
    
    We require the following for fixes submitted via pull requests:
 
    1. Required: Prepare your fix for the master branch
    2. Required: Check the following (and comment in your pull request, or jira issue):
       
-      * Investigate if the issue impact all the active branches (master / stable / maintenance)
-      * Investigate the your fix can be backported to all the active branches (master / stable / maintenance)
+      * Investigate if the issue impact any of the other active branches (master / stable / maintenance)
+      * Investigate whether the fix can be backported to the applicable active branches (master / stable / maintenance)
       
    3. Recommended: Actual backport to stable and maintenance is optional but highly recommended.
 
@@ -52,7 +52,7 @@ Assuming that ``origin`` points to your github repo the the patch workflow then 
    At this point the core developers will be notified of the pull request and review it at the earliest 
 convenience.
 
-Core developers will :ref:`review` the patch and may equire changes or improvements to it prior to it being accepted. It will be up to the submitter to amend the pull request and keep it alive until it gets merged. Please be patient as pull requests are often reviewed in spare time so turn-around can be a little slow.
+Core developers will :ref:`review` the patch and may require changes or improvements to it prior to it being accepted. It will be up to the submitter to amend the pull request and keep it alive until it gets merged. Please be patient as pull requests are often reviewed in spare time so turn-around can be a little slow.
 
 If a pull request becomes stale with no feedback from the submitter for a couple of months long, it will linked form a JIRA issue (to avoid losing the partial work) and then be closed.
 
@@ -72,7 +72,7 @@ Ensure your IDE/editor is properly configured
 Ensure that your development environment is properly configured for GeoServer development. A common issue 
 with patches from newcomers is that their text editor is configured to use tabs rather than spaces.
 
-See the the :ref:`eclipse_guide` for general information about formatting and ide setup. 
+See the the :ref:`eclipse_guide` for general information about formatting and IDE setup. 
 
 Include only relevant changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -93,6 +93,8 @@ Be patient
 The core developers review community patches in spare time. Be cognizant of this and realize that just 
 as you are contributing your own free time to the project, so is the developer who is reviewing and 
 applying your patch.
+
+We understand professionals working on the code base may meet a customer or contractual obligation, please review `commercial support <http://geoserver.org/support/>`__ options if you are not in a position to wait for a volunteer.
 
 Test Case
 ^^^^^^^^^

@@ -48,7 +48,7 @@ PSC Membership
 New PSC members
 ^^^^^^^^^^^^^^^
 
-A new PSC member can be nominated at any time.  Voting for a new PSC is done by current active PSC members.  There is no hard limit to the number of PSC members, but we want a relatively active PSC.  PSC nominations are generally given in recognition to very significant contributions to the project.  Membership is open to non-technical people, for example if someone is to make huge advances to the documentations or marketing of GeoServer, for example.  
+A new PSC member can be nominated at any time.  Voting for a new PSC is done by current active PSC members.  There is no hard limit to the number of PSC members, but we want a relatively active PSC.  PSC nominations are generally given in recognition to very significant contributions to the project.  Membership is open to non-technical people, for example if someone is to make huge advances to the documentation or marketing of GeoServer, for example.  
 
 Since we demand a fairly active PSC we expect turnover may be high compared to other projects, so initially we will aim to keep it around 7 PSC members.  But given sufficient reason we will expand that.  
 

@@ -3,7 +3,7 @@
 Review
 ======
 
-Reviewing code is an invaluable process that is used to ensure that the highest quality code possible gets committed into GeoServer at all times. 
+Reviewing code is an invaluable process that is used to ensure that code meets an acceptable level of quality prior to being included in a GeoServer release.
 
 Informal Code Review
 --------------------
@@ -41,10 +41,11 @@ The following checks can be performed quickly and represent common mistakes or o
 
 * *Contribution agreement* on file. Check if the contribution requires a contribution agreement, and if it matches the requisites, verify that a contribution agreement has been provided to OSGeo, if not, demand for one.
 
-* *Presence of tests*. Given a large code base, that pretty much nobody really can hope to master fully, the large number of external contributors, as well as focused changes to the code base, and the fast evolution of the code base, tests are really the only line of defense against accidental breakage of the contributed functionality. That is why we always demand to have at least one test, it's not a "punishment", but a basic guarantee that the fix or new functionality being contributed will still be there, and working, a bare few months. So always check there is at least one test, one that would break in a evident way if there ever was a regression in the contributed code.
+* *Presence of tests*. Given a large code base, that pretty much nobody really can hope to master fully, the large number of external contributors, as well as focused changes to the code base, and the fast evolution of the code base, tests are really the only line of defense against accidental breakage of the contributed functionality. That is why we always demand to have at least one test, it's not a "punishment", but a basic guarantee that the fix or new functionality being contributed will still be there, and working, a bare few months later. So always check there is at least one test, one that would break in a evident way if there ever was a regression in the contributed code.
 
-* *Presence of documentation*. For functional, user or protocol facing changes, check that some basic documentation has been contributed. Almost will know the functionality is there if we don't have documentation on how it works. As a plus, documentation will help you understand quicker what is getting contributed, both from a high level view, and as a guide though the changes being made.
-Presence of a proposal, if required. For any large change our process demands a formal proposal to be made and discussed in the community before a pull request gets made. If the pull request is made anyways, point them to the process and warn that the community might eventually request changes in the approach
+* *Presence of documentation*. For functional, user or protocol facing changes, check that some basic documentation has been contributed. Almost nobody will know functionality is there if we don't have documentation on how it works. As a plus, documentation will help you understand quicker what is getting contributed, both from a high level view, and as a guide though the changes being made.
+
+* *Presence of a proposal*, if required. For any large change our process demands a formal proposal to be made and discussed in the community before a pull request gets made. If the pull request is made anyways, point them to the process and warn that the community might eventually request changes in the approach
 
 * *Copyright headers* are present or have been updated. Every source file needs a copyright header to be present and up to date. For new files ask the contributor to add the header, for files that have been updated for the first time this year, ask the header to have been updated to include the current year.
 

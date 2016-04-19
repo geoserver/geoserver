@@ -15,6 +15,8 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
@@ -43,8 +45,10 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractCatalogDecorator;
+import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.ows.Dispatcher;
@@ -54,12 +58,15 @@ import org.geoserver.security.AbstractCatalogFilter;
 import org.geoserver.security.CatalogFilterAccessManager;
 import org.geoserver.security.DataAccessManager;
 import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.decorators.ReadOnlyDataStoreTest;
 import org.geoserver.security.decorators.SecuredCoverageInfo;
 import org.geoserver.security.decorators.SecuredDataStoreInfo;
 import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
+import org.geoserver.security.decorators.*;
 import org.geotools.util.logging.Logging;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -107,6 +114,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGrid, sc.getCoverageByName("nurc:arcgrid"));
         assertSame(states, sc.getResourceByName("topp:states", FeatureTypeInfo.class));
         assertSame(arcGrid, sc.getResourceByName("nurc:arcgrid", CoverageInfo.class));
+        assertSame(cascaded, sc.getResourceByName("topp:cascaded", WMSLayerInfo.class));
         assertEquals(toppWs, sc.getWorkspaceByName("topp"));
         assertSame(statesStore, sc.getDataStoreByName("states"));
         assertSame(roadsStore, sc.getDataStoreByName("roads"));
@@ -1353,5 +1361,41 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
             }
             return false;
         }
+    }
+
+    @Test
+    public void testUnwrapping() {
+        // we create a mock a policy without defining any behavior since it will not be used
+        WrapperPolicy policy = createNiceMock(WrapperPolicy.class);
+        // test that a secured coverage info info is correctly unwrapped to a coverage info
+        assertThat(SecureCatalogImpl.unwrap(new SecuredCoverageInfo(arcGrid, policy)), not(instanceOf(SecuredCoverageInfo.class)));
+        // test that a secured feature info info is correctly unwrapped to a feature info
+        assertThat(SecureCatalogImpl.unwrap(new SecuredFeatureTypeInfo(states, policy)), not(instanceOf(SecuredFeatureTypeInfo.class)));
+        // test that a secured WMS layer info info is correctly unwrapped to a WMS layer info
+        assertThat(SecureCatalogImpl.unwrap(new SecuredWMSLayerInfo(cascaded, policy)), not(instanceOf(SecuredWMSLayerInfo.class)));
+    }
+
+    @Test
+    public void testSettingResourceOnSecureLayerInfo() {
+        // we create a mock a policy without defining any behavior since it will not be used
+        WrapperPolicy policy = createNiceMock(WrapperPolicy.class);
+        // testing for coverages
+        LayerInfo coverageLayerInfo = new LayerInfoImpl();
+        SecuredLayerInfo secureCoverageLayerInfo = new SecuredLayerInfo(coverageLayerInfo, policy);
+        secureCoverageLayerInfo.setResource(new SecuredCoverageInfo(arcGrid, policy));
+        assertThat(coverageLayerInfo.getResource(), not(instanceOf(SecuredCoverageInfo.class)));
+        assertThat(coverageLayerInfo.getResource(), instanceOf(CoverageInfo.class));
+        // testing for features
+        LayerInfo featureLayerInfo = new LayerInfoImpl();
+        SecuredLayerInfo secureFeatureLayerInfo = new SecuredLayerInfo(featureLayerInfo, policy);
+        secureFeatureLayerInfo.setResource(new SecuredFeatureTypeInfo(states, policy));
+        assertThat(featureLayerInfo.getResource(), not(instanceOf(SecuredFeatureTypeInfo.class)));
+        assertThat(featureLayerInfo.getResource(), instanceOf(FeatureTypeInfo.class));
+        // testing for WMS layers
+        LayerInfo wmsLayerInfo = new LayerInfoImpl();
+        SecuredLayerInfo secureWmsLayerInfo = new SecuredLayerInfo(wmsLayerInfo, policy);
+        secureWmsLayerInfo.setResource(new SecuredWMSLayerInfo(cascaded, policy));
+        assertThat(wmsLayerInfo.getResource(), not(instanceOf(SecuredWMSLayerInfo.class)));
+        assertThat(wmsLayerInfo.getResource(), instanceOf(WMSLayerInfo.class));
     }
 }

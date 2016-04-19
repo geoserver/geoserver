@@ -1058,7 +1058,8 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return ((SecuredFeatureTypeInfo) info).unwrap(ResourceInfo.class);
         if (info instanceof SecuredCoverageInfo)
             return ((SecuredCoverageInfo) info).unwrap(ResourceInfo.class);
-
+        if (info instanceof SecuredWMSLayerInfo)
+            return ((SecuredWMSLayerInfo) info).unwrap(ResourceInfo.class);
         return info;
     }
     

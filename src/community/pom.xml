@@ -71,6 +71,7 @@
           <descriptor>release/ext-wps-remote.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
           <descriptor>release/ext-ysld.xml</descriptor>
+          <descriptor>release/ext-jdbcstore.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>

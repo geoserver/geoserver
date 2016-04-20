@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -487,4 +487,13 @@ public abstract class ResourceTheoryTest {
         assertTrue(res.delete());
         
     }
+
+    @Theory
+    public void theoryRootSlashIsIgnored(String path) throws Exception {
+        final Resource res = getResource(path);
+        final Resource res2 = getResource("/" + path);
+        assertTrue(res.equals(res2));
+        assertTrue(res.path().equals(res2.path()));
+    }
+
 }

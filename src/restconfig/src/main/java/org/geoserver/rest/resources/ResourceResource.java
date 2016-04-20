@@ -265,14 +265,11 @@ public class ResourceResource extends AbstractResource {
                         protected void wrapInternal(Map<String, Object> properties, SimpleHash model, 
                                 ResourceMetadata object) {
                             super.wrapInternal(properties, model, object);
-                            properties.put(
-                                    "path", 
-                                    object.getParent() == null ? "/" :  
-                                        Paths.path(object.getParent().getPath(),
-                                    object.getName()));
+                            properties.put("path", 
+                                    object.getParent() == null ? "/" :
+                                        "/" + Paths.path(object.getParent().getPath(), object.getName()));
                             properties.put("parent_path", 
-                                    object.getParent() == null ? "" : 
-                                        object.getParent().getPath());
+                                    object.getParent() == null ? "" : object.getParent().getPath());
                             properties.put("parent_href", 
                                     object.getParent() == null ? "" : 
                                         formatHtmlLink(object.getParent().getLink().getHref()));

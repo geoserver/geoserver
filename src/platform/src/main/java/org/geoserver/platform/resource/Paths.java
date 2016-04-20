@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -233,7 +233,7 @@ public class Paths {
         String item;
         do {
             item = path.substring(index, split);
-            if (item != "/") {
+            if (item.length() != 0 && item != "/") {
                 names.add(item);
             }
             index = split + 1;

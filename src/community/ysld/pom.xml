@@ -16,7 +16,7 @@
   
   <dependencies>
     <dependency>
-      <groupId>org.opengeo</groupId>
+      <groupId>org.geotools</groupId>
       <artifactId>gt-ysld</artifactId>
       <version>${gt.version}</version>
     </dependency>
@@ -57,7 +57,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opengeo</groupId>
+      <groupId>org.geotools</groupId>
       <artifactId>gt-ysld</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>

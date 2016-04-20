@@ -53,7 +53,7 @@ goto JavaFail
   echo Please install Java or, if present but not in the path, set this environment variable via the following command:
   echo    set JAVA_HOME=[path to Java]
   echo Example:
-  echo    set JAVA_HOME=C:\Program Files\Java\jdk6
+  echo    set JAVA_HOME=C:\Program Files\Java\jdk8
   echo.
   set error=1
 goto end

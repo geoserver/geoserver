@@ -53,7 +53,7 @@ Var PortHWND
 ;Version Information (Version tab for EXE properties)
 ;VIProductVersion ${LONGVERSION}
 ;VIAddVersionKey ProductName "${APPNAME}"
-;VIAddVersionKey LegalCopyright "Copyright (c) 1999 - 2011 The Open Planning Project"
+;VIAddVersionKey LegalCopyright "Copyright (c) 1999-2016 Open Source Geospatial Foundation"
 ;VIAddVersionKey FileDescription "GeoServer Installer"
 ;VIAddVersionKey ProductVersion "${VERSION}"
 ;VIAddVersionKey FileVersion "${VERSION}"

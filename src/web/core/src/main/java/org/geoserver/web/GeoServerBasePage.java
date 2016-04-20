@@ -112,7 +112,26 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 	    add(new Label("pageTitle", getPageTitle()));
 
         // login form
-        WebMarkupContainer loginForm = new WebMarkupContainer("loginform");
+        WebMarkupContainer loginForm = new WebMarkupContainer("loginform") {
+            protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
+                String path = getRequest().getUrl().getPath();
+                StringBuilder loginPath = new StringBuilder();
+                if(path.isEmpty()) {
+                    // home page
+                    loginPath.append("../j_spring_security_check");
+                } else {
+                    // boomarkable page of sorts
+                    String[] pathElements = path.split("/");
+                    for (String pathElement : pathElements) {
+                        if(!pathElement.isEmpty()) {
+                            loginPath.append("../");
+                        }
+                    }
+                    loginPath.append("j_spring_security_check");
+                }
+                tag.put("action", loginPath);
+            };
+        };
         add(loginForm);
         final Authentication user = GeoServerSession.get().getAuthentication();
         final boolean anonymous = user == null || user instanceof AnonymousAuthenticationToken;

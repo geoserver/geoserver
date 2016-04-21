@@ -10,7 +10,7 @@ GeoServer is packaged as a standalone servlet for use with existing application 
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 7** environment. The Oracle JRE is preferred, but OpenJDK has been known to work adequately. You can `download JRE 7 from Oracle <http://www.oracle.com/technetwork/java/javase/downloads/>`_.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. The minimum Java version to run GeoServer is  **Java 7**. The Oracle JRE is preferred, but OpenJDK has been known to work adequately. You can `download JRE 7 from Oracle <http://www.oracle.com/technetwork/java/javase/downloads/>`_.
 
    .. note:: Java 8 is not currently supported.
 

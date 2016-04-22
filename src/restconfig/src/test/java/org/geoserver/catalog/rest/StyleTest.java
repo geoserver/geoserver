@@ -337,7 +337,24 @@ public class StyleTest extends CatalogRESTTestSupport {
             putAsServletResponse("/rest/workspaces/gs/styles/foo", xml, "application/xml");
         assertEquals(403, response.getStatus());
     }
+    @Test
+    public void testStyleNotFoundGloballyWhenInWorkspace() throws Exception {
+        testPostToWorkspace();
 
+        Catalog cat = getCatalog();
+        assertEquals("foo.sld", cat.getStyleByName("gs","foo").getFilename());
+
+        String xml = 
+            "<style>" +
+              "<filename>bar.sld</filename>" +
+            "</style>";
+        
+        MockHttpServletResponse response =
+            putAsServletResponse("/rest/workspaces/gs/styles/foo", xml, "application/xml");
+        assertEquals(200, response.getStatus());
+        response = putAsServletResponse("/rest/styles/gs:foo", xml, "application/xml");
+        assertEquals(404, response.getStatus());
+    }
     @Test
     public void testDelete() throws Exception {
         String xml = 

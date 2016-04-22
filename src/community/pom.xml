@@ -70,6 +70,7 @@
           <descriptor>release/ext-params-extractor.xml</descriptor>
           <descriptor>release/ext-wps-remote.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
+          <descriptor>release/ext-ysld.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -193,6 +194,7 @@
 	<module>jdbcstore</module>
 	<module>gdal</module>
 	<module>gwc-s3</module>
+	<module>ysld</module>
       </modules>
     </profile>
     <profile>
@@ -410,6 +412,12 @@
       <id>dem</id>
       <modules>
         <module>dem</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ysld</id>
+      <modules>
+        <module>ysld</module>
       </modules>
     </profile>
   </profiles>

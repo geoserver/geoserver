@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.XStream;
  * Handles storage for {@link RepositoryInfo}s inside the GeoServer data directory's
  * {@code geogig/config/repos/} subdirectory.
  * <p>
- * {@link RepositoryInfo} instances are created through its default constructor, which assings a
+ * {@link RepositoryInfo} instances are created through its default constructor, which assigns a
  * {@code null} id, meaning its a new instance and has not yet being saved.
  * <p>
  * Persistence is handled with {@link XStream} on a one file per {@code RepositoryInfo} bases under

@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -399,14 +400,17 @@ public class DirectoryChooser extends Panel {
             // maps canonical files to configured file to identify duplicates due to symlinks
             final Map<File, File> existingPaths = new HashMap<>();
             for (RepositoryInfo info : all) {
-                File configured = new File(info.getLocation());
-                File canonical;
-                try {
-                    canonical = configured.getCanonicalFile();
-                } catch (IOException e) {
-                    canonical = configured;
+                final URI uri = info.getLocation();
+                if ("file".equals(uri.getScheme())) {
+                    File configured = new File(uri);
+                    File canonical;
+                    try {
+                        canonical = configured.getCanonicalFile();
+                    } catch (IOException e) {
+                        canonical = configured;
+                    }
+                    existingPaths.put(canonical, configured);
                 }
-                existingPaths.put(canonical, configured);
             }
 
             DataView<File> fileTable = new DataView<File>("files", fileProvider) {

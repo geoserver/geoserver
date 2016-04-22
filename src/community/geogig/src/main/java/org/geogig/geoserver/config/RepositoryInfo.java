@@ -10,9 +10,10 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
 
+import org.locationtech.geogig.repository.RepositoryResolver;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 
 public class RepositoryInfo implements Serializable {
 
@@ -69,6 +70,25 @@ public class RepositoryInfo implements Serializable {
         this.location = location;
     }
 
+    @VisibleForTesting
+    void setParentDirectory(String parent) {
+        this.parentDirectory = parent;
+    }
+
+    @VisibleForTesting
+    void setName(String name) {
+        this.name = name;
+    }
+
+    public String getRepoName() {
+        if (this.location != null)  {
+            // Name is deprecated, use the RepositoryResolver
+            RepositoryResolver uriResolver = RepositoryResolver.lookup(this.location);
+            return uriResolver.getName(this.location);
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof RepositoryInfo)) {
@@ -87,15 +107,5 @@ public class RepositoryInfo implements Serializable {
     public String toString() {
         return new StringBuilder("[id:").append(getId()).append(", URI:").append(getLocation())
                 .append("]").toString();
-    }
-
-    @VisibleForTesting
-    void setName(String name) {
-        this.name = name;
-    }
-
-    @VisibleForTesting
-    void setParentDirectory(String parent) {
-        this.parentDirectory = parent;
     }
 }

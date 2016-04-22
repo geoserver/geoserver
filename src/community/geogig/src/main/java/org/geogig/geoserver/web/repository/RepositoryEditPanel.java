@@ -10,10 +10,7 @@ import java.io.File;
 import java.net.URI;
 
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
@@ -24,25 +21,15 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
 
     private static final long serialVersionUID = -870873448379832051L;
 
-    private GeoGigDirectoryFormComponent parent;
-
-    private TextField<String> name;
+    private final GeoGigRepositoryInfoFormComponent config;
 
     public RepositoryEditPanel(final String wicketId, IModel<RepositoryInfo> model,
             final boolean isNew) {
         super(wicketId, model);
-
-        IModel<String> parentModel = new PropertyModel<String>(model, "parentDirectory");
-        parent = new GeoGigDirectoryFormComponent("parentDirectory", parentModel);
-        parent.setEnabled(isNew);
-        add(parent);
-
-        IModel<String> nameModel = new PropertyModel<String>(model, "name");
-        name = new TextField<String>("repositoryName", nameModel);
-        name.setEnabled(isNew);
-        name.setRequired(true);
-        name.setLabel(new ResourceModel("name", "Repo name"));
-        add(name);
+        
+        config = new GeoGigRepositoryInfoFormComponent("repositoryConfig", model);
+        config.setVisible(true);
+        add(config);
 
         add(new IValidator<RepositoryInfo>() {
 
@@ -51,8 +38,7 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
             @Override
             public void validate(IValidatable<RepositoryInfo> validatable) {
                 if (isNew) {
-                    parent.processInput();
-                    name.processInput();
+                    config.processInput();
                 }
                 ValidationError error = new ValidationError();
                 RepositoryInfo repo = validatable.getValue();

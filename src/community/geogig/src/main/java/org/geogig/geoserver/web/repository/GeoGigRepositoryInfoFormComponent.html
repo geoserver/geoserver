@@ -1,0 +1,22 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+  <wicket:panel>
+    <span><wicket:message key="name">name</wicket:message></span>
+    <div><input class="text" wicket:id="repositoryName" type="text"/></div>
+    <ul>
+      <li>
+      <wicket:message key="configChoice">PG Config</wicket:message>
+      <div><select name="configChoice" wicket:id="configChoice"/></div>
+      </li>
+      <div wicket:id="settingsContainer">
+        <li>
+          <div wicket:id="parentDirectory"></div>
+        </li>
+        <li>
+          <div wicket:id="pgPanel"></div>
+        </li>
+      </div>
+    </ul>
+  </wicket:panel>
+</body>
+</html>

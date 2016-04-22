@@ -40,7 +40,6 @@ import org.geoserver.web.data.store.DataAccessNewPage;
 import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
-import org.locationtech.geogig.repository.RepositoryResolver;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
@@ -56,11 +55,11 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
 
     private final ModalWindow modalWindow;
 
-    private IModel<String> repositoryIdModel;
+    private final IModel<String> repositoryIdModel;
 
-    private IModel<String> branchNameModel;
+    private final IModel<String> branchNameModel;
 
-    private String originalRepo, originalBranch;
+    private final String originalRepo, originalBranch;
 
     /**
      * @param componentId the wicket component id
@@ -99,8 +98,8 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
         IModel<List<String>> choices = new RepositoryListDettachableModel();
 
         RepoInfoChoiceRenderer choiceRenderer = new RepoInfoChoiceRenderer();
-        DropDownChoice<String> choice = new DropDownChoice<String>("geogig_repository",
-                repositoryIdModel, choices, choiceRenderer);
+        DropDownChoice<String> choice = new DropDownChoice<>("geogig_repository", repositoryIdModel,
+                choices, choiceRenderer);
         choice.setLabel(new ResourceModel("repository"));
         choice.setNullValid(true);
         choice.setRequired(true);
@@ -232,8 +231,7 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
             Component namePanel = form.get("dataStoreNamePanel");
             if (namePanel != null && namePanel instanceof TextParamPanel) {
                 TextParamPanel paramPanel = (TextParamPanel) namePanel;
-                dataStoreName = RepositoryManager.getRepoName(info);
-                paramPanel.getFormComponent().setModelObject(dataStoreName);
+                paramPanel.getFormComponent().setModelObject(info.getRepoName());
                 target.addComponent(form);
             }
         }
@@ -266,7 +264,7 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
             } catch (IOException e) {
                 throw Throwables.propagate(e);
             }
-            return RepositoryManager.getRepoName(info) + " (" + info.getLocation() + ")";
+            return info.getRepoName() + " (" + info.getLocation() + ")";
         }
 
         @Override

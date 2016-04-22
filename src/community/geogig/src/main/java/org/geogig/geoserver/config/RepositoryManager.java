@@ -70,7 +70,7 @@ public class RepositoryManager {
         }
     }
 
-    private ConfigStore store;
+    private final ConfigStore store;
 
     private final RepositoryCache repoCache;
 
@@ -317,11 +317,4 @@ public class RepositoryManager {
             throw new IllegalArgumentException("Unable to connect: " + e.getMessage(), e);
         }
     }
-
-    public static String getRepoName(RepositoryInfo info) {
-        RepositoryResolver uriResolver = RepositoryResolver.lookup(info.getLocation());
-        String name = uriResolver.getName(info.getLocation());
-        return name;
-    }
-
 }

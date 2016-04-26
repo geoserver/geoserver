@@ -1299,6 +1299,16 @@
       </dependencies>
    </profile>
    <profile>
+      <id>ysld</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-ysld</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+   </profile>
+   <profile>
       <id>params-extractor</id>
       <dependencies>
         <dependency>

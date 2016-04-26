@@ -1,0 +1,7 @@
+name: ${layerName}
+feature-styles:
+- rules:
+  - title: raster
+    symbolizers:
+      - raster:
+          opacity: 1.0

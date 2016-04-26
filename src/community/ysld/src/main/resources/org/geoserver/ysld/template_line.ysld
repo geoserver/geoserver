@@ -1,0 +1,5 @@
+title: ${colorName} line
+symbolizers:
+- line:
+    stroke-width: 1.0
+    stroke-color: '${colorCode}'

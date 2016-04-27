@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,6 +18,7 @@ import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.IllegalAttributeException;
 import org.geotools.feature.SchemaException;
+import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.spatial.ReprojectingFilterVisitor;
@@ -56,7 +57,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author Justin Deoliveira, The Open Planning Project
  * 
  */
-public class ReprojectingFeatureCollection extends DecoratingFeatureCollection {
+public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollection {
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2(null);
     
     /**

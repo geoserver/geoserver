@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import no.ecc.vectortile.VectorTileEncoder;
+import no.ecc.vectortile.VectorTileEncoderNoClip;
 
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RawMap;
@@ -33,7 +34,7 @@ public class MapBoxTileBuilder implements VectorTileBuilder {
         final int extent = Math.max(mapSize.width, mapSize.height);
         final int polygonClipBuffer = extent / 32;
         final boolean autoScale = false;
-        this.encoder = new VectorTileEncoder(extent, polygonClipBuffer, autoScale);
+        this.encoder = new VectorTileEncoderNoClip(extent, polygonClipBuffer, autoScale);
     }
 
     @Override

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,21 +6,26 @@
 package org.geoserver.feature;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.geotools.data.FeatureReader;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.feature.FeatureIterator;
-import org.geotools.feature.IllegalAttributeException;
-import org.geotools.feature.collection.DelegateSimpleFeatureIterator;
+import org.geotools.data.store.ReTypingFeatureCollection;
+import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.visitor.CountVisitor;
+import org.geotools.feature.visitor.FeatureAttributeVisitor;
+import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.filter.identity.FeatureIdImpl;
+import org.opengis.feature.FeatureVisitor;
+import org.opengis.feature.IllegalAttributeException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.identity.FeatureId;
 
 /**
@@ -29,7 +34,7 @@ import org.opengis.filter.identity.FeatureId;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  * 
  */
-public class RetypingFeatureCollection extends DecoratingFeatureCollection {
+public class RetypingFeatureCollection extends DecoratingSimpleFeatureCollection {
     SimpleFeatureType target;
 
     public RetypingFeatureCollection(SimpleFeatureCollection delegate,
@@ -37,7 +42,7 @@ public class RetypingFeatureCollection extends DecoratingFeatureCollection {
         super(delegate);
         this.target = target;
     }
-
+    
     public SimpleFeatureType getSchema() {
         return target;
     }
@@ -45,6 +50,12 @@ public class RetypingFeatureCollection extends DecoratingFeatureCollection {
     public SimpleFeatureIterator features() {
         return new RetypingIterator(delegate.features(), target);
     }
+    
+    @Override
+    protected boolean canDelegate(FeatureVisitor visitor) {
+        return ReTypingFeatureCollection.isTypeCompatible(visitor, target);
+    }
+
 
     static SimpleFeature retype(SimpleFeature source, SimpleFeatureBuilder builder)
             throws IllegalAttributeException {

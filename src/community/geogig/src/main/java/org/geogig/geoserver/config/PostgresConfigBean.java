@@ -29,8 +29,8 @@ public class PostgresConfigBean implements Serializable {
     private static final String AMPERSAND = "&";
     private static final String QUESTION_MARK = "?";
 
-    private String host, database, schema, username, password;
-    private Integer port = 0;
+    private String host = "localhost", database, schema = "public", username = "postgres", password;
+    private Integer port = 5432;
 
     public String getHost() {
         return host;
@@ -94,6 +94,10 @@ public class PostgresConfigBean implements Serializable {
         sb.append(QUESTION_MARK).append(USER).append("=").append(username);
         sb.append(AMPERSAND).append(PASSWORD).append("=").append(password);
         return URI.create(sb.toString());
+    }
+
+    public static PostgresConfigBean newInstance() {
+        return new PostgresConfigBean();
     }
 
     public static PostgresConfigBean from(URI location) {

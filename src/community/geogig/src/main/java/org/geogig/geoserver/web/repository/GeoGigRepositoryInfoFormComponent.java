@@ -97,18 +97,23 @@ class GeoGigRepositoryInfoFormComponent extends FormComponentPanel<RepositoryInf
     @Override
     protected void convertInput() {
         RepositoryInfo modelObject = getModelObject();
-        if (PG_CONFIG.equals(dropdown.getModelValue())) {
+        final String repoTypeChoice = dropdown.getConvertedInput();
+        if (PG_CONFIG.equals(repoTypeChoice)) {
             // PG config used
             PostgresConfigBean bean = pgPanel.getConvertedInput();
             // build a URI out of the config
             URI uri = bean.toUri(name.getConvertedInput().trim());
             modelObject.setLocation(uri);
-        } else if (FILE_CONFIG.equals(dropdown.getModelValue())) {
+        } else if (FILE_CONFIG.equals(repoTypeChoice)) {
             // local directory used
             String path = directoryComponent.getConvertedInput().trim();
             String repoId = name.getConvertedInput().trim();
             Path uriPath = Paths.get(path, repoId);
             modelObject.setLocation(uriPath.toUri());
+        } else {
+            throw new IllegalStateException(
+                    String.format("Unknown repositry type '%s', expected one of %s, %s",
+                            repoTypeChoice, PG_CONFIG, FILE_CONFIG));
         }
         setConvertedInput(modelObject);
     }

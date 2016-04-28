@@ -32,6 +32,8 @@ public class PGBeanModel implements IModel<PostgresConfigBean> {
             if (location != null && "postgresql".equals(location.getScheme())) {
                 // build a bean from the parts
                 bean = PostgresConfigBean.from(location);
+            }else{
+                bean = PostgresConfigBean.newInstance();
             }
         }
         return bean;

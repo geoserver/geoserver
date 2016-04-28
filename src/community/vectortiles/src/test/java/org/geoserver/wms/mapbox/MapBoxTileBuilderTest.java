@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015-2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -97,4 +97,40 @@ public class MapBoxTileBuilderTest {
         assertEquals(line, lineFeature.getGeometry());
         assertEquals(lineProps, lineFeature.getAttributes());
     }
+    
+    /*
+     * we ensure that the encoder is NOT clipping geometries by giving it 
+     * a "too big" line and ensuring it isn't changed by the encoder.
+     */
+    @Test
+    public void testEncoderClipping() throws Exception {
+
+        MapBoxTileBuilderFactory builderFact = new MapBoxTileBuilderFactory();
+
+        Rectangle screenSize = new Rectangle(256, 256);
+        ReferencedEnvelope mapArea = new ReferencedEnvelope();
+
+        MapBoxTileBuilder tileBuilder = builderFact.newBuilder(screenSize, mapArea);        
+
+        Geometry line = geom("LINESTRING(-100 -100,300 300)"); //box is 0 to 256, so this is outside the box
+        
+        Map<String, Object> lineProps = ImmutableMap.<String, Object> of("name", "line1");
+
+        tileBuilder.addFeature("Lines", "unused", "unused", line, lineProps);
+
+        WMSMapContent mapContent = mock(WMSMapContent.class);
+
+        RawMap map = tileBuilder.build(mapContent);
+
+        ListMultimap<String, Feature> features = decode(map);
+
+        assertEquals(1, features.size());
+        assertEquals(ImmutableSet.of( "Lines"), features.keySet());
+
+        Feature lineFeature = features.get("Lines").get(0);
+
+        assertTrue(lineFeature.getGeometry() instanceof LineString);
+        assertEquals(line, lineFeature.getGeometry()); // line should not be clipped
+    }
+    
 }

@@ -4,14 +4,15 @@
  */
 package org.geogig.geoserver.web.repository;
 
-import org.geogig.geoserver.config.PostgresConfigBean;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.PasswordTextField;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.validator.MaximumValidator;
 import org.apache.wicket.validation.validator.MinimumValidator;
+import org.geogig.geoserver.config.PostgresConfigBean;
+import org.geoserver.web.data.store.panel.PasswordParamPanel;
+import org.geoserver.web.data.store.panel.TextParamPanel;
 
 /**
  *
@@ -20,35 +21,40 @@ class PostgresConfigFormPanel extends FormComponentPanel<PostgresConfigBean> {
 
     private static final long serialVersionUID = 1L;
 
-    private final TextField<String> hostField;
-    private final TextField<Integer> portField;
-    private final TextField<String> dbField;
-    private final TextField<String> schemaField;
-    private final TextField<String> usernameField;
-    private final PasswordTextField passwordField;
+    private final TextParamPanel hostPanel;
+    private final TextParamPanel portPanel;
+    private final TextParamPanel dbPanel;
+    private final TextParamPanel schemaPanel;
+    private final TextParamPanel usernamePanel;
+    private final PasswordParamPanel passwordPanel;
 
     public PostgresConfigFormPanel(String id, IModel<PostgresConfigBean> model) {
         super(id, model);
 
         setOutputMarkupId(true);
-        add(hostField = new TextField<>("pgHost", new PropertyModel<String>(model, "host"),
-                String.class));
-        hostField.setRequired(true);
-        add(portField = new TextField<>("pgPort", new PropertyModel<Integer>(model, "port"),
-                Integer.TYPE));
-        portField.add(new MinimumValidator<>(1025), new MaximumValidator<>(65535));
-        add(dbField = new TextField<>("pgDatabase", new PropertyModel<String>(model, "database"),
-                String.class));
-        dbField.setRequired(true);
-        add(schemaField = new TextField<>("pgSchema", new PropertyModel<String>(model, "schema"),
-                String.class));
-        add(usernameField = new TextField<>("pgUsername", new PropertyModel<String>(model,
-                "username"), String.class));
-        usernameField.setRequired(true);
-        add(passwordField = new PasswordTextField("pgPassword", new PropertyModel<String>(model,
-                "password")).setResetPassword(false));
-        passwordField.setType(String.class);
-        passwordField.setRequired(true);
+        hostPanel = new TextParamPanel("hostPanel", new PropertyModel<String>(model, "host"),
+                new ResourceModel("PostgresConfigFormPanel.host", "Host Name"), true);
+        add(hostPanel);
+        portPanel = new TextParamPanel("portPanel", new PropertyModel<Integer>(model, "port"),
+                new ResourceModel("PostgresConfigFormPanel.port", "Port"), false);
+        // set the type for the port, and validators
+        portPanel.getFormComponent().setType(Integer.TYPE).add(new MinimumValidator<>(1025),
+                new MaximumValidator<>(65535));
+        add(portPanel);
+        dbPanel = new TextParamPanel("dbPanel", new PropertyModel<String>(model, "database"),
+                new ResourceModel("PostgresConfigFormPanel.database", "Database Name"), true);
+        add(dbPanel);
+        schemaPanel = new TextParamPanel("schemaPanel", new PropertyModel<String>(model, "schema"),
+                new ResourceModel("PostgresConfigFormPanel.schema", "Schema Name"), false);
+        add(schemaPanel);
+        usernamePanel = new TextParamPanel("usernamePanel", new PropertyModel<String>(model,
+                "username"), new ResourceModel("PostgresConfigFormPanel.username",
+                "Username"), true);
+        add(usernamePanel);
+        passwordPanel = new PasswordParamPanel("passwordPanel", new PropertyModel<String>(model,
+                "password"), new ResourceModel("PostgresConfigFormPanel.password",
+                "Password"), true);
+        add(passwordPanel);
     }
 
     @Override
@@ -58,22 +64,22 @@ class PostgresConfigFormPanel extends FormComponentPanel<PostgresConfigBean> {
             bean = new PostgresConfigBean();
         }
         // populate the bean
-        String host = hostField.getConvertedInput().trim();
-        Integer port = portField.getConvertedInput();
-        String db = dbField.getConvertedInput().trim();
-        String schema = schemaField.getConvertedInput();
-        String username = usernameField.getConvertedInput().trim();
-        String password = passwordField.getConvertedInput().trim();
+        String host = hostPanel.getFormComponent().getConvertedInput().toString().trim();
+        Integer port = Integer.class.cast(portPanel.getFormComponent().getConvertedInput());
+        String db = dbPanel.getFormComponent().getConvertedInput().toString().trim();
+        Object schema = schemaPanel.getFormComponent().getConvertedInput();
+        String username = usernamePanel.getFormComponent().getConvertedInput().toString().trim();
+        String password = passwordPanel.getFormComponent().getConvertedInput();
 
         bean.setHost(host);
         bean.setPort(port);
         bean.setDatabase(db);
         bean.setUsername(username);
         bean.setPassword(password);
-        if (schema == null || schema.trim().isEmpty()) {
+        if (schema == null || schema.toString().trim().isEmpty()) {
             bean.setSchema(null);
         } else {
-            bean.setSchema(schema);
+            bean.setSchema(schema.toString().trim());
 
         }
 

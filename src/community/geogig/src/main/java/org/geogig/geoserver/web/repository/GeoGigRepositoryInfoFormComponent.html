@@ -1,20 +1,12 @@
 <html xmlns:wicket="http://wicket.apache.org/">
   <body>
   <wicket:panel>
-    <span><wicket:message key="name">name</wicket:message></span>
-    <div><input class="text" wicket:id="repositoryName" type="text"/></div>
+    <div wicket:id=repositoryNamePanel">repositoryNamePanel</div>
     <ul>
-      <li>
-      <wicket:message key="configChoice">PG Config</wicket:message>
-      <div><select name="configChoice" wicket:id="configChoice"/></div>
-      </li>
+      <li wicket:id="configChoicePanel">configChoicePanel</li>
       <div wicket:id="settingsContainer">
-        <li>
-          <div wicket:id="parentDirectory"></div>
-        </li>
-        <li>
-          <div wicket:id="pgPanel"></div>
-        </li>
+        <li wicket:id="parentDirectory">parentDirectory</li>
+        <li wicket:id="pgPanel">pgPanel</li>
       </div>
     </ul>
   </wicket:panel>

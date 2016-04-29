@@ -144,7 +144,11 @@ Parameter for configuring in memory cache size in MB.
 
 Cache Eviction Policy
 ```````````````````````````````````````
-Paramter for configuring in memory cache eviction policy, it may be: LRU, LFU, EXPIRE_AFTER_WRITE, EXPIRE_AFTER_ACCESS, NULL
+Parameter for configuring in memory cache eviction policy, it may be: LRU, LFU, EXPIRE_AFTER_WRITE, EXPIRE_AFTER_ACCESS, NULL
+
+This eviction policies may not be supported by all caches implementations. For example, Guava Caching only supports the eviction policies: EXPIRE_AFTER_WRITE, EXPIRE_AFTER_ACCESS and NULL.
+
+Note, only the eviction policies accepted by the selected cache will be shown on the UI.
 
 Cache Eviction Time (in Seconds)
 ```````````````````````````````````````

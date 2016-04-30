@@ -368,35 +368,18 @@ public class InMemoryBlobStorePanel extends Panel {
                     evictionTimeValue);
             evictionTime.setType(Long.class).setOutputMarkupId(true).setEnabled(true);
 
+            // by the default all available eviction policies are available
+            List<EvictionPolicy> evictionPolicies = Arrays.asList(EvictionPolicy.values());
+            ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
+            if (store != null) {
+                // we use the current cache accepted eviction policies
+                CacheProvider cache = store.getCacheProviders().get(key);
+                evictionPolicies = cache.getSupportedPolicies();
+            }
+
             final DropDownChoice<EvictionPolicy> policyDropDown = new DropDownChoice<EvictionPolicy>(
-                    "policy", policy, Arrays.asList(EvictionPolicy.values()));
+                    "policy", policy, evictionPolicies);
             policyDropDown.setOutputMarkupId(true).setEnabled(true);
-            // Validation for Eviction Policy
-            policyDropDown.add(new IValidator<EvictionPolicy>() {
-
-                @Override
-                public void validate(IValidatable<EvictionPolicy> validatable) {
-
-                    EvictionPolicy value = validatable.getValue();
-                    if (value != EvictionPolicy.NULL) {
-                        final ConfigurableBlobStore store = GeoServerExtensions
-                                .bean(ConfigurableBlobStore.class);
-                        // Ensure that the defined Eviction policy can be accepted by the cache used
-                        if (store != null) {
-                            CacheProvider cache = store.getCacheProviders().get(key);
-                            if (cache != null) {
-                                List<EvictionPolicy> policies = cache.getSupportedPolicies();
-                                if (policies != null && !policies.contains(value)) {
-                                    ValidationError error = new ValidationError();
-                                    error.setMessage(new ParamResourceModel(
-                                            "BlobStorePanel.invalidPolicy", null, "").getObject());
-                                    validatable.error(error);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
 
             final TextField<Integer> textConcurrency = new TextField<Integer>("concurrencyLevel",
                     concurrencyLevel);

@@ -28,6 +28,7 @@ import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.locks.NIOLockProvider;
+import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -376,5 +377,35 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         // Check the GWCConfig
         config = gwc.getConfig();
         assertFalse(config.isInnerCachingEnabled());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testEvictionPolicy() {
+
+        // creating a start the gwc configuration page
+        GWCSettingsPage page = new GWCSettingsPage();
+        tester.startPage(page);
+
+        // enabling the cache
+        FormTester form = tester.newFormTester("form");
+        form.setValue("cachingOptionsPanel:container:configs:blobstores:innerCachingEnabled", true);
+        form.submit("submit");
+        tester.startPage(new GWCSettingsPage());
+
+        // check that the cache provider is guava
+        tester.assertComponent("form:cachingOptionsPanel:container:configs:blobstores:container:caches", DropDownChoice.class);
+        DropDownChoice<String> choice = (DropDownChoice<String>) tester.getComponentFromLastRenderedPage(
+                "form:cachingOptionsPanel:container:configs:blobstores:container:caches");
+        assertTrue(choice.getChoices().get(0).equalsIgnoreCase(GuavaCacheProvider.class.toString()));
+
+        // check that only guava supported eviction policies are available
+        DropDownChoice<String> evictionPoliciesDropDown = (DropDownChoice<String>) tester.getComponentFromLastRenderedPage(
+                "form:cachingOptionsPanel:container:configs:blobstores:container:cacheConfContainer:policy");
+        List evictionPolicies = evictionPoliciesDropDown.getChoices();
+        assertTrue(evictionPolicies.size() == 3);
+        assertTrue(evictionPolicies.contains(CacheConfiguration.EvictionPolicy.NULL));
+        assertTrue(evictionPolicies.contains(CacheConfiguration.EvictionPolicy.EXPIRE_AFTER_ACCESS));
+        assertTrue(evictionPolicies.contains(CacheConfiguration.EvictionPolicy.EXPIRE_AFTER_WRITE));
     }
 }

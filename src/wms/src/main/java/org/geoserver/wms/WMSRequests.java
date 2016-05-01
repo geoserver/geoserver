@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -206,7 +206,7 @@ public class WMSRequests {
      * 
      * @param req
      *            The wms request.
-     * @param layer
+     * @param published
      *            The Map layer, may not be <code>null</code>.
      * @param kvp
      *            Additional or overidding kvp parameters, may be <code>null</code>

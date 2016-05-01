@@ -5,8 +5,13 @@
  */
 package org.geoserver.catalog.impl;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
@@ -14,26 +19,54 @@ import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.ows.Request;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 
 public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
 
+    static final String GLOBAL_GROUP = "globalGroup";
+    static final String GLOBAL_GROUP2 = "globalGroup2";
+    static final String NESTED_GROUP = "nestedGroup";
+    static final String LOCAL_GROUP = "localGroup";
+    
     Catalog catalog;
 
     @Before
     public void setUpInternal() {
         catalog = getCatalog();
+        LocalPublished.remove();
+        LocalWorkspace.remove();
+        Dispatcher.REQUEST.remove();
+        
+        cleanupGroupByName(GLOBAL_GROUP);
+        cleanupGroupByName(GLOBAL_GROUP2);
+        cleanupGroupByName(NESTED_GROUP);
+        cleanupGroupByName(LOCAL_GROUP);
+    }
+    
+    private void cleanupGroupByName(String name) {
+        for (LayerGroupInfo lg : new ArrayList<>(catalog.getLayerGroups())) {
+            if(lg.getName().equals(name)) {
+                catalog.remove(lg);
+            }
+        }
     }
 
     @Test
     public void testGroupLayerInWorkspace() {
+        System.out.println(catalog.getLayerGroups());
+        
         WorkspaceInfo workspace = catalog.getWorkspaceByName("sf");
         WorkspaceInfo workspace2 = catalog.getWorkspaceByName("cite");
         CatalogFactory factory = catalog.getFactory();
@@ -76,8 +109,6 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testLayersInLocalWorkspace() {
-        List<LayerInfo> layers = catalog.getLayers();
-
         WorkspaceInfo sf = catalog.getWorkspaceByName("sf");
         WorkspaceInfo cite = catalog.getWorkspaceByName("cite");
 
@@ -136,5 +167,165 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         assertNotNull(catalog.getLayerByName("citeLayer"));
         assertEquals("citeLayer", catalog.getLayerByName("citeLayer").prefixedName());
         LocalWorkspace.remove();
+    }
+    
+    @Test
+    public void testGlobalGroupSpecificRequest() {
+        CatalogFactory factory = catalog.getFactory();
+
+        LayerGroupInfo globalGroup = factory.createLayerGroup();
+        
+        globalGroup.setName(GLOBAL_GROUP);
+        globalGroup.getLayers().add(getBuildingsLayer());
+        globalGroup.getLayers().add(getAggregateGeoFeatureLayer());
+        catalog.add(globalGroup);
+        
+        LayerGroupInfo globalGroup2 = factory.createLayerGroup();
+        globalGroup2.setName(GLOBAL_GROUP2);
+        globalGroup2.getLayers().add(getBridgesLayer());
+        catalog.add(globalGroup2);
+
+        LocalPublished.set(catalog.getLayerGroupByName(GLOBAL_GROUP));
+        
+        // some direct access tests, generic request
+        assertNull(catalog.getLayerByName(getLayerId(SystemTestData.BASIC_POLYGONS)));
+        assertNull(getBridgesLayer());
+        assertNull(catalog.getLayerGroupByName(GLOBAL_GROUP2));
+        assertNotNull(getBuildingsLayer());
+        assertNotNull(getAggregateGeoFeatureLayer());
+        assertNotNull(catalog.getLayerGroupByName(GLOBAL_GROUP));
+        List<LayerInfo> layers = catalog.getLayers();
+        assertEquals(2, layers.size());
+        assertThat(layers, containsInAnyOrder(getBuildingsLayer(), getAggregateGeoFeatureLayer()));
+        
+        // now simulate WMS getCaps, the layers should not appear in the caps document
+        Request request = new Request();
+        request.setService("WMS");
+        request.setRequest("GetCapabilities");
+        Dispatcher.REQUEST.set(request);
+        assertNull(catalog.getLayerByName(getLayerId(SystemTestData.BASIC_POLYGONS)));
+        assertNull(getBridgesLayer());
+        assertNull(catalog.getLayerGroupByName(GLOBAL_GROUP2));
+        assertNull(getBuildingsLayer());
+        assertNull(getAggregateGeoFeatureLayer());
+        assertNotNull(catalog.getLayerGroupByName(GLOBAL_GROUP));
+        assertEquals(0, catalog.getLayers().size());
+        
+        LocalPublished.remove();
+    }
+    
+    @Test
+    public void testNestedGroupSpecificRequest() {
+        CatalogFactory factory = catalog.getFactory();
+
+        LayerGroupInfo nestedGroup = factory.createLayerGroup();
+        nestedGroup.setName(NESTED_GROUP);
+        nestedGroup.getLayers().add(getBridgesLayer());
+        catalog.add(nestedGroup);
+        
+        LayerGroupInfo globalGroup = factory.createLayerGroup();
+        globalGroup.setName(GLOBAL_GROUP);
+        globalGroup.getLayers().add(getBuildingsLayer());
+        globalGroup.getLayers().add(getAggregateGeoFeatureLayer());
+        globalGroup.getLayers().add(nestedGroup);
+        catalog.add(globalGroup);
+
+        LocalPublished.set(catalog.getLayerGroupByName(GLOBAL_GROUP));
+        
+        // some direct access tests, generic request, everything nested
+        assertNull(catalog.getLayerByName(getLayerId(SystemTestData.BASIC_POLYGONS)));
+        assertNotNull(getBridgesLayer());
+        assertNotNull(getBuildingsLayer());
+        assertNotNull(getAggregateGeoFeatureLayer());
+        assertNotNull(catalog.getLayerGroupByName(NESTED_GROUP));
+        assertNotNull(catalog.getLayerGroupByName(GLOBAL_GROUP));
+        assertThat(catalog.getLayers(), containsInAnyOrder(getBuildingsLayer(), getAggregateGeoFeatureLayer(), getBridgesLayer()));
+        
+        // now simulate WMS getCaps, the layers should not appear in the caps document
+        Request request = new Request();
+        request.setService("WMS");
+        request.setRequest("GetCapabilities");
+        Dispatcher.REQUEST.set(request);
+        assertNull(catalog.getLayerByName(getLayerId(SystemTestData.BASIC_POLYGONS)));
+        assertNull(getBridgesLayer());
+        assertNull(catalog.getLayerGroupByName(NESTED_GROUP));
+        assertNull(getBuildingsLayer());
+        assertNull(getAggregateGeoFeatureLayer());
+        assertNotNull(catalog.getLayerGroupByName(GLOBAL_GROUP));
+        assertEquals(0, catalog.getLayers().size());
+        
+        // and then change the mode of the group to tree mode, contents will show up in caps too
+        globalGroup = catalog.getLayerGroupByName(GLOBAL_GROUP);
+        globalGroup.setMode(Mode.NAMED);
+        catalog.save(globalGroup);
+        
+        assertNull(catalog.getLayerByName(getLayerId(SystemTestData.BASIC_POLYGONS)));
+        assertNotNull(getBridgesLayer());
+        assertNotNull(catalog.getLayerGroupByName(NESTED_GROUP));
+        assertNotNull(getBuildingsLayer());
+        assertNotNull(getAggregateGeoFeatureLayer());
+        assertNotNull(catalog.getLayerGroupByName(GLOBAL_GROUP));
+        assertThat(catalog.getLayers(), containsInAnyOrder(getBuildingsLayer(), getAggregateGeoFeatureLayer(), getBridgesLayer()));
+        
+        LocalPublished.remove();
+    }
+
+    @Test
+    public void testWorkspaceGroupSpecificRequest() {
+        CatalogFactory factory = catalog.getFactory();
+        WorkspaceInfo citeWs = catalog.getWorkspaceByName("cite");
+
+        LayerGroupInfo localGroup = factory.createLayerGroup();
+        localGroup.setName(LOCAL_GROUP);
+        localGroup.setWorkspace(citeWs);
+        localGroup.getLayers().add(getBuildingsLayer());
+        localGroup.getLayers().add(getBridgesLayer());
+        catalog.add(localGroup);
+        
+        LayerGroupInfo globalGroup = factory.createLayerGroup();
+        globalGroup.setName(GLOBAL_GROUP);
+        globalGroup.getLayers().add(getAggregateGeoFeatureLayer());
+        catalog.add(globalGroup);
+
+        LocalWorkspace.set(citeWs);
+        LocalPublished.set(catalog.getLayerGroupByName(LOCAL_GROUP));
+        
+        // some direct access tests, generic request
+        assertNull(catalog.getLayerByName(getLayerId(SystemTestData.BASIC_POLYGONS)));
+        assertNull(getAggregateGeoFeatureLayer());
+        assertNull(catalog.getLayerGroupByName(GLOBAL_GROUP));
+        assertNotNull(getBridgesLayer());
+        assertNotNull(getBuildingsLayer());
+        List<LayerInfo> layers = catalog.getLayers();
+        assertEquals(2, layers.size());
+        assertThat(layers, containsInAnyOrder(getBuildingsLayer(), getBridgesLayer()));
+        
+        // now simulate WMS getCaps, the layers should not appear in the caps document
+        Request request = new Request();
+        request.setService("WMS");
+        request.setRequest("GetCapabilities");
+        Dispatcher.REQUEST.set(request);
+        assertNull(catalog.getLayerByName(getLayerId(SystemTestData.BASIC_POLYGONS)));
+        assertNull(getBridgesLayer());
+        assertNull(catalog.getLayerGroupByName(GLOBAL_GROUP));
+        assertNull(getBuildingsLayer());
+        assertNull(getAggregateGeoFeatureLayer());
+        assertEquals(0, catalog.getLayers().size());
+        
+        LocalPublished.remove();
+        LocalWorkspace.remove();
+    }
+    
+    
+    private LayerInfo getBridgesLayer() {
+        return catalog.getLayerByName(getLayerId(SystemTestData.BRIDGES));
+    }
+
+    private LayerInfo getAggregateGeoFeatureLayer() {
+        return catalog.getLayerByName(getLayerId(SystemTestData.AGGREGATEGEOFEATURE));
+    }
+
+    private LayerInfo getBuildingsLayer() {
+        return catalog.getLayerByName(getLayerId(SystemTestData.BUILDINGS));
     }
 }

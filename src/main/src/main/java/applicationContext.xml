@@ -244,7 +244,7 @@
   </bean>
   <bean id="adminRequestTransfer" class="org.geoserver.threadlocals.AdminRequestThreadLocalTransfer"/>
   <bean id="authenticationTransfer" class="org.geoserver.threadlocals.AuthenticationThreadLocalTransfer"/>
-  <bean id="localLayerTransfer" class="org.geoserver.threadlocals.LocalLayerThreadLocalTransfer"/>
+  <bean id="localPublishedTransfer" class="org.geoserver.threadlocals.LocalPublishedThreadLocalTransfer"/>
   <bean id="localWorkspaceTransfer" class="org.geoserver.threadlocals.LocalWorkspaceThreadLocalTransfer"/>
 
   <!-- default style handlers -->

@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 -2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -193,9 +193,19 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         // a nested container
         assertExpectedLayers(Arrays.asList(forestLayer), containerParent);        
     }
+    
+    @Test
+    public void testAllGroups() {
+        assertExpectedGroups(Arrays.asList(nested, lakesNeatline, ponds), nested);
+    }
 
     private void assertExpectedLayers(List<LayerInfo> expected, LayerGroupInfo group) {
         List<LayerInfo> layers = new LayerGroupHelper(group).allLayers();
+        assertEquals(expected, layers);
+    }
+    
+    private void assertExpectedGroups(List<LayerGroupInfo> expected, LayerGroupInfo group) {
+        List<LayerGroupInfo> layers = new LayerGroupHelper(group).allGroups();
         assertEquals(expected, layers);
     }
 

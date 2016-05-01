@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.geoserver.ows.LocalLayer;
+import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -178,8 +178,8 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             // TODO: replace service path with call to buildURL since it does this
             // same dance
             String servicePath = "wms";
-            if (LocalLayer.get() != null) {
-                servicePath = LocalLayer.get().getName() + "/" + servicePath;
+            if (LocalPublished.get() != null) {
+                servicePath = LocalPublished.get().getName() + "/" + servicePath;
             }
             if (LocalWorkspace.get() != null) {
                 servicePath = LocalWorkspace.get().getName() + "/" + servicePath;

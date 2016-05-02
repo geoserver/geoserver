@@ -187,6 +187,7 @@
         <module>geofence-server</module>
         <module>sldService</module>
         <module>params-extractor</module>
+        <module>vectortiles</module>
         <module>wps-remote</module>
         <module>wps-jdbc</module>
         <module>release</module>

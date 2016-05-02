@@ -197,11 +197,12 @@
         <module>jms-cluster</module>
         <module>hz-cluster</module>
         <module>solr</module>
-	<module>rest-upload</module>
+	      <module>rest-upload</module>
         <module>geofence</module>
         <module>geofence-server</module>
         <module>sldService</module>
         <module>params-extractor</module>
+        <module>vectortiles</module>
         <module>release</module>
 	<module>gwc-distributed</module>
 	<module>gdal</module>

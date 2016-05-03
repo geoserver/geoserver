@@ -29,6 +29,7 @@ import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -167,6 +168,7 @@ public class XStreamPersister {
      * Callback interface or xstream persister.
      */
     public static class Callback {
+        protected CatalogInfo getCatalogObject() { return null; }
         protected void postEncodeWorkspace( WorkspaceInfo ws, HierarchicalStreamWriter writer, MarshallingContext context ) {
         }
         
@@ -1507,9 +1509,58 @@ public class XStreamPersister {
         }
     }
     /**
+     * Converter for all {@link CatalogInfo} resources. Obtains the appropriate catalog object in 
+     * {@link #instantiateNewInstance(HierarchicalStreamReader, UnmarshallingContext)} prior to 
+     * reading in the XStream request, so that primitive objects are appropriately initialized.
+     * 
+     * Supported implementations of {@link AbstractCatalogResource} must implement 
+     * {@link XStreamPersister.Callback.getCatalogObject()} when providing an instance of 
+     * {@link XStreamPersister.Callback} to {@link XStreamPersister} in 
+     * {@link AbstractCatalogResource.configurePersister(XStreamPersister, DataFormat)}
+     */
+    protected class AbstractCatalogInfoConverter extends AbstractReflectionConverter {
+        public AbstractCatalogInfoConverter(Class clazz) {
+            super(clazz);
+        }
+        private <T> void unsafeCopy(Object source, Object target, Class<T> clazz) {
+            OwsUtils.copy((T)source, (T)target, clazz);
+        }
+        @Override
+        protected Object instantiateNewInstance(HierarchicalStreamReader reader,
+                UnmarshallingContext context) {
+            Object emptyObject = super.instantiateNewInstance(reader, context);
+            Object catalogObject = callback.getCatalogObject();
+            
+            if (catalogObject != null) {
+                Class i = null;
+                if (emptyObject instanceof CoverageInfo) {
+                    i = CoverageInfo.class;
+                } else if (emptyObject instanceof CoverageStoreInfo) {
+                    i = CoverageStoreInfo.class;
+                } else if (emptyObject instanceof DataStoreInfo) {
+                    i = DataStoreInfo.class;
+                } else if (emptyObject instanceof FeatureTypeInfo) {
+                    i = FeatureTypeInfo.class;
+                } else if (emptyObject instanceof LayerGroupInfo) {
+                    i = LayerGroupInfo.class;
+                } else if (emptyObject instanceof LayerInfo) {
+                    i = LayerInfo.class;
+                } else if (emptyObject instanceof WMSLayerInfo) {
+                    i = WMSLayerInfo.class;
+                } else if (emptyObject instanceof WMSStoreInfo) {
+                    i = WMSStoreInfo.class;
+                }
+                if (i != null) {
+                    unsafeCopy(catalogObject, emptyObject, i);
+                }
+            }
+            return emptyObject;
+        }
+    }
+    /**
      * Converter for {@link DataStoreInfo}, {@link CoverageStoreInfo}, and {@link WMSStoreInfo}
      */
-    class StoreInfoConverter extends AbstractReflectionConverter {
+    class StoreInfoConverter extends AbstractCatalogInfoConverter {
 
         public StoreInfoConverter() {
             super(StoreInfo.class);
@@ -1545,7 +1596,6 @@ public class XStreamPersister {
                         + (store == null ? "null" : store.getClass().getName()));
             }
         }
-        
         @Override
         public Object doUnmarshal(Object result,
                 HierarchicalStreamReader reader, UnmarshallingContext context) {
@@ -1714,7 +1764,7 @@ public class XStreamPersister {
     /**
      * Base converter for handling resources.
      */
-    class ResourceInfoConverter extends AbstractReflectionConverter {
+    class ResourceInfoConverter extends AbstractCatalogInfoConverter {
         
         public ResourceInfoConverter() {
             this(ResourceInfo.class);
@@ -1745,7 +1795,6 @@ public class XStreamPersister {
         public FeatureTypeInfoConverter() {
             super(FeatureTypeInfo.class);
         }
-        
         @Override
         protected void postDoMarshal(Object result,
                 HierarchicalStreamWriter writer, MarshallingContext context) {
@@ -1784,7 +1833,7 @@ public class XStreamPersister {
     /**
      * Converter for layers.
      */
-    class LayerInfoConverter extends AbstractReflectionConverter {
+    class LayerInfoConverter extends AbstractCatalogInfoConverter {
 
         public LayerInfoConverter() {
             super( LayerInfo.class );
@@ -1866,7 +1915,7 @@ public class XStreamPersister {
     /**
      * Converter for layer groups.
      */
-    class LayerGroupInfoConverter extends AbstractReflectionConverter {
+    class LayerGroupInfoConverter extends AbstractCatalogInfoConverter {
 
         public LayerGroupInfoConverter() {
             super( LayerGroupInfo.class );

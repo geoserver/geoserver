@@ -5,8 +5,6 @@
  */
 package org.geoserver.catalog.rest;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.*;
 import net.sf.json.JSON;
@@ -297,6 +295,27 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         
         WMSLayerInfo wli = catalog.getResourceByName( "sf", "states", WMSLayerInfo.class);
         assertEquals( "Lots of states here", wli.getTitle() );
+    }
+    
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        WMSLayerInfo wli = catalog.getResourceByName( "sf", "states", WMSLayerInfo.class);
+        wli.setEnabled(true);
+        catalog.save(wli);
+        assertTrue(wli.isEnabled());
+        boolean isAdvertised = wli.isAdvertised();
+        
+        String xml = 
+          "<wmsLayer>" + 
+            "<title>Lots of states here</title>" +  
+          "</wmsLayer>";
+        MockHttpServletResponse response = 
+            putAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers/states", xml, "text/xml");
+        assertEquals( 200, response.getStatus() );
+        
+        wli = catalog.getResourceByName( "sf", "states", WMSLayerInfo.class);
+        assertTrue(wli.isEnabled());
+        assertEquals(isAdvertised, wli.isAdvertised());
     }
     
     @Test

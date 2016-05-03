@@ -5,10 +5,10 @@
  */
 package org.geoserver.catalog.rest;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.*;
@@ -324,7 +324,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
                 response.getStatus());
         dom = getAsDOM(path);
         print(dom);
-        assertXpathExists("/coverage/latLonBoundingBox/minx[text()!='0.0']",
+        assertXpathExists("/coverage/nativeBoundingBox/minx[text()!='0.0']",
                 dom);
     }
 
@@ -390,6 +390,25 @@ public class CoverageTest extends CatalogRESTTestSupport {
         
         CoverageInfo c = catalog.getCoverageByName( "wcs", "BlueMarble");
         assertEquals( "new title", c.getTitle() );
+    }
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        CoverageInfo c = catalog.getCoverageByName( "wcs", "BlueMarble");
+        
+        assertTrue(c.isEnabled());
+        boolean isAdvertised = c.isAdvertised();
+        
+        String xml = 
+          "<coverage>" + 
+            "<title>new title</title>" +  
+          "</coverage>";
+        MockHttpServletResponse response = 
+            putAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", xml, "text/xml");
+        assertEquals( 200, response.getStatus() );
+        
+        c = catalog.getCoverageByName( "wcs", "BlueMarble");
+        assertTrue(c.isEnabled());
+        assertEquals(isAdvertised, c.isAdvertised());
     }
 
     @Test

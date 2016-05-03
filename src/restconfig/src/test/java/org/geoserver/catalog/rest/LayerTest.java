@@ -108,6 +108,33 @@ public class LayerTest extends CatalogRESTTestSupport {
         l = catalog.getLayerByName("cite:Buildings");
         assertEquals( "Forests", l.getDefaultStyle().getName() );
     }
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        LayerInfo l = catalog.getLayerByName( "cite:Buildings" );
+        
+        assertTrue(l.isEnabled());
+        boolean isAdvertised = l.isAdvertised();
+        boolean isOpaque = l.isOpaque();
+        boolean isQueryable = l.isQueryable();
+        
+        String xml = 
+            "<layer>" +
+              "<defaultStyle>Forests</defaultStyle>" + 
+              "<styles>" + 
+                "<style>Ponds</style>" +
+              "</styles>" + 
+            "</layer>";
+        MockHttpServletResponse response = 
+            putAsServletResponse("/rest/layers/cite:Buildings", xml, "text/xml");
+        assertEquals( 200, response.getStatus() );
+        
+        l = catalog.getLayerByName("cite:Buildings");
+        
+        assertTrue(l.isEnabled());
+        assertEquals(isAdvertised, l.isAdvertised());
+        assertEquals(isOpaque, l.isOpaque());
+        assertEquals(isQueryable, l.isQueryable());
+    }
     
     @Test
     public void testUpdateStyleJSON() throws Exception {

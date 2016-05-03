@@ -372,6 +372,29 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertEquals( 102, lg.getAttribution().getLogoHeight() );
         assertEquals( 2, lg.getMetadataLinks().size() );
     }
+    
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        LayerGroupInfo lg = catalog.getLayerGroupByName( "sfLayerGroup" );
+        boolean isQueryDisabled = lg.isQueryDisabled();
+        
+        lg.setQueryDisabled(true);
+        catalog.save(lg);
+        
+        String xml = 
+            "<layerGroup>" + 
+              "<name>sfLayerGroup</name>" +
+            "</layerGroup>";
+        
+        MockHttpServletResponse response = putAsServletResponse("/rest/layergroups/sfLayerGroup", xml, "text/xml" );
+        assertEquals( 200, response.getStatus() );
+        
+        lg = catalog.getLayerGroupByName( "sfLayerGroup" );
+        
+        assertTrue(lg.isQueryDisabled());
+        lg.setQueryDisabled(isQueryDisabled);
+        catalog.save(lg);
+    }
 
     @Test
     public void testPutToWorkspace() throws Exception {

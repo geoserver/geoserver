@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -150,8 +151,9 @@ public class CoverageResource extends AbstractCatalogResource {
         
         CoverageStoreInfo cs = catalog.getCoverageStoreByName(workspace, coveragestore);
         CoverageInfo original = catalog.getCoverageByCoverageStore( cs,  coverage );
-        new CatalogBuilder(catalog).updateCoverage(original,c);
         calculateOptionalFields(c, original);
+        
+        new CatalogBuilder(catalog).updateCoverage(original,c);
         catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         
@@ -202,6 +204,21 @@ public class CoverageResource extends AbstractCatalogResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setCallback( new XStreamPersister.Callback() {
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                String workspace = getAttribute("workspace");
+                String coveragestore = getAttribute("coveragestore");
+                String coverage = getAttribute("coverage");
+                
+                if (workspace == null || coveragestore == null || coverage == null) {
+                    return null;
+                }
+                CoverageStoreInfo cs = catalog.getCoverageStoreByName(workspace, coveragestore);
+                if (cs == null) {
+                    return null;
+                }
+                return catalog.getCoverageByCoverageStore( cs,  coverage );
+            }
             @Override
             protected void postEncodeReference(Object obj, String ref, String prefix, 
                     HierarchicalStreamWriter writer, MarshallingContext context) {

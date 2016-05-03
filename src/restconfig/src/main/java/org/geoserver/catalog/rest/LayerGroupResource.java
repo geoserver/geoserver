@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,6 +7,8 @@ package org.geoserver.catalog.rest;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -131,6 +133,16 @@ public class LayerGroupResource extends AbstractCatalogResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setCallback( new XStreamPersister.Callback() {
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                String workspace = getAttribute("workspace");
+                String layergroup = getAttribute("layergroup");
+                
+                if (layergroup == null) {
+                    return null;
+                }
+                return catalog.getLayerGroupByName(workspace, layergroup );
+            }
            @Override
            protected void postEncodeReference(Object obj, String ref, String prefix,
                 HierarchicalStreamWriter writer, MarshallingContext context) {

@@ -118,7 +118,7 @@ public class VectorTileMapOutputFormat extends AbstractMapOutputFormat {
                     .collapseCollections()
                     .build();
 
-            Query query = getStyleQuery(layer, mapContent);
+            Query query = getStyleQuery(layer, mapContent, builder.getClipDistance());
             query.getHints().remove(Hints.SCREENMAP);
 
             FeatureCollection<?, ?> features = featureSource.getFeatures(query);

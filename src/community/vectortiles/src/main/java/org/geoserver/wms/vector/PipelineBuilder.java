@@ -243,13 +243,17 @@ class PipelineBuilder {
                 clippingEnvelope = paintArea;
             } else {
                 ReferencedEnvelope renderingArea = context.renderingArea;
-                renderingArea.expandBy( clipBBOXSizeIncreasePixels * context.pixelSizeInTargetCRS);
+                renderingArea.expandBy(getClipDistance());
                 clippingEnvelope = renderingArea;
             }
 
             addLast(new Clip(clippingEnvelope));
         }
         return this;
+    }
+
+    public double getClipDistance() {
+        return clipBBOXSizeIncreasePixels * context.pixelSizeInTargetCRS;
     }
 
     private static final class Transform extends Pipeline {

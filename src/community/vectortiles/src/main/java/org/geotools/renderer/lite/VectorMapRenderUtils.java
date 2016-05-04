@@ -53,7 +53,7 @@ public class VectorMapRenderUtils {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    public static Query getStyleQuery(Layer layer, WMSMapContent mapContent) throws IOException {
+    public static Query getStyleQuery(Layer layer, WMSMapContent mapContent, double bufferDistance) throws IOException {
 
         final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
         final Rectangle screenSize = new Rectangle(mapContent.getMapWidth(),
@@ -77,7 +77,7 @@ public class VectorMapRenderUtils {
         Query styleQuery;
         try {
             styleQuery = VectorMapRenderUtils.getStyleQuery(featureSource, styleList,
-                    renderingArea, screenSize, geometryDescriptor);
+                    renderingArea, bufferDistance, screenSize, geometryDescriptor);
         } catch (IllegalFilterException | FactoryException e1) {
             throw Throwables.propagate(e1);
         }
@@ -95,6 +95,7 @@ public class VectorMapRenderUtils {
             FeatureSource<?, ?> source, //
             List<LiteFeatureTypeStyle> styleList, //
             ReferencedEnvelope mapArea,//
+            double bufferDistance,
             Rectangle screenSize, //
             GeometryDescriptor geometryAttribute//
     ) throws IllegalFilterException, IOException, FactoryException {
@@ -103,8 +104,11 @@ public class VectorMapRenderUtils {
         Query query = new Query(schema.getName().getLocalPart());
         query.setProperties(Query.ALL_PROPERTIES);
 
+        ReferencedEnvelope bufferArea = ReferencedEnvelope.create(mapArea);
+        bufferArea.expandBy(bufferDistance);
+
         String geomName = geometryAttribute.getLocalName();
-        Filter filter = FF.bbox(FF.property(geomName), mapArea);
+        Filter filter = FF.bbox(FF.property(geomName), bufferArea);
         query.setFilter(filter);
 
         LiteFeatureTypeStyle[] styles = styleList

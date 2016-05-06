@@ -4,7 +4,6 @@
  */
 package org.geogig.geoserver.web.repository;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -157,10 +156,10 @@ public abstract class RepositoryEditFormPanel extends Panel {
 
     private void onSave(RepositoryInfo repoInfo, AjaxRequestTarget target) {
         RepositoryManager manager = RepositoryManager.get();
-        repoInfo = manager.save(repoInfo);
         // update remotes
         GeoGIG geogig;
         try {
+            repoInfo = manager.save(repoInfo);
             geogig = manager.getRepository(repoInfo.getId());
         } catch (Exception e) {
             form.error("Unable to connect to repository " + repoInfo.getLocation() +

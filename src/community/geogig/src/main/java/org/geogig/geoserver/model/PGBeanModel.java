@@ -17,6 +17,8 @@ import org.geogig.geoserver.config.RepositoryInfo;
  */
 public class PGBeanModel implements IModel<PostgresConfigBean> {
 
+    private static final long serialVersionUID = 1L;
+
     private final IModel<RepositoryInfo> repoModel;
     private PostgresConfigBean bean;
 

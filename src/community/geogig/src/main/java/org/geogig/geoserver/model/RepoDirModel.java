@@ -19,6 +19,8 @@ import org.geogig.geoserver.config.RepositoryInfo;
  */
 public class RepoDirModel implements IModel<String> {
 
+    private static final long serialVersionUID = 1L;
+
     private final IModel<RepositoryInfo> repoModel;
     private String parentDirectory;
 

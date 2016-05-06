@@ -34,6 +34,7 @@ class PostgresConfigFormPanel extends FormComponentPanel<PostgresConfigBean> {
         setOutputMarkupId(true);
         hostPanel = new TextParamPanel("hostPanel", new PropertyModel<String>(model, "host"),
                 new ResourceModel("PostgresConfigFormPanel.host", "Host Name"), true);
+        hostPanel.getFormComponent().setType(String.class);
         add(hostPanel);
         portPanel = new TextParamPanel("portPanel", new PropertyModel<Integer>(model, "port"),
                 new ResourceModel("PostgresConfigFormPanel.port", "Port"), false);
@@ -43,26 +44,27 @@ class PostgresConfigFormPanel extends FormComponentPanel<PostgresConfigBean> {
         add(portPanel);
         dbPanel = new TextParamPanel("dbPanel", new PropertyModel<String>(model, "database"),
                 new ResourceModel("PostgresConfigFormPanel.database", "Database Name"), true);
+        dbPanel.getFormComponent().setType(String.class);
         add(dbPanel);
         schemaPanel = new TextParamPanel("schemaPanel", new PropertyModel<String>(model, "schema"),
                 new ResourceModel("PostgresConfigFormPanel.schema", "Schema Name"), false);
+        schemaPanel.getFormComponent().setType(String.class);
         add(schemaPanel);
         usernamePanel = new TextParamPanel("usernamePanel", new PropertyModel<String>(model,
                 "username"), new ResourceModel("PostgresConfigFormPanel.username",
                 "Username"), true);
+        usernamePanel.getFormComponent().setType(String.class);
         add(usernamePanel);
         passwordPanel = new PasswordParamPanel("passwordPanel", new PropertyModel<String>(model,
                 "password"), new ResourceModel("PostgresConfigFormPanel.password",
                 "Password"), true);
+        passwordPanel.getFormComponent().setType(String.class);
         add(passwordPanel);
     }
 
     @Override
     protected void convertInput() {
-        PostgresConfigBean bean = getModelObject();
-        if (bean == null) {
-            bean = new PostgresConfigBean();
-        }
+        PostgresConfigBean bean = new PostgresConfigBean();
         // populate the bean
         String host = hostPanel.getFormComponent().getConvertedInput().toString().trim();
         Integer port = Integer.class.cast(portPanel.getFormComponent().getConvertedInput());

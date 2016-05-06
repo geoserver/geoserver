@@ -176,3 +176,48 @@ The default GeoServer security configuration is:
 
 For further information, please refer to :ref:`configuring a user/group service <security_webadmin_usergroupservices>` in the :ref:`web_admin`.
 
+.. _security_rolesystem_usergroupldap:
+
+LDAP user/group service
+------------------------
+
+The LDAP user/group service is a read only user/group service that maps users and groups from an LDAP repository to GeoServer users and groups.
+
+Users are extracted from a specific LDAP node, configured as the ``Users search base``. Groups are extracted from a specific LDAP node, configured as the ``Groups search base``. A user is mapped for every matching user and a group is mapped for every matching group. 
+
+It is possible to specify the attributes which contain the name of the group (such as ``cn``), the user (such as ``uid``) as well as the membership relationship between the two (such as ``member``). However, it is also possible to specify specific filters to search for all users/groups (for example ``cn=*``), find a user/group by name  (for example ``cn={0}``) and map users to groups (such as ``member={0}``). These filters can also be automatically derived from the attribute names. Alternatively, the attribute names may be left empty if the filters are provided.
+
+For users, additional properties (key/value pairs, see :ref:`security_rolesystem_usergroups`) may be populated from the LDAP Server by providing a comma separated list of property names.
+
+Retrieving the user/group information can be done anonymously or using a given username/password if the LDAP repository requires it.
+
+An example of configuration file (config.xml) for this type of role service is the following:
+
+   .. code-block:: xml
+
+	<org.geoserver.security.ldap.LDAPUserGroupServiceConfig>
+	  <id>2c3e0e8d:154853796a3:-8000</id>
+	  <name>myldapservice</name>
+	  <className>org.geoserver.security.ldap.LDAPUserGroupService</className>
+	  <serverURL>ldap://127.0.0.1:10389/dc=acme,dc=org</serverURL>
+	  <groupSearchBase>ou=groups</groupSearchBase>
+	  <groupFilter>cn={0}</groupFilter>
+	  <groupNameAttribute>cn</groupNameAttribute>
+	  <allGroupsSearchFilter>cn=*</allGroupsSearchFilter>
+	  <groupSearchFilter>member={0}</groupSearchFilter>
+	  <groupMembershipAttribute>member</groupMembershipAttribute>
+	  <userSearchBase>ou=people</userSearchBase>
+	  <userFilter>uid</userFilter>
+	  <userNameAttribute>uid={0}</userNameAttribute>
+	  <allUsersSearchFilter>uid=*</allUsersSearchFilter>
+	  <useTLS>false</useTLS>
+	  <bindBeforeGroupSearch>true</bindBeforeGroupSearch>
+	  <user>admin</user>
+	  <password>admin</password>
+	  <passwordEncoderName>emptyPasswordEncoder</passwordEncoderName>
+	  <passwordPolicyName>default</passwordPolicyName>
+	  <populatedAttributes>email, telephone</populatedAttributes>
+	</org.geoserver.security.ldap.LDAPUserGroupServiceConfig>
+
+For further information, please refer to :ref:`configuring a user/group service <security_webadmin_usergroupservices>` in the :ref:`web_admin`.
+

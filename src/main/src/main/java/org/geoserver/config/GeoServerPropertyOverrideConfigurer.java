@@ -61,7 +61,6 @@ public class GeoServerPropertyOverrideConfigurer extends PropertyOverrideConfigu
     
     @Override
     protected String convertPropertyValue(String property) {
-        return property.replaceAll(Pattern.quote("${GEOSERVER_DATA_DIR}"), data.root().toString());
+        return property.replace("${GEOSERVER_DATA_DIR}", data.root().getPath());
     }
-
 }

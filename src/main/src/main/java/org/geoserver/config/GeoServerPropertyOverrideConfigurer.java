@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015-2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -27,7 +27,6 @@ public class GeoServerPropertyOverrideConfigurer extends PropertyOverrideConfigu
     
     @Override
     protected String convertPropertyValue(String property) {
-        return property.replaceAll(Pattern.quote("${GEOSERVER_DATA_DIR}"), data.root().toString());
+        return property.replace("${GEOSERVER_DATA_DIR}", data.root().getPath());
     }
-
 }

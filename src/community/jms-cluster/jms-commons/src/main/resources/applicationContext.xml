@@ -78,7 +78,14 @@
 		<constructor-arg index="0" ref="JMSManager" />
 	</bean>
 
-
+    <!-- turn of default webui redirect -->
+    <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer" >
+        <property name="properties"> 
+            <props>
+                <prop key="webApplication.defaultIsRedirect">false</prop>
+            </props>
+        </property>
+    </bean>   
 
 
 </beans>

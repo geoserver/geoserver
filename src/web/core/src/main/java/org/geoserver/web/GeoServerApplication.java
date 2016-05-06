@@ -35,9 +35,11 @@ import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
+import org.apache.wicket.settings.RequestCycleSettings.RenderStrategy;
 import org.apache.wicket.util.IProvider;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo.WebUIMode;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -72,6 +74,30 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
             .valueOf(System.getProperty("org.geoserver.web.browser.detect", "true"));
 
     ApplicationContext applicationContext;
+
+    /**
+     * Default redirect mode. Determines whether default webUIMode setting means redirect or not (default is true).
+     */
+    protected boolean defaultIsRedirect = true;
+
+    /**
+     * Get default redirect mode.
+     * 
+     * @return default redirect mode.
+     */
+    public boolean isDefaultIsRedirect() {
+        return defaultIsRedirect;
+    }
+
+    /**
+     * Set default redirect mode. 
+     * (must be called before init method, usually by Spring PropertyOverriderConfigurer)
+     * 
+     * @param defaultIsRedirect
+     */
+    public void setDefaultIsRedirect(boolean defaultIsRedirect) {
+        this.defaultIsRedirect = defaultIsRedirect;
+    }
 
     /**
      * The {@link GeoServerHomePage}.
@@ -194,6 +220,22 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
         setRootRequestMapper(new DynamicCryptoMapper(getRootRequestMapper(), securityManager, this));
         
         getRequestCycleListeners().add(new CallbackRequestCycleListener(this));
+
+        WebUIMode webUIMode = getGeoServer().getGlobal().getWebUIMode();
+        if (webUIMode == null) {
+            webUIMode = WebUIMode.DEFAULT;
+        }
+        switch (webUIMode) {
+        case DO_NOT_REDIRECT:
+            getRequestCycleSettings().setRenderStrategy(RenderStrategy.ONE_PASS_RENDER);
+            break;
+        case REDIRECT:
+            getRequestCycleSettings().setRenderStrategy(RenderStrategy.REDIRECT_TO_BUFFER);
+            break;
+        case DEFAULT:
+            getRequestCycleSettings().setRenderStrategy(defaultIsRedirect ?
+                    RenderStrategy.REDIRECT_TO_BUFFER : RenderStrategy.ONE_PASS_RENDER);
+        }
     }
 
     @Override

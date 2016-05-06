@@ -47,6 +47,8 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     protected Boolean xmlExternalEntitiesEnabled = Boolean.FALSE;
     
     protected String lockProviderName;
+
+    protected WebUIMode webUIMode = WebUIMode.DEFAULT;
     
     //deprecated members, kept around to maintain xstream persistence backward compatability
     @Deprecated
@@ -435,6 +437,16 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     public ResourceErrorHandling getResourceErrorHandling() {
         return this.resourceErrorHandling;
+    }
+
+    @Override
+    public WebUIMode getWebUIMode() {
+        return webUIMode;
+    }
+
+    @Override
+    public void setWebUIMode(WebUIMode webUIMode) {
+        this.webUIMode = webUIMode;
     }
 
 }

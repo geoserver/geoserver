@@ -23,6 +23,8 @@ Install the plugin-in, see :ref:`geofence_server_install`. Configure the user/gr
 
 Restart GeoServer.
 
+  .. note:: Since we defined no rules yet, the default behavior of GeoFence is to deny access to all resources.
+
 There should now be a :guilabel:`GeoFence Server` link on the left side of the screen after logging in. Click on it. 
 This is the configuration page of your internal GeoFence.
 

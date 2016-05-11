@@ -61,25 +61,11 @@ allowed to release directly from a specific GeoTools revision.
 Release in JIRA
 ---------------
 
-Run the `geoserver-release-jira <http://ares.boundlessgeo.com/jenkins/job/geoserver-release-jira/>`_ job in Jenkins. The job takes the following parameters:
+1. Navigate to the `GeoServer project page <https://osgeo-org.atlassian.net/projects/GEOS?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page&status=released-unreleased>`_ in JIRA.
 
-**VERSION**
+2. Click ``Manage Versions``. Create a new version for the next version to be released after the current release (For example, if you are releasing GeoServer 2.9.1, create version 2.9.2).
 
-  The version to release, same as in the previous section. This version must match a version in JIRA.
-
-**NEXT_VERSION**
-
-  The next version in the series. All unresolved issues currently fils against ``VERSION`` will be transitioned to this version.
-
-**JIRA_USER**
-
-  A JIRA user name that has release privileges. This user  will be used to perform the release in JIRA, via the SOAP api.
-
-**JIRA_PASSWD**
-
-  The password for the ``JIRA_USER``.
-
-This job will perform the tasks in JIRA to release ``VERSION``. Navigate to `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`__ and verify that the version has actually been released.
+3. Return to the project page, and click on the version you are releasing. Click the ``Release`` button, and enter the release date when prompted. If there are still unsolved issues remaining in this release, you will be prompted to move them to an unreleased version. If so, choose the new version you created in step 2.
 
 If you are cutting the first RC of a series, create the stable branch
 ---------------------------------------------------------------------
@@ -102,6 +88,8 @@ When creating the first release candidate of a series, there are some extra step
     git checkout master
     find . -name pom.xml -exec sed -i 's/2.7-SNAPSHOT/2.8-SNAPSHOT/g' {} \;
 
+  .. note:: ``sed`` behaves differently on Linux vs. Mac OS X. If running on OS X, the ``-i`` should be followed by ``'' -e`` for each of these ``sed`` commands.
+
 * Update GeoTools dependency; for example if changing from ``13-SNAPSHOT`` to ``14-SNAPSHOT``::
 
     sed -i 's/13-SNAPSHOT/14-SNAPSHOT/g' src/pom.xml
@@ -117,7 +105,6 @@ When creating the first release candidate of a series, there are some extra step
     * ``doc/en/user/source/conf.py``
     * ``doc/es/user/source/conf.py``
     * ``doc/fr/user/source/conf.py``
-    * ``src/extension/css/project/build/GeoServerCSSProject.scala``
 
 * Commit the changes and push to the master branch on GitHub::
 
@@ -202,7 +189,7 @@ to the SourceForge FRS server. Navigate to `Sourceforge <http://sourceforge.net/
 Create the download page
 ------------------------
 
-The `GeoServer web site <http://geoserver.org/>`_ is now managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the instructions in the repository to create a download page for the release.
+The `GeoServer web site <http://geoserver.org/>`_ is now managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a download page for the release. This requires the url of the blog post announcing the release, so wait until after you have posted the announcement to do this.
 
 Post the Documentation
 ----------------------
@@ -228,6 +215,10 @@ Post the Documentation
     sudo unzip geoserver-a.b.c-htmldoc.zip
     sudo rm geoserver-a.b.c-htmldoc.zip
 
+   .. note:: Steps 2 and 3 have now been automated by a bash script on the server, and can be completed by executing::
+
+               sudo /var/www/docs.geoserver.org/htdocs/postdocs.sh a.b.c
+
 #. Open the file :file:`/var/www/docs.geoserver.org/htdocs/index.html` in a text editor.
 
 #. Add a new entry in the table for the most recent release::
@@ -239,6 +230,34 @@ Post the Documentation
     </tr>
 
 #. Save and close this file.
+
+#. If you are cutting the first RC of a series, you will also need to update the stable and maintenance links in the documentation:
+
+   #. Open the file :file:`/etc/apache2/sites-available/docs.geoserver.org` in a text editor.
+
+   #. Add the lines::
+
+        ProxyPass /a.b.x/ http://ares.boundlessgeo.com/geoserver/a.b.x/doc/
+        ProxyPassReverse /a.b.x/ http://ares.boundlessgeo.com/geoserver/a.b.x/doc/
+
+      after the last similar entry.
+
+   #. Modify the lines::
+
+        ProxyPass /maintain/ http://ares.boundlessgeo.com/geoserver/2.8.x/doc/
+        ProxyPassReverse /maintain/ http://ares.boundlessgeo.com/geoserver/2.8.x/doc/
+        ProxyPass /stable/ http://ares.boundlessgeo.com/geoserver/2.9.x/doc/
+        ProxyPassReverse /stable/ http://ares.boundlessgeo.com/geoserver/2.9.x/doc/
+        ProxyPass /latest/ http://ares.boundlessgeo.com/geoserver/master/doc/
+        ProxyPassReverse /latest/ http://ares.boundessgeo.com/geoserver/master/doc/
+
+      replacing ``2.8.x`` with the new maintenance and ``2.9.x`` with the newly created stable branch.
+
+   #. Save and close the file.
+
+   #. Restart the web server::
+
+        sudo service apache2 restart
 
 Announce the Release
 --------------------
@@ -408,33 +427,3 @@ Example::
   the 1.7.1 series is available in the issue tracker:
   
   https://osgeo-org.atlassian.net/jira/secure/ReleaseNote.jspa?projectId=10000&version=
-
-FreshMeat
-^^^^^^^^^
-
-.. note:: This announcement should be made only for official rel-eases. Not betas and release candidates.
-
-.. note::
-
-   This step requires an account on http://freshmeat.net/
-
-#. Go to http://freshmeat.net/ and log in.
-#. Search for "geoserver" and click the resulting link.
-#. Click the **add release** link at the top of the page.
-#. Choose the **Default** branch
-#. Enter the version and choose the appropriate **Release focus**.
-
-   .. note::
-
-      The release focus is usually 4,5,6, or 7. Choose which ever is
-      appropriate.
-
-#. Enter a succinct description (less than 600 characters) of the **Changes**.
-#. Update the links to the following fields:
-
-   * Zip
-   * OS X package
-   * Changelog
-
-#. Click the **Step 3** button.
-#. Click the **Finish** button.

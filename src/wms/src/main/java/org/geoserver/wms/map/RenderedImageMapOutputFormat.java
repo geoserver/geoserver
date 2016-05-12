@@ -1171,9 +1171,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                         transparent ? 0 : 255 };
                 cm = image.getColorModel();
             } else {
-            	// we found the background color in the original image palette therefore we set its index as the bkg value.
-            	// The final Mosaic will use the IndexColorModel of this image anywa, therefore all we need to do is to force
-            	// the background to point to the right color in the palette
+                // we found the background color in the original image palette therefore we set its index as the bkg value.
+                // The final Mosaic will use the IndexColorModel of this image anywa, therefore all we need to do is to force
+                // the background to point to the right color in the palette
                 bgValues = new double[] { bgColorIndex };
             }
             
@@ -1245,7 +1245,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             if(bgValues == null) {
                 if (hasAlpha) {
                     // get alpha
-    	            final ImageWorker iw = new ImageWorker(image);
+                    final ImageWorker iw = new ImageWorker(image);
                     final RenderedImage alpha = iw.retainLastBand().getRenderedImage();
                     alphaChannels = new PlanarImage[] { PlanarImage.wrapRenderedImage(alpha) };
     

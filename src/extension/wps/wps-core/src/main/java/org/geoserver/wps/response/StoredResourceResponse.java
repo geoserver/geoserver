@@ -54,7 +54,7 @@ public class StoredResourceResponse extends Response {
             }
         } else {
             throw new WPSException("Trying to get a mime type for a unknown operation, " +
-            		"we should not have got here in the first place");
+                    "we should not have got here in the first place");
         }
     }
     

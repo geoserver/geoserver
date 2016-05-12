@@ -19,23 +19,23 @@ import com.thoughtworks.xstream.XStream;
  *
  */
 public class JMSCatalogAddEventHandlerSPI extends JMSCatalogEventHandlerSPI{
-	
-	public JMSCatalogAddEventHandlerSPI(final int priority, Catalog cat, XStream xstream, ToggleSwitch producer) {
-		super(priority,cat,xstream,producer);
-	}
+    
+    public JMSCatalogAddEventHandlerSPI(final int priority, Catalog cat, XStream xstream, ToggleSwitch producer) {
+        super(priority,cat,xstream,producer);
+    }
 
-	@Override
-	public boolean canHandle(final Object event) {
-		if (event instanceof CatalogAddEvent)
-			return true;
-		else
-			return false;
-	}
+    @Override
+    public boolean canHandle(final Object event) {
+        if (event instanceof CatalogAddEvent)
+            return true;
+        else
+            return false;
+    }
 
-	@Override
-	public JMSEventHandler<String,CatalogEvent> createHandler() {
-		return new JMSCatalogAddEventHandler(catalog,xstream,this.getClass(),producer);
-	}
+    @Override
+    public JMSEventHandler<String,CatalogEvent> createHandler() {
+        return new JMSCatalogAddEventHandler(catalog,xstream,this.getClass(),producer);
+    }
 
 
 }

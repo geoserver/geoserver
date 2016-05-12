@@ -542,9 +542,9 @@ public class WMSRequests {
      * 
      */
     public static String encodeFormatOptions(Map formatOptions) {
-    	StringBuffer sb = new StringBuffer();
-    	encodeFormatOptions(formatOptions, sb);
-    	return sb.toString();
+        StringBuffer sb = new StringBuffer();
+        encodeFormatOptions(formatOptions, sb);
+        return sb.toString();
     }
     
     /**
@@ -554,7 +554,7 @@ public class WMSRequests {
      * @param sb StringBuffer to append to.
      * 
      * @return A string of the form 'key1.1:value1.1,value1.2;key1.2:value1.1;...[,key2.1:value2.1,value2.2;key2.2:value2.1]', 
-     * 	or the empty string if the formatOptions list is empty.
+     *     or the empty string if the formatOptions list is empty.
      * 
      */
     public static String encodeFormatOptions(List<Map<String, String>> formatOptions) {
@@ -565,11 +565,11 @@ public class WMSRequests {
         StringBuffer sb = new StringBuffer();
         boolean first = true;
         for (Map<String, String> map : formatOptions) {
-        	if (first) {
-        		first = false;
-        	} else {
+            if (first) {
+                first = false;
+            } else {
                 sb.append(",");
-        	}
+            }
             encodeFormatOptions(map, sb);
         }
 

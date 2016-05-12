@@ -183,9 +183,9 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                 }
             } else {
                 // We don't have to worry about locking right now
-            	int deletedCount = store.getFeatures(filter).size();
-            	if(deletedCount > 0)
-            		deleted += deletedCount;
+                int deletedCount = store.getFeatures(filter).size();
+                if(deletedCount > 0)
+                    deleted += deletedCount;
                 store.removeFeatures(filter);
             }
         } catch (IOException e) {

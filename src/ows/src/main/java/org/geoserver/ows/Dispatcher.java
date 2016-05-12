@@ -211,11 +211,11 @@ public class Dispatcher extends AbstractController {
        //TODO: make this server settable
         charSet = UTF8;
         if(request.getCharacterEncoding() != null)
-	        try {
-	            charSet = Charset.forName(request.getCharacterEncoding());
-	        } catch (Exception e) {
-	            // ok, we tried...
-	        }
+            try {
+                charSet = Charset.forName(request.getCharacterEncoding());
+            } catch (Exception e) {
+                // ok, we tried...
+            }
 
         request.setCharacterEncoding(charSet.name());
     }

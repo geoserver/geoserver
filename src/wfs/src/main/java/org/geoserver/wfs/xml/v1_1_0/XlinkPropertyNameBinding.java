@@ -20,8 +20,8 @@ import org.geotools.xml.Node;
  * Binding object for the element http://www.opengis.net/wfs:XlinkPropertyName.
  *
  * <p>
- *	<pre>
- *	 <code>
+ *    <pre>
+ *     <code>
  *  &lt;xsd:element name="XlinkPropertyName"&gt;
  *      &lt;xsd:annotation&gt;
  *          &lt;xsd:documentation&gt;
@@ -61,7 +61,7 @@ import org.geotools.xml.Node;
  *                          &lt;xsd:documentation&gt;
  *                    The traverseXlinkExpiry attribute value is specified in
  *                    minutes It indicates how long a Web Feature Service should
- *                    wait to receive a response to a nested GetGmlObject request.	
+ *                    wait to receive a response to a nested GetGmlObject request.    
  *                       &lt;/xsd:documentation&gt;
  *                      &lt;/xsd:annotation&gt;
  *                  &lt;/xsd:attribute&gt;
@@ -69,9 +69,9 @@ import org.geotools.xml.Node;
  *          &lt;/xsd:simpleContent&gt;
  *      &lt;/xsd:complexType&gt;
  *  &lt;/xsd:element&gt; 
- *		
- *	  </code>
- *	 </pre>
+ *        
+ *      </code>
+ *     </pre>
  * @generated
  */
 public class XlinkPropertyNameBinding extends AbstractComplexBinding {
@@ -92,11 +92,11 @@ public class XlinkPropertyNameBinding extends AbstractComplexBinding {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     *	
+     *    
      * @generated modifiable
-     */	
+     */    
     public Class getType() {
-    	return XlinkPropertyNameType.class;
+        return XlinkPropertyNameType.class;
     }
     
     public int getExecutionMode() {
@@ -106,12 +106,12 @@ public class XlinkPropertyNameBinding extends AbstractComplexBinding {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     *	
+     *    
      * @generated modifiable
-     */	
+     */    
     public Object parse(ElementInstance instance, Node node, Object value) 
-    	throws Exception {
-    	
+        throws Exception {
+        
         XlinkPropertyNameType property = factory.createXlinkPropertyNameType();
 
         property.setValue( (String) value );
@@ -122,8 +122,8 @@ public class XlinkPropertyNameBinding extends AbstractComplexBinding {
         
         //&lt;xsd:attribute name="traverseXlinkExpiry"
         //      type="xsd:positiveInteger" use="optional"&gt;
-    	if ( node.hasAttribute( "traverseXlinkExpiry" ) ) {
-    	    property.setTraverseXlinkExpiry( (BigInteger) node.getAttributeValue( "traverseXlinkExpiry" ) );
+        if ( node.hasAttribute( "traverseXlinkExpiry" ) ) {
+            property.setTraverseXlinkExpiry( (BigInteger) node.getAttributeValue( "traverseXlinkExpiry" ) );
         }
         
         return property;

@@ -263,7 +263,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
                             "&coverageId=wcs__BlueMarble&&Format=image/tiff" +
                             "&subset=http://www.opengis.net/def/axis/OGC/0/Long(" +sourceEnvelope.x+","+(sourceEnvelope.x+sourceEnvelope.width/2)+")"+
                             "&subset=http://www.opengis.net/def/axis/OGC/0/Lat(" +sourceEnvelope.y+","+(sourceEnvelope.y+sourceEnvelope.height/2)+")" +
-                            		"&SCALESIZE=http://www.opengis.net/def/axis/OGC/1/i(50)," +
+                                    "&SCALESIZE=http://www.opengis.net/def/axis/OGC/1/i(50)," +
                             "http://www.opengis.net/def/axis/OGC/1/j(50)");
             
             

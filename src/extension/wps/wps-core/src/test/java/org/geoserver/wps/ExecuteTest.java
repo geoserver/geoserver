@@ -1073,42 +1073,42 @@ public class ExecuteTest extends WPSTestSupport {
     @Test
     public void testChainedProgress() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-        		"<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
-        		"  <ows:Identifier>gs:CollectGeometries</ows:Identifier>\n" + 
-        		"  <wps:DataInputs>\n" + 
-        		"    <wps:Input>\n" + 
-        		"      <ows:Identifier>features</ows:Identifier>\n" + 
-        		"      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wps\" method=\"POST\">\n" + 
-        		"        <wps:Body>\n" + 
-        		"          <wps:Execute version=\"1.0.0\" service=\"WPS\">\n" + 
-        		"            <ows:Identifier>gs:Monkey</ows:Identifier>\n" + 
-        		"            <wps:DataInputs>\n" + 
-        		"              <wps:Input>\n" + 
-        		"                <ows:Identifier>id</ows:Identifier>\n" + 
-        		"                <wps:Data>\n" + 
-        		"                  <wps:LiteralData>chained-monkey</wps:LiteralData>\n" + 
-        		"                </wps:Data>\n" + 
-        		"              </wps:Input>\n" + 
-        		"            </wps:DataInputs>\n" + 
-        		"            <wps:ResponseForm>\n" + 
-        		"              <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n" + 
-        		"                <ows:Identifier>result</ows:Identifier>\n" + 
-        		"              </wps:RawDataOutput>\n" + 
-        		"            </wps:ResponseForm>\n" + 
-        		"          </wps:Execute>\n" + 
-        		"        </wps:Body>\n" + 
-        		"      </wps:Reference>\n" + 
-        		"    </wps:Input>\n" + 
-        		"  </wps:DataInputs>\n" + 
-        		"  <wps:ResponseForm>\n" + 
+                "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
+                "  <ows:Identifier>gs:CollectGeometries</ows:Identifier>\n" + 
+                "  <wps:DataInputs>\n" + 
+                "    <wps:Input>\n" + 
+                "      <ows:Identifier>features</ows:Identifier>\n" + 
+                "      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wps\" method=\"POST\">\n" + 
+                "        <wps:Body>\n" + 
+                "          <wps:Execute version=\"1.0.0\" service=\"WPS\">\n" + 
+                "            <ows:Identifier>gs:Monkey</ows:Identifier>\n" + 
+                "            <wps:DataInputs>\n" + 
+                "              <wps:Input>\n" + 
+                "                <ows:Identifier>id</ows:Identifier>\n" + 
+                "                <wps:Data>\n" + 
+                "                  <wps:LiteralData>chained-monkey</wps:LiteralData>\n" + 
+                "                </wps:Data>\n" + 
+                "              </wps:Input>\n" + 
+                "            </wps:DataInputs>\n" + 
+                "            <wps:ResponseForm>\n" + 
+                "              <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n" + 
+                "                <ows:Identifier>result</ows:Identifier>\n" + 
+                "              </wps:RawDataOutput>\n" + 
+                "            </wps:ResponseForm>\n" + 
+                "          </wps:Execute>\n" + 
+                "        </wps:Body>\n" + 
+                "      </wps:Reference>\n" + 
+                "    </wps:Input>\n" + 
+                "  </wps:DataInputs>\n" + 
+                "  <wps:ResponseForm>\n" + 
  "<wps:ResponseDocument status=\"true\" storeExecuteResponse=\"true\">"
                 +
                      "<wps:Output asReference=\"true\">"  +
                         "<ows:Identifier>result</ows:Identifier>" +
                       "</wps:Output>" +
                       "</wps:ResponseDocument>" + 
-        		"  </wps:ResponseForm>\n" + 
-        		"</wps:Execute>";
+                "  </wps:ResponseForm>\n" + 
+                "</wps:Execute>";
         
         //
         // MonkeyProcess.exit("chained-monkey", collectionOfThings(), false);

@@ -56,7 +56,7 @@ public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate im
                 });
     }
 
-	public void encode(GridCoverage2D sourceCoverage, String outputFormat, Map<String,String> econdingParameters, OutputStream output) throws ServiceException, IOException {
+    public void encode(GridCoverage2D sourceCoverage, String outputFormat, Map<String,String> econdingParameters, OutputStream output) throws ServiceException, IOException {
         if (sourceCoverage == null) {
             throw new IllegalStateException(
                     "It seems prepare() has not been called or has not succeed");

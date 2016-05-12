@@ -25,46 +25,46 @@ import com.thoughtworks.xstream.XStream;
  *
  */
 public abstract class JMSCatalogEventHandler extends
-		JMSEventHandler<String, CatalogEvent> {
-	public JMSCatalogEventHandler(final XStream xstream,
-			Class<JMSEventHandlerSPI<String, CatalogEvent>> clazz) {
-		super(xstream,clazz);
-		// omit not serializable fields
-		omitFields();
-	}
+        JMSEventHandler<String, CatalogEvent> {
+    public JMSCatalogEventHandler(final XStream xstream,
+            Class<JMSEventHandlerSPI<String, CatalogEvent>> clazz) {
+        super(xstream,clazz);
+        // omit not serializable fields
+        omitFields();
+    }
 
-	/**
-	 * omit not serializable fields
-	 * @see {@link XStream}
-	 */
-	private void omitFields() {
-		// omit not serializable fields
-		xstream.omitField(CatalogImpl.class, "listeners");
-		xstream.omitField(CatalogImpl.class, "facade");
-		xstream.omitField(CatalogImpl.class, "resourcePool");
-		xstream.omitField(CatalogImpl.class, "resourceLoader");
-	}
+    /**
+     * omit not serializable fields
+     * @see {@link XStream}
+     */
+    private void omitFields() {
+        // omit not serializable fields
+        xstream.omitField(CatalogImpl.class, "listeners");
+        xstream.omitField(CatalogImpl.class, "facade");
+        xstream.omitField(CatalogImpl.class, "resourcePool");
+        xstream.omitField(CatalogImpl.class, "resourceLoader");
+    }
 
-	@Override
-	public String serialize(CatalogEvent  event) throws Exception {
-		return xstream.toXML(event);
-	}
+    @Override
+    public String serialize(CatalogEvent  event) throws Exception {
+        return xstream.toXML(event);
+    }
 
-	@Override
-	public CatalogEvent deserialize(String s) throws Exception {
-		
-		final Object source= xstream.fromXML(s);
-		if (source instanceof CatalogEvent) {
-			final CatalogEvent ev = (CatalogEvent) source;
-			if (LOGGER.isLoggable(Level.FINE)) {
-				final CatalogInfo info = ev.getSource();
-				LOGGER.fine("Incoming message event of type CatalogEvent: "
-						+ info.getId());
-			}
-			return ev;
-		} else {
-			throw new JMSException("Unable to deserialize the following object:\n"+s);
-		}
+    @Override
+    public CatalogEvent deserialize(String s) throws Exception {
+        
+        final Object source= xstream.fromXML(s);
+        if (source instanceof CatalogEvent) {
+            final CatalogEvent ev = (CatalogEvent) source;
+            if (LOGGER.isLoggable(Level.FINE)) {
+                final CatalogInfo info = ev.getSource();
+                LOGGER.fine("Incoming message event of type CatalogEvent: "
+                        + info.getId());
+            }
+            return ev;
+        } else {
+            throw new JMSException("Unable to deserialize the following object:\n"+s);
+        }
 
-	}
+    }
 }

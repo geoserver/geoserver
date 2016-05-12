@@ -671,13 +671,13 @@ public class CatalogBuilder {
      * Initializes basic resource info.
      */
     private void initResourceInfo(ResourceInfo resInfo) throws Exception {
-    	// set the name
-    	if (resInfo.getNativeName() == null && resInfo.getName() != null) {
-    		resInfo.setNativeName(resInfo.getName());
-    	}
-    	if (resInfo.getNativeName() != null && resInfo.getName() == null) {
-    		resInfo.setName(resInfo.getNativeName());
-    	}
+        // set the name
+        if (resInfo.getNativeName() == null && resInfo.getName() != null) {
+            resInfo.setNativeName(resInfo.getName());
+        }
+        if (resInfo.getNativeName() != null && resInfo.getName() == null) {
+            resInfo.setName(resInfo.getNativeName());
+        }
     }
 
     /**
@@ -778,9 +778,9 @@ public class CatalogBuilder {
      * Initialize a coverage object and set any unset info.
      */
     public void initCoverage(CoverageInfo cinfo, final String coverageName) throws Exception {
-    	CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
+        CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
         GridCoverage2DReader reader = (GridCoverage2DReader) catalog
-            	.getResourcePool().getGridCoverageReader(cinfo, GeoTools.getDefaultHints());
+                .getResourcePool().getGridCoverageReader(cinfo, GeoTools.getDefaultHints());
         if(coverageName != null) {
             reader = SingleGridCoverage2DReader.wrap(reader, coverageName);
         }
@@ -792,13 +792,13 @@ public class CatalogBuilder {
                     + csinfo.getFormat().getName());
 
         if (cinfo.getNativeCRS() == null) {
-        	cinfo.setNativeCRS(reader.getCoordinateReferenceSystem());
+            cinfo.setNativeCRS(reader.getCoordinateReferenceSystem());
         }
 
         CoordinateReferenceSystem nativeCRS = cinfo.getNativeCRS();
 
         if (cinfo.getSRS() == null) {
-        	cinfo.setSRS(nativeCRS.getIdentifiers().toArray()[0].toString());
+            cinfo.setSRS(nativeCRS.getIdentifiers().toArray()[0].toString());
         }
 
         if (cinfo.getProjectionPolicy() == null) {
@@ -810,18 +810,18 @@ public class CatalogBuilder {
             }
         }
 
-    	if (cinfo.getLatLonBoundingBox() == null
-    			&& cinfo.getNativeBoundingBox() == null) {
-    		GeneralEnvelope envelope = reader.getOriginalEnvelope();
+        if (cinfo.getLatLonBoundingBox() == null
+                && cinfo.getNativeBoundingBox() == null) {
+            GeneralEnvelope envelope = reader.getOriginalEnvelope();
 
-    		cinfo.setNativeBoundingBox(new ReferencedEnvelope(envelope));
-    		cinfo.setLatLonBoundingBox(new ReferencedEnvelope(CoverageStoreUtils.getWGS84LonLatEnvelope(envelope)));
-    	} else if (cinfo.getLatLonBoundingBox() == null) {
-    		setupBounds(cinfo);
-    	} else if (cinfo.getNativeBoundingBox() == null && cinfo.getNativeCRS() != null) {
-    		ReferencedEnvelope boundsLatLon = cinfo.getLatLonBoundingBox();
-    		cinfo.setNativeBoundingBox(boundsLatLon.transform(cinfo.getNativeCRS(), true));
-    	}
+            cinfo.setNativeBoundingBox(new ReferencedEnvelope(envelope));
+            cinfo.setLatLonBoundingBox(new ReferencedEnvelope(CoverageStoreUtils.getWGS84LonLatEnvelope(envelope)));
+        } else if (cinfo.getLatLonBoundingBox() == null) {
+            setupBounds(cinfo);
+        } else if (cinfo.getNativeBoundingBox() == null && cinfo.getNativeCRS() != null) {
+            ReferencedEnvelope boundsLatLon = cinfo.getLatLonBoundingBox();
+            cinfo.setNativeBoundingBox(boundsLatLon.transform(cinfo.getNativeCRS(), true));
+        }
 
         if (cinfo.getGrid() == null) {
             GridEnvelope originalRange = reader.getOriginalGridRange();
@@ -955,7 +955,7 @@ public class CatalogBuilder {
         testEnvelope.setCoordinateReferenceSystem(nativeCRS);
 
         if (customParameters != null) {
-        	parameters.putAll(customParameters);
+            parameters.putAll(customParameters);
         }
 
         // make sure mosaics with many superimposed tiles won't blow up with 

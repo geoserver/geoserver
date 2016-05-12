@@ -111,7 +111,7 @@ public class TransactionTest extends WFS20TestSupport {
         assertTrue(dom.getElementsByTagName("fes:ResourceId").getLength() > 0);
     }
 
-    	
+        
     @Test
     public void testInsertWithNoSRS() throws Exception {
         // 1. do a getFeature
@@ -481,7 +481,7 @@ public class TransactionTest extends WFS20TestSupport {
         assertEquals( "1", getFirstElementByTagName(dom, "wfs:totalInserted").getFirstChild().getNodeValue());
         
         dom = getAsDOM( "wfs?version=2.0.0&request=getfeature&typename=cite:RoadSegments&srsName=EPSG:4326&" +
-    		"cql_filter=FID%3D'foo'");
+            "cql_filter=FID%3D'foo'");
         print(dom);
         assertEquals( "wfs:FeatureCollection", dom.getDocumentElement().getNodeName() );
         

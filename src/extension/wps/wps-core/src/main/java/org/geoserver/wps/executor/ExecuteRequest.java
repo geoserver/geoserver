@@ -188,12 +188,12 @@ public class ExecuteRequest {
         ResponseFormType form = request.getResponseForm();
         OutputDefinitionType raw = form.getRawDataOutput();
         ResponseDocumentType document = form.getResponseDocument();
-		if (form == null || (raw == null && document == null)) {
+        if (form == null || (raw == null && document == null)) {
             // all outputs using their default mime
-        	for (String rawResult : rawResults) {
-        		String mime = AbstractRawData.getDefaultMime(name, pf, rawResult);
-        		result.put(rawResult, mime);
-			}
+            for (String rawResult : rawResults) {
+                String mime = AbstractRawData.getDefaultMime(name, pf, rawResult);
+                result.put(rawResult, mime);
+            }
         } else if (raw != null) {
             // just one output type
             String output = raw.getIdentifier().getValue();
@@ -206,18 +206,18 @@ public class ExecuteRequest {
             result.put(output, mime);
         } else {
             // the response document form
-        	for (Iterator it = document.getOutput().iterator(); it.hasNext();) {
-				OutputDefinitionType out = (OutputDefinitionType) it.next();
-				String outputName = out.getIdentifier().getValue();
-				if(rawResults.contains(outputName)) {
-					// was the output mime specified?
-					String mime = out.getMimeType();
-					if(mime == null || mime.trim().isEmpty()) {
-						mime = AbstractRawData.getDefaultMime(name, pf, outputName);
-					}
-					result.put(outputName, mime);
-				}
-			}
+            for (Iterator it = document.getOutput().iterator(); it.hasNext();) {
+                OutputDefinitionType out = (OutputDefinitionType) it.next();
+                String outputName = out.getIdentifier().getValue();
+                if(rawResults.contains(outputName)) {
+                    // was the output mime specified?
+                    String mime = out.getMimeType();
+                    if(mime == null || mime.trim().isEmpty()) {
+                        mime = AbstractRawData.getDefaultMime(name, pf, outputName);
+                    }
+                    result.put(outputName, mime);
+                }
+            }
         }
         
         return result;

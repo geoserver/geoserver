@@ -56,7 +56,7 @@ public class GetCoverageXmlParserTest extends WCSTestSupport {
 
         try {
             @SuppressWarnings("unused")
-			GetCoverageType cov = (GetCoverageType) reader.read(null, new StringReader(request),null);
+            GetCoverageType cov = (GetCoverageType) reader.read(null, new StringReader(request),null);
             fail("This request is not valid!!!");
         } catch (WcsException e) {
             // ok, we do expect a validation exception in fact

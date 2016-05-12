@@ -15,8 +15,8 @@ import org.jaitools.numeric.Range;
  * @author Emanuele Tajarol - GeoSolutions
  */
 public class JAIToolsRangePPIO extends LiteralPPIO {
-	
-	static Converter CONVERTER = new JAIToolsRangeConverterFactory().createConverter(String.class, Range.class, null);
+    
+    static Converter CONVERTER = new JAIToolsRangeConverterFactory().createConverter(String.class, Range.class, null);
 
     /**
      * Parses a single range from a string
@@ -25,16 +25,16 @@ public class JAIToolsRangePPIO extends LiteralPPIO {
      *
      */
     public static Range<Double> parseRange(String sRange) {
-    	try {
-	        Range<Double> result = CONVERTER.convert(sRange, Range.class);
-	        if(result == null) {
-	        	throw new IllegalArgumentException("Bad range definition '"+sRange+"'");
-	        }
-	        
-	        return result;
-    	} catch(Exception e) {
-    		throw new IllegalArgumentException("Bad range definition '"+sRange+"'", e);
-    	}
+        try {
+            Range<Double> result = CONVERTER.convert(sRange, Range.class);
+            if(result == null) {
+                throw new IllegalArgumentException("Bad range definition '"+sRange+"'");
+            }
+            
+            return result;
+        } catch(Exception e) {
+            throw new IllegalArgumentException("Bad range definition '"+sRange+"'", e);
+        }
     }
     
 

@@ -33,9 +33,9 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
     public LayerGroupListPanel(String id) {
         super(id, new GeoServerDataProvider<LayerGroupInfo>() {
 
-        	private static final long serialVersionUID = 6471805356307807737L;
+            private static final long serialVersionUID = 6471805356307807737L;
 
-			@Override
+            @Override
             protected List<LayerGroupInfo> getItems() {
                 return getCatalog().getLayerGroups();
             }
@@ -54,7 +54,7 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     protected Component getComponentForProperty(String id, final IModel<LayerGroupInfo> itemModel,
             Property<LayerGroupInfo> property) {
         IModel<?> model = property.getModel(itemModel);

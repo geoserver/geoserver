@@ -131,7 +131,7 @@ public class CoverageUtils {
             }
 
             return (!parameters.isEmpty())? 
-            		(GeneralParameterValue[]) parameters.toArray(new GeneralParameterValue[parameters.size()]): new GeneralParameterValue[0];
+                    (GeneralParameterValue[]) parameters.toArray(new GeneralParameterValue[parameters.size()]): new GeneralParameterValue[0];
         } else {
             return new GeneralParameterValue[0];
         }
@@ -344,7 +344,7 @@ public class CoverageUtils {
                         String[] elements = temp.split(",");
                         final double[] backgroundValues = new double[elements.length];
                         for(int i=0;i<elements.length;i++)
-                        	backgroundValues[i]=Double.valueOf(elements[i]);
+                            backgroundValues[i]=Double.valueOf(elements[i]);
                         value=backgroundValues;
                         
                     } 
@@ -355,17 +355,17 @@ public class CoverageUtils {
                         
                     } 
                 } else if (key.equalsIgnoreCase("Filter")) {
-    	            	Object sfilter=params.get(key);
-    	            	if (sfilter!=null){
-    	            		if (sfilter instanceof String){
-    	            			value=ECQL.toFilter((String)sfilter);
-    	            		} else if (sfilter instanceof Filter){
-    	            			value=(Filter)sfilter;
-    	            		}
-    	        		} else {
-    	        			value=param.getValue();
-    	        		}
-            		 
+                        Object sfilter=params.get(key);
+                        if (sfilter!=null){
+                            if (sfilter instanceof String){
+                                value=ECQL.toFilter((String)sfilter);
+                            } else if (sfilter instanceof Filter){
+                                value=(Filter)sfilter;
+                            }
+                        } else {
+                            value=param.getValue();
+                        }
+                     
                 } else {
                     value = params.get(key);
                     if(value != null) {

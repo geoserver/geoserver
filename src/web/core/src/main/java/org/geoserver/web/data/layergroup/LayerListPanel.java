@@ -113,7 +113,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
     
     
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     protected Component getComponentForProperty(String id, final IModel<LayerInfo> itemModel,
             Property<LayerInfo> property) {
         IModel<?> model = property.getModel( itemModel );

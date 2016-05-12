@@ -1024,7 +1024,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
         }
 
-		private void handleStyles(final LayerInfo layer) {
+        private void handleStyles(final LayerInfo layer) {
             if (layer.getResource() instanceof WMSLayerInfo) {
                 // do nothing for the moment, we may want to list the set of cascaded named styles
                 // in the future (when we add support for that)

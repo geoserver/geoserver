@@ -30,49 +30,49 @@ import org.springframework.jms.core.MessageCreator;
  */
 public class JMSObjectMessageCreator implements MessageCreator {
 
-	private final Serializable serialized;
-	private final Properties properties;
+    private final Serializable serialized;
+    private final Properties properties;
 
-	public JMSObjectMessageCreator(final Serializable serialized,
-			final Properties props) {
-		this.serialized = serialized;
-		this.properties = props;
-	}
+    public JMSObjectMessageCreator(final Serializable serialized,
+            final Properties props) {
+        this.serialized = serialized;
+        this.properties = props;
+    }
 
-	protected void updateProperties(Message message) throws JMSException {
-		// append the name of the server
-		message.setObjectProperty(JMSConfiguration.INSTANCE_NAME_KEY,
-				properties.get(JMSConfiguration.INSTANCE_NAME_KEY));
+    protected void updateProperties(Message message) throws JMSException {
+        // append the name of the server
+        message.setObjectProperty(JMSConfiguration.INSTANCE_NAME_KEY,
+                properties.get(JMSConfiguration.INSTANCE_NAME_KEY));
 
-		// set other properties
-		final Set<Entry<Object, Object>> set = properties.entrySet();
-		final Iterator<Entry<Object, Object>> it = set.iterator();
-		while (it.hasNext()) {
-			final Entry<Object, Object> entry = it.next();
-			message.setObjectProperty(entry.getKey().toString(),
-					entry.getValue());
-		}
-	}
+        // set other properties
+        final Set<Entry<Object, Object>> set = properties.entrySet();
+        final Iterator<Entry<Object, Object>> it = set.iterator();
+        while (it.hasNext()) {
+            final Entry<Object, Object> entry = it.next();
+            message.setObjectProperty(entry.getKey().toString(),
+                    entry.getValue());
+        }
+    }
 
-	@Override
-	public Message createMessage(Session session) throws JMSException {
+    @Override
+    public Message createMessage(Session session) throws JMSException {
 
-		ObjectMessage message;
-		try {
-			message = session.createObjectMessage(serialized);
-		} catch (Exception e) {
-			final JMSException ex = new JMSException(e.getLocalizedMessage());
-			ex.initCause(e);
-			throw ex;
-		}
+        ObjectMessage message;
+        try {
+            message = session.createObjectMessage(serialized);
+        } catch (Exception e) {
+            final JMSException ex = new JMSException(e.getLocalizedMessage());
+            ex.initCause(e);
+            throw ex;
+        }
 
-		// // set the used SPI
-		// message.setStringProperty(JMSEventHandlerSPI.getKeyName(),
-		// handlerGenerator.getSimpleName());
+        // // set the used SPI
+        // message.setStringProperty(JMSEventHandlerSPI.getKeyName(),
+        // handlerGenerator.getSimpleName());
 
-		// append properties
-		updateProperties(message);
+        // append properties
+        updateProperties(message);
 
-		return message;
-	}
+        return message;
+    }
 }

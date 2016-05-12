@@ -398,7 +398,7 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
         String name = "";
 
         if ( bbox instanceof ReferencedEnvelope3D ) {
-        	return filterFactory.bbox(name, (ReferencedEnvelope3D) bbox);        
+            return filterFactory.bbox(name, (ReferencedEnvelope3D) bbox);        
         }         
     
         //get the epsg code

@@ -15,11 +15,11 @@ import org.opengis.coverage.SampleDimensionType;
 public class CoverageDimensionImpl implements CoverageDimensionInfo {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 2993765933856195894L;
+     * 
+     */
+    private static final long serialVersionUID = 2993765933856195894L;
 
-	String id;
+    String id;
 
     String name;
 

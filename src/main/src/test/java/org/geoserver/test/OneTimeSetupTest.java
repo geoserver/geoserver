@@ -86,7 +86,7 @@ public abstract class OneTimeSetupTest extends TestCase {
     protected final void setUp() throws Exception {
         if(inSetup)
             throw new RuntimeException("setUpInternal seems to call back to super.setUp(). " +
-            		"It should call super.setUpInternal instead");
+                    "It should call super.setUpInternal instead");
         try {
             inSetup = true;
         

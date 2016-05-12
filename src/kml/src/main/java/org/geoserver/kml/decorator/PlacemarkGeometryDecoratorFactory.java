@@ -149,9 +149,9 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
 
         private de.micromata.opengis.kml.v_2_2_0.Geometry encodeGeometry(Geometry geometry, KmlEncodingContext context, double height) {
             de.micromata.opengis.kml.v_2_2_0.Geometry kmlGeometry = toKmlGeometry(geometry);
-			boolean isSinglePoint = geometry instanceof Point
-					|| (geometry instanceof MultiPoint)
-					&& ((MultiPoint) geometry).getNumPoints() == 1;
+            boolean isSinglePoint = geometry instanceof Point
+                    || (geometry instanceof MultiPoint)
+                    && ((MultiPoint) geometry).getNumPoints() == 1;
 
             // if is not a single point and is description enabled, we
             // add and extrude a centroid together with the geometry

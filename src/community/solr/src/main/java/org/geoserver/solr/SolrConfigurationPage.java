@@ -102,11 +102,11 @@ public abstract class SolrConfigurationPage extends Panel {
 
         AjaxCheckBox checkBox = new AjaxCheckBox("hideEmpty", Model.of(Boolean.TRUE)) {
             /**
-			 * 
-			 */
-			private static final long serialVersionUID = 8715377219204904531L;
+             * 
+             */
+            private static final long serialVersionUID = 8715377219204904531L;
 
-			@Override
+            @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 attProvider.reload((Boolean) this.getDefaultModelObject());
                 target.add(solrAttributePanel);
@@ -118,11 +118,11 @@ public abstract class SolrConfigurationPage extends Panel {
 
         solr_form.add(new AjaxButton("solr_save") {
             /**
-			 * 
-			 */
-			private static final long serialVersionUID = 819555072210390051L;
+             * 
+             */
+            private static final long serialVersionUID = 819555072210390051L;
 
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 onSave(target);
             }
         });
@@ -243,11 +243,11 @@ public abstract class SolrConfigurationPage extends Panel {
         GeoServerTablePanel<SolrAttribute> atts = new GeoServerTablePanel<SolrAttribute>(
                 "solrAttributes", attProvider) {
             /**
-					 * 
-					 */
-					private static final long serialVersionUID = 7306412054935816724L;
+                     * 
+                     */
+                    private static final long serialVersionUID = 7306412054935816724L;
 
-			@Override
+            @Override
             protected Component getComponentForProperty(String id, IModel<SolrAttribute> itemModel,
                     Property<SolrAttribute> property) {
                 SolrAttribute att = (SolrAttribute) itemModel.getObject();
@@ -272,7 +272,7 @@ public abstract class SolrConfigurationPage extends Panel {
                 } else if (property == SolrAttributeProvider.TYPE && isGeometry) {
                     Fragment f = new Fragment(id, "geometry", SolrConfigurationPage.this);
                     f.add(new DropDownChoice("geometry", 
-                    		new PropertyModel(itemModel, "type"),
+                            new PropertyModel(itemModel, "type"),
                             GEOMETRY_TYPES, new GeometryTypeRenderer()));
                     return f;
                 } else if (property == SolrAttributeProvider.USE) {
@@ -323,9 +323,9 @@ public abstract class SolrConfigurationPage extends Panel {
      */
     private static class GeometryTypeRenderer extends ChoiceRenderer<Class<?>> {
 
-		private static final long serialVersionUID = -6371918467884222834L;
+        private static final long serialVersionUID = -6371918467884222834L;
 
-		public Object getDisplayValue(Class<?> object) {
+        public Object getDisplayValue(Class<?> object) {
             return ((Class<?>) object).getSimpleName();
         }
 

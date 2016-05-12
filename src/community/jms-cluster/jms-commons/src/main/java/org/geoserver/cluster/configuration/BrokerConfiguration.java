@@ -16,18 +16,18 @@ import java.io.IOException;
  */
 final public class BrokerConfiguration implements JMSConfigurationExt {
 
-	public static final String BROKER_URL_KEY = "brokerURL";
+    public static final String BROKER_URL_KEY = "brokerURL";
 
-	public static final String DEFAULT_BROKER_URL ="";
-	
-	@Override
-	public void initDefaults(JMSConfiguration config) throws IOException {
-		config.putConfiguration(BROKER_URL_KEY, DEFAULT_BROKER_URL);
-	}
+    public static final String DEFAULT_BROKER_URL ="";
+    
+    @Override
+    public void initDefaults(JMSConfiguration config) throws IOException {
+        config.putConfiguration(BROKER_URL_KEY, DEFAULT_BROKER_URL);
+    }
 
-	@Override
-	public boolean override(JMSConfiguration config) throws IOException {
-		return config.override(BROKER_URL_KEY, DEFAULT_BROKER_URL);
-	}
+    @Override
+    public boolean override(JMSConfiguration config) throws IOException {
+        return config.override(BROKER_URL_KEY, DEFAULT_BROKER_URL);
+    }
 
 }

@@ -17,7 +17,7 @@ import org.opengis.filter.spatial.Intersects;
 
 public class Filter_1_1_0_KvpParserTest {
 
-	@Test
+    @Test
     public void testParse() throws Exception {
         final String filterString = "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" "
                 + "xmlns:gml=\"http://www.opengis.net/gml\">"

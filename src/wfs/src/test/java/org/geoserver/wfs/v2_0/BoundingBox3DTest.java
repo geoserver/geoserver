@@ -25,21 +25,21 @@ import org.junit.Test;
  */
 public class BoundingBox3DTest extends WFS20TestSupport {
     
-	@Override
+    @Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
-    	
-    	//temp hack until feature bounding for 3D is fixed.
-    	WFSInfo wfs = getWFS();
-    	wfs.setFeatureBounding(false);
-    	getGeoServer().save(wfs);
-    	
+        
+        //temp hack until feature bounding for 3D is fixed.
+        WFSInfo wfs = getWFS();
+        wfs.setFeatureBounding(false);
+        getGeoServer().save(wfs);
+        
         // add extra types
         dataDirectory.addVectorLayer( 
                 new QName( SystemTestData.SF_URI, "With3D", SystemTestData.SF_PREFIX ),                 
                 Collections.EMPTY_MAP, org.geoserver.wfs.v1_1.BoundingBox3DTest.class, getCatalog());
     }
         
-	@Test
+    @Test
     public void testBBox1() throws Exception {
         Document doc = getAsDOM( "wfs?request=getfeature&service=wfs&version=2.0.0&typename=sf:With3D&bbox=-200,-200,0,200,200,50");
         assertGML32(doc);
@@ -51,7 +51,7 @@ public class BoundingBox3DTest extends WFS20TestSupport {
         
     }
     
-	@Test
+    @Test
     public void testBBox2() throws Exception {
         Document doc = getAsDOM( "wfs?request=getfeature&service=wfs&version=2.0.0&typename=sf:With3D&bbox=-200,-200,50,200,200,100");
         assertGML32(doc);

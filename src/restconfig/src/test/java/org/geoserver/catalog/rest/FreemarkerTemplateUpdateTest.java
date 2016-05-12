@@ -14,7 +14,7 @@ import com.vividsolutions.jts.util.Assert;
 public class FreemarkerTemplateUpdateTest extends CatalogRESTTestSupport {
 
     @Test
-	public void testUpdate() throws Exception {
+    public void testUpdate() throws Exception {
         String fooTemplate = "/rest/templates/foo.ftl";
         String barTemplate = "/rest/templates/bar.ftl";
         

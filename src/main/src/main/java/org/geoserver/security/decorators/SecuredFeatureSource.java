@@ -97,8 +97,8 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
                 } else {
                     // complex feature store eh? No way to fix it at least warn the admin
                     LOGGER.log(Level.SEVERE, "Complex store returned more properties than allowed " +
-                    		"by security (because they are required by the schema). " +
-                    		"Either the security setup is broken or you have a security breach");
+                            "by security (because they are required by the schema). " +
+                            "Either the security setup is broken or you have a security breach");
                     return (FeatureCollection) SecuredObjects.secure(fc, policy);
                 }
             } else {
@@ -126,7 +126,7 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
             
         } else {
             throw new IllegalArgumentException("SecureFeatureSources has been fed " +
-            		"with unexpected AccessLimits class " + policy.getLimits().getClass());
+                    "with unexpected AccessLimits class " + policy.getLimits().getClass());
         }
     }
     

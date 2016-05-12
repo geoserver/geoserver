@@ -20,20 +20,20 @@ import com.thoughtworks.xstream.XStream;
  * @author Sampo Savolainen (Spatineo)
  */
 public class WFSXStreamPersisterInitializer implements
-		XStreamPersisterInitializer {
+        XStreamPersisterInitializer {
 
-	@Override
-	public void init(XStreamPersister persister) {
-		XStream xs = persister.getXStream();
+    @Override
+    public void init(XStreamPersister persister) {
+        XStream xs = persister.getXStream();
         xs.alias("storedQueryConfiguration", StoredQueryConfiguration.class);
-		xs.alias("storedQueryParameterMappingExpressionValue", ParameterMappingExpressionValue.class);
-		xs.alias("storedQueryParameterMappingDefaultValue", ParameterMappingDefaultValue.class);
-		xs.alias("storedQueryParameterMappingBlockValue", ParameterMappingBlockValue.class);
+        xs.alias("storedQueryParameterMappingExpressionValue", ParameterMappingExpressionValue.class);
+        xs.alias("storedQueryParameterMappingDefaultValue", ParameterMappingDefaultValue.class);
+        xs.alias("storedQueryParameterMappingBlockValue", ParameterMappingBlockValue.class);
         xs.allowTypes(
                 new Class[] { StoredQueryConfiguration.class, ParameterMappingExpressionValue.class,
                         ParameterMappingDefaultValue.class, ParameterMappingBlockValue.class });
-		
-		persister.registerBreifMapComplexType("storedQueryConfiguration", StoredQueryConfiguration.class);
-	}
+        
+        persister.registerBreifMapComplexType("storedQueryConfiguration", StoredQueryConfiguration.class);
+    }
 
 }

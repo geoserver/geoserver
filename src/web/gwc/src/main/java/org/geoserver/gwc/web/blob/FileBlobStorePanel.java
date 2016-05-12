@@ -45,7 +45,7 @@ public class FileBlobStorePanel extends Panel {
                 (DirectoryFileFilter) DirectoryFileFilter.INSTANCE));
         add(new TextField<Integer>("fileSystemBlockSize").setRequired(true)
                 .add(new AttributeModifier("title", new ResourceModel("fileSystemBlockSize.title"))));
-    	
+        
     }
 
 }

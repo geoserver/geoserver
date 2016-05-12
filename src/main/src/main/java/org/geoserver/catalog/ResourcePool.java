@@ -140,9 +140,9 @@ import org.vfny.geoserver.util.DataStoreUtils;
  */
 public class ResourcePool {
 
-	/**
-	 * OGC "cilyndrical earth" model, we'll use it to translate meters to degrees (yes, it's ugly)
-	 */
+    /**
+     * OGC "cilyndrical earth" model, we'll use it to translate meters to degrees (yes, it's ugly)
+     */
     final static double OGC_DEGREE_TO_METERS = 6378137.0 * 2.0 * Math.PI / 360;
     final static double OGC_METERS_TO_DEGREES = 1 / OGC_DEGREE_TO_METERS;
 
@@ -1573,9 +1573,9 @@ public class ResourcePool {
             destCRS = info.getCRS();
         } 
         catch (Exception e) {
-			final IOException ioe= new IOException( "unable to determine coverage crs");
-			ioe.initCause(e);
-			throw ioe;
+            final IOException ioe= new IOException( "unable to determine coverage crs");
+            ioe.initCause(e);
+            throw ioe;
         }
         
         if (!CRS.equalsIgnoreMetadata(sourceCRS, destCRS)) {
@@ -1960,7 +1960,7 @@ public class ResourcePool {
         
         protected void dispose(String key, FeatureType featureType) {
             String id = key.substring(0, key.indexOf(PROJECTION_POLICY_SEPARATOR));
-        	FeatureTypeInfo info = catalog.getFeatureType(id);
+            FeatureTypeInfo info = catalog.getFeatureType(id);
             if(info != null){
                 LOGGER.fine( "Disposing feature type '" + info.getName() + "'/" + id);
                 fireDisposed(info, featureType);
@@ -2015,8 +2015,8 @@ public class ResourcePool {
     class CoverageReaderCache extends CatalogResourceCache<String, GridCoverageReader> {
         
         protected void dispose(String id, GridCoverageReader reader) {
-        	CoverageStoreInfo info = catalog.getCoverageStore(id);
-        	if(info != null) {
+            CoverageStoreInfo info = catalog.getCoverageStore(id);
+            if(info != null) {
                 String name = info.getName();
                 LOGGER.fine( "Disposing coverage store '" + name + "'" );
                 
@@ -2035,8 +2035,8 @@ public class ResourcePool {
     class CoverageHintReaderCache extends CatalogResourceCache<CoverageHintReaderKey, GridCoverageReader> {
         
         protected void dispose(CoverageHintReaderKey key, GridCoverageReader reader) {
-        	CoverageStoreInfo info = catalog.getCoverageStore(key.id);
-        	if(info != null) {
+            CoverageStoreInfo info = catalog.getCoverageStore(key.id);
+            if(info != null) {
                 String name = info.getName();
                 LOGGER.fine( "Disposing coverage store '" + name + "'" );
                 

@@ -48,7 +48,7 @@ public class GetFeatureInfoHandler extends RequestObjectHandler {
     
     @Override
     protected BoundingBox getBBox(Object request) {
-    	Object gmr = OwsUtils.get(request, "getMapRequest");
+        Object gmr = OwsUtils.get(request, "getMapRequest");
         CoordinateReferenceSystem crs = (CoordinateReferenceSystem) OwsUtils.get(gmr, "crs");
         Envelope mapEnv = (Envelope) OwsUtils.get(gmr, "bbox");
         ReferencedEnvelope mapBbox = new ReferencedEnvelope(mapEnv, crs);

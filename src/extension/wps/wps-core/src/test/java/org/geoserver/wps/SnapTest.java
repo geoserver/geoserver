@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class SnapTest extends WPSTestSupport {
-	
+    
     public static QName STREAMS = new QName(MockData.CITE_URI, "Streams", MockData.CITE_PREFIX);
     
     @Override

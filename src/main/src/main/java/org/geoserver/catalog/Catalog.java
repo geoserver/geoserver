@@ -837,7 +837,7 @@ public interface Catalog extends CatalogInfo {
      * This method is a convenience for:
      * 
      * <pre>
-     * 	<code>
+     *     <code>
      * getResources(FeatureTypeInfo.class);
      * </code>
      * </pre>
@@ -998,7 +998,7 @@ public interface Catalog extends CatalogInfo {
      * This method is a convenience for:
      * 
      * <pre>
-     * 	<code>
+     *     <code>
      * getResources(CoverageInfo.class);
      * </code>
      * </pre>

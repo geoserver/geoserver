@@ -79,7 +79,7 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         tester.startPage(page);        
 
         @SuppressWarnings("unchecked")
-		GeoServerTablePanel<BlobStoreConfig> table = (GeoServerTablePanel<BlobStoreConfig>) tester.getComponentFromLastRenderedPage("storesPanel");
+        GeoServerTablePanel<BlobStoreConfig> table = (GeoServerTablePanel<BlobStoreConfig>) tester.getComponentFromLastRenderedPage("storesPanel");
         
         assertEquals(blobStores.size(), table.getDataProvider().size());
         assertTrue(getStoresFromTable(table).contains(dummy1));  
@@ -111,7 +111,7 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         tester.startPage(page);   
         
         @SuppressWarnings("unchecked")
-		GeoServerTablePanel<BlobStoreConfig> table = (GeoServerTablePanel<BlobStoreConfig>) tester.getComponentFromLastRenderedPage("storesPanel");
+        GeoServerTablePanel<BlobStoreConfig> table = (GeoServerTablePanel<BlobStoreConfig>) tester.getComponentFromLastRenderedPage("storesPanel");
                 
         BlobStoreConfig dummy1 = dummyStore1();
         GWC.get().addBlobStore(dummy1);

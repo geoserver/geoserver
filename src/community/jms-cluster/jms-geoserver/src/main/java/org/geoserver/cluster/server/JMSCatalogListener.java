@@ -77,7 +77,7 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
 
         try {
             // check if we may publish also the file
-        	GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             final CatalogInfo info = event.getSource();
             if (info instanceof StyleInfo) {
                 final StyleInfo sInfo=((StyleInfo) info);

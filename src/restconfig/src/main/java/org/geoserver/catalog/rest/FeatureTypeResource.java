@@ -198,10 +198,10 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         // basic checks
         if(fti.getName() == null) {
             throw new RestletException("Trying to create new feature type inside the store, " +
-            		"but no feature type name was specified", Status.CLIENT_ERROR_BAD_REQUEST);
+                    "but no feature type name was specified", Status.CLIENT_ERROR_BAD_REQUEST);
         } else if(fti.getAttributes() == null || fti.getAttributes() == null) {
             throw new RestletException("Trying to create new feature type inside the store, " +
-            		"but no attributes were specified", Status.CLIENT_ERROR_BAD_REQUEST);
+                    "but no attributes were specified", Status.CLIENT_ERROR_BAD_REQUEST);
         }
         
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();

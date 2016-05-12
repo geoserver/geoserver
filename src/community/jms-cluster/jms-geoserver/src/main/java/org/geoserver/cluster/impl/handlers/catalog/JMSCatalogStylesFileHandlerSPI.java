@@ -20,33 +20,33 @@ import com.thoughtworks.xstream.XStream;
  *
  */
 public class JMSCatalogStylesFileHandlerSPI extends DocumentFileHandlerSPI {
-	
-	final Catalog catalog;
-	final XStream xstream;
-	
-	@Autowired
-	public JMSConfiguration config;
-	
-	public JMSCatalogStylesFileHandlerSPI(final int priority, Catalog cat, XStream xstream) {
-		super(priority,xstream);
-		this.catalog=cat;
-		this.xstream=xstream;
-	}
+    
+    final Catalog catalog;
+    final XStream xstream;
+    
+    @Autowired
+    public JMSConfiguration config;
+    
+    public JMSCatalogStylesFileHandlerSPI(final int priority, Catalog cat, XStream xstream) {
+        super(priority,xstream);
+        this.catalog=cat;
+        this.xstream=xstream;
+    }
 
-	@Override
-	public boolean canHandle(final Object event) {
-		if (event instanceof DocumentFile)
-			return true;
-		else
-			return false;
-	}
+    @Override
+    public boolean canHandle(final Object event) {
+        if (event instanceof DocumentFile)
+            return true;
+        else
+            return false;
+    }
 
-	@Override
-	public JMSEventHandler<String,DocumentFile> createHandler() {
-		JMSCatalogStylesFileHandler styleHandler = new JMSCatalogStylesFileHandler(catalog,xstream,JMSCatalogStylesFileHandlerSPI.class);
-		styleHandler.setConfig(config);
-		return styleHandler;
-	}
+    @Override
+    public JMSEventHandler<String,DocumentFile> createHandler() {
+        JMSCatalogStylesFileHandler styleHandler = new JMSCatalogStylesFileHandler(catalog,xstream,JMSCatalogStylesFileHandlerSPI.class);
+        styleHandler.setConfig(config);
+        return styleHandler;
+    }
 
 
 }

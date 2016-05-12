@@ -156,11 +156,11 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
             @Override
             protected void onClick(AjaxRequestTarget target, Form<?> form) {
-				crs.processInput();
+                crs.processInput();
                 bounds.processInput();
                 tileWidth.getFormComponent().processInput();
                 tileHeight.getFormComponent().processInput();
-            	
+                
                 addZoomLevel(target);
                 target.add(tileMatrixSetEditor);
                 target.add(feedback);
@@ -192,7 +192,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
             @Override
             protected void onClick(AjaxRequestTarget target, Form<?> form) {
-            	crs.processInput();
+                crs.processInput();
                 computeBounds();
                 target.add(bounds);
                 target.add(feedback);

@@ -28,7 +28,7 @@ import org.geoserver.web.wicket.SimpleBookmarkableLink;
 public class LayerGroupPage extends GeoServerSecuredPage {
     
     private static final long serialVersionUID = 5039809655908312633L;
-	
+    
     GeoServerTablePanel<LayerGroupInfo> table;
     GeoServerDialog dialog;
     SelectionRemovalLink removal;
@@ -104,11 +104,11 @@ public class LayerGroupPage extends GeoServerSecuredPage {
         String wsName = (String) wsModel.getObject();
         
         if (wsName == null) {
-        	return new SimpleBookmarkableLink(id, LayerGroupEditPage.class, groupNameModel, 
-        			LayerGroupEditPage.GROUP, groupName);
+            return new SimpleBookmarkableLink(id, LayerGroupEditPage.class, groupNameModel, 
+                    LayerGroupEditPage.GROUP, groupName);
         } else {
-        	return new SimpleBookmarkableLink(id, LayerGroupEditPage.class, groupNameModel, 
-        			LayerGroupEditPage.GROUP, groupName, LayerGroupEditPage.WORKSPACE, wsName);
+            return new SimpleBookmarkableLink(id, LayerGroupEditPage.class, groupNameModel, 
+                    LayerGroupEditPage.GROUP, groupName, LayerGroupEditPage.WORKSPACE, wsName);
         }
     }
    

@@ -47,8 +47,8 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
     public void extensionGeotiff() throws Exception {
         // complete
         GetCoverageType gc = parse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-        		"&coverageId=theCoverage&compression=JPEG&jpeg_quality=75&predictor=None" +
-        		"&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
+                "&coverageId=theCoverage&compression=JPEG&jpeg_quality=75&predictor=None" +
+                "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
         
         Map<String, Object> extensions = getExtensionsMap(gc);
         

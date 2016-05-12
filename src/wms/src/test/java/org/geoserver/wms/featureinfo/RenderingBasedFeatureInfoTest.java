@@ -261,10 +261,10 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
 
     @Test
     public void testGenericGeometry() throws Exception {
-    	String layer = getLayerId(MockData.GENERICENTITY);
-    	String request = "wms?REQUEST=GetFeatureInfo&BBOX=-2.73291%2C55.220703%2C8.510254%2C69.720703&SERVICE=WMS"
-    			+ "&INFO_FORMAT=application/json&QUERY_LAYERS=" + layer + "&Layers=" + layer 
-    			+ "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=line&srs=EPSG%3A4326&version=1.1.1&x=284&y=269";
+        String layer = getLayerId(MockData.GENERICENTITY);
+        String request = "wms?REQUEST=GetFeatureInfo&BBOX=-2.73291%2C55.220703%2C8.510254%2C69.720703&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&QUERY_LAYERS=" + layer + "&Layers=" + layer 
+                + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=line&srs=EPSG%3A4326&version=1.1.1&x=284&y=269";
         JSONObject result = (JSONObject) getAsJSON(request);
         // we used to get no results 
         assertEquals(1, result.getJSONArray("features").size());
@@ -272,10 +272,10 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     
     @Test
     public void testDashed() throws Exception {
-    	String layer = getLayerId(MockData.GENERICENTITY);
-    	String request = "wms?REQUEST=GetFeatureInfo&&BBOX=0.778809%2C45.421875%2C12.021973%2C59.921875&SERVICE=WMS"
-    			+ "&INFO_FORMAT=application/json&QUERY_LAYERS=" + layer + "&Layers=" + layer 
-    			+ "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=dashed&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
+        String layer = getLayerId(MockData.GENERICENTITY);
+        String request = "wms?REQUEST=GetFeatureInfo&&BBOX=0.778809%2C45.421875%2C12.021973%2C59.921875&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&QUERY_LAYERS=" + layer + "&Layers=" + layer 
+                + "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=dashed&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
         JSONObject result = (JSONObject) getAsJSON(request);
         // we used to get no results 
         assertEquals(1, result.getJSONArray("features").size());

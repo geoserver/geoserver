@@ -39,7 +39,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         coverageStore = getCatalog().getStoreByName(MockData.TASMANIA_BM.getLocalPart(),
                 CoverageStoreInfo.class);
         if(coverageStore == null) {
-        	// revert the bluemable modified change
+            // revert the bluemable modified change
             Catalog cat = getCatalog();
             CoverageStoreInfo c = cat.getCoverageStoreByName("BlueMarbleModified");
             if (c != null) {

@@ -110,7 +110,7 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         assertEquals(sf.getAttribute(11), cell.getBooleanCellValue());
         // ... an empty cell (original value is null -> no cell)
         cell = sheet.getRow(1).getCell(3);
-        assertNull(cell);    	
+        assertNull(cell);        
     }
     
     @Test
@@ -135,7 +135,7 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
     
     private void testMultipleFeatureTypes( Workbook wb ) throws IOException{
         // check we have the expected sheets
-    	Sheet sheet = wb.getSheet("PrimitiveGeoFeature");
+        Sheet sheet = wb.getSheet("PrimitiveGeoFeature");
         assertNotNull(sheet);
 
         // check the number of rows in the output
@@ -147,6 +147,6 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
 
         // check the number of rows in the output
         fs = getFeatureSource(MockData.GENERICENTITY);
-        assertEquals(fs.getCount(Query.ALL) + 1, sheet.getPhysicalNumberOfRows());    	
+        assertEquals(fs.getCount(Query.ALL) + 1, sheet.getPhysicalNumberOfRows());        
     }
 }

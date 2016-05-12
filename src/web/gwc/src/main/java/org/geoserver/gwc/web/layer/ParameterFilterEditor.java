@@ -170,16 +170,16 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
             @Override
             protected void onBeforeRender() {
-            	//let's remove the correct child quickly before wicket just removes the last one on the list.
-            	for (final Iterator<Component> iterator = iterator(); iterator.hasNext();){
-					final ListItem<?> child = (ListItem<?>) iterator.next();
-					if (child != null) {
-						if (!getList().contains(child.get("subform").getDefaultModelObject())) {
-							iterator.remove();
-						}
-					}
-				}
-            	
+                //let's remove the correct child quickly before wicket just removes the last one on the list.
+                for (final Iterator<Component> iterator = iterator(); iterator.hasNext();){
+                    final ListItem<?> child = (ListItem<?>) iterator.next();
+                    if (child != null) {
+                        if (!getList().contains(child.get("subform").getDefaultModelObject())) {
+                            iterator.remove();
+                        }
+                    }
+                }
+                
                 super.onBeforeRender();
             }
 
@@ -204,7 +204,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    	getList().remove((ParameterFilter) getDefaultModelObject());
+                        getList().remove((ParameterFilter) getDefaultModelObject());
                         target.add(container);
                     }
                 };
@@ -220,7 +220,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         // this is necessary to avoid loosing item contents on edit/validation checks
         filters.setReuseItems(true);
         
-		Form<?> filtersForm = new Form<>("filtersForm", filters.getDefaultModel());
+        Form<?> filtersForm = new Form<>("filtersForm", filters.getDefaultModel());
         filtersForm.add(filters);
                 
         table.add(filtersForm);

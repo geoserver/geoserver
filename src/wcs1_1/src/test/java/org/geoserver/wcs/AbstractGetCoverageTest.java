@@ -53,9 +53,9 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
     
     @After
     public void cleanCoverages() {
-    	for (GridCoverage coverage : coverages) {
-			CoverageCleanerCallback.disposeCoverage(coverage);
-		}
+        for (GridCoverage coverage : coverages) {
+            CoverageCleanerCallback.disposeCoverage(coverage);
+        }
     }
 
     /**

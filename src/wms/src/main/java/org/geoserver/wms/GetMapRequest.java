@@ -692,13 +692,13 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         
         @Override
         public Object clone() throws CloneNotSupportedException {
-        	return super.clone();
+            return super.clone();
         } 
 
     }
 
     private class OptionalParameters implements Cloneable {
-    	
+        
         /**
          * Tells us whether or not we should loop forever in an ani,mated gif
          * <p>
@@ -713,7 +713,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
          * Default to 1s
          */
         Integer animatedGIFDelay;
-    	
+        
         /**
          * the map's background color requested, or the default (white) if not specified
          */
@@ -815,8 +815,8 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 
         @Override
         public Object clone() throws CloneNotSupportedException {
-        	return super.clone();
-        	
+            return super.clone();
+            
         } 
 
     }
@@ -871,15 +871,15 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     
     @Override
     public Object clone() {
-    	try {
-			GetMapRequest copy = (GetMapRequest) super.clone();
-			copy.mandatoryParams = (MandatoryParameters) mandatoryParams.clone();
-			copy.optionalParams = (OptionalParameters) optionalParams.clone();
-			
-			return copy;
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException("Unexpected, could not clone GetMapRequest", e);
-		}
+        try {
+            GetMapRequest copy = (GetMapRequest) super.clone();
+            copy.mandatoryParams = (MandatoryParameters) mandatoryParams.clone();
+            copy.optionalParams = (OptionalParameters) optionalParams.clone();
+            
+            return copy;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Unexpected, could not clone GetMapRequest", e);
+        }
     }
 
     public List<String> getCustomDimension(String dimensionName) {

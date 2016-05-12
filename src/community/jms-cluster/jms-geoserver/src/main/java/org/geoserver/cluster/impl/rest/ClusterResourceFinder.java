@@ -19,19 +19,19 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  */
 public class ClusterResourceFinder extends Finder {
-	
-	@Autowired
-	public volatile transient Controller controller;
+    
+    @Autowired
+    public volatile transient Controller controller;
 
-	@Autowired
-	public volatile transient JMSConfiguration config;
+    @Autowired
+    public volatile transient JMSConfiguration config;
 
-	protected ClusterResourceFinder() {
-		super();
-	}
+    protected ClusterResourceFinder() {
+        super();
+    }
 
-	@Override
-	public Resource findTarget(Request request, Response response) {
-		return new ClusterResource(getContext(), request, response, controller, config);
-	}
+    @Override
+    public Resource findTarget(Request request, Response response) {
+        return new ClusterResource(getContext(), request, response, controller, config);
+    }
 }

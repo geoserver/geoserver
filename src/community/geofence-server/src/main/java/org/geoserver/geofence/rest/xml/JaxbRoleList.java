@@ -15,23 +15,23 @@ import org.geoserver.security.impl.GeoServerRole;
 
 @XmlRootElement(name="roles")
 public class JaxbRoleList {
-	
-	protected List<String> roleNames;
+    
+    protected List<String> roleNames;
 
-	public JaxbRoleList() {
-		
-	}
+    public JaxbRoleList() {
+        
+    }
 
-	public JaxbRoleList( Collection<GeoServerRole> roles ) {
-		roleNames = new ArrayList<String>();
-		for (GeoServerRole role: roles) {
-			roleNames.add(role.getAuthority());
-		}
-	}
+    public JaxbRoleList( Collection<GeoServerRole> roles ) {
+        roleNames = new ArrayList<String>();
+        for (GeoServerRole role: roles) {
+            roleNames.add(role.getAuthority());
+        }
+    }
 
-	@XmlElement(name="role")
-	public List<String> getRoles() {
-		return roleNames;
-	}
+    @XmlElement(name="role")
+    public List<String> getRoles() {
+        return roleNames;
+    }
 
 }

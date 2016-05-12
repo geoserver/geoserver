@@ -85,8 +85,8 @@ public class NativeSortRegionatingStrategy extends
     }
 
     public FeatureIterator getSortedFeatures(GeometryDescriptor geom,
-    		ReferencedEnvelope latLongEnv, ReferencedEnvelope nativeEnv, 
-    		Connection cacheConn) throws Exception {
+            ReferencedEnvelope latLongEnv, ReferencedEnvelope nativeEnv, 
+            Connection cacheConn) throws Exception {
         // build the bbox filter
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
         BBOX filter = ff.bbox(geom.getLocalName(), nativeEnv.getMinX(),

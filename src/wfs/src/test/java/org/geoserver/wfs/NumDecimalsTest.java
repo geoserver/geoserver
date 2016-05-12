@@ -29,7 +29,7 @@ public class NumDecimalsTest extends WFSTestSupport {
         cat.save(ft2);
     }
 
-	@Test
+    @Test
     public void testDefaults() throws Exception {
         Document dom = getAsDOM("wfs?request=getfeature&featureid=PrimitiveGeoFeature.f008&version=1.0.0");
         runAssertions(dom,3);
@@ -37,7 +37,7 @@ public class NumDecimalsTest extends WFSTestSupport {
 
     @Test
     public void testGlobal() throws Exception {
-    	Catalog cat = getCatalog();
+        Catalog cat = getCatalog();
         FeatureTypeInfo ft = cat.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
         ft.setNumDecimals(-1);
         cat.save(ft);

@@ -46,8 +46,8 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
     private Resource root;
     
     public SimpleCatalogStore(Resource root) {
-    	support(CSWRecordDescriptor.getInstance());
-    	
+        support(CSWRecordDescriptor.getInstance());
+        
         this.root = root;
 
         if (root.getType() == Type.RESOURCE) {
@@ -58,7 +58,7 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
     }
     
     public FeatureCollection getRecords(Query q, Transaction t) throws IOException {
-    	return getRecords(q,t,null);
+        return getRecords(q,t,null);
     }
 
     @Override

@@ -53,7 +53,7 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
     private Form<CoverageStoreInfo> editForm;
 
     @SuppressWarnings("unchecked")
-	private ArcSDECoverageStoreEditPanel startPanelToEditStore() {
+    private ArcSDECoverageStoreEditPanel startPanelToEditStore() {
         final Catalog catalog = getCatalog();
         storeInfo = catalog.getFactory().createCoverageStore();
         storeInfo.setDescription("fake arcsde store");
@@ -80,7 +80,7 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
     }
 
     @SuppressWarnings("unchecked")
-	private ArcSDECoverageStoreEditPanel startPanelForNewStore() {
+    private ArcSDECoverageStoreEditPanel startPanelForNewStore() {
         login();
         page = new CoverageStoreNewPage(ArcSDERasterFormat.getInstance().getName());
         tester.startPage(page);

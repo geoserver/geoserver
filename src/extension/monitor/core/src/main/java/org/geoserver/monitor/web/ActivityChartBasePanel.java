@@ -65,7 +65,7 @@ public abstract class ActivityChartBasePanel extends Panel {
         form.add(new DateTimeField("from", new PropertyModel<Date>(this,"from")) {
             private static final long serialVersionUID = -6541833048507323265L;
 
-			@Override
+            @Override
             protected boolean use12HourFormat() {
                 return false;
             }
@@ -73,7 +73,7 @@ public abstract class ActivityChartBasePanel extends Panel {
         form.add(new DateTimeField("to", new PropertyModel<Date>(this, "to")) {
             private static final long serialVersionUID = 1306927761884039503L;
 
-			@Override
+            @Override
             protected boolean use12HourFormat() {
                 return false;
             }
@@ -82,7 +82,7 @@ public abstract class ActivityChartBasePanel extends Panel {
         form.add(new AjaxButton("refresh") {
             private static final long serialVersionUID = -6954067333262732996L;
 
-			@Override
+            @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 Monitor monitor = 
                     ((GeoServerApplication)getApplication()).getBeanOfType(Monitor.class);

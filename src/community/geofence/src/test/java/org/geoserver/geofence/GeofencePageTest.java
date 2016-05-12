@@ -118,7 +118,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     @Test
     public void testErrorWrongURL()  {
         @SuppressWarnings("unchecked")
-		TextField<String> servicesUrl = ((TextField<String>)tester.getComponentFromLastRenderedPage("form:servicesUrl"));
+        TextField<String> servicesUrl = ((TextField<String>)tester.getComponentFromLastRenderedPage("form:servicesUrl"));
         servicesUrl.setDefaultModel(new Model<String>("fakeurl"));
 
         tester.clickLink("form:test", true);

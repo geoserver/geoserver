@@ -277,9 +277,9 @@ public class BufferedImageLegendGraphicBuilder {
             }
 
             final boolean buildRasterLegend = 
-            		(!strict && layer == null && LegendUtils.checkRasterSymbolizer(gt2Style)) || 
-            		(LegendUtils.checkGridLayer(layer) && !hasVectorTransformation) || 
-            		hasRasterTransformation;
+                    (!strict && layer == null && LegendUtils.checkRasterSymbolizer(gt2Style)) || 
+                    (LegendUtils.checkGridLayer(layer) && !hasVectorTransformation) || 
+                    hasRasterTransformation;
             
             // Just checks LegendInfo currently, should check gtStyle
             final boolean useProvidedLegend = layer != null && legend.getLayerInfo() != null;
@@ -738,7 +738,7 @@ public class BufferedImageLegendGraphicBuilder {
                     if (description != null && description.getTitle() != null) {
                         final InternationalString title = description.getTitle();
                         if(locale != null) {
-                        	labels[i] = title.toString(locale);
+                            labels[i] = title.toString(locale);
                         } else {
                         labels[i] = title.toString();
                         }

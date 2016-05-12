@@ -56,22 +56,22 @@ public class GetFeatureTest extends WFSTestSupport {
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
         this.getGeoServer().getGlobal().setXmlExternalEntitiesEnabled(true);
-    	WFSInfo wfs = getWFS();
+        WFSInfo wfs = getWFS();
         wfs.setFeatureBounding(true);
-    	getGeoServer().save(wfs);
-    	
-    	data.addVectorLayer ( new QName( SystemTestData.SF_URI, "WithGMLProperties", SystemTestData.SF_PREFIX ), 
-    			Collections.EMPTY_MAP, getClass(), getCatalog());
+        getGeoServer().save(wfs);
+        
+        data.addVectorLayer ( new QName( SystemTestData.SF_URI, "WithGMLProperties", SystemTestData.SF_PREFIX ), 
+                Collections.EMPTY_MAP, getClass(), getCatalog());
     }
 
     @Test
     public void testGet() throws Exception {
-    	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.1.0&service=wfs");
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.1.0&service=wfs");
     }
     
     @Test
     public void testGetPropertyNameEmpty() throws Exception {
-    	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.1.0&service=wfs&propertyname=");
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.1.0&service=wfs&propertyname=");
     }
     
     @Test
@@ -80,7 +80,7 @@ public class GetFeatureTest extends WFSTestSupport {
     }
     
     private void testGetFifteenAll(String request) throws Exception{
-    	Document doc = getAsDOM(request);
+        Document doc = getAsDOM(request);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement()
                 .getNodeName());
 
@@ -418,7 +418,7 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals( "ExceptionReport", dom.getDocumentElement().getLocalName() );
         
         getTestData().addVectorLayer ( new QName( SystemTestData.SF_URI, "new", SystemTestData.SF_PREFIX ), 
-    			Collections.EMPTY_MAP, getClass(), getCatalog());
+                Collections.EMPTY_MAP, getClass(), getCatalog());
         
         //reloadCatalogAndConfiguration();
         

@@ -29,9 +29,9 @@ import org.geoserver.web.wicket.ParamResourceModel;
  */
 public class RootLayerEntryPanel extends Panel {
 
-	private static final long serialVersionUID = 3471204885852128002L;
+    private static final long serialVersionUID = 3471204885852128002L;
 
-	public RootLayerEntryPanel(String id,WorkspaceInfo workspace, final IModel<LayerGroupInfo> model) {
+    public RootLayerEntryPanel(String id,WorkspaceInfo workspace, final IModel<LayerGroupInfo> model) {
         super(id);
         
         setOutputMarkupId(true);
@@ -42,11 +42,11 @@ public class RootLayerEntryPanel extends Panel {
             @SuppressWarnings("unchecked")
             @Override
             public <C> IConverter<C> getConverter(Class<C> type) { 
-            	if (LayerInfo.class.isAssignableFrom(type)) {
-            		return (IConverter<C>) new LayerInfoConverter();
-            	} else {
-            		return super.getConverter(type);
-            	}
+                if (LayerInfo.class.isAssignableFrom(type)) {
+                    return (IConverter<C>) new LayerInfoConverter();
+                } else {
+                    return super.getConverter(type);
+                }
             } 
         };
         rootLayerField.setOutputMarkupId(true);

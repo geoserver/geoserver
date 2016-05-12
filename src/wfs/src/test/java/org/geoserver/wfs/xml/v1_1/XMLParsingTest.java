@@ -26,7 +26,7 @@ public class XMLParsingTest extends WFSTestSupport {
         testData.setUpSecurity();
     }
 
-	@Test
+    @Test
     public void testNativeType() throws Exception {
         Parser p = new Parser(getXmlConfiguration11());
         NativeType nativ = (NativeType) p.parse(

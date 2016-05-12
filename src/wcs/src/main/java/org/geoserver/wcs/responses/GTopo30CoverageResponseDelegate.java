@@ -49,7 +49,7 @@ public class GTopo30CoverageResponseDelegate extends BaseCoverageResponseDelegat
      * 
      * @see org.vfny.geoserver.wcs.responses.CoverageResponseDelegate#encode(java.io.OutputStream)
      */
-	public void encode(GridCoverage2D sourceCoverage, String outputFormat, Map<String,String> econdingParameters, OutputStream output) throws ServiceException, IOException {
+    public void encode(GridCoverage2D sourceCoverage, String outputFormat, Map<String,String> econdingParameters, OutputStream output) throws ServiceException, IOException {
         // creating a zip outputstream
         final ZipOutputStream outZ = new ZipOutputStream(output);
         output = outZ;

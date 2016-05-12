@@ -104,7 +104,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         testData.addStyle("rainfall_classes",MockData.class,catalog);
         //add raster layer for rendering transform test                
         testData.addRasterLayer(new QName("http://www.opengis.net/wcs/1.1.1", "DEM", "wcs"), 
-        		"tazdem.tiff", "tiff", new HashMap(), MockData.class, catalog);	        
+                "tazdem.tiff", "tiff", new HashMap(), MockData.class, catalog);            
     }
     
     @Before
@@ -409,7 +409,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
      * with vector and coverage layers.
      */
     @org.junit.Test    
-	public void testMultipleLayersWithVectorAndCoverage() throws Exception {        
+    public void testMultipleLayersWithVectorAndCoverage() throws Exception {        
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         
         int titleHeight = getTitleHeight(req);
@@ -424,44 +424,44 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-	        SimpleFeatureCollection feature;
-	        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
-	        layers.add(feature.getSchema());
-	        
-	        req.setLayers(layers);
-	        
-	        List<Style> styles=new ArrayList<Style>();
-	        Style style1= getCatalog().getStyleByName(
-	                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
-	        styles.add(style1);
-	        
-	        Style style2= getCatalog().getStyleByName("rainfall").getStyle();
-	        styles.add(style2);
-	        req.setStyles(styles);
-	        
-	        this.legendProducer.buildLegendGraphic(req);
-	
-	        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
-	
-	        
-	        // vector layer
-	        assertPixel(image, 10, 10+titleHeight, new Color(192,160,0));
-	        
-	        assertPixel(image, 10, 30+titleHeight, new Color(0,0,0));
-	        
-	        assertPixel(image, 10, 50+titleHeight, new Color(224,64,0));
-	        
-	        // coverage layer        
-	        assertPixel(image, 10, 70+titleHeight*2, new Color(115,38,0));
-		} finally {
-	        RenderedImage ri = coverage.getRenderedImage();
-	        if(coverage instanceof GridCoverage2D) {
-	            ((GridCoverage2D) coverage).dispose(true);
-	        }
-	        if(ri instanceof PlanarImage) {
-	            ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
-	        }
-	    }
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            layers.add(feature.getSchema());
+            
+            req.setLayers(layers);
+            
+            List<Style> styles=new ArrayList<Style>();
+            Style style1= getCatalog().getStyleByName(
+                    MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
+            styles.add(style1);
+            
+            Style style2= getCatalog().getStyleByName("rainfall").getStyle();
+            styles.add(style2);
+            req.setStyles(styles);
+            
+            this.legendProducer.buildLegendGraphic(req);
+    
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+    
+            
+            // vector layer
+            assertPixel(image, 10, 10+titleHeight, new Color(192,160,0));
+            
+            assertPixel(image, 10, 30+titleHeight, new Color(0,0,0));
+            
+            assertPixel(image, 10, 50+titleHeight, new Color(224,64,0));
+            
+            // coverage layer        
+            assertPixel(image, 10, 70+titleHeight*2, new Color(115,38,0));
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if(coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if(ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
 
     }
     
@@ -486,47 +486,47 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-	        SimpleFeatureCollection feature;
-	        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
-	        layers.add(feature.getSchema());
-	        
-	        req.setLayers(layers);
-	        
-	        List<Style> styles=new ArrayList<Style>();
-	        Style style1= getCatalog().getStyleByName(
-	                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
-	        styles.add(style1);
-	        
-	        styles.add(readSLD("InvisibleRaster.sld"));
-	        
-	        
-	        req.setStyles(styles);
-	        
-	        this.legendProducer.buildLegendGraphic(req);
-	
-	        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
-	        
-	        // vector layer
-	        assertPixel(image, 10, 10+titleHeight, new Color(192,160,0));
-	        
-	        assertPixel(image, 10, 30+titleHeight, new Color(0,0,0));
-	        
-	        assertPixel(image, 10, 50+titleHeight, new Color(224,64,0));
-	                
-	        // no coverage
-	        assertTrue(image.getHeight() < 70+titleHeight*2);
-	    } finally {
-	        RenderedImage ri = coverage.getRenderedImage();
-	        if(coverage instanceof GridCoverage2D) {
-	            ((GridCoverage2D) coverage).dispose(true);
-	        }
-	        if(ri instanceof PlanarImage) {
-	            ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
-	        }
-	    }
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            layers.add(feature.getSchema());
+            
+            req.setLayers(layers);
+            
+            List<Style> styles=new ArrayList<Style>();
+            Style style1= getCatalog().getStyleByName(
+                    MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
+            styles.add(style1);
+            
+            styles.add(readSLD("InvisibleRaster.sld"));
+            
+            
+            req.setStyles(styles);
+            
+            this.legendProducer.buildLegendGraphic(req);
+    
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+            
+            // vector layer
+            assertPixel(image, 10, 10+titleHeight, new Color(192,160,0));
+            
+            assertPixel(image, 10, 30+titleHeight, new Color(0,0,0));
+            
+            assertPixel(image, 10, 50+titleHeight, new Color(224,64,0));
+                    
+            // no coverage
+            assertTrue(image.getHeight() < 70+titleHeight*2);
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if(coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if(ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
     }
 
-	public void testMixedGeometry() throws Exception {
+    public void testMixedGeometry() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
     
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
@@ -820,7 +820,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
      */
     @org.junit.Test
     public void testRenderingTransformationRasterVector() throws Exception {
-    	           
+                   
         Style transformStyle = readSLD("RenderingTransformRasterVector.sld");
         
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
@@ -850,7 +850,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
             assertPixel(image, 19, 19, new Color (255, 255, 255));
             
         }catch(Exception e){
-        	fail(e.getMessage());           
+            fail(e.getMessage());           
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
             if(coverage instanceof GridCoverage2D) {
@@ -860,8 +860,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
             }
         }
-    	
-    	
+        
+        
     }
     
     /**
@@ -943,7 +943,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
      */
     @org.junit.Test
     public void testRenderingTransformationVectorRaster() throws Exception {
-    	           
+                   
         Style transformStyle = readSLD("RenderingTransformVectorRaster.sld");
         
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
@@ -966,7 +966,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         
         assertPixel(image, 10, 70, new Color(188, 188, 255));
         assertPixel(image, 10, 80, new Color (68, 68, 255));            
-        assertPixel(image, 10, 130, new Color (255, 152, 0));    	
+        assertPixel(image, 10, 130, new Color (255, 152, 0));        
     }
     
     /**

@@ -19,7 +19,7 @@ import org.geoserver.web.GeoServerApplication;
 public class LayerGroupEntry implements Serializable {
 
     private static final long serialVersionUID = -2212620293553872451L;
-	
+    
     String styleId;
     String layerId;
     String layerGroupId;

@@ -170,7 +170,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
                 handleXmlException(exception, request);
             }
         } else {
-        	// use default
+            // use default
             handleXmlException(exception, request);
         }
     }

@@ -31,7 +31,7 @@ public class AliasTest extends WFSTestSupport {
     
     private void setAliasedType( QName qName, String alias, Catalog catalog)
             throws IOException {
-    	String name = qName.getLocalPart();        
+        String name = qName.getLocalPart();        
         FeatureTypeInfo featureType = catalog.getFeatureTypeByName(name);
         featureType.setName(alias);
         getCatalog().save(featureType);

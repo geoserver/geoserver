@@ -49,38 +49,38 @@ public class TimeKvpParserTest extends TestCase {
      */
     private final static DateFormat format;
     static {
-    	 format = new SimpleDateFormat("yyyy-MM-dd'T'HH'Z'");
-    	 format.setTimeZone(TimeParser.UTC_TZ);
+         format = new SimpleDateFormat("yyyy-MM-dd'T'HH'Z'");
+         format.setTimeZone(TimeParser.UTC_TZ);
     }
     
     public void testReducedAccuracyYear() throws Exception {
-    	Calendar c = new GregorianCalendar();
-    	c.setTimeZone(TimeParser.UTC_TZ);
-    	
-    	DateRange year = (DateRange) TimeParser.getFuzzyDate("2000");
-    	c.clear();
-    	c.set(Calendar.YEAR, 2000);
-    	assertRangeStarts(year, c.getTime());
-    	c.set(Calendar.YEAR, 2001);
-    	c.add(Calendar.MILLISECOND, -1);
-    	assertRangeEnds(year, c.getTime());
-    	
-    	year = (DateRange) TimeParser.getFuzzyDate("2001");
-    	c.clear();
-    	c.set(Calendar.YEAR, 2001);
-    	assertRangeStarts(year, c.getTime());
-    	c.set(Calendar.YEAR, 2002);
-    	c.add(Calendar.MILLISECOND, -1);
-    	assertRangeEnds(year, c.getTime());
-    	
-    	year = (DateRange) TimeParser.getFuzzyDate("-6052");
-    	c.clear();
-    	c.set(Calendar.ERA, GregorianCalendar.BC);
-    	c.set(Calendar.YEAR, 6053);
-    	assertRangeStarts(year, c.getTime());
-    	c.set(Calendar.YEAR, 6052);
-    	c.add(Calendar.MILLISECOND, -1);
-    	assertRangeEnds(year, c.getTime());
+        Calendar c = new GregorianCalendar();
+        c.setTimeZone(TimeParser.UTC_TZ);
+        
+        DateRange year = (DateRange) TimeParser.getFuzzyDate("2000");
+        c.clear();
+        c.set(Calendar.YEAR, 2000);
+        assertRangeStarts(year, c.getTime());
+        c.set(Calendar.YEAR, 2001);
+        c.add(Calendar.MILLISECOND, -1);
+        assertRangeEnds(year, c.getTime());
+        
+        year = (DateRange) TimeParser.getFuzzyDate("2001");
+        c.clear();
+        c.set(Calendar.YEAR, 2001);
+        assertRangeStarts(year, c.getTime());
+        c.set(Calendar.YEAR, 2002);
+        c.add(Calendar.MILLISECOND, -1);
+        assertRangeEnds(year, c.getTime());
+        
+        year = (DateRange) TimeParser.getFuzzyDate("-6052");
+        c.clear();
+        c.set(Calendar.ERA, GregorianCalendar.BC);
+        c.set(Calendar.YEAR, 6053);
+        assertRangeStarts(year, c.getTime());
+        c.set(Calendar.YEAR, 6052);
+        c.add(Calendar.MILLISECOND, -1);
+        assertRangeEnds(year, c.getTime());
     }
     
     public void testReducedAccuracyHour() throws Exception {
@@ -298,7 +298,7 @@ public class TimeKvpParserTest extends TestCase {
     public void testInclusions() throws ParseException {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
         List l = new ArrayList((Collection)  timeKvpParser.parse(CONTINUOUS_PERIOD+",2007-01-29T12Z," +
-        		"2007-01-12T12Z,2007-01-17T12Z,2007-01-01T12Z/2007-01-15T12Z"));
+                "2007-01-12T12Z,2007-01-17T12Z,2007-01-01T12Z/2007-01-15T12Z"));
         // Verify that the list contains at least one element.
         assertFalse(l.isEmpty());
         assertTrue(l.size()==1);
@@ -310,7 +310,7 @@ public class TimeKvpParserTest extends TestCase {
     public void testOrderedValues() throws Exception {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
         List l = new ArrayList((Collection)  timeKvpParser.parse("2007-01-29T12Z,2007-01-12T12Z," +
-        		"2007-01-17T12Z,2007-01-01T12Z,2007-01-05T12Z"));
+                "2007-01-17T12Z,2007-01-01T12Z,2007-01-05T12Z"));
         // Verify that the list contains at least one element.
         assertFalse(l.isEmpty());
         assertTrue(l.size()==5);
@@ -353,40 +353,40 @@ public class TimeKvpParserTest extends TestCase {
     }
 
     private static void assertInstant(Date expected, Object object) {
-    	if (object instanceof DateRange) { 
-	    	assertEquals(object + " Should start at", expected, ((DateRange)object).getMinValue());
-	    	assertEquals(object + " Should end at", expected, ((DateRange)object).getMaxValue());
-    	} else if (object instanceof Date) {
-    		assertEquals(expected, object);
-    	} else {
-    		fail("Should have a DateRange: " + object);
-    	}
-	}
+        if (object instanceof DateRange) { 
+            assertEquals(object + " Should start at", expected, ((DateRange)object).getMinValue());
+            assertEquals(object + " Should end at", expected, ((DateRange)object).getMaxValue());
+        } else if (object instanceof Date) {
+            assertEquals(expected, object);
+        } else {
+            fail("Should have a DateRange: " + object);
+        }
+    }
     
     private static void assertRange(DateRange range, Date start, Date end) {
-    	assertRangeStarts(range, start);
-    	assertRangeEnds(range, new Date(end.getTime() - 1));
+        assertRangeStarts(range, start);
+        assertRangeEnds(range, new Date(end.getTime() - 1));
     }
 
     public static void assertRangeLength(DateRange range, long expectedLength) {
-    	if (range.getMinValue() == null)
-    		fail("Expected finite range, saw: " + range);
-    	if (range.getMaxValue() == null)
-    		fail("Expected finite range, saw: " + range);
-    	long min = range.getMinValue().getTime();
-    	long max = range.getMaxValue().getTime();
-    	assertEquals("Range " + range + " should have length", expectedLength, max - min);
+        if (range.getMinValue() == null)
+            fail("Expected finite range, saw: " + range);
+        if (range.getMaxValue() == null)
+            fail("Expected finite range, saw: " + range);
+        long min = range.getMinValue().getTime();
+        long max = range.getMaxValue().getTime();
+        assertEquals("Range " + range + " should have length", expectedLength, max - min);
     }
     
     public static void assertRangeStarts(DateRange range, Date expectedStart) {
-    	if (range.getMinValue() == null) 
-    		fail("Expected valid start date in range " + range);
-    	assertEquals("Range " + range + " should have start", expectedStart, range.getMinValue());
+        if (range.getMinValue() == null) 
+            fail("Expected valid start date in range " + range);
+        assertEquals("Range " + range + " should have start", expectedStart, range.getMinValue());
     }
     
     public static void assertRangeEnds(DateRange range, Date expectedEnd) {
-    	if (range.getMaxValue() == null)
-    		fail("Expected valid end date in range " + range);
-    	assertEquals("Range " + range + " should have end", expectedEnd, range.getMaxValue());
+        if (range.getMaxValue() == null)
+            fail("Expected valid end date in range " + range);
+        assertEquals("Range " + range + " should have end", expectedEnd, range.getMaxValue());
     }
 }

@@ -27,44 +27,44 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  */
 public class ErrorHandler extends DefaultHandler {
-		
-	/**
-	 * Logger and level
-	 */
-	Logger logger;
-	Level level;
-	
-	public List errors = new ArrayList();
-	
-	public ErrorHandler() {
-		
-	}
-	
-	public ErrorHandler( Logger logger, Level level ) {
-		this.logger = logger;
-		this.level = level;
-	}
-	
-	public void error(SAXParseException e) throws SAXException {
-		e( e );
-		super.error( e );
-	}
-	
-	public void fatalError(SAXParseException e) throws SAXException {
-		e( e );
-		super.fatalError( e );
-	}
-	
-	public void warning(SAXParseException e) throws SAXException {		
-		//ignore
-	}
-	
-	void e( SAXParseException e ) {
-		if ( logger != null ) {
-			logger.log( level, e.getLocalizedMessage() );	
-		}
-		
-		errors.add( e );
-	}
-	
+        
+    /**
+     * Logger and level
+     */
+    Logger logger;
+    Level level;
+    
+    public List errors = new ArrayList();
+    
+    public ErrorHandler() {
+        
+    }
+    
+    public ErrorHandler( Logger logger, Level level ) {
+        this.logger = logger;
+        this.level = level;
+    }
+    
+    public void error(SAXParseException e) throws SAXException {
+        e( e );
+        super.error( e );
+    }
+    
+    public void fatalError(SAXParseException e) throws SAXException {
+        e( e );
+        super.fatalError( e );
+    }
+    
+    public void warning(SAXParseException e) throws SAXException {        
+        //ignore
+    }
+    
+    void e( SAXParseException e ) {
+        if ( logger != null ) {
+            logger.log( level, e.getLocalizedMessage() );    
+        }
+        
+        errors.add( e );
+    }
+    
 }

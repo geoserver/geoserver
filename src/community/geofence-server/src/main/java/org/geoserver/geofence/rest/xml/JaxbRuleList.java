@@ -15,7 +15,7 @@ import org.geoserver.geofence.core.model.Rule;
 
 @XmlRootElement(name="Rules")
 public class JaxbRuleList{
-	
+    
     protected List<JaxbRule> list;
     
     protected long count;
@@ -23,24 +23,24 @@ public class JaxbRuleList{
     public JaxbRuleList(){}
     
     public JaxbRuleList(long count){
-    	this.count = count;
+        this.count = count;
     }
     
     public JaxbRuleList(List<Rule> list){
-    	this.list = new ArrayList<JaxbRule>();
-    	for (Rule rule : list) {
-			this.list.add(new JaxbRule(rule));
-		}
-    	this.count = list.size();
+        this.list = new ArrayList<JaxbRule>();
+        for (Rule rule : list) {
+            this.list.add(new JaxbRule(rule));
+        }
+        this.count = list.size();
     }
     
     @XmlAttribute
     public long getCount() {
-    	return count;
+        return count;
     }
 
     @XmlElement(name="Rule")
     public List<JaxbRule> getRules(){
-    	return list;
+        return list;
     }
 }

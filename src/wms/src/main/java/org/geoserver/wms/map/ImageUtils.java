@@ -46,33 +46,33 @@ import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
  */
 public class ImageUtils {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.responses.wms.map");
-	/**
-	 * This variable is use for testing purposes in order to force this
-	 * {@link GridCoverageRenderer} to dump images at various steps on the disk.
-	 */
-	private static boolean DEBUG = Boolean.valueOf(GeoServerExtensions.getProperty("org.geoserver.wms.map.ImageUtils.debug"));
-	private static String DEBUG_DIR;
+    /**
+     * This variable is use for testing purposes in order to force this
+     * {@link GridCoverageRenderer} to dump images at various steps on the disk.
+     */
+    private static boolean DEBUG = Boolean.valueOf(GeoServerExtensions.getProperty("org.geoserver.wms.map.ImageUtils.debug"));
+    private static String DEBUG_DIR;
 
     static {
-	    if (DEBUG) {
-	        final File tempDir = new File(GeoServerExtensions.getProperty("user.home"),".geoserver");
-	        if (!tempDir.exists() ) {
-	            if(!tempDir.mkdir())
-	            System.out
-	                    .println("Unable to create debug dir, exiting application!!!");
-	            DEBUG=false;
-	            DEBUG_DIR = null;
-	        } else
-	           {
-	                    DEBUG_DIR = tempDir.getAbsolutePath();
-	                     System.out.println("MetatileMapOutputFormat debug dir "+DEBUG_DIR);
-	           }
-	    }
-	
-	}
+        if (DEBUG) {
+            final File tempDir = new File(GeoServerExtensions.getProperty("user.home"),".geoserver");
+            if (!tempDir.exists() ) {
+                if(!tempDir.mkdir())
+                System.out
+                        .println("Unable to create debug dir, exiting application!!!");
+                DEBUG=false;
+                DEBUG_DIR = null;
+            } else
+               {
+                        DEBUG_DIR = tempDir.getAbsolutePath();
+                         System.out.println("MetatileMapOutputFormat debug dir "+DEBUG_DIR);
+               }
+        }
+    
+    }
 
 
-	/**
+    /**
      * Forces the use of the class as a pure utility methods one by declaring a
      * private default constructor.
      */
@@ -164,8 +164,8 @@ public class ImageUtils {
      *         otherwise.
      */
     public static Graphics2D prepareTransparency(
-    		final boolean transparent, 
-    		final Color bgColor,
+            final boolean transparent, 
+            final Color bgColor,
             final RenderedImage preparedImage, 
             final Map<RenderingHints.Key, Object> extraHints) {
         final Graphics2D graphic;
@@ -224,15 +224,15 @@ public class ImageUtils {
             // check image type 
             String type = "RI";
             if (originalImage instanceof PlanarImage) {
-            	type = "PI";
+                type = "PI";
             } else if (originalImage instanceof BufferedImage) {
-            	type = "BI";
+                type = "BI";
             }
             if(LOGGER.isLoggable(Level.FINER)){
-            	LOGGER.finer("OriginalImage type " + type);  
-            	LOGGER.finer("OriginalImage info: " + originalImage.toString());  
+                LOGGER.finer("OriginalImage type " + type);  
+                LOGGER.finer("OriginalImage info: " + originalImage.toString());  
             }            
-        }    	
+        }        
         // /////////////////////////////////////////////////////////////////
         //
         // Check what we need to do depending on the color model of the image we
@@ -273,7 +273,7 @@ public class ImageUtils {
             } else {
                 if (LOGGER.isLoggable(Level.FINER)) {
                     LOGGER.finer("Image has Transparency TRANSLUCENT, forceBitmaskIndexColorModel");
-                }               	
+                }                   
                 // //
                 //
                 // The image is indexed on 8 bits and the color model is
@@ -283,13 +283,13 @@ public class ImageUtils {
                 // //
                 image = new ImageWorker(originalImage).forceBitmaskIndexColorModel().getRenderedImage();
                 if(DEBUG){
-                	writeRenderedImage(image, "indexed8translucent");
+                    writeRenderedImage(image, "indexed8translucent");
                 }
             }
         } else {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("Image has generic color model and/or type");
-            }        	
+            }            
             // /////////////////////////////////////////////////////////////////
             //
             // NOT IndexColorModel and DataBuffer.TYPE_BYTE
@@ -299,7 +299,7 @@ public class ImageUtils {
             // We got an image that needs to be converted.
             //
             // /////////////////////////////////////////////////////////////////
-        	image = new ImageWorker(originalImage).rescaleToBytes().getRenderedImage();
+            image = new ImageWorker(originalImage).rescaleToBytes().getRenderedImage();
             if (invColorMap != null) {
                 if (LOGGER.isLoggable(Level.FINER)) {
                     LOGGER.finer("We have an invColorMap");
@@ -308,12 +308,12 @@ public class ImageUtils {
                 // types
                 image = invColorMap.filterRenderedImage(image);
                 if(DEBUG){
-                	writeRenderedImage(image, "invColorMap");
+                    writeRenderedImage(image, "invColorMap");
                 }                
             } else {
                 if (LOGGER.isLoggable(Level.FINER)) {
                     LOGGER.finer("We do not have an invColorMap");
-                }              	
+                }                  
                 // //
                 //
                 // We do not have a paletteInverter, let's create a palette that
@@ -326,7 +326,7 @@ public class ImageUtils {
                 }                
                 image = new ImageWorker(image).forceComponentColorModel().getRenderedImage();
                 if(DEBUG){
-                	writeRenderedImage(image, "forceComponentColorModel");
+                    writeRenderedImage(image, "forceComponentColorModel");
                 }                  
 
                 // //
@@ -346,7 +346,7 @@ public class ImageUtils {
                     LOGGER.finer("Computed Palette:"+paletteRepresentation(cpb.getIndexColorModel()));
                 }                   
                 if(DEBUG){
-                	writeRenderedImage(image, "buildPalette");
+                    writeRenderedImage(image, "buildPalette");
                 }  
             }
         }
@@ -354,39 +354,39 @@ public class ImageUtils {
         return image;
     }
 
-	private static String paletteRepresentation(IndexColorModel indexColorModel) {
-		final StringBuilder builder = new StringBuilder();
-		final int mapSize= indexColorModel.getMapSize();
-		builder.append("PaletteSize:").append(mapSize).append("\n");
-		builder.append("Transparency:").append(indexColorModel.getTransparency()).append("\n");
-		builder.append("TransparentPixel:").append(indexColorModel.getTransparentPixel()).append("\n");
-		for(int i=0;i<mapSize;i++){
-			builder.append("[r=").append(indexColorModel.getRed(i)).append(",");
-			builder.append("[g=").append(indexColorModel.getGreen(i)).append(",");
-			builder.append("[b=").append(indexColorModel.getBlue(i)).append("]\n");
-		}
-		return builder.toString();
-	}
+    private static String paletteRepresentation(IndexColorModel indexColorModel) {
+        final StringBuilder builder = new StringBuilder();
+        final int mapSize= indexColorModel.getMapSize();
+        builder.append("PaletteSize:").append(mapSize).append("\n");
+        builder.append("Transparency:").append(indexColorModel.getTransparency()).append("\n");
+        builder.append("TransparentPixel:").append(indexColorModel.getTransparentPixel()).append("\n");
+        for(int i=0;i<mapSize;i++){
+            builder.append("[r=").append(indexColorModel.getRed(i)).append(",");
+            builder.append("[g=").append(indexColorModel.getGreen(i)).append(",");
+            builder.append("[b=").append(indexColorModel.getBlue(i)).append("]\n");
+        }
+        return builder.toString();
+    }
 
-	/**
-	 * Write the provided {@link RenderedImage} in the debug directory with the provided file name.
-	 * 
-	 * @param raster
-	 *            the {@link RenderedImage} that we have to write.
-	 * @param fileName
-	 *            a {@link String} indicating where we should write it.
-	 */
-	static void writeRenderedImage(final RenderedImage raster, final String fileName) {
-	    if (DEBUG_DIR == null)
-	        throw new NullPointerException(
-	                "Unable to write the provided coverage in the debug directory");
-	    if (DEBUG == false)
-	        throw new IllegalStateException(
-	                "Unable to write the provided coverage since we are not in debug mode");
-	    try {
-	        ImageIO.write(raster, "tiff", new File(DEBUG_DIR, fileName + ".tiff"));
-	    } catch (IOException e) {
-	        LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
-	    }
-	}
+    /**
+     * Write the provided {@link RenderedImage} in the debug directory with the provided file name.
+     * 
+     * @param raster
+     *            the {@link RenderedImage} that we have to write.
+     * @param fileName
+     *            a {@link String} indicating where we should write it.
+     */
+    static void writeRenderedImage(final RenderedImage raster, final String fileName) {
+        if (DEBUG_DIR == null)
+            throw new NullPointerException(
+                    "Unable to write the provided coverage in the debug directory");
+        if (DEBUG == false)
+            throw new IllegalStateException(
+                    "Unable to write the provided coverage since we are not in debug mode");
+        try {
+            ImageIO.write(raster, "tiff", new File(DEBUG_DIR, fileName + ".tiff"));
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
+        }
+    }
 }

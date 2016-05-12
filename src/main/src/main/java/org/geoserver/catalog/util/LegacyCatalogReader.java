@@ -106,8 +106,8 @@ public class LegacyCatalogReader {
             String id = ReaderUtils.getAttribute(dataStoreElement, "id", true );
             dataStore.put( "id", id );
             dataStore.put( "namespace", ReaderUtils.getAttribute(dataStoreElement, "namespace", false ) );
-    		dataStore.put( "enabled", 
-    				Boolean.valueOf( ReaderUtils.getBooleanAttribute( dataStoreElement, "enabled", false, true ) ) );
+            dataStore.put( "enabled", 
+                    Boolean.valueOf( ReaderUtils.getBooleanAttribute( dataStoreElement, "enabled", false, true ) ) );
             try {
                 Map params = dataStoreParams(dataStoreElement);
                 dataStore.put( "connectionParams", params );
@@ -146,7 +146,7 @@ public class LegacyCatalogReader {
      * @throws Exception If error processing "datastores" element.
      */
     public List<Map<String,Object>> formats() throws Exception {
-    	Element formatsElement = ReaderUtils.getChildElement(catalog, "formats", true);
+        Element formatsElement = ReaderUtils.getChildElement(catalog, "formats", true);
 
         NodeList formatElements = formatsElement.getElementsByTagName("format");
         ArrayList formats = new ArrayList();
@@ -159,13 +159,13 @@ public class LegacyCatalogReader {
             format.put( "id", ReaderUtils.getAttribute(formatElement, "id", true ) );
             format.put( "namespace", ReaderUtils.getAttribute(formatElement, "namespace", false ) );
             format.put( "enabled", 
-    				Boolean.valueOf( ReaderUtils.getBooleanAttribute( formatElement, "enabled", false, true ) ) );
+                    Boolean.valueOf( ReaderUtils.getBooleanAttribute( formatElement, "enabled", false, true ) ) );
 
             format.put( "type", ReaderUtils.getChildText(formatElement, "type", true ) );
             format.put( "url", ReaderUtils.getChildText(formatElement, "url", false ) );
             format.put( "title", ReaderUtils.getChildText(formatElement, "title", false ) );
             format.put( "description", ReaderUtils.getChildText(formatElement, "description", false ) );
-            		
+                    
             formats.add(format);
         }
 
@@ -221,7 +221,7 @@ public class LegacyCatalogReader {
      * @throws Exception If error processing "styles" element.
      */
     public Map<String,String> styles() throws Exception {
-    	 Element stylesElement = ReaderUtils.getChildElement(catalog, "styles", true);
+         Element stylesElement = ReaderUtils.getChildElement(catalog, "styles", true);
 
          NodeList styleElements = stylesElement.getElementsByTagName("style");
          Map styles = new HashMap();

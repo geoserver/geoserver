@@ -41,7 +41,7 @@ public class GetCapabilities {
      */
     Catalog catalog;
 
-	private final Collection<WFSExtendedCapabilitiesProvider> extendedCapabilitiesProviders;
+    private final Collection<WFSExtendedCapabilitiesProvider> extendedCapabilitiesProviders;
 
     /**
      * Creates a new wfs 1.0/1.1 GetCapabilitis operation.
@@ -114,6 +114,6 @@ public class GetCapabilities {
         List<String> accepted = request.getAcceptVersions();
 
         String version = RequestUtils.getVersionPreOws(provided, accepted);
-		return version;
-	}
+        return version;
+    }
 }

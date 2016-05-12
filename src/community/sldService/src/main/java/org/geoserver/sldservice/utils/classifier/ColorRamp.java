@@ -16,23 +16,23 @@ import java.util.List;
  *
  */
 public interface ColorRamp{
-	/**
-	 * Set the new classes number and update the color ramp
-	 * @param numClass color ramp number of classes
-	 */
-	public void setNumClasses(int numClass);
-	/**
-	 * 
-	 * @return int classes number
-	 */
-	public int getNumClasses();
-	/**
-	 * Return the color ramp 
-	 * @return Color[]
-	 */
-	public List<Color> getRamp() throws Exception;	
-	/**
-	 * revert color ramp order
-	 */
-	public void revert();
+    /**
+     * Set the new classes number and update the color ramp
+     * @param numClass color ramp number of classes
+     */
+    public void setNumClasses(int numClass);
+    /**
+     * 
+     * @return int classes number
+     */
+    public int getNumClasses();
+    /**
+     * Return the color ramp 
+     * @return Color[]
+     */
+    public List<Color> getRamp() throws Exception;    
+    /**
+     * revert color ramp order
+     */
+    public void revert();
 }

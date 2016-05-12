@@ -50,8 +50,8 @@ public class BilWCSUtils extends WCSUtils {
         hints.add(LENIENT_HINT);
     }
 
-	
-	/**
+    
+    /**
      * <strong>Reprojecting</strong><br>
      * The new grid geometry can have a different coordinate reference system
      * than the underlying grid geometry. For example, a grid coverage can be

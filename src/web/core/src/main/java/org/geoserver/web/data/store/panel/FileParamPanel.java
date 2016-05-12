@@ -30,8 +30,8 @@ import org.geoserver.web.wicket.browser.GeoServerFileChooser;
  */
 public class FileParamPanel extends Panel implements ParamPanel {
 
-	private static final long serialVersionUID = 2630421795437249103L;
-	TextField<String> textField;
+    private static final long serialVersionUID = 2630421795437249103L;
+    TextField<String> textField;
     ModalWindow dialog;
     IModel<? extends FileFilter> fileFilter;
     
@@ -46,7 +46,7 @@ public class FileParamPanel extends Panel implements ParamPanel {
      *            any extra validator that should be added to the input field, or {@code null}
      */
     @SafeVarargs
-	public FileParamPanel(final String id, final IModel<String> paramValue, final IModel<String> paramLabelModel,
+    public FileParamPanel(final String id, final IModel<String> paramValue, final IModel<String> paramLabelModel,
             final boolean required, IValidator<? super String>... validators) {
         // make the value of the text field the model of this panel, for easy value retrieval
         super(id, paramValue);
@@ -82,9 +82,9 @@ public class FileParamPanel extends Panel implements ParamPanel {
     protected Component chooserButton(final String windowTitle) {
         AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
             
-			private static final long serialVersionUID = -6640131658256808053L;
+            private static final long serialVersionUID = -6640131658256808053L;
 
-			@Override
+            @Override
             public boolean getDefaultFormProcessing() {
                 return false;
             }

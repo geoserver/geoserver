@@ -38,8 +38,8 @@ public class ExecuteOnCoverageTest extends WPSTestSupport {
     private final String version;
 
     @Parameters
-    public static Collection<Object[]> getParameters(){	
-	return Arrays.asList(new Object[]{"1.1.1"},new Object[]{"2.0.0"});
+    public static Collection<Object[]> getParameters(){    
+    return Arrays.asList(new Object[]{"1.1.1"},new Object[]{"2.0.0"});
     }
     
     @Override
@@ -51,7 +51,7 @@ public class ExecuteOnCoverageTest extends WPSTestSupport {
     
     
     public ExecuteOnCoverageTest(String version) {
-	this.version = version;
+    this.version = version;
     }
     
     /**
@@ -59,10 +59,10 @@ public class ExecuteOnCoverageTest extends WPSTestSupport {
      */
     @Test
     public void testCrop() throws Exception {
-	String wcsRequest = WCS2GetCoverageRequestBuilder.newBuilder()
-		.coverageId(getLayerId(MockData.TASMANIA_DEM))
-		.bbox(130.0, 150,-44., -40)
-		.asXML(version);
+    String wcsRequest = WCS2GetCoverageRequestBuilder.newBuilder()
+        .coverageId(getLayerId(MockData.TASMANIA_DEM))
+        .bbox(130.0, 150,-44., -40)
+        .asXML(version);
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
                 + "  <ows:Identifier>gs:CropCoverage</ows:Identifier>\n"
@@ -71,7 +71,7 @@ public class ExecuteOnCoverageTest extends WPSTestSupport {
                 + "      <ows:Identifier>coverage</ows:Identifier>\n"
                 + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
                 + "        <wps:Body>\n"
-                + 		wcsRequest
+                +         wcsRequest
                 + "        </wps:Body>\n"
                 + "      </wps:Reference>\n"
                 + "    </wps:Input>\n"

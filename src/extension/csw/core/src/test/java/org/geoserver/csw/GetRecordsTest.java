@@ -432,7 +432,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
     @Test 
     public void testSortByDateSelectElements() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results" +
-        		"&elementName=dc:identifier,dc:type,dc:date&sortBy=dc:date:A";
+                "&elementName=dc:identifier,dc:type,dc:date&sortBy=dc:date:A";
         Document d = getAsDOM(request);
         checkValidationErrors(d, new CSWConfiguration());
         // print(d);
@@ -525,7 +525,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
         assertGMLTimestamp(timeStamp);
         
         assertXpathEvaluatesTo("*lorem*", "/csw:Acknowledgement/csw:EchoedRequest/csw:GetRecords/csw:Query/" +
-        		"csw:Constraint/ogc:Filter/ogc:PropertyIsLike/ogc:Literal", d);
+                "csw:Constraint/ogc:Filter/ogc:PropertyIsLike/ogc:Literal", d);
     }
     
     @Test 

@@ -139,7 +139,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                     // checked before creating the transformer
                     throw new IllegalArgumentException("Failed to locate coverage " 
                             + encodedCoverageId + ", unexpected, the coverage existance has been " +
-                            		"checked earlier in the request lifecycle");
+                                    "checked earlier in the request lifecycle");
                 }
             }
             

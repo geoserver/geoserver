@@ -17,11 +17,11 @@ import org.geoserver.platform.ServiceException;
  */
 public class WcsException extends ServiceException {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = -6110652531274829497L;
+     * 
+     */
+    private static final long serialVersionUID = -6110652531274829497L;
 
-	public enum WcsExceptionCode {
+    public enum WcsExceptionCode {
         MissingParameterValue, 
         InvalidParameterValue, 
         NoApplicableCode, 

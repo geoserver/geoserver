@@ -57,7 +57,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
     private class GridSubsetListValidator implements IValidator<Set<XMLGridSubset>> {
 
         private static final long serialVersionUID = -2646310164736911748L;
-		
+        
         private boolean validate;
 
         public GridSubsetListValidator() {

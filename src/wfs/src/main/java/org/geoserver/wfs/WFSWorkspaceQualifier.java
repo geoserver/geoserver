@@ -163,7 +163,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
                     //in the replace case the objects are gt feature types which are not mutable
                     // so we just check them and throw an exception if a name does not match
                     List features = rep.getFeatures();
-                    ensureFeatureNamespaceUriMatches(features, ns, t);                	
+                    ensureFeatureNamespaceUriMatches(features, ns, t);                    
                 }
                 else {
                     el.setTypeName(qualifyTypeName(el.getTypeName(), workspace, ns));
@@ -178,15 +178,15 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
      * @param ns
      * @param t
      */
-	private void ensureFeatureNamespaceUriMatches(List features,
+    private void ensureFeatureNamespaceUriMatches(List features,
             NamespaceInfo ns, TransactionRequest t) {
-	    for (Iterator j = features.iterator(); j.hasNext(); ) {
-	        Feature f = (Feature) j.next();
-	        Name n = f.getType().getName();
-	        if (n.getNamespaceURI() != null && !ns.getURI().equals(n.getNamespaceURI())) {
-	            throw new WFSException(t, "No such feature type " + n);
-	        }
-	    }
+        for (Iterator j = features.iterator(); j.hasNext(); ) {
+            Feature f = (Feature) j.next();
+            Name n = f.getType().getName();
+            if (n.getNamespaceURI() != null && !ns.getURI().equals(n.getNamespaceURI())) {
+                throw new WFSException(t, "No such feature type " + n);
+            }
+        }
     }
     
     void qualifyTypeNames(List names, WorkspaceInfo ws, NamespaceInfo ns) {

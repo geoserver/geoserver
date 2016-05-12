@@ -24,10 +24,10 @@ public class DescribeLayer {
 private static final Logger LOGGER = Logging.getLogger(DescribeLayerModel.class);
     
     public DescribeLayer() {
-    	
+        
     }
 
-	private final List<LayerDescription> layerDescriptions=new ArrayList<LayerDescription>();
+    private final List<LayerDescription> layerDescriptions=new ArrayList<LayerDescription>();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static DescribeLayerModel run(final DescribeLayerRequest request) throws ServiceException {

@@ -24,8 +24,8 @@ import org.jaitools.numeric.Range;
  * @source $URL$
  */
 public class JAIToolsRangeConverterFactory implements ConverterFactory {
-	
-	private final static String RE_OPEN  = "(\\(|\\[)"; // char for opening a range
+    
+    private final static String RE_OPEN  = "(\\(|\\[)"; // char for opening a range
     private final static String RE_CLOSE = "(\\)|\\])"; // char for closing range
     private final static String RE_NUM   = "(\\-?\\d+(?:\\.\\d*)?)?"; // a nullable general number
 
@@ -35,28 +35,28 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
     private final static String RANGELIST_REGEX = "(" + RE_OPEN + RE_NUM + ";" + RE_NUM + RE_CLOSE + ")+" ; // "\\z";
     private final static Pattern RANGELIST_PATTERN = Pattern.compile(RANGELIST_REGEX);
 
-	public Converter createConverter(Class source, Class target, Hints hints) {
-		if (target.equals(Range.class) && source.equals(String.class)) {
-			return new Converter() {
+    public Converter createConverter(Class source, Class target, Hints hints) {
+        if (target.equals(Range.class) && source.equals(String.class)) {
+            return new Converter() {
 
-				public <T> T convert(Object source, Class<T> target)
-						throws Exception {
-					String sRange = (String) source;
-					Matcher m = RANGE_PATTERN.matcher(sRange);
-			        
-			        if( ! m.matches())
-			            return null;
+                public <T> T convert(Object source, Class<T> target)
+                        throws Exception {
+                    String sRange = (String) source;
+                    Matcher m = RANGE_PATTERN.matcher(sRange);
+                    
+                    if( ! m.matches())
+                        return null;
 
-			        return (T) parseRangeInternal(m, sRange);
-				}
-				
-			};
-		}
+                    return (T) parseRangeInternal(m, sRange);
+                }
+                
+            };
+        }
 
-		return null;
-	}
-	
-	/**
+        return null;
+    }
+    
+    /**
      * Return the parsed Range.
      *
      * @param sRange

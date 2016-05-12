@@ -540,7 +540,7 @@ public class WMS implements ApplicationContextAware {
     }
 
     public int getMaxAllowedFrames() {
-    	return getMetadataValue(MAX_ALLOWED_FRAMES, MAX_ALLOWED_FRAMES_DEFAULT, Integer.class);
+        return getMetadataValue(MAX_ALLOWED_FRAMES, MAX_ALLOWED_FRAMES_DEFAULT, Integer.class);
     }
     
     public Long getMaxAnimatorRenderingTime() {
@@ -588,11 +588,11 @@ public class WMS implements ApplicationContextAware {
 
         MetadataMap metadata = getServiceInfo().getMetadata();
 
-    	T parsedValue =  Converters.convert(metadata.get(key), clazz);
-    	if (parsedValue == null)
+        T parsedValue =  Converters.convert(metadata.get(key), clazz);
+        if (parsedValue == null)
             return defaultValue;
-    	
-    	return parsedValue;
+        
+        return parsedValue;
     }
     
     public int getNumDecimals() {

@@ -458,7 +458,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
                 throw createSecurityException(RESERVED_ROLE_NAME,systemRole.getAuthority());
             if (systemRole.getAuthority().equals(config.getGroupAdminRoleName()))
                 throw createSecurityException(RESERVED_ROLE_NAME,systemRole.getAuthority());
-        }    	
+        }        
     }
 
     public void validate(SecurityUserGroupServiceConfig config) throws SecurityConfigException {

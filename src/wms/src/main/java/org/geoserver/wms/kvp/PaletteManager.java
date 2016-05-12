@@ -150,84 +150,84 @@ public class PaletteManager {
             opCache.put(key,  op);
             return op;
         }
-	}
+    }
 
-	/**
-	 * Builds the internet safe paletteInverter
-	 */
-	static IndexColorModel buildDefaultPalette() {
-		int[] cmap = new int[256];
+    /**
+     * Builds the internet safe paletteInverter
+     */
+    static IndexColorModel buildDefaultPalette() {
+        int[] cmap = new int[256];
 
-		// Create the standard 6x6x6 color cube (all elements do cycle
-		// between 00, 33, 66, 99, CC and FF, the decimal difference is 51)
-		// The color is made of alpha, red, green and blue, in this order, from
-		// the most significant bit onwards.
-		int i = 0;
-		int opaqueAlpha = 255 << 24;
+        // Create the standard 6x6x6 color cube (all elements do cycle
+        // between 00, 33, 66, 99, CC and FF, the decimal difference is 51)
+        // The color is made of alpha, red, green and blue, in this order, from
+        // the most significant bit onwards.
+        int i = 0;
+        int opaqueAlpha = 255 << 24;
 
-		for (int r = 0; r < 256; r += 51) {
-			for (int g = 0; g < 256; g += 51) {
-				for (int b = 0; b < 256; b += 51) {
-					cmap[i] = opaqueAlpha | (r << 16) | (g << 8) | b;
-					i++;
-				}
-			}
-		}
+        for (int r = 0; r < 256; r += 51) {
+            for (int g = 0; g < 256; g += 51) {
+                for (int b = 0; b < 256; b += 51) {
+                    cmap[i] = opaqueAlpha | (r << 16) | (g << 8) | b;
+                    i++;
+                }
+            }
+        }
 
-		// The gray scale. Make sure we end up with gray == 255
-		int grayIncr = 256 / (255 - i);
-		int gray = 255 - ((255 - i - 1) * grayIncr);
+        // The gray scale. Make sure we end up with gray == 255
+        int grayIncr = 256 / (255 - i);
+        int gray = 255 - ((255 - i - 1) * grayIncr);
 
-		for (; i < 255; i++) {
-			cmap[i] = opaqueAlpha | (gray << 16) | (gray << 8) | gray;
-			gray += grayIncr;
-		}
+        for (; i < 255; i++) {
+            cmap[i] = opaqueAlpha | (gray << 16) | (gray << 8) | gray;
+            gray += grayIncr;
+        }
 
-		// setup the transparent color (alpha == 0)
-		cmap[255] = (255 << 16) | (255 << 8) | 255;
+        // setup the transparent color (alpha == 0)
+        cmap[255] = (255 << 16) | (255 << 8) | 255;
 
-		// create the color model
-		return new IndexColorModel(8, 256, cmap, 0, true, 255,
-				DataBuffer.TYPE_BYTE);
-	}
+        // create the color model
+        return new IndexColorModel(8, 256, cmap, 0, true, 255,
+                DataBuffer.TYPE_BYTE);
+    }
 
-	/**
-	 * An entry in the paletteInverter cache. Can determine wheter it's stale or not,
-	 * too
-	 */
-	private static class PaletteCacheEntry {
-		Resource file;
+    /**
+     * An entry in the paletteInverter cache. Can determine wheter it's stale or not,
+     * too
+     */
+    private static class PaletteCacheEntry {
+        Resource file;
 
-		long lastModified;
+        long lastModified;
 
-		IndexColorModel icm;
+        IndexColorModel icm;
 
-		public PaletteCacheEntry(Resource file,
-				IndexColorModel icm) {
-			this.file = file;
-			this.icm = icm;
-			this.lastModified = file.lastmodified();
-		}
+        public PaletteCacheEntry(Resource file,
+                IndexColorModel icm) {
+            this.file = file;
+            this.icm = icm;
+            this.lastModified = file.lastmodified();
+        }
 
-		/**
-		 * Returns true if the backing file does not exist any more, or has been
-		 * modified
-		 * 
-		 *
-		 */
-		public boolean isStale() {
-			return !Resources.exists(file) || (file.lastmodified() != lastModified);
-		}
-	}
-	
-	/**
-	 * IndexColorModel has a broken hashcode implementation (inherited from ColorModel
-	 * and not overridden), use a custom key that leverages identity hash code instead
-	 * (a full equals would be expensive, palettes can have 65k entries)
-	 */
-	private static class IndexColorModelKey {
-	    IndexColorModel icm;
-	    
+        /**
+         * Returns true if the backing file does not exist any more, or has been
+         * modified
+         * 
+         *
+         */
+        public boolean isStale() {
+            return !Resources.exists(file) || (file.lastmodified() != lastModified);
+        }
+    }
+    
+    /**
+     * IndexColorModel has a broken hashcode implementation (inherited from ColorModel
+     * and not overridden), use a custom key that leverages identity hash code instead
+     * (a full equals would be expensive, palettes can have 65k entries)
+     */
+    private static class IndexColorModelKey {
+        IndexColorModel icm;
+        
         public IndexColorModelKey(IndexColorModel icm) {
             this.icm = icm;
         }
@@ -248,7 +248,7 @@ public class PaletteManager {
             IndexColorModelKey other = (IndexColorModelKey) obj;
             return icm == other.icm;
         }
-	    
-	    
-	}
+        
+        
+    }
 }

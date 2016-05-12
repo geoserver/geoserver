@@ -683,9 +683,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     @Test
     public void testMosaicHoles() throws Exception {
         String url = "wms?LAYERS=sf%3Amosaic_holes&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1" +
-        		"&REQUEST=GetMap&STYLES=&SRS=EPSG%3A4326" +
-        		"&BBOX=6.40284375,36.385494140625,12.189662109375,42.444494140625" +
-        		"&WIDTH=489&HEIGHT=512&transparent=true";
+                "&REQUEST=GetMap&STYLES=&SRS=EPSG%3A4326" +
+                "&BBOX=6.40284375,36.385494140625,12.189662109375,42.444494140625" +
+                "&WIDTH=489&HEIGHT=512&transparent=true";
         BufferedImage bi = getAsImage(url, "image/png");
         int[] pixel = new int[4];
         bi.getRaster().getPixel(0, 250, pixel);

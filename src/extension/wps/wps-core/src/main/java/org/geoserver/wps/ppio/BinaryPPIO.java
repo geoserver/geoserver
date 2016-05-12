@@ -14,8 +14,8 @@ package org.geoserver.wps.ppio;
  */
 public abstract class BinaryPPIO extends ComplexPPIO {
 
-	protected BinaryPPIO(Class externalType, Class internalType, String mimeType) {
-		super(externalType, internalType, mimeType);
-	}
+    protected BinaryPPIO(Class externalType, Class internalType, String mimeType) {
+        super(externalType, internalType, mimeType);
+    }
 
 }

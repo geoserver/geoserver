@@ -80,7 +80,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader implements Appl
         if("true".equals(kvp.get("storeExecuteResponse"))) {
             if(execute.getResponseForm().getResponseDocument() == null) {
                 throw new WPSException("InvalidParameterValue", "Cannot store the response for raw data outputs, " +
-                		"please use response document instead");
+                        "please use response document instead");
             }
             execute.getResponseForm().getResponseDocument().setStoreExecuteResponse(true);
         }
@@ -100,7 +100,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader implements Appl
             }
             if(!execute.getResponseForm().getResponseDocument().isStoreExecuteResponse()) {
                 throw new WPSException("InvalidParameterValue", "Cannot add status if the response " +
-                		"is not stored, please add storeExecuteResponse=true your request");
+                        "is not stored, please add storeExecuteResponse=true your request");
             }
             execute.getResponseForm().getResponseDocument().setStatus(true);
         }

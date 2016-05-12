@@ -65,7 +65,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
  * @author Andrea Aime - GeoSolutions
  */
 public class CSWRecordDescriptor extends AbstractRecordDescriptor {
-	        
+            
     private static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     
     /**

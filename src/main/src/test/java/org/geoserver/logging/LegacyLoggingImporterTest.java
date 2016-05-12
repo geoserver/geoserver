@@ -25,7 +25,7 @@ public class LegacyLoggingImporterTest {
         
         importer = new LegacyLoggingImporter();
         importer.imprt( 
-        		DataUtilities.urlToFile(getClass().getResource("services.xml")).getParentFile());
+                DataUtilities.urlToFile(getClass().getResource("services.xml")).getParentFile());
     }
     
     @Test

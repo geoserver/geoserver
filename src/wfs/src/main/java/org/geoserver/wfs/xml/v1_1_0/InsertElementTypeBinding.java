@@ -185,7 +185,7 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
         }
 
         //&lt;xsd:attribute default="GenerateNew" name="idgen"
-        //		type="wfs:IdentifierGenerationOptionType" use="optional"&gt;
+        //        type="wfs:IdentifierGenerationOptionType" use="optional"&gt;
         if (node.hasAttribute("idgen")) {
             insertElement.setIdgen((IdentifierGenerationOptionType) node.getAttributeValue("idgen"));
         }
@@ -196,7 +196,7 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
         }
 
         //&lt;xsd:attribute default="text/xml; subtype=gml/3.1.1"
-        //		 name="inputFormat" type="xsd:string" use="optional"&gt;
+        //         name="inputFormat" type="xsd:string" use="optional"&gt;
         if (node.hasAttribute("inputFormat")) {
             insertElement.setInputFormat((String) node.getAttributeValue("inputFormat"));
         }

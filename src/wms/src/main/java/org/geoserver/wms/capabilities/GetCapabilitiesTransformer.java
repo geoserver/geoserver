@@ -207,9 +207,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
         private static final String MIN_DENOMINATOR_ATTR = "min";
 
-		private static final String MAX_DENOMINATOR_ATTR = "max";
+        private static final String MAX_DENOMINATOR_ATTR = "max";
 
-		private static final String EPSG = "EPSG:";
+        private static final String EPSG = "EPSG:";
 
         private static AttributesImpl wmsVersion = new AttributesImpl();
 
@@ -1028,7 +1028,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 }else{
                     minScaleHint = scaleDenominators.getMinValue();
                     maxScaleHint = scaleDenominators.getMaxValue();
-                }	
+                }    
                 
 
                 AttributesImpl attrs = new AttributesImpl();
@@ -1043,7 +1043,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         }
 
 
-	private String qualifySRS(String srs) {
+    private String qualifySRS(String srs) {
            if (srs.indexOf(':') == -1) {
                srs = EPSG + srs;
            }

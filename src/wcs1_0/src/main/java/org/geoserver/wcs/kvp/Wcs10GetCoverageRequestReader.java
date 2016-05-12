@@ -64,7 +64,7 @@ import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
 
     public static final String VERSION = "1.0.0";
-	Catalog catalog;
+    Catalog catalog;
 
     public Wcs10GetCoverageRequestReader(Catalog catalog) {
         super(GetCoverageType.class, Wcs10Factory.eINSTANCE);
@@ -138,7 +138,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
             throw new WcsException("CRS parameter is mandatory", MissingParameterValue, "crs");
         final CoordinateReferenceSystem crs = decodeCRS100(crsName);
         if(crs==null)
-        	throw new WcsException("CRS parameter is invalid:"+crsName,InvalidParameterValue , "crs");
+            throw new WcsException("CRS parameter is invalid:"+crsName,InvalidParameterValue , "crs");
 //        final VerticalCRS verticalCRS = CRS.getVerticalCRS(crs);
 //        final boolean hasVerticalCRS = verticalCRS != null;
 
@@ -195,7 +195,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         if (w != null && h != null) {
             //
             // normal grid management, only the envelope and the raster dimensions have been specified, 
-        	// we need to compute RESX, RESY, RESZ afterwards
+            // we need to compute RESX, RESY, RESZ afterwards
             //
 
             // get W and H
@@ -242,11 +242,11 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
             final Object ry = kvp.get("resy");
             if (rx != null && ry != null) {
                 // get resx e resy but correct also the sign for them taking into account 
-            	final CoordinateSystem cs=crs.getCoordinateSystem();
-            	final AxisDirection northingDirection=cs.getAxis(1).getDirection();
-            	final int yAxisCorrection=AxisDirection.NORTH.equals(northingDirection)?-1:1;
-            	final AxisDirection eastingDirection=cs.getAxis(0).getDirection();
-            	final int xAxisCorrection=AxisDirection.EAST.equals(eastingDirection)?1:-1;
+                final CoordinateSystem cs=crs.getCoordinateSystem();
+                final AxisDirection northingDirection=cs.getAxis(1).getDirection();
+                final int yAxisCorrection=AxisDirection.NORTH.equals(northingDirection)?-1:1;
+                final AxisDirection eastingDirection=cs.getAxis(0).getDirection();
+                final int xAxisCorrection=AxisDirection.EAST.equals(eastingDirection)?1:-1;
                 final double resX = Double.parseDouble((String) rx)*xAxisCorrection;
                 final double resY = Double.parseDouble((String) ry)*yAxisCorrection;
                 

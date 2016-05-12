@@ -109,7 +109,7 @@ public class RetypingDataStore implements DataStore {
     public SimpleFeatureType getSchema(String typeName) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, false);
         if(map == null)
-        	throw new IOException("Unknown type " + typeName);
+            throw new IOException("Unknown type " + typeName);
         updateMap(map, true);
         return map.getFeatureType();
     }

@@ -168,7 +168,7 @@ public class GpxEncoder {
         writer.close();
         return;
         /*
-		*/
+        */
     }
 
     private void writeCoordinates(XMLStreamWriter writer, String ptElementName, LineString ls)

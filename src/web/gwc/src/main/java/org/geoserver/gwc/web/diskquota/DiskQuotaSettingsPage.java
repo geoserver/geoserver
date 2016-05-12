@@ -34,7 +34,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
 
         private static final long serialVersionUID = 75816375328629448L;
 
-	public DiskQuotaSettingsPage() throws Exception {
+    public DiskQuotaSettingsPage() throws Exception {
         GWC gwc = getGWC();
 
         final boolean diskQuotaModuleDisabled = gwc.getDiskQuotaConfig() == null;

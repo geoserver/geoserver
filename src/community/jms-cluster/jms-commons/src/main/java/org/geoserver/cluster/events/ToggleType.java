@@ -6,6 +6,6 @@
 package org.geoserver.cluster.events;
 
 public enum ToggleType{
-	MASTER,
-	SLAVE
+    MASTER,
+    SLAVE
 }

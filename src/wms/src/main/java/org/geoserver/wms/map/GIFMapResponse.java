@@ -229,7 +229,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
                 if (ri != null) {
                     // prepare metadata and write param
                     final IIOMetadata imageMetadata = gifWriter.getDefaultImageMetadata(
-                    	new ImageTypeSpecifier(ri), param);
+                        new ImageTypeSpecifier(ri), param);
                     prepareMetadata(ri, imageMetadata, loopContinuosly, delay, disposalMethod);
 
                     // write

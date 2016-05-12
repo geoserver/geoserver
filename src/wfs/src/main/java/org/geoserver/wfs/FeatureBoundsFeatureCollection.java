@@ -142,7 +142,7 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
            return getPrimaryGeometry();
         }
         public Geometry getPrimaryGeometry() {
-        	 GeometryDescriptor defaultGeometry = type.getGeometryDescriptor();
+             GeometryDescriptor defaultGeometry = type.getGeometryDescriptor();
              if(defaultGeometry == null)
                  return null;
              return (Geometry) delegate.getAttribute(defaultGeometry.getName());

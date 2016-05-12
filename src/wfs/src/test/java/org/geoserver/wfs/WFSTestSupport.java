@@ -87,7 +87,7 @@ public abstract class WFSTestSupport extends GeoServerSystemTestSupport {
         setUpInternal(testData);
     }
     
-    protected void setUpInternal(SystemTestData testData) throws Exception {    	
+    protected void setUpInternal(SystemTestData testData) throws Exception {        
     }
     
 

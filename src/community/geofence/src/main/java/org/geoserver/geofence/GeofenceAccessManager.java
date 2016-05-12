@@ -272,8 +272,8 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     {
         //return getAccessLimits(user, style.getResource());
         LOGGER.fine("Not limiting styles");
-    	return null;
-    	// TODO
+        return null;
+        // TODO
     }
 
     @Override
@@ -282,8 +282,8 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     {
         //return getAccessLimits(user, layerInfo.getResource());
         LOGGER.fine("Not limiting layergroups");
-    	return null;
-    	// TODO
+        return null;
+        // TODO
     }
 
     @Override
@@ -422,7 +422,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     
     }
 
-	/**
+    /**
      * @param resource
      * @param rule
      *
@@ -657,16 +657,16 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         List<LayerInfo> layers = new ArrayList<LayerInfo>();
         LayerInfo candidateLayer = catalog.getLayerByName(layerName);
         if(candidateLayer == null) {
-        	if(layerName.indexOf(":") == -1) {
-        		// add namespace info to candidate layer group name
-        		if(LocalWorkspace.get() != null) {
-             		layerName = LocalWorkspace.get().getName() + ":" + layerName;
-             	} else if(catalog.getDefaultWorkspace() != null) {
-             		layerName = catalog.getDefaultWorkspace().getName() + ":" + layerName;
-             	}
-        	}
-        	LayerGroupInfo layerGroup = catalog.getLayerGroupByName(layerName);
-        	if(layerGroup != null) {
+            if(layerName.indexOf(":") == -1) {
+                // add namespace info to candidate layer group name
+                if(LocalWorkspace.get() != null) {
+                     layerName = LocalWorkspace.get().getName() + ":" + layerName;
+                 } else if(catalog.getDefaultWorkspace() != null) {
+                     layerName = catalog.getDefaultWorkspace().getName() + ":" + layerName;
+                 }
+            }
+            LayerGroupInfo layerGroup = catalog.getLayerGroupByName(layerName);
+            if(layerGroup != null) {
                 for (PublishedInfo publishedInfo : layerGroup.getLayers()) {
                     if(publishedInfo instanceof LayerInfo) {
                         layers.add((LayerInfo)publishedInfo);
@@ -676,16 +676,16 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
                         }
                     }
                 }
-        	}
+            }
         } else {
-        	layers.add(candidateLayer);
+            layers.add(candidateLayer);
         }
         
         // get the request object
         GetLegendGraphicRequest getLegend = (GetLegendGraphicRequest) operation.getParameters()[0];
         
         for(LayerInfo layer : layers) {
-        	ResourceInfo resource = layer.getResource();
+            ResourceInfo resource = layer.getResource();
 
             // get the rule, it contains default and allowed styles
             RuleFilter ruleFilter = new RuleFilter(RuleFilter.SpecialFilterType.ANY);
@@ -723,14 +723,14 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     }
 
     void overrideGetMapRequest(Request gsRequest, String service, String request,
-    		Authentication user, GetMapRequest getMap)
+            Authentication user, GetMapRequest getMap)
     {
-		if (gsRequest.getKvp().get("layers") == null
-				&& gsRequest.getKvp().get("sld") == null
-				&& gsRequest.getKvp().get("sld_body") == null) {
+        if (gsRequest.getKvp().get("layers") == null
+                && gsRequest.getKvp().get("sld") == null
+                && gsRequest.getKvp().get("sld_body") == null) {
             throw new ServiceException("GetMap POST requests are forbidden");
         }
-		
+        
         // check for dynamic style
         if ((getMap.getSld() != null) || (getMap.getSldBody() != null)) {
             if( !configurationManager.getConfiguration().isAllowDynamicStyles() ) {
@@ -750,7 +750,7 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             MapLayerInfo layer = layers.get(i);
             ResourceInfo info = null;
             if(layer.getType() == MapLayerInfo.TYPE_VECTOR || layer.getType() == MapLayerInfo.TYPE_RASTER) {
-            	info = layer.getResource();
+                info = layer.getResource();
             } else if(!configurationManager.getConfiguration().isAllowRemoteAndInlineLayers()) {
                 throw new ServiceException("Remote layers are not allowed");                
             }
@@ -763,12 +763,12 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             ruleFilter.setService(service);
             ruleFilter.setRequest(request);
             if(info != null) {
-	            ruleFilter.setWorkspace(info.getStore().getWorkspace().getName());
-	            ruleFilter.setLayer(info.getName());
-	            
+                ruleFilter.setWorkspace(info.getStore().getWorkspace().getName());
+                ruleFilter.setLayer(info.getName());
+                
             } else {
-            	ruleFilter.setWorkspace(RuleFilter.SpecialFilterType.ANY);
-            	ruleFilter.setLayer(RuleFilter.SpecialFilterType.ANY);
+                ruleFilter.setWorkspace(RuleFilter.SpecialFilterType.ANY);
+                ruleFilter.setLayer(RuleFilter.SpecialFilterType.ANY);
             }
 
             LOGGER.log(Level.FINE, "Getting access limits for getMap", ruleFilter);

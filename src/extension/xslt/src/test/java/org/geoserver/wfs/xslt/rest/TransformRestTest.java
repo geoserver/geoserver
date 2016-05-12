@@ -106,14 +106,14 @@ public class TransformRestTest extends XSLTTestSupport {
     public void testPostXML() throws Exception {
         String xml = "<transform>\n" +
                 "  <name>buildings</name>\n" + //
-        		"  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>\n" + // 
-        		"  <outputFormat>text/html</outputFormat>\n" + //
-        		"  <fileExtension>html</fileExtension>\n" + //
-        		"  <xslt>buildings.xslt</xslt>\n" + //
-        		"  <featureType>\n" + //
-        		"    <name>cite:Buildings</name>\n" + // 
-        		"  </featureType>\n" + 
-        		"</transform>\n";
+                "  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>\n" + // 
+                "  <outputFormat>text/html</outputFormat>\n" + //
+                "  <fileExtension>html</fileExtension>\n" + //
+                "  <xslt>buildings.xslt</xslt>\n" + //
+                "  <featureType>\n" + //
+                "    <name>cite:Buildings</name>\n" + // 
+                "  </featureType>\n" + 
+                "</transform>\n";
         MockHttpServletResponse response = postAsServletResponse("rest/services/wfs/transforms", xml);
         assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
@@ -148,11 +148,11 @@ public class TransformRestTest extends XSLTTestSupport {
     public void testPutXML() throws Exception {
         // let's change the output format
         String xml = "<transform>\n" + 
-        		"  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>\n" + 
-        		"  <outputFormat>text/html</outputFormat>\n" + 
-        		"  <fileExtension>html</fileExtension>\n" + 
-        		"  <xslt>general.xslt</xslt>\n" + 
-        		"</transform>";
+                "  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>\n" + 
+                "  <outputFormat>text/html</outputFormat>\n" + 
+                "  <fileExtension>html</fileExtension>\n" + 
+                "  <xslt>general.xslt</xslt>\n" + 
+                "</transform>";
         
         MockHttpServletResponse response = putAsServletResponse("rest/services/wfs/transforms/general", xml, "text/xml");
         assertEquals(200, response.getStatus());

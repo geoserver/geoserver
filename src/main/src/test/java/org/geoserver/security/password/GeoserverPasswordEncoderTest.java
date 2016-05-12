@@ -415,7 +415,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
             if (enc.getPrefix()!= null && enc.getPrefix().equals("plain4711")) {
                 found=true;
                 break;
-            }            		
+            }                    
         }
         assertTrue(found);
     }

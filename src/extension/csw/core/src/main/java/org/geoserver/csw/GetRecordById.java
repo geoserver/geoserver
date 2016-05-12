@@ -116,7 +116,7 @@ public class GetRecordById {
         
         Set<FeatureId> fids = new HashSet<FeatureId>();
         for (URI id: ids) {
-        	fids.add (FF.featureId(id.toString()));
+            fids.add (FF.featureId(id.toString()));
         }
         
         Filter filter = FF.id(fids);

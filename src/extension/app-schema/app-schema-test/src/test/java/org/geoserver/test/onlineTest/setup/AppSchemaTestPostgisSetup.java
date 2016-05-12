@@ -191,9 +191,9 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                     for (Property prop : properties) {
                         Object value = prop.getValue();
                         if (value instanceof Geometry) {
-                        	//use wkt writer to convert geometry to string, so third dimension can be supported if present.
-                        	Geometry geom = (Geometry) value;
-                        	value = new WKTWriter(geom.getCoordinate().z == Double.NaN? 2 : 3).write(geom);
+                            //use wkt writer to convert geometry to string, so third dimension can be supported if present.
+                            Geometry geom = (Geometry) value;
+                            value = new WKTWriter(geom.getCoordinate().z == Double.NaN? 2 : 3).write(geom);
                         }
                         if (value == null || value.toString().equalsIgnoreCase("null")) {
                             values[valueIndex] = "null";

@@ -56,31 +56,31 @@ public class AnimatorTest extends WMSTestSupport {
      */
     @org.junit.Test
     public void testFrameCatalog() throws Exception {
-    	final WebMapService wms = (WebMapService) applicationContext.getBean("wmsService2");
-    	final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
-        	MockData.BASIC_POLYGONS.getLocalPart();
-    	
-    	GetMapRequest getMapRequest = createGetMapRequest(new QName(layerName));
-    	
-    	FrameCatalog catalog = null;
-    	try {
-    		catalog = new FrameCatalog(getMapRequest, wms, getWMS());
-    	} catch (RuntimeException e) {
-    		assertEquals("Missing \"animator\" mandatory params \"aparam\" and \"avalues\".", e.getLocalizedMessage());
-    	}
-    	
-    	getMapRequest.getRawKvp().put("aparam", "fake_param");
-    	getMapRequest.getRawKvp().put("avalues", "val0,val\\,1,val2\\,\\,,val3");
-    	
-    	catalog = new FrameCatalog(getMapRequest, wms, getWMS());
-    	
-    	assertNotNull(catalog);
-    	assertEquals("fake_param", catalog.getParameter());
-    	assertEquals(4, catalog.getValues().length);
-    	assertEquals("val0", catalog.getValues()[0]);
-    	assertEquals("val\\,1", catalog.getValues()[1]);
-    	assertEquals("val2\\,\\,", catalog.getValues()[2]);
-    	assertEquals("val3", catalog.getValues()[3]);
+        final WebMapService wms = (WebMapService) applicationContext.getBean("wmsService2");
+        final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
+            MockData.BASIC_POLYGONS.getLocalPart();
+        
+        GetMapRequest getMapRequest = createGetMapRequest(new QName(layerName));
+        
+        FrameCatalog catalog = null;
+        try {
+            catalog = new FrameCatalog(getMapRequest, wms, getWMS());
+        } catch (RuntimeException e) {
+            assertEquals("Missing \"animator\" mandatory params \"aparam\" and \"avalues\".", e.getLocalizedMessage());
+        }
+        
+        getMapRequest.getRawKvp().put("aparam", "fake_param");
+        getMapRequest.getRawKvp().put("avalues", "val0,val\\,1,val2\\,\\,,val3");
+        
+        catalog = new FrameCatalog(getMapRequest, wms, getWMS());
+        
+        assertNotNull(catalog);
+        assertEquals("fake_param", catalog.getParameter());
+        assertEquals(4, catalog.getValues().length);
+        assertEquals("val0", catalog.getValues()[0]);
+        assertEquals("val\\,1", catalog.getValues()[1]);
+        assertEquals("val2\\,\\,", catalog.getValues()[2]);
+        assertEquals("val3", catalog.getValues()[3]);
     }
     
     /**
@@ -89,32 +89,32 @@ public class AnimatorTest extends WMSTestSupport {
      */
     @org.junit.Test
     public void testFrameVisitor() throws Exception {
-    	final WebMapService wms = (WebMapService) applicationContext.getBean("wmsService2");
-    	final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
-        	MockData.BASIC_POLYGONS.getLocalPart();
-    	
-    	GetMapRequest getMapRequest = createGetMapRequest(new QName(layerName));
-    	
-    	FrameCatalog catalog = null;
-    	
-    	getMapRequest.getRawKvp().put("aparam", "fake_param");
-    	getMapRequest.getRawKvp().put("avalues", "val0,val\\,1,val2\\,\\,,val3");
-    	getMapRequest.getRawKvp().put("format", GIF_ANIMATED_FORMAT);
-    	getMapRequest.getRawKvp().put("LAYERS", layerName);
-    	
-    	catalog = new FrameCatalog(getMapRequest, wms, getWMS());
-    	
-    	assertNotNull(catalog);
+        final WebMapService wms = (WebMapService) applicationContext.getBean("wmsService2");
+        final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
+            MockData.BASIC_POLYGONS.getLocalPart();
+        
+        GetMapRequest getMapRequest = createGetMapRequest(new QName(layerName));
+        
+        FrameCatalog catalog = null;
+        
+        getMapRequest.getRawKvp().put("aparam", "fake_param");
+        getMapRequest.getRawKvp().put("avalues", "val0,val\\,1,val2\\,\\,,val3");
+        getMapRequest.getRawKvp().put("format", GIF_ANIMATED_FORMAT);
+        getMapRequest.getRawKvp().put("LAYERS", layerName);
+        
+        catalog = new FrameCatalog(getMapRequest, wms, getWMS());
+        
+        assertNotNull(catalog);
 
-    	FrameCatalogVisitor visitor = new FrameCatalogVisitor();
-    	catalog.getFrames(visitor);
-    	
-    	assertEquals(4, visitor.framesNumber);
-    	
-    	List<RenderedImageMap> frames = visitor.produce(getWMS());
-    	
-    	assertNotNull(frames);
-    	assertEquals(4, frames.size());
+        FrameCatalogVisitor visitor = new FrameCatalogVisitor();
+        catalog.getFrames(visitor);
+        
+        assertEquals(4, visitor.framesNumber);
+        
+        List<RenderedImageMap> frames = visitor.produce(getWMS());
+        
+        assertNotNull(frames);
+        assertEquals(4, frames.size());
     }
     
     /**

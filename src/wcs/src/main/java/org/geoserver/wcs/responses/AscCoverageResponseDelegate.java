@@ -76,16 +76,16 @@ public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate im
 
 
         }finally {
-        	try{
-        	if(writer!=null)
-        		writer.dispose();
-        	}catch (Throwable e) {
-				// eating exception
-			}
-        	if(gzipOut!=null)
-        		IOUtils.closeQuietly(gzipOut);
-        	
+            try{
+            if(writer!=null)
+                writer.dispose();
+            }catch (Throwable e) {
+                // eating exception
+            }
+            if(gzipOut!=null)
+                IOUtils.closeQuietly(gzipOut);
+            
             sourceCoverage.dispose(true);
-		}
+        }
     }
 }

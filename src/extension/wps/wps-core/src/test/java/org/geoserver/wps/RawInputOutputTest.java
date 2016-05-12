@@ -19,7 +19,7 @@ public class RawInputOutputTest extends WPSTestSupport {
 
     private static final int MAX_WAIT_FOR_ASYNCH = 60;
 
-	static {
+    static {
         Processors.addProcessFactory(RawProcess.getFactory());
     }
 
@@ -134,12 +134,12 @@ public class RawInputOutputTest extends WPSTestSupport {
                   "</wps:Input>" + 
                  "</wps:DataInputs>" +
                  "<wps:ResponseForm>" +  
-	                 "<wps:ResponseDocument storeExecuteResponse='true' status='true'>" + 
-	                   "<wps:Output asReference='true'>" +
-	                     "<ows:Identifier>result</ows:Identifier>" +
-	                   "</wps:Output>" + 
-	                 "</wps:ResponseDocument>" +
-	               "</wps:ResponseForm>" + 
+                     "<wps:ResponseDocument storeExecuteResponse='true' status='true'>" + 
+                       "<wps:Output asReference='true'>" +
+                         "<ows:Identifier>result</ows:Identifier>" +
+                       "</wps:Output>" + 
+                     "</wps:ResponseDocument>" +
+                   "</wps:ResponseForm>" + 
                "</wps:Execute>";
         // System.out.println(xml);
               
@@ -165,7 +165,7 @@ public class RawInputOutputTest extends WPSTestSupport {
             }
         }
         if(wait > 60) {
-        	throw new Exception("Waited for the process to complete more than " + MAX_WAIT_FOR_ASYNCH);
+            throw new Exception("Waited for the process to complete more than " + MAX_WAIT_FOR_ASYNCH);
         }
 
         // print(dom);

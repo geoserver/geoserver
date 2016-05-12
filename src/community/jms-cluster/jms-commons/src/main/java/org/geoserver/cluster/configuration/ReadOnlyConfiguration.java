@@ -36,12 +36,12 @@ final public class ReadOnlyConfiguration implements JMSConfigurationExt {
     }
 
     public static boolean isReadOnly(JMSConfiguration config){
-		Object statusObj = config
-				.getConfiguration(ReadOnlyConfiguration.READ_ONLY_KEY);
-		if (statusObj == null) {
-			statusObj = ReadOnlyConfiguration.DEFAULT_READ_ONLY_VALUE;
-		}
-		return ReadOnlyConfigurationStatus.valueOf(statusObj.toString())
-				.equals(ReadOnlyConfigurationStatus.enabled);
-	}
+        Object statusObj = config
+                .getConfiguration(ReadOnlyConfiguration.READ_ONLY_KEY);
+        if (statusObj == null) {
+            statusObj = ReadOnlyConfiguration.DEFAULT_READ_ONLY_VALUE;
+        }
+        return ReadOnlyConfigurationStatus.valueOf(statusObj.toString())
+                .equals(ReadOnlyConfigurationStatus.enabled);
+    }
 }

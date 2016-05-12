@@ -69,12 +69,12 @@ public class CoverageAccessInitializer implements GeoServerInitializer, Extensio
             
             //First initialization
             if (executor == null){
-            	final Hints defHints = GeoTools.getDefaultHints();
-            	
-            	//Looking for executor from default Hints
-            	if (defHints != null && defHints.containsKey(Hints.EXECUTOR_SERVICE)){
-            		executor = (ThreadPoolExecutor) defHints.get(Hints.EXECUTOR_SERVICE);
-            	} 
+                final Hints defHints = GeoTools.getDefaultHints();
+                
+                //Looking for executor from default Hints
+                if (defHints != null && defHints.containsKey(Hints.EXECUTOR_SERVICE)){
+                    executor = (ThreadPoolExecutor) defHints.get(Hints.EXECUTOR_SERVICE);
+                } 
             }
             if (executor == null){
                 // No Executor found: Create a new one

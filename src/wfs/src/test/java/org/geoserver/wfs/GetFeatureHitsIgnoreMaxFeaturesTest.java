@@ -32,7 +32,7 @@ public class GetFeatureHitsIgnoreMaxFeaturesTest extends WFSTestSupport {
         getGeoServer().save( wfs );
         
         Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Fifteen" +
-        		"&version=1.1.0&service=wfs&resultType=hits");
+                "&version=1.1.0&service=wfs&resultType=hits");
         XpathEngine xpath = XMLUnit.newXpathEngine();
         assertEquals("15", 
                 xpath.getMatchingNodes("//wfs:FeatureCollection/@numberOfFeatures", doc)
@@ -53,7 +53,7 @@ public class GetFeatureHitsIgnoreMaxFeaturesTest extends WFSTestSupport {
         getGeoServer().save( wfs );
         
         Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Fifteen" +
-        		"&version=1.1.0&service=wfs");
+                "&version=1.1.0&service=wfs");
         
         // check we get a feature collection
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
@@ -76,7 +76,7 @@ public class GetFeatureHitsIgnoreMaxFeaturesTest extends WFSTestSupport {
         getGeoServer().save( wfs );
         
         Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Fifteen" +
-        		"&version=1.1.0&service=wfs&resultType=hits");
+                "&version=1.1.0&service=wfs&resultType=hits");
         // check it's a feature collection
         XpathEngine xpath = XMLUnit.newXpathEngine();
         assertEquals("1", 

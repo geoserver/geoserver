@@ -17,7 +17,7 @@ import org.geoserver.web.GeoServerApplication;
  */
 public class WorkspaceDetachableModel implements IModel<WorkspaceInfo> {
     private static final long serialVersionUID = 7805768164289311051L;
-	
+    
     transient WorkspaceInfo workspace;
     String id;
     

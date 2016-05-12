@@ -31,13 +31,13 @@ public class GroovyPlugin extends ScriptPlugin {
         return "Groovy";
     }
 
-	@Override
-	public WpsHook createWpsHook() {
-		return new GroovyWpsHook(this);
-	}
+    @Override
+    public WpsHook createWpsHook() {
+        return new GroovyWpsHook(this);
+    }
 
-	@Override
-	public FunctionHook createFunctionHook() {
-		return new GroovyFunctionHook(this);
-	}
+    @Override
+    public FunctionHook createFunctionHook() {
+        return new GroovyFunctionHook(this);
+    }
 }

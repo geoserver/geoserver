@@ -203,7 +203,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                             AttributeDescriptor ad = types.get(j);
                             
                             if( id_option != null && id_option.equals(ad.getLocalName()) ){
-                            	continue; // skip this value as it is used as the id
+                                continue; // skip this value as it is used as the id
                             }
                             if (ad instanceof GeometryDescriptor) {
                                 // This is an area of the spec where they

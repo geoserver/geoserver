@@ -159,9 +159,9 @@ public class GeoServerImplTest {
         
         Map<Object, Object> newProps = new HashMap<Object, Object>();
         newProps.put("123", "456");
-		gsii.setClientProperties(newProps);
-		
-		assertFalse(before.equals(newProps));
+        gsii.setClientProperties(newProps);
+        
+        assertFalse(before.equals(newProps));
     }
 
     @Test

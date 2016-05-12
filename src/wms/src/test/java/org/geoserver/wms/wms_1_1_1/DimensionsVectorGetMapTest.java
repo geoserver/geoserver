@@ -288,10 +288,10 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
     
     @Test
     public void testTimeListAnimatedTransparent() throws Exception {
-    	// testing transparency in animated gif
-    	// note only by truly visual test you can test if animated gif is truly transparent
-    	// note that in this test BGCOLOR should be white, else ALL is transparent
-    	// note by uncommenting lines below you can see actual output
+        // testing transparency in animated gif
+        // note only by truly visual test you can test if animated gif is truly transparent
+        // note that in this test BGCOLOR should be white, else ALL is transparent
+        // note by uncommenting lines below you can see actual output
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         MockHttpServletResponse response = getAsServletResponse("wms?service=WMS&version=1.1.1&request=GetMap"
                 + "&bbox=-180,-90,180,90&styles=&width=80&height=40&srs=EPSG:4326"

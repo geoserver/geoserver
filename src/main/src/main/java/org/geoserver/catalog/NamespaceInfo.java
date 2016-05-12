@@ -78,12 +78,12 @@ public interface NamespaceInfo extends CatalogInfo {
     // inverse="namespace:org.geoserver.catalog.ResourceInfo"
     // */
     // Iterator/*<ResourceInfo>*/ resources();
-    //	
+    //    
     // /**
     // * Adds a resource to the namespace.
     // */
     // void add( ResourceInfo resource );
-    //	
+    //    
     // /**
     // * Removes a resource from the namespace.
     // */

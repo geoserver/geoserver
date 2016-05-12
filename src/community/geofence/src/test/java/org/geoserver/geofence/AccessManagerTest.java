@@ -70,7 +70,7 @@ public class AccessManagerTest extends GeofenceBaseTest
     
     public void testCiteCannotWriteOnWorkspace()
     {
-    	configManager.getConfiguration().setGrantWriteToWorkspacesToAuthenticatedUsers(false);
+        configManager.getConfiguration().setGrantWriteToWorkspacesToAuthenticatedUsers(false);
         UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken("cite",
                 "cite",
                 Arrays.asList(
@@ -85,7 +85,7 @@ public class AccessManagerTest extends GeofenceBaseTest
     
     public void testCiteCanWriteOnWorkspace()
     {
-    	configManager.getConfiguration().setGrantWriteToWorkspacesToAuthenticatedUsers(true);
+        configManager.getConfiguration().setGrantWriteToWorkspacesToAuthenticatedUsers(true);
         UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken("cite",
                 "cite",
                 Arrays.asList(

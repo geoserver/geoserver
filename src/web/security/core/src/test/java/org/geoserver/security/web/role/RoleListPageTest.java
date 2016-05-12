@@ -141,7 +141,7 @@ public class RoleListPageTest extends AbstractTabbedListPageTest<GeoServerRole> 
     }
 
     GeoServerRole createNewRoleForRemvovalTest() throws Exception {
-    	return gaStore.createRoleObject("NEW_ROLE");
+        return gaStore.createRoleObject("NEW_ROLE");
     }
     
     @Override

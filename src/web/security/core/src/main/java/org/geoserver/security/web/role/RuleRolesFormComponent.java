@@ -116,21 +116,21 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
 
         @Override
         protected List<GeoServerRole> load() {
-        	
-        	Map<String,GeoServerRole> roleMap;
+            
+            Map<String,GeoServerRole> roleMap;
             roleMap=new HashMap<String,GeoServerRole>();
             try {
-	            for (GeoServerRole role : GeoServerApplication.get().getSecurityManager().getRolesForAccessControl())
-	            	roleMap.put(role.getAuthority(), role);
-	        } catch (IOException e) {
-	            throw new RuntimeException(e);
-	        }
-        	
-        	List<GeoServerRole> roles = new ArrayList<GeoServerRole>();
+                for (GeoServerRole role : GeoServerApplication.get().getSecurityManager().getRolesForAccessControl())
+                    roleMap.put(role.getAuthority(), role);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            
+            List<GeoServerRole> roles = new ArrayList<GeoServerRole>();
             for (String roleName : roleNamesModel.getObject()) {
-            	GeoServerRole role = roleMap.get(roleName);
-            	if (role!=null)
-            		roles.add(role);
+                GeoServerRole role = roleMap.get(roleName);
+                if (role!=null)
+                    roles.add(role);
             }
             return roles;
         }

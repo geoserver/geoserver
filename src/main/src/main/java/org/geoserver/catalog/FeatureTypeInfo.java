@@ -189,8 +189,8 @@ public interface FeatureTypeInfo extends ResourceInfo {
     FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource( ProgressListener listener, Hints hints )
             throws IOException;
 
-	boolean isCircularArcPresent();
-	
-	void setCircularArcPresent(boolean arcsPresent);
+    boolean isCircularArcPresent();
+    
+    void setCircularArcPresent(boolean arcsPresent);
 
 }

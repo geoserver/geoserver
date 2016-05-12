@@ -19,7 +19,7 @@ import org.geowebcache.layer.TileLayer;
 class TileLayerDetachableModel extends LoadableDetachableModel<TileLayer> {
 
     private static final long serialVersionUID = -2511578156425555123L;
-	
+    
     private String name;
 
     public TileLayerDetachableModel(String layerName) {

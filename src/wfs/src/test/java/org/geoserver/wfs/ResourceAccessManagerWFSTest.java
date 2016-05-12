@@ -70,16 +70,16 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
             + "    </cite:Buildings>\n" + "  </wfs:Insert>\n" + "</wfs:Transaction>";
     
     static final String UPDATE_ADDRESS = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"\n" + 
-    		"  xmlns:cite=\"http://www.opengis.net/cite\"\n" + 
-    		"  xmlns:ogc=\"http://www.opengis.net/ogc\"\n" + 
-    		"  xmlns:wfs=\"http://www.opengis.net/wfs\">\n" + 
-    		"  <wfs:Update typeName=\"cite:Buildings\">\n" + 
-    		"    <wfs:Property>\n" + 
-    		"      <wfs:Name>ADDRESS</wfs:Name>\n" + 
-    		"      <wfs:Value>123 ABC Street</wfs:Value>\n" + 
-    		"    </wfs:Property>\n" + 
-    		"  </wfs:Update>\n" + 
-    		"</wfs:Transaction>";
+            "  xmlns:cite=\"http://www.opengis.net/cite\"\n" + 
+            "  xmlns:ogc=\"http://www.opengis.net/ogc\"\n" + 
+            "  xmlns:wfs=\"http://www.opengis.net/wfs\">\n" + 
+            "  <wfs:Update typeName=\"cite:Buildings\">\n" + 
+            "    <wfs:Property>\n" + 
+            "      <wfs:Name>ADDRESS</wfs:Name>\n" + 
+            "      <wfs:Value>123 ABC Street</wfs:Value>\n" + 
+            "    </wfs:Property>\n" + 
+            "  </wfs:Update>\n" + 
+            "</wfs:Transaction>";
     
     static final String DELETE_ADDRESS = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"\n" + 
     "  xmlns:cite=\"http://www.opengis.net/cite\"\n" + 
@@ -109,7 +109,7 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
      */
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
-    	super.setUpSpring(springContextLocations);
+        super.setUpSpring(springContextLocations);
         springContextLocations.add("classpath:/org/geoserver/wfs/ResourceAccessManagerContext.xml");
     }
         

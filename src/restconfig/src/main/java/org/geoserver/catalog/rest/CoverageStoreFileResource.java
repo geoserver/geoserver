@@ -71,7 +71,7 @@ public class CoverageStoreFileResource extends StoreFileResource {
             }
         } catch(IOException e) {
             throw new RestletException("Failed to access the existing reader to " +
-            		"check if it can harvest new files", Status.SERVER_ERROR_INTERNAL);
+                    "check if it can harvest new files", Status.SERVER_ERROR_INTERNAL);
         }
     }
     
@@ -195,15 +195,15 @@ public class CoverageStoreFileResource extends StoreFileResource {
         
         //add or update the datastore info
         if ( add ) {
-        	if (!catalog.validate(info, true).isValid()) {
-        		throw new RuntimeException("Validation failed");
-        	}
+            if (!catalog.validate(info, true).isValid()) {
+                throw new RuntimeException("Validation failed");
+            }
             catalog.add( info );
         }
         else {
-        	if (!catalog.validate(info, false).isValid()) {
-        		throw new RuntimeException("Validation failed");
-        	}
+            if (!catalog.validate(info, false).isValid()) {
+                throw new RuntimeException("Validation failed");
+            }
             catalog.save( info );
         }
         
@@ -228,7 +228,7 @@ public class CoverageStoreFileResource extends StoreFileResource {
             final Map customParameters = new HashMap();
             String useJAIImageReadParam = form.getFirstValue("USE_JAI_IMAGEREAD");
             if (useJAIImageReadParam != null) {
-            	customParameters.put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), Boolean.valueOf(useJAIImageReadParam));
+                customParameters.put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), Boolean.valueOf(useJAIImageReadParam));
             }
             
             //check if the name of the coverage was specified
@@ -237,8 +237,8 @@ public class CoverageStoreFileResource extends StoreFileResource {
             
             if(names.length > 1 && coverageName != null) {
                 throw new RestletException("The reader found more than one coverage, " +
-                		"coverageName cannot be used in this case (it would generate " +
-                		"the same name for all coverages found", Status.CLIENT_ERROR_BAD_REQUEST);
+                        "coverageName cannot be used in this case (it would generate " +
+                        "the same name for all coverages found", Status.CLIENT_ERROR_BAD_REQUEST);
             }
             
             // configure all available coverages, preserving backwards compatibility for the

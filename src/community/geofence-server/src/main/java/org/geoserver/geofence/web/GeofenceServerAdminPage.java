@@ -62,7 +62,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
 
             @Override
             protected Component getComponentForProperty(String id, IModel<ShortAdminRule> itemModel, 
-            		Property<ShortAdminRule> property) {
+                    Property<ShortAdminRule> property) {
                 if (property == GeofenceAdminRulesModel.BUTTONS) {
                     return new ButtonPanel(id, (ShortAdminRule) itemModel.getObject());
                 }
@@ -104,7 +104,7 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
     private class ButtonPanel extends Panel {
 
         private static final long serialVersionUID = -3702358364804495550L;
-	private ImageAjaxLink<Object> upLink;
+    private ImageAjaxLink<Object> upLink;
         private ImageAjaxLink<Object> downLink;
 
         public ButtonPanel(String id, final ShortAdminRule rule) {

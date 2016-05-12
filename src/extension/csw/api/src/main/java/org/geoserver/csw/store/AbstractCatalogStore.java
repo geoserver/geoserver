@@ -63,7 +63,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         if (rd==null) {
             throw new IOException(typeName + " is not a supported type");
         }
-		
+        
         // do we have such attribute?
         final PropertyName property = rd.translateProperty(attributeName);
         AttributeDescriptor ad = (AttributeDescriptor) property.evaluate(rd.getFeatureType());
@@ -113,9 +113,9 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         
         RecordDescriptor rdOutput;
         if (outputSchema == null || "".equals(outputSchema)) {
-        	rdOutput = descriptorByOutputSchema.get(CSWRecordDescriptor.getInstance().getOutputSchema());
+            rdOutput = descriptorByOutputSchema.get(CSWRecordDescriptor.getInstance().getOutputSchema());
         } else {
-        	rdOutput = descriptorByOutputSchema.get(outputSchema);
+            rdOutput = descriptorByOutputSchema.get(outputSchema);
         }
                 
         if (rd==null) {

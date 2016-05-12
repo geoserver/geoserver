@@ -20,33 +20,33 @@ import es.unex.sextante.exceptions.IteratorException;
  *
  */
 public class GTDBFIterator implements IRecordsetIterator{
-	private DbaseFileReader reader = null;
-	
-	public GTDBFIterator(DbaseFileReader reader) {
-		this.reader = reader;
-	}
+    private DbaseFileReader reader = null;
+    
+    public GTDBFIterator(DbaseFileReader reader) {
+        this.reader = reader;
+    }
 
-	public void close() {
-		try {
-			this.reader.close();
-		} catch (IOException e) {
-			Sextante.addErrorToLog(e);
-		}
-	}
+    public void close() {
+        try {
+            this.reader.close();
+        } catch (IOException e) {
+            Sextante.addErrorToLog(e);
+        }
+    }
 
-	public boolean hasNext() {
-		return reader.hasNext();
-	}
+    public boolean hasNext() {
+        return reader.hasNext();
+    }
 
-	public IRecord next() throws IteratorException {
-		if (reader.hasNext()) {
-			try {
-				return new RecordImpl(reader.readEntry());
-			} catch (IOException e) {
-				Sextante.addErrorToLog(e);
-			}
-		}
-		throw new IteratorException();
-	}
+    public IRecord next() throws IteratorException {
+        if (reader.hasNext()) {
+            try {
+                return new RecordImpl(reader.readEntry());
+            } catch (IOException e) {
+                Sextante.addErrorToLog(e);
+            }
+        }
+        throw new IteratorException();
+    }
 
 }

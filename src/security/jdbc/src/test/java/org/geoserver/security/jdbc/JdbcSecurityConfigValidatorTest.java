@@ -93,7 +93,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
         
         JDBCRoleServiceConfig  configJNDI = (JDBCRoleServiceConfig) 
                 createRoleConfig("jndi", JDBCRoleService.class, 
-                		AbstractRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
+                        AbstractRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
         configJNDI.setJndi(true);
         configJNDI.setJndiName("jndi:connect");
         configJNDI.setPropertyFileNameDDL(JDBCRoleService.DEFAULT_DDL_FILE);

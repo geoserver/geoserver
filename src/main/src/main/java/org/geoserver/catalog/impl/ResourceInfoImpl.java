@@ -232,7 +232,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
           php == ProjectionPolicy.REPROJECT_TO_DECLARED ) {
           return nativeBox.transform(declaredCRS,true); 
       } else if(php == ProjectionPolicy.FORCE_DECLARED) {
-    	  return ReferencedEnvelope.create( (Envelope) nativeBox, declaredCRS);
+          return ReferencedEnvelope.create( (Envelope) nativeBox, declaredCRS);
       }
       
       return nativeBox;
@@ -313,9 +313,9 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         
         //TODO: cache this
         try {
-        	return CRS.decode( getSRS() );
+            return CRS.decode( getSRS() );
         } catch(Exception e) {
-        	throw new RuntimeException("This is unexpected, the layer seems to be mis-configured", e);
+            throw new RuntimeException("This is unexpected, the layer seems to be mis-configured", e);
         }
     }
 

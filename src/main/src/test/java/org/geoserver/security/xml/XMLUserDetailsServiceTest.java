@@ -170,10 +170,10 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
         
         boolean found = false;
         for (String rule : rules) {
-        	if (rule.contains(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE))
-        		found=true;
-        	if (rule.contains(GeoServerRole.ADMIN_ROLE.getAuthority()))
-        		Assert.fail("Migration of admin role not successful");
+            if (rule.contains(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE))
+                found=true;
+            if (rule.contains(GeoServerRole.ADMIN_ROLE.getAuthority()))
+                Assert.fail("Migration of admin role not successful");
         }
         assertTrue(found);
         */

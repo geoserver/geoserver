@@ -139,7 +139,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
    
     @Override
     protected TilesFile createTilesFile() throws IOException{
-    	return new GeopackageWrapper();
+        return new GeopackageWrapper();
     }
     
     /**

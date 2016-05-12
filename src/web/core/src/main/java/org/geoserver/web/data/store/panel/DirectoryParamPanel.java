@@ -38,7 +38,7 @@ public class DirectoryParamPanel extends FileParamPanel {
      *            any extra validator that should be added to the input field, or {@code null}
      */
     @SafeVarargs
-	public DirectoryParamPanel(final String id, final IModel<String> paramValue,
+    public DirectoryParamPanel(final String id, final IModel<String> paramValue,
             final IModel<String> paramLabelModel, final boolean required, IValidator<? super String>... validators) {
         super(id, paramValue, paramLabelModel, required, validators);
 
@@ -64,11 +64,11 @@ public class DirectoryParamPanel extends FileParamPanel {
                 gsDialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
                     /**
-					 * 
-					 */
-					private static final long serialVersionUID = 1576266249751904398L;
+                     * 
+                     */
+                    private static final long serialVersionUID = 1576266249751904398L;
 
-					@Override
+                    @Override
                     protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
                         GeoServerFileChooser chooser = (GeoServerFileChooser) contents;
                         String path = ((File) chooser.getDefaultModelObject()).getAbsolutePath();

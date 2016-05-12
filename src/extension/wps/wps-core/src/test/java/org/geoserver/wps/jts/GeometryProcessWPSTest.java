@@ -22,33 +22,33 @@ import com.vividsolutions.jts.io.WKTReader;
 public class GeometryProcessWPSTest extends WPSTestSupport {
 
     @Test
-	public void testBufferCapabilities() throws Exception {
-		// buffer uses an enumerated attribute, make sure it's not blacklisted because of that
-		Document d = getAsDOM( "wps?service=wps&request=getcapabilities" );
+    public void testBufferCapabilities() throws Exception {
+        // buffer uses an enumerated attribute, make sure it's not blacklisted because of that
+        Document d = getAsDOM( "wps?service=wps&request=getcapabilities" );
         // print(d);
         checkValidationErrors(d);
         assertXpathEvaluatesTo("1", "count(//wps:Process/ows:Identifier[text() = 'JTS:buffer'])", d);
-	}
-	
+    }
+    
     @Test
-	public void testDescribeBuffer() throws Exception {
-		Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=JTS:buffer");
-		// print(d);
-		checkValidationErrors(d);
-		
-		// check we get the right type declarations for primitives
-		assertXpathEvaluatesTo("xs:double", "//Input[ows:Identifier/text()='distance']/LiteralData/ows:DataType/text()", d);
-		assertXpathEvaluatesTo("xs:int", "//Input[ows:Identifier/text()='quadrantSegments']/LiteralData/ows:DataType/text()", d);
-		
-		// check we have the list of possible values for enumerations
-		assertXpathEvaluatesTo("3", "count(//Input[ows:Identifier/text()='capStyle']/LiteralData/ows:AllowedValues/ows:Value)", d);
-		assertXpathEvaluatesTo("Round", "//Input[ows:Identifier/text()='capStyle']/LiteralData/ows:AllowedValues/ows:Value[1]/text()", d);
-		assertXpathEvaluatesTo("Flat", "//Input[ows:Identifier/text()='capStyle']/LiteralData/ows:AllowedValues/ows:Value[2]/text()", d);
-		assertXpathEvaluatesTo("Square", "//Input[ows:Identifier/text()='capStyle']/LiteralData/ows:AllowedValues/ows:Value[3]/text()", d);
-	}                                        
-	
+    public void testDescribeBuffer() throws Exception {
+        Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=JTS:buffer");
+        // print(d);
+        checkValidationErrors(d);
+        
+        // check we get the right type declarations for primitives
+        assertXpathEvaluatesTo("xs:double", "//Input[ows:Identifier/text()='distance']/LiteralData/ows:DataType/text()", d);
+        assertXpathEvaluatesTo("xs:int", "//Input[ows:Identifier/text()='quadrantSegments']/LiteralData/ows:DataType/text()", d);
+        
+        // check we have the list of possible values for enumerations
+        assertXpathEvaluatesTo("3", "count(//Input[ows:Identifier/text()='capStyle']/LiteralData/ows:AllowedValues/ows:Value)", d);
+        assertXpathEvaluatesTo("Round", "//Input[ows:Identifier/text()='capStyle']/LiteralData/ows:AllowedValues/ows:Value[1]/text()", d);
+        assertXpathEvaluatesTo("Flat", "//Input[ows:Identifier/text()='capStyle']/LiteralData/ows:AllowedValues/ows:Value[2]/text()", d);
+        assertXpathEvaluatesTo("Square", "//Input[ows:Identifier/text()='capStyle']/LiteralData/ows:AllowedValues/ows:Value[3]/text()", d);
+    }                                        
+    
     @Test
-	public void testExecuteBuffer() throws Exception {
+    public void testExecuteBuffer() throws Exception {
         String xml =  
             "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
                 "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
@@ -87,7 +87,7 @@ public class GeometryProcessWPSTest extends WPSTestSupport {
           assertEquals("application/wkt", response.getContentType());
           Geometry g = new WKTReader().read(response.getContentAsString());
           assertTrue(g instanceof Polygon);
-	}
+    }
 
     @Test
     public void testLinearRingHandling() throws Exception {
@@ -99,7 +99,7 @@ public class GeometryProcessWPSTest extends WPSTestSupport {
     }
 
     @Test
-	public void testJsonResponse() throws Exception {
+    public void testJsonResponse() throws Exception {
         String xml =  
             "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
                 "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
@@ -138,5 +138,5 @@ public class GeometryProcessWPSTest extends WPSTestSupport {
           assertEquals("application/json", response.getContentType());
           Geometry g = new GeometryJSON().read(response.getContentAsString());
           assertTrue(g instanceof Polygon);
-	}
+    }
 }

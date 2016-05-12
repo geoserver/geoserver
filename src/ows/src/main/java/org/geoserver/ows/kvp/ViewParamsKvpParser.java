@@ -38,21 +38,21 @@ public class ViewParamsKvpParser extends KvpParser implements ApplicationContext
     }
 
     public Object parse(String value) throws Exception {
-    	List ret = new ArrayList();
+        List ret = new ArrayList();
         List parsers = GeoServerExtensions.extensions(KvpParser.class, applicationContext);
         KvpParser formatOptionsParser = null;
         for (Object o : parsers) {
             KvpParser parser = (KvpParser) o;
             if ( parser.getKey().equalsIgnoreCase("format_options") ) {
-            	formatOptionsParser = parser;
-            	break;
+                formatOptionsParser = parser;
+                break;
             }
         }
         if (formatOptionsParser == null) {
-        	throw new IllegalStateException("Missing format options parser.");
+            throw new IllegalStateException("Missing format options parser.");
         }
         for (String kvp : KvpUtils.escapedTokens(value, ',')) {
-        	ret.add(formatOptionsParser.parse(kvp));
+            ret.add(formatOptionsParser.parse(kvp));
         }
 
         return ret;

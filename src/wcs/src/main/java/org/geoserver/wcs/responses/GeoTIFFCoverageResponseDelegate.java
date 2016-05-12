@@ -49,8 +49,8 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
     /** DEFAULT_JPEG_COMPRESSION_QUALITY */
     private static final float DEFAULT_JPEG_COMPRESSION_QUALITY = 0.75f;
 
-	private static final GeoTiffFormat GEOTIF_FORMAT = new GeoTiffFormat();
-	
+    private static final GeoTiffFormat GEOTIF_FORMAT = new GeoTiffFormat();
+    
         public static final String GEOTIFF_CONTENT_TYPE = "image/tiff";
 
 

@@ -34,7 +34,7 @@ import org.springframework.context.ApplicationListener;
  */
 public class JMSApplicationListener implements ApplicationListener<ApplicationEvent> {
 
-	private final static Logger LOGGER = Logging.getLogger(JMSApplicationListener.class);
+    private final static Logger LOGGER = Logging.getLogger(JMSApplicationListener.class);
 
     protected final ToggleType type;
 

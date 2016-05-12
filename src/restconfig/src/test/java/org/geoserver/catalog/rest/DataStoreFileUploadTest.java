@@ -163,7 +163,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     @Test
     public void testShapeFileUploadWithCharset() throws Exception {
         /* Requires that a zipped shapefile (chinese_poly.zip) be in test-data directory */
-    	byte[] bytes = shpChineseZipAsBytes();
+        byte[] bytes = shpChineseZipAsBytes();
         MockHttpServletResponse response = 
              putAsServletResponse("/rest/workspaces/gs/datastores/chinese_poly/file.shp?charset=UTF-8", bytes, "application/zip");
         assertEquals( 201, response.getStatus() );

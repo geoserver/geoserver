@@ -13,11 +13,11 @@ package org.vfny.geoserver.wms.responses.map.htmlimagemap;
  */
 public class AbortedException extends Exception {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 225177065602384118L;
+     * 
+     */
+    private static final long serialVersionUID = 225177065602384118L;
 
-	public AbortedException(String msg) {
+    public AbortedException(String msg) {
         super(msg);
     }
 }

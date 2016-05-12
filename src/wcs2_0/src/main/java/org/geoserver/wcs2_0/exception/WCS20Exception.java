@@ -18,11 +18,11 @@ import org.geoserver.platform.OWS20Exception;
  */
 public class WCS20Exception extends OWS20Exception {
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = -6110652531274829497L;
+     * 
+     */
+    private static final long serialVersionUID = -6110652531274829497L;
 
-	public static class WCS20ExceptionCode extends OWS20Exception.OWSExceptionCode {
+    public static class WCS20ExceptionCode extends OWS20Exception.OWSExceptionCode {
 
         public final static WCS20ExceptionCode EmptyCoverageIdList = new WCS20ExceptionCode("emptyCoverageIdList", 404);
         public final static WCS20ExceptionCode InvalidEncodingSyntax = new WCS20ExceptionCode("InvalidEncodingSyntax", 400);

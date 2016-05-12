@@ -18,7 +18,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
  * @version $Id$
  */
 public class GetCapabilitiesReponseTest extends WMSTestSupport {
-	    
+        
     /**
      * Tests ContentDisposition
      * 

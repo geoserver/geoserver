@@ -105,7 +105,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         setupRasterDimension(TIMERANGES, "date", DimensionPresentation.LIST, null, null, null);
 
         String baseUrl = "wms?LAYERS=" + getLayerId(TIMERANGES) + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326" +
-        		"&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&bgcolor=0xFFFFFF";
+                "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&bgcolor=0xFFFFFF";
 
         // in the last range, it's bluish
         BufferedImage image = getAsImage(baseUrl + "&TIME=2008-11-05T00:00:00.000Z/2008-11-06T12:00:00.000Z", "image/png");

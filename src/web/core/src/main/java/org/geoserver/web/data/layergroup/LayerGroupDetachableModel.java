@@ -15,7 +15,7 @@ import org.geoserver.web.GeoServerApplication;
 public class LayerGroupDetachableModel extends LoadableDetachableModel<LayerGroupInfo> {
 
     private static final long serialVersionUID = 1945014162826151239L;
-	
+    
     String id;
     LayerGroupInfo layerGroup;
     

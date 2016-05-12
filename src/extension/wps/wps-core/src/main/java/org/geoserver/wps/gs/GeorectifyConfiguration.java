@@ -329,5 +329,5 @@ public class GeorectifyConfiguration implements ApplicationListener {
             timer.cancel();
         }
     }
-	
+    
 }

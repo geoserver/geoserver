@@ -52,9 +52,9 @@ import org.geoserver.wms.GetMapOutputFormat;
  */
 public class MapPreviewPage extends GeoServerBasePage {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	PreviewLayerProvider provider = new PreviewLayerProvider();
+    PreviewLayerProvider provider = new PreviewLayerProvider();
 
     GeoServerTablePanel<PreviewLayer> table;
     
@@ -72,9 +72,9 @@ public class MapPreviewPage extends GeoServerBasePage {
         // build the table
         table = new GeoServerTablePanel<PreviewLayer>("table", provider) {
 
-			private static final long serialVersionUID = 1L;
+            private static final long serialVersionUID = 1L;
 
-			@Override
+            @Override
             protected Component getComponentForProperty(String id, IModel<PreviewLayer> itemModel, Property<PreviewLayer> property) {
                 PreviewLayer layer = itemModel.getObject();
 

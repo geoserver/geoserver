@@ -115,17 +115,17 @@ public class GetCoverageTest extends WCSTestSupport {
     
     @Test
     public void testDomainSubsetRxRy() throws Exception {
-    	// get base  coverage
+        // get base  coverage
         final GridCoverage baseCoverage = catalog.getCoverageByName(TASMANIA_BM.getLocalPart()).getGridCoverage(null, null);
         final AffineTransform2D expectedTx = (AffineTransform2D) baseCoverage.getGridGeometry().getGridToCRS();        
         final GeneralEnvelope originalEnvelope = (GeneralEnvelope) baseCoverage.getEnvelope();
         final GeneralEnvelope newEnvelope=new GeneralEnvelope(originalEnvelope);
         newEnvelope.setEnvelope(
-        		originalEnvelope.getMinimum(0),
-        		originalEnvelope.getMaximum(1)-originalEnvelope.getSpan(1)/2,
-        		originalEnvelope.getMinimum(0)+originalEnvelope.getSpan(0)/2,
-        		originalEnvelope.getMaximum(1)
-        		);
+                originalEnvelope.getMinimum(0),
+                originalEnvelope.getMaximum(1)-originalEnvelope.getSpan(1)/2,
+                originalEnvelope.getMinimum(0)+originalEnvelope.getSpan(0)/2,
+                originalEnvelope.getMaximum(1)
+                );
         
         final MathTransform cornerWorldToGrid = PixelTranslation.translate(expectedTx,PixelInCell.CELL_CENTER,PixelInCell.CELL_CORNER);
         final GeneralGridEnvelope expectedGridEnvelope = new GeneralGridEnvelope(CRS.transform(cornerWorldToGrid.inverse(), newEnvelope),PixelInCell.CELL_CORNER,false);
@@ -305,37 +305,37 @@ public class GetCoverageTest extends WCSTestSupport {
     @Test
     public void testReproject() throws Exception {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-        		"<GetCoverage version=\"1.0.0\" service=\"WCS\" " +
-        		"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-        		"xmlns=\"http://www.opengis.net/wcs\" " +
-        		"xmlns:ows=\"http://www.opengis.net/ows/1.1\" " +
-        		"xmlns:gml=\"http://www.opengis.net/gml\" " +
-        		"xmlns:ogc=\"http://www.opengis.net/ogc\" " +
-        		"xsi:schemaLocation=\"http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd\">\n" + 
-        		"  <sourceCoverage>" +  getLayerId(TASMANIA_BM) + "</sourceCoverage>\n" + 
-        		"  <domainSubset>\n" + 
-        		"    <spatialSubset>\n" + 
-        		"      <gml:Envelope srsName=\"EPSG:4326\">\n" + 
-        		"        <gml:pos>146 -45</gml:pos>\n" + 
-        		"        <gml:pos>147 42</gml:pos>\n" + 
-        		"      </gml:Envelope>\n" + 
-        		"      <gml:Grid dimension=\"2\">\n" + 
-        		"        <gml:limits>\n" + 
-        		"          <gml:GridEnvelope>\n" + 
-        		"            <gml:low>0 0</gml:low>\n" + 
-        		"            <gml:high>150 150</gml:high>\n" + 
-        		"          </gml:GridEnvelope>\n" + 
-        		"        </gml:limits>\n" + 
-        		"        <gml:axisName>x</gml:axisName>\n" + 
-        		"        <gml:axisName>y</gml:axisName>\n" + 
-        		"      </gml:Grid>\n" + 
-        		"    </spatialSubset>\n" + 
-        		"  </domainSubset>\n" + 
-        		"  <output>\n" + 
-        		"    <crs>EPSG:3857</crs>\n" + 
-        		"    <format>image/geotiff</format>\n" + 
-        		"  </output>\n" + 
-        		"</GetCoverage>";
+                "<GetCoverage version=\"1.0.0\" service=\"WCS\" " +
+                "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+                "xmlns=\"http://www.opengis.net/wcs\" " +
+                "xmlns:ows=\"http://www.opengis.net/ows/1.1\" " +
+                "xmlns:gml=\"http://www.opengis.net/gml\" " +
+                "xmlns:ogc=\"http://www.opengis.net/ogc\" " +
+                "xsi:schemaLocation=\"http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd\">\n" + 
+                "  <sourceCoverage>" +  getLayerId(TASMANIA_BM) + "</sourceCoverage>\n" + 
+                "  <domainSubset>\n" + 
+                "    <spatialSubset>\n" + 
+                "      <gml:Envelope srsName=\"EPSG:4326\">\n" + 
+                "        <gml:pos>146 -45</gml:pos>\n" + 
+                "        <gml:pos>147 42</gml:pos>\n" + 
+                "      </gml:Envelope>\n" + 
+                "      <gml:Grid dimension=\"2\">\n" + 
+                "        <gml:limits>\n" + 
+                "          <gml:GridEnvelope>\n" + 
+                "            <gml:low>0 0</gml:low>\n" + 
+                "            <gml:high>150 150</gml:high>\n" + 
+                "          </gml:GridEnvelope>\n" + 
+                "        </gml:limits>\n" + 
+                "        <gml:axisName>x</gml:axisName>\n" + 
+                "        <gml:axisName>y</gml:axisName>\n" + 
+                "      </gml:Grid>\n" + 
+                "    </spatialSubset>\n" + 
+                "  </domainSubset>\n" + 
+                "  <output>\n" + 
+                "    <crs>EPSG:3857</crs>\n" + 
+                "    <format>image/geotiff</format>\n" + 
+                "  </output>\n" + 
+                "</GetCoverage>";
         
         MockHttpServletResponse response = postAsServletResponse("wcs", xml);
         assertEquals("image/tiff", response.getContentType());
@@ -434,8 +434,8 @@ public class GetCoverageTest extends WCSTestSupport {
     @Test
     public void testTimeFirstKVP() throws Exception {
         String queryString ="request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff" +
-        		"&bbox=0.237,40.562,14.593,44.558&crs=EPSG:4326&width=25&height=25&time=2008-10-31T00:00:00.000Z" +
-        		"&coverage=" + getLayerId(WATTEMP);
+                "&bbox=0.237,40.562,14.593,44.558&crs=EPSG:4326&width=25&height=25&time=2008-10-31T00:00:00.000Z" +
+                "&coverage=" + getLayerId(WATTEMP);
         MockHttpServletResponse response = getAsServletResponse("wcs?" + queryString);
         
         checkPixelValue(response, 10, 10, 18.2659999176394);
@@ -540,78 +540,78 @@ public class GetCoverageTest extends WCSTestSupport {
     private String getWaterTempElevationRequest(String elevation) {
         String request =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-    		"<GetCoverage version=\"1.0.0\" service=\"WCS\"\n" + 
-    		"  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wcs\"\n" + 
-    		"  xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\"\n" + 
-    		"  xmlns:ogc=\"http://www.opengis.net/ogc\"\n" + 
-    		"  xsi:schemaLocation=\"http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd\">\n" + 
-    		"  <sourceCoverage>" + getLayerId(WATTEMP) + "</sourceCoverage>\n" + 
-    		"  <domainSubset>\n" + 
-    		"    <spatialSubset>\n" + 
-    		"      <gml:Envelope srsName=\"EPSG:4326\">\n" + 
-    		"        <gml:pos>0.237 40.562</gml:pos>\n" + 
-    		"        <gml:pos>14.593 44.558</gml:pos>\n" + 
-    		"      </gml:Envelope>\n" + 
-    		"      <gml:Grid dimension=\"2\">\n" + 
-    		"        <gml:limits>\n" + 
-    		"          <gml:GridEnvelope>\n" + 
-    		"            <gml:low>0 0</gml:low>\n" + 
-    		"            <gml:high>25 24</gml:high>\n" + 
-    		"          </gml:GridEnvelope>\n" + 
-    		"        </gml:limits>\n" + 
-    		"        <gml:axisName>x</gml:axisName>\n" + 
-    		"        <gml:axisName>y</gml:axisName>\n" + 
-    		"      </gml:Grid>\n" + 
-    		"    </spatialSubset>\n" + 
-    		"  </domainSubset>\n" + 
-    		"  <rangeSubset>\n" + 
-    		"    <axisSubset name=\"ELEVATION\">\n" + 
-    		"      <singleValue>" + elevation + "</singleValue>\n" + 
-    		"    </axisSubset>\n" + 
-    		"  </rangeSubset>\n" + 
-    		"  <output>\n" + 
-    		"    <crs>EPSG:4326</crs>\n" + 
-    		"    <format>GEOTIFF</format>\n" + 
-    		"  </output>\n" + 
-    		"</GetCoverage>";
+            "<GetCoverage version=\"1.0.0\" service=\"WCS\"\n" + 
+            "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wcs\"\n" + 
+            "  xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\"\n" + 
+            "  xmlns:ogc=\"http://www.opengis.net/ogc\"\n" + 
+            "  xsi:schemaLocation=\"http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd\">\n" + 
+            "  <sourceCoverage>" + getLayerId(WATTEMP) + "</sourceCoverage>\n" + 
+            "  <domainSubset>\n" + 
+            "    <spatialSubset>\n" + 
+            "      <gml:Envelope srsName=\"EPSG:4326\">\n" + 
+            "        <gml:pos>0.237 40.562</gml:pos>\n" + 
+            "        <gml:pos>14.593 44.558</gml:pos>\n" + 
+            "      </gml:Envelope>\n" + 
+            "      <gml:Grid dimension=\"2\">\n" + 
+            "        <gml:limits>\n" + 
+            "          <gml:GridEnvelope>\n" + 
+            "            <gml:low>0 0</gml:low>\n" + 
+            "            <gml:high>25 24</gml:high>\n" + 
+            "          </gml:GridEnvelope>\n" + 
+            "        </gml:limits>\n" + 
+            "        <gml:axisName>x</gml:axisName>\n" + 
+            "        <gml:axisName>y</gml:axisName>\n" + 
+            "      </gml:Grid>\n" + 
+            "    </spatialSubset>\n" + 
+            "  </domainSubset>\n" + 
+            "  <rangeSubset>\n" + 
+            "    <axisSubset name=\"ELEVATION\">\n" + 
+            "      <singleValue>" + elevation + "</singleValue>\n" + 
+            "    </axisSubset>\n" + 
+            "  </rangeSubset>\n" + 
+            "  <output>\n" + 
+            "    <crs>EPSG:4326</crs>\n" + 
+            "    <format>GEOTIFF</format>\n" + 
+            "  </output>\n" + 
+            "</GetCoverage>";
         return request;
     }
 
     private String getWaterTempTimeRequest(String date) {
         String request =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-		"<GetCoverage version=\"1.0.0\" service=\"WCS\"\n" + 
-		"  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wcs\"\n" + 
-		"  xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\"\n" + 
-		"  xmlns:ogc=\"http://www.opengis.net/ogc\"\n" + 
-		"  xsi:schemaLocation=\"http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd\">\n" + 
-		"  <sourceCoverage>" + getLayerId(WATTEMP) + "</sourceCoverage>\n" + 
-		"  <domainSubset>\n" + 
-		"    <spatialSubset>\n" + 
-		"      <gml:Envelope srsName=\"EPSG:4326\">\n" + 
-		"        <gml:pos>0.237 40.562</gml:pos>\n" + 
-		"        <gml:pos>14.593 44.558</gml:pos>\n" + 
-		"      </gml:Envelope>\n" + 
-		"      <gml:Grid dimension=\"2\">\n" + 
-		"        <gml:limits>\n" + 
-		"          <gml:GridEnvelope>\n" + 
-		"            <gml:low>0 0</gml:low>\n" + 
-		"            <gml:high>25 25</gml:high>\n" + 
-		"          </gml:GridEnvelope>\n" + 
-		"        </gml:limits>\n" + 
-		"        <gml:axisName>x</gml:axisName>\n" + 
-		"        <gml:axisName>y</gml:axisName>\n" + 
-		"      </gml:Grid>\n" + 
-		"    </spatialSubset>\n" + 
-		"    <temporalSubset>\n" + 
-		"      <gml:timePosition>" + date + "</gml:timePosition>\n" + 
-		"    </temporalSubset>\n" + 
-		"  </domainSubset>\n" + 
-		"  <output>\n" + 
-		"    <crs>EPSG:4326</crs>\n" + 
-		"    <format>GEOTIFF</format>\n" + 
-		"  </output>\n" + 
-		"</GetCoverage>";
+        "<GetCoverage version=\"1.0.0\" service=\"WCS\"\n" + 
+        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wcs\"\n" + 
+        "  xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\"\n" + 
+        "  xmlns:ogc=\"http://www.opengis.net/ogc\"\n" + 
+        "  xsi:schemaLocation=\"http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd\">\n" + 
+        "  <sourceCoverage>" + getLayerId(WATTEMP) + "</sourceCoverage>\n" + 
+        "  <domainSubset>\n" + 
+        "    <spatialSubset>\n" + 
+        "      <gml:Envelope srsName=\"EPSG:4326\">\n" + 
+        "        <gml:pos>0.237 40.562</gml:pos>\n" + 
+        "        <gml:pos>14.593 44.558</gml:pos>\n" + 
+        "      </gml:Envelope>\n" + 
+        "      <gml:Grid dimension=\"2\">\n" + 
+        "        <gml:limits>\n" + 
+        "          <gml:GridEnvelope>\n" + 
+        "            <gml:low>0 0</gml:low>\n" + 
+        "            <gml:high>25 25</gml:high>\n" + 
+        "          </gml:GridEnvelope>\n" + 
+        "        </gml:limits>\n" + 
+        "        <gml:axisName>x</gml:axisName>\n" + 
+        "        <gml:axisName>y</gml:axisName>\n" + 
+        "      </gml:Grid>\n" + 
+        "    </spatialSubset>\n" + 
+        "    <temporalSubset>\n" + 
+        "      <gml:timePosition>" + date + "</gml:timePosition>\n" + 
+        "    </temporalSubset>\n" + 
+        "  </domainSubset>\n" + 
+        "  <output>\n" + 
+        "    <crs>EPSG:4326</crs>\n" + 
+        "    <format>GEOTIFF</format>\n" + 
+        "  </output>\n" + 
+        "</GetCoverage>";
         return request;
     }
     

@@ -175,7 +175,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
     
     protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
             Operation getFeature) throws IOException, ServiceException {
-    	List<SimpleFeatureCollection> collections = new ArrayList<SimpleFeatureCollection>();
+        List<SimpleFeatureCollection> collections = new ArrayList<SimpleFeatureCollection>();
         collections.addAll((List)featureCollection.getFeature());
         Charset charset = getShapefileCharset(getFeature);
         write(collections, charset, output, GetFeatureRequest.adapt(getFeature.getParameters()[0]));
@@ -400,12 +400,12 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
             Properties properties = new Properties();
             InputStream fis = null;
             try {
-            	fis = file.in();
-            	properties.load(fis);
+                fis = file.in();
+                properties.load(fis);
             } finally {
-            	org.apache.commons.io.IOUtils.closeQuietly(fis);
+                org.apache.commons.io.IOUtils.closeQuietly(fis);
             }
-			
+            
 
             String data = (String) properties.get(epsgCode.toString());
 

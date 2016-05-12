@@ -50,7 +50,7 @@ public class DescribeFeatureResponseTest extends WFSTestSupport {
         assertEquals(1, types.getLength());
     }
 
-	@Test
+    @Test
     public void testWithDifferntNamespaces() throws Exception {
 
         FeatureTypeInfo meta1 = getFeatureTypeInfo(CiteTestData.BASIC_POLYGONS);

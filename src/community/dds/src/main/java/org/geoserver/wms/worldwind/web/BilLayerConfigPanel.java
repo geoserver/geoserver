@@ -69,22 +69,22 @@ public class BilLayerConfigPanel extends PublishedConfigurationPanel<LayerInfo>
         private static final long serialVersionUID = 9198622236589910965L;
 
         public Object getDisplayValue(String str)
-    	{
-    	    IStringResourceLoader loader = new GeoServerStringResourceLoader();
-    	    if (ByteOrder.LITTLE_ENDIAN.toString().equals(str))
-        	{
-    	            return new StringResourceModel("byteOrderLittleEndian", BilLayerConfigPanel.this).getObject();
-        	} else if (ByteOrder.BIG_ENDIAN.toString().equals(str)) {
+        {
+            IStringResourceLoader loader = new GeoServerStringResourceLoader();
+            if (ByteOrder.LITTLE_ENDIAN.toString().equals(str))
+            {
+                    return new StringResourceModel("byteOrderLittleEndian", BilLayerConfigPanel.this).getObject();
+            } else if (ByteOrder.BIG_ENDIAN.toString().equals(str)) {
                     return new StringResourceModel("byteOrderBigEndian", BilLayerConfigPanel.this).getObject();
-        	}
+            }
 
-    	    LOGGER.warning("Unknown byte order: " + str);
-        	return str;
+            LOGGER.warning("Unknown byte order: " + str);
+            return str;
         }
 
         public String getIdValue(String str, int index)
         {
-        	return str;
+            return str;
         }
     }
 }

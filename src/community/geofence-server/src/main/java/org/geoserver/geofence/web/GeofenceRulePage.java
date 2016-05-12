@@ -61,8 +61,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     private class RuleFormData implements Serializable {
 
         private static final long serialVersionUID = 3045099348340468123L;
-		
-	ShortRule rule;
+        
+    ShortRule rule;
         RuleLimits ruleLimits;
         String allowedArea;
     }
@@ -256,7 +256,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
      * Returns a sorted list of workspace names
      */
     protected List<String> getWorkspaceNames() {
-    	
+        
         SortedSet<String> resultSet = new TreeSet<String>();
         for (WorkspaceInfo ws : getCatalog().getFacade().getWorkspaces()) {
             resultSet.add(ws.getName());
@@ -270,19 +270,19 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected List<String> getLayerNames(String workspaceName) {
         List<String> resultSet = new ArrayList<String>();
         if (workspaceName != null) {
-        	FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
-        	
-        	try(CloseableIterator<ResourceInfo> it = 
-    			getCatalog().getFacade().list(ResourceInfo.class, 
-    	            Predicates.equal("store.workspace.name", workspaceName),
-    	            null, null, ff.sort("name", SortOrder.ASCENDING)))
-    	    {
-    	        while(it.hasNext()) {
-    	            resultSet.add(it.next().getName());
-    	        }
-    	    }
+            FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+            
+            try(CloseableIterator<ResourceInfo> it = 
+                getCatalog().getFacade().list(ResourceInfo.class, 
+                    Predicates.equal("store.workspace.name", workspaceName),
+                    null, null, ff.sort("name", SortOrder.ASCENDING)))
+            {
+                while(it.hasNext()) {
+                    resultSet.add(it.next().getName());
+                }
+            }
         }
-    	
+        
         return resultSet;
     }
     

@@ -57,9 +57,9 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
     
     private static final IConverter<List<Float>> CONVERT = new IConverter<List<Float>>() {
 
-    	private static final long serialVersionUID = 6972092160668131862L;
+        private static final long serialVersionUID = 6972092160668131862L;
 
-		@Override
+        @Override
         public List<Float> convertToObject(String value, Locale locale) {
             if(value==null) {
                 return null;
@@ -105,12 +105,12 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
             private static final long serialVersionUID = 1L;
 
             @SuppressWarnings("unchecked")
-			@Override
+            @Override
             public <S> IConverter<S> getConverter(Class<S> type) {
-            	if (List.class.isAssignableFrom(type)) {
-            		return (IConverter<S>) CONVERT;
-            	}
-            	return super.getConverter(type);
+                if (List.class.isAssignableFrom(type)) {
+                    return (IConverter<S>) CONVERT;
+                }
+                return super.getConverter(type);
             }
         };
         values.setConvertEmptyInputStringToNull(false);
@@ -123,12 +123,12 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
 
             // Want to use non-localized float parsing so we can handle exponential notation
             @SuppressWarnings("unchecked")
-			@Override
+            @Override
             public <S> IConverter<S> getConverter(Class<S> type) {
-            	if (Float.class.isAssignableFrom(type)) {
-            		return (IConverter<S>) FLOAT;
-            	}
-            	return super.getConverter(type);
+                if (Float.class.isAssignableFrom(type)) {
+                    return (IConverter<S>) FLOAT;
+                }
+                return super.getConverter(type);
             }
         };
         add(threshold);

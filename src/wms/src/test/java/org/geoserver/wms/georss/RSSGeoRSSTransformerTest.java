@@ -59,7 +59,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         NodeList description = channel.getElementsByTagName("description");
         assertEquals("Test Abstract", description.item(0).getChildNodes().item(0).getNodeValue());
     }
-	
+    
     @Test
     public void testLinkTemplate() throws Exception {
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
@@ -90,7 +90,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         assertEquals(n, items.getLength());
         for (int i = 0; i < items.getLength(); i++) {
             Element item = (Element) items.item(i);
-			assertEquals("http://dummp.com", item.getElementsByTagName("link").item(0).getChildNodes().item(0).getNodeValue());
+            assertEquals("http://dummp.com", item.getElementsByTagName("link").item(0).getChildNodes().item(0).getNodeValue());
         }
     }
 

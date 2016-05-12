@@ -98,8 +98,8 @@ public class PyWpsHook extends WpsHook {
                         metadata = new HashMap();
                     }
                     for (String key : otherKeys) {
-						metadata.put(key, meta.get(key));
-					}
+                        metadata.put(key, meta.get(key));
+                    }
                 }
             }
             if (defaults != null) {
@@ -137,7 +137,7 @@ public class PyWpsHook extends WpsHook {
         Map<String,Parameter<?>> map = new TreeMap<String, Parameter<?>>();
 
         for (String name : (List<String>)outputs.keys()) {
-        	PyTuple output = (PyTuple) outputs.get(name); 
+            PyTuple output = (PyTuple) outputs.get(name); 
 
             Object type = output.__getitem__(0);
             Object desc = output.__getitem__(1);
@@ -147,10 +147,10 @@ public class PyWpsHook extends WpsHook {
             if (output.size() == 3) {
                 PyDictionary meta = (PyDictionary) output.get(2);
                 if(meta != null && !meta.isEmpty()) {
-                	metadata = new HashMap<String, Object>();
-	                for (Object key : meta.keySet()) {
-						metadata.put((String) key, meta.get(key));
-					}
+                    metadata = new HashMap<String, Object>();
+                    for (Object key : meta.keySet()) {
+                        metadata.put((String) key, meta.get(key));
+                    }
                 }
             }
 

@@ -1856,10 +1856,10 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
     
     @Test
     public void testFilteringSplit() throws Exception {
-    	if (AppSchemaDataAccessConfigurator.isJoining()) {
-    		// this is non joining test
-    		return;
-    	}
+        if (AppSchemaDataAccessConfigurator.isJoining()) {
+            // this is non joining test
+            return;
+        }
         FeatureSource<FeatureType, Feature> featureSource;
         try {
             Name gu = Types.typeName("urn:cgi:xmlns:CGI:GeoSciML:2.0", "GeologicUnit");

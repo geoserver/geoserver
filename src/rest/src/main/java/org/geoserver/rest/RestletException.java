@@ -26,8 +26,8 @@ public class RestletException extends RuntimeException {
      * @param e The actual Exception that occurred
      */
     public RestletException(Representation r, Status stat, Throwable t){
-    	super(t);
-    	init(r, stat);
+        super(t);
+        init(r, stat);
     }
     /**
      * @param r The Representation to report this error to the user
@@ -43,7 +43,7 @@ public class RestletException extends RuntimeException {
      * @param e The actual Exception that occurred
      */
     public RestletException(String s, Status stat, Throwable t){
-    	super(t);
+        super(t);
         init(new StringRepresentation(s + ":" + t.getMessage(), MediaType.TEXT_PLAIN), stat);
     }
     
@@ -59,8 +59,8 @@ public class RestletException extends RuntimeException {
      * Internal helper function so we can call the super constructor and still share initialization code within this class
      */
     private void init(Representation r, Status s){
-    	myRepresentation = r;
-    	myStatus = s;
+        myRepresentation = r;
+        myStatus = s;
     }
 
     /**

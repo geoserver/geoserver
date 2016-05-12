@@ -18,11 +18,11 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
 
 public class JMSXBeanBrokerFactory extends XBeanBrokerFactory implements ApplicationContextAware {
-	
+    
         private ApplicationContext context;
-	
+    
 
-	protected ApplicationContext createApplicationContext(String uri) throws MalformedURLException {
+    protected ApplicationContext createApplicationContext(String uri) throws MalformedURLException {
         Resource resource = Utils.resourceFromString(uri);
         try {
             return new ResourceXmlApplicationContext(resource,context) {
@@ -36,9 +36,9 @@ public class JMSXBeanBrokerFactory extends XBeanBrokerFactory implements Applica
         }
     }
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.context=applicationContext;
-	}
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext)
+            throws BeansException {
+        this.context=applicationContext;
+    }
 }

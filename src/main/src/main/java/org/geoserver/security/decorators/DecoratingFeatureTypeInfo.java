@@ -311,12 +311,12 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     
     @Override
     public boolean isCircularArcPresent() {
-    	return delegate.isCircularArcPresent();
+        return delegate.isCircularArcPresent();
     }
     
     @Override
     public void setCircularArcPresent(boolean enabled) {
-    	delegate.setCircularArcPresent(enabled);
+        delegate.setCircularArcPresent(enabled);
     }
     
     @Override

@@ -184,7 +184,7 @@ public class ServiceException extends org.geoserver.platform.ServiceException {
      */
 
     //public String getXmlResponse() {
-    //	return getXmlResponse(true);
+    //    return getXmlResponse(true);
     //}
 
     /**

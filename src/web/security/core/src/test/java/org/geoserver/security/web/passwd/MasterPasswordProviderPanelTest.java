@@ -24,15 +24,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class MasterPasswordProviderPanelTest extends AbstractSecurityNamedServicePanelTest {
-	
-	@Before
-	public void clearSecurityStuff() throws Exception {
-		Set<String> mpProviders = getSecurityManager().listMasterPasswordProviders();
-		if (mpProviders.contains("default2")) {
-			MasterPasswordProviderConfig default2 = getSecurityManager().loadMasterPassswordProviderConfig("default2");
-			getSecurityManager().removeMasterPasswordProvder(default2);
-		}
-	}
+    
+    @Before
+    public void clearSecurityStuff() throws Exception {
+        Set<String> mpProviders = getSecurityManager().listMasterPasswordProviders();
+        if (mpProviders.contains("default2")) {
+            MasterPasswordProviderConfig default2 = getSecurityManager().loadMasterPassswordProviderConfig("default2");
+            getSecurityManager().removeMasterPasswordProvder(default2);
+        }
+    }
 
     @Override
     protected AbstractSecurityPage getBasePage() {

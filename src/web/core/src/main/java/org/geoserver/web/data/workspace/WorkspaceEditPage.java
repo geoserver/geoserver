@@ -292,13 +292,13 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
     class SettingsPanel extends FormComponentPanel<Serializable> {
 
         private static final long serialVersionUID = -1580928887379954134L;
-		
+        
         WebMarkupContainer settingsContainer;
         ContactPanel contactPanel;
         WebMarkupContainer otherSettingsPanel;
         Settings set;
 
-		public SettingsPanel(String id, IModel<WorkspaceInfo> model) {
+        public SettingsPanel(String id, IModel<WorkspaceInfo> model) {
             super(id, new Model<>());
 
             SettingsInfo settings = getGeoServer().getSettings(model.getObject());
@@ -523,7 +523,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                 //if service is disabled, create a placeholder model to hold a newly created one,
                 // otherwise create a live model to the existing service
                 @SuppressWarnings("unchecked")
-				Class<ServiceInfo> serviceClass = (Class<ServiceInfo>) page.getServiceClass();
+                Class<ServiceInfo> serviceClass = (Class<ServiceInfo>) page.getServiceClass();
                 service.model = !service.enabled ? new NewServiceModel(wsModel, serviceClass) :  
                     new ExistingServiceModel(wsModel, serviceClass);
                 services.add(service);

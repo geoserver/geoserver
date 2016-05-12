@@ -42,7 +42,7 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
     @Test
     public void testCascadeGetMapOnto13() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=-90,-180,90,180" +
-        		"&styles=&layers=" + WORLD4326_130 + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
+                "&styles=&layers=" + WORLD4326_130 + "&Format=image/png&request=GetMap&version=1.3.0&service=wms"
                 + "&width=180&height=90&crs=EPSG:4326");
         // we'll get a service exception if the requests are not the ones expected
         checkImage(response, "image/png", 180, 90);

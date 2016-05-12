@@ -208,8 +208,8 @@ public class PartialBufferedOutputStream2 extends OutputStream {
         out_buffer = null;
         out_real = null; // get rid of our local pointer
         response = null; // get rid of our local pointer
-                         //if (out_real != null)	// removed so the user has to close their stream
-                         //	out_real.close();
+                         //if (out_real != null)    // removed so the user has to close their stream
+                         //    out_real.close();
     }
 
     /**

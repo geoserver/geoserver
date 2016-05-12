@@ -79,7 +79,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
     private MathTransform dst2srcCRSTransform;
 
     /** Color table representing source's IndexColorModel. */
-	// just for keeping compiler quiet: let's see if we really need it
+    // just for keeping compiler quiet: let's see if we really need it
     private byte[][] ctable = null;
 
     /** Do we need a reprojection.*/

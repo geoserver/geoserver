@@ -12,11 +12,11 @@ import org.geotools.util.Converter;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class StringBBoxConverter implements Converter {
-	
-	private static String SEPARATOR = ",";
+    
+    private static String SEPARATOR = ",";
 
-	@SuppressWarnings("unchecked")
-	public <T> T convert(Object source, Class<T> target) throws Exception {
+    @SuppressWarnings("unchecked")
+    public <T> T convert(Object source, Class<T> target) throws Exception {
         if (source instanceof ReferencedEnvelope){
             if (String.class.isAssignableFrom(target)){
                 try{
@@ -55,9 +55,9 @@ public class StringBBoxConverter implements Converter {
                 }
             }
         }
-		
-		throw new IllegalArgumentException(
+        
+        throw new IllegalArgumentException(
                 "String List converter expects to convert ReferencedEnvelope <-> string only. (" + source + "), (" + target + ")"
         );
-	}
+    }
 }

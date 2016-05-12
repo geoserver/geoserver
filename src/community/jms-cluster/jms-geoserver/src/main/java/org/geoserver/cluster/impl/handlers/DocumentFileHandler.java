@@ -20,31 +20,31 @@ import com.thoughtworks.xstream.XStream;
  * 
  */
 public class DocumentFileHandler extends
-		JMSEventHandler<String, DocumentFile> {
-	public DocumentFileHandler(XStream xstream, Class clazz) {
-		super(xstream, clazz);
-	}
+        JMSEventHandler<String, DocumentFile> {
+    public DocumentFileHandler(XStream xstream, Class clazz) {
+        super(xstream, clazz);
+    }
 
-	@Override
-	public boolean synchronize(DocumentFile event) throws Exception {
-		try (OutputStream fout = event.getPath().out()) {			
-			xstream.toXML(event.getBody(), fout);
-			return true;
-		} catch (IllegalStateException e) {
-			if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-				LOGGER.severe(e.getLocalizedMessage());
-			throw e;
-		} 
-	}
+    @Override
+    public boolean synchronize(DocumentFile event) throws Exception {
+        try (OutputStream fout = event.getPath().out()) {            
+            xstream.toXML(event.getBody(), fout);
+            return true;
+        } catch (IllegalStateException e) {
+            if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
+                LOGGER.severe(e.getLocalizedMessage());
+            throw e;
+        } 
+    }
 
-	@Override
-	public String serialize(DocumentFile o) throws Exception {
-		return xstream.toXML(o);
-	}
+    @Override
+    public String serialize(DocumentFile o) throws Exception {
+        return xstream.toXML(o);
+    }
 
-	@Override
-	public DocumentFile deserialize(String o) throws Exception {
-		return (DocumentFile) xstream.fromXML(o);
-	}
+    @Override
+    public DocumentFile deserialize(String o) throws Exception {
+        return (DocumentFile) xstream.fromXML(o);
+    }
 
 }

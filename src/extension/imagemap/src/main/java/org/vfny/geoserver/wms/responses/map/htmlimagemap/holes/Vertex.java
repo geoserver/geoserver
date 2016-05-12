@@ -21,58 +21,58 @@ import com.vividsolutions.jts.geom.Coordinate;
  *
  */
 public class Vertex {
-	private Coordinate position;
-	private int index;
+    private Coordinate position;
+    private int index;
 
-	public Vertex(Coordinate position, int index)
-	{
-		this.position = position;
-		this.index = index;
-	}
-	
-	
-	
-	public Coordinate getPosition() {
-		return position;
-	}
-
-
-
-	public void setPosition(Coordinate position) {
-		this.position = position;
-	}
+    public Vertex(Coordinate position, int index)
+    {
+        this.position = position;
+        this.index = index;
+    }
+    
+    
+    
+    public Coordinate getPosition() {
+        return position;
+    }
 
 
 
-	public int getIndex() {
-		return index;
-	}
+    public void setPosition(Coordinate position) {
+        this.position = position;
+    }
 
 
 
-	public void setIndex(int index) {
-		this.index = index;
-	}
+    public int getIndex() {
+        return index;
+    }
 
 
 
-	public boolean equals(Object obj)
-	{
-		if (!(obj instanceof Vertex)) 
-			return false;
-		Vertex v=(Vertex)obj;
-		return v.position.equals(position) && v.index == index;
-	}
+    public void setIndex(int index) {
+        this.index = index;
+    }
 
-	
 
-	public int hashCode()
-	{			
-		return (position.hashCode() * 397) ^ index;		
-	}
 
-	public String toString()
-	{
-		return ((position==null) ? "" :position.toString())+" ("+index+")";
-	}
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof Vertex)) 
+            return false;
+        Vertex v=(Vertex)obj;
+        return v.position.equals(position) && v.index == index;
+    }
+
+    
+
+    public int hashCode()
+    {            
+        return (position.hashCode() * 397) ^ index;        
+    }
+
+    public String toString()
+    {
+        return ((position==null) ? "" :position.toString())+" ("+index+")";
+    }
 }

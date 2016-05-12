@@ -78,7 +78,7 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
     }
 
     public boolean is3D(){
-    	return crs != null && crs.getCoordinateSystem().getDimension() >= 3;
+        return crs != null && crs.getCoordinateSystem().getDimension() >= 3;
     }
 
     public void setLabelsVisibility(boolean visible) {
@@ -135,18 +135,18 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
             this.maxY = e.getMaxY();
             this.crs = e.getCoordinateReferenceSystem();
             if( is3D() ){
-            	if( e instanceof ReferencedEnvelope3D ){
-	            	this.minZ = ((ReferencedEnvelope3D)e).getMinZ();
-	            	this.maxZ = ((ReferencedEnvelope3D)e).getMaxZ();
-            	}
-            	else {
-            		this.minZ = Double.NaN;
-            		this.maxZ = Double.NaN;
-            	}
+                if( e instanceof ReferencedEnvelope3D ){
+                    this.minZ = ((ReferencedEnvelope3D)e).getMinZ();
+                    this.maxZ = ((ReferencedEnvelope3D)e).getMaxZ();
+                }
+                else {
+                    this.minZ = Double.NaN;
+                    this.maxZ = Double.NaN;
+                }
             }
             else {
-            	this.minZ = Double.NaN;
-        		this.maxZ = Double.NaN;
+                this.minZ = Double.NaN;
+                this.maxZ = Double.NaN;
             }
         }
     }
@@ -176,14 +176,14 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
             if(crsRequired && crs == null) {
                 setConvertedInput(null);
             } else {
-            	if( is3D() ){
-        			double minZsafe = minZ == null ? Double.NaN : minZ;
-        			double maxZsafe = maxZ == null ? Double.NaN : maxZ;
-    				setConvertedInput(new ReferencedEnvelope3D(minX, maxX, minY, maxY, minZsafe, maxZsafe,crs));
-        		}
-            	else {
-            		setConvertedInput(new ReferencedEnvelope(minX, maxX, minY, maxY, crs));
-            	}
+                if( is3D() ){
+                    double minZsafe = minZ == null ? Double.NaN : minZ;
+                    double maxZsafe = maxZ == null ? Double.NaN : maxZ;
+                    setConvertedInput(new ReferencedEnvelope3D(minX, maxX, minY, maxY, minZsafe, maxZsafe,crs));
+                }
+                else {
+                    setConvertedInput(new ReferencedEnvelope(minX, maxX, minY, maxY, crs));
+                }
             }
         } else {
             setConvertedInput(null);

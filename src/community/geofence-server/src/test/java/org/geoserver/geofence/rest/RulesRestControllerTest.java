@@ -102,9 +102,9 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         //conflict - will be translated by spring exception handler to code 409
         boolean conflict = false;
         try {
-        	controller.insert(rule2);
+            controller.insert(rule2);
         } catch (DuplicateKeyException e) {
-        	conflict = true;
+            conflict = true;
         }
         assertTrue(conflict);
     }

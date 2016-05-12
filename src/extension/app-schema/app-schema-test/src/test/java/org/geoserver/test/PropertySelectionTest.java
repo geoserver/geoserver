@@ -29,7 +29,7 @@ public class PropertySelectionTest extends AbstractAppSchemaTestSupport {
      */
     @Test
     public void testGetFeature() {
-    	Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature&propertyname=gml:description");
+        Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature&propertyname=gml:description");
         LOGGER.info("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature&propertyname=gml:description Response:\n" + prettyString(doc));
 
         // using custom IDs - this is being tested too

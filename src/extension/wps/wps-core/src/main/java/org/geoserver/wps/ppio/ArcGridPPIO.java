@@ -32,7 +32,7 @@ public class ArcGridPPIO extends CDataPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
-    	// in order to read a grid coverage we need to first store it on disk
+        // in order to read a grid coverage we need to first store it on disk
         File root = new File(System.getProperty("java.io.tmpdir", "."));
         File f = File.createTempFile("wps", "asc", root);
         FileOutputStream os = null;

@@ -121,7 +121,7 @@ public class TransactionTest extends WFSTestSupport {
         assertTrue(dom.getElementsByTagName("ogc:FeatureId").getLength() > 0);
     }
 
-    	
+        
     @Test
     public void testInsertWithNoSRS() throws Exception {
         // 1. do a getFeature
@@ -479,7 +479,7 @@ public class TransactionTest extends WFSTestSupport {
         assertEquals( "1", getFirstElementByTagName(dom, "wfs:totalInserted").getFirstChild().getNodeValue());
         
         dom = getAsDOM( "wfs?version=1.1.0&request=getfeature&typename=cite:RoadSegments&srsName=EPSG:4326&" +
-    		"cql_filter=FID%3D'foo'");
+            "cql_filter=FID%3D'foo'");
 //        print(dom);
         assertEquals( "wfs:FeatureCollection", dom.getDocumentElement().getNodeName() );
         

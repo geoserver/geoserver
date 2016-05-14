@@ -80,7 +80,7 @@ public class PostgresConfigBean implements Serializable {
         this.port = port;
     }
 
-    public URI toUri(String repoId) {
+    public URI buildUriForRepo(String repoId) {
         StringBuilder sb = new StringBuilder(128);
         sb.append(SCHEME).append(this.host);
         if (port > 0) {
@@ -103,8 +103,10 @@ public class PostgresConfigBean implements Serializable {
     public static PostgresConfigBean from(URI location) {
         Preconditions.checkNotNull(location, "Cannot parse NULL URI location");
         Preconditions.checkNotNull(location.getScheme(), "Cannot parse NULL URI scheme");
-        Preconditions.checkArgument("postgresql".equals(location.getScheme()),
-                "Cannot parse non-postgresql URI schem");
+        if (!"postgresql".equals(location.getScheme())) {
+            // don't parse, return new object
+            return newInstance();
+        }
         // build a bean from the parts
         String host = location.getHost();
         int port = location.getPort();

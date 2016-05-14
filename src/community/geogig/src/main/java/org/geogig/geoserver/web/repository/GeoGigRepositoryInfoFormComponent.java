@@ -4,24 +4,26 @@
  */
 package org.geogig.geoserver.web.repository;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 import org.geogig.geoserver.config.PostgresConfigBean;
 import org.geogig.geoserver.config.RepositoryInfo;
+import org.geogig.geoserver.model.DropDownModel;
 import org.geogig.geoserver.model.PGBeanModel;
 import org.geogig.geoserver.model.RepoDirModel;
 import org.geogig.geoserver.model.RepoNameModel;
+import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
+import org.geoserver.web.data.store.panel.TextParamPanel;
 
 /**
  * Wicket form panel to hold form components for configuring a GeoGig repository. This panel allows
@@ -36,60 +38,56 @@ class GeoGigRepositoryInfoFormComponent extends FormComponentPanel<RepositoryInf
 
     private static final long serialVersionUID = 1L;
 
-    static final String FILE_CONFIG = "File";
-    static final String PG_CONFIG = "PostgreSQL";
-    static final String DEFAULT_CONFIG = FILE_CONFIG;
-    static final List<String> CONFIG_LIST = Arrays.asList(FILE_CONFIG, PG_CONFIG);
-
-    private final TextField<String> name;
-    private final DropDownChoice<String> dropdown;
+    private final TextParamPanel repoNamePanel;
+    private final DropDownChoiceParamPanel dropdownPanel;
     private final GeoGigDirectoryFormComponent directoryComponent;
     private final PostgresConfigFormPanel pgPanel;
 
     private WebMarkupContainer settingsContainer;
 
-    public GeoGigRepositoryInfoFormComponent(String id, IModel<RepositoryInfo> model) {
+    GeoGigRepositoryInfoFormComponent(String id, IModel<RepositoryInfo> model) {
         super(id, model);
 
-        RepositoryInfo repoInfo = model.getObject();
-
-        IModel<String> nameModel = new RepoNameModel(model);
-        name = new TextField<>("repositoryName", nameModel);
-        name.setRequired(true);
-        //name.setLabel(new ResourceModel("name", "Repo name"));
-        if (repoInfo.getRepoName() != null) {
-            name.setModelObject(repoInfo.getRepoName());
-        }
-        add(name);
-
         // add the dropdown to switch between configurations
-        dropdown = new DropDownChoice<>("configChoice", new DropDownModel(model), CONFIG_LIST);
-        dropdown.add(new AjaxFormComponentUpdatingBehavior("onChange") {
+        dropdownPanel = new DropDownChoiceParamPanel("configChoicePanel", new DropDownModel(model),
+                new ResourceModel("GeoGigRepositoryInfoFormComponent.repositoryType",
+                        "Repository Type"), DropDownModel.CONFIG_LIST, true);
+        final DropDownChoice<Serializable> dropDownChoice = dropdownPanel.getFormComponent();
+        dropDownChoice.add(new AjaxFormComponentUpdatingBehavior("onChange") {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                final String value = dropdown.getModelObject();
-                directoryComponent.setVisible(FILE_CONFIG.equals(value));
-                pgPanel.setVisible(PG_CONFIG.equals(value));
+                final String value = dropDownChoice.getModelObject().toString();
+                directoryComponent.setVisible(DropDownModel.DIRECTORY_CONFIG.equals(value));
+                pgPanel.setVisible(DropDownModel.PG_CONFIG.equals(value));
                 target.addComponent(settingsContainer);
             }
         });
-        dropdown.setOutputMarkupId(true);
-        dropdown.setNullValid(true);
-        dropdown.setRequired(true);
-        add(dropdown);
+        add(dropdownPanel);
 
         settingsContainer = new WebMarkupContainer("settingsContainer");
         settingsContainer.setOutputMarkupId(true);
         add(settingsContainer);
 
+        IModel<String> nameModel = new RepoNameModel(model);
+        repoNamePanel = new TextParamPanel("repositoryNamePanel", nameModel,
+                new ResourceModel("GeoGigRepositoryInfoFormComponent.repositoryName",
+                        "Repository Name"), true);
+        settingsContainer.add(repoNamePanel);
+
         pgPanel = new PostgresConfigFormPanel("pgPanel", new PGBeanModel(model));
-        pgPanel.setVisible(PG_CONFIG.equals(dropdown.getModelObject()));
+        pgPanel.setVisible(DropDownModel.PG_CONFIG
+                .equals(dropDownChoice.getModelObject().toString()));
         settingsContainer.add(pgPanel);
 
         directoryComponent = new GeoGigDirectoryFormComponent("parentDirectory",
                 new RepoDirModel(model));
         directoryComponent.setOutputMarkupId(true);
-        directoryComponent.setVisible(FILE_CONFIG.equals(dropdown.getModelObject()));
+        directoryComponent
+                .setVisible(DropDownModel.DIRECTORY_CONFIG.equals(dropDownChoice.getModelObject()
+                        .toString()));
         settingsContainer.add(directoryComponent);
 
     }
@@ -97,74 +95,34 @@ class GeoGigRepositoryInfoFormComponent extends FormComponentPanel<RepositoryInf
     @Override
     protected void convertInput() {
         RepositoryInfo modelObject = getModelObject();
-        final String repoTypeChoice = dropdown.getConvertedInput();
-        if (PG_CONFIG.equals(repoTypeChoice)) {
-            // PG config used
-            PostgresConfigBean bean = pgPanel.getConvertedInput();
-            // build a URI out of the config
-            URI uri = bean.toUri(name.getConvertedInput().trim());
-            modelObject.setLocation(uri);
-        } else if (FILE_CONFIG.equals(repoTypeChoice)) {
-            // local directory used
-            String path = directoryComponent.getConvertedInput().trim();
-            String repoId = name.getConvertedInput().trim();
-            Path uriPath = Paths.get(path, repoId);
-            modelObject.setLocation(uriPath.toUri());
-        } else {
-            throw new IllegalStateException(
-                    String.format("Unknown repositry type '%s', expected one of %s, %s",
-                            repoTypeChoice, PG_CONFIG, FILE_CONFIG));
+        final String repoTypeChoice = dropdownPanel.getFormComponent().getConvertedInput()
+                .toString();
+        if (null != repoTypeChoice) {
+            switch (repoTypeChoice) {
+                case DropDownModel.PG_CONFIG:
+                    // PG config used
+                    PostgresConfigBean bean = pgPanel.getConvertedInput();
+                    // build a URI out of the config
+                    URI uri = bean.buildUriForRepo(repoNamePanel.getFormComponent()
+                            .getConvertedInput().toString().trim());
+                    modelObject.setLocation(uri);
+                    break;
+                case DropDownModel.DIRECTORY_CONFIG:
+                    // local directory used
+                    String path = directoryComponent.getConvertedInput().trim();
+                    String repoId = repoNamePanel.getFormComponent().getConvertedInput().toString()
+                            .trim();
+                    Path uriPath = Paths.get(path, repoId);
+                    modelObject.setLocation(uriPath.toUri());
+                    break;
+                default:
+                    throw new IllegalStateException(
+                            String.format("Unknown repositry type '%s', expected one of %s, %s",
+                                    repoTypeChoice, DropDownModel.PG_CONFIG,
+                                    DropDownModel.DIRECTORY_CONFIG));
+            }
         }
         setConvertedInput(modelObject);
     }
 
-    class DropDownModel implements IModel<String> {
-
-        private final IModel<RepositoryInfo> repoModel;
-        private String type;
-
-        public DropDownModel(IModel<RepositoryInfo> repoModel) {
-            this.repoModel = repoModel;
-        }
-
-        @Override
-        public String getObject() {
-            if (type == null) {
-                // get the type from the model
-                RepositoryInfo repo = repoModel.getObject();
-                URI location = repo != null ? repo.getLocation() : null;
-                if (location != null) {
-                    if (null != location.getScheme()) // if the URI is Postgres...
-                    {
-                        switch (location.getScheme()) {
-                            case "postgresql":
-                                type = PG_CONFIG;
-                                break;
-                            case "file":
-                                type = FILE_CONFIG;
-                                break;
-                            default:
-                                type = DEFAULT_CONFIG;
-                                break;
-                        }
-                    }
-                }
-            }
-            return type;
-        }
-
-        @Override
-        public void setObject(String object) {
-            type = object;
-        }
-
-        @Override
-        public void detach() {
-            if (repoModel != null) {
-                repoModel.detach();
-            }
-            type = null;
-        }
-
-    }
 }

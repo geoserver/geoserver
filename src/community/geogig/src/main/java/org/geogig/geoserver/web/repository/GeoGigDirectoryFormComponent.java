@@ -10,6 +10,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
@@ -33,9 +34,9 @@ class GeoGigDirectoryFormComponent extends FormComponentPanel<String> {
     private final ModalWindow dialog;
 
     /**
-     * 
+     *
      * @param validators any extra validator that should be added to the input field, or
-     *        {@code null}
+     *                   {@code null}
      */
     public GeoGigDirectoryFormComponent(final String id, final IModel<String> valueModel) {
         // make the value of the text field the model of this panel, for easy value retrieval
@@ -45,11 +46,19 @@ class GeoGigDirectoryFormComponent extends FormComponentPanel<String> {
         add(dialog = new ModalWindow("dialog"));
 
         // the text field, with a decorator for validations
-        directory = new TextField<String>("value", valueModel);
+        directory = new TextField<>("value", valueModel);
         directory.setRequired(true);
         directory.setOutputMarkupId(true);
-        directory.setLabel(new ResourceModel("directory", "Parent directory"));
-        // directory.add(GEOGIG_DIR_VALIDATOR);
+
+        final Label directoryLabel = new Label("directoryLabel", new ResourceModel("directory",
+                "Parent directory") {
+            @Override
+            public String getObject() {
+                String value = super.getObject();
+                return value + " *";
+            }
+        }.getObject());
+        add(directoryLabel);
 
         FormComponentFeedbackBorder feedback = new FormComponentFeedbackBorder("wrapper");
         feedback.add(directory);
@@ -84,7 +93,7 @@ class GeoGigDirectoryFormComponent extends FormComponentPanel<String> {
 
                 final boolean makeRepositoriesSelectable = false;
                 DirectoryChooser chooser = new DirectoryChooser(dialog.getContentId(),
-                        new Model<File>(file), makeRepositoriesSelectable) {
+                        new Model<>(file), makeRepositoriesSelectable) {
 
                     private static final long serialVersionUID = 1L;
 

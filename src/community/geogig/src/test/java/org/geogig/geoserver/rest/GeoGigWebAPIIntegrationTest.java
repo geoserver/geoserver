@@ -312,7 +312,7 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
         assertXpathEvaluatesTo("upstream", "/response/name", dom);
 
         dom = getAsDOM(url);
-
+        print(dom);
         // <response><success>false</success><error>REMOTE_ALREADY_EXISTS</error></response>
         assertXpathEvaluatesTo("false", "/response/success", dom);
         assertXpathEvaluatesTo("REMOTE_ALREADY_EXISTS", "/response/error", dom);

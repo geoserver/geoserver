@@ -31,7 +31,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerApplication;
 import org.locationtech.geogig.api.Context;
 import org.locationtech.geogig.api.ContextBuilder;
-import org.locationtech.geogig.api.DefaultPlatform;
 import org.locationtech.geogig.api.GeoGIG;
 import org.locationtech.geogig.api.GlobalContextBuilder;
 import org.locationtech.geogig.api.Ref;
@@ -56,9 +55,9 @@ import com.google.common.collect.Lists;
 
 public class RepositoryManager {
     static {
-        if (GlobalContextBuilder.builder == null
-                || GlobalContextBuilder.builder.getClass().equals(ContextBuilder.class)) {
-            GlobalContextBuilder.builder = new CLIContextBuilder();
+        if (GlobalContextBuilder.builder() == null
+                || GlobalContextBuilder.builder().getClass().equals(ContextBuilder.class)) {
+            GlobalContextBuilder.builder(new CLIContextBuilder());
         }
     }
 
@@ -213,15 +212,15 @@ public class RepositoryManager {
     }
 
     private void create(final RepositoryInfo repoInfo) {
-//        File targetDirectory = new File(repoInfo.getLocation());
-//        Preconditions.checkArgument(!isGeogigDirectory(targetDirectory));
+        // File targetDirectory = new File(repoInfo.getLocation());
+        // Preconditions.checkArgument(!isGeogigDirectory(targetDirectory));
 
         URI repoURI = repoInfo.getLocation();
         RepositoryResolver resolver = RepositoryResolver.lookup(repoURI);
         if (!resolver.repoExists(repoURI)) {
             Hints hints = new Hints();
             hints.set(Hints.REPOSITORY_URL, repoURI);
-            Context context = GlobalContextBuilder.builder.build(hints);
+            Context context = GlobalContextBuilder.builder().build(hints);
             GeoGIG geogig = new GeoGIG(context);
             try {
                 Repository repository = geogig.command(InitOp.class).call();
@@ -300,7 +299,7 @@ public class RepositoryManager {
         Optional<IRemoteRepo> remoteRepo;
         try {
             Hints hints = Hints.readOnly();
-            Repository localRepo = GlobalContextBuilder.builder.build(hints).repository();
+            Repository localRepo = GlobalContextBuilder.builder().build(hints).repository();
             remoteRepo = RemoteUtils.newRemote(localRepo, remote, null);
             if (!remoteRepo.isPresent()) {
                 throw new IllegalArgumentException("Repository not found or not reachable");

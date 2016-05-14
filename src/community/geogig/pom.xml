@@ -15,7 +15,7 @@
   <name>GeoGig GeoServer integration</name>
 
   <properties>
-    <geogig.version>1.0-RC2</geogig.version>
+    <geogig.version>1.0-SNAPSHOT</geogig.version>
     <jline.version>2.12</jline.version>
     <mockito.version>1.8.5</mockito.version>
   </properties>
@@ -51,6 +51,11 @@
     <dependency>
       <groupId>org.locationtech.geogig</groupId>
       <artifactId>geogig-geotools</artifactId>
+      <version>${geogig.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-datastore</artifactId>
       <version>${geogig.version}</version>
     </dependency>
     <dependency>

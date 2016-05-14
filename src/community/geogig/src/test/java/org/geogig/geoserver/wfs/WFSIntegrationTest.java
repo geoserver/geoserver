@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +40,10 @@ import org.locationtech.geogig.api.RevCommit;
 import org.locationtech.geogig.api.TestPlatform;
 import org.locationtech.geogig.api.plumbing.FindTreeChild;
 import org.locationtech.geogig.api.plumbing.LsTreeOp;
+import org.locationtech.geogig.api.plumbing.ResolveGeogigURI;
 import org.locationtech.geogig.api.porcelain.CommitOp;
 import org.locationtech.geogig.api.porcelain.LogOp;
-import org.locationtech.geogig.cli.test.functional.general.CLITestContextBuilder;
+import org.locationtech.geogig.cli.test.functional.CLITestContextBuilder;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.test.integration.RepositoryTestCase;
@@ -51,8 +53,6 @@ import org.w3c.dom.Document;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import java.net.URI;
-import org.locationtech.geogig.api.plumbing.ResolveGeogigURI;
 
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class WFSIntegrationTest extends WFSTestSupport {
@@ -69,8 +69,8 @@ public class WFSIntegrationTest extends WFSTestSupport {
         @Override
         protected Context createInjector() {
             TestPlatform testPlatform = (TestPlatform) createPlatform();
-            GlobalContextBuilder.builder = new CLITestContextBuilder(testPlatform);
-            return GlobalContextBuilder.builder.build();
+            GlobalContextBuilder.builder(new CLITestContextBuilder(testPlatform));
+            return GlobalContextBuilder.builder().build();
         }
 
         @Override
@@ -178,10 +178,11 @@ public class WFSIntegrationTest extends WFSTestSupport {
         Document dom = insert();
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
 
-        assertEquals("1", getFirstElementByTagName(dom, "wfs:totalInserted").getFirstChild()
-                .getNodeValue());
+        assertEquals("1",
+                getFirstElementByTagName(dom, "wfs:totalInserted").getFirstChild().getNodeValue());
 
-        dom = getAsDOM("wfs?version=1.1.0&request=getfeature&typename=geogig:Lines&srsName=EPSG:4326&");
+        dom = getAsDOM(
+                "wfs?version=1.1.0&request=getfeature&typename=geogig:Lines&srsName=EPSG:4326&");
         // print(dom);
         assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
 
@@ -214,8 +215,8 @@ public class WFSIntegrationTest extends WFSTestSupport {
     public void testUpdate() throws Exception {
         Document dom = update();
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
-        assertEquals("1", getFirstElementByTagName(dom, "wfs:totalUpdated").getFirstChild()
-                .getNodeValue());
+        assertEquals("1",
+                getFirstElementByTagName(dom, "wfs:totalUpdated").getFirstChild().getNodeValue());
 
         dom = getAsDOM("wfs?version=1.1.0&request=getfeature&typename=geogig:Lines" + "&"
                 + "cql_filter=ip%3D1000");
@@ -226,8 +227,7 @@ public class WFSIntegrationTest extends WFSTestSupport {
 
     private Document update() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\""//
-                + " xmlns:geogig=\"" + NAMESPACE
-                + "\""//
+                + " xmlns:geogig=\"" + NAMESPACE + "\""//
                 + " xmlns:ogc=\"http://www.opengis.net/ogc\""//
                 + " xmlns:gml=\"http://www.opengis.net/gml\""//
                 + " xmlns:wfs=\"http://www.opengis.net/wfs\">"//
@@ -279,8 +279,8 @@ public class WFSIntegrationTest extends WFSTestSupport {
                 + "</wfs:Transaction>";
 
         GeoGIG geogig = helper.getGeogig();
-        final NodeRef initialTypeTreeRef = geogig.command(FindTreeChild.class)
-                .setChildPath("Lines").call().get();
+        final NodeRef initialTypeTreeRef = geogig.command(FindTreeChild.class).setChildPath("Lines")
+                .call().get();
         assertFalse(initialTypeTreeRef.getMetadataId().isNull());
 
         Document dom = postAsDOM("wfs", xml);
@@ -324,8 +324,7 @@ public class WFSIntegrationTest extends WFSTestSupport {
     @Test
     public void testUpdateDoesntChangeFeatureType() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\""//
-                + " xmlns:geogig=\"" + NAMESPACE
-                + "\""//
+                + " xmlns:geogig=\"" + NAMESPACE + "\""//
                 + " xmlns:ogc=\"http://www.opengis.net/ogc\""//
                 + " xmlns:gml=\"http://www.opengis.net/gml\""//
                 + " xmlns:wfs=\"http://www.opengis.net/wfs\">"//
@@ -348,15 +347,15 @@ public class WFSIntegrationTest extends WFSTestSupport {
                 + "</wfs:Transaction>";
 
         GeoGIG geogig = helper.getGeogig();
-        final NodeRef initialTypeTreeRef = geogig.command(FindTreeChild.class)
-                .setChildPath("Lines").call().get();
+        final NodeRef initialTypeTreeRef = geogig.command(FindTreeChild.class).setChildPath("Lines")
+                .call().get();
         assertFalse(initialTypeTreeRef.getMetadataId().isNull());
 
         Document dom = postAsDOM("wfs", xml);
         assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
 
-        assertEquals("1", getFirstElementByTagName(dom, "wfs:totalUpdated").getFirstChild()
-                .getNodeValue());
+        assertEquals("1",
+                getFirstElementByTagName(dom, "wfs:totalUpdated").getFirstChild().getNodeValue());
 
         final NodeRef finalTypeTreeRef = geogig.command(FindTreeChild.class).setChildPath("Lines")
                 .call().get();
@@ -387,7 +386,9 @@ public class WFSIntegrationTest extends WFSTestSupport {
         // shut down server
         destroyGeoServer();
 
-        geogig = new GeoGIG(repoDir);
+        TestPlatform testPlatform = new TestPlatform(repoDir);
+        Context context = new CLITestContextBuilder(testPlatform).build();
+        geogig = new GeoGIG(context);
         try {
             assertNotNull(geogig.getRepository());
             List<RevCommit> actual = ImmutableList.copyOf(geogig.command(LogOp.class).call());

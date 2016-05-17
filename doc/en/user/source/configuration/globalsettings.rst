@@ -118,6 +118,22 @@ There are three options:
 
 **Disable Locking**: No file locking is used.
 
+Web/UI Mode
+-----------
+
+This configuration setting allows control over WebUI redirecting behaviour. By default, when the user loads a page that contains input, a HTTP 302 Redirect response is returned that causes a reload of that same with a generated session ID in the request parameter. This session ID allows the state of the page to be remembered after a refresh and prevents any occurence of the 'double submit problem'. However, this behaviour is incompatible with clustering of multiple geoserver instances.
+
+There are three options:
+
+**DEFAULT**: Use redirecting unless a clustering module has been loaded.
+
+**REDIRECT**: Always use redirecting (incompatible with clustering).
+
+**DO_NOT_REDIRECT**: Never use redirecting (does not remember state when reloading a page and may cause double submit).
+
+Note that a restart of GeoServer is necessary for a change in the setting to have effect.
+
+
 REST Disable Resource not found Logging
 ----------------------------------------
 This parameter can be used to mute exception logging when doing REST operations and the requested Resource is not present. This default setting can be overridden by adding to a REST call the following parameter: **quietOnNotFound=true/false**.

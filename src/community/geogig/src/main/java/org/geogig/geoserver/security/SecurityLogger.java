@@ -132,15 +132,17 @@ public class SecurityLogger implements InitializingBean {
         if (location == null) {
             return null;
         }
-        String uri;
-        try {
-            File f = new File(location);
-            if (f.getName().endsWith(".geogig")) {
-                f = f.getParentFile();
+        String uri = location.toString();
+        if ("file".equals(location.getScheme())) {
+            try {
+                File f = new File(location);
+                if (f.getName().equals(".geogig")) {
+                    f = f.getParentFile();
+                    uri = f.toURI().toString();
+                }
+            } catch (Exception e) {
+                uri = location.toString();
             }
-            uri = f.getAbsolutePath();
-        } catch (Exception e) {
-            uri = location.toString();
         }
         return uri;
     }
@@ -253,8 +255,8 @@ public class SecurityLogger implements InitializingBean {
 
         @Override
         String params(CloneOp c) {
-            return format("url=%s, branch=%s, depth=%s", c.getRepositoryURL().orNull(), c
-                    .getBranch().orNull(), c.getDepth().orNull());
+            return format("url=%s, branch=%s, depth=%s", c.getRepositoryURL().orNull(),
+                    c.getBranch().orNull(), c.getDepth().orNull());
         }
     }
 

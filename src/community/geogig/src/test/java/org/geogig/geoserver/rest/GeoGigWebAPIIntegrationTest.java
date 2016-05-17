@@ -60,6 +60,9 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 @TestSetup(run = TestSetupFrequency.ONCE)
 public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
 
+    /**
+     * {@code /geogig/repos/<repoId>}
+     */
     private String BASE_URL;
 
     private static final Random rnd = new Random();
@@ -88,13 +91,13 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
                 .commit("created type trees")//
                 .get();
 
-        geogigData.insert("points",//
-                "p1=geom:POINT(0 0)",//
-                "p2=geom:POINT(1 1)",//
+        geogigData.insert("points", //
+                "p1=geom:POINT(0 0)", //
+                "p2=geom:POINT(1 1)", //
                 "p3=geom:POINT(2 2)");
 
-        geogigData.insert("lines",//
-                "l1=geom:LINESTRING(-10 0, 10 0)",//
+        geogigData.insert("lines", //
+                "l1=geom:LINESTRING(-10 0, 10 0)", //
                 "l2=geom:LINESTRING(0 0, 180 0)");
 
         geogigData.add().commit("Added test features");
@@ -124,11 +127,11 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
         assertNotNull(dataStore);
         assertTrue(dataStore instanceof GeoGigDataStore);
 
-        String repoId = (String) dsInfo.getConnectionParameters().get(
-                GeoGigDataStoreFactory.REPOSITORY.key);
+        String repoId = (String) dsInfo.getConnectionParameters()
+                .get(GeoGigDataStoreFactory.REPOSITORY.key);
         RepositoryInfo repositoryInfo = RepositoryManager.get().get(repoId);
         assertNotNull(repositoryInfo);
-        BASE_URL = "/geogig/" + repositoryInfo.getId();
+        BASE_URL = "/geogig/repos/" + repositoryInfo.getId();
     }
 
     /**
@@ -309,7 +312,7 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
         assertXpathEvaluatesTo("upstream", "/response/name", dom);
 
         dom = getAsDOM(url);
-
+        print(dom);
         // <response><success>false</success><error>REMOTE_ALREADY_EXISTS</error></response>
         assertXpathEvaluatesTo("false", "/response/success", dom);
         assertXpathEvaluatesTo("REMOTE_ALREADY_EXISTS", "/response/error", dom);

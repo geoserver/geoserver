@@ -10,6 +10,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
@@ -33,11 +34,11 @@ class GeoGigDirectoryFormComponent extends FormComponentPanel<String> {
     private final ModalWindow dialog;
 
     /**
-     * 
+     *
      * @param validators any extra validator that should be added to the input field, or
-     *        {@code null}
+     *                   {@code null}
      */
-    public GeoGigDirectoryFormComponent(final String id, final IModel<String> valueModel) {
+    GeoGigDirectoryFormComponent(final String id, final IModel<String> valueModel) {
         // make the value of the text field the model of this panel, for easy value retrieval
         super(id, valueModel);
 
@@ -45,11 +46,26 @@ class GeoGigDirectoryFormComponent extends FormComponentPanel<String> {
         add(dialog = new ModalWindow("dialog"));
 
         // the text field, with a decorator for validations
-        directory = new TextField<String>("value", valueModel);
+        directory = new TextField<>("value", valueModel);
         directory.setRequired(true);
         directory.setOutputMarkupId(true);
-        directory.setLabel(new ResourceModel("directory", "Parent directory"));
-        // directory.add(GEOGIG_DIR_VALIDATOR);
+
+        IModel<String> labelModel = new ResourceModel("GeoGigDirectoryFormComponent.directory",
+                "Parent directory") {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public String getObject() {
+                String value = super.getObject();
+                return value + " *";
+            }
+        };
+
+        final Label directoryLabel = new Label("directoryLabel", labelModel.getObject());
+        add(directoryLabel);
+
+        directory.setLabel(labelModel);
 
         FormComponentFeedbackBorder feedback = new FormComponentFeedbackBorder("wrapper");
         feedback.add(directory);
@@ -63,7 +79,7 @@ class GeoGigDirectoryFormComponent extends FormComponentPanel<String> {
         setConvertedInput(uri);
     }
 
-    protected Component chooserButton() {
+    private Component chooserButton() {
         AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
 
             private static final long serialVersionUID = 1242472443848716943L;
@@ -78,13 +94,13 @@ class GeoGigDirectoryFormComponent extends FormComponentPanel<String> {
                 File file = null;
                 directory.processInput();
                 String input = directory.getConvertedInput();
-                if (input != null && !input.equals("")) {
+                if (input != null && !input.isEmpty()) {
                     file = new File(input);
                 }
 
                 final boolean makeRepositoriesSelectable = false;
                 DirectoryChooser chooser = new DirectoryChooser(dialog.getContentId(),
-                        new Model<File>(file), makeRepositoriesSelectable) {
+                        new Model<>(file), makeRepositoriesSelectable) {
 
                     private static final long serialVersionUID = 1L;
 

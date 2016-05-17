@@ -48,9 +48,9 @@ public class RepositoriesListPanel extends GeoServerTablePanel<RepositoryInfo> {
     private static final ResourceReference removeIcon = new ResourceReference(
             GeoServerBasePage.class, "img/icons/silk/delete.png");
 
-    private ModalWindow popupWindow;
+    private final ModalWindow popupWindow;
 
-    private GeoServerDialog dialog;
+    private final GeoServerDialog dialog;
 
     public RepositoriesListPanel(final String id) {
         super(id, new RepositoryProvider(), false);
@@ -70,7 +70,7 @@ public class RepositoriesListPanel extends GeoServerTablePanel<RepositoryInfo> {
         if (property == RepositoryProvider.NAME) {
             return nameLink(id, itemModel);
         } else if (property == RepositoryProvider.LOCATION) {
-            String location = (String) RepositoryProvider.LOCATION.getModel(itemModel).getObject();
+            String location = RepositoryProvider.LOCATION.getModel(itemModel).getObject().toString();
             Label label = new Label(id, location);
             // label.add(new SimpleAttributeModifier("style", "word-wrap:break-word;"));
             return label;
@@ -103,13 +103,13 @@ public class RepositoriesListPanel extends GeoServerTablePanel<RepositoryInfo> {
 
             private static final long serialVersionUID = -3061812114487970427L;
 
-            private IModel<RepositoryInfo> model = itemModel;
+            private final IModel<RepositoryInfo> model = itemModel;
 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 GeoServerDialog dialog = RepositoriesListPanel.this.dialog;
-                dialog.setTitle(new ParamResourceModel(
-                        "RepositoriesListPanel.confirmRemoval.title", this));
+                dialog.setTitle(
+                        new ParamResourceModel("RepositoriesListPanel.confirmRemoval.title", this));
 
                 dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
                     private static final long serialVersionUID = -450822090965263894L;
@@ -146,9 +146,9 @@ public class RepositoriesListPanel extends GeoServerTablePanel<RepositoryInfo> {
         public ConfirmRemovePanel(String id, IModel<RepositoryInfo> repo) {
             super(id);
 
+            final String repoName = repo.getObject().getRepoName();
             add(new Label("aboutRemoveMsg", new ParamResourceModel(
-                    "RepositoriesListPanel$ConfirmRemovePanel.aboutRemove", this, repo.getObject()
-                            .getName())));
+                    "RepositoriesListPanel$ConfirmRemovePanel.aboutRemove", this, repoName)));
 
             final String repoId = repo.getObject().getId();
             final List<? extends CatalogInfo> stores;
@@ -187,7 +187,7 @@ public class RepositoriesListPanel extends GeoServerTablePanel<RepositoryInfo> {
             WebMarkupContainer lar = new WebMarkupContainer("layersRemoved");
             removed.add(lar);
             List<LayerInfo> layers = visitor.getObjects(LayerInfo.class, DELETE);
-            if (layers.size() == 0)
+            if (layers.isEmpty())
                 lar.setVisible(false);
             lar.add(new Label("layers", names(layers)));
 
@@ -205,7 +205,7 @@ public class RepositoriesListPanel extends GeoServerTablePanel<RepositoryInfo> {
         }
 
         String names(List<? extends CatalogInfo> objects) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < objects.size(); i++) {
                 sb.append(name(objects.get(i)));
                 if (i < (objects.size() - 1)) {
@@ -230,7 +230,7 @@ public class RepositoriesListPanel extends GeoServerTablePanel<RepositoryInfo> {
         private static final long serialVersionUID = 4883560661021761394L;
 
         static final Property<RepositoryInfo> NAME = new BeanProperty<RepositoryInfo>("name",
-                "name");
+                "repoName");
 
         static final Property<RepositoryInfo> LOCATION = new BeanProperty<RepositoryInfo>(
                 "location", "location");

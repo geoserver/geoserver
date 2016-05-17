@@ -15,9 +15,10 @@
   <name>GeoGig GeoServer integration</name>
 
   <properties>
-    <geogig.version>1.0-RC1a</geogig.version>
+    <geogig.version>1.0-SNAPSHOT</geogig.version>
     <jline.version>2.12</jline.version>
     <mockito.version>1.8.5</mockito.version>
+    <logback.version>1.1.2</logback.version>
   </properties>
 
   <repositories>
@@ -33,24 +34,28 @@
 
   <dependencies>
     <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.locationtech.geogig</groupId>
       <artifactId>geogig-cli</artifactId>
       <version>${geogig.version}</version>
-      <exclusions>
-        <exclusion>
-          <!-- used by the GeogigPy4JEntryPoint class for the QGIS plugin, not needed here -->
-          <groupId>net.sf.py4j</groupId>
-          <artifactId>py4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jul-to-slf4j</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.locationtech.geogig</groupId>
       <artifactId>geogig-geotools</artifactId>
+      <version>${geogig.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-datastore</artifactId>
       <version>${geogig.version}</version>
     </dependency>
     <dependency>
@@ -61,6 +66,11 @@
     <dependency>
       <groupId>org.locationtech.geogig</groupId>
       <artifactId>geogig-osm</artifactId>
+      <version>${geogig.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-postgres</artifactId>
       <version>${geogig.version}</version>
     </dependency>
 
@@ -178,11 +188,6 @@
       <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.jolbox</groupId>
-      <artifactId>bonecp</artifactId>
-      <version>0.8.0.RELEASE</version>
-    </dependency>
     
     <dependency>
       <groupId>org.hamcrest</groupId>
@@ -219,12 +224,6 @@
       <version>${geogig.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jul-to-slf4j</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>

@@ -63,7 +63,7 @@ import org.locationtech.geogig.api.porcelain.CommitOp;
 import org.locationtech.geogig.api.porcelain.ConfigOp;
 import org.locationtech.geogig.api.porcelain.ConfigOp.ConfigAction;
 import org.locationtech.geogig.api.porcelain.InitOp;
-import org.locationtech.geogig.cli.test.functional.general.CLITestContextBuilder;
+import org.locationtech.geogig.cli.test.functional.CLITestContextBuilder;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.repository.WorkingTree;
@@ -120,9 +120,11 @@ public class GeoGigTestData extends ExternalResource {
         repoDir = new File(dataDirectory, name);
         Assert.assertTrue(repoDir.mkdir());
 
-        TestPlatform testPlatform = new TestPlatform(dataDirectory);
-        GlobalContextBuilder.builder = new CLITestContextBuilder(testPlatform);
-        GeoGIG Geogig = new GeoGIG(repoDir);
+        TestPlatform testPlatform = new TestPlatform(repoDir);
+        testPlatform.setUserHome(dataDirectory);
+        GlobalContextBuilder.builder(new CLITestContextBuilder(testPlatform));
+        Context context = GlobalContextBuilder.builder().build();
+        GeoGIG Geogig = new GeoGIG(context);
 
         return Geogig;
     }
@@ -208,9 +210,9 @@ public class GeoGigTestData extends ExternalResource {
     /**
      * Inserts features in the working tree under the given parent tree path.
      * <p>
-     * The parent tree must exist. The {@code featureSpecs} are of the form
-     * {@code  featureSpec := <id>=<attname>:<value>[;<attname>:<value>]+} . The parsing routine is
-     * as naive as it can be so do not use any '=', ':', or ';' in the values.
+     * The parent tree must exist. The {@code featureSpecs} are of the form {@code  featureSpec := 
+     * <id>=<attname>:<value>[;<attname>:<value>]+} . The parsing routine is as naive as it can be
+     * so do not use any '=', ':', or ';' in the values.
      * <p>
      * An empty value string is assumed to mean {@code null}. Any {@code <attname>} not provided
      * (wrt. its type) will be left as {@code null} in the built feature.
@@ -304,15 +306,15 @@ public class GeoGigTestData extends ExternalResource {
             String treeName = treeNames.get(i);
             if (treeName.equals(parentTreePath)) {
                 ObjectId metadataId = featureTypeTrees.get(i).getMetadataId();
-                RevFeatureType revType = ((Optional<RevFeatureType>) run(geogig.command(
-                        RevObjectParse.class).setObjectId(metadataId))).get();
+                RevFeatureType revType = ((Optional<RevFeatureType>) run(
+                        geogig.command(RevObjectParse.class).setObjectId(metadataId))).get();
                 SimpleFeatureType featureType = (SimpleFeatureType) revType.type();
                 return featureType;
             }
         }
 
-        throw new IllegalArgumentException(String.format("No tree path named '%s' exists: %s",
-                parentTreePath, treeNames));
+        throw new IllegalArgumentException(
+                String.format("No tree path named '%s' exists: %s", parentTreePath, treeNames));
     }
 
     public GeoGigTestData update(String featurePath, String attributeName, @Nullable Object value) {
@@ -348,8 +350,8 @@ public class GeoGigTestData extends ExternalResource {
         SimpleFeatureType type = getType(featureRef.getParentPath());
 
         @SuppressWarnings("unchecked")
-        Optional<RevFeature> revFeature = (Optional<RevFeature>) run(context.command(
-                RevObjectParse.class).setObjectId(featureRef.objectId()));
+        Optional<RevFeature> revFeature = (Optional<RevFeature>) run(
+                context.command(RevObjectParse.class).setObjectId(featureRef.objectId()));
 
         String id = featureRef.name();
         Feature feature = new FeatureBuilder(type).build(id, revFeature.get());

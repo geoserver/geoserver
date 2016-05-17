@@ -17,6 +17,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.format.FreemarkerFormat;
+import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.rest.JettisonRepresentation;
 import org.locationtech.geogig.rest.RestletException;
 import org.locationtech.geogig.rest.Variants;
@@ -62,13 +63,14 @@ public class RepositoryResource extends Resource {
         if (byExtension.isPresent()) {
             return byExtension.get();
         }
-        List<MediaType> acceptedMediaTypes = Lists.transform(getRequest().getClientInfo()
-                .getAcceptedMediaTypes(), new Function<Preference<MediaType>, MediaType>() {
-            @Override
-            public MediaType apply(Preference<MediaType> input) {
-                return input.getMetadata();
-            }
-        });
+        List<MediaType> acceptedMediaTypes = Lists.transform(
+                getRequest().getClientInfo().getAcceptedMediaTypes(),
+                new Function<Preference<MediaType>, MediaType>() {
+                    @Override
+                    public MediaType apply(Preference<MediaType> input) {
+                        return input.getMetadata();
+                    }
+                });
         if (acceptedMediaTypes.contains(MediaType.TEXT_HTML)) {
             return HTML;
         }
@@ -92,7 +94,8 @@ public class RepositoryResource extends Resource {
             representation = format.toRepresentation(getMap());
         } else {
             Request request = getRequest();
-            GeoServerRepositoryProvider repoFinder = (GeoServerRepositoryProvider) repositoryProvider(request);
+            GeoServerRepositoryProvider repoFinder = (GeoServerRepositoryProvider) repositoryProvider(
+                    request);
             Optional<RepositoryInfo> repository = repoFinder.findRepository(request);
             if (!repository.isPresent()) {
                 throw new RestletException("not found", Status.CLIENT_ERROR_NOT_FOUND);
@@ -132,7 +135,9 @@ public class RepositoryResource extends Resource {
         protected void write(XMLStreamWriter w) throws XMLStreamException {
             w.writeStartElement("repository");
             element(w, "id", repo.getId());
-            element(w, "name", repo.getName());
+            RepositoryResolver uriResolver = RepositoryResolver.lookup(repo.getLocation());
+            String name = uriResolver.getName(repo.getLocation());
+            element(w, "name", name);
             element(w, "location", repo.getLocation());
             w.writeEndElement();
         }

@@ -12,6 +12,7 @@ import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.RESOL
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,9 +58,8 @@ class DeprecatedDataStoreConfigFixer implements CatalogListener {
             ensureNewConfig(event.getSource());
         } catch (RuntimeException rte) {
             rte.printStackTrace();
-            LOGGER.log(Level.WARNING,
-                    "Unexpected exception handing add event on " + event.getSource()
-                            + ". Returning silently to let the catalog go on.", rte);
+            LOGGER.log(Level.WARNING, "Unexpected exception handing add event on "
+                    + event.getSource() + ". Returning silently to let the catalog go on.", rte);
         }
     }
 
@@ -69,9 +69,10 @@ class DeprecatedDataStoreConfigFixer implements CatalogListener {
         try {
             ensureNewConfig(event.getSource());
         } catch (RuntimeException rte) {
-            LOGGER.log(Level.WARNING,
-                    "Unexpected exception handing post modify event on " + event.getSource()
-                            + ". Returning silently to let the catalog go on.", rte);
+            LOGGER.log(
+                    Level.WARNING, "Unexpected exception handing post modify event on "
+                            + event.getSource() + ". Returning silently to let the catalog go on.",
+                    rte);
         }
     }
 
@@ -94,12 +95,12 @@ class DeprecatedDataStoreConfigFixer implements CatalogListener {
             } catch (IOException e) {
                 if (RepositoryManager.isGeogigDirectory(new File(repositoryParam))) {
                     // this is wrong, resolver is right but given a location path instead, fix it.
-                    fixConfig(ds, repositoryParam);
+                    fixConfig(ds, new File(repositoryParam).getAbsoluteFile().toURI());
                 } else {
                     // we tried...
-                    String msg = String
-                            .format("GeoGig DataStore config has repository %s but it couldn't be resolverd to an actual repository",
-                                    repositoryParam);
+                    String msg = String.format(
+                            "GeoGig DataStore config has repository %s but it couldn't be resolverd to an actual repository",
+                            repositoryParam);
                     LOGGER.log(Level.WARNING, msg, e);
                 }
             }
@@ -113,25 +114,25 @@ class DeprecatedDataStoreConfigFixer implements CatalogListener {
                         dataStore.dispose();
                     }
                 } catch (IOException e) {
-                    throw new RuntimeException("Unable to create repository at "
-                            + repoDirectory.getAbsolutePath(), e);
+                    throw new RuntimeException(
+                            "Unable to create repository at " + repoDirectory.getAbsolutePath(), e);
                 }
             }
             if (RepositoryManager.isGeogigDirectory(repoDirectory)) {
-                fixConfig(ds, repositoryParam);
+                fixConfig(ds, new File(repositoryParam).getAbsoluteFile().toURI());
             } else {
-                String msg = String
-                        .format("GeoGig DataStore config has repository %s but it couldn't be resolverd to an actual repository",
-                                repositoryParam);
+                String msg = String.format(
+                        "GeoGig DataStore config has repository %s but it couldn't be resolverd to an actual repository",
+                        repositoryParam);
                 LOGGER.log(Level.WARNING, msg);
             }
         }
     }
 
-    private void fixConfig(final DataStoreInfo ds, final String repoDirectory) {
+    private void fixConfig(final DataStoreInfo ds, final URI uri) {
         RepositoryManager manager = RepositoryManager.get();
         Map<String, Serializable> params = ds.getConnectionParameters();
-        RepositoryInfo info = manager.findOrCreateByLocation(repoDirectory);
+        RepositoryInfo info = manager.findOrCreateByLocation(uri);
         params.put(REPOSITORY.key, info.getId());
         params.put(RESOLVER_CLASS_NAME.key, GeoGigInitializer.REPO_RESOLVER_CLASSNAME);
         Catalog catalog = ds.getCatalog();

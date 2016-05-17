@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -28,6 +29,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerApplication;
+import org.locationtech.geogig.api.Context;
 import org.locationtech.geogig.api.ContextBuilder;
 import org.locationtech.geogig.api.GeoGIG;
 import org.locationtech.geogig.api.GlobalContextBuilder;
@@ -41,6 +43,7 @@ import org.locationtech.geogig.remote.IRemoteRepo;
 import org.locationtech.geogig.remote.RemoteUtils;
 import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.repository.Repository;
+import org.locationtech.geogig.repository.RepositoryResolver;
 import org.opengis.filter.Filter;
 
 import com.google.common.base.Objects;
@@ -52,9 +55,9 @@ import com.google.common.collect.Lists;
 
 public class RepositoryManager {
     static {
-        if (GlobalContextBuilder.builder == null
-                || GlobalContextBuilder.builder.getClass().equals(ContextBuilder.class)) {
-            GlobalContextBuilder.builder = new CLIContextBuilder();
+        if (GlobalContextBuilder.builder() == null
+                || GlobalContextBuilder.builder().getClass().equals(ContextBuilder.class)) {
+            GlobalContextBuilder.builder(new CLIContextBuilder());
         }
     }
 
@@ -67,7 +70,7 @@ public class RepositoryManager {
         }
     }
 
-    private ConfigStore store;
+    private final ConfigStore store;
 
     private final RepositoryCache repoCache;
 
@@ -148,7 +151,8 @@ public class RepositoryManager {
         String locationKey = "connectionParameters." + GeoGigDataStoreFactory.REPOSITORY.key;
         filter = and(filter, equal(locationKey, repoId));
         List<DataStoreInfo> dependent;
-        try (CloseableIterator<DataStoreInfo> stores = catalog().list(DataStoreInfo.class, filter)) {
+        try (CloseableIterator<DataStoreInfo> stores = catalog().list(DataStoreInfo.class,
+                filter)) {
             dependent = Lists.newArrayList(stores);
         }
         return dependent;
@@ -182,7 +186,8 @@ public class RepositoryManager {
 
     public List<FeatureTypeInfo> findFeatureTypes(DataStoreInfo store) {
         Filter filter = equal("store.id", store.getId());
-        try (CloseableIterator<FeatureTypeInfo> it = catalog().list(FeatureTypeInfo.class, filter)) {
+        try (CloseableIterator<FeatureTypeInfo> it = catalog().list(FeatureTypeInfo.class,
+                filter)) {
             return Lists.newArrayList(it);
         }
     }
@@ -197,9 +202,8 @@ public class RepositoryManager {
     }
 
     public RepositoryInfo save(RepositoryInfo info) {
-        Preconditions.checkNotNull(info.getName());
-        Preconditions.checkNotNull(info.getParentDirectory());
-        if (info.getId() == null && !isGeogigDirectory(new File(info.getLocation()))) {
+        Preconditions.checkNotNull(info.getLocation());
+        if (info.getId() == null) {
             create(info);
         }
         // so far we don't need to invalidate the GeoGIG instance from the cache here... re-evaluate
@@ -208,16 +212,22 @@ public class RepositoryManager {
     }
 
     private void create(final RepositoryInfo repoInfo) {
-        File targetDirectory = new File(repoInfo.getLocation());
-        Preconditions.checkArgument(!isGeogigDirectory(targetDirectory));
+        // File targetDirectory = new File(repoInfo.getLocation());
+        // Preconditions.checkArgument(!isGeogigDirectory(targetDirectory));
 
-        File parentDirectory = new File(repoInfo.getParentDirectory());
-        GeoGIG geogig = new GeoGIG(parentDirectory);
-        try {
-            Repository repository = geogig.command(InitOp.class).setTarget(targetDirectory).call();
-            Preconditions.checkState(repository != null);
-        } finally {
-            geogig.close();
+        URI repoURI = repoInfo.getLocation();
+        RepositoryResolver resolver = RepositoryResolver.lookup(repoURI);
+        if (!resolver.repoExists(repoURI)) {
+            Hints hints = new Hints();
+            hints.set(Hints.REPOSITORY_URL, repoURI);
+            Context context = GlobalContextBuilder.builder().build(hints);
+            GeoGIG geogig = new GeoGIG(context);
+            try {
+                Repository repository = geogig.command(InitOp.class).call();
+                Preconditions.checkState(repository != null);
+            } finally {
+                geogig.close();
+            }
         }
     }
 
@@ -244,15 +254,15 @@ public class RepositoryManager {
         }
     }
 
-    RepositoryInfo findOrCreateByLocation(final String repositoryDirectory) {
+    RepositoryInfo findOrCreateByLocation(final URI repositoryURI) {
         List<RepositoryInfo> repos = getAll();
         for (RepositoryInfo info : repos) {
-            if (Objects.equal(info.getLocation(), repositoryDirectory)) {
+            if (Objects.equal(info.getLocation(), repositoryURI)) {
                 return info;
             }
         }
         RepositoryInfo info = new RepositoryInfo();
-        info.setLocation(repositoryDirectory);
+        info.setLocation(repositoryURI);
         return save(info);
     }
 
@@ -289,7 +299,7 @@ public class RepositoryManager {
         Optional<IRemoteRepo> remoteRepo;
         try {
             Hints hints = Hints.readOnly();
-            Repository localRepo = GlobalContextBuilder.builder.build(hints).repository();
+            Repository localRepo = GlobalContextBuilder.builder().build(hints).repository();
             remoteRepo = RemoteUtils.newRemote(localRepo, remote, null);
             if (!remoteRepo.isPresent()) {
                 throw new IllegalArgumentException("Repository not found or not reachable");
@@ -307,5 +317,4 @@ public class RepositoryManager {
             throw new IllegalArgumentException("Unable to connect: " + e.getMessage(), e);
         }
     }
-
 }

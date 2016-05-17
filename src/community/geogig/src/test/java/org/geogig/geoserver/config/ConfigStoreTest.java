@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,8 +67,7 @@ public class ConfigStoreTest {
     @Test
     public void saveNoId() throws Exception {
         RepositoryInfo info = new RepositoryInfo();
-        info.setName("name");
-        info.setParentDirectory("/path");
+        info.setLocation(URI.create("file:/home/test/repo"));
         info.setId(null);
         assertNull(info.getId());
         store.save(info);
@@ -75,7 +75,7 @@ public class ConfigStoreTest {
     }
 
     @Test
-    public void save() throws Exception {
+    public void saveDeprecatedFormat() throws Exception {
         final String dummyId = "94bcb762-9ee9-4b43-a912-063509966988";
         RepositoryInfo info = new RepositoryInfo(dummyId);
         info.setName("repo");
@@ -88,12 +88,31 @@ public class ConfigStoreTest {
         // Files.copy(resource.file(), System.err);
         String expected = "<RepositoryInfo>"//
                 + "<id>" + dummyId + "</id>"//
-                + "<parentDirectory>/home/test</parentDirectory>"//
-                + "<name>repo</name>"//
+                + "<location>file:/home/test/repo</location>"//
                 + "</RepositoryInfo>";
 
-        XMLAssert.assertXMLEqual(new StringReader(expected), new InputStreamReader(resource.in(),
-                Charsets.UTF_8));
+        XMLAssert.assertXMLEqual(new StringReader(expected),
+                new InputStreamReader(resource.in(), Charsets.UTF_8));
+    }
+
+    @Test
+    public void save() throws Exception {
+        final String dummyId = "94bcb762-9ee9-4b43-a912-063509966988";
+        RepositoryInfo info = new RepositoryInfo(dummyId);
+        info.setLocation(URI.create("file:/home/test/repo"));
+        store.save(info);
+
+        String path = ConfigStore.path(info.getId());
+        Resource resource = dataDir.get(path);
+        assertTrue(resource.file().exists());
+        // Files.copy(resource.file(), System.err);
+        String expected = "<RepositoryInfo>"//
+                + "<id>" + dummyId + "</id>"//
+                + "<location>file:/home/test/repo</location>"//
+                + "</RepositoryInfo>";
+
+        XMLAssert.assertXMLEqual(new StringReader(expected),
+                new InputStreamReader(resource.in(), Charsets.UTF_8));
     }
 
     @Test
@@ -128,7 +147,7 @@ public class ConfigStoreTest {
     }
 
     @Test
-    public void load() throws Exception {
+    public void loadDeprecatedFormat() throws Exception {
         final String dummyId = "94bcb762-9ee9-4b43-a912-063509966988";
         String expected = "<RepositoryInfo>"//
                 + "<id>" + dummyId + "</id>"//
@@ -143,8 +162,25 @@ public class ConfigStoreTest {
         RepositoryInfo info = store.load(dummyId);
         assertNotNull(info);
         assertEquals(dummyId, info.getId());
-        assertEquals("repo", info.getName());
-        assertEquals("/home/test", info.getParentDirectory());
+        assertEquals(new URI("file:/home/test/repo"), info.getLocation());
+    }
+
+    @Test
+    public void load() throws Exception {
+        final String dummyId = "94bcb762-9ee9-4b43-a912-063509966988";
+        String expected = "<RepositoryInfo>"//
+                + "<id>" + dummyId + "</id>"//
+                + "<location>file:/home/test/repo</location>"//
+                + "</RepositoryInfo>";
+
+        String path = ConfigStore.path(dummyId);
+        Resource resource = dataDir.get(path);
+        Files.write(expected, resource.file(), Charsets.UTF_8);
+
+        RepositoryInfo info = store.load(dummyId);
+        assertNotNull(info);
+        assertEquals(dummyId, info.getId());
+        assertEquals(new URI("file:/home/test/repo"), info.getLocation());
     }
 
     @Test
@@ -250,8 +286,7 @@ public class ConfigStoreTest {
         final String id = dummyId.substring(0, dummyId.length() - 1) + String.valueOf(i);
         RepositoryInfo info = new RepositoryInfo();
         info.setId(id);
-        info.setName("name-" + i);
-        info.setParentDirectory("parent/directory/" + i);
+        info.setLocation(URI.create("file:/parent/directory/" + i + "/name-" + i));
         return info;
     }
 }

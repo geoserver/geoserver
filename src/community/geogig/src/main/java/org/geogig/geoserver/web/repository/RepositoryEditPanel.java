@@ -7,40 +7,33 @@ package org.geogig.geoserver.web.repository;
 import static org.geogig.geoserver.config.RepositoryManager.isGeogigDirectory;
 
 import java.io.File;
+import java.net.URI;
 
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geogig.geoserver.config.RepositoryInfo;
+import org.geogig.geoserver.util.PostgresConnectionErrorHandler;
+import org.locationtech.geogig.repository.RepositoryResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
 
     private static final long serialVersionUID = -870873448379832051L;
+    private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryEditPanel.class);
 
-    private GeoGigDirectoryFormComponent parent;
-
-    private TextField<String> name;
+    private final GeoGigRepositoryInfoFormComponent config;
 
     public RepositoryEditPanel(final String wicketId, IModel<RepositoryInfo> model,
             final boolean isNew) {
         super(wicketId, model);
 
-        IModel<String> parentModel = new PropertyModel<String>(model, "parentDirectory");
-        parent = new GeoGigDirectoryFormComponent("parentDirectory", parentModel);
-        parent.setEnabled(isNew);
-        add(parent);
-
-        IModel<String> nameModel = new PropertyModel<String>(model, "name");
-        name = new TextField<String>("repositoryName", nameModel);
-        name.setEnabled(isNew);
-        name.setRequired(true);
-        name.setLabel(new ResourceModel("name", "Repo name"));
-        add(name);
+        config = new GeoGigRepositoryInfoFormComponent("repositoryConfig", model);
+        config.setVisible(true);
+        add(config);
 
         add(new IValidator<RepositoryInfo>() {
 
@@ -49,26 +42,41 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
             @Override
             public void validate(IValidatable<RepositoryInfo> validatable) {
                 if (isNew) {
-                    parent.processInput();
-                    name.processInput();
+                    config.processInput();
                 }
                 ValidationError error = new ValidationError();
                 RepositoryInfo repo = validatable.getValue();
-                final File parent = new File(repo.getParentDirectory());
-                if (!parent.exists() || !parent.isDirectory()) {
-                    error.addMessageKey("errParentDoesntExist");
-                }
-                if (!parent.canWrite()) {
-                    error.addMessageKey("errParentReadOnly");
-                }
-                String uri = repo.getLocation();
-                File repoDir = new File(uri);
-                if (isNew) {
-                    if (repoDir.exists()) {
-                        error.addMessageKey("errDirectoryExists");
+                final URI location = repo.getLocation();
+                final RepositoryResolver resolver = RepositoryResolver.lookup(location);
+                final String scheme = location.getScheme();
+                if ("file".equals(scheme)) {
+                    File repoDir = new File(location);
+                    final File parent = repoDir.getParentFile();
+                    if (!parent.exists() || !parent.isDirectory()) {
+                        error.addMessageKey("errParentDoesntExist");
                     }
-                } else if (!isGeogigDirectory(repoDir)) {
-                    error.addMessageKey("notAGeogigRepository");
+                    if (!parent.canWrite()) {
+                        error.addMessageKey("errParentReadOnly");
+                    }
+                    if (isNew) {
+                        if (repoDir.exists()) {
+                            error.addMessageKey("errDirectoryExists");
+                        }
+                    } else if (!isGeogigDirectory(repoDir)) {
+                        error.addMessageKey("notAGeogigRepository");
+                    }
+                } else if ("postgresql".equals(scheme)) {
+                    try {
+                        if (resolver.repoExists(location)) {
+                            error.addMessageKey("errRepositoryExists");
+                        }
+                    } catch (Exception ex) {
+                        // likely failed to connect
+                        LOGGER.error("Failed to connect to PostgreSQL database", ex);
+                        error.addMessageKey("errCannotConnectToDatabase");
+                        // find root cause
+                        error.setVariable("message", PostgresConnectionErrorHandler.getMessage(ex));
+                    }
                 }
                 if (!error.getKeys().isEmpty()) {
                     validatable.error(error);

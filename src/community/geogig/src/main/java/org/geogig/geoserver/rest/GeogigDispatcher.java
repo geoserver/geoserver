@@ -22,6 +22,7 @@ import org.locationtech.geogig.rest.repository.CommandResource;
 import org.locationtech.geogig.rest.repository.FixedEncoder;
 import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.locationtech.geogig.rest.repository.RepositoryRouter;
+import org.locationtech.geogig.rest.repository.UploadCommandResource;
 import org.locationtech.geogig.web.api.CommandSpecException;
 import org.restlet.Restlet;
 import org.restlet.Router;
@@ -65,8 +66,8 @@ public class GeogigDispatcher extends AbstractController {
 
     public GeogigDispatcher() {
         this.repositoryProvider = new GeoServerRepositoryProvider();
-        setSupportedMethods(new String[] { METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_DELETE,
-                METHOD_HEAD });
+        setSupportedMethods(
+                new String[] { METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_DELETE, METHOD_HEAD });
     }
 
     @Override
@@ -96,8 +97,8 @@ public class GeogigDispatcher extends AbstractController {
     public Router createInboundRoot() {
         Router router = createRoot();
 
-        router.attach("", RepositoryListResource.class);
-        router.attach("/", RepositoryListResource.class);
+        router.attach("/repos", RepositoryListResource.class);
+        router.attach("/repos/", RepositoryListResource.class);
 
         router.attach("/tasks.{extension}", TaskStatusResource.class);
         router.attach("/tasks", TaskStatusResource.class);
@@ -105,16 +106,17 @@ public class GeogigDispatcher extends AbstractController {
         router.attach("/tasks/{taskId}", TaskStatusResource.class);
 
         Router osm = new OSMRouter();
-        router.attach("/{repository}/osm", osm);
+        router.attach("/repos/{repository}/osm", osm);
 
         Router postgis = new PGRouter();
-        router.attach("/{repository}/postgis", postgis);
+        router.attach("/repos/{repository}/postgis", postgis);
 
-        router.attach("/{repository}.{extension}", RepositoryResource.class);
-        router.attach("/{repository}", RepositoryResource.class);
-        router.attach("/{repository}/repo", makeRepoRouter());
-        router.attach("/{repository}/{command}.{extension}", CommandResource.class);
-        router.attach("/{repository}/{command}", CommandResource.class);
+        router.attach("/repos/{repository}.{extension}", RepositoryResource.class);
+        router.attach("/repos/{repository}", RepositoryResource.class);
+        router.attach("/repos/{repository}/repo", makeRepoRouter());
+        router.attach("/repos/{repository}/import", UploadCommandResource.class);
+        router.attach("/repos/{repository}/{command}.{extension}", CommandResource.class);
+        router.attach("/repos/{repository}/{command}", CommandResource.class);
 
         return router;
     }

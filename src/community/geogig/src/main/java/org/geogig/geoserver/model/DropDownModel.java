@@ -40,6 +40,8 @@ public class DropDownModel implements IModel<Serializable> {
     @Override
     public Serializable getObject() {
         if (type == null) {
+            // set a default
+            type = DEFAULT_CONFIG;
             // get the type from the model
             RepositoryInfo repo = repoModel.getObject();
             URI location = repo != null ? repo.getLocation() : null;

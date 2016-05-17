@@ -38,7 +38,7 @@ class GeoGigDirectoryFormComponent extends FormComponentPanel<String> {
      * @param validators any extra validator that should be added to the input field, or
      *                   {@code null}
      */
-    public GeoGigDirectoryFormComponent(final String id, final IModel<String> valueModel) {
+    GeoGigDirectoryFormComponent(final String id, final IModel<String> valueModel) {
         // make the value of the text field the model of this panel, for easy value retrieval
         super(id, valueModel);
 
@@ -50,15 +50,22 @@ class GeoGigDirectoryFormComponent extends FormComponentPanel<String> {
         directory.setRequired(true);
         directory.setOutputMarkupId(true);
 
-        final Label directoryLabel = new Label("directoryLabel", new ResourceModel("directory",
+        IModel<String> labelModel = new ResourceModel("GeoGigDirectoryFormComponent.directory",
                 "Parent directory") {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public String getObject() {
                 String value = super.getObject();
                 return value + " *";
             }
-        }.getObject());
+        };
+
+        final Label directoryLabel = new Label("directoryLabel", labelModel.getObject());
         add(directoryLabel);
+
+        directory.setLabel(labelModel);
 
         FormComponentFeedbackBorder feedback = new FormComponentFeedbackBorder("wrapper");
         feedback.add(directory);
@@ -72,7 +79,7 @@ class GeoGigDirectoryFormComponent extends FormComponentPanel<String> {
         setConvertedInput(uri);
     }
 
-    protected Component chooserButton() {
+    private Component chooserButton() {
         AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
 
             private static final long serialVersionUID = 1242472443848716943L;
@@ -87,7 +94,7 @@ class GeoGigDirectoryFormComponent extends FormComponentPanel<String> {
                 File file = null;
                 directory.processInput();
                 String input = directory.getConvertedInput();
-                if (input != null && !input.equals("")) {
+                if (input != null && !input.isEmpty()) {
                     file = new File(input);
                 }
 

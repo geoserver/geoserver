@@ -113,7 +113,7 @@ public class RepositoryImportPanel extends FormComponentPanel<RepositoryInfo> {
                 .equals(dropDownChoice.getModelObject().toString()));
         settingsPanel.add(pgPanel);
 
-        repoDirectoryComponent = new RepoDirectoryComponent("parentDirectoryPanel", formModel);
+        repoDirectoryComponent = new RepoDirectoryComponent("repoDirectoryPanel", formModel);
         repoDirectoryComponent.setOutputMarkupId(true);
         repoDirectoryComponent
                 .setVisible(DropDownModel.DIRECTORY_CONFIG.equals(dropDownChoice.getModelObject()
@@ -220,9 +220,9 @@ public class RepositoryImportPanel extends FormComponentPanel<RepositoryInfo> {
             repoDirectoryField.setRequired(true);
             repoDirectoryField.setOutputMarkupId(true);
 
-            Label directoryLabel = new Label("repoLabel", new ResourceModel(
+            IModel<String> labelModel = new ResourceModel(
                     "RepositoryImportPanel.directoryLabel",
-                    "Parent Directory") {
+                    "Repository Directory") {
 
                 private static final long serialVersionUID = 1L;
 
@@ -231,8 +231,11 @@ public class RepositoryImportPanel extends FormComponentPanel<RepositoryInfo> {
                     String value = super.getObject();
                     return value + " *";
                 }
-            }.getObject());
+            };
+
+            Label directoryLabel = new Label("repoLabel", labelModel.getObject());
             add(directoryLabel);
+            repoDirectoryField.setLabel(labelModel);
 
             FormComponentFeedbackBorder feedback = new FormComponentFeedbackBorder("wrapper");
             feedback.add(repoDirectoryField);

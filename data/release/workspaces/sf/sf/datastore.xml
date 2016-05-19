@@ -1,7 +1,7 @@
 <dataStore>
   <id>DataStoreInfoImpl--570ae188:124761b8d78:-7fdb</id>
   <name>sf</name>
-  <description>The area cov- ered by the data set is in the vicinity of Spearfish, SD and includes a majority of the Black Hills National Forest (i.e., Mount Rushmore).</description>
+  <description>Vector data for Spearfish City in Lawrence County, South Dakota. The area covered by the data set is in the vicinity of Spearfish and includes a majority of the Black Hills National Forest (i.e., Mount Rushmore).</description>
   <enabled>true</enabled>
   <workspace>
     <id>WorkspaceInfoImpl--570ae188:124761b8d78:-7fff</id>

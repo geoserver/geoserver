@@ -33,7 +33,7 @@ Data was provided by GeoSolutions with redistribution rights.
 New York City
 -------------
 
-Data was provided by the Open Planning Project.
+Data was provided by the Open Planning Project, processed from United States Census Bureau's Topologically Integrated Geographic Encoding and Referencing (TIGER) dataset.
 
 Spearfish
 ---------

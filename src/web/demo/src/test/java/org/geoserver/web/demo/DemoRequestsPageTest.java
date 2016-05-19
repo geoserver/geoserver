@@ -29,6 +29,7 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.test.TestData;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.util.SerializationUtils;
 
 /**
  * 
@@ -231,6 +232,13 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
             global.getSettings().setProxyBaseUrl(null);
             getGeoServer().save(global);
         }
+    }
+    
+    @Test
+    public void testSerializable() {
+        DemoRequestsPage page = new DemoRequestsPage();
+        DemoRequestsPage page2 = (DemoRequestsPage) SerializationUtils.deserialize( SerializationUtils.serialize(page));
+        assertEquals(page.demoDir, page2.demoDir);         
     }
 
 }

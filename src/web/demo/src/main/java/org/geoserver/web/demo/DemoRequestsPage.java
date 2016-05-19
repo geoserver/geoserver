@@ -40,6 +40,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
@@ -59,7 +60,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.demo");
 
-    private final Resource demoDir;
+    final Resource demoDir;
 
     private TextField urlTextField;
 
@@ -72,7 +73,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
     public DemoRequestsPage() {
         try {
             GeoServerResourceLoader loader = this.getGeoServer().getCatalog().getResourceLoader();
-            demoDir = loader.get("demo");
+            demoDir = Resources.serializable(loader.get("demo"));
         } catch (Exception e) {
             throw new WicketRuntimeException("Can't access demo requests directory: "
                     + e.getMessage());
@@ -89,7 +90,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
      * @param demoDir
      */
     DemoRequestsPage(final Resource demoDir) {
-        this.demoDir = demoDir;
+        this.demoDir = Resources.serializable(demoDir);
         DemoRequest model = new DemoRequest(demoDir.path());
         setDefaultModel(new Model(model));
         setUpDemoRequestsForm(demoDir);

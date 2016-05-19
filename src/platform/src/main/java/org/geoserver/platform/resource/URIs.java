@@ -27,7 +27,6 @@ public final class URIs {
     private URIs() {}
     
     static class ResourceAdaptor implements Resource {
-        private static final long serialVersionUID = 4002509659099083614L;
         
         private URL url;
         

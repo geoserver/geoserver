@@ -223,6 +223,7 @@ public class GeoJSONBuilderTest {
         Geometry g = new WKTReader().read("POLYGON((0.1 0.2 0.3, 0.1 10.1 1.1, 10.2 10.3 2.4, 9.5 0.4 3, 0.1 0.2 0.3),(1 1 4, 1 2 5, 2 2 6, 2 1 7, 1 1 4))");
         builder.writeGeom(g);
         assertEquals("{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]],[[1,1,4],[1,2,5],[2,2,6],[2,1,7],[1,1,4]]]}", writer.toString());
+    }
 
     @Test
     public void testWriteStrList() throws Exception {

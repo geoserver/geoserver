@@ -7,6 +7,7 @@
   </namespace>
   <title>mosaic</title>
   <description>Generated from ImageMosaic</description>
+  <abstract>Italian sample mosaic</abstract>
   <keywords>
     <string>WCS</string>
     <string>ImageMosaic</string>
@@ -119,23 +120,15 @@
   </responseSRS>
   <parameters>
     <entry>
-      <string>AllowMultithreading</string>
-      <string>false</string>
+      <string>BackgroundValues</string>
+      <null/>
     </entry>
     <entry>
       <string>Filter</string>
       <null/>
     </entry>
     <entry>
-      <string>MaxAllowedTiles</string>
-      <string>-1</string>
-    </entry>
-    <entry>
       <string>InputTransparentColor</string>
-      <string>#000000</string>
-    </entry>
-    <entry>
-      <string>OutputTransparentColor</string>
       <string>#000000</string>
     </entry>
     <entry>
@@ -143,12 +136,20 @@
       <string>512,512</string>
     </entry>
     <entry>
-      <string>USE_JAI_IMAGEREAD</string>
-      <string>true</string>
+      <string>AllowMultithreading</string>
+      <string>false</string>
     </entry>
     <entry>
-      <string>BackgroundValues</string>
-      <null/>
+      <string>MaxAllowedTiles</string>
+      <string>-1</string>
+    </entry>
+    <entry>
+      <string>OutputTransparentColor</string>
+      <string>#000000</string>
+    </entry>
+    <entry>
+      <string>USE_JAI_IMAGEREAD</string>
+      <string>true</string>
     </entry>
   </parameters>
 </coverage>

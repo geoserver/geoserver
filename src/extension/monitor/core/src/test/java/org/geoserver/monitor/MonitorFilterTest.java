@@ -230,8 +230,9 @@ public class MonitorFilterTest {
         filter.doFilter(req, response(), chain);
 
         RequestData data = dao.getLast();
-
         assertEquals("username", data.getRemoteUser());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
     
     MockHttpServletRequest request(String method, String path, String remoteAddr, String body, String referer) {

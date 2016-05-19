@@ -135,7 +135,7 @@ Eclipse preferences
 Code formatting
 ^^^^^^^^^^^^^^^
 
-#. Download https://github.com/geotools/geotools/blob/master/build/eclipse/formatter.xml
+#. Download https://raw.githubusercontent.com/geotools/geotools/master/build/eclipse/formatter.xml
 #. Navigate to ``Java``, ``Code Style``, ``Formatter`` and click ``Import...``
 
    .. image:: code_formatting1.jpg
@@ -156,7 +156,7 @@ Code formatting
 Code templates
 ^^^^^^^^^^^^^^
 
-#. Download https://github.com/geotools/geotools/blob/master/build/eclipse/codetemplates.xml
+#. Download https://raw.githubusercontent.com/geotools/geotools/master/build/eclipse/codetemplates.xml
 #. Navigate to ``Java``, ``Code Style``, ``Code Templates`` and click ``Import...``
 
    .. image:: code_templates.jpg

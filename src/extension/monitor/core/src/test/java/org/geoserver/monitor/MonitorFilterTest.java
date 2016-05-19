@@ -8,6 +8,7 @@ package org.geoserver.monitor;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -24,6 +25,11 @@ import junit.framework.TestCase;
 import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 
 public class MonitorFilterTest {
     
@@ -194,6 +200,21 @@ public class MonitorFilterTest {
         assertEquals("http://testhost/testpath", data.getHttpReferer());
 
       
+    }
+
+    @Test
+    public void testUserRemoteUser() throws Exception {
+        Object principal = new User("username", "", Collections.<GrantedAuthority>emptyList());
+
+        Authentication authentication = new TestingAuthenticationToken(principal, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        HttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", null, null);
+        filter.doFilter(req, response(), chain);
+
+        RequestData data = dao.getLast();
+
+        assertEquals("username", data.getRemoteUser());
     }
     
     MockHttpServletRequest request(String method, String path, String remoteAddr, String body, String referer) {

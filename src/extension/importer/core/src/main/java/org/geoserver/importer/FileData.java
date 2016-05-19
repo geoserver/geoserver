@@ -7,6 +7,7 @@ package org.geoserver.importer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,7 +29,7 @@ public class FileData extends ImportData {
     protected Resource file;
 
     public FileData(Resource file) {
-        this.file = file;
+        this.file = Resources.serializable(file);
     }
 
     public FileData(FileData file) {

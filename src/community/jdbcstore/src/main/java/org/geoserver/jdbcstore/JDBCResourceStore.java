@@ -140,9 +140,7 @@ public class JDBCResourceStore implements ResourceStore {
      * 
      */    
     protected class JDBCResource implements Resource {
-        
-        private static final long serialVersionUID = 1829574259576354635L;
-        
+
         private final JDBCDirectoryStructure.Entry entry;
         
         public JDBCResource(JDBCDirectoryStructure.Entry entry) {

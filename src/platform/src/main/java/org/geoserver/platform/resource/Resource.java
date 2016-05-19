@@ -20,7 +20,7 @@ import java.util.List;
  * Resource creation is handled in a lazy fashion, simply use {@link #file()} or {@link #out()} and the resource will be created as required. In a
  * similar fashion setting up a child resource will create any required parent directories.
  */
-public interface Resource extends Serializable {
+public interface Resource {
     /**
      * Enumeration indicating kind of resource used.
      */

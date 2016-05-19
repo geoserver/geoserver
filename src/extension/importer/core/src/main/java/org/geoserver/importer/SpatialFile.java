@@ -82,7 +82,7 @@ public class SpatialFile extends FileData {
     }
 
     public void setPrjFile(Resource prjFile) {
-        this.prjFile = prjFile;
+        this.prjFile = Resources.serializable(prjFile);
     }
 
     public Resource getStyleFile() {
@@ -90,7 +90,7 @@ public class SpatialFile extends FileData {
     }
 
     public void setStyleFile(Resource styleFile) {
-        this.styleFile = styleFile;
+        this.styleFile = Resources.serializable(styleFile);
     }
 
     public List<Resource> getSuppFiles() {

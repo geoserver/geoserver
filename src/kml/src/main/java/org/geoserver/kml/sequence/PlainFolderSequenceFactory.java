@@ -1,11 +1,10 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.kml.sequence;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.geoserver.kml.KmlEncodingContext;
@@ -13,7 +12,6 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSRequests;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
@@ -75,19 +73,12 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
          * @param folder
          */
         private void addFeatureCentroids(Layer layer, Folder folder) {
-            try {
-                SimpleFeatureSource source = (SimpleFeatureSource) ((FeatureLayer) layer).getFeatureSource();
-                SimpleFeatureCollection original = source.getFeatures();
-                SimpleFeatureCollection centroids = new KMLCentroidFeatureCollection(original);
-                context.setCurrentFeatureCollection(centroids);
-                FeatureLayer centroidsLayer = new FeatureLayer(centroids, layer.getStyle(), layer.getTitle());
-                List<Feature> features = new SequenceList<Feature>(
-                        new FeatureSequenceFactory(context, centroidsLayer));
-                context.addFeatures(folder, features);
-            } catch(IOException e) {
-                throw new ServiceException(
-                        "Failed to load vector data during KML generation", e);
-            }
+            SimpleFeatureCollection centroids = new KMLCentroidFeatureCollection(context.getCurrentFeatureCollection());
+            context.setCurrentFeatureCollection(centroids);
+            FeatureLayer centroidsLayer = new FeatureLayer(centroids, layer.getStyle(), layer.getTitle());
+            List<Feature> features = new SequenceList<Feature>(
+                    new FeatureSequenceFactory(context, centroidsLayer));
+            context.addFeatures(folder, features);
         }
 
         /**

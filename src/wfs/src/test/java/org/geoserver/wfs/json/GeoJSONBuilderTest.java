@@ -8,9 +8,10 @@ package org.geoserver.wfs.json;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringWriter;
-import java.util.Calendar;
-import java.util.TimeZone;
+import java.util.*;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -223,4 +224,118 @@ public class GeoJSONBuilderTest {
         builder.writeGeom(g);
         assertEquals("{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]],[[1,1,4],[1,2,5],[2,2,6],[2,1,7],[1,1,4]]]}", writer.toString());
     }
+
+    @Test
+    public void testWriteStrList() throws Exception {
+        final List<String> list = Arrays.asList("a", "b", "c", "d");
+        builder.writeList(list);
+        assertEquals("[\"a\",\"b\",\"c\",\"d\"]", writer.toString());
+    }
+
+    @Test
+    public void testWriteIntList() throws Exception {
+        final List<Integer> list = Arrays.asList(Integer.MAX_VALUE, Integer.MIN_VALUE, 3 ,4);
+        builder.writeList(list);
+        assertEquals("[" + Integer.toString(Integer.MAX_VALUE) + "," +
+                Integer.toString(Integer.MIN_VALUE) + ",3,4]", writer.toString());
+    }
+
+    @Test
+    public void testWriteLongList() throws Exception {
+        final List<Long> list = Arrays.asList(Long.MAX_VALUE, Long.MIN_VALUE, 0L, -333L ,4L);
+        builder.writeList(list);
+        assertEquals("[" + Long.toString(Long.MAX_VALUE) + "," +
+                Long.toString(Long.MIN_VALUE) + ",0,-333,4]", writer.toString());
+    }
+
+    @Test
+    public void testWriteFloatList() throws Exception {
+        final List<Float> list = Arrays.asList(Float.MAX_VALUE, Float.MIN_VALUE, 0f, -333.2365f , 0.23235656f);
+        builder.writeList(list);
+        assertEquals("[" + Float.toString(Float.MAX_VALUE) + "," +
+                Float.toString(Float.MIN_VALUE) + ",0,-333.2365,0.23235656]", writer.toString());
+    }
+
+    @Test
+    public void testWriteDoubleList() throws Exception {
+        final List<Double> list = Arrays.asList(Double.MAX_VALUE, Double.MIN_VALUE, 0d, -333.2365d , 0.23235656d);
+        builder.writeList(list);
+        assertEquals("[" + Double.toString(Double.MAX_VALUE) + "," +
+                Double.toString(Double.MIN_VALUE) + ",0,-333.2365,0.23235656]", writer.toString());
+    }
+
+    @Test
+    public void testWriteUUIDList() throws Exception {
+        final UUID u1 = UUID.fromString("12345678-1234-1234-1234-123456781234");
+        final UUID u2 = UUID.fromString("00000000-0000-0000-0000-000000000000");
+        final List<UUID> list = Arrays.asList(u1, u2);
+        builder.writeList(list);
+        assertEquals("[" + "\"" +  u1.toString() + "\"" + "," + "\"" + u2.toString() + "\"" + "]", writer.toString());
+    }
+
+    @Test
+    public void testWriteStringStringMap() throws Exception {
+        final Map<String, String> map = new HashMap<String, String>() {{
+            put("a", "1");
+            put("b", "2");
+            put("c", "3");
+        }};
+        builder.writeMap(map);
+        final JSONObject root = JSONObject.fromObject(writer.toString());
+        assertEquals(3, root.size());
+        assertEquals("1", root.get("a"));
+        assertEquals("2", root.get("b"));
+        assertEquals("3", root.get("c"));
+    }
+
+    @Test
+    public void testWriteStringIntMap() throws Exception {
+        final Map<String, Integer> map = new HashMap<String, Integer>() {{
+            put("a", Integer.MAX_VALUE);
+            put("b", Integer.MIN_VALUE);
+            put("c", 3);
+        }};
+        builder.writeMap(map);
+        final JSONObject root = JSONObject.fromObject(writer.toString());
+        assertEquals(3, root.size());
+        assertEquals(Integer.MAX_VALUE, root.get("a"));
+        assertEquals(Integer.MIN_VALUE, root.get("b"));
+        assertEquals(3, root.get("c"));
+    }
+
+    @Test
+    public void testWriteListOfMaps() throws Exception {
+        final UUID u1 = UUID.fromString("12345678-1234-1234-1234-123456781234");
+        final Map<String, Object> tuple1 = new HashMap<String, Object>() {{
+            put("a", 1);
+            put("b", u1);
+            put("c", "object1");
+        }};
+
+        final UUID u2 = UUID.fromString("00000000-0000-0000-0000-000000000000");
+        final Map<String, Object> tuple2 = new HashMap<String, Object>() {{
+            put("a", 2);
+            put("b", u2);
+            put("c", "object2");
+        }};
+
+        final List<Map<String, Object>> tupleList = Arrays.asList(tuple1, tuple2);
+        builder.writeList(tupleList);
+
+        final JSONArray root = JSONArray.fromObject(writer.toString());
+        assertEquals(2, root.size());
+
+        final JSONObject o1 = root.getJSONObject(0);
+        assertEquals(3, o1.size());
+        assertEquals(1, o1.get("a"));
+        assertEquals(u1.toString(), o1.get("b"));
+        assertEquals("object1", o1.get("c"));
+
+        final JSONObject o2 = root.getJSONObject(1);
+        assertEquals(3, o2.size());
+        assertEquals(2, o2.get("a"));
+        assertEquals(u2.toString(), o2.get("b"));
+        assertEquals("object2", o2.get("c"));
+    }
 }
+

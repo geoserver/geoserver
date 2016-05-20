@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,6 +14,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -22,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.util.logging.Logging;
 
 
 /**
@@ -32,6 +36,9 @@ import org.apache.commons.codec.binary.Base64;
  * @version 1.0
  */
 public class TestWfsPost extends HttpServlet {
+    
+    static final Logger LOGGER = Logging.getLogger(TestWfsPost.class);
+    
     /**
      * Initializes the servlet.
      *
@@ -258,10 +265,11 @@ public class TestWfsPost extends HttpServlet {
                 //    out.print(line);
                 //}
             } catch (Exception e) {
+                LOGGER.log(Level.FINE, "Failure dealing with the request", e);
                 PrintWriter out = response.getWriter();
                 out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                 out.println("<servlet-exception>");
-                out.println(e.toString());
+                out.println(ResponseUtils.encodeXML(e.toString()));
                 out.println("</servlet-exception>");
                 out.close();
             } finally {
@@ -270,10 +278,11 @@ public class TestWfsPost extends HttpServlet {
                         xmlIn.close();
                     }
                 } catch (Exception e1) {
+                    LOGGER.log(Level.FINE, "Internal failure dealing with the request", e1);
                     PrintWriter out = response.getWriter();
                     out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     out.println("<servlet-exception>");
-                    out.println(e1.toString());
+                    out.println(ResponseUtils.encodeXML(e1.toString()));
                     out.println("</servlet-exception>");
                     out.close();
                 }
@@ -283,10 +292,11 @@ public class TestWfsPost extends HttpServlet {
                         xmlOut.close();
                     }
                 } catch (Exception e2) {
+                    LOGGER.log(Level.FINE, "Internal failure dealing with the request", e2);
                     PrintWriter out = response.getWriter();
                     out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     out.println("<servlet-exception>");
-                    out.println(e2.toString());
+                    out.println(ResponseUtils.encodeXML(e2.toString()));
                     out.println("</servlet-exception>");
                     out.close();
                 }

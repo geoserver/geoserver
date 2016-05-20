@@ -9,6 +9,8 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -21,10 +23,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.TestCase;
+import static org.easymock.EasyMock.*;
 
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class MonitorFilterTest {
     
@@ -193,6 +202,36 @@ public class MonitorFilterTest {
         assertEquals("http://testhost/testpath", data.getHttpReferer());
 
       
+    }
+
+    @Test
+    public void testUserRemoteUser() throws Exception {
+        Object principal = new User("username", "", Collections.<GrantedAuthority>emptyList());
+
+        testRemoteUser(principal);
+    }
+
+    @Test
+    public void testUserDetailsRemoteUser() throws Exception {
+        UserDetails principal = createMock(UserDetails.class);
+
+        expect(principal.getUsername()).andReturn("username");
+        replay(principal);
+
+        testRemoteUser(principal);
+    }
+
+    private void testRemoteUser(Object principal) throws Exception {
+        Authentication authentication = new TestingAuthenticationToken(principal, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        HttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", null, null);
+        filter.doFilter(req, response(), chain);
+
+        RequestData data = dao.getLast();
+        assertEquals("username", data.getRemoteUser());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
     
     MockHttpServletRequest request(String method, String path, String remoteAddr, String body, String referer) throws UnsupportedEncodingException {

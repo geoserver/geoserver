@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015-2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -27,7 +27,6 @@ public final class URIs {
     private URIs() {}
     
     static class ResourceAdaptor implements Resource {
-        private static final long serialVersionUID = 4002509659099083614L;
         
         private URL url;
         

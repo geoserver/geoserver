@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,7 +23,6 @@ final class NullResourceStore implements ResourceStore {
     @Override
     public Resource get(final String resourcePath) {
         return new Resource() {
-            private static final long serialVersionUID = -8613315438546471004L;
             
             String path = resourcePath;
 

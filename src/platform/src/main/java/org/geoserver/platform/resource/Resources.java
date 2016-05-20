@@ -9,7 +9,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -79,6 +81,9 @@ public class Resources {
      * @return true If resource is hidden
      */
     public static boolean isHidden(Resource resource) {
+        if (resource instanceof SerializableResourceWrapper) {
+            resource = ((SerializableResourceWrapper) resource).delegate;
+        }
         if (resource instanceof FileSystemResourceStore.FileSystemResource || 
                 resource instanceof Files.ResourceAdaptor) {
             //this is a file based resource, just check the file
@@ -674,6 +679,131 @@ public class Resources {
         } catch (MalformedURLException e) {
             throw new IllegalStateException("Should not happen",e);
         }
+    }
+
+    /**
+     * Resource wrapper, serialization using resource path.
+     */
+    private static class SerializableResourceWrapper implements Serializable, Resource {
+        private static final long serialVersionUID = 1758097257412707071L;
+
+        private transient Resource delegate;
+        private String path;
+
+        private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+            stream.defaultReadObject();
+            delegate = Resources.fromPath(path);
+        }
+
+        public SerializableResourceWrapper(Resource delegate) {
+            this.delegate = delegate;
+            path = delegate.path();
+        }
+
+        @Override
+        public String path() {
+            return path;
+        }
+
+        @Override
+        public String name() {
+            return delegate.name();
+        }
+
+        @Override
+        public Lock lock() {
+            return delegate.lock();
+        }
+
+        @Override
+        public void addListener(ResourceListener listener) {
+            delegate.addListener(listener);
+        }
+
+        @Override
+        public void removeListener(ResourceListener listener) {
+            delegate.removeListener(listener);
+        }
+
+        @Override
+        public InputStream in() {
+            return delegate.in();
+        }
+
+        @Override
+        public OutputStream out() {
+            return delegate.out();
+        }
+
+        @Override
+        public File file() {
+            return delegate.file();
+        }
+
+        @Override
+        public File dir() {
+            return delegate.dir();
+        }
+
+        @Override
+        public long lastmodified() {
+            return delegate.lastmodified();
+        }
+
+        @Override
+        public Resource parent() {
+            return new SerializableResourceWrapper(delegate.parent());
+        }
+
+        @Override
+        public Resource get(String resourcePath) {
+            return delegate.get(resourcePath);
+        }
+
+        @Override
+        public List<Resource> list() {
+            List<Resource> children = new ArrayList<Resource>();
+            for (Resource child : delegate.list()) {
+                children.add(new SerializableResourceWrapper(child));
+            }
+            return children;
+        }
+
+        @Override
+        public Type getType() {
+            return delegate.getType();
+        }
+
+        @Override
+        public boolean delete() {
+            return delegate.delete();
+        }
+
+        @Override
+        public boolean renameTo(Resource dest) {
+            return delegate.renameTo(dest);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof SerializableResourceWrapper)) {
+                return false;
+            }
+            return delegate.equals(((SerializableResourceWrapper) o).delegate);
+        }
+
+        @Override
+        public int hashCode() {
+            return delegate.hashCode();
+        }
+
+    }
+
+    public static Resource serializable(Resource resource) {
+        if (resource instanceof Serializable) {
+            return resource;
+        }
+        return new SerializableResourceWrapper(resource);
     }
 
 }

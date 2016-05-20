@@ -19,7 +19,6 @@ import org.geoserver.importer.FileData;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.job.ProgressMonitor;
-import org.geoserver.platform.resource.Resource;
 import org.geotools.gce.image.WorldImageFormat;
 
 /**
@@ -80,8 +79,8 @@ public class GdalWarpTransform extends AbstractCommandLineTransform implements R
 
     @Override
     protected List<String> getReplacementTargetNames(ImportData data) throws IOException {
-        Resource input = getInputFile(data);
-        String name = input.name();
+        File input = getInputFile(data);
+        String name = input.getName();
         String baseName = FilenameUtils.getBaseName(name);
         String extension = FilenameUtils.getExtension(name);
         List<String> names = new ArrayList<>();
@@ -101,7 +100,7 @@ public class GdalWarpTransform extends AbstractCommandLineTransform implements R
     }
 
     @Override
-    protected Resource getInputFile(ImportData data) throws IOException {
+    protected File getInputFile(ImportData data) throws IOException {
         if (data instanceof FileData) {
             FileData fd = (FileData) data;
             return fd.getFile();

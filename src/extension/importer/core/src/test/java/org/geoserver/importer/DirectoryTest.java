@@ -10,16 +10,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.importer.mosaic.Mosaic;
-import org.geoserver.platform.resource.Files;
-import org.geoserver.platform.resource.Resource;
-
 import static org.geoserver.importer.ImporterTestUtils.unpack;
 
 public class DirectoryTest extends TestCase {
@@ -55,7 +51,7 @@ public class DirectoryTest extends TestCase {
     public void testSingleSpatialFile() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");
 
-        Directory d = new Directory(Files.asResource(dir));
+        Directory d = new Directory(dir);
         d.prepare();
         
         List<FileData> files = d.getFiles();
@@ -64,16 +60,16 @@ public class DirectoryTest extends TestCase {
         assertTrue( files.get(0) instanceof SpatialFile);
 
         SpatialFile spatial = (SpatialFile) files.get(0);
-        assertEquals("shp", FilenameUtils.getExtension(spatial.getFile().name()));
+        assertEquals("shp", FilenameUtils.getExtension(spatial.getFile().getName()));
 
-        assertNotNull(spatial.getPrjFile().name());
-        assertEquals("prj", FilenameUtils.getExtension(spatial.getPrjFile().name()));
+        assertNotNull(spatial.getPrjFile().getName());
+        assertEquals("prj", FilenameUtils.getExtension(spatial.getPrjFile().getName()));
         
         assertEquals(2, spatial.getSuppFiles().size());
 
         Set<String> exts = new HashSet<String>(Arrays.asList("shx", "dbf"));
-        for (Resource supp : spatial.getSuppFiles()) {
-            exts.remove(FilenameUtils.getExtension(supp.name()));
+        for (File supp : spatial.getSuppFiles()) {
+            exts.remove(FilenameUtils.getExtension(supp.getName()));
         }
 
         assertTrue(exts.isEmpty());
@@ -88,7 +84,7 @@ public class DirectoryTest extends TestCase {
         new File(osxDir, ".archsites.dbf").createNewFile();
         new File(osxDir, ".archsites.prj").createNewFile();
         
-        Directory d = new Directory(Files.asResource(dir));
+        Directory d = new Directory(dir);
         d.prepare();
         
         assertNotNull(d.getFormat());
@@ -107,7 +103,7 @@ public class DirectoryTest extends TestCase {
         new File(dir, "archsites.sbn").createNewFile();
         new File(dir, "archsites.shp.ed.lock").createNewFile();
         
-        Directory d = new Directory(Files.asResource(dir));
+        Directory d = new Directory(dir);
         d.prepare();
         
         assertNotNull(d.getFormat());
@@ -121,7 +117,7 @@ public class DirectoryTest extends TestCase {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         unpack("shape/bugsites_esri_prj.tar.gz", dir);
 
-        Directory d = new Directory(Files.asResource(dir));
+        Directory d = new Directory(dir);
         d.prepare();
 
         assertEquals(2, d.getFiles().size());
@@ -134,7 +130,7 @@ public class DirectoryTest extends TestCase {
         unpack("shape/bugsites_esri_prj.tar.gz", dir);
         FileUtils.touch(new File(dir, "foo.txt")); //TODO: don't rely on alphabetical order 
         
-        Directory d = new Directory(Files.asResource(dir));
+        Directory d = new Directory(dir);
         d.prepare();
         
         assertEquals(3, d.getFiles().size());

@@ -37,7 +37,6 @@ import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.VectorFormat;
 import org.geoserver.importer.job.ProgressMonitor;
-import org.geoserver.platform.resource.Resource;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -60,7 +59,7 @@ public class GeoJSONFormat extends VectorFormat {
             (SimpleFeatureType) item.getMetadata().get(FeatureType.class);
         FeatureJSON json = new FeatureJSON();
         json.setFeatureType(featureType);
-        final FeatureIterator it = json.streamFeatureCollection(file(data, item).file());
+        final FeatureIterator it = json.streamFeatureCollection(file(data, item));
 
         return new FeatureReader() {
 
@@ -104,7 +103,7 @@ public class GeoJSONFormat extends VectorFormat {
     
     @Override
     public boolean canRead(ImportData data) throws IOException {
-        Optional<Resource> file = maybeFile(data);
+        Optional<File> file = maybeFile(data);
         if (file.isPresent()) {
             return sniff(file.get()) != null;
         }
@@ -112,9 +111,9 @@ public class GeoJSONFormat extends VectorFormat {
         return false;
     }
 
-    SimpleFeature sniff(Resource file) {
+    SimpleFeature sniff(File file) {
         try {
-            FeatureIterator it = new FeatureJSON().streamFeatureCollection(file.file());
+            FeatureIterator it = new FeatureJSON().streamFeatureCollection(file);
             try {
                 if (it.hasNext()) {
                     return (SimpleFeature) it.next();
@@ -153,22 +152,22 @@ public class GeoJSONFormat extends VectorFormat {
     }
 
     ImportTask task(ImportData data, Catalog catalog) throws IOException {
-        Resource file = maybeFile(data).get();
+        File file = maybeFile(data).get();
         CatalogFactory factory = catalog.getFactory();
         CatalogBuilder catalogBuilder = new CatalogBuilder(catalog);
 
         // get the composite feature type
-        SimpleFeatureType featureType = new FeatureJSON().readFeatureCollectionSchema(file.file(), false);
+        SimpleFeatureType featureType = new FeatureJSON().readFeatureCollectionSchema(file, false);
         System.out.println(featureType);
 
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.init(featureType);
-        tb.setName(FilenameUtils.getBaseName(file.name()));
+        tb.setName(FilenameUtils.getBaseName(file.getName()));
         featureType = tb.buildFeatureType();
 
         // create the feature type
         FeatureTypeInfo ft = catalog.getFactory().createFeatureType();
-        ft.setName(FilenameUtils.getBaseName(file.name()));
+        ft.setName(FilenameUtils.getBaseName(file.getName()));
         ft.setNativeName(ft.getName());
 
         List<AttributeTypeInfo> attributes = ft.getAttributes();
@@ -213,12 +212,12 @@ public class GeoJSONFormat extends VectorFormat {
         return task;
     }
 
-    Resource file(ImportData data, final ImportTask item) {
+    File file(ImportData data, final ImportTask item) {
         if (data instanceof Directory) {
             return Iterables.find(((Directory) data).getFiles(), new Predicate<FileData>() {
                 @Override
                 public boolean apply(FileData input) {
-                    return FilenameUtils.getBaseName(input.getFile().name())
+                    return FilenameUtils.getBaseName(input.getFile().getName())
                         .equals(item.getLayer().getName());
                 }
             }).getFile();
@@ -228,7 +227,7 @@ public class GeoJSONFormat extends VectorFormat {
         }
     }
 
-    Optional<Resource> maybeFile(ImportData data) {
+    Optional<File> maybeFile(ImportData data) {
         if (data instanceof FileData) {
             return Optional.of(((FileData) data).getFile());
         }

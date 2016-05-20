@@ -22,7 +22,6 @@ import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
-import org.geoserver.platform.resource.Resource;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.coverage.grid.io.UnknownFormat;
@@ -48,18 +47,8 @@ public abstract class DataFormat implements Serializable {
 
     /**
      * looks up a format based on file extension.
-     * 
-     * @deprecated Use {@link #lookup(Resource)}
      */
-    @Deprecated
     public static DataFormat lookup(File file) {
-        return lookup(Files.asResource(file));
-    }
-
-    /**
-     * looks up a format based on file extension.
-     */
-    public static DataFormat lookup(Resource file) {
         FileData fileData = new FileData(file); 
         for (DataFormat df : GeoServerExtensions.extensions(DataFormat.class)) {
             try {
@@ -68,19 +57,19 @@ public abstract class DataFormat implements Serializable {
                 }
             } catch (IOException e) {
                 LOG.log(Level.FINER, String.format("Error checking if format %s can read file %s, " +
-                    df.getName(), file.path()), e);
+                    df.getName(), file.getPath()), e);
             }
         }
 
         //look for a datastore that can handle the file
-        String ext = FilenameUtils.getExtension(file.name());
+        String ext = FilenameUtils.getExtension(file.getName());
         FileDataStoreFactorySpi factory = FileDataStoreFinder.getDataStoreFactory(ext);
         if (factory != null) {
             return new DataStoreFormat(factory);
         }
 
         //look for a gridformat that can handle the file
-        Set<AbstractGridFormat> formats = GridFormatFinder.findFormats(file.file());
+        Set<AbstractGridFormat> formats = GridFormatFinder.findFormats(file);
         AbstractGridFormat format = null;
         // in the case of 2 formats, let's ensure any ambiguity that cannot
         // be resolved is an error to prevent spurious bugs related to
@@ -149,10 +138,10 @@ public abstract class DataFormat implements Serializable {
      * @param data
      *
      */
-    protected Resource getFileFromData(ImportData data) {
+    protected File getFileFromData(ImportData data) {
         assert data instanceof FileData;
         FileData fileData = (FileData) data;
-        Resource file = fileData.getFile();
+        File file = fileData.getFile();
         return file;
     }
 

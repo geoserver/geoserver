@@ -15,7 +15,6 @@ import org.apache.commons.exec.CommandLine;
 import org.geoserver.importer.FileData;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ValidationException;
-import org.geoserver.platform.resource.Resource;
 
 /**
  * Runs gdaladdo on a input raster file
@@ -78,12 +77,12 @@ public class GdalAddoTransform extends AbstractCommandLineTransform implements R
 
     @Override
     protected List<String> getReplacementTargetNames(ImportData data) throws IOException {
-        Resource input = getInputFile(data);
-        return Collections.singletonList(input.name());
+        File input = getInputFile(data);
+        return Collections.singletonList(input.getName());
     }
 
     @Override
-    protected Resource getInputFile(ImportData data) throws IOException {
+    protected File getInputFile(ImportData data) throws IOException {
         if (data instanceof FileData) {
             FileData fd = (FileData) data;
             return fd.getFile();

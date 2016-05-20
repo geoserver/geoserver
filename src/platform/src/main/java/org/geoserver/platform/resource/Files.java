@@ -39,7 +39,6 @@ public final class Files {
      * in the data directory.
      */
     static final class ResourceAdaptor implements Resource {
-        private static final long serialVersionUID = -3529072360389761648L;
         
         final File file;
 

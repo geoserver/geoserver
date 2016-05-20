@@ -1,4 +1,4 @@
-/* Copyright (c) 2015 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -140,9 +140,7 @@ public class JDBCResourceStore implements ResourceStore {
      * 
      */    
     protected class JDBCResource implements Resource {
-        
-        private static final long serialVersionUID = 1829574259576354635L;
-        
+
         private final JDBCDirectoryStructure.Entry entry;
         
         public JDBCResource(JDBCDirectoryStructure.Entry entry) {

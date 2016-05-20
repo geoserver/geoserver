@@ -390,9 +390,9 @@ public class GetMap {
                 final Query definitionQuery = new Query(source.getSchema().getName().getLocalPart());
                 definitionQuery.setVersion(featureVersion);
                 definitionQuery.setFilter(filter);
-            	if (viewParams != null) {
+                if (viewParams != null) {
                     definitionQuery.setHints(new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams.get(i)));
-            	}
+                }
 
                 // check for startIndex + offset
                 final Integer startIndex = request.getStartIndex();

@@ -56,8 +56,8 @@ public abstract class CoverageTestSupport extends GeoServerSystemTestSupport {
 //        String styleName = "raster";
 //        dataDirectory.addStyle(styleName, style);
 //        if(SpatioTemporalRasterTests)
-//        	dataDirectory.addCoverage(WATTEMP, TestData.class.getResource("watertemp.zip"),
-//	                null, styleName);
+//            dataDirectory.addCoverage(WATTEMP, TestData.class.getResource("watertemp.zip"),
+//                    null, styleName);
 //        dataDirectory.addWcs10Coverages();
 //    }
 }

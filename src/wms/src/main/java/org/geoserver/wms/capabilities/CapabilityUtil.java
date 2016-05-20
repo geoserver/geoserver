@@ -27,21 +27,21 @@ import org.geotools.util.NumberRange;
  *
  */
 final class CapabilityUtil {
-	
-	private CapabilityUtil(){
-		//utility class
-	}
-	
-	/**
-	 * Helper method: aggregates min/max scale denominators of a set of styles.
-	 * 
-	 */
-	private static NumberRange<Double> searchMinMaxScaleDenominator(Set<StyleInfo> styles) throws IOException {
-	    // searches the maximum and minimum denominator in the style's rules that are contained in the style set. 
+    
+    private CapabilityUtil(){
+        //utility class
+    }
+    
+    /**
+     * Helper method: aggregates min/max scale denominators of a set of styles.
+     * 
+     */
+    private static NumberRange<Double> searchMinMaxScaleDenominator(Set<StyleInfo> styles) throws IOException {
+        // searches the maximum and minimum denominator in the style's rules that are contained in the style set. 
             double minScaleDenominator =  Double.POSITIVE_INFINITY;
             double maxScaleDenominator = Double.NEGATIVE_INFINITY;
 
-            for (StyleInfo styleInfo : styles) {	    
+            for (StyleInfo styleInfo : styles) {        
                 Style style = styleInfo.getStyle();
                 for (FeatureTypeStyle fts : style.featureTypeStyles()) {
                     
@@ -68,24 +68,24 @@ final class CapabilityUtil {
             assert minScaleDenominator <= maxScaleDenominator : "Min <= Max scale is expected";
 
             return new NumberRange<Double>(Double.class, minScaleDenominator, maxScaleDenominator);
-	}
-	
-	/**
-	 * Searches the Max and Min scale denominators in the layer's styles.  
-	 * 
-	 * <pre>
-	 * If the Min or Max values aren't present, the following default are assumed:
-	 * 
-	 * Min Scale: 0.0
-	 * Max Scale: infinity
-	 * </pre> 
-	 * @param minScaleDenominator Min scale attribute (or element) name
-	 * @param maxScaleDenominator Max scale attribute (or element) name
-	 * @param layer
-	 * 
-	 * @return Max and Min denominator
-	 * @throws IOException 
-	 */
+    }
+    
+    /**
+     * Searches the Max and Min scale denominators in the layer's styles.  
+     * 
+     * <pre>
+     * If the Min or Max values aren't present, the following default are assumed:
+     * 
+     * Min Scale: 0.0
+     * Max Scale: infinity
+     * </pre> 
+     * @param minScaleDenominator Min scale attribute (or element) name
+     * @param maxScaleDenominator Max scale attribute (or element) name
+     * @param layer
+     * 
+     * @return Max and Min denominator
+     * @throws IOException 
+     */
         public static NumberRange<Double> searchMinMaxScaleDenominator(final LayerInfo layer)
                 throws IOException {
     
@@ -123,8 +123,8 @@ final class CapabilityUtil {
                 }
             }
         }
-	
-	/**
+    
+    /**
          * Searches the Max and Min scale denominators in the layergroup's layers  
          * 
          * <pre>
@@ -175,19 +175,19 @@ final class CapabilityUtil {
             throw new UnsupportedOperationException("PublishedInfo must be either Layer or Layergroup");
         }
 
-	/**
-	 * Computes the rendering scale taking into account the standard pixel size and the real world scale denominator.
-	 * 
-	 * @param scaleDenominator
-	 * @return the rendering scale.
-	 */
-	public static Double computeScaleHint(final Double scaleDenominator) {
-		
-		// According to OGC SLD 1.0 specification: The "standardized rendering pixel size" is defined to be 0.28mm × 0.28mm (millimeters).
-		final Double sizeStandardRenderPixel = 0.00028;//(meters) 
-		
-		Double scaleHint = Math.sqrt(Math.pow((scaleDenominator * sizeStandardRenderPixel), 2) * 2);
-		
-		return scaleHint;
-	}
+    /**
+     * Computes the rendering scale taking into account the standard pixel size and the real world scale denominator.
+     * 
+     * @param scaleDenominator
+     * @return the rendering scale.
+     */
+    public static Double computeScaleHint(final Double scaleDenominator) {
+        
+        // According to OGC SLD 1.0 specification: The "standardized rendering pixel size" is defined to be 0.28mm × 0.28mm (millimeters).
+        final Double sizeStandardRenderPixel = 0.00028;//(meters) 
+        
+        Double scaleHint = Math.sqrt(Math.pow((scaleDenominator * sizeStandardRenderPixel), 2) * 2);
+        
+        return scaleHint;
+    }
 }

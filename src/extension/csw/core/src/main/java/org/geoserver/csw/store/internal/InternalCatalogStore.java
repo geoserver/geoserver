@@ -115,7 +115,7 @@ public class InternalCatalogStore extends AbstractCatalogStore {
         }
         
         if (q.getProperties() != null && q.getProperties().size() > 0) {
-        	outputMapping = outputMapping.subMapping(q.getProperties(), rd);
+            outputMapping = outputMapping.subMapping(q.getProperties(), rd);
         }
 
         return new CatalogStoreFeatureCollection(startIndex,

@@ -136,9 +136,9 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
      * @throws NoSuchElementException
      * @throws IOException
      */
-	private void createTables(Map<String, File> propertyFiles, String parser)
+    private void createTables(Map<String, File> propertyFiles, String parser)
             throws IllegalAttributeException, NoSuchElementException, IOException {
-    	
+        
         StringBuffer buf = new StringBuffer();
         StringBuffer spatialIndex = new StringBuffer();
         // drop table procedure I copied from Victor's Oracle_Data_ref_set.sql
@@ -187,7 +187,7 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                         
                         spatialIndex.append("DELETE FROM user_sdo_geom_metadata WHERE table_name = '")
                                 .append(tableName).append("'\n");
-    		
+            
                         spatialIndex
                                 .append("Insert into user_sdo_geom_metadata ")
                                 .append("(TABLE_NAME,COLUMN_NAME,DIMINFO,SRID)")
@@ -199,9 +199,9 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                                         "',MDSYS.SDO_DIM_ARRAY(MDSYS.SDO_DIM_ELEMENT('X',140.962,144.909,0.00001),")
                                 .append("MDSYS.SDO_DIM_ELEMENT('Y',-38.858,-33.98,0.00001)")
                                 .append( //support 3d index
-                                		((GeometryDescriptor) desc).getCoordinateReferenceSystem() != null
-                                		&& ((GeometryDescriptor) desc).getCoordinateReferenceSystem().getCoordinateSystem().getDimension() == 3 ?
-                                		", MDSYS.SDO_DIM_ELEMENT('Z',-100000, 100000, 1) )," : "),")
+                                        ((GeometryDescriptor) desc).getCoordinateReferenceSystem() != null
+                                        && ((GeometryDescriptor) desc).getCoordinateReferenceSystem().getCoordinateSystem().getDimension() == 3 ?
+                                        ", MDSYS.SDO_DIM_ELEMENT('Z',-100000, 100000, 1) )," : "),")
                                 .append(srid).append(")\n");
     
                         // ensure it's <= 30 characters to avoid Oracle exception
@@ -249,9 +249,9 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                     for (Property prop : properties) {
                         Object value = prop.getValue();
                         if (value instanceof Geometry) {
-                        	//use wkt writer to convert geometry to string, so third dimension can be supported if present.
-                        	Geometry geom = (Geometry) value;
-                        	value = new WKTWriter(geom.getCoordinate().z == Double.NaN? 2 : 3).write(geom);
+                            //use wkt writer to convert geometry to string, so third dimension can be supported if present.
+                            Geometry geom = (Geometry) value;
+                            value = new WKTWriter(geom.getCoordinate().z == Double.NaN? 2 : 3).write(geom);
                         }
                         if (value == null || value.toString().equalsIgnoreCase("null")) {
                             values[valueIndex] = "null";

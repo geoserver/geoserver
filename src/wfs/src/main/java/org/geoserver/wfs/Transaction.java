@@ -409,7 +409,7 @@ public class Transaction {
         // result.getTransactionResult().getStatus().setSUCCESS(
         // WfsFactory.eINSTANCE.createEmptyType() );
         // }
-        //        	
+        //            
         // }
         // finally {
         // transaction.close();

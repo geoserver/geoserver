@@ -450,9 +450,9 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
          * @param elevationMetadata 
              */
         private void handleGrid(CoverageInfo ci) throws Exception {
-        	final GridGeometry originalGrid = ci.getGrid();
-        	final GridEnvelope gridRange=originalGrid.getGridRange();
-        	final AffineTransform2D gridToCRS = (AffineTransform2D) originalGrid.getGridToCRS();
+            final GridGeometry originalGrid = ci.getGrid();
+            final GridEnvelope gridRange=originalGrid.getGridRange();
+            final AffineTransform2D gridToCRS = (AffineTransform2D) originalGrid.getGridToCRS();
             final int gridDimension = (gridToCRS != null ? gridToCRS.getSourceDimensions() : 0);
 
             AttributesImpl attributes = new AttributesImpl();
@@ -589,7 +589,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                         }
                     }
                     for(Double elevation : elevations) {
-                    	element("wcs:singleValue", Double.toString(elevation));
+                        element("wcs:singleValue", Double.toString(elevation));
                     }
                     element("wcs:default", Double.toString(elevations.first()));
                    

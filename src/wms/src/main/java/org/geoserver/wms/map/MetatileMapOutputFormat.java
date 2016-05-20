@@ -239,7 +239,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
             type = 2;
         }
         if(LOGGER.isLoggable(Level.FINER)){
-        	LOGGER.finer("Metatile type " + type);        
+            LOGGER.finer("Metatile type " + type);        
         }
 
         // now do the splitting

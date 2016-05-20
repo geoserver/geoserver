@@ -106,10 +106,10 @@ public class IntegerParameterFilterSubform extends AbstractParameterFilterSubfor
             @SuppressWarnings("unchecked")
             @Override
             public <S> IConverter<S> getConverter(Class<S> type) {
-            	if (List.class.isAssignableFrom(type)) {
-            		return (IConverter<S>) CONVERT;
-            	}
-            	return super.getConverter(type);
+                if (List.class.isAssignableFrom(type)) {
+                    return (IConverter<S>) CONVERT;
+                }
+                return super.getConverter(type);
             }
         };
         values.setConvertEmptyInputStringToNull(false);
@@ -122,10 +122,10 @@ public class IntegerParameterFilterSubform extends AbstractParameterFilterSubfor
             @SuppressWarnings("unchecked")
             @Override
             public <S> IConverter<S> getConverter(Class<S> type) {
-            	if (Integer.class.isAssignableFrom(type)) {
-            		return (IConverter<S>) INTEGER;
-            	}
-            	return super.getConverter(type);
+                if (Integer.class.isAssignableFrom(type)) {
+                    return (IConverter<S>) INTEGER;
+                }
+                return super.getConverter(type);
             }
         };
         add(threshold);

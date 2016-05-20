@@ -102,7 +102,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         comparator = sortOrder==null || sortOrder.length==0 ? null : CatalogComparatorFactory.buildComparator(sortOrder);
         index = 0;        
         while (index < offset && hasNext()) {
-        	nextInternal();
+            nextInternal();
         }
         this.recordDescriptor = recordDescriptor;
         builder = new GenericRecordBuilder(recordDescriptor);
@@ -114,52 +114,52 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     }
     
     public ResourceInfo nextLayer() {
-    	ResourceInfo result = nextResource;
-    	
-    	if (layerIt.hasNext()) {
-        	nextResource = layerIt.next();
+        ResourceInfo result = nextResource;
+        
+        if (layerIt.hasNext()) {
+            nextResource = layerIt.next();
         } else {
-        	nextResource = null;
+            nextResource = null;
         }
-    	
-    	return result;
+        
+        return result;
     }
     
     public LayerGroupInfo nextLayerGroup() {
-    	LayerGroupInfo result = nextLayerGroup;
-    	
-    	if (layerGroupIt.hasNext()) {
-    		nextLayerGroup = layerGroupIt.next();
+        LayerGroupInfo result = nextLayerGroup;
+        
+        if (layerGroupIt.hasNext()) {
+            nextLayerGroup = layerGroupIt.next();
         } else {
-        	nextLayerGroup = null;
+            nextLayerGroup = null;
         }
-    	
-    	return result;
+        
+        return result;
     }
     
     public CatalogInfo nextInternal() {
-    	if (!hasNext()) {
+        if (!hasNext()) {
             throw new NoSuchElementException("No more records to retrieve");
         }        
         index++;
         
         if (nextResource == null) {
-        	return nextLayerGroup();
+            return nextLayerGroup();
         }
         
         if (nextLayerGroup == null) {
-        	return nextLayer();
+            return nextLayer();
         }
         
         if (comparator == null) {
-        	return nextLayer();
+            return nextLayer();
         }
                 
         int c = comparator.compare(nextResource, nextLayerGroup);
         if (c <= 0) {
-        	return nextLayer();
+            return nextLayer();
         } else {
-        	return nextLayerGroup();
+            return nextLayerGroup();
         }        
     }
     
@@ -168,9 +168,9 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         CatalogInfo info = nextInternal();
         
         if (info instanceof ResourceInfo) {
-        	return convertToFeature( (ResourceInfo) info );
+            return convertToFeature( (ResourceInfo) info );
         } else {
-        	return convertToFeature( (LayerGroupInfo) info );
+            return convertToFeature( (LayerGroupInfo) info );
         }
     }
     

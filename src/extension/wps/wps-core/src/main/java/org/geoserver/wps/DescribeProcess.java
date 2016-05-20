@@ -176,10 +176,10 @@ public class DescribeProcess {
                 
                 // map the java class to an xml type name
                 if ( !String.class.equals(lppio.getType()) ) {
-                	Class type = lppio.getType();
-                	if(PRIMITIVE_TO_WRAPPER.containsKey(type)) {
-                		type = PRIMITIVE_TO_WRAPPER.get(type);
-                	}
+                    Class type = lppio.getType();
+                    if(PRIMITIVE_TO_WRAPPER.containsKey(type)) {
+                        type = PRIMITIVE_TO_WRAPPER.get(type);
+                    }
                     Name typeName = xsp.name(type); 
                     if ( typeName != null ) {
                         literal.setDataType(Ows11Util.type("xs:" + typeName.getLocalPart()));        
@@ -190,7 +190,7 @@ public class DescribeProcess {
                     Object[] optionsArray = options.toArray(new Object[options.size()]);
                     addAllowedValues(literal, optionsArray);
                 } else if (lppio.getType().isEnum()) {
-                	Object[] enumValues = lppio.getType().getEnumConstants();
+                    Object[] enumValues = lppio.getType().getEnumConstants();
                     addAllowedValues(literal, enumValues);
                 } else {
                     Object min = p.metadata.get(Param.MIN);
@@ -342,10 +342,10 @@ public class DescribeProcess {
                 
                 //map the java class to an xml type name
                 if ( !String.class.equals( lppio.getType() ) ) {
-                	Class type = lppio.getType();
-                	if(PRIMITIVE_TO_WRAPPER.containsKey(type)) {
-                		type = PRIMITIVE_TO_WRAPPER.get(type);
-                	}
+                    Class type = lppio.getType();
+                    if(PRIMITIVE_TO_WRAPPER.containsKey(type)) {
+                        type = PRIMITIVE_TO_WRAPPER.get(type);
+                    }
                     Name typeName = xsp.name(type); 
                     if ( typeName != null ) {
                         literal.setDataType( Ows11Util.type( typeName.getLocalPart() ) );        

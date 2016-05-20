@@ -62,11 +62,11 @@ public class LegacyFeatureTypeInfoReader {
     
     
     public String dataStore() throws Exception {
-    	return ReaderUtils.getAttribute( featureType, "datastore", true );
+        return ReaderUtils.getAttribute( featureType, "datastore", true );
     }
     
     public String name() {
-    	return ReaderUtils.getChildText( featureType, "name" );
+        return ReaderUtils.getChildText( featureType, "name" );
     }
     
     public String alias() {
@@ -74,7 +74,7 @@ public class LegacyFeatureTypeInfoReader {
     }
     
     public String srs() throws Exception {
-    	return ReaderUtils.getChildText( featureType, "SRS" );
+        return ReaderUtils.getChildText( featureType, "SRS" );
     }
     
     public int srsHandling() {
@@ -87,25 +87,25 @@ public class LegacyFeatureTypeInfoReader {
     }
     
     public String title() {
-    	return ReaderUtils.getChildText( featureType, "title" );
+        return ReaderUtils.getChildText( featureType, "title" );
     }
     
     public String abstrct() {
-    	return ReaderUtils.getChildText( featureType, "abstract" );
+        return ReaderUtils.getChildText( featureType, "abstract" );
     }
     
     public List<String> keywords() {
-    	String raw = ReaderUtils.getChildText( featureType, "keywords" );
-    	if ( raw == null || "".equals( raw ) ) {
-    	    return new ArrayList<String>();
-    	}
-    	StringTokenizer st = new StringTokenizer( raw, ", " );
-    	ArrayList keywords = new ArrayList();
-    	while( st.hasMoreTokens() ) {
-    		keywords.add( st.nextToken() );
-    	}
-    	
-    	return keywords;
+        String raw = ReaderUtils.getChildText( featureType, "keywords" );
+        if ( raw == null || "".equals( raw ) ) {
+            return new ArrayList<String>();
+        }
+        StringTokenizer st = new StringTokenizer( raw, ", " );
+        ArrayList keywords = new ArrayList();
+        while( st.hasMoreTokens() ) {
+            keywords.add( st.nextToken() );
+        }
+        
+        return keywords;
     }
     
     public List<Map<String,String>> metadataLinks() {
@@ -128,13 +128,13 @@ public class LegacyFeatureTypeInfoReader {
     }
     
     public Envelope latLonBoundingBox() throws Exception {
-    	Element box = ReaderUtils.getChildElement(featureType, "latLonBoundingBox" );
-    	double minx = ReaderUtils.getDoubleAttribute(box, "minx", true );
-    	double miny = ReaderUtils.getDoubleAttribute(box, "miny", true );
-    	double maxx = ReaderUtils.getDoubleAttribute(box, "maxx", true );
-    	double maxy = ReaderUtils.getDoubleAttribute(box, "maxy", true );
+        Element box = ReaderUtils.getChildElement(featureType, "latLonBoundingBox" );
+        double minx = ReaderUtils.getDoubleAttribute(box, "minx", true );
+        double miny = ReaderUtils.getDoubleAttribute(box, "miny", true );
+        double maxx = ReaderUtils.getDoubleAttribute(box, "maxx", true );
+        double maxy = ReaderUtils.getDoubleAttribute(box, "maxy", true );
     
-    	return new Envelope( minx, maxx, miny, maxy );
+        return new Envelope( minx, maxx, miny, maxy );
     }
     
     public Envelope nativeBoundingBox() throws Exception {
@@ -153,8 +153,8 @@ public class LegacyFeatureTypeInfoReader {
     }
     
     public String defaultStyle() throws Exception {
-    	Element styles = ReaderUtils.getChildElement(featureType, "styles" );
-    	return ReaderUtils.getAttribute( styles, "default", false );
+        Element styles = ReaderUtils.getChildElement(featureType, "styles" );
+        return ReaderUtils.getAttribute( styles, "default", false );
     }
     
     public List<String> styles() throws Exception {

@@ -32,25 +32,25 @@ public class GetRecordByIdKvpRequestReader extends CSWKvpRequestReader {
 
     @Override
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
-    	
-    	ElementSetType ent = (ElementSetType) kvp.get("elementsetname");
-    	if (ent != null) {
-    		ElementSetNameType esnt = Csw20Factory.eINSTANCE.createElementSetNameType();
-    		esnt.setValue(ent);
-  	    	kvp.put("elementsetname", esnt);
-    	}
-    	
-    	List<URI> idsuri = new ArrayList<URI>(); 
-    	String rawId = (String) kvp.get("id");
-    	if(rawId == null) {
-    	    throw new ServiceException("Missing required parameter id", ServiceException.MISSING_PARAMETER_VALUE, "id");
-    	}
+        
+        ElementSetType ent = (ElementSetType) kvp.get("elementsetname");
+        if (ent != null) {
+            ElementSetNameType esnt = Csw20Factory.eINSTANCE.createElementSetNameType();
+            esnt.setValue(ent);
+              kvp.put("elementsetname", esnt);
+        }
+        
+        List<URI> idsuri = new ArrayList<URI>(); 
+        String rawId = (String) kvp.get("id");
+        if(rawId == null) {
+            throw new ServiceException("Missing required parameter id", ServiceException.MISSING_PARAMETER_VALUE, "id");
+        }
         String[] ids = rawId.split("\\s*,\\s*"); 
-    	for (String id: ids) {
-    		idsuri.add(new URI(id));
-    	}
-    	kvp.put("id", idsuri);
-    	
+        for (String id: ids) {
+            idsuri.add(new URI(id));
+        }
+        kvp.put("id", idsuri);
+        
         // proceed with the normal reflective setup
         return super.read(request, kvp, rawKvp);
     }

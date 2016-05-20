@@ -45,7 +45,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInfo> {
 
     private static final long serialVersionUID = 5659874305843575438L;
-	
+    
     public static final String GROUP = "group";
     public static final String WORKSPACE = "workspace";
     

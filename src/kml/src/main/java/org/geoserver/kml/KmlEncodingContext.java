@@ -417,7 +417,7 @@ public class KmlEncodingContext {
     public void addKmzGroundOverlay(String imagePath, Layer layer) {
         if(!kmz) {
             throw new IllegalStateException("Cannot add ground " +
-            		"overlay layers, the output is not supposed to be a KMZ");
+                    "overlay layers, the output is not supposed to be a KMZ");
         }
         this.kmzGroundOverlays.put(imagePath, layer);
     }
@@ -548,34 +548,34 @@ public class KmlEncodingContext {
 
     
 
-	public Envelope getRequestBoxWGS84() {
-		try {
-			Envelope env = request.getBbox();
-			ReferencedEnvelope re;
-			if(env instanceof ReferencedEnvelope) {
-				re = (ReferencedEnvelope) env;
-				if(re.getCoordinateReferenceSystem() == null) {
-					re = new ReferencedEnvelope(re, DefaultGeographicCRS.WGS84);
-				}
-			} else {
-				if(request.getCrs() != null) {
-					re = new ReferencedEnvelope(env, request.getCrs());
-				} else if(request.getSRS() != null) {
-					CoordinateReferenceSystem crs = CRS.decode(request.getSRS());
-					re = new ReferencedEnvelope(env, crs);
-				} else {
-					re = new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84);
-				}
-			}
-			
-			if(!CRS.equalsIgnoreMetadata(re.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)) {
-				return re.transform(DefaultGeographicCRS.WGS84, true);
-			} else {
-				return re;
-			}
-		} catch(Exception e) {
-			throw new ServiceException("Requested bounding box " + request.getBbox() + " could not be tranformed to WGS84", e);
-		}
-	}
+    public Envelope getRequestBoxWGS84() {
+        try {
+            Envelope env = request.getBbox();
+            ReferencedEnvelope re;
+            if(env instanceof ReferencedEnvelope) {
+                re = (ReferencedEnvelope) env;
+                if(re.getCoordinateReferenceSystem() == null) {
+                    re = new ReferencedEnvelope(re, DefaultGeographicCRS.WGS84);
+                }
+            } else {
+                if(request.getCrs() != null) {
+                    re = new ReferencedEnvelope(env, request.getCrs());
+                } else if(request.getSRS() != null) {
+                    CoordinateReferenceSystem crs = CRS.decode(request.getSRS());
+                    re = new ReferencedEnvelope(env, crs);
+                } else {
+                    re = new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84);
+                }
+            }
+            
+            if(!CRS.equalsIgnoreMetadata(re.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)) {
+                return re.transform(DefaultGeographicCRS.WGS84, true);
+            } else {
+                return re;
+            }
+        } catch(Exception e) {
+            throw new ServiceException("Requested bounding box " + request.getBbox() + " could not be tranformed to WGS84", e);
+        }
+    }
 
 }

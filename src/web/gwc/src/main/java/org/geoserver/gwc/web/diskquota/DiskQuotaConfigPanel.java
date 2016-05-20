@@ -230,7 +230,7 @@ public class DiskQuotaConfigPanel extends Panel {
         Object[] progressMessageParams = { globalUsedQuotaModel.getObject().toNiceString(),
                 globalQuotaModel.getObject().toNiceString() };
         IModel<String> progressMessageModel = 
-        		new StringResourceModel("DiskQuotaConfigPanel.usedQuotaMessage").setParameters(progressMessageParams);
+                new StringResourceModel("DiskQuotaConfigPanel.usedQuotaMessage").setParameters(progressMessageParams);
         addGlobalQuotaStatusBar(globalQuotaModel, globalUsedQuotaModel, progressMessageModel);
 
         TextField<Double> quotaValue = new TextField<Double>("globalQuota", quotaValueModel);

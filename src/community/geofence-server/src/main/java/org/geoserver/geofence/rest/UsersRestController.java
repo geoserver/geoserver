@@ -49,7 +49,7 @@ public class UsersRestController {
     
     @ExceptionHandler(IllegalArgumentException.class)
     public void somethingNotFound(IllegalArgumentException exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
-    	response.sendError(404, exception.getMessage());
+        response.sendError(404, exception.getMessage());
     }
 
     @RequestMapping(value = "/rest/usergroup/users", method = RequestMethod.GET, produces = {"application/xml", "application/json"})

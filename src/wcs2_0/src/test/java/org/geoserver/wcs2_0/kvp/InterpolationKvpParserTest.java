@@ -69,9 +69,9 @@ public class InterpolationKvpParserTest extends GeoServerSystemTestSupport{
     @Test
     public void testMultiAxis() throws Exception {
         InterpolationType it = (InterpolationType) parser.parse("http://www.opengis.net/def/axis/OGC/1/latitude:" +
-        		"http://www.opengis.net/def/interpolation/OGC/1/linear," +
-        		"http://www.opengis.net/def/axis/OGC/1/longitude:" +
-        		"http://www.opengis.net/def/interpolation/OGC/1/nearest");
+                "http://www.opengis.net/def/interpolation/OGC/1/linear," +
+                "http://www.opengis.net/def/axis/OGC/1/longitude:" +
+                "http://www.opengis.net/def/interpolation/OGC/1/nearest");
         EList<InterpolationAxisType> axes = it.getInterpolationAxes().getInterpolationAxis();
         assertEquals(2, axes.size());
         assertEquals("http://www.opengis.net/def/axis/OGC/1/latitude", axes.get(0).getAxis());

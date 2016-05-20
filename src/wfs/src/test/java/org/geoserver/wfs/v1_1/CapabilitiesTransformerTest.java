@@ -41,7 +41,7 @@ public class CapabilitiesTransformerTest extends WFSTestSupport {
 
     @Test
     public void test() throws Exception {
-    	GetCapabilitiesType request = request();
+        GetCapabilitiesType request = request();
         CapabilitiesTransformer tx = new CapabilitiesTransformer.WFS1_1(getWFS(), request.getBaseUrl(), getCatalog(), Collections.<WFSExtendedCapabilitiesProvider>emptyList());
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         tx.transform(request, output);
@@ -68,7 +68,7 @@ public class CapabilitiesTransformerTest extends WFSTestSupport {
      */
     @Test
     public void testDefaultOutputFormat() throws Exception {
-    	GetCapabilitiesType request = request();
+        GetCapabilitiesType request = request();
         CapabilitiesTransformer tx = new CapabilitiesTransformer.WFS1_1(getWFS(), request.getBaseUrl(), getCatalog(), Collections.<WFSExtendedCapabilitiesProvider>emptyList());
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         tx.transform(request, output);

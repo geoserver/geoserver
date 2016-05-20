@@ -173,7 +173,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     /**
      * True if running 3D online test. Only matters for Oracle, since a special wkt parser is needed.
      */
-	private boolean is3D = false;
+    private boolean is3D = false;
     /**
      * Constructor with the default namespaces, schema directory, and catalog file.
      */

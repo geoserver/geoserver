@@ -123,10 +123,10 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         // check the attributes and show a dropdown
         List<String> attributes = getAttributesOfType(resource, type);
         attribute = new DropDownChoice<String>("attribute", new PropertyModel<String>(model,
-		        "attribute"), attributes);
-		attribute.setOutputMarkupId(true);
-		attribute.setRequired(true);
-		attContainer.add(attribute);
+                "attribute"), attributes);
+        attribute.setOutputMarkupId(true);
+        attribute.setRequired(true);
+        attContainer.add(attribute);
         
         List<String> endAttributes = new ArrayList<String>(attributes);
         endAttributes.add(0, "-");
@@ -224,8 +224,8 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         //default value block
         DimensionDefaultValueSetting defValueSetting = model.getObject().getDefaultValue();
         if (defValueSetting == null){
-        	defValueSetting = new DimensionDefaultValueSetting();
-        	model.getObject().setDefaultValue(defValueSetting);
+            defValueSetting = new DimensionDefaultValueSetting();
+            model.getObject().setDefaultValue(defValueSetting);
         }
         final WebMarkupContainer defValueContainer = new WebMarkupContainer("defaultValueContainer");
         defValueContainer.setOutputMarkupId(true);

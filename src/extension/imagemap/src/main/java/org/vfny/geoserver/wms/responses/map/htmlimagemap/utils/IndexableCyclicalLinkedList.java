@@ -16,17 +16,17 @@ import java.util.LinkedList;
  *
  */
 public class IndexableCyclicalLinkedList extends LinkedList {
-	
-	private static final long serialVersionUID = 6239225551852896282L;
+    
+    private static final long serialVersionUID = 6239225551852896282L;
 
-	
-	public Object get(int index)
-	{		
-			//perform the index wrapping
-			while (index < 0)
-				index = size() + index;
-			if (index >=  size())
-				index %=  size();
-			return super.get(index);		
-	}
+    
+    public Object get(int index)
+    {        
+            //perform the index wrapping
+            while (index < 0)
+                index = size() + index;
+            if (index >=  size())
+                index %=  size();
+            return super.get(index);        
+    }
 }

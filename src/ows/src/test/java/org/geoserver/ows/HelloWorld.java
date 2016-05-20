@@ -22,9 +22,9 @@ public class HelloWorld {
     
     public void wrappedHttpErrorCodeException() {
         try {
-        	throw new HttpErrorCodeException( HttpServletResponse.SC_NO_CONTENT );
+            throw new HttpErrorCodeException( HttpServletResponse.SC_NO_CONTENT );
         } catch(Exception e) {
-        	throw new ServiceException("Wrapping code error", e);
+            throw new ServiceException("Wrapping code error", e);
         }
     }
 }

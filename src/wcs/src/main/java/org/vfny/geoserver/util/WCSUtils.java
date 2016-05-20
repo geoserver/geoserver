@@ -89,7 +89,7 @@ public class WCSUtils {
      * @throws WcsException
      */
     public static GridCoverage2D resample(
-    		final GridCoverage2D coverage,
+            final GridCoverage2D coverage,
             final CoordinateReferenceSystem sourceCRS, 
             final CoordinateReferenceSystem targetCRS,
             final GridGeometry2D gridGeometry,
@@ -151,7 +151,7 @@ public class WCSUtils {
      * @throws WcsException
      */
     public static GridCoverage2D interpolate(
-    		final GridCoverage2D coverage,
+            final GridCoverage2D coverage,
             final Interpolation interpolation) throws WcsException {
         // ///////////////////////////////////////////////////////////////////
         //
@@ -283,9 +283,9 @@ public class WCSUtils {
      * @param gridRange2D
      * @param sampleModel
      */
-	public static void checkOutputLimits(WCSInfo info, GridEnvelope2D gridRange2D, SampleModel sampleModel) {
+    public static void checkOutputLimits(WCSInfo info, GridEnvelope2D gridRange2D, SampleModel sampleModel) {
         // do we have to check a limit at all?
-	long limit = info.getMaxOutputMemory() * 1024;
+    long limit = info.getMaxOutputMemory() * 1024;
         if(limit <= 0) {
             return;
         }
@@ -323,7 +323,7 @@ public class WCSUtils {
         if(actual > limit) {
             throw new WcsException("This request is trying to read too much data, " +
                     "the limit is " + formatBytes(limit) + " but the actual amount of " +
-                    		"bytes to be read is " + formatBytes(actual));
+                            "bytes to be read is " + formatBytes(actual));
         }
     }
     
@@ -436,7 +436,7 @@ public class WCSUtils {
         if(actual > limit) {
             throw new WcsException("This request is trying to read too much data, " +
                     "the limit is " + formatBytes(limit) + " but the actual amount of bytes " +
-                    		"to be read is " + formatBytes(actual));
+                            "to be read is " + formatBytes(actual));
         }
     }
 

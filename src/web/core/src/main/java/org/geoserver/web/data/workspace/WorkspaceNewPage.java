@@ -31,7 +31,7 @@ import org.geoserver.web.wicket.XMLNameValidator;
 public class WorkspaceNewPage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = -4355978268880701910L;
-	
+    
     Form<WorkspaceInfo> form;
     TextField<String> nsUriTextField;
     boolean defaultWs;

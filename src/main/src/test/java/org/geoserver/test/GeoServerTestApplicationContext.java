@@ -81,22 +81,22 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
         }
     }
     
-	@Override
-	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+    @Override
+    protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
         beanFactory.addBeanPostProcessor(new ServletContextAwareProcessor(this.servletContext));
         beanFactory.ignoreDependencyInterface(ServletContextAware.class);
         beanFactory.ignoreDependencyInterface(ServletConfigAware.class);
 
         WebApplicationContextUtils.registerWebApplicationScopes(beanFactory, this.servletContext);
         WebApplicationContextUtils.registerEnvironmentBeans(beanFactory, this.servletContext);
-	}
+    }
     
     @Override
     protected void initPropertySources() {
         super.initPropertySources();
         WebApplicationContextUtils.initServletPropertySources(
                 this.getEnvironment().getPropertySources(), this.servletContext);
-	}
+    }
 
     @Override
     protected void initBeanDefinitionReader(XmlBeanDefinitionReader reader) {

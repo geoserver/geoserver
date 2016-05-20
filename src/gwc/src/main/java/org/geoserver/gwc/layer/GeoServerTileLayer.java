@@ -1036,10 +1036,10 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
      */
     @Override
     public int getExpireClients(int zoomLevel) {
-    	if (info.getExpireClients()>0) {
-    		return info.getExpireClients();
-    	}
-    	
+        if (info.getExpireClients()>0) {
+            return info.getExpireClients();
+        }
+        
         LayerInfo layerInfo = getLayerInfo();
         if(layerInfo != null) {
             return getLayerMaxAge(layerInfo);
@@ -1050,7 +1050,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         } else {
             if(LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Found a GeoServerTileLayer that is not base on either" +
-                		"LayerInfo or LayerGroupInfo, setting its max age to 0");
+                        "LayerInfo or LayerGroupInfo, setting its max age to 0");
             }
             return 0;
         }
@@ -1073,7 +1073,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             } else {
                 if(LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.log(Level.FINE, "Found a PublishedInfo that is nor LayerInfo nor " +
-                    		"LayerGroupInfo, setting its max age to 0: " + pi);
+                            "LayerGroupInfo, setting its max age to 0: " + pi);
                 }
                 piAge = 0;
             }
@@ -1107,7 +1107,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
      */
     @Override
     public int getExpireCache(int zoomLevel) {
-    	if (info.getExpireCacheList() != null) {
+        if (info.getExpireCacheList() != null) {
             ExpirationRule matchedRule = null;
             for (ExpirationRule rule : info.getExpireCacheList()) {
                 if (zoomLevel >= rule.getMinZoom()) {

@@ -46,7 +46,7 @@ public abstract class HzSynchronizerTest {
     final public static int SYNC_DELAY = 1;
     //protected void setUpSpring(List<String> springContextLocations) {
 
-	// We're going to set up the synchronizer manually so ignore the spring context.
+    // We're going to set up the synchronizer manually so ignore the spring context.
     //}
     @Before
     @SuppressWarnings("unchecked")
@@ -88,17 +88,17 @@ public abstract class HzSynchronizerTest {
 
         ackTopic.publish(EasyMock.capture(captureAckTopicPublish));EasyMock.expectLastCall().andStubAnswer(new IAnswer<Object>() {
 
-			@Override
-			public Object answer() throws Throwable {
-				Message<UUID> message = createMock(Message.class);
-				expect(message.getMessageObject()).andStubReturn(captureAckTopicPublish.getValue());
-				EasyMock.replay(message);
-				for(MessageListener<UUID> listener: captureAckTopicListener.getValues()) {
-					listener.onMessage(message);
-				}
-				return null;
-			}
-        	
+            @Override
+            public Object answer() throws Throwable {
+                Message<UUID> message = createMock(Message.class);
+                expect(message.getMessageObject()).andStubReturn(captureAckTopicPublish.getValue());
+                EasyMock.replay(message);
+                for(MessageListener<UUID> listener: captureAckTopicListener.getValues()) {
+                    listener.onMessage(message);
+                }
+                return null;
+            }
+            
         });
         
         expect(cluster.getLocalMember()).andStubReturn(localMember);
@@ -156,9 +156,9 @@ public abstract class HzSynchronizerTest {
     protected Capture<ConfigurationListener> gsListenerCapture;
     protected Capture<CatalogListener> catListenerCapture;
     protected Capture<MessageListener<Event>> captureTopicListener;
-	protected Capture<MessageListener<UUID>> captureAckTopicListener;
+    protected Capture<MessageListener<UUID>> captureAckTopicListener;
     protected Capture<Runnable> captureExecutor;
-	protected Capture<UUID> captureAckTopicPublish;
+    protected Capture<UUID> captureAckTopicPublish;
     
     public List<Object> myMocks() {
         return Arrays.asList(topic, ackTopic, configWatcher, clusterConfig, geoServer, catalog, hz, executor, cluster);

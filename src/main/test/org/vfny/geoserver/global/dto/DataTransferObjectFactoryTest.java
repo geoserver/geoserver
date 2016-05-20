@@ -45,9 +45,9 @@ public class DataTransferObjectFactoryTest extends TestCase {
 //        expected.add( nse );
 //        nse = gml.getElement("GeometryPropertyType");
 //System.out.println("Expected GeometryPropertyType : "+nse.getTypeDefName());
-//		expected.add( nse );
-//		nse = gml.getElement("AbstractGeometryType");
-//		System.out.println("Expected AbstractGeometryType : "+nse.getTypeDefName());
+//        expected.add( nse );
+//        nse = gml.getElement("AbstractGeometryType");
+//        System.out.println("Expected AbstractGeometryType : "+nse.getTypeDefName());
 //        expected.add( nse );
 //        nse = xs.getElement("string");
 //System.out.println("Expected string : "+nse.getTypeDefName());
@@ -56,7 +56,7 @@ public class DataTransferObjectFactoryTest extends TestCase {
 //        List mappings = DataTransferObjectFactory.getElements("pointProperty", Point.class);
 //Iterator i = mappings.iterator();
 //while(i.hasNext()){
-//	System.out.println("Result : "+((NameSpaceElement)i.next()).getTypeDefName());
+//    System.out.println("Result : "+((NameSpaceElement)i.next()).getTypeDefName());
 //}
 //System.out.println("Result End");
 //        assertEquals(expected, new HashSet(mappings));

@@ -24,17 +24,17 @@ import org.geoserver.catalog.PublishedInfo;
  * 
  */
 public class PublishedConfigurationPanel<T extends PublishedInfo> extends Panel {
-	private static final long serialVersionUID = 4881474189619124359L;
+    private static final long serialVersionUID = 4881474189619124359L;
 
-	public PublishedConfigurationPanel(String id, IModel<? extends T> model){
-		super(id, model);
-	}
-	
-	@SuppressWarnings("unchecked")
+    public PublishedConfigurationPanel(String id, IModel<? extends T> model){
+        super(id, model);
+    }
+    
+    @SuppressWarnings("unchecked")
         public T getPublishedInfo(){
-		return (T) getDefaultModelObject();
-	}
-	
+        return (T) getDefaultModelObject();
+    }
+    
         /**
          * Allows subclasses to override in case they need to save any other state than the
          *  {@link PublishedInfo} itself

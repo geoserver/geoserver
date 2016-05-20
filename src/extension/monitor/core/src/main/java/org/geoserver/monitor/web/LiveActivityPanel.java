@@ -50,9 +50,9 @@ public class LiveActivityPanel extends Panel {
 
     
     static class LiveRequestDataProvider extends GeoServerDataProvider<RequestData> {
-    	
+        
         private static final long serialVersionUID = -5576324995486786071L;
-		
+        
         static final Property<RequestData> ID = new BeanProperty<RequestData>("id", "id");
         static final Property<RequestData> PATH = new BeanProperty<RequestData>("path", "path");
         static final Property<RequestData> STATUS = new BeanProperty<RequestData>("status", "status");

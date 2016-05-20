@@ -71,8 +71,8 @@ public class GetFeatureTest extends WFS20TestSupport {
 
     @Test
     public void testGet() throws Exception {
-    	testGetFifteenAll("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
-    	testGetFifteenAll("wfs?request=GetFeature&typenames=(cdf:Fifteen)&version=2.0.0&service=wfs");
+        testGetFifteenAll("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
+        testGetFifteenAll("wfs?request=GetFeature&typenames=(cdf:Fifteen)&version=2.0.0&service=wfs");
     }
 
     @Test
@@ -97,7 +97,7 @@ public class GetFeatureTest extends WFS20TestSupport {
 
     @Test
     public void testGetPropertyNameEmpty() throws Exception {
-    	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=2.0.0&service=wfs&propertyname=");
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=2.0.0&service=wfs&propertyname=");
     }
     
     @Test
@@ -106,8 +106,8 @@ public class GetFeatureTest extends WFS20TestSupport {
     }
     
     private void testGetFifteenAll(String request) throws Exception{
-    	Document doc = getAsDOM(request);
-    	assertGML32(doc);
+        Document doc = getAsDOM(request);
+        assertGML32(doc);
 
         NodeList features = doc.getElementsByTagName("cdf:Fifteen");
         assertFalse(features.getLength() == 0);
@@ -619,7 +619,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         assertEquals( "ExceptionReport", dom.getDocumentElement().getLocalName() );
         
         getTestData().addVectorLayer ( new QName( SystemTestData.SF_URI, "new", SystemTestData.SF_PREFIX ), 
-    			Collections.EMPTY_MAP, org.geoserver.wfs.v1_1.GetFeatureTest.class, getCatalog());
+                Collections.EMPTY_MAP, org.geoserver.wfs.v1_1.GetFeatureTest.class, getCatalog());
         //reloadCatalogAndConfiguration();
         
         dom = getAsDOM( "wfs?request=getfeature&service=wfs&version=2.0.0&typename=sf:new");

@@ -74,7 +74,7 @@ public class GetRecords {
 
         try {
             // build the queries            
-        	RecordDescriptor outputRd = getRecordDescriptor(request);
+            RecordDescriptor outputRd = getRecordDescriptor(request);
             QueryType cswQuery = (QueryType) request.getQuery();
             List<Query> queries = toGtQueries(outputRd, cswQuery, request);
             // see how many records we have to return

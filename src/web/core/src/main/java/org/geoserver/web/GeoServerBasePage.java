@@ -82,7 +82,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
      */
     protected Class<? extends Page> returnPageClass;
 
-	@SuppressWarnings("serial")
+    @SuppressWarnings("serial")
     public GeoServerBasePage() {
         // lookup for a pluggable favicon
         PackageResourceReference faviconReference = null;
@@ -107,9 +107,9 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         }
         String faviconUrl = RequestCycle.get().urlFor(faviconReference, null).toString();
         add(new ExternalLink("faviconLink", faviconUrl, null));
-	    
-	    // page title
-	    add(new Label("pageTitle", getPageTitle()));
+        
+        // page title
+        add(new Label("pageTitle", getPageTitle()));
 
         // login form
         WebMarkupContainer loginForm = new WebMarkupContainer("loginform") {
@@ -290,23 +290,23 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     protected String getTitle() {
         return new ParamResourceModel("title", this).getString();
     }
-	
-	protected String getDescription() {
-	    return new ParamResourceModel("description", this).getString();
+    
+    protected String getDescription() {
+        return new ParamResourceModel("description", this).getString();
     }
 
     /**
-	 * Gets the page title from the PageName.title resource, falling back on "GeoServer" if not found
-	 *
-	 */
-	String getPageTitle() {
-	    try {
-	        ParamResourceModel model = new ParamResourceModel("title", this);
-	        return "GeoServer: " + model.getString();
-	    } catch(Exception e) {
-	        LOGGER.warning(getClass().getSimpleName() + " does not have a title set");
-	    }
-	    return "GeoServer";
+     * Gets the page title from the PageName.title resource, falling back on "GeoServer" if not found
+     *
+     */
+    String getPageTitle() {
+        try {
+            ParamResourceModel model = new ParamResourceModel("title", this);
+            return "GeoServer: " + model.getString();
+        } catch(Exception e) {
+            LOGGER.warning(getClass().getSimpleName() + " does not have a title set");
+        }
+        return "GeoServer";
     }
 
     /**

@@ -51,22 +51,22 @@ public class DescribeLayerRequest extends WMSRequest {
     private String outputFormat=XMLDescribeLayerResponse.DESCLAYER_MIME_TYPE;
 
     public GetMapRequest getGetMapRequest() {
-		return getMapRequest;
-	}
+        return getMapRequest;
+    }
 
-	public void setGetMapRequest(GetMapRequest getMapRequest) {
-		this.getMapRequest = getMapRequest;
-	}
+    public void setGetMapRequest(GetMapRequest getMapRequest) {
+        this.getMapRequest = getMapRequest;
+    }
 
-	public String getExeptionFormat() {
-		return exeptionFormat;
-	}
+    public String getExeptionFormat() {
+        return exeptionFormat;
+    }
 
-	public void setExeptionFormat(String exeptionFormat) {
-		this.exeptionFormat = exeptionFormat;
-	}
+    public void setExeptionFormat(String exeptionFormat) {
+        this.exeptionFormat = exeptionFormat;
+    }
 
-	public DescribeLayerRequest() {
+    public DescribeLayerRequest() {
         super("DescribeLayer");
     }
 

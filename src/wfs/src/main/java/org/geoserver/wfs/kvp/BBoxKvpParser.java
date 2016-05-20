@@ -37,7 +37,7 @@ public class BBoxKvpParser extends KvpParser {
         
         int countco = 4;
         if (unparsed.size() == 6) { //3d-coordinates 
-        	countco = 6;        	
+            countco = 6;            
         }
 
         //if it does, store them in an array of doubles
@@ -57,13 +57,13 @@ public class BBoxKvpParser extends KvpParser {
         double miny = bbox[1];
         double minz=0, maxx=0, maxy=0, maxz=0;
         if (countco == 6) {
-        	minz = bbox[2];
-        	maxx = bbox[3];
-        	maxy = bbox[4];
-        	maxz = bbox[5];
+            minz = bbox[2];
+            maxx = bbox[3];
+            maxy = bbox[4];
+            maxz = bbox[5];
         } else {
-        	maxx = bbox[2];
-        	maxy = bbox[3];     
+            maxx = bbox[2];
+            maxy = bbox[3];     
         }
         
         if (minx > maxx) {
@@ -84,7 +84,7 @@ public class BBoxKvpParser extends KvpParser {
         // check for srs
         String srs = null;
         if (unparsed.size() > countco) {
-        	// merge back the CRS definition, in case it is an AUTO one
+            // merge back the CRS definition, in case it is an AUTO one
             StringBuilder sb = new StringBuilder();
             for (int i = countco; i < unparsed.size(); i++) {
                 sb.append(unparsed.get(i));

@@ -60,14 +60,14 @@ public class GetFeatureMissingTypesTest extends WFSTestSupport {
         + "<wfs:Query typeName=\"" + getLayerId(SystemTestData.BUILDINGS) +"\"/> "
         + "</wfs:GetFeature>";
 
-		doc = postAsDOM("wfs", xml);
-		
-		assertEquals("ServiceExceptionReport", doc.getDocumentElement()
-		        .getNodeName());
+        doc = postAsDOM("wfs", xml);
+        
+        assertEquals("ServiceExceptionReport", doc.getDocumentElement()
+                .getNodeName());
     }
-	
-	@Test
-	public void testPostMissingType11() throws Exception {
+    
+    @Test
+    public void testPostMissingType11() throws Exception {
         // let's remove one property file so that its schema cannot be computed
         // (GEOS-3049)
         File root = getTestData().getDataDirectoryRoot();

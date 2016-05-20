@@ -46,8 +46,8 @@ public class GetCapabilitiesTest extends WFSTestSupport {
 
     @Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
-    	DataStoreInfo di = getCatalog().getDataStoreByName(CiteTestData.CITE_PREFIX);
-    	di.setEnabled(false);
+        DataStoreInfo di = getCatalog().getDataStoreByName(CiteTestData.CITE_PREFIX);
+        di.setEnabled(false);
         getCatalog().save(di);
 
         GeoServerInfo global = getGeoServer().getGlobal();

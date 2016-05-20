@@ -22,7 +22,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 
 public class GetFeaturePagingTest extends WFSTestSupport {
-	
+    
     @Override
     protected void setUpInternal(SystemTestData testData) throws Exception {
         //run all the tests against a store that can do native paging (h2) and one that 
@@ -136,7 +136,7 @@ public class GetFeaturePagingTest extends WFSTestSupport {
     public void testStartIndexMultipleTypes() throws Exception {
         doTestStartIndexMultipleTypes("gs:Fifteen", "gs:Seven");
         doTestStartIndexMultipleTypes("cdf:Fifteen", "cdf:Seven");
-    	doTestStartIndexMultipleTypes("gs:Fifteen", "cdf:Seven");
+        doTestStartIndexMultipleTypes("gs:Fifteen", "cdf:Seven");
         doTestStartIndexMultipleTypes("cdf:Fifteen", "gs:Seven");
     }
     

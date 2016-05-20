@@ -86,7 +86,7 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
                 exception = null;
             } catch(Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to get a quota store, " +
-                		"the GeoWebCache disk quota subsystem will stop working now", e);
+                        "the GeoWebCache disk quota subsystem will stop working now", e);
                 this.exception = e;
                 store = new DummyQuotaStore(calculator);
             }

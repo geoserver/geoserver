@@ -85,7 +85,7 @@ public class ConfirmRemovalUserPanelTest extends AbstractConfirmRemovalPanelTest
     protected String getRemoveableObjectRegExp() throws Exception{
         if (disassociateRoles)
             return ".*"+getRemoveableObject().getUsername()+".*" +
-            		GeoServerRole.ADMIN_ROLE +".*";
+                    GeoServerRole.ADMIN_ROLE +".*";
         else    
             return ".*"+getRemoveableObject().getUsername()+".*";
     }    

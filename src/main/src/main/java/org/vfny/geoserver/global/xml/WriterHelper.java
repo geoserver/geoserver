@@ -299,17 +299,17 @@ public class WriterHelper {
      */
     private String escape(String text) {
         String s = new String(text);
-    	
+        
         // All redundant carriage returns should already have been stripped.
         s = s.replaceAll("\r\n", "\n");
-    	
+        
         if(XML_ENTITIES.matcher(s).matches()) {
             s = s.replaceAll("&", "&amp;");
-			s = s.replaceAll("\"", "&quot;");
-			s = s.replaceAll("'", "&apos;");
-			s = s.replaceAll("<", "&lt;");
-			s = s.replaceAll(">", "&gt;");
-		}
-    	return s;
+            s = s.replaceAll("\"", "&quot;");
+            s = s.replaceAll("'", "&apos;");
+            s = s.replaceAll("<", "&lt;");
+            s = s.replaceAll(">", "&gt;");
+        }
+        return s;
     }
 }

@@ -69,7 +69,7 @@ public class EventHzSynchronizerSendTest extends HzSynchronizerSendTest {
             
             expect(wsInfo.getId()).andStubReturn(storeWorkspace);
             
-			topic.publish(capture(capture));expectLastCall();
+            topic.publish(capture(capture));expectLastCall();
         }
         replay(info, wsInfo);
         {

@@ -78,12 +78,12 @@ public class StringParameterFilterSubform extends
             private static final long serialVersionUID = 1L;
 
             @SuppressWarnings("unchecked")
-			@Override
+            @Override
             public <S> IConverter<S> getConverter(Class<S> type) {
-            	if (List.class.isAssignableFrom(type)) {
-            		return (IConverter<S>) CONVERT;
-            	}
-            	return super.getConverter(type);
+                if (List.class.isAssignableFrom(type)) {
+                    return (IConverter<S>) CONVERT;
+                }
+                return super.getConverter(type);
             }
         };
         values.setConvertEmptyInputStringToNull(false);

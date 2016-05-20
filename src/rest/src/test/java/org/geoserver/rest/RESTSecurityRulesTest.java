@@ -36,7 +36,7 @@ public class RESTSecurityRulesTest extends GeoServerSystemTestSupport {
         Resource restProperties = getDataDirectory().getSecurity("rest.properties");
         restProperties.delete();
         String defaultRules = "/**;GET=ROLE_ADMINISTRATOR\n" + 
-        		"/**;POST,DELETE,PUT=ROLE_ADMINISTRATOR";
+                "/**;POST,DELETE,PUT=ROLE_ADMINISTRATOR";
         OutputStream os = restProperties.out();
         os.write(defaultRules.getBytes());
         os.close();

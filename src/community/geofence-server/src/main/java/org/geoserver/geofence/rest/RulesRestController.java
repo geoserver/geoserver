@@ -42,12 +42,12 @@ public class RulesRestController {
      
     @ExceptionHandler(NotFoundServiceEx.class)
     public void ruleNotFound(NotFoundServiceEx exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
-    	response.sendError(404, exception.getMessage());
+        response.sendError(404, exception.getMessage());
     }
     
     @ExceptionHandler(DuplicateKeyException.class)
     public void rule(DuplicateKeyException exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
-    	response.sendError(409, exception.getMessage());
+        response.sendError(409, exception.getMessage());
     }
     
     @RequestMapping(value = "/rest/rules", method = RequestMethod.GET, produces={"application/xml", "application/json"})
@@ -71,7 +71,7 @@ public class RulesRestController {
             @RequestParam(value = "layer", required = false) String  layer,
             @RequestParam(value = "layerAny", required = false)  Boolean layerDefault
     ) {
-    	RuleFilter filter = buildFilter(
+        RuleFilter filter = buildFilter(
                 userName, userDefault,
                 roleName, roleDefault,
                 instanceId, instanceName, instanceDefault,
@@ -85,7 +85,7 @@ public class RulesRestController {
     
     @RequestMapping(value = "/rest/rules/id/{id}", method = RequestMethod.GET, produces={"application/xml", "application/json"})
     public @ResponseBody JaxbRule get(@PathVariable ("id") Long id) {
-    	return new JaxbRule(adminService.get(id));
+        return new JaxbRule(adminService.get(id));
     }    
 
     @RequestMapping(value = "/rest/rules/count", method = RequestMethod.GET, produces={"application/xml", "application/json"})
@@ -106,7 +106,7 @@ public class RulesRestController {
         @RequestParam(value = "layer", required = false) String layer,
         @RequestParam(value = "layerAny", required = false) Boolean layerDefault
     ) {
-    	RuleFilter filter = buildFilter(
+        RuleFilter filter = buildFilter(
                 userName, userDefault,
                 roleName, roleDefault,
                 instanceId, instanceName, instanceDefault,
@@ -128,7 +128,7 @@ public class RulesRestController {
         }
 
         return new ResponseEntity<Long>(adminService.insert(rule.toRule()),
-        		HttpStatus.CREATED);
+                HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/rest/rules/id/{id}", method = RequestMethod.POST)
@@ -139,7 +139,7 @@ public class RulesRestController {
                 adminService.shift(rule.getPriority().longValue(), 1);
             }
         }        
-    	adminService.update(rule.toRule(adminService.get(id)));
+        adminService.update(rule.toRule(adminService.get(id)));
     }
     
     @RequestMapping(value = "/rest/rules/id/{id}", method = RequestMethod.DELETE)

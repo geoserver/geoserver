@@ -18,76 +18,76 @@ import es.unex.sextante.core.ITaskMonitor;
  */
 public class ProgressListenerTaskMonitor implements ITaskMonitor{
 
-	private ProgressListener m_ProgressListener;
+    private ProgressListener m_ProgressListener;
 
-	public ProgressListenerTaskMonitor(ProgressListener progressListener) {
+    public ProgressListenerTaskMonitor(ProgressListener progressListener) {
 
-		m_ProgressListener = progressListener;
+        m_ProgressListener = progressListener;
 
-	}
+    }
 
-	public void close() {
+    public void close() {
 
-		if (m_ProgressListener != null){
-			m_ProgressListener.complete();
-			m_ProgressListener.dispose();
-		}
+        if (m_ProgressListener != null){
+            m_ProgressListener.complete();
+            m_ProgressListener.dispose();
+        }
 
-	}
+    }
 
-	public boolean isCanceled() {
+    public boolean isCanceled() {
 
-		if (m_ProgressListener != null){
-			return m_ProgressListener.isCanceled();
-		}
-		else{
-			return false;
-		}
+        if (m_ProgressListener != null){
+            return m_ProgressListener.isCanceled();
+        }
+        else{
+            return false;
+        }
 
-	}
+    }
 
-	public void setProgress(int step) {
+    public void setProgress(int step) {
 
-		if (m_ProgressListener != null){
-			m_ProgressListener.progress((float)step);
-		}
+        if (m_ProgressListener != null){
+            m_ProgressListener.progress((float)step);
+        }
 
-	}
+    }
 
-	public void setProgress(int step, int totalNumberOfSteps) {
+    public void setProgress(int step, int totalNumberOfSteps) {
 
-		if (m_ProgressListener != null){
-			m_ProgressListener.progress((float)(step/totalNumberOfSteps) * 100);
-		}
+        if (m_ProgressListener != null){
+            m_ProgressListener.progress((float)(step/totalNumberOfSteps) * 100);
+        }
 
-	}
+    }
 
-	public void setProgressText(String text) {
+    public void setProgressText(String text) {
 
-		if (m_ProgressListener != null){
-			m_ProgressListener.setTask(Text.text(text));
-		}
+        if (m_ProgressListener != null){
+            m_ProgressListener.setTask(Text.text(text));
+        }
 
-	}
+    }
 
-	public void setDeterminate(boolean determinate) {
-	}
+    public void setDeterminate(boolean determinate) {
+    }
 
-	public void setProcessDescription(String description) {
+    public void setProcessDescription(String description) {
 
-		if (m_ProgressListener != null){
-			m_ProgressListener.setTask(Text.text(description));
-		}
+        if (m_ProgressListener != null){
+            m_ProgressListener.setTask(Text.text(description));
+        }
 
-	}
+    }
 
-	@Override
-	public void setDescriptionPrefix(String prefix) {
+    @Override
+    public void setDescriptionPrefix(String prefix) {
 
-		if (m_ProgressListener != null){
-			m_ProgressListener.setTask(Text.text(prefix));
-		}		
-		
-	}
+        if (m_ProgressListener != null){
+            m_ProgressListener.setTask(Text.text(prefix));
+        }        
+        
+    }
 
 }

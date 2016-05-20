@@ -70,7 +70,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
 
     @Override
     protected void closeIterator(Iterator<Feature> close) {
-    	
+        
     }
 
     @Override

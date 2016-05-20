@@ -286,12 +286,12 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     
     @Override
     public int getExpireClients() {
-    	return expireClients;
+        return expireClients;
     }
     
     @Override
     public void setExpireClients(int seconds) {
-    	expireClients = seconds;
+        expireClients = seconds;
     }
 
     /**

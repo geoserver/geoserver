@@ -110,19 +110,19 @@ public class IpBlacklistFilter implements GeoServerFilter {
         boolean blocked=false;
         //Check IP on blackList roles (to block)
         for(String blackListRole: blackListedAddresses){
-        	if(incomingIp.matches(blackListRole)){ 
-        		blocked=true;
-        		break;
-        	}
+            if(incomingIp.matches(blackListRole)){ 
+                blocked=true;
+                break;
+            }
         }
         
         //Check IP (if blocked) on whiteList roles (to unlock)
         if(blocked && !whiteListedAddresses.isEmpty()){
-        	for(String whiteListRole: whiteListedAddresses){
-            	if(incomingIp.matches(whiteListRole)){ 
-            		blocked=false;
-            		break;
-            	}
+            for(String whiteListRole: whiteListedAddresses){
+                if(incomingIp.matches(whiteListRole)){ 
+                    blocked=false;
+                    break;
+                }
             }
         }
         return blocked;

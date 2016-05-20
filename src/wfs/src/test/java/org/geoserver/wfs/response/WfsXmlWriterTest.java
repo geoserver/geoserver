@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 
 public class WfsXmlWriterTest extends WFSTestSupport {
 
-	@Test
+    @Test
     public void test() throws Exception {
         File tmp = File.createTempFile("wfs", "xml");
         tmp.deleteOnExit();

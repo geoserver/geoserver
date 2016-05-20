@@ -43,7 +43,7 @@ public class Ogr2OgrConfigurator extends AbstractToolConfigurator {
         // setup OGR-specific aliases
         xstream.alias("OgrConfiguration", OgrConfiguration.class);
         xstream.alias("Format", OgrFormat.class);
-	xstream.allowTypes(new Class[] { OgrConfiguration.class, OgrFormat.class });
+    xstream.allowTypes(new Class[] { OgrConfiguration.class, OgrFormat.class });
 
         return xstream;
     }

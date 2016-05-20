@@ -59,49 +59,49 @@ public class ColorMapLegendCreator {
      * 
      * <code>
      * // colormap element
-		final ColorMap cmap = rasterSymbolizer.getColorMap();
-		final Builder cmapLegendBuilder= new ColorMapLegendCreator.Builder();
-		if (cmap != null && cmap.getColorMapEntries() != null
-				&& cmap.getColorMapEntries().length > 0) {
-			
-			// passing additional options
-			cmapLegendBuilder.setAdditionalOptions(request.getLegendOptions());	
+        final ColorMap cmap = rasterSymbolizer.getColorMap();
+        final Builder cmapLegendBuilder= new ColorMapLegendCreator.Builder();
+        if (cmap != null && cmap.getColorMapEntries() != null
+                && cmap.getColorMapEntries().length > 0) {
+            
+            // passing additional options
+            cmapLegendBuilder.setAdditionalOptions(request.getLegendOptions());    
 
-			
-			// setting type of colormap
-			cmapLegendBuilder.setColorMapType(cmap.getType());
+            
+            // setting type of colormap
+            cmapLegendBuilder.setColorMapType(cmap.getType());
 
-			// is this colormap using extended colors
-			cmapLegendBuilder.setExtended(cmap.getExtendedColors());
-			
+            // is this colormap using extended colors
+            cmapLegendBuilder.setExtended(cmap.getExtendedColors());
+            
 
-			// setting the requested colormap entries
-			cmapLegendBuilder.setRequestedDimension(new Dimension(width,height));
+            // setting the requested colormap entries
+            cmapLegendBuilder.setRequestedDimension(new Dimension(width,height));
 
-			// setting transparency and background bkgColor
-			cmapLegendBuilder.setTransparent(transparent);
-			cmapLegendBuilder.setBackgroundColor(bgColor);
-			
-			//setting band
+            // setting transparency and background bkgColor
+            cmapLegendBuilder.setTransparent(transparent);
+            cmapLegendBuilder.setBackgroundColor(bgColor);
+            
+            //setting band
 
-			// Setting label font and font bkgColor
-			cmapLegendBuilder.setLabelFont(LegendUtils.getLabelFont(request));
-			cmapLegendBuilder.setLabelFontColor(LegendUtils.getLabelFontColor(request));
-			
-			
-			//set band
-			final ChannelSelection channelSelection = rasterSymbolizer.getChannelSelection();
-			cmapLegendBuilder.setBand(channelSelection!=null?channelSelection.getGrayChannel():null);
+            // Setting label font and font bkgColor
+            cmapLegendBuilder.setLabelFont(LegendUtils.getLabelFont(request));
+            cmapLegendBuilder.setLabelFontColor(LegendUtils.getLabelFontColor(request));
+            
+            
+            //set band
+            final ChannelSelection channelSelection = rasterSymbolizer.getChannelSelection();
+            cmapLegendBuilder.setBand(channelSelection!=null?channelSelection.getGrayChannel():null);
 
-			// adding the colormap entries
-			final ColorMapEntry[] colorMapEntries = cmap.getColorMapEntries();
-			for (ColorMapEntry ce : colorMapEntries)
-				if (ce != null)
-					cmapLegendBuilder.addColorMapEntry(ce);	
-			
-			cMapLegendCreator=cmapLegendBuilder.create();
-		}
-	 * </code>
+            // adding the colormap entries
+            final ColorMapEntry[] colorMapEntries = cmap.getColorMapEntries();
+            for (ColorMapEntry ce : colorMapEntries)
+                if (ce != null)
+                    cmapLegendBuilder.addColorMapEntry(ce);    
+            
+            cMapLegendCreator=cmapLegendBuilder.create();
+        }
+     * </code>
      * 
      * @author Simone Giannecchini, GeoSolutions SAS
      * 

@@ -147,9 +147,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     @Test
     public void testIndexedTransparency() throws Exception {
         String request = "wms?LAYERS=sf:paletted&STYLES=&FORMAT=image%2Fpng&SERVICE=WMS" +
-        		"&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A3174" +
-        		"&BBOX=-3256153.625,826440.25,-2756153.625,1326440.25" +
-        		"&WIDTH=256&HEIGHT=256&transparent=true";
+                "&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A3174" +
+                "&BBOX=-3256153.625,826440.25,-2756153.625,1326440.25" +
+                "&WIDTH=256&HEIGHT=256&transparent=true";
         MockHttpServletResponse response = getAsServletResponse(request);
         assertEquals("image/png", response.getContentType());
         
@@ -168,9 +168,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     @Test
     public void testFourBits() throws Exception {
         String request = "wms?LAYERS=sf:fourbits&STYLES=&FORMAT=image/png" +
-        		"&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4269" +
-        		"&BBOX=-118.58930224611,45.862378906251,-118.33030957033,45.974688476563" +
-        		"&WIDTH=761&HEIGHT=330";
+                "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4269" +
+                "&BBOX=-118.58930224611,45.862378906251,-118.33030957033,45.974688476563" +
+                "&WIDTH=761&HEIGHT=330";
         
         MockHttpServletResponse response = getAsServletResponse(request);
         assertEquals("image/png", response.getContentType());
@@ -184,9 +184,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     @Test
     public void testMetaWMS13() throws Exception {
         String wms11 = "wms?LAYERS=cite%3ALakes&STYLES=&FORMAT=image%2Fpng&TILED=true&TILESORIGIN=0.0006%2C-0.0018" +
-        		"&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&BBOX=0.0006,-0.0018,0.0031,0.0007&WIDTH=256&HEIGHT=256";
+                "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&BBOX=0.0006,-0.0018,0.0031,0.0007&WIDTH=256&HEIGHT=256";
         String wms13 = "wms?LAYERS=cite%3ALakes&STYLES=&FORMAT=image%2Fpng&TILED=true&TILESORIGIN=-0.0018%2C0.0006" +
-        		"&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&CRS=EPSG%3A4326&BBOX=-0.0018,0.0006,0.0007,0.0031&WIDTH=256&HEIGHT=256";
+                "&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&CRS=EPSG%3A4326&BBOX=-0.0018,0.0006,0.0007,0.0031&WIDTH=256&HEIGHT=256";
 
         BufferedImage image11 = getAsImage(wms11, "image/png");
         BufferedImage image13 = getAsImage(wms13, "image/png");

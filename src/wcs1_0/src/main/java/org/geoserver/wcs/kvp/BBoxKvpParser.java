@@ -28,7 +28,7 @@ public class BBoxKvpParser extends Wcs10KvpParser {
     }
 
     @SuppressWarnings("unchecked")
-	public GeneralEnvelope parse(String value) throws Exception {
+    public GeneralEnvelope parse(String value) throws Exception {
         List unparsed = KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER);
         final int size = unparsed.size();
         // check to make sure that the bounding box has 4 coordinates
@@ -52,11 +52,11 @@ public class BBoxKvpParser extends Wcs10KvpParser {
         double miny = bbox[1];
         double maxx = bbox[2];
         double maxy = bbox[3];
-//    	double minz = Double.NaN;
-//    	double maxz = Double.NaN;
+//        double minz = Double.NaN;
+//        double maxz = Double.NaN;
 //        if(size==6){
-//        	minz = bbox[4];
-//        	maxz = bbox[5];
+//            minz = bbox[4];
+//            maxz = bbox[5];
 //        }
         if (minx > maxx) {
             throw new WcsException("illegal bbox, minX: " + minx + " is "
@@ -76,9 +76,9 @@ public class BBoxKvpParser extends Wcs10KvpParser {
         // build the final envelope with no CRS
         final GeneralEnvelope envelope= new GeneralEnvelope(size/2);
 //        if(size==4)
-        	envelope.setEnvelope(minx,miny,maxx,maxy);
+            envelope.setEnvelope(minx,miny,maxx,maxy);
 //        else
-//        	envelope.setEnvelope(minx,miny,minz,maxx,maxy,maxz);
+//            envelope.setEnvelope(minx,miny,minz,maxx,maxy,maxz);
         return envelope;
 
     }

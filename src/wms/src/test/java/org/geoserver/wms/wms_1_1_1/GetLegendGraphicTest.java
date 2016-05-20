@@ -68,8 +68,8 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     @Test
     public void testPlain() throws Exception {
         BufferedImage image = getAsImage("wms?service=WMS&version=1.1.1&request=GetLegendGraphic" +
-        		"&layer=" + getLayerId(MockData.LAKES) + "&style=Lakes" +
-        		"&format=image/png&width=20&height=20", "image/png");
+                "&layer=" + getLayerId(MockData.LAKES) + "&style=Lakes" +
+                "&format=image/png&width=20&height=20", "image/png");
         assertPixel(image, 10, 10, Converters.convert("#4040C0", Color.class));
     }
     

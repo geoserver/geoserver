@@ -14,56 +14,56 @@ import org.geoserver.security.impl.GeoServerUser;
 
 @XmlRootElement(name="user")
 public class JaxbUser {
-	
-	protected String userName;
-	protected String password;
-	protected Boolean enabled;
+    
+    protected String userName;
+    protected String password;
+    protected Boolean enabled;
 
-	public JaxbUser() {	}
+    public JaxbUser() {    }
 
-	public JaxbUser( GeoServerUser user ) {
-		this.userName = user.getUsername();
-		this.enabled = new Boolean(user.isEnabled());
-	}
+    public JaxbUser( GeoServerUser user ) {
+        this.userName = user.getUsername();
+        this.enabled = new Boolean(user.isEnabled());
+    }
 
-	@XmlElement
-	public String getUserName() {
-		return userName;
-	}
+    @XmlElement
+    public String getUserName() {
+        return userName;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	@XmlElement
-	public String getPassword() {
-		return password;
-	}
+    @XmlElement
+    public String getPassword() {
+        return password;
+    }
 
-	public void setPassword(String passwd) {
-		this.password = passwd;
- 	}
+    public void setPassword(String passwd) {
+        this.password = passwd;
+     }
 
-	@XmlElement
- 	public Boolean isEnabled() {
-		return enabled;
-	}
+    @XmlElement
+     public Boolean isEnabled() {
+        return enabled;
+    }
 
-	public void setEnabled(Boolean enabled) {
-        	this.enabled = enabled;
-	}
+    public void setEnabled(Boolean enabled) {
+            this.enabled = enabled;
+    }
 
-	public GeoServerUser toUser(GeoServerUserGroupService service) throws IOException {
-		return service.createUserObject(userName, password, enabled);
-	}
-	
-	public GeoServerUser toUser(GeoServerUser user) {
-		if (password != null) {
-			user.setPassword(password);
-		}
-		if (enabled != null) {
-			user.setEnabled(enabled);
-		}
-		return user;
-	}
+    public GeoServerUser toUser(GeoServerUserGroupService service) throws IOException {
+        return service.createUserObject(userName, password, enabled);
+    }
+    
+    public GeoServerUser toUser(GeoServerUser user) {
+        if (password != null) {
+            user.setPassword(password);
+        }
+        if (enabled != null) {
+            user.setEnabled(enabled);
+        }
+        return user;
+    }
 }

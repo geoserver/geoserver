@@ -2529,8 +2529,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                	lines.add(line.replace(GeoServerRole.ADMIN_ROLE.getAuthority(), 
-                	        XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE));
+                    lines.add(line.replace(GeoServerRole.ADMIN_ROLE.getAuthority(), 
+                            XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE));
                 }             
             }
             try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(file.out()))) {
@@ -3621,20 +3621,20 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
      * @throws IOException
      */
     public SortedSet<GeoServerRole> getRolesForAccessControl() throws IOException {
-    	
-    	SortedSet<GeoServerRole> allRoles = new TreeSet<GeoServerRole>();
-    	for (String serviceName : listRoleServices()) {
-    		// catch the IOException for each role service.
-    		// As an example, it does not make sense to throw an IOException if 
-    		// a jdbc connection cannot be established.
-    		try {
-    			allRoles.addAll(loadRoleService(serviceName).getRoles());
-    		} catch (IOException ex) {
-    			LOGGER.log(Level.WARNING,ex.getMessage(),ex);
-    		}
-    	}
-    	allRoles.add(GeoServerRole.AUTHENTICATED_ROLE);
-    	allRoles.add(GeoServerRole.ANONYMOUS_ROLE);
-    	return allRoles;
+        
+        SortedSet<GeoServerRole> allRoles = new TreeSet<GeoServerRole>();
+        for (String serviceName : listRoleServices()) {
+            // catch the IOException for each role service.
+            // As an example, it does not make sense to throw an IOException if 
+            // a jdbc connection cannot be established.
+            try {
+                allRoles.addAll(loadRoleService(serviceName).getRoles());
+            } catch (IOException ex) {
+                LOGGER.log(Level.WARNING,ex.getMessage(),ex);
+            }
+        }
+        allRoles.add(GeoServerRole.AUTHENTICATED_ROLE);
+        allRoles.add(GeoServerRole.ANONYMOUS_ROLE);
+        return allRoles;
     }
 }

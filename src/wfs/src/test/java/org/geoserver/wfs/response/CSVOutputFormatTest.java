@@ -40,7 +40,7 @@ import static org.junit.Assert.assertEquals;
 
 public class CSVOutputFormatTest extends WFSTestSupport {
 
-	@Test
+    @Test
     public void testFullRequest() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?version=1.1.0&request=GetFeature&typeName=sf:PrimitiveGeoFeature&outputFormat=csv","");
         
@@ -69,7 +69,7 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         }
     }
     
-	@Test
+    @Test
     public void testEscapes() throws Exception {
         // build some fake data in memory, the property data store cannot handle newlines in its data
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();

@@ -482,10 +482,10 @@ public class DataStoreFileResource extends StoreFileResource {
             
             //clean up the files if we can
             if (isInlineUpload(method) && canRemoveFiles) {
-        		if (uploadedFile.getType() == Type.RESOURCE) uploadedFile = uploadedFile.parent();
-        		if (!uploadedFile.delete()) {
+                if (uploadedFile.getType() == Type.RESOURCE) uploadedFile = uploadedFile.parent();
+                if (!uploadedFile.delete()) {
                             LOGGER.info("Unable to delete " + uploadedFile.path());
-        		}
+                }
             }
         }
     }

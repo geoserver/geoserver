@@ -499,7 +499,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      * @param j
      */
     protected void assertPixelIsTransparent(BufferedImage image, int i, int j) {
-  	    int pixel = image.getRGB(i,j);
+          int pixel = image.getRGB(i,j);
         assertEquals(true, (pixel>>24) == 0x00);
     }
 

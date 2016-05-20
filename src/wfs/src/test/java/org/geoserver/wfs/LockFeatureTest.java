@@ -17,13 +17,13 @@ import org.w3c.dom.Element;
 
 
 public class LockFeatureTest extends WFSTestSupport {
-	
+    
     @Override
     protected void setUpInternal(SystemTestData systemTestData) throws Exception {
         getServiceDescriptor10().getOperations().add( "ReleaseLock");
     }
 
-	@Test
+    @Test
     public void testLockActionSomeAlreadyLocked() throws Exception {
 
         // get a feature
@@ -79,7 +79,7 @@ public class LockFeatureTest extends WFSTestSupport {
         assertFalse(dom.getElementsByTagName("FeaturesNotLocked").getLength() == 0);
     }
 
-	@Test
+    @Test
     public void testDeleteWithoutLockId() throws Exception {
         // get a feature
         String xml = "<wfs:GetFeature" + "  service=\"WFS\""
@@ -133,7 +133,7 @@ public class LockFeatureTest extends WFSTestSupport {
 
     }
 
-	@Test
+    @Test
     public void testUpdateWithLockId() throws Exception {
         // get a feature
         String xml = "<wfs:GetFeature" + "  service=\"WFS\""
@@ -190,7 +190,7 @@ public class LockFeatureTest extends WFSTestSupport {
         assertFalse(dom.getElementsByTagName("wfs:SUCCESS").getLength() == 0);
     }
     
-	@Test
+    @Test
     public void testWorkspaceQualified() throws Exception {
         // get a feature
         String xml = "<wfs:GetFeature" + "  service=\"WFS\""
@@ -230,7 +230,7 @@ public class LockFeatureTest extends WFSTestSupport {
         get("wfs?request=ReleaseLock&version=1.0.0&lockId=" + lockId);
     }
     
-	@Test
+    @Test
     public void testLayerQualified() throws Exception {
         // get a feature
         String xml = "<wfs:GetFeature" + "  service=\"WFS\""

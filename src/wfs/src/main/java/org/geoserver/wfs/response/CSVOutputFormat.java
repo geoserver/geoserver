@@ -90,20 +90,20 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
     protected void write(FeatureCollectionResponse featureCollection,
             OutputStream output, Operation getFeature) throws IOException,
             ServiceException {
-    	   //write out content here
+           //write out content here
 
         //create a writer
         BufferedWriter w = new BufferedWriter( new OutputStreamWriter( output, gs.getGlobal().getSettings().getCharset() ) );
                    
         //get the feature collection
         FeatureCollection<?, ?> fc = 
-        		featureCollection.getFeature().get(0);           
+                featureCollection.getFeature().get(0);           
         
         if (fc.getSchema() instanceof SimpleFeatureType) {
             // Flatten the collection if necessary (the request was a WFS 2.0 joining GetFeature
             // one, the features contain other SimpleFeature as attributes)
             fc = FlatteningFeatureCollection.flatten((SimpleFeatureCollection) fc);
-        	
+            
             //write out the header
             SimpleFeatureType ft = (SimpleFeatureType) fc.getSchema();
             w.write("FID,");
@@ -329,23 +329,23 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
      * obeys the CSV spec.
      */    
     private static String prepCSVField(String field){
-    	// "embedded double-quote characters must be represented by a pair of double-quote characters."
+        // "embedded double-quote characters must be represented by a pair of double-quote characters."
         String mod = escaper.escape(field);
 
-    	/*
-    	 * Enclose string in double quotes if it contains double quotes, commas, or newlines
-    	 */
+        /*
+         * Enclose string in double quotes if it contains double quotes, commas, or newlines
+         */
         if (CSV_ESCAPES.matcher(mod).find()) {
             mod = "\"" + mod + "\"";
-    	}
-    	
-		return mod;
-    	
+        }
+        
+        return mod;
+        
     }
     
     @Override
     public String getCapabilitiesElementName() {
-    	return "CSV";
+        return "CSV";
     }
     
     @Override

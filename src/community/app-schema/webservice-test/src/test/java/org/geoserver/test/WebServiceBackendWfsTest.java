@@ -25,15 +25,15 @@ import org.w3c.dom.Document;
  */
 public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {    
 
-	@Override
-	protected AbstractAppSchemaMockData createTestData() {
-		return new WebServiceBackendMockData();
-	}
+    @Override
+    protected AbstractAppSchemaMockData createTestData() {
+        return new WebServiceBackendMockData();
+    }
 
     /**
      * Test whether GetCapabilities returns wfs:WFS_Capabilities.
      */
-	@Test
+    @Test
     public void testGetCapabilities() {
         Document doc = getAsDOM("wfs?request=GetCapabilities&version=1.1.0");
         LOGGER.info("WFS GetCapabilities response:\n" + prettyString(doc));
@@ -61,7 +61,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
      * 
      * @throws IOException
      */
-	@Test
+    @Test
     public void testDescribeFeatureType() throws IOException {
         /**
          * gsml:MappedFeature
@@ -108,7 +108,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
      * data access with property files backend, but it chains GeologicUnit from a web service
      * backend.
      */
-	@Test
+    @Test
     public void testMappedFeature() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
@@ -155,7 +155,7 @@ public class WebServiceBackendWfsTest extends AbstractAppSchemaTestSupport {
      * chains observationMethod which is a normal app-schema data access with property files backend.
      * It also feature chains CompositionPart which is another app-schema data access with web service.
      */
-	@Test
+    @Test
     public void testGeologicUnit() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit");
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));

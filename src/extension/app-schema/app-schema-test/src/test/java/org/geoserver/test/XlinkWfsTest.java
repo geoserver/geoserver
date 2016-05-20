@@ -60,8 +60,8 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
      */
     @Test
     public void testGetFeatureContent() {
-    	
-    	Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
+        
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         
         LOGGER.info("WFS testGetFeatureContent response:\n" + prettyString(doc));
 

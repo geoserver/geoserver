@@ -239,7 +239,7 @@ public class LayerGroupEntryPanel extends Panel {
     Component removeLink(String id, IModel<LayerGroupEntry> itemModel) {
         final LayerGroupEntry entry = itemModel.getObject();
         ImageAjaxLink<Object> link = new ImageAjaxLink<Object>( id, 
-        		new PackageResourceReference( getClass(), "../../img/icons/silk/delete.png") ) {
+                new PackageResourceReference( getClass(), "../../img/icons/silk/delete.png") ) {
 
             private static final long serialVersionUID = 4050942811476326745L;
 

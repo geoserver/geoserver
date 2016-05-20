@@ -62,8 +62,8 @@ public class HTMLImageMapMapProducer implements GetMapOutputFormat {
         return MIME_TYPE;
     }
 
-	public MapProducerCapabilities getCapabilities(String format) {
-		return CAPABILITIES;
-	}
+    public MapProducerCapabilities getCapabilities(String format) {
+        return CAPABILITIES;
+    }
 
 }

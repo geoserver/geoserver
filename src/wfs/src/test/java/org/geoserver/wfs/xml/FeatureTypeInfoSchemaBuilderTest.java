@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class FeatureTypeInfoSchemaBuilderTest extends WFSTestSupport {
 
-	@Test
+    @Test
     public void testBuildGml2() throws Exception {
         FeatureTypeSchemaBuilder builder = new FeatureTypeSchemaBuilder.GML2(
                 getGeoServer());

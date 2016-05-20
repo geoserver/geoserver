@@ -33,11 +33,11 @@ import org.opengis.util.ProgressListener;
 public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 659498790758954330L;
+     * 
+     */
+    private static final long serialVersionUID = 659498790758954330L;
 
-	protected String nativeFormat;
+    protected String nativeFormat;
 
     protected GridGeometry grid;
     

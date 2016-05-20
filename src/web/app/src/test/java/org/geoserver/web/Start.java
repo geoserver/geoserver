@@ -198,34 +198,34 @@ public class Start {
         ssl.setTrustStorePassword("changeit");
 
         return ssl;
-	}
-	
-	private static void assureSelfSignedServerCertificate(String hostname, File keyStoreFile, String password) throws Exception {
-	    
-	    
-	    KeyStore privateKS = KeyStore.getInstance("JKS");
-	    if (keyStoreFile.exists()) {	              
-	        FileInputStream fis = new FileInputStream(keyStoreFile);  
-	        privateKS.load(fis, password.toCharArray());  	       
-	        if (keyStoreContainsCertificate(privateKS,  hostname)) 
-	            return;
-	    } else {
-	        privateKS.load(null);
-	    }
-	    
-	    // create a RSA key pair generator using 1024 bits
-	    
-	    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");  
-	    keyPairGenerator.initialize(1024);  
-	    KeyPair KPair = keyPairGenerator.generateKeyPair();  
-	    
-	    // cerate a X509 certifacte generator
-	    X509V3CertificateGenerator v3CertGen = new X509V3CertificateGenerator();  
-	    
-	    // set validity to 10 years, issuer and subject are equal --> self singed certificate
-	    int random = new SecureRandom().nextInt();
-	    if (random < 0 ) random*=-1;
-	    v3CertGen.setSerialNumber(BigInteger.valueOf(random));  
+    }
+    
+    private static void assureSelfSignedServerCertificate(String hostname, File keyStoreFile, String password) throws Exception {
+        
+        
+        KeyStore privateKS = KeyStore.getInstance("JKS");
+        if (keyStoreFile.exists()) {                  
+            FileInputStream fis = new FileInputStream(keyStoreFile);  
+            privateKS.load(fis, password.toCharArray());             
+            if (keyStoreContainsCertificate(privateKS,  hostname)) 
+                return;
+        } else {
+            privateKS.load(null);
+        }
+        
+        // create a RSA key pair generator using 1024 bits
+        
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");  
+        keyPairGenerator.initialize(1024);  
+        KeyPair KPair = keyPairGenerator.generateKeyPair();  
+        
+        // cerate a X509 certifacte generator
+        X509V3CertificateGenerator v3CertGen = new X509V3CertificateGenerator();  
+        
+        // set validity to 10 years, issuer and subject are equal --> self singed certificate
+        int random = new SecureRandom().nextInt();
+        if (random < 0 ) random*=-1;
+        v3CertGen.setSerialNumber(BigInteger.valueOf(random));  
             v3CertGen.setIssuerDN(new X509Principal("CN=" + hostname + ", OU=None, O=None L=None, C=None"));  
             v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));  
             v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365*10)));  
@@ -252,7 +252,7 @@ public class Start {
                                              
             privateKS.store( new FileOutputStream(keyStoreFile), password.toCharArray());  
       }
-	
+    
       private static boolean keyStoreContainsCertificate(KeyStore ks, String hostname) throws Exception{
           SubjectDnX509PrincipalExtractor ex = new SubjectDnX509PrincipalExtractor();
           Enumeration<String> e = ks.aliases();

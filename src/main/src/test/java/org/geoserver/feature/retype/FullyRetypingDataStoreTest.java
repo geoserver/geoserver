@@ -74,7 +74,7 @@ public class FullyRetypingDataStoreTest {
 
     @Before
     public void setUp() throws Exception {
-    	// setup property file
+        // setup property file
         data = File.createTempFile("retype", "data", new File("./target"));
         data.delete();
         data.mkdir();
@@ -94,24 +94,24 @@ public class FullyRetypingDataStoreTest {
         
         PropertyDataStore pds = new PropertyDataStore(data);
         rts = new RetypingDataStore(pds) {
-        	
-        	@Override
-        	protected SimpleFeatureType transformFeatureType(
-        			SimpleFeatureType original) throws IOException {
-        		if (original.getTypeName().equals(MockData.PRIMITIVEGEOFEATURE.getLocalPart()))
+            
+            @Override
+            protected SimpleFeatureType transformFeatureType(
+                    SimpleFeatureType original) throws IOException {
+                if (original.getTypeName().equals(MockData.PRIMITIVEGEOFEATURE.getLocalPart()))
                     return primitive;
                 else
                     return super.transformFeatureType(original);
-        	}
-        	
-        	@Override
-        	protected String transformFeatureTypeName(String originalName) {
-        		if (originalName.equals(MockData.PRIMITIVEGEOFEATURE.getLocalPart()))
+            }
+            
+            @Override
+            protected String transformFeatureTypeName(String originalName) {
+                if (originalName.equals(MockData.PRIMITIVEGEOFEATURE.getLocalPart()))
                     return primitive.getTypeName();
                 else
                     return super.transformFeatureTypeName(originalName);
-        	}
-        	
+            }
+            
         };
 
         // build a filter that will retrieve one feature only
@@ -162,7 +162,7 @@ public class FullyRetypingDataStoreTest {
         // check mappings occurred
         assertEquals("description-f001", sf.getAttribute("description"));
         assertTrue(new WKTReader().read("MULTIPOINT(39.73245 2.00342)").equalsExact(
-        		(Geometry) sf.getAttribute("pointProperty")));
+                (Geometry) sf.getAttribute("pointProperty")));
         assertEquals(new Long(155), sf.getAttribute("intProperty"));
         assertNull(sf.getAttribute("newProperty"));
     }

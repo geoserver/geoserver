@@ -52,7 +52,7 @@ public class GranuleResource extends AbstractGranuleResource {
             return new FeaturesJSONFormat();
         } else {
             throw new IllegalArgumentException("Only supported formats are " +
-            		"xml and json, this one is not supported: " + format);
+                    "xml and json, this one is not supported: " + format);
         }
     }
     

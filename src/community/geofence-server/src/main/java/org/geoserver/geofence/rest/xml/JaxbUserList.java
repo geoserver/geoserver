@@ -15,23 +15,23 @@ import org.geoserver.security.impl.GeoServerUser;
 
 @XmlRootElement(name="users")
 public class JaxbUserList {
-	
-	protected List<JaxbUser> users;
+    
+    protected List<JaxbUser> users;
 
-	public JaxbUserList() {
-		
-	}
+    public JaxbUserList() {
+        
+    }
 
-	public JaxbUserList( Collection<GeoServerUser> users ) {
-		this.users = new ArrayList<JaxbUser>();
-		for (GeoServerUser user : users) {
-			this.users.add(new JaxbUser(user));
-		}		
-	}
+    public JaxbUserList( Collection<GeoServerUser> users ) {
+        this.users = new ArrayList<JaxbUser>();
+        for (GeoServerUser user : users) {
+            this.users.add(new JaxbUser(user));
+        }        
+    }
 
-	@XmlElement(name="user")
-	public List<JaxbUser> getUsers() {
-		return users;
-	}
+    @XmlElement(name="user")
+    public List<JaxbUser> getUsers() {
+        return users;
+    }
 
 }

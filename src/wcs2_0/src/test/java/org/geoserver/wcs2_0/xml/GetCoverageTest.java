@@ -84,14 +84,14 @@ public class GetCoverageTest extends WCSTestSupport {
         Resource watertemp = dataDirectory.getResourceLoader().get("watertemp");
         File data = watertemp.dir();
         FilenameFilter groundElevationFilter = new FilenameFilter() {
-			
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.matches(".*_000_.*tiff") || name.matches("watertemp\\..*");
-			}
-		};
-		for(File file : data.listFiles(groundElevationFilter)) {
-        	file.delete();
+            
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.matches(".*_000_.*tiff") || name.matches("watertemp\\..*");
+            }
+        };
+        for(File file : data.listFiles(groundElevationFilter)) {
+            file.delete();
         }
         
         testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());

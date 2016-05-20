@@ -32,7 +32,7 @@ public class TransactionListenerTest extends WFSTestSupport {
     TransactionListenerTester listener;
 
     @Override
-    protected void setUpSpring(List<String> springContextLocations) {    	
+    protected void setUpSpring(List<String> springContextLocations) {        
         super.setUpSpring(springContextLocations);
         springContextLocations.add("classpath:/org/geoserver/wfs/TransactionListenerTestContext.xml");
     }

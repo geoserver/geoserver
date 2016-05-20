@@ -213,7 +213,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
     }
     
     @SuppressWarnings("unchecked")
-	@Test
+    @Test
     public void testEditLockProvider() {
         GWC gwc = GWC.get();
         ConfigurableLockProvider lockProvider = (ConfigurableLockProvider) gwc.getLockProvider();
@@ -247,7 +247,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
     }
 
     @SuppressWarnings("unchecked")
-	@Test
+    @Test
     public void testNewDefaultGridSet() throws IOException {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
@@ -334,7 +334,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:cachingOptionsPanel:container:configs:blobstores:container:caches",
                 DropDownChoice.class);
         @SuppressWarnings("unchecked")
-		DropDownChoice<String> choice = (DropDownChoice<String>) tester.getComponentFromLastRenderedPage("form:cachingOptionsPanel:container:configs:blobstores:container:caches");
+        DropDownChoice<String> choice = (DropDownChoice<String>) tester.getComponentFromLastRenderedPage("form:cachingOptionsPanel:container:configs:blobstores:container:caches");
         assertTrue(choice.getChoices().get(0).equalsIgnoreCase(GuavaCacheProvider.class.toString()));
         
         // Ensure that the other fields are enabled

@@ -40,15 +40,15 @@ import com.google.common.base.Function;
  */
 public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements Catalog {
 
-	private GeoServer geoServer;
+    private GeoServer geoServer;
 
     public LocalWorkspaceCatalog(Catalog delegate) {
         super(delegate);
     }
 
-	public void setGeoServer(GeoServer geoServer ) {
-		this.geoServer = geoServer;
-	}
+    public void setGeoServer(GeoServer geoServer ) {
+        this.geoServer = geoServer;
+    }
 
     @Override
     public StyleInfo getStyleByName(String name) {

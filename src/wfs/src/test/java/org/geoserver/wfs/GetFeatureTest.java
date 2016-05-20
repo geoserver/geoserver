@@ -35,19 +35,19 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetFeatureTest extends WFSTestSupport {
-	
+    
     public static QName NULL_GEOMETRIES = new QName(SystemTestData.CITE_URI, "NullGeometries", SystemTestData.CITE_PREFIX);
     
     public static QName FIFTEEN_DUPLICATE = new QName(SystemTestData.CITE_URI, "Fifteen", SystemTestData.CITE_PREFIX);
         
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
-    	WFSInfo wfs = getWFS();
+        WFSInfo wfs = getWFS();
         wfs.setFeatureBounding(true);
-    	getGeoServer().save(wfs);
-    	
-    	data.addVectorLayer (NULL_GEOMETRIES, Collections.EMPTY_MAP, getClass(), getCatalog());
-    	data.addVectorLayer (FIFTEEN_DUPLICATE, Collections.EMPTY_MAP, getClass(), getCatalog());
+        getGeoServer().save(wfs);
+        
+        data.addVectorLayer (NULL_GEOMETRIES, Collections.EMPTY_MAP, getClass(), getCatalog());
+        data.addVectorLayer (FIFTEEN_DUPLICATE, Collections.EMPTY_MAP, getClass(), getCatalog());
     }
 
     @Before
@@ -57,7 +57,7 @@ public class GetFeatureTest extends WFSTestSupport {
        
     @Test
     public void testGet() throws Exception {
-    	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
     }
     
     @Test
@@ -87,7 +87,7 @@ public class GetFeatureTest extends WFSTestSupport {
 
     @Test
     public void testGetPropertyNameEmpty() throws Exception {
-    	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=");
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=");
     }
     
     @Test
@@ -97,7 +97,7 @@ public class GetFeatureTest extends WFSTestSupport {
     
     @Test
     public void testGetPropertyNameStar() throws Exception {
-    	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=*");
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=*");
     }
     
     private void testGetFifteenAll(String request) throws Exception {

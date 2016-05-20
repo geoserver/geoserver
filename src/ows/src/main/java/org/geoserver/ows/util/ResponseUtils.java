@@ -438,7 +438,7 @@ public class ResponseUtils {
         Map<String, String> result = new LinkedHashMap<String, String>();
         if(parameters.length % 2 != 0)
             throw new IllegalArgumentException("The parameters sequence should be " +
-            		"composed of key/value pairs, but the params passed are odd in number");
+                    "composed of key/value pairs, but the params passed are odd in number");
         
         for (int i = 0; i < parameters.length;) {
             String key = parameters[i++];

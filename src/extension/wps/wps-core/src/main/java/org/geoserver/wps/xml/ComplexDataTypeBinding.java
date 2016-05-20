@@ -38,14 +38,14 @@ public class ComplexDataTypeBinding extends org.geotools.wps.bindings.ComplexDat
     
     @Override
     public Object parse(ElementInstance instance, Node node, Object value)
-    		throws Exception {
-    	ComplexDataType cd = (ComplexDataType) super.parse(instance, node, value);
-    	
-    	// handle non xml content as well
-    	if(cd.getData().size() == 0) {
-    		cd.getData().add(instance.getText().toString());
-    	}
-    	
-    	return cd;
+            throws Exception {
+        ComplexDataType cd = (ComplexDataType) super.parse(instance, node, value);
+        
+        // handle non xml content as well
+        if(cd.getData().size() == 0) {
+            cd.getData().add(instance.getText().toString());
+        }
+        
+        return cd;
     }
 }

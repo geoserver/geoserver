@@ -143,7 +143,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
             //                + "gml/2.1.2/feature.xsd\"/>\n\n");
             tempResponse.append("\n\n<xs:import namespace=" + GML_URL + " schemaLocation=\"" +
                     buildSchemaURL(request.getBaseUrl(), "gml/2.1.2.1/feature.xsd")
-            		+ "\"/>\n\n");
+                    + "\"/>\n\n");
             tempResponse.append(generateSpecifiedTypes(infos));
         } else {
             //the featureTypes do not have all the same prefixes.

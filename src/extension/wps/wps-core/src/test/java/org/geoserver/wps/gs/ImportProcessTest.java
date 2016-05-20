@@ -170,8 +170,8 @@ public class ImportProcessTest extends WPSTestSupport {
     }
 
 
-	private void checkBuildings(String result,String expected) throws IOException {
-		assertEquals(SystemTestData.CITE_PREFIX + ":" + expected, result);
+    private void checkBuildings(String result,String expected) throws IOException {
+        assertEquals(SystemTestData.CITE_PREFIX + ":" + expected, result);
 
             // check the layer
             LayerInfo layer = getCatalog().getLayerByName(result);
@@ -204,7 +204,7 @@ public class ImportProcessTest extends WPSTestSupport {
             fi.close();
             assertEquals("114", f.getAttribute("FID"));
             assertEquals("215 Main Street", f.getAttribute("ADDRESS"));
-	}
+    }
 
     /**
      * Test creating a coverage store when a store name is specified but does not exist

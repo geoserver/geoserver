@@ -1173,12 +1173,12 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
 
         if (null != sortByList) {
             for (int i = sortByList.length - 1; i >=0 ; i--) {
-            	SortBy sortBy = sortByList[i];
-	            Ordering<Object> ordering = Ordering.from(comparator(sortBy));
-	            if (SortOrder.DESCENDING.equals(sortBy.getSortOrder())) {
-	                ordering = ordering.reverse();
-	            }
-	            all = ordering.sortedCopy(all);
+                SortBy sortBy = sortByList[i];
+                Ordering<Object> ordering = Ordering.from(comparator(sortBy));
+                if (SortOrder.DESCENDING.equals(sortBy.getSortOrder())) {
+                    ordering = ordering.reverse();
+                }
+                all = ordering.sortedCopy(all);
             }
         }
 

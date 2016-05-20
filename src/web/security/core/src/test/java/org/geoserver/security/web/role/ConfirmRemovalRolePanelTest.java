@@ -57,7 +57,7 @@ public class ConfirmRemovalRolePanelTest extends AbstractConfirmRemovalPanelTest
 
     @Override
     protected GeoServerRole getProblematicObject() throws Exception {
-    	return null;
+        return null;
     }
 
     @Override

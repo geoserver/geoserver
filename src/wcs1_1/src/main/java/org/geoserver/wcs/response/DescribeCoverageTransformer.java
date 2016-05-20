@@ -147,7 +147,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
                 // check the coverage is known
                 LayerInfo layer = catalog.getLayerByName(coverageId);
-				if (layer == null || layer.getType() != PublishedType.RASTER) {
+                if (layer == null || layer.getType() != PublishedType.RASTER) {
                     throw new WcsException("Could not find the specified coverage: "
                             + coverageId, WcsExceptionCode.InvalidParameterValue, "identifiers");
                 }
@@ -180,11 +180,11 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
         // TODO: find a way to share this with the capabilities transfomer
         protected void handleMetadataLinks(List<MetadataLinkInfo> links, String linkType) {
-        	for (MetadataLinkInfo mdl : links) {
-        		if (mdl != null) {
+            for (MetadataLinkInfo mdl : links) {
+                if (mdl != null) {
                     handleMetadataLink(mdl, linkType);
                 }
-			}
+            }
         }
 
         protected void handleMetadataLink(MetadataLinkInfo mdl, String linkType) {
@@ -342,18 +342,18 @@ public class DescribeCoverageTransformer extends TransformerBase {
         protected NumberRange getCoverageRange(List<CoverageDimensionInfo> dimensions) {
             NumberRange range = null;
             for (CoverageDimensionInfo dimension : dimensions) {
-            	if (dimension.getRange() == null)
+                if (dimension.getRange() == null)
                     return null;
                 else if (range == null)
                     range = dimension.getRange();
                 else
                     range.union(dimension.getRange());
-			}
+            }
             return range;
         }
 
         protected void handleNullValues(List<CoverageDimensionInfo> dimensions) {
-        	for (CoverageDimensionInfo cd : dimensions) {
+            for (CoverageDimensionInfo cd : dimensions) {
                 List<Double> nulls = cd.getNullValues();
                 if(nulls == null)
                     return;

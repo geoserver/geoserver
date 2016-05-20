@@ -177,7 +177,7 @@ public abstract class FileDataView extends Panel {
     }
     
     public FileProvider getProvider() {
-    	return provider;
+        return provider;
     }
     
     public void setTableHeight(String tableHeight) {

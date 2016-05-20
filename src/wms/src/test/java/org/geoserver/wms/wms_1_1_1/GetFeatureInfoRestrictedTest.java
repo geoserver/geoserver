@@ -37,16 +37,16 @@ import org.springframework.security.core.Authentication;
  */
 public class GetFeatureInfoRestrictedTest extends WMSTestSupport {
     
-	/**
-	 * Simple extension of org.geoserver.security.SecureCatalogImpl that exposes the constructor that includes a org.geoserver.security.DataAccessManager
-	 *
-	 */
-	class TestableSecureCatalogImpl extends SecureCatalogImpl {
-		public TestableSecureCatalogImpl(Catalog catalog, DataAccessManager manager) {
-			super(catalog, new DataAccessManagerAdapter(manager));
-		}
-	}
-	
+    /**
+     * Simple extension of org.geoserver.security.SecureCatalogImpl that exposes the constructor that includes a org.geoserver.security.DataAccessManager
+     *
+     */
+    class TestableSecureCatalogImpl extends SecureCatalogImpl {
+        public TestableSecureCatalogImpl(Catalog catalog, DataAccessManager manager) {
+            super(catalog, new DataAccessManagerAdapter(manager));
+        }
+    }
+    
  
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -66,7 +66,7 @@ public class GetFeatureInfoRestrictedTest extends WMSTestSupport {
         //Overwrite our catalog with this new restricted catalog
         getGeoServer().setCatalog(new TestableSecureCatalogImpl(getGeoServer().getCatalog(), mockManager));
 
-    }	
+    }    
     
     
     /**

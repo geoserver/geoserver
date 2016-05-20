@@ -64,7 +64,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	public BlobStorePage(final BlobStoreConfig originalStore) {
+    public BlobStorePage(final BlobStoreConfig originalStore) {
 
         final List<String> assignedLayers = new ArrayList<String>();
 
@@ -78,7 +78,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         typeOfBlobStore.add(new AjaxFormComponentUpdatingBehavior("change") {
             private static final long serialVersionUID = 359589121400814043L;
 
-			@Override
+            @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 blobStoreForm.setVisible(typeOfBlobStore.getModelObject() != null);
                 if (typeOfBlobStore.getModelObject() != null) {

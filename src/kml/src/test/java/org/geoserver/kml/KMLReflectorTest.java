@@ -695,9 +695,9 @@ public class KMLReflectorTest extends WMSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("name-f005", sd + "[@name='name']", doc);
         XMLAssert.assertXpathEvaluatesTo("2012.78", sd + "[@name='doubleProperty']", doc);
         XMLAssert.assertXpathEvaluatesTo("Ma quande lingues coalesce, li grammatica del resultant " +
-        		"lingue es plu simplic e regulari quam ti del coalescent lingues. Li nov lingua " +
-        		"franca va esser plu simplic e regulari quam li existent Europan lingues.", 
-        		sd + "[@name='strProperty']", doc);
+                "lingue es plu simplic e regulari quam ti del coalescent lingues. Li nov lingua " +
+                "franca va esser plu simplic e regulari quam li existent Europan lingues.", 
+                sd + "[@name='strProperty']", doc);
         XMLAssert.assertXpathEvaluatesTo("BK030", sd + "[@name='featureCode']", doc);
     }
     
@@ -725,7 +725,7 @@ public class KMLReflectorTest extends WMSTestSupport {
             XMLAssert.assertXpathEvaluatesTo("relativeToGround", base + "/kml:Polygon/kml:altitudeMode", doc);
             
             assertXPathCoordinates( "LinearRing","6.0E-4,-0.0018,101.0 0.0010,-6.0E-4,101.0 0.0024,-1.0E-4,101.0 0.0031,-0.0015,101.0 6.0E-4,-0.0018,101.0", 
-            			base + "/kml:Polygon/kml:outerBoundaryIs/kml:LinearRing/kml:coordinates", doc);
+                        base + "/kml:Polygon/kml:outerBoundaryIs/kml:LinearRing/kml:coordinates", doc);
         } finally {
             if(template != null) {
                 template.delete();
@@ -759,54 +759,54 @@ public class KMLReflectorTest extends WMSTestSupport {
     }
 
     private void assertXPathCoordinates( String message, String expectedText, String xpath, Document doc ) throws XpathException {
-    	XpathEngine engine = XMLUnit.newXpathEngine();
+        XpathEngine engine = XMLUnit.newXpathEngine();
         String text = engine.evaluate(xpath, doc);
         if( equalsRegardingNull( expectedText, text ) ){
-        	return;
+            return;
         }
         if( expectedText != null && text != null ){
-        	String expectedCoordinates[] = expectedText.split("(\\s|,)");
-        	String actualCoordiantes[] = text.split("(\\s|,)");
-        	if( expectedCoordinates.length == actualCoordiantes.length ){
-        		final int LENGTH = actualCoordiantes.length;
-        		boolean checked = true;
-        		LIST: for( int i = 0; i< LENGTH; i++){
-        			String expected = expectedCoordinates[i];
-        			String actual = actualCoordiantes[i];
-        			if( expected.length() == actual.length()){
-        				if( !expected.equals(actual)){
-        					checked = false;
-        					break LIST; // normal equals check will report issue
-        				}
-        			}
-        			else {
-        				try {
-	        				double expectedOrdinate = Double.parseDouble(expected);
-	        				double actualOridnate = Double.parseDouble(actual);
-	        				if (Double.compare(expectedOrdinate, actualOridnate) != 0) {
-		        		        // Could do a Math.abs(expectedOrdinate - actualOridnate) <= delta check
-	        					break LIST; // normal equals check will report issue
-	        				}
-        				}
-        				catch (NumberFormatException formatException ){
-        					checked = false;
-        					break LIST; // normal equals check will report issue
-        				}
-        			}
-        		}
-    			if( checked) {
-    				return; // double based comparison checked all elements
-    			}
-        	}
+            String expectedCoordinates[] = expectedText.split("(\\s|,)");
+            String actualCoordiantes[] = text.split("(\\s|,)");
+            if( expectedCoordinates.length == actualCoordiantes.length ){
+                final int LENGTH = actualCoordiantes.length;
+                boolean checked = true;
+                LIST: for( int i = 0; i< LENGTH; i++){
+                    String expected = expectedCoordinates[i];
+                    String actual = actualCoordiantes[i];
+                    if( expected.length() == actual.length()){
+                        if( !expected.equals(actual)){
+                            checked = false;
+                            break LIST; // normal equals check will report issue
+                        }
+                    }
+                    else {
+                        try {
+                            double expectedOrdinate = Double.parseDouble(expected);
+                            double actualOridnate = Double.parseDouble(actual);
+                            if (Double.compare(expectedOrdinate, actualOridnate) != 0) {
+                                // Could do a Math.abs(expectedOrdinate - actualOridnate) <= delta check
+                                break LIST; // normal equals check will report issue
+                            }
+                        }
+                        catch (NumberFormatException formatException ){
+                            checked = false;
+                            break LIST; // normal equals check will report issue
+                        }
+                    }
+                }
+                if( checked) {
+                    return; // double based comparison checked all elements
+                }
+            }
         }
         // call normal assertEquals for consistent failure message    
         assertEquals( message,  expectedText, text );
     }
     private boolean equalsRegardingNull(String expected, String actual ){
-    	if( expected == null ){
-    		return actual == null;
-    	}
-    	return expected.equals(actual); // fast string equals check
+        if( expected == null ){
+            return actual == null;
+        }
+        return expected.equals(actual); // fast string equals check
     }
     @Test
     public void testHeightTemplateNoExtrude() throws Exception {
@@ -835,7 +835,7 @@ public class KMLReflectorTest extends WMSTestSupport {
             // JDK 1.6: 0.0010  
             // JDK 1.7: 0.001
             assertXPathCoordinates("kml:LinearRing","6.0E-4,-0.0018,101.0 0.001,-6.0E-4,101.0 0.0024,-1.0E-4,101.0 0.0031,-0.0015,101.0 6.0E-4,-0.0018,101.0", 
-	                    base + "/kml:Polygon/kml:outerBoundaryIs/kml:LinearRing/kml:coordinates", doc);
+                        base + "/kml:Polygon/kml:outerBoundaryIs/kml:LinearRing/kml:coordinates", doc);
         } finally {
             if(template != null) {
                 template.delete();

@@ -160,7 +160,7 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
         updateElement.setTypeName((QName) node.getAttributeValue("typeName"));
 
         //&lt;xsd:attribute default="x-application/gml:3" name="inputFormat"
-        //	type="xsd:string" use="optional"&gt;
+        //    type="xsd:string" use="optional"&gt;
         if (node.hasAttribute("inputFormat")) {
             updateElement.setInputFormat((String) node.getAttributeValue("inputFormat"));
         }

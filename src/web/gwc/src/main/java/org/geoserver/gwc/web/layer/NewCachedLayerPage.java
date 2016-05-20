@@ -186,7 +186,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                     IModel<String> model = new StringResourceModel(
                             "NewCachedLayerPage.confirmBulkConfig.message",
                             BulkCachedLayerConfigurationLink.this).setParameters(
-                            		new Object[] { selectedLayerCount.toString() });
+                                    new Object[] { selectedLayerCount.toString() });
                     Label confirmLabel = new Label(id, model);
                     confirmLabel.setEscapeModelStrings(false);// allow some html inside, like
                                                               // <b></b>, etc

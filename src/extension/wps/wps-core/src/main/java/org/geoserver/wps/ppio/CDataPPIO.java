@@ -15,14 +15,14 @@ import java.io.OutputStream;
  */
 public abstract class CDataPPIO extends ComplexPPIO {
 
-	protected CDataPPIO(Class externalType, Class internalType, String mimeType) {
-		super(externalType, internalType, mimeType);
-	}
-	
+    protected CDataPPIO(Class externalType, Class internalType, String mimeType) {
+        super(externalType, internalType, mimeType);
+    }
+    
     
     @Override
     public Object decode(Object input) throws Exception {
-    	return decode((String) input);
+        return decode((String) input);
     }
 
     /**

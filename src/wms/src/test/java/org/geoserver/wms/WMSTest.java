@@ -100,7 +100,7 @@ public class WMSTest extends WMSTestSupport {
                 new DateRange(Date.valueOf("2012-02-09"), Date.valueOf("2012-02-14")), null,
                 0, 1, 2
         );
-       	//Test start during and end after a range.
+           //Test start during and end after a range.
         doTimeElevationFilter( 
                 new DateRange(Date.valueOf("2012-02-13"), Date.valueOf("2012-02-14")), null,
                 1,2

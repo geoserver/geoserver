@@ -104,13 +104,13 @@ public class EditableUserDAO implements UserDetailsService {
     Collection<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
     auths.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR"));
     myDetailStorage.put(name, new User(name,
-	  passwd,
-	  true,
-	  true,
-	  true,
-	  true,
-	  auths
-	  ));
+      passwd,
+      true,
+      true,
+      true,
+      true,
+      auths
+      ));
   }
 
   /**
@@ -161,19 +161,19 @@ public class EditableUserDAO implements UserDetailsService {
     try {
       if (myWatcher == null) {
       } else if (myWatcher.isStale()) {
-	Properties prop = myWatcher.getProperties();
-	UserAttributeEditor uae = new UserAttributeEditor();
-	myDetailStorage.clear();
+    Properties prop = myWatcher.getProperties();
+    UserAttributeEditor uae = new UserAttributeEditor();
+    myDetailStorage.clear();
 
-	Iterator<Object> it = prop.keySet().iterator();
-	while  (it.hasNext()){
-	  String username = (String)it.next();
-	  uae.setAsText(prop.getProperty(username));
-	  UserAttribute attrs = (UserAttribute) uae.getValue();
-	  if (attrs != null) {
-	    myDetailStorage.put(username, makeUser(username, attrs));
-	  }
-	}
+    Iterator<Object> it = prop.keySet().iterator();
+    while  (it.hasNext()){
+      String username = (String)it.next();
+      uae.setAsText(prop.getProperty(username));
+      UserAttribute attrs = (UserAttribute) uae.getValue();
+      if (attrs != null) {
+        myDetailStorage.put(username, makeUser(username, attrs));
+      }
+    }
       }
     } catch (IOException ioe) {
       // TODO: handle the exception properly
@@ -190,13 +190,13 @@ public class EditableUserDAO implements UserDetailsService {
    */
   private UserDetails makeUser(String username, UserAttribute attrs) {
     return new User(
-	username,
-	attrs.getPassword(),
-	attrs.isEnabled(),
-	true, // account not expired
-	true, // credentials not expired
-	true, // account not locked
-	attrs.getAuthorities());
+    username,
+    attrs.getPassword(),
+    attrs.isEnabled(),
+    true, // account not expired
+    true, // credentials not expired
+    true, // account not locked
+    attrs.getAuthorities());
   }
 
   /**
@@ -217,7 +217,7 @@ public class EditableUserDAO implements UserDetailsService {
           value+= "," + auth.getAuthority();
       }
       if (!details.isEnabled()){
-	value+=",disabled";
+    value+=",disabled";
       }
       prop.setProperty(key, value);
     }

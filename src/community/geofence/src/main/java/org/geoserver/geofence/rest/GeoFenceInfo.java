@@ -52,9 +52,9 @@ public class GeoFenceInfo extends Resource {
     }
 
     @Override
-	public void handleGet() {
-		Representation representation = new StringRepresentation(configManager
-				.getConfiguration().getInstanceName());
+    public void handleGet() {
+        Representation representation = new StringRepresentation(configManager
+                .getConfiguration().getInstanceName());
         getResponse().setEntity(representation);
-	}
+    }
 }

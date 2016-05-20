@@ -176,12 +176,12 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * 
      * <pre>
      * The computation of Min and Max values return: 
-     * 		Min: 0.0
-     * 		Max: infinity
+     *         Min: 0.0
+     *         Max: infinity
      * 
      * Capabilities document Expected:
      *  
-     * 		ScaleHint element shouldn't be generated.
+     *         ScaleHint element shouldn't be generated.
      * </pre>
      * 
      */
@@ -204,8 +204,8 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * 
      * <pre>
      * Check the min and max values return:
-     * 		Min: 0.0
-     * 		Max: a value
+     *         Min: 0.0
+     *         Max: a value
      * 
      * Capabilities document Expected:
      *  
@@ -236,8 +236,8 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * <pre>
      * The computation of Min and Max values when the option 
      * 'Scalehint in units per diagonal pixel' is set. Return: 
-     * 		Min: 0.0
-     * 		Max: a value
+     *         Min: 0.0
+     *         Max: a value
      * 
      * Capabilities document Expected:
      *  
@@ -267,8 +267,8 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * 
      * <pre>
      * Check the Min and Max values return: 
-     * 		Min: a value
-     * 		Max: Infinity
+     *         Min: a value
+     *         Max: Infinity
      * 
      * Capabilities document Expected:
      *  
@@ -298,8 +298,8 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * <pre>
      * The computation of Min and Max values when the option 
      * 'Scalehint in units per diagonal pixel' is set. Return: 
-     * 		Min: a value
-     * 		Max: Infinity
+     *         Min: a value
+     *         Max: Infinity
      * 
      * Capabilities document Expected:
      *  

@@ -202,10 +202,10 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         Properties props = new Properties();
         props.put("mode", catalogMode.toString());
         for (DataAccessRule rule : rules) {
-        	String key = rule.getWorkspace().replaceAll("\\.", "\\\\.") + "." 
-        	             + rule.getLayer().replaceAll("\\.", "\\\\.") + "." 
-        	             + rule.getAccessMode().getAlias();
-        	props.put(key, rule.getValue());
+            String key = rule.getWorkspace().replaceAll("\\.", "\\\\.") + "." 
+                         + rule.getLayer().replaceAll("\\.", "\\\\.") + "." 
+                         + rule.getAccessMode().getAlias();
+            props.put(key, rule.getValue());
         }
         return props;
     }
@@ -235,30 +235,30 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         return (String[]) result.toArray(new String[result.size()]);
     }
 
-	public void setCatalogMode(CatalogMode catalogMode) {
-		this.catalogMode = catalogMode;
-	}
-	
-	public static CatalogMode getByAlias(String alias){
-		for(CatalogMode mode: CatalogMode.values()){
-			if(mode.name().equals(alias)){
-				return mode;
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Returns a sorted set of rules associated to the role
-	 * 
-	 * @param role
-	 *
-	 */
-	public SortedSet<DataAccessRule> getRulesAssociatedWithRole(String role) {
-	    SortedSet<DataAccessRule> result = new TreeSet<DataAccessRule>();
-	    for (DataAccessRule rule: getRules())
-	        if (rule.getRoles().contains(role))
-	            result.add(rule);
-	    return result;
-	}		
+    public void setCatalogMode(CatalogMode catalogMode) {
+        this.catalogMode = catalogMode;
+    }
+    
+    public static CatalogMode getByAlias(String alias){
+        for(CatalogMode mode: CatalogMode.values()){
+            if(mode.name().equals(alias)){
+                return mode;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Returns a sorted set of rules associated to the role
+     * 
+     * @param role
+     *
+     */
+    public SortedSet<DataAccessRule> getRulesAssociatedWithRole(String role) {
+        SortedSet<DataAccessRule> result = new TreeSet<DataAccessRule>();
+        for (DataAccessRule rule: getRules())
+            if (rule.getRoles().contains(role))
+                result.add(rule);
+        return result;
+    }        
 }

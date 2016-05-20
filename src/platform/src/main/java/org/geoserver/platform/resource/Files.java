@@ -194,7 +194,7 @@ public final class Files {
         @Override
         public List<Resource> list() {
             if (!file.isDirectory()) {
-            	return Collections.emptyList();
+                return Collections.emptyList();
             }
             List<Resource> result = new ArrayList<Resource>();
             for (File child : file.listFiles()) {

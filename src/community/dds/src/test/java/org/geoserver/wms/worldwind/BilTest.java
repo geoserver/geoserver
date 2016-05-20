@@ -36,11 +36,11 @@ import org.springframework.mock.web.MockHttpServletResponse;
  */
 
 public class BilTest extends WMSTestSupport {
-	/**
+    /**
      * This is a READ ONLY TEST so we can use one time setup
      */
 
-	public static String WCS_PREFIX = "wcs";
+    public static String WCS_PREFIX = "wcs";
     public static String WCS_URI = "http://www.opengis.net/wcs/1.1.1";
     public static QName AUS_DEM = new QName(WCS_URI, "Ausdem", WCS_PREFIX);
     public static QName SF_DEM = new QName(MockData.SF_URI, "sfdem", MockData.SF_PREFIX);
@@ -63,7 +63,7 @@ public class BilTest extends WMSTestSupport {
     }
 
     @Test
-	public void testBil() throws Exception {
+    public void testBil() throws Exception {
         byte[] response = getStandardRequest("application/bil");
 
         int expected = width * height * 2; // Native encoding, 2 bytes/pixel
@@ -92,7 +92,7 @@ public class BilTest extends WMSTestSupport {
 
         int expected = width * height * 4; // 4 bytes/pixel
         assertEquals("testStandardRequest", expected, response.length);
-	}
+    }
 
     private byte[] getStandardRequest(String mimeType) throws Exception {
         String layer = getLayerId(AUS_DEM);
@@ -106,15 +106,15 @@ public class BilTest extends WMSTestSupport {
     }
 
     @Test
-	public void testLargeRequest() throws Exception {
-	    String layer = getLayerId(AUS_DEM);
-	    String request = "wms?service=wms&request=GetMap&version=1.1.1" +
-	    		"&layers=" + layer + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=600&height=600" + 
-	    		"&format=image/bil&srs=EPSG:4326";
+    public void testLargeRequest() throws Exception {
+        String layer = getLayerId(AUS_DEM);
+        String request = "wms?service=wms&request=GetMap&version=1.1.1" +
+                "&layers=" + layer + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=600&height=600" + 
+                "&format=image/bil&srs=EPSG:4326";
 
-	    String exceptstr  = getAsString(request);
-	    assertTrue("testLargeRequest",exceptstr.contains("512x512"));
-	}
+        String exceptstr  = getAsString(request);
+        assertTrue("testLargeRequest",exceptstr.contains("512x512"));
+    }
 
     @Test
     public void testWms13Request() throws Exception {
@@ -147,14 +147,14 @@ public class BilTest extends WMSTestSupport {
         assertEquals("testStandardRequest", expected, bytes.length);
 
         // Int16 default type
-    	setConfiguration(AUS_DEM, BilConfig.DEFAULT_DATA_TYPE, "application/bil16");
+        setConfiguration(AUS_DEM, BilConfig.DEFAULT_DATA_TYPE, "application/bil16");
         bytes = getStandardRequest("application/bil");
 
         expected = width * height * 2; // 2 bytes/pixel
         assertEquals("testStandardRequest", expected, bytes.length);
 
         // Int32 default type
-    	setConfiguration(AUS_DEM, BilConfig.DEFAULT_DATA_TYPE, "application/bil32");
+        setConfiguration(AUS_DEM, BilConfig.DEFAULT_DATA_TYPE, "application/bil32");
         bytes = getStandardRequest("application/bil");
 
         expected = width * height * 4; // 4 bytes/pixel
@@ -252,10 +252,10 @@ public class BilTest extends WMSTestSupport {
         catalog.save(coverage);
     }
 
-	/**
-	 * Need to override since we are in the community folder
-	 */
-	protected void copySchemaFile(String file) throws IOException {
+    /**
+     * Need to override since we are in the community folder
+     */
+    protected void copySchemaFile(String file) throws IOException {
         File f = new File("../../web/app/src/main/webapp/schemas/" + file);
         FileUtils.copyFile(f, getResourceLoader().createFile("WEB-INF/schemas/"+file));
     }

@@ -74,14 +74,14 @@ class RemovedObjectProxy implements InvocationHandler {
         this.catalogCollaborators = new HashMap<String, CatalogInfo>();
     }
 
-	/**
-	 * Makes the proxy return a catalog object
-	 * @param property 
-	 * @param id
-	 */
+    /**
+     * Makes the proxy return a catalog object
+     * @param property 
+     * @param id
+     */
     public void addCatalogCollaborator(String property, CatalogInfo info) {
-    	String accessor = "get" + property.substring(0, 1).toUpperCase() + property.substring(1);
-    	catalogCollaborators.put(accessor, info);
+        String accessor = "get" + property.substring(0, 1).toUpperCase() + property.substring(1);
+        catalogCollaborators.put(accessor, info);
     }
     
     @Override
@@ -100,7 +100,7 @@ class RemovedObjectProxy implements InvocationHandler {
         }
         
         if (catalogCollaborators.containsKey(method.getName())) {
-        	return catalogCollaborators.get(method.getName());
+            return catalogCollaborators.get(method.getName());
         }
         
         Class<?> returnType = method.getReturnType();
@@ -145,11 +145,11 @@ class RemovedObjectProxy implements InvocationHandler {
                 + name + "]]";
     }
 
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
-		return super.clone();
-		
-	}
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        // TODO Auto-generated method stub
+        return super.clone();
+        
+    }
 
 }

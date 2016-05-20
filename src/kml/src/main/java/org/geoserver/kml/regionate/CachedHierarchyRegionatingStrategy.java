@@ -458,8 +458,8 @@ public abstract class CachedHierarchyRegionatingStrategy implements
      *
      */
     protected abstract FeatureIterator getSortedFeatures(
-    		GeometryDescriptor geom, ReferencedEnvelope latLongEnvelope, 
-    		ReferencedEnvelope nativeEnvelope, Connection indexConnection)
+            GeometryDescriptor geom, ReferencedEnvelope latLongEnvelope, 
+            ReferencedEnvelope nativeEnvelope, Connection indexConnection)
             throws Exception;
 
     /**

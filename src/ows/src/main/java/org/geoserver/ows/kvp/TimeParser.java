@@ -82,7 +82,7 @@ public class TimeParser {
     /**
      * pattern used to match back parameter
      */
-	private static final Pattern pattern = Pattern.compile("(back)(\\d+)([hdw])");
+    private static final Pattern pattern = Pattern.compile("(back)(\\d+)([hdw])");
     
     /**
      * Amount of milliseconds in a day.

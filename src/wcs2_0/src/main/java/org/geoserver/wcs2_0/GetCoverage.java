@@ -124,7 +124,7 @@ public class GetCoverage {
     private static final Hints HINTS = new Hints(
             Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
 
-	private final static Set<String> mdFormats;
+    private final static Set<String> mdFormats;
 
     private static final CoverageProcessor processor = CoverageProcessor.getInstance(HINTS);
     

@@ -44,14 +44,14 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
     boolean circularArcPresent;
     
     public boolean isCircularArcPresent() {
-    	return circularArcPresent;
-	}
+        return circularArcPresent;
+    }
 
-	public void setCircularArcPresent(boolean curveGeometryEnabled) {
-		this.circularArcPresent = curveGeometryEnabled;
-	}
+    public void setCircularArcPresent(boolean curveGeometryEnabled) {
+        this.circularArcPresent = curveGeometryEnabled;
+    }
 
-	Measure linearizationTolerance;
+    Measure linearizationTolerance;
     
     protected FeatureTypeInfoImpl() {
     }

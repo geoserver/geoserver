@@ -28,8 +28,8 @@ import org.opengis.feature.type.FeatureType;
  */
 public abstract class AbstractFeatureCollection<T extends FeatureType, F extends Feature> implements
         FeatureCollection<T, F> {
-	    
-	    
+        
+        
     /**
      * id used when serialized to gml
      */

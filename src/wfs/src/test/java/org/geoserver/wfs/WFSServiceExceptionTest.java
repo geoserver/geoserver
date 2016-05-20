@@ -21,7 +21,7 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
 
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
-    	WFSInfo wfs = getWFS();
+        WFSInfo wfs = getWFS();
         wfs.setFeatureBounding(true);
         getGeoServer().save(wfs);
     }

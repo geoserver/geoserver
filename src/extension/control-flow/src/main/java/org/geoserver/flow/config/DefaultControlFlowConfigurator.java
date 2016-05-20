@@ -171,10 +171,10 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
 
                     }.build(keys, value);
                 } else if (keys.length > 1) {
-                	if(!"blacklist".equals(keys[1]) && !"whitelist".equals(keys[1])){
-                		String ip = key.substring("ip.".length());
-                		controller = new SingleIpFlowController(queueSize, ip);
-                	}
+                    if(!"blacklist".equals(keys[1]) && !"whitelist".equals(keys[1])){
+                        String ip = key.substring("ip.".length());
+                        controller = new SingleIpFlowController(queueSize, ip);
+                    }
                 }
             }
             if (controller == null) {

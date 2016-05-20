@@ -15,21 +15,21 @@ import org.springframework.context.ApplicationEvent;
  */
 public class ToggleEvent extends ApplicationEvent {
 
-	private static final long serialVersionUID = 1L;
-	
-	private final ToggleType toggleType;
-	
-	public ToggleEvent(Boolean source, ToggleType toggleType) {
-		super(source);
-		this.toggleType=toggleType;
-	}
-	
-	public ToggleType getType(){
-		return this.toggleType;
-	}
+    private static final long serialVersionUID = 1L;
+    
+    private final ToggleType toggleType;
+    
+    public ToggleEvent(Boolean source, ToggleType toggleType) {
+        super(source);
+        this.toggleType=toggleType;
+    }
+    
+    public ToggleType getType(){
+        return this.toggleType;
+    }
 
-	public boolean toggleTo() {
-		return (Boolean) getSource();
-	}
+    public boolean toggleTo() {
+        return (Boolean) getSource();
+    }
 
 }

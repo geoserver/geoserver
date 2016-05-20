@@ -27,7 +27,7 @@ public class DataReferenceWmsPostgisWithJoiningTest extends DataReferenceWmsOnli
 
     @Override
     protected AppSchemaWmsReferenceMockData createTestData() {
-    	AppSchemaWmsReferenceMockData mockData = new AppSchemaWmsReferenceMockData();
+        AppSchemaWmsReferenceMockData mockData = new AppSchemaWmsReferenceMockData();
         mockData.addStyle("Default", "styles/Default.sld");
         mockData.addStyle("simplelithology", "styles/cgi-simplelithology-2008.sld");
         mockData.addStyle("stratchart", "styles/ics-stratchart-2008.sld");

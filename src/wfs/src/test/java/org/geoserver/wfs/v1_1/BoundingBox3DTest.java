@@ -27,12 +27,12 @@ public class BoundingBox3DTest extends WFSTestSupport {
     
     @Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
-    	
-    	//temp hack until feature bounding for 3D is fixed.
-    	WFSInfo wfs = getWFS();
-    	wfs.setFeatureBounding(false);
-    	getGeoServer().save(wfs);
-    	
+        
+        //temp hack until feature bounding for 3D is fixed.
+        WFSInfo wfs = getWFS();
+        wfs.setFeatureBounding(false);
+        getGeoServer().save(wfs);
+        
         // add extra types
         dataDirectory.addVectorLayer( 
                 new QName( SystemTestData.SF_URI, "With3D", SystemTestData.SF_PREFIX ),                 

@@ -238,16 +238,16 @@ public class WCSRequestBuilderPanel extends Panel {
     protected String getDescribeXML(String processId) {
         if(getCoverage.version == Version.v1_0_0) {
             return "<DescribeCoverage\n" + 
-            		"  version=\"1.0.0\"\n" + 
-            		"  service=\"WCS\"\n" + 
-            		"  xmlns=\"http://www.opengis.net/wcs\"\n" + 
-            		"  xmlns:nurc=\"http://www.nurc.nato.int\"\n" + 
-            		"  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
-            		"  xsi:schemaLocation=\"http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/describeCoverage.xsd\">\n" + 
-            		"  \n" + 
-            		"    <Coverage>" + getCoverage.coverage + "</Coverage>\n" + 
-            		"    \n" + 
-            		"</DescribeCoverage>";
+                    "  version=\"1.0.0\"\n" + 
+                    "  service=\"WCS\"\n" + 
+                    "  xmlns=\"http://www.opengis.net/wcs\"\n" + 
+                    "  xmlns:nurc=\"http://www.nurc.nato.int\"\n" + 
+                    "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
+                    "  xsi:schemaLocation=\"http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/describeCoverage.xsd\">\n" + 
+                    "  \n" + 
+                    "    <Coverage>" + getCoverage.coverage + "</Coverage>\n" + 
+                    "    \n" + 
+                    "</DescribeCoverage>";
         } else {
             return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + // 
             "<wcs:DescribeCoverage service=\"WCS\" " + //

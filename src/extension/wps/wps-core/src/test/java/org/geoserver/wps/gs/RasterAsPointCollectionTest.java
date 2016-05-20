@@ -102,7 +102,7 @@ public class RasterAsPointCollectionTest extends WPSTestSupport {
         SimpleFeature sf = (SimpleFeature) fc.features().next();
         Geometry simplified = ((Geometry) sf.getDefaultGeometry());
         assertTrue(simplified instanceof Point);
-        assertEquals(sf.getID(),"0");	
+        assertEquals(sf.getID(),"0");    
         assertEquals(sf.getAttributeCount(), 5);
         assertEquals("75",sf.getProperty("GRAY_INDEX").getValue());
         

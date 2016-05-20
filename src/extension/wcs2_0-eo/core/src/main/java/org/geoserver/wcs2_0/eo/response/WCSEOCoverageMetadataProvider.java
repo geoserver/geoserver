@@ -128,7 +128,7 @@ public class WCSEOCoverageMetadataProvider implements WCS20CoverageMetadataProvi
         DimensionInfo time = ci.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null) {
             LOGGER.log(Level.FINE, "We received a coverage info that has no " +
-            		"associated time, cannot add EO metadata to it: "+ ci.prefixedName());
+                    "associated time, cannot add EO metadata to it: "+ ci.prefixedName());
             return;
         }
         GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);

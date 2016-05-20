@@ -25,7 +25,7 @@ public class LockFeatureTest extends WFS20TestSupport {
         getServiceDescriptor20().getOperations().add( "ReleaseLock");
     }
         
-	@Test
+    @Test
     public void testLock() throws Exception {
         String xml = 
             "<wfs:LockFeature xmlns:sf=\"http://cite.opengeospatial.org/gmlsf\" " +
@@ -45,8 +45,8 @@ public class LockFeatureTest extends WFS20TestSupport {
         String lockId = dom.getDocumentElement().getAttribute("lockId");        
         get("wfs?request=ReleaseLock&version=2.0&lockId=" + lockId);
     }
-	
-	@Test
+    
+    @Test
     public void testSOAP() throws Exception {
         String xml = 
            "<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope'> " + 

@@ -17,7 +17,7 @@ import org.w3c.dom.Document;
 
 public class GMLOutputFormatTest extends WFSTestSupport {
     
-	@Test
+    @Test
     public void testGML2() throws Exception {
         Document dom = getAsDOM( "wfs?request=getfeature&version=1.0.0&outputFormat=gml2&typename=" + 
             MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
@@ -44,7 +44,7 @@ public class GMLOutputFormatTest extends WFSTestSupport {
         assertNull( getFirstElementByTagName(dom, "gml:exterior")); 
     }
     
-	@Test
+    @Test
     public void testGML2GZIP() throws Exception {
 //        InputStream input = get( "wfs?request=getfeature&version=1.0.0&outputFormat=gml2-gzip&typename=" + 
 //            MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());

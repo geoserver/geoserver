@@ -168,7 +168,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
             ev.setWorkspaceId(ws.getId());
         }
         if (store !=null) {
-        	ev.setStoreId(store.getId());
+            ev.setStoreId(store.getId());
         }
         if (subj instanceof ResourceInfo) {
             ev.setNativeName(((ResourceInfo) subj).getNativeName());

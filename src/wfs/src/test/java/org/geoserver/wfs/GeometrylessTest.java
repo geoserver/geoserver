@@ -14,7 +14,7 @@ import org.w3c.dom.NodeList;
 
 public class GeometrylessTest extends WFSTestSupport {
       
-	@Test
+    @Test
     public void testGetFeature10() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&typename=cite:Geometryless&version=1.0.0&service=wfs");
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement()
@@ -27,7 +27,7 @@ public class GeometrylessTest extends WFSTestSupport {
         assertEquals(3, featureMembers.getLength());
     }
    
-	@Test
+    @Test
     public void testGetFeatureReproject10() throws Exception {
         WFSInfo wfs = getWFS();
         wfs.setFeatureBounding( true );
@@ -44,7 +44,7 @@ public class GeometrylessTest extends WFSTestSupport {
         assertEquals(3, featureMembers.getLength());
     }
     
-	@Test
+    @Test
     public void testGetFeature11() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&typename=cite:Geometryless&version=1.1.0&service=wfs");
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement()
@@ -57,7 +57,7 @@ public class GeometrylessTest extends WFSTestSupport {
         assertEquals(3, features.getLength());
     }
     
-	@Test
+    @Test
     public void testGetFeatureReproject11() throws Exception {
         WFSInfo wfs = getWFS();
         wfs.setFeatureBounding( true );
@@ -73,16 +73,16 @@ public class GeometrylessTest extends WFSTestSupport {
         assertEquals(3, features.getLength());
     }
     
-	@Test
+    @Test
     public void testGetFeatureReprojectPost() throws Exception {
         String request = "<wfs:GetFeature service=\"WFS\" xmlns:wfs=\"http://www.opengis.net/wfs\" " +
-        		"version=\"1.0.0\"  outputFormat=\"GML2\" " +
-        		"xmlns:topp=\"http://www.openplans.org/topp\" " +
-        		"xmlns:ogc=\"http://www.opengis.net/ogc\" " +
-        		"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-        		"xsi:schemaLocation=\"http://www.opengis.net/wfs " +
-        		"http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd\">" +
-        		"<wfs:Query typeName=\"cite:Geometryless\" srsName=\"EPSG:900913\"/></wfs:GetFeature>";
+                "version=\"1.0.0\"  outputFormat=\"GML2\" " +
+                "xmlns:topp=\"http://www.openplans.org/topp\" " +
+                "xmlns:ogc=\"http://www.opengis.net/ogc\" " +
+                "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+                "xsi:schemaLocation=\"http://www.opengis.net/wfs " +
+                "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd\">" +
+                "<wfs:Query typeName=\"cite:Geometryless\" srsName=\"EPSG:900913\"/></wfs:GetFeature>";
         System.out.println(request);
         Document doc = postAsDOM("wfs", request);
         

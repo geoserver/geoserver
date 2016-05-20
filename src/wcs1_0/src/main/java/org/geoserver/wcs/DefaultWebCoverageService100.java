@@ -484,8 +484,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             coverage = (GridCoverage2D) reader.read(readParameters);
             if ((coverage == null) || !(coverage instanceof GridCoverage2D)) {
                 throw new IOException("No raster data found in the request (it may be that " +
-                		"the request bbox is outside of the coverage area, or that the filters used " +
-                		"match no portions of it.");
+                        "the request bbox is outside of the coverage area, or that the filters used " +
+                        "match no portions of it.");
             }
 
             // double check what we have loaded
@@ -618,7 +618,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // If this approach succeeds, either the request crs is the same of
             // the coverage crs or the request bbox can be reprojected to that
             // crs
-            //        	
+            //            
             MathTransform destinationToSourceTransform = null;
             // STEP 1: reproject requested BBox to native CRS if needed
             if (!CRS.equalsIgnoreMetadata(requestCRS, nativeCRS)) {

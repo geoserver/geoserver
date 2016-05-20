@@ -686,7 +686,7 @@ public abstract class FeatureTypeSchemaBuilder {
             if(featureTypeMeta.isCircularArcPresent() && this.getClass().equals(GML3.class)) {
                 featureType = new CurveTypeWrapper(featureType);
             }
-			XSDComplexTypeDefinition xsdComplexType = buildComplexSchemaContent(featureType, schema, factory);
+            XSDComplexTypeDefinition xsdComplexType = buildComplexSchemaContent(featureType, schema, factory);
 
             XSDElementDeclaration element = factory.createXSDElementDeclaration();
             element.setName(featureTypeMeta.getName());
@@ -704,7 +704,7 @@ public abstract class FeatureTypeSchemaBuilder {
     }
 
 
-	/**
+    /**
      * Construct an XSD type definition for a ComplexType. 
      * 
      * <p>

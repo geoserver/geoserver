@@ -218,10 +218,10 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator impl
             if (service.getName().equals(serviceName)) continue;
             GeoServerRole role = null;
             try {
-            	role = service.getSecurityManager().loadRoleService(serviceName).getRoleByName(roleName);
+                role = service.getSecurityManager().loadRoleService(serviceName).getRoleByName(roleName);
             } catch (IOException ex) {
-            	LOGGER.log(Level.WARNING,ex.getMessage(),ex);
-            	throw createSecurityException(CANNOT_CHECK_ROLE_IN_SERVICE,roleName,serviceName);
+                LOGGER.log(Level.WARNING,ex.getMessage(),ex);
+                throw createSecurityException(CANNOT_CHECK_ROLE_IN_SERVICE,roleName,serviceName);
             }
             if (role!=null) {
                 throw createSecurityException(ALREADY_EXISTS_IN,roleName,serviceName);                

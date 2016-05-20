@@ -38,11 +38,11 @@ public class FreefsLog extends HttpServlet {
         // TODO: this is a hack, log config should be cleaner 
 
         //JD: Commenting out
-        //    	ConsoleAppender appender = new ConsoleAppender(new PatternLayout());
-        //    	appender.addFilter(new DenyAllFilter());
-        //    	
-        //    	BasicConfigurator.configure(appender);
-        //	
+        //        ConsoleAppender appender = new ConsoleAppender(new PatternLayout());
+        //        appender.addFilter(new DenyAllFilter());
+        //        
+        //        BasicConfigurator.configure(appender);
+        //    
         //HACK: java.util.prefs are awful.  See
         //http://www.allaboutbalance.com/disableprefs.  When the site comes
         //back up we should implement their better way of fixing the problem.

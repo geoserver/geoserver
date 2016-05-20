@@ -200,9 +200,9 @@ public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<
     
     @Override
     public void onInitialize() {
-    	super.onInitialize();
-    	
-    	final Component defaultValue;
+        super.onInitialize();
+        
+        final Component defaultValue;
         
         final String allStyles = getLocalizer().getString("allStyles", this);
         final String layerDefault = getLocalizer().getString("layerDefault", this);

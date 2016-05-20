@@ -21,7 +21,7 @@ import org.apache.wicket.validation.IValidator;
 public class TextParamPanel<T> extends Panel implements ParamPanel {
 
     private static final long serialVersionUID = 5498443514886175158L;
-	
+    
     private TextField<T> textField;
     
     /**
@@ -35,7 +35,7 @@ public class TextParamPanel<T> extends Panel implements ParamPanel {
      *            any extra validator that should be added to the input field, or {@code null}
      */
     @SafeVarargs
-	public TextParamPanel(final String id, final IModel<T> paramValue, final IModel<String> paramLabelModel,
+    public TextParamPanel(final String id, final IModel<T> paramValue, final IModel<String> paramLabelModel,
             final boolean required, IValidator<T>... validators) {
         // make the value of the text field the model of this panel, for easy value retrieval
         super(id, paramValue);

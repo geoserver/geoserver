@@ -12,6 +12,6 @@ import org.geoserver.filters.GeoServerFilter;
  * @author Mark Paxton
  */
 public class OpenEntityManagerInViewFilter extends
-	org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter implements GeoServerFilter {
+    org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter implements GeoServerFilter {
 
 }

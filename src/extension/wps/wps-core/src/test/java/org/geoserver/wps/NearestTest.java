@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class NearestTest extends WPSTestSupport {
-	
+    
     public static QName STREAMS = new QName(MockData.CITE_URI, "Streams", MockData.CITE_PREFIX);
     
     @Override
@@ -33,9 +33,9 @@ public class NearestTest extends WPSTestSupport {
     
     @Before
     public void oneTimeSetUp() throws Exception {
-    	WFSInfo wfs = getGeoServer().getService( WFSInfo.class );
+        WFSInfo wfs = getGeoServer().getService( WFSInfo.class );
         wfs.setFeatureBounding(true);
-    	getGeoServer().save(wfs);
+        getGeoServer().save(wfs);
     }
 
     @Test

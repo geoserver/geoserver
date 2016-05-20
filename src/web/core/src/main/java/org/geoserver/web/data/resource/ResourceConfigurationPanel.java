@@ -28,13 +28,13 @@ import org.geotools.util.logging.Logging;
 public class ResourceConfigurationPanel extends Panel {
     protected static Logger LOGGER = Logging.getLogger(ResourceConfigurationPanel.class);
 
-	public ResourceConfigurationPanel(String panelId, IModel model){
-		super(panelId, model);
-	}
-	
-	public ResourceInfo getResourceInfo(){
-		return (ResourceInfo)getDefaultModelObject();
-	}
+    public ResourceConfigurationPanel(String panelId, IModel model){
+        super(panelId, model);
+    }
+    
+    public ResourceInfo getResourceInfo(){
+        return (ResourceInfo)getDefaultModelObject();
+    }
 
     /**
      * Called when the resource gets updated in the main page. The ajax request target might be null

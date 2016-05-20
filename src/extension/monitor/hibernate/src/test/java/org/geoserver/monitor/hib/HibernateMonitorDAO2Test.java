@@ -36,29 +36,29 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 
 public class HibernateMonitorDAO2Test extends MonitorDAOTestSupport {
 
-	
-	
+    
+    
     private static XmlWebApplicationContext ctx;
 
-	@BeforeClass
+    @BeforeClass
     public static void initHibernate() throws Exception {
-	    
-	    // setup in memory h2 db
-	    Properties p = new Properties();
-	    p.put("driver", "org.h2.Driver");
-	    p.put("url", "jdbc:h2:mem:monitoring");
-	    File file = new File("./target/monitoring/db.properties");
-	    FileOutputStream fos = null;
-	    try {
-	        if(!file.getParentFile().exists()) {
-	            assertTrue(file.getParentFile().mkdirs());
-	        }
-	        fos = new FileOutputStream(file);
-	        p.store(fos, null);
-	    } finally {
-	        IOUtils.closeQuietly(fos);
-	    }
-	    
+        
+        // setup in memory h2 db
+        Properties p = new Properties();
+        p.put("driver", "org.h2.Driver");
+        p.put("url", "jdbc:h2:mem:monitoring");
+        File file = new File("./target/monitoring/db.properties");
+        FileOutputStream fos = null;
+        try {
+            if(!file.getParentFile().exists()) {
+                assertTrue(file.getParentFile().mkdirs());
+            }
+            fos = new FileOutputStream(file);
+            p.store(fos, null);
+        } finally {
+            IOUtils.closeQuietly(fos);
+        }
+        
         ctx = new XmlWebApplicationContext() {
             public String[] getConfigLocations() {
                 return new String[]{
@@ -77,8 +77,8 @@ public class HibernateMonitorDAO2Test extends MonitorDAOTestSupport {
     
     @AfterClass
     public static void destroy() throws Exception {
-    	dao.dispose();
-    	ctx.close();
+        dao.dispose();
+        ctx.close();
         DeleteDbFiles.execute("target/monitoring", "monitoring", false);
     }
 

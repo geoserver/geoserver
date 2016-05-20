@@ -2070,7 +2070,7 @@ public class XStreamPersister {
                             writer.endNode();
                         } else {
                             throw new RuntimeException("Cannot handle this type of validator," +
-                            		" please extend the VirtualTableConverter " + param.getValidator().getClass());
+                                    " please extend the VirtualTableConverter " + param.getValidator().getClass());
                         }
                     }
                     writer.endNode();
@@ -2214,10 +2214,10 @@ public class XStreamPersister {
     
     static class MeasureConverter extends AbstractSingleValueConverter {
 
-    	org.geotools.util.Converter str2Measure = new MeasureConverterFactory().createConverter(String.class, Measure.class, null);
-    	org.geotools.util.Converter measure2Str = new MeasureConverterFactory().createConverter(Measure.class, String.class, null);
+        org.geotools.util.Converter str2Measure = new MeasureConverterFactory().createConverter(String.class, Measure.class, null);
+        org.geotools.util.Converter measure2Str = new MeasureConverterFactory().createConverter(Measure.class, String.class, null);
 
-    	
+        
         @Override
         public boolean canConvert(Class type) {
             return Measure.class.isAssignableFrom(type);
@@ -2225,20 +2225,20 @@ public class XStreamPersister {
 
         @Override
         public Object fromString(String str) {
-        	try {
-				return str2Measure.convert(str, Measure.class);
-			} catch (Exception e) {
-				throw new IllegalArgumentException(e);
-			}
+            try {
+                return str2Measure.convert(str, Measure.class);
+            } catch (Exception e) {
+                throw new IllegalArgumentException(e);
+            }
         }
 
         @Override
         public String toString(Object obj) {
-        	try {
-				return measure2Str.convert(obj, String.class);
-			} catch (Exception e) {
-				throw new IllegalArgumentException(e);
-			}
+            try {
+                return measure2Str.convert(obj, String.class);
+            } catch (Exception e) {
+                throw new IllegalArgumentException(e);
+            }
         }
     }
 

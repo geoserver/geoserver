@@ -57,7 +57,7 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
     }
     
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     protected Component getComponentForProperty(String id, IModel<StyleInfo> itemModel,
             Property<StyleInfo> property) {
         final StyleInfo style = (StyleInfo) itemModel.getObject();

@@ -44,7 +44,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
         add(new AjaxLink<Object>("addNew") {
             private static final long serialVersionUID = 8443763075141885559L;
 
-			@Override
+            @Override
             public void onClick(AjaxRequestTarget target) {
                 setResponsePage(new GeofenceRulePage(rulesModel.newRule(), rulesModel));
             }
@@ -54,7 +54,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
         add(remove = new AjaxLink<Object>("removeSelected") {
             private static final long serialVersionUID = 3581476968062788921L;
 
-			@Override
+            @Override
             public void onClick(AjaxRequestTarget target) {
                 rulesModel.remove(rulesPanel.getSelection());
                 target.add(rulesPanel);
@@ -119,7 +119,7 @@ public class GeofenceServerPage extends GeoServerSecuredPage {
     private class ButtonPanel extends Panel {
         
         private static final long serialVersionUID = 833648465957566970L;
-	private ImageAjaxLink<?> upLink;
+    private ImageAjaxLink<?> upLink;
         private ImageAjaxLink<?> downLink;      
         
         public ButtonPanel( String id, final ShortRule rule ) {

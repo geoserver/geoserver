@@ -29,10 +29,10 @@ public class StatusBar extends Panel {
                 private static final long serialVersionUID = -8058471260136015254L;
 
                 @Override
-        	public void renderHead(Component component, IHeaderResponse response) {
-        		response.render(CssHeaderItem.forReference(new PackageResourceReference(StatusBar.class, "statusbar.css")));
-        	}
-        	
+            public void renderHead(Component component, IHeaderResponse response) {
+                response.render(CssHeaderItem.forReference(new PackageResourceReference(StatusBar.class, "statusbar.css")));
+            }
+            
         });
 
         WebMarkupContainer usageBar = new WebMarkupContainer("statusBarProgress");

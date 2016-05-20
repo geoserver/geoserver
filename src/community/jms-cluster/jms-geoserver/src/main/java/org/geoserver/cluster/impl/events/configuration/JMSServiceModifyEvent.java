@@ -22,15 +22,15 @@ import org.geoserver.config.ServiceInfo;
  */
 public class JMSServiceModifyEvent extends JMSModifyEvent<ServiceInfo> {
 
-	public JMSServiceModifyEvent(final ServiceInfo source,
-			final List<String> propertyNames, final List<Object> oldValues,
-			final List<Object> newValues) {
-		super(source, propertyNames, oldValues, newValues);
-	}
+    public JMSServiceModifyEvent(final ServiceInfo source,
+            final List<String> propertyNames, final List<Object> oldValues,
+            final List<Object> newValues) {
+        super(source, propertyNames, oldValues, newValues);
+    }
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
 }

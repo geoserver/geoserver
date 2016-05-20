@@ -19,33 +19,33 @@ import com.thoughtworks.xstream.XStream;
  *
  */
 public class JMSServiceHandlerSPI extends JMSEventHandlerSPI<String,JMSServiceModifyEvent> {
-	
-	private final GeoServer geoserver;
-	private final XStream xstream;
-	private final ToggleSwitch producer;
-	
-	public JMSServiceHandlerSPI(final int priority, final GeoServer geo, final XStream xstream, final ToggleSwitch producer) {
-		super(priority);
-		this.geoserver=geo;
-		this.xstream=xstream;
-		this.producer=producer;
-	}
+    
+    private final GeoServer geoserver;
+    private final XStream xstream;
+    private final ToggleSwitch producer;
+    
+    public JMSServiceHandlerSPI(final int priority, final GeoServer geo, final XStream xstream, final ToggleSwitch producer) {
+        super(priority);
+        this.geoserver=geo;
+        this.xstream=xstream;
+        this.producer=producer;
+    }
 
-	@Override
-	public boolean canHandle(final Object event) {
-//		if (event instanceof ServiceInfo)
-//			return true;
-//		else 
-		if (event instanceof JMSServiceModifyEvent)
-			return true;
-		else
-			return false;
-	}
+    @Override
+    public boolean canHandle(final Object event) {
+//        if (event instanceof ServiceInfo)
+//            return true;
+//        else 
+        if (event instanceof JMSServiceModifyEvent)
+            return true;
+        else
+            return false;
+    }
 
-	@Override
-	public JMSEventHandler<String,JMSServiceModifyEvent> createHandler() {
-		return new JMSServiceHandler(geoserver,xstream,this.getClass(),producer);
-	}
+    @Override
+    public JMSEventHandler<String,JMSServiceModifyEvent> createHandler() {
+        return new JMSServiceHandler(geoserver,xstream,this.getClass(),producer);
+    }
 
 
 }

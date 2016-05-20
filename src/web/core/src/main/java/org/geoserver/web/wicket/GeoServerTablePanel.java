@@ -317,7 +317,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      *
      */
     @SuppressWarnings("unchecked")
-	public List<T> getSelection() {
+    public List<T> getSelection() {
         List<T> result = new ArrayList<T>();
         int i = 0;
         for (Iterator<Component> it = dataView.iterator(); it.hasNext();) {
@@ -412,7 +412,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         int i = 0;
         for (Iterator<Component> it = dataView.iterator(); it.hasNext();) {
             @SuppressWarnings("unchecked")
-			Item<T>  item = (Item<T>) it.next();
+            Item<T>  item = (Item<T>) it.next();
             if (object.equals(item.getModelObject())) {
                 selection[i] = true;
                 return;
@@ -478,7 +478,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             public void onClick(AjaxRequestTarget target) {
                 SortParam<?> currSort = dataProvider.getSort();
                 @SuppressWarnings("unchecked")
-				Property<T> property = (Property<T>) getModelObject();
+                Property<T> property = (Property<T>) getModelObject();
                 if (currSort == null || !property.getName().equals(currSort.getProperty())) {
                     dataProvider.setSort(new SortParam<Object>(property.getName(), true));
                 } else {

@@ -220,7 +220,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         // print(dom);
         
         MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/watertemp/coverages" +
-        		"/watertemp/index/granules?filter=ingestion=2008-11-01T00:00:00Z");
+                "/watertemp/index/granules?filter=ingestion=2008-11-01T00:00:00Z");
         assertEquals(200, response.getStatus());
 
         // check it's gone from the index

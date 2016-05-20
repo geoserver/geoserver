@@ -99,14 +99,14 @@ public class FeatureTemplateTest extends WMSTestSupport {
         SimpleFeatureCollection fc = source.getFeatures();
         SimpleFeatureIterator features = fc.features();
         try {
-			SimpleFeature f = features.next();
-	        
-	        FeatureTemplate template = new FeatureTemplate();
-	        String result = template.template(f, "dummy.ftl", Dummy.class );
-	        
-	        assertEquals( "dummy", result );
+            SimpleFeature f = features.next();
+            
+            FeatureTemplate template = new FeatureTemplate();
+            String result = template.template(f, "dummy.ftl", Dummy.class );
+            
+            assertEquals( "dummy", result );
         } finally {
-        	features.close();
+            features.close();
         }
     }
     

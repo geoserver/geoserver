@@ -14,7 +14,7 @@ import org.w3c.dom.Document;
 
 public class GetPropertyValueTest extends WFS20TestSupport {
 
-	@Test
+    @Test
     public void testPOST() throws Exception {
         String xml = 
             "<wfs:GetPropertyValue service='WFS' version='2.0.0' "
@@ -31,7 +31,7 @@ public class GetPropertyValueTest extends WFS20TestSupport {
         XMLAssert.assertXpathEvaluatesTo("3", "count(//wfs:member/sf:pointProperty/gml:Point)", dom);
     }
     
-	@Test
+    @Test
     public void testGET() throws Exception {
         Document dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=GetPropertyValue" +
             "&typeNames=sf:PrimitiveGeoFeature&valueReference=pointProperty");

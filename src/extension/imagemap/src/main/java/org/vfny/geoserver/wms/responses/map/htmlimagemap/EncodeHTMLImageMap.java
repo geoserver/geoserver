@@ -46,7 +46,7 @@ public class EncodeHTMLImageMap extends WebMap{
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.responses.wms.map");
     
     /** Filter factory for creating filters */
-	private final static FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
+    private final static FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
     
     /** 
      * Current writer. 
@@ -81,7 +81,7 @@ public class EncodeHTMLImageMap extends WebMap{
         long t = System.currentTimeMillis();
 
         try {
-        	// encodes the different layers
+            // encodes the different layers
             writeLayers();
 
             this.writer.flush();
@@ -94,94 +94,94 @@ public class EncodeHTMLImageMap extends WebMap{
 
     
     /**
-	 * Applies Filters from style rules to the given query, to optimize
-	 * DataStore queries.
-	 * Similar to the method in StreamingRenderer.
-	 * 
-	 * @param styles
-	 * @param q
-	 */
+     * Applies Filters from style rules to the given query, to optimize
+     * DataStore queries.
+     * Similar to the method in StreamingRenderer.
+     * 
+     * @param styles
+     * @param q
+     */
     private Filter processRuleForQuery(FeatureTypeStyle[] styles) {
-		try {
+        try {
 
-			// first we check to see if there are >
-			// "getMaxFiltersToSendToDatastore" rules
-			// if so, then we dont do anything since no matter what there's too
-			// many to send down.
-			// next we check for any else rules. If we find any --> dont send
-			// anything to Datastore
-			// next we check for rules w/o filters. If we find any --> dont send
-			// anything to Datastore
-			//
-			// otherwise, we're gold and can "or" together all the fiters then
-			// AND it with the original filter.
-			// ie. SELECT * FROM ... WHERE (the_geom && BBOX) AND (filter1 OR
-			// filter2 OR filter3);
+            // first we check to see if there are >
+            // "getMaxFiltersToSendToDatastore" rules
+            // if so, then we dont do anything since no matter what there's too
+            // many to send down.
+            // next we check for any else rules. If we find any --> dont send
+            // anything to Datastore
+            // next we check for rules w/o filters. If we find any --> dont send
+            // anything to Datastore
+            //
+            // otherwise, we're gold and can "or" together all the fiters then
+            // AND it with the original filter.
+            // ie. SELECT * FROM ... WHERE (the_geom && BBOX) AND (filter1 OR
+            // filter2 OR filter3);
 
-			
-			final List<Filter> filtersToDS = new ArrayList<Filter>();
-			
-			final int stylesLength = styles.length;
-			
-			int styleRulesLength;
-			FeatureTypeStyle style;
-			int u = 0;
-			Rule r;
-			
-			for (int t = 0; t < stylesLength; t++) // look at each
-			// featuretypestyle
-			{
-				style = styles[t];
-				
-				Rule[] rules=style.getRules();
-				styleRulesLength = rules.length;
-				
-				for (u = 0; u < styleRulesLength; u++) // look at each
-														// rule in the
-														// featuretypestyle
-				{
-					r = rules[u];
-					if (r.getFilter() == null)
-						return null; // uh-oh has no filter (want all rows)
-					if(r.hasElseFilter())
-						return null;  // uh-oh has elseRule
-					filtersToDS.add(r.getFilter());
-				}
-			}
-			
+            
+            final List<Filter> filtersToDS = new ArrayList<Filter>();
+            
+            final int stylesLength = styles.length;
+            
+            int styleRulesLength;
+            FeatureTypeStyle style;
+            int u = 0;
+            Rule r;
+            
+            for (int t = 0; t < stylesLength; t++) // look at each
+            // featuretypestyle
+            {
+                style = styles[t];
+                
+                Rule[] rules=style.getRules();
+                styleRulesLength = rules.length;
+                
+                for (u = 0; u < styleRulesLength; u++) // look at each
+                                                        // rule in the
+                                                        // featuretypestyle
+                {
+                    r = rules[u];
+                    if (r.getFilter() == null)
+                        return null; // uh-oh has no filter (want all rows)
+                    if(r.hasElseFilter())
+                        return null;  // uh-oh has elseRule
+                    filtersToDS.add(r.getFilter());
+                }
+            }
+            
 
-			Filter ruleFiltersCombined=null;
-			Filter newFilter;
-			// We're GOLD -- OR together all the Rule's Filters
-			if (filtersToDS.size() == 1) // special case of 1 filter
-			{
-				ruleFiltersCombined = filtersToDS.get(0);
-			// OR all filters if they are under maxFilterSize in number, else, do not filter
-			} else if(filtersToDS.size()<maxFilterSize) {
-				// build it up
-				ruleFiltersCombined = filtersToDS.get(0);
-				final int size = filtersToDS.size();
-				for (int t = 1; t < size; t++) // NOTE: dont
-				// redo 1st one
-				{
-					newFilter = filtersToDS.get(t);
-					ruleFiltersCombined = filterFactory.or(
-							ruleFiltersCombined, newFilter);
-				}
-			}
-			return ruleFiltersCombined;
-			/*
-			// combine with the geometry filter (preexisting)
-			ruleFiltersCombined = filterFactory.or(
-					q.getFilter(), ruleFiltersCombined);
+            Filter ruleFiltersCombined=null;
+            Filter newFilter;
+            // We're GOLD -- OR together all the Rule's Filters
+            if (filtersToDS.size() == 1) // special case of 1 filter
+            {
+                ruleFiltersCombined = filtersToDS.get(0);
+            // OR all filters if they are under maxFilterSize in number, else, do not filter
+            } else if(filtersToDS.size()<maxFilterSize) {
+                // build it up
+                ruleFiltersCombined = filtersToDS.get(0);
+                final int size = filtersToDS.size();
+                for (int t = 1; t < size; t++) // NOTE: dont
+                // redo 1st one
+                {
+                    newFilter = filtersToDS.get(t);
+                    ruleFiltersCombined = filterFactory.or(
+                            ruleFiltersCombined, newFilter);
+                }
+            }
+            return ruleFiltersCombined;
+            /*
+            // combine with the geometry filter (preexisting)
+            ruleFiltersCombined = filterFactory.or(
+                    q.getFilter(), ruleFiltersCombined);
 
-			// set the actual filter
-			q.setFilter(ruleFiltersCombined);
-			*/
-		} catch (Exception e) {
-			return null;
-		}
-	}
+            // set the actual filter
+            q.setFilter(ruleFiltersCombined);
+            */
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     /**
      * Filters the feature type styles of <code>style</code> returning only
@@ -211,10 +211,10 @@ public class EncodeHTMLImageMap extends WebMap{
             String featureTypeName = featureTypeStyle.getFeatureTypeName();
             Rule[] rules=featureTypeStyle.getRules();
             if(rules!=null)
-            	rules=filterRules(rules);
+                rules=filterRules(rules);
             //does this style have any rules
             if (rules == null || rules.length == 0 ) {
-            	continue;
+                continue;
             }
             featureTypeStyle.setRules(rules);            
             
@@ -235,9 +235,9 @@ public class EncodeHTMLImageMap extends WebMap{
      * @return true if scaleDenominator is in the rule defined range
      */
     public static boolean isWithInScale(Rule r,double scaleDenominator) {
-		return ((r.getMinScaleDenominator() ) <= scaleDenominator)
-				&& ((r.getMaxScaleDenominator()) > scaleDenominator);
-	}
+        return ((r.getMinScaleDenominator() ) <= scaleDenominator)
+                && ((r.getMaxScaleDenominator()) > scaleDenominator);
+    }
     
     /**
      * Filter given rules, to consider only the rules compatible
@@ -246,30 +246,30 @@ public class EncodeHTMLImageMap extends WebMap{
      *
      */
     private Rule[] filterRules(Rule[] rules) {
-    	List<Rule> result=new ArrayList<Rule>();
-    	for(int count=0;count<rules.length;count++) {
-    		Rule rule=rules[count];
-    		double scaleDenominator;
-			try {
-				scaleDenominator = RendererUtilities.calculateScale(mapContent.getRenderingArea(), mapContent.getMapWidth(), mapContent.getMapHeight(),90);
-			
-	            //is this rule within scale?
-	            if (EncodeHTMLImageMap.isWithInScale(rule,scaleDenominator)) {
-	            	result.add(rule);
-	            }
+        List<Rule> result=new ArrayList<Rule>();
+        for(int count=0;count<rules.length;count++) {
+            Rule rule=rules[count];
+            double scaleDenominator;
+            try {
+                scaleDenominator = RendererUtilities.calculateScale(mapContent.getRenderingArea(), mapContent.getMapWidth(), mapContent.getMapHeight(),90);
+            
+                //is this rule within scale?
+                if (EncodeHTMLImageMap.isWithInScale(rule,scaleDenominator)) {
+                    result.add(rule);
+                }
             } catch (TransformException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    	}
-		// TODO Auto-generated method stub
-		return result.toArray(new Rule[result.size()]);
-	}
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (FactoryException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        // TODO Auto-generated method stub
+        return result.toArray(new Rule[result.size()]);
+    }
 
-	/**
+    /**
      * Encodes the current set of layers.
      *
      * @throws IOException if an error occurs during encoding
@@ -278,16 +278,16 @@ public class EncodeHTMLImageMap extends WebMap{
      * @task TODO: respect layer filtering given by their Styles
      */
     @SuppressWarnings("unchecked")
-	private void writeLayers() throws IOException, AbortedException {
+    private void writeLayers() throws IOException, AbortedException {
         for(Layer layer:mapContent.layers()){    
-        	SimpleFeatureSource fSource;
+            SimpleFeatureSource fSource;
             fSource = (SimpleFeatureSource) layer.getFeatureSource();
             SimpleFeatureType schema = fSource.getSchema();
             /*FeatureSource fSource = layer.getFeatureSource();
             FeatureType schema = fSource.getSchema();*/
 
             try {
-            	ReferencedEnvelope aoi = mapContent.getRenderingArea();
+                ReferencedEnvelope aoi = mapContent.getRenderingArea();
                 
                 CoordinateReferenceSystem sourceCrs = schema.getGeometryDescriptor().getCoordinateReferenceSystem();
 
@@ -296,7 +296,7 @@ public class EncodeHTMLImageMap extends WebMap{
                 if (reproject) {
                     aoi = aoi.transform(sourceCrs, true);
                 }
-            	// apply filters.
+                // apply filters.
                 // 1) bbox filter
                 BBOX bboxFilter = filterFactory.bbox(schema.getGeometryDescriptor().getLocalName(), 
                         aoi.getMinX() , aoi.getMinY(), aoi.getMaxX(), aoi.getMaxY(), null);
@@ -308,7 +308,7 @@ public class EncodeHTMLImageMap extends WebMap{
 
                 writer.write("<map name=\"" + mapId + "\">\n");
 
-            	// 2) definition query filter
+                // 2) definition query filter
                 Query definitionQuery = layer.getQuery();
                 LOGGER.info("Definition Query: "+definitionQuery.toString());
                 if (!definitionQuery.equals(Query.ALL)) {
@@ -320,25 +320,25 @@ public class EncodeHTMLImageMap extends WebMap{
                 }
                 
                 FeatureTypeStyle[] ftsList=filterFeatureTypeStyles(layer.getStyle(), fSource.getSchema());
-            	// 3) rule filters               
+                // 3) rule filters               
                 Filter ruleFilter=processRuleForQuery(ftsList);
-				if(ruleFilter!=null) {
-					// combine with the geometry filter (preexisting)
-					ruleFilter = filterFactory.and(
-						q.getFilter(), ruleFilter);
+                if(ruleFilter!=null) {
+                    // combine with the geometry filter (preexisting)
+                    ruleFilter = filterFactory.and(
+                        q.getFilter(), ruleFilter);
 
-					// set the actual filter
-					//q.setFilter(ruleFilter);
-					q = new DefaultQuery(schema.getTypeName(),ruleFilter);
-                	//q = (Query) DataUtilities.mixQueries(new Query(schema.getTypeName(),ruleFilter), q, "HTMLImageMapEncoder");
-				}
+                    // set the actual filter
+                    //q.setFilter(ruleFilter);
+                    q = new DefaultQuery(schema.getTypeName(),ruleFilter);
+                    //q = (Query) DataUtilities.mixQueries(new Query(schema.getTypeName(),ruleFilter), q, "HTMLImageMapEncoder");
+                }
                 //ensure reprojection occurs, do not trust query, use the wrapper  
                 SimpleFeatureCollection fColl = null;//fSource.getFeatures(q);
                 //FeatureCollection fColl=null;
                 if ( reproject ) {
-                	fColl=new ReprojectFeatureResults( fSource.getFeatures(q),mapContent.getCoordinateReferenceSystem() );
+                    fColl=new ReprojectFeatureResults( fSource.getFeatures(q),mapContent.getCoordinateReferenceSystem() );
                 } else
-                	fColl=fSource.getFeatures(q);
+                    fColl=fSource.getFeatures(q);
                 
                 // encodes the current layer, using the defined style
                 writer.writeFeatures(fColl, ftsList);

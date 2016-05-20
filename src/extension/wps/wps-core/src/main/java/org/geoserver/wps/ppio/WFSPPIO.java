@@ -63,9 +63,9 @@ public class WFSPPIO extends XMLPPIO {
             //allow WFS result to be logged for debugging purposes
             //WFS result can be large, so use only for debugging
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	    ByteStreams.copy(input, outputStream);
-	    streamBytes = outputStream.toByteArray();
-	    input = new ByteArrayInputStream(streamBytes);	    	    
+        ByteStreams.copy(input, outputStream);
+        streamBytes = outputStream.toByteArray();
+        input = new ByteArrayInputStream(streamBytes);                
         }
         Object result = p.parse(input);
         if(result instanceof FeatureCollectionType){
@@ -73,7 +73,7 @@ public class WFSPPIO extends XMLPPIO {
             return decode(fct);            
         }else{
             if(LOGGER.isLoggable(Level.FINEST)){
-        	LOGGER.log(Level.FINEST, "Decoding the following WFS response did not result in an object of type FeatureCollectionType: \n"+new String(streamBytes));
+            LOGGER.log(Level.FINEST, "Decoding the following WFS response did not result in an object of type FeatureCollectionType: \n"+new String(streamBytes));
             }
             throw new IllegalArgumentException("Decoded WFS result is not a feature collection, got a: "+result);
         }

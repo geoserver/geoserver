@@ -132,35 +132,35 @@ public class UserRoleRestControllerTest extends GeofenceBaseTest {
         //not found errors - will be translated by spring exception handler to code 404 
         boolean notfound = false;
         try {
-        	usersController.getUsers("blabla");
+            usersController.getUsers("blabla");
         } catch (IllegalArgumentException e) {
-        	notfound = true;
+            notfound = true;
         }
         assertTrue(notfound);
         
         notfound = false;
         try {
-        	usersController.getGroupsFromUser(USER_SERVICE, "niemand");
+            usersController.getGroupsFromUser(USER_SERVICE, "niemand");
         } catch (IllegalArgumentException e) {
-        	notfound = true;
+            notfound = true;
         }
         assertTrue(notfound);
         
 
         notfound = false;
         try {
-        	usersController.getUsersFromGroup(USER_SERVICE, "onbestaand");
+            usersController.getUsersFromGroup(USER_SERVICE, "onbestaand");
         } catch (IllegalArgumentException e) {
-        	notfound = true;
+            notfound = true;
         }
         assertTrue(notfound);
 
 
         notfound = false;
         try {
-        	rolesController.delete("onbestaand");
+            rolesController.delete("onbestaand");
         } catch (IllegalArgumentException e) {
-        	notfound = true;
+            notfound = true;
         }
         assertTrue(notfound);
     }

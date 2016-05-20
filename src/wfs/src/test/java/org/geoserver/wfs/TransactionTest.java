@@ -73,9 +73,9 @@ public class TransactionTest extends WFSTestSupport {
 
     }
     
-	@Test
+    @Test
     public void testDoubleDelete() throws Exception {
-    	// see 
+        // see 
 
         // 1. do a getFeature
         String getFeature = "<wfs:GetFeature " + "service=\"WFS\" "
@@ -117,7 +117,7 @@ public class TransactionTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("13", "count(//gml:featureMember)", dom);
     }
 
-	@Test
+    @Test
     public void testInsert() throws Exception {
 
         // 1. do a getFeature
@@ -160,7 +160,7 @@ public class TransactionTest extends WFSTestSupport {
                 .getLength());
     }
 
-	@Test
+    @Test
     public void testUpdate() throws Exception {
 
         // 1. do a getFeature
@@ -202,7 +202,7 @@ public class TransactionTest extends WFSTestSupport {
                 .getFirstChild().getNodeValue());
     }
     
-	@Test
+    @Test
     public void testUpdateLayerQualified() throws Exception {
         // 1. do a getFeature
         String getFeature = "<wfs:GetFeature " + "service=\"WFS\" "
@@ -246,7 +246,7 @@ public class TransactionTest extends WFSTestSupport {
                 .getFirstChild().getNodeValue());
     }
 
-	@Test
+    @Test
     public void testInsertWithBoundedBy() throws Exception {
         String xml = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
             + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
@@ -284,7 +284,7 @@ public class TransactionTest extends WFSTestSupport {
         assertTrue(dom.getElementsByTagName("wfs:SUCCESS").getLength() > 0);
     }
     
-	@Test
+    @Test
     public void testInsertWorkspaceQualified() throws Exception {
      // 1. do a getFeature
         String getFeature = "<wfs:GetFeature " + "service=\"WFS\" "
@@ -329,7 +329,7 @@ public class TransactionTest extends WFSTestSupport {
                 .getLength());
     }
     
-	@Test
+    @Test
     public void testInsertLayerQualified() throws Exception {
         // 1. do a getFeature
        String getFeature = "<wfs:GetFeature " + "service=\"WFS\" "
@@ -374,7 +374,7 @@ public class TransactionTest extends WFSTestSupport {
                .getLength());
    }
 
-	@Test
+    @Test
    public void testUpdateWithDifferentPrefix() throws Exception {
 
       // 1. do a getFeature

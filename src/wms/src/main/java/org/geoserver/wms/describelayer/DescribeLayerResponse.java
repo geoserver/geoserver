@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
 public abstract class DescribeLayerResponse extends Response {
 
     private final String type;
-	
+    
     /**
      * Creates a new GetMapResponse object.
      */
@@ -65,15 +65,15 @@ public abstract class DescribeLayerResponse extends Response {
      */
     @Override
     public String getMimeType(Object value, Operation operation)
-			throws ServiceException {
+            throws ServiceException {
 
-		Object op = operation.getParameters()[0];
-		if (op instanceof DescribeLayerRequest) {
-			DescribeLayerRequest dlr = (DescribeLayerRequest) op;
-			return dlr.getOutputFormat();
-		}
-		throw new ServiceException("Unable to parse incoming operation");
-	}
+        Object op = operation.getParameters()[0];
+        if (op instanceof DescribeLayerRequest) {
+            DescribeLayerRequest dlr = (DescribeLayerRequest) op;
+            return dlr.getOutputFormat();
+        }
+        throw new ServiceException("Unable to parse incoming operation");
+    }
 
     
     /**
@@ -98,14 +98,14 @@ public abstract class DescribeLayerResponse extends Response {
         Assert.isTrue(value instanceof DescribeLayerModel);
         final DescribeLayerModel results = (DescribeLayerModel) value;
         try {
-        	write(results, request, output);
+            write(results, request, output);
         } finally {
-    		if (output!=null){
-    			try {
-    				output.flush();
-    			} catch (IOException ioe){}
-    			IOUtils.closeQuietly(output);
-    		}
+            if (output!=null){
+                try {
+                    output.flush();
+                } catch (IOException ioe){}
+                IOUtils.closeQuietly(output);
+            }
         }
         
     }

@@ -36,16 +36,16 @@ import org.w3c.dom.NodeList;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DescribeFeatureTypeTest extends WFS20TestSupport {
-	
+    
     @Override
     protected String getLogConfiguration() {
         return "/DEFAULT_LOGGING.properties";
     }
     
-	@Override
+    @Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
-    	DataStoreInfo di = getCatalog().getDataStoreByName(CiteTestData.CITE_PREFIX);
-    	di.setEnabled(false);
+        DataStoreInfo di = getCatalog().getDataStoreByName(CiteTestData.CITE_PREFIX);
+        di.setEnabled(false);
         getCatalog().save(di);
     }
 

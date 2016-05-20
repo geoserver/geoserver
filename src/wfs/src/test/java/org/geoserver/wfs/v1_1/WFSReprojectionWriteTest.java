@@ -173,7 +173,7 @@ public class WFSReprojectionWriteTest extends WFSTestSupport {
                 +        "</gml:LinearRing>"
                 +      "</gml:exterior>"
                 +    "</gml:Polygon>"
-        		+ "</wfs:Value>" 
+                + "</wfs:Value>" 
                 + "</wfs:Property>" 
                 + "<ogc:Filter>"
                 + "<ogc:PropertyIsEqualTo>"

@@ -30,7 +30,7 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
     // protected String getDefaultLogConfiguration() {
     // return "/DEFAULT_LOGGING.properties";
     // }
-	
+    
     @Test
     public void testKvpBasic() throws Exception {
         String request = "wcs?service=WCS&version=1.1.1&request=GetCoverage" + "&identifier="
@@ -100,7 +100,7 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         // make sure we can read the coverage back
         ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
         ImageInputStream iis = ImageIO.createImageInputStream(coveragePart.getInputStream());
-		reader.setInput(iis);
+        reader.setInput(iis);
         reader.read(0);
         iis.close();
     }

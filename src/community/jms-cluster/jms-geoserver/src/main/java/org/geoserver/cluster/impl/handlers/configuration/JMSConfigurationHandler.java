@@ -19,35 +19,35 @@ import com.thoughtworks.xstream.XStream;
  *
  */
 public abstract class JMSConfigurationHandler<TYPE> extends
-		JMSEventHandler<String, TYPE> {
-	public JMSConfigurationHandler(final XStream xstream,
-			Class<JMSEventHandlerSPI<String, TYPE>> clazz) {
-		super(xstream,clazz);
-		// omit not serializable fields
-		omitFields(xstream);
-	}
+        JMSEventHandler<String, TYPE> {
+    public JMSConfigurationHandler(final XStream xstream,
+            Class<JMSEventHandlerSPI<String, TYPE>> clazz) {
+        super(xstream,clazz);
+        // omit not serializable fields
+        omitFields(xstream);
+    }
 
-	/**
-	 * here you may modify XStream [de]serialization adding 
-	 * omitFields and all other changes supported by XStream 
-	 * 
-	 * @param xstream a not null and initted XStream to use
-	 */
-	protected abstract void omitFields(final XStream xstream);
-	
-	@Override
-	public String serialize(TYPE  event) throws Exception {
-		return xstream.toXML(event);
-	}
+    /**
+     * here you may modify XStream [de]serialization adding 
+     * omitFields and all other changes supported by XStream 
+     * 
+     * @param xstream a not null and initted XStream to use
+     */
+    protected abstract void omitFields(final XStream xstream);
+    
+    @Override
+    public String serialize(TYPE  event) throws Exception {
+        return xstream.toXML(event);
+    }
 
-	@Override
-	public TYPE deserialize(String s) throws Exception {
-		final Object source = xstream.fromXML(s);
-		if (source!=null) {
-			return (TYPE) source;
-		} else {
-			throw new IllegalArgumentException(this.getClass().getCanonicalName()+" is unable to deserialize the object:"+s);
-		}
-		
-	}
+    @Override
+    public TYPE deserialize(String s) throws Exception {
+        final Object source = xstream.fromXML(s);
+        if (source!=null) {
+            return (TYPE) source;
+        } else {
+            throw new IllegalArgumentException(this.getClass().getCanonicalName()+" is unable to deserialize the object:"+s);
+        }
+        
+    }
 }

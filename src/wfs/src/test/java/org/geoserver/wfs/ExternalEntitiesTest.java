@@ -24,86 +24,86 @@ import org.w3c.dom.Document;
 public class ExternalEntitiesTest extends WFSTestSupport {
 
     private static final String WFS_1_0_0_REQUEST = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
-    		"<!DOCTYPE wfs:GetFeature [\r\n" + 
-    		"<!ENTITY c SYSTEM \"FILE:///this/file/does/not/exist?.XSD\">\r\n" + 
-    		"]>\r\n" + 
-    		"<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" \r\n" + 
-    		"  outputFormat=\"GML2\"\r\n" + 
-    		"  xmlns:cdf=\"http://www.opengis.net/cite/data\"\r\n" + 
-    		"  xmlns:wfs=\"http://www.opengis.net/wfs\"\r\n" + 
-    		"  xmlns:ogc=\"http://www.opengis.net/ogc\"\r\n" + 
-    		"  xmlns:gml=\"http://www.opengis.net/gml\"\r\n" + 
-    		"  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n" + 
-    		"  xsi:schemaLocation=\"http://www.opengis.net/wfs\r\n" + 
-    		"                      http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd\">\r\n" + 
-    		"  <wfs:Query typeName=\"cdf:Fifteen\" handle=\"test\">\r\n" + 
-    		"        <ogc:Literal>&c;</ogc:Literal>\r\n" + 
-    		"    <ogc:Filter>\r\n" + 
-    		"      <ogc:BBOX>\r\n" + 
-    		"        <ogc:PropertyName>the_geom</ogc:PropertyName>\r\n" + 
-    		"        <gml:Box srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\r\n" + 
-    		"           <gml:coordinates>-75.102613,40.212597 -72.361859,41.512517</gml:coordinates>\r\n" + 
-    		"        </gml:Box>\r\n" + 
-    		"      </ogc:BBOX>\r\n" + 
-    		"   </ogc:Filter>\r\n" + 
-    		"  </wfs:Query>\r\n" + 
-    		"</wfs:GetFeature>";
+            "<!DOCTYPE wfs:GetFeature [\r\n" + 
+            "<!ENTITY c SYSTEM \"FILE:///this/file/does/not/exist?.XSD\">\r\n" + 
+            "]>\r\n" + 
+            "<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" \r\n" + 
+            "  outputFormat=\"GML2\"\r\n" + 
+            "  xmlns:cdf=\"http://www.opengis.net/cite/data\"\r\n" + 
+            "  xmlns:wfs=\"http://www.opengis.net/wfs\"\r\n" + 
+            "  xmlns:ogc=\"http://www.opengis.net/ogc\"\r\n" + 
+            "  xmlns:gml=\"http://www.opengis.net/gml\"\r\n" + 
+            "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n" + 
+            "  xsi:schemaLocation=\"http://www.opengis.net/wfs\r\n" + 
+            "                      http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd\">\r\n" + 
+            "  <wfs:Query typeName=\"cdf:Fifteen\" handle=\"test\">\r\n" + 
+            "        <ogc:Literal>&c;</ogc:Literal>\r\n" + 
+            "    <ogc:Filter>\r\n" + 
+            "      <ogc:BBOX>\r\n" + 
+            "        <ogc:PropertyName>the_geom</ogc:PropertyName>\r\n" + 
+            "        <gml:Box srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\r\n" + 
+            "           <gml:coordinates>-75.102613,40.212597 -72.361859,41.512517</gml:coordinates>\r\n" + 
+            "        </gml:Box>\r\n" + 
+            "      </ogc:BBOX>\r\n" + 
+            "   </ogc:Filter>\r\n" + 
+            "  </wfs:Query>\r\n" + 
+            "</wfs:GetFeature>";
     
     private static final String WFS_1_1_0_REQUEST = "<!DOCTYPE wfs:GetFeature [\r\n" + 
-    		"<!ELEMENT wfs:GetFeature (wfs:Query*)>\r\n" + 
-    		"<!ATTLIST wfs:GetFeature\r\n" + 
-    		"                service CDATA #FIXED \"WFS\"\r\n" + 
-    		"                version CDATA #FIXED \"1.1.0\"\r\n" + 
-    		"        xmlns:wfs CDATA #FIXED \"http://www.opengis.net/wfs\"\r\n" + 
-    		"                xmlns:ogc CDATA #FIXED \"http://www.opengis.net/ogc\">\r\n" + 
-    		"<!ELEMENT wfs:Query (wfs:PropertyName*,ogc:Filter?)>\r\n" + 
-    		"<!ATTLIST wfs:Query typeName CDATA #FIXED \"cdf:Fifteen\">\r\n" + 
-    		"<!ELEMENT wfs:PropertyName (#PCDATA) >\r\n" + 
-    		"<!ELEMENT ogc:Filter (ogc:FeatureId*)>\r\n" + 
-    		"<!ELEMENT ogc:FeatureId EMPTY>\r\n" + 
-    		"<!ATTLIST ogc:FeatureId fid CDATA #FIXED \"states.3\">\r\n" + 
-    		"\r\n" + 
-    		"<!ENTITY passwd  SYSTEM \"FILE:///this/file/does/not/exist?.XSD\">]>\r\n" + 
-    		"<wfs:GetFeature service=\"WFS\" version=\"1.1.0\" \r\n" + 
-    		"  xmlns:wfs=\"http://www.opengis.net/wfs\"\r\n" + 
-    		"  xmlns:ogc=\"http://www.opengis.net/ogc\">\r\n" + 
-    		"  <wfs:Query typeName=\"cdf:Fifteen\">\r\n" + 
-    		"    <wfs:PropertyName>&passwd;</wfs:PropertyName>\r\n" + 
-    		"        <ogc:Filter>\r\n" + 
-    		"       <ogc:FeatureId fid=\"states.3\"/>\r\n" + 
-    		"    </ogc:Filter>\r\n" + 
-    		"  </wfs:Query>\r\n" + 
-    		"</wfs:GetFeature>";
+            "<!ELEMENT wfs:GetFeature (wfs:Query*)>\r\n" + 
+            "<!ATTLIST wfs:GetFeature\r\n" + 
+            "                service CDATA #FIXED \"WFS\"\r\n" + 
+            "                version CDATA #FIXED \"1.1.0\"\r\n" + 
+            "        xmlns:wfs CDATA #FIXED \"http://www.opengis.net/wfs\"\r\n" + 
+            "                xmlns:ogc CDATA #FIXED \"http://www.opengis.net/ogc\">\r\n" + 
+            "<!ELEMENT wfs:Query (wfs:PropertyName*,ogc:Filter?)>\r\n" + 
+            "<!ATTLIST wfs:Query typeName CDATA #FIXED \"cdf:Fifteen\">\r\n" + 
+            "<!ELEMENT wfs:PropertyName (#PCDATA) >\r\n" + 
+            "<!ELEMENT ogc:Filter (ogc:FeatureId*)>\r\n" + 
+            "<!ELEMENT ogc:FeatureId EMPTY>\r\n" + 
+            "<!ATTLIST ogc:FeatureId fid CDATA #FIXED \"states.3\">\r\n" + 
+            "\r\n" + 
+            "<!ENTITY passwd  SYSTEM \"FILE:///this/file/does/not/exist?.XSD\">]>\r\n" + 
+            "<wfs:GetFeature service=\"WFS\" version=\"1.1.0\" \r\n" + 
+            "  xmlns:wfs=\"http://www.opengis.net/wfs\"\r\n" + 
+            "  xmlns:ogc=\"http://www.opengis.net/ogc\">\r\n" + 
+            "  <wfs:Query typeName=\"cdf:Fifteen\">\r\n" + 
+            "    <wfs:PropertyName>&passwd;</wfs:PropertyName>\r\n" + 
+            "        <ogc:Filter>\r\n" + 
+            "       <ogc:FeatureId fid=\"states.3\"/>\r\n" + 
+            "    </ogc:Filter>\r\n" + 
+            "  </wfs:Query>\r\n" + 
+            "</wfs:GetFeature>";
     
     private static final String WFS_2_0_0_REQUEST = "<?xml version=\"1.0\" ?>\r\n" + 
-    		"<!DOCTYPE wfs:GetFeature [\r\n" + 
-    		"<!ELEMENT wfs:GetFeature (wfs:Query*)>\r\n" + 
-    		"<!ATTLIST wfs:GetFeature\r\n" + 
-    		"                service   CDATA #FIXED \"WFS\"\r\n" + 
-    		"                version   CDATA #FIXED \"2.0.0\"\r\n" + 
-    		"                outputFormat CDATA #FIXED \"application/gml+xml; version=3.2\"\r\n" + 
-    		"        xmlns:wfs CDATA #FIXED \"http://www.opengis.net/wfs\"\r\n" + 
-    		"                xmlns:ogc CDATA #FIXED \"http://www.opengis.net/ogc\"\r\n" + 
-    		"                xmlns:fes CDATA #FIXED \"http://www.opengis.net/fes/2.0\">\r\n" + 
-    		"<!ELEMENT wfs:Query (wfs:PropertyName*,ogc:Filter?)>\r\n" + 
-    		"<!ATTLIST wfs:Query typeName CDATA #FIXED \"cdf:Fifteen\">\r\n" + 
-    		"<!ELEMENT wfs:PropertyName (#PCDATA) >\r\n" + 
-    		"<!ELEMENT ogc:Filter (fes:ResourceId*)>\r\n" + 
-    		"<!ELEMENT fes:ResourceId EMPTY>\r\n" + 
-    		"<!ATTLIST fes:ResourceId rid CDATA #FIXED \"states.3\">\r\n" + 
-    		"\r\n" + 
-    		"<!ENTITY passwd  SYSTEM \"FILE:///thisfiledoesnotexist?.XSD\">\r\n" + 
-    		"]>\r\n" + 
-    		"<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" outputFormat=\"application/gml+xml; version=3.2\"\r\n" + 
-    		"        xmlns:wfs=\"http://www.opengis.net/wfs/2.0\"\r\n" + 
-    		"        xmlns:fes=\"http://www.opengis.net/fes/2.0\">\r\n" + 
-    		"        <wfs:Query typeName=\"cdf:Fifteen\">\r\n" + 
-    		"                <wfs:PropertyName>&passwd;</wfs:PropertyName>\r\n" + 
-    		"                <fes:Filter>\r\n" + 
-    		"                        <fes:ResourceId rid=\"states.3\"/>\r\n" + 
-    		"                </fes:Filter>\r\n" + 
-    		"        </wfs:Query>\r\n" + 
-    		"</wfs:GetFeature>";
+            "<!DOCTYPE wfs:GetFeature [\r\n" + 
+            "<!ELEMENT wfs:GetFeature (wfs:Query*)>\r\n" + 
+            "<!ATTLIST wfs:GetFeature\r\n" + 
+            "                service   CDATA #FIXED \"WFS\"\r\n" + 
+            "                version   CDATA #FIXED \"2.0.0\"\r\n" + 
+            "                outputFormat CDATA #FIXED \"application/gml+xml; version=3.2\"\r\n" + 
+            "        xmlns:wfs CDATA #FIXED \"http://www.opengis.net/wfs\"\r\n" + 
+            "                xmlns:ogc CDATA #FIXED \"http://www.opengis.net/ogc\"\r\n" + 
+            "                xmlns:fes CDATA #FIXED \"http://www.opengis.net/fes/2.0\">\r\n" + 
+            "<!ELEMENT wfs:Query (wfs:PropertyName*,ogc:Filter?)>\r\n" + 
+            "<!ATTLIST wfs:Query typeName CDATA #FIXED \"cdf:Fifteen\">\r\n" + 
+            "<!ELEMENT wfs:PropertyName (#PCDATA) >\r\n" + 
+            "<!ELEMENT ogc:Filter (fes:ResourceId*)>\r\n" + 
+            "<!ELEMENT fes:ResourceId EMPTY>\r\n" + 
+            "<!ATTLIST fes:ResourceId rid CDATA #FIXED \"states.3\">\r\n" + 
+            "\r\n" + 
+            "<!ENTITY passwd  SYSTEM \"FILE:///thisfiledoesnotexist?.XSD\">\r\n" + 
+            "]>\r\n" + 
+            "<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" outputFormat=\"application/gml+xml; version=3.2\"\r\n" + 
+            "        xmlns:wfs=\"http://www.opengis.net/wfs/2.0\"\r\n" + 
+            "        xmlns:fes=\"http://www.opengis.net/fes/2.0\">\r\n" + 
+            "        <wfs:Query typeName=\"cdf:Fifteen\">\r\n" + 
+            "                <wfs:PropertyName>&passwd;</wfs:PropertyName>\r\n" + 
+            "                <fes:Filter>\r\n" + 
+            "                        <fes:ResourceId rid=\"states.3\"/>\r\n" + 
+            "                </fes:Filter>\r\n" + 
+            "        </wfs:Query>\r\n" + 
+            "</wfs:GetFeature>";
     
     @Test
     public void testWfs1_0() throws Exception {

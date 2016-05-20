@@ -12,7 +12,7 @@ import org.geoserver.web.GeoServerApplication;
 public class StyleDetachableModel extends LoadableDetachableModel<StyleInfo> {
 
     private static final long serialVersionUID = 1429186780251933703L;
-	
+    
     String id;
     
     public StyleDetachableModel(StyleInfo style) {

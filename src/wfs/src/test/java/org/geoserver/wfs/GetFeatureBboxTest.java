@@ -17,7 +17,7 @@ import org.w3c.dom.Document;
 
 public class GetFeatureBboxTest extends WFSTestSupport {
        
-	@Test
+    @Test
     public void testFeatureBoudingOn() throws Exception {
         WFSInfo wfs = getWFS();
         wfs.setFeatureBounding( true );
@@ -36,7 +36,7 @@ public class GetFeatureBboxTest extends WFSTestSupport {
         
     }
     
-	@Test
+    @Test
     public void testFeatureBoudingOff() throws Exception {
         WFSInfo wfs = getWFS();
         wfs.setFeatureBounding( false );

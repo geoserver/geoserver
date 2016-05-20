@@ -680,8 +680,8 @@ public class HibernateMonitorDAO2 implements MonitorDAO , DisposableBean {
         
     }
 
-	@Override
-	public void destroy() throws Exception {
-		getSessionFactory().close();
-	}
+    @Override
+    public void destroy() throws Exception {
+        getSessionFactory().close();
+    }
 }

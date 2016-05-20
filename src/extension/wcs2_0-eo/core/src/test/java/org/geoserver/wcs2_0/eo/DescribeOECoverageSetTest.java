@@ -60,7 +60,7 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
         assertEquals("2008-10-31T00:00:00.000Z", xpath.evaluate(base + "/gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:beginPosition", dom));
         assertEquals("2008-11-03T00:00:00.000Z", xpath.evaluate(base + "/gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:endPosition", dom));
         assertEquals("2008-10-31T00:00:00.000Z", xpath.evaluate(base + "/gmlcov:metadata/gmlcov:Extension/wcseo:EOMetadata" +
-        		"/eop:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition", dom));
+                "/eop:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition", dom));
         
         // check the DatasetSeriesDescriptions
         assertEquals("1", xpath.evaluate("count(/wcseo:EOCoverageSetDescription/wcseo:DatasetSeriesDescriptions/wcseo:DatasetSeriesDescription)", dom));
@@ -272,7 +272,7 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
     public void testTimeTrimOverlaps() throws Exception {
         // overlaps with first half
         Document dom = getAsDOM("wcs?request=DescribeEOCoverageSet&version=2.0.1&service=WCS&eoid=sf__spatio-temporal_dss" +
-        		"&subset=phenomenonTime(\"2008-10-31T00:00:00.000Z\",\"2008-10-31T23:59:00.000Z\")");
+                "&subset=phenomenonTime(\"2008-10-31T00:00:00.000Z\",\"2008-10-31T23:59:00.000Z\")");
         assertEquals("8", xpath.evaluate("count(//wcs:CoverageDescriptions/wcs:CoverageDescription)", dom));
         assertEquals("1", xpath.evaluate("count(//wcseo:DatasetSeriesDescriptions)", dom));
         
@@ -326,7 +326,7 @@ public class DescribeOECoverageSetTest extends WCSEOTestSupport {
     public void testMixedTrim() throws Exception {
         // 
         Document dom = getAsDOM("wcs?request=DescribeEOCoverageSet&version=2.0.1&service=WCS&eoid=sf__spatio-temporal_dss" +
-        		"&subset=Long(1,5)&subset=Lat(40,41)&subset=phenomenonTime(\"2008-10-31T00:00:00.000Z\",\"2008-10-31T23:59:00.000Z\")");
+                "&subset=Long(1,5)&subset=Lat(40,41)&subset=phenomenonTime(\"2008-10-31T00:00:00.000Z\",\"2008-10-31T23:59:00.000Z\")");
         // print(dom);
         assertEquals("2", xpath.evaluate("count(//wcs:CoverageDescriptions/wcs:CoverageDescription)", dom));
     }

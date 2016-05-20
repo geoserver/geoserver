@@ -60,8 +60,8 @@ public class JMSModifyEvent<S extends Serializable> {
     }
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
 }

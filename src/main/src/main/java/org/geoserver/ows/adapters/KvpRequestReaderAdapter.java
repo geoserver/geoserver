@@ -80,12 +80,12 @@ public class KvpRequestReaderAdapter extends org.geoserver.ows.KvpRequestReader
             } catch (NoSuchMethodException e) {
                 Class[] classes = clazz.getInterfaces();
                 for (Class c : classes) {
-                	try {
-                		constructor = delegateClass.getConstructor(new Class[] { Map.class, c });
-                	} catch(NoSuchMethodException e2) {
-                		// no harm done
-                	}
-				}
+                    try {
+                        constructor = delegateClass.getConstructor(new Class[] { Map.class, c });
+                    } catch(NoSuchMethodException e2) {
+                        // no harm done
+                    }
+                }
                 clazz = clazz.getSuperclass();
             }
         }
@@ -95,7 +95,7 @@ public class KvpRequestReaderAdapter extends org.geoserver.ows.KvpRequestReader
             throw new IllegalStateException("No appropriate constructor");
         }
 
-        //create an instance of the delegate	
+        //create an instance of the delegate    
         KvpRequestReader delegate = (KvpRequestReader) constructor.newInstance(new Object[] {
                     kvp, service
                 });

@@ -153,7 +153,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                 Iterator<Component> iterator = grids.iterator();
                 while (iterator.hasNext()) {
                     @SuppressWarnings("unchecked")
-					ListItem<Grid> next = (ListItem<Grid>) iterator.next();
+                    ListItem<Grid> next = (ListItem<Grid>) iterator.next();
                     next.get("resolution").setEnabled(useResolutions);
                     next.get("scale").setEnabled(!useResolutions);
                 }

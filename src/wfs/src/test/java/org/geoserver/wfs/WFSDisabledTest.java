@@ -12,7 +12,7 @@ import org.w3c.dom.Document;
 
 public class WFSDisabledTest extends WFSTestSupport {
     
-	@Test
+    @Test
     public void testDisabledServiceResponse() throws Exception {
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         wfs.setEnabled(false);
@@ -23,7 +23,7 @@ public class WFSDisabledTest extends WFSTestSupport {
                 .getNodeName());
     }
     
-	@Test
+    @Test
     public void testEnabledServiceResponse() throws Exception {
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         wfs.setEnabled(true);

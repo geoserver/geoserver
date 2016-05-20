@@ -230,19 +230,19 @@ public class ExecuteProcessResponse extends Response {
                         + "the results of the process", e);
             }
         } else if(rawResult instanceof CDataEncoderDelegate) {
-        	try {
+            try {
                 ((CDataEncoderDelegate) rawResult).encode(output);
-        	} catch(Exception e) {
-        		throw new WPSException("An error occurred while encoding "
+            } catch(Exception e) {
+                throw new WPSException("An error occurred while encoding "
                         + "the results of the process", e);
-        	}
+            }
         } else if(rawResult instanceof BinaryEncoderDelegate) {
-        	try {
-        		((BinaryEncoderDelegate) rawResult).encode(output);
-        	} catch(Exception e) {
-        		throw new WPSException("An error occurred while encoding "
+            try {
+                ((BinaryEncoderDelegate) rawResult).encode(output);
+            } catch(Exception e) {
+                throw new WPSException("An error occurred while encoding "
                         + "the results of the process", e);
-        	}
+            }
         } else {
             throw new WPSException("Cannot encode an object of class "
                     + rawResult.getClass() + " in raw form");

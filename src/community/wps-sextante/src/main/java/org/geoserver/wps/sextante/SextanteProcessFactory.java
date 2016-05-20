@@ -101,15 +101,15 @@ public class SextanteProcessFactory implements ProcessFactory {
         
         // Register the algorithms loaded.
         HashMap<String,HashMap<String,GeoAlgorithm>>algorithmsHash = Sextante.getAlgorithms();
-		Set<Name> result = new HashSet<Name>();
-		
-		for (HashMap<String,GeoAlgorithm> itemOb : algorithmsHash.values())
-		{
-			for (Entry<String,GeoAlgorithm> entry : itemOb.entrySet())
-			{
-				result.add(new NameImpl(SEXTANTE_NAMESPACE, entry.getValue().getCommandLineName()));
-			}
-		}
+        Set<Name> result = new HashSet<Name>();
+        
+        for (HashMap<String,GeoAlgorithm> itemOb : algorithmsHash.values())
+        {
+            for (Entry<String,GeoAlgorithm> entry : itemOb.entrySet())
+            {
+                result.add(new NameImpl(SEXTANTE_NAMESPACE, entry.getValue().getCommandLineName()));
+            }
+        }
         names = Collections.unmodifiableSet(result);
         
         // Register this factory in the singleton Processors manager. 
@@ -117,7 +117,7 @@ public class SextanteProcessFactory implements ProcessFactory {
     }
 
     public InternationalString getTitle() {
-    	return new SimpleInternationalString("Sextante");
+        return new SimpleInternationalString("Sextante");
     }
     
     public Set<Name> getNames() {
@@ -193,15 +193,15 @@ public class SextanteProcessFactory implements ProcessFactory {
             String title = param.getParameterDescription();
             String description = title;
             try {
-            	String td = param.getParameterAdditionalInfo().getTextDescription();
-            	if(td != null) {
-            		description += " - " + td;
-            	}
-            	
-            	// TODO: for numeric data we can specify default value and 
-            	// range, that should be useful
+                String td = param.getParameterAdditionalInfo().getTextDescription();
+                if(td != null) {
+                    description += " - " + td;
+                }
+                
+                // TODO: for numeric data we can specify default value and 
+                // range, that should be useful
             } catch(NullParameterAdditionalInfoException e) {
-            	// fine
+                // fine
             }
             
             hasRasterInput = hasRasterInput || IRasterLayer.class.isAssignableFrom(param.getParameterClass());
@@ -377,11 +377,11 @@ public class SextanteProcessFactory implements ProcessFactory {
         return "SextanteFactory";
     }
 
-	public boolean isAvailable() {
-		return true;
-	}
+    public boolean isAvailable() {
+        return true;
+    }
 
-	public Map<Key, ?> getImplementationHints() {
-		return Collections.EMPTY_MAP;
-	}
+    public Map<Key, ?> getImplementationHints() {
+        return Collections.EMPTY_MAP;
+    }
 }

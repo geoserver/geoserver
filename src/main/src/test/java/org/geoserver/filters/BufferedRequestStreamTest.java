@@ -16,21 +16,21 @@ import org.junit.Test;
  */
 public class BufferedRequestStreamTest {
     BufferedRequestStream myBRS;
-	String myTestString;
+    String myTestString;
 
-	@Before
+    @Before
     public void setUpInternal() throws Exception{
-		myTestString = "Hello, this is a test";
+        myTestString = "Hello, this is a test";
         myBRS = new BufferedRequestStream(myTestString.getBytes());
-	}
+    }
 
-	@Test
+    @Test
     public void testReadLine() throws Exception{
-		byte[] b = new byte[1024];
-		int off = 0;
-		int len = 1024;
-		int amountRead = myBRS.readLine(b, off, len);
-		String s = new String(b, 0, amountRead);
-		assertEquals(s, myTestString);;
+        byte[] b = new byte[1024];
+        int off = 0;
+        int len = 1024;
+        int amountRead = myBRS.readLine(b, off, len);
+        String s = new String(b, 0, amountRead);
+        assertEquals(s, myTestString);;
     }
 }

@@ -349,9 +349,9 @@ public class HTMLImageMapTest {
         assertTestResult("BuildingCenters", result);
 
     }
-	
+    
     @Test
-	public void testMapProducePointsWithSize() throws Exception {
+    public void testMapProducePointsWithSize() throws Exception {
 
         final FeatureSource<SimpleFeatureType, SimpleFeature> fs = testDS
                 .getFeatureSource("BuildingCenters");
@@ -375,8 +375,8 @@ public class HTMLImageMapTest {
     }
     
     @Test
-	public void testMapProducePointsWithDifferenSizeInScale1() throws Exception {
-		
+    public void testMapProducePointsWithDifferenSizeInScale1() throws Exception {
+        
         final FeatureSource<SimpleFeatureType,SimpleFeature> fs = testDS.getFeatureSource("BuildingCenters");
         final ReferencedEnvelope env = new ReferencedEnvelope(fs.getBounds(),WGS84);
 
@@ -395,11 +395,11 @@ public class HTMLImageMapTest {
         
         assertTestResult("BuildingCenters3", result);
 
-	}
+    }
     
     @Test
-	public void testMapProducePointsWithDifferenSizeInScale2() throws Exception {
-		
+    public void testMapProducePointsWithDifferenSizeInScale2() throws Exception {
+        
         final FeatureSource<SimpleFeatureType,SimpleFeature> fs = testDS.getFeatureSource("BuildingCenters");
         ReferencedEnvelope tmp=fs.getBounds();
         tmp.expandBy(5, 5);
@@ -420,7 +420,7 @@ public class HTMLImageMapTest {
         
         assertTestResult("BuildingCenters4", result);
 
-	}
+    }
 
     @Test
     public void testMapProduceMultiPoints() throws Exception {

@@ -852,7 +852,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             }
         }else {
             throw new IllegalArgumentException("Can't build the wrapper policy for objects " +
-            		"other than workspace, layer or resource: " + info);
+                    "other than workspace, layer or resource: " + info);
         }
         
         final CatalogMode mode = limits != null ? limits.getMode() : CatalogMode.HIDE;

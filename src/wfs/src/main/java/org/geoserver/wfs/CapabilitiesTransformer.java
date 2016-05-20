@@ -131,21 +131,21 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
      * @throws ServiceException
      */
     public void verifyUpdateSequence(GetCapabilitiesRequest request) throws ServiceException {
-    	long reqUS = -1;
+        long reqUS = -1;
         if (request.getUpdateSequence() != null) {
-	        try {
-	        	reqUS = Long.parseLong(request.getUpdateSequence());
-	        } catch (NumberFormatException nfe) {
-	        	throw new ServiceException("GeoServer only accepts numbers in the updateSequence parameter");
-	        }
+            try {
+                reqUS = Long.parseLong(request.getUpdateSequence());
+            } catch (NumberFormatException nfe) {
+                throw new ServiceException("GeoServer only accepts numbers in the updateSequence parameter");
+            }
         }
         long geoUS = wfs.getGeoServer().getGlobal().getUpdateSequence();
-    	if (reqUS > geoUS) {
-    		throw new ServiceException("Client supplied an updateSequence that is greater than the current sever updateSequence","InvalidUpdateSequence");
-    	}
-    	if (reqUS == geoUS) {
-    		throw new ServiceException("WFS capabilities document is current (updateSequence = " + geoUS + ")","CurrentUpdateSequence");
-    	}
+        if (reqUS > geoUS) {
+            throw new ServiceException("Client supplied an updateSequence that is greater than the current sever updateSequence","InvalidUpdateSequence");
+        }
+        if (reqUS == geoUS) {
+            throw new ServiceException("WFS capabilities document is current (updateSequence = " + geoUS + ")","CurrentUpdateSequence");
+        }
     }
     
     protected Set<FunctionName> getAvailableFunctionNames() {
@@ -894,9 +894,9 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         protected class CapabilitiesTranslator1_1 extends TranslatorSupport {
             protected static final String GML_3_1_1_FORMAT = "text/xml; subtype=gml/3.1.1";
             GetCapabilitiesRequest request;
-			protected Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;
-			protected final WFSInfo wfs;
-			protected final String schemaBaseURL;
+            protected Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;
+            protected final WFSInfo wfs;
+            protected final String schemaBaseURL;
             
             public CapabilitiesTranslator1_1(ContentHandler handler, String baseUrl, WFSInfo wfs, Collection<WFSExtendedCapabilitiesProvider> extCapsProviders) {
                 super(handler, null, null);
@@ -1216,14 +1216,14 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 Map.Entry[] parameters = new Map.Entry[] {
                         parameter("AcceptVersions", new String[] { "1.0.0", "1.1.0" }),
                         parameter("AcceptFormats", new String[] { "text/xml" })
-                    //    				parameter( 
-                    //    					"Sections", 
-                    //    					new String[]{ 
-                    //    						"ServiceIdentification", "ServiceProvider", "OperationsMetadata",
-                    //    						"FeatureTypeList", "ServesGMLObjectTypeList", "SupportsGMLObjectTypeList", 
-                    //    						"Filter_Capabilities"
-                    //    					} 
-                    //    				) 
+                    //                    parameter( 
+                    //                        "Sections", 
+                    //                        new String[]{ 
+                    //                            "ServiceIdentification", "ServiceProvider", "OperationsMetadata",
+                    //                            "FeatureTypeList", "ServesGMLObjectTypeList", "SupportsGMLObjectTypeList", 
+                    //                            "Filter_Capabilities"
+                    //                        } 
+                    //                    ) 
                     };
                 operation("GetCapabilities", parameters, true, true);
             }

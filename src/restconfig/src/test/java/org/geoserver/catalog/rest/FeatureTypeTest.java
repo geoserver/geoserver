@@ -513,29 +513,29 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
     @Test
     public void testCreateFeatureType() throws Exception {
         String xml = "<featureType>\n" + 
-        		"  <name>states</name>\n" + 
-        		"  <nativeName>states</nativeName>\n" + 
-        		"  <namespace>\n" + 
-        		"    <name>cite</name>\n" + 
-        		"  </namespace>\n" + 
-        		"  <title>USA Population</title>\n" + 
-        		"  <srs>EPSG:4326</srs>\n" + 
-        		"  <attributes>\n" + 
-        		"    <attribute>\n" + 
-        		"      <name>the_geom</name>\n" + 
-        		"      <binding>com.vividsolutions.jts.geom.MultiPolygon</binding>\n" + 
-        		"    </attribute>\n" + 
-        		"    <attribute>\n" + 
-        		"      <name>STATE_NAME</name>\n" + 
-        		"      <binding>java.lang.String</binding>\n" + 
-        		"      <length>25</length>\n" + 
-        		"    </attribute>\n" + 
-        		"    <attribute>\n" + 
-        		"      <name>LAND_KM</name>\n" + 
-        		"      <binding>java.lang.Double</binding>\n" + 
-        		"    </attribute>\n" + 
-        		"  </attributes>\n" + 
-        		"</featureType>";
+                "  <name>states</name>\n" + 
+                "  <nativeName>states</nativeName>\n" + 
+                "  <namespace>\n" + 
+                "    <name>cite</name>\n" + 
+                "  </namespace>\n" + 
+                "  <title>USA Population</title>\n" + 
+                "  <srs>EPSG:4326</srs>\n" + 
+                "  <attributes>\n" + 
+                "    <attribute>\n" + 
+                "      <name>the_geom</name>\n" + 
+                "      <binding>com.vividsolutions.jts.geom.MultiPolygon</binding>\n" + 
+                "    </attribute>\n" + 
+                "    <attribute>\n" + 
+                "      <name>STATE_NAME</name>\n" + 
+                "      <binding>java.lang.String</binding>\n" + 
+                "      <length>25</length>\n" + 
+                "    </attribute>\n" + 
+                "    <attribute>\n" + 
+                "      <name>LAND_KM</name>\n" + 
+                "      <binding>java.lang.Double</binding>\n" + 
+                "    </attribute>\n" + 
+                "  </attributes>\n" + 
+                "</featureType>";
         
         MockHttpServletResponse response = 
             postAsServletResponse("/rest/workspaces/cite/datastores/default/featuretypes", xml, "text/xml");

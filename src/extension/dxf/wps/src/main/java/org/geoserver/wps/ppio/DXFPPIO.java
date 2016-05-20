@@ -38,7 +38,7 @@ public class DXFPPIO extends CDataPPIO {
 
     @Override
     public void encode(Object value, OutputStream os) throws IOException {
-    	Charset dxfcharset = Charset.forName("Cp1252");
+        Charset dxfcharset = Charset.forName("Cp1252");
         BufferedWriter w = new BufferedWriter(new OutputStreamWriter(os, dxfcharset));
         DXFWriter dxfWriter = DXFWriterFinder.getWriter("14", w);
         String[] names = {"wps_result"};
@@ -55,7 +55,7 @@ public class DXFPPIO extends CDataPPIO {
 
     @Override
     public Object decode(InputStream input) throws UnsupportedOperationException {
-    	throw new UnsupportedOperationException("DXF files can not be used as input");
+        throw new UnsupportedOperationException("DXF files can not be used as input");
     }
 
     @Override

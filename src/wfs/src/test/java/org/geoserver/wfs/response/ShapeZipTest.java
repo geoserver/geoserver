@@ -114,7 +114,7 @@ public class ShapeZipTest extends WFSTestSupport {
     @Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
         
-    	Map params = new HashMap();
+        Map params = new HashMap();
         params.put(SystemTestData.LayerProperty.SRS, 4326);
         dataDirectory.addVectorLayer(ALL_TYPES,
                 params, ShapeZipTest.class, getCatalog());
@@ -161,7 +161,7 @@ public class ShapeZipTest extends WFSTestSupport {
     @Test
     public void testRequestUrlNoProxy() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wfs?service=WFS&version=1.0.0" +
-        		"&request=GetFeature&typeName=" + getLayerId(SystemTestData.BASIC_POLYGONS) + "&outputFormat=SHAPE-ZIP");
+                "&request=GetFeature&typeName=" + getLayerId(SystemTestData.BASIC_POLYGONS) + "&outputFormat=SHAPE-ZIP");
         assertEquals("application/zip", response.getContentType());
         checkShapefileIntegrity(new String[] { "BasicPolygons" }, getBinaryInputStream(response));
         assertEquals("http://localhost:8080/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=cite:BasicPolygons&outputFormat=SHAPE-ZIP", 

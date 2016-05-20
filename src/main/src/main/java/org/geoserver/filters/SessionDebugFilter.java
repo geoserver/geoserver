@@ -97,7 +97,7 @@ public class SessionDebugFilter implements Filter {
                     Exception e = new Exception("Full stack trace for the session creation path");
                     e.fillInStackTrace();
                     LOGGER.log(Level.INFO, "Creating a new http session outside of the web UI! " +
-                    		"(normally not desirable), the path is" + getPathInfo(), e);
+                            "(normally not desirable), the path is" + getPathInfo(), e);
                 }
             }
 

@@ -36,11 +36,11 @@ public class Ows11Util {
     static Ows11Factory f = Ows11Factory.eINSTANCE;
 
     public static LanguageStringType languageString( InternationalString value ) {
-    	if(value != null) {
-    		return languageString( value.toString( Locale.getDefault() ) );
-    	} else {
-    		return null;
-    	}
+        if(value != null) {
+            return languageString( value.toString( Locale.getDefault() ) );
+        } else {
+            return null;
+        }
     }
     
     public static LanguageStringType languageString( String value ) {
@@ -91,7 +91,7 @@ public class Ows11Util {
      *
      */
     public static Name name(String URI) {
-    	String[] parsed = URI.trim().split(":");
+        String[] parsed = URI.trim().split(":");
         if(parsed.length == 1) {
             return new NameImpl(parsed[0]);
         } else {
@@ -175,5 +175,5 @@ public class Ows11Util {
        
     }
 
-	
+    
 }

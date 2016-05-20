@@ -37,114 +37,114 @@ import net.opengis.wps10.Wps10Factory;
  */
 public abstract class AbstractJDBCStatusStoreTest extends AbstractProcessStoreTest {
 
-	private DataStore datastore;
+    private DataStore datastore;
 
-	JDBCStatusStore statusStore;
+    JDBCStatusStore statusStore;
 
-	String fixtureId;
+    String fixtureId;
 
-	abstract String getFixtureId();
-	
-	@Before
-	public void checkOnLine() {
-		Assume.assumeNotNull(getFixture());
-	}
+    abstract String getFixtureId();
+    
+    @Before
+    public void checkOnLine() {
+        Assume.assumeNotNull(getFixture());
+    }
 
-	protected Properties getFixture() {
-		return GSFixtureUtilitiesDelegate.loadFixture(getFixtureId());
-	}
-	
-	@After
-	public void cleanup() {
-		if(datastore != null) {
-			datastore.dispose();
-		}
-	}
+    protected Properties getFixture() {
+        return GSFixtureUtilitiesDelegate.loadFixture(getFixtureId());
+    }
+    
+    @After
+    public void cleanup() {
+        if(datastore != null) {
+            datastore.dispose();
+        }
+    }
 
-	@Override
-	protected ProcessStatusStore buildStore() throws IOException {
-		setupDataStore();
-		if(Arrays.asList(datastore.getTypeNames()).contains(getStatusTable())) {
-			datastore.removeSchema(getStatusTable());
-		}
-		statusStore = new JDBCStatusStore(datastore);
-		return statusStore;
-	}
+    @Override
+    protected ProcessStatusStore buildStore() throws IOException {
+        setupDataStore();
+        if(Arrays.asList(datastore.getTypeNames()).contains(getStatusTable())) {
+            datastore.removeSchema(getStatusTable());
+        }
+        statusStore = new JDBCStatusStore(datastore);
+        return statusStore;
+    }
 
-	protected String getStatusTable() {
-		return JDBCStatusStore.STATUS;
-	}
+    protected String getStatusTable() {
+        return JDBCStatusStore.STATUS;
+    }
 
-	protected void setupDataStore() {
-		Properties props = getFixture();
+    protected void setupDataStore() {
+        Properties props = getFixture();
 
-		Map<Object, Object> params = props;
-		try {
-			datastore = DataStoreFinder.getDataStore(params);
+        Map<Object, Object> params = props;
+        try {
+            datastore = DataStoreFinder.getDataStore(params);
 
-		} catch (IOException e) {
-		}
+        } catch (IOException e) {
+        }
 
-		if (datastore == null) {
-			throw new RuntimeException("failed to create dataStore with \n " + props);
-		}
-	}
+        if (datastore == null) {
+            throw new RuntimeException("failed to create dataStore with \n " + props);
+        }
+    }
 
-	@After
-	public void shutdown() {
-		// clean up the DB
-		if (statusStore != null)
-			statusStore.remove(Filter.INCLUDE);
-		if (datastore != null)
-			datastore.dispose();
-	}
+    @After
+    public void shutdown() {
+        // clean up the DB
+        if (statusStore != null)
+            statusStore.remove(Filter.INCLUDE);
+        if (datastore != null)
+            datastore.dispose();
+    }
 
-	@Test
-	public void testStackTrace() {
-		ExecutionStatus s = new ExecutionStatus(new NameImpl("tracetest"), "ian", false);
-		s.setException(new IllegalArgumentException("a test exception"));
-		store.save(s);
-		ExecutionStatus status = store.get(s.getExecutionId());
-		assertEquals(s, status);
-		assertEquals(s.getException().getMessage(), status.getException().getMessage());
+    @Test
+    public void testStackTrace() {
+        ExecutionStatus s = new ExecutionStatus(new NameImpl("tracetest"), "ian", false);
+        s.setException(new IllegalArgumentException("a test exception"));
+        store.save(s);
+        ExecutionStatus status = store.get(s.getExecutionId());
+        assertEquals(s, status);
+        assertEquals(s.getException().getMessage(), status.getException().getMessage());
 
-		StackTraceElement[] expStackTrace = s.getException().getStackTrace();
-		StackTraceElement[] obsStackTrace = status.getException().getStackTrace();
-		assertEquals(expStackTrace.length, obsStackTrace.length);
-		for (int i = 0; i < obsStackTrace.length; i++) {
-			assertEquals(expStackTrace[i], obsStackTrace[i]);
-		}
-		store.remove(s.getExecutionId());
-	}
+        StackTraceElement[] expStackTrace = s.getException().getStackTrace();
+        StackTraceElement[] obsStackTrace = status.getException().getStackTrace();
+        assertEquals(expStackTrace.length, obsStackTrace.length);
+        for (int i = 0; i < obsStackTrace.length; i++) {
+            assertEquals(expStackTrace[i], obsStackTrace[i]);
+        }
+        store.remove(s.getExecutionId());
+    }
 
-	@Test
-	public void testRequest() {
-		Wps10Factory f = Wps10Factory.eINSTANCE;
-		ExecuteType ex = f.createExecuteType();
+    @Test
+    public void testRequest() {
+        Wps10Factory f = Wps10Factory.eINSTANCE;
+        ExecuteType ex = f.createExecuteType();
 
-		CodeType id = Ows11Factory.eINSTANCE.createCodeType();
-		ex.setIdentifier(id);
-		id.setValue("foo");
+        CodeType id = Ows11Factory.eINSTANCE.createCodeType();
+        ex.setIdentifier(id);
+        id.setValue("foo");
 
-		DataInputsType1 inputs = f.createDataInputsType1();
-		ex.setDataInputs(inputs);
+        DataInputsType1 inputs = f.createDataInputsType1();
+        ex.setDataInputs(inputs);
 
-		InputType in = f.createInputType();
-		inputs.getInput().add(in);
+        InputType in = f.createInputType();
+        inputs.getInput().add(in);
 
-		DataType data = f.createDataType();
-		in.setData(data);
+        DataType data = f.createDataType();
+        in.setData(data);
 
-		ComplexDataType cd = f.createComplexDataType();
-		data.setComplexData(cd);
-		ExecutionStatus s = new ExecutionStatus(new NameImpl("requesttest"), "ian", false);
-		s.setRequest(ex);
-		store.save(s);
-		ExecutionStatus status = store.get(s.getExecutionId());
-		assertEquals(s, status);
-		ExecuteType obs = status.getRequest();
-		ExecuteType expected = s.getRequest();
-		assertEquals(expected.getBaseUrl(), obs.getBaseUrl());
-		assertEquals(expected.getIdentifier().getValue(), obs.getIdentifier().getValue());
-	}
+        ComplexDataType cd = f.createComplexDataType();
+        data.setComplexData(cd);
+        ExecutionStatus s = new ExecutionStatus(new NameImpl("requesttest"), "ian", false);
+        s.setRequest(ex);
+        store.save(s);
+        ExecutionStatus status = store.get(s.getExecutionId());
+        assertEquals(s, status);
+        ExecuteType obs = status.getRequest();
+        ExecuteType expected = s.getRequest();
+        assertEquals(expected.getBaseUrl(), obs.getBaseUrl());
+        assertEquals(expected.getIdentifier().getValue(), obs.getIdentifier().getValue());
+    }
 }

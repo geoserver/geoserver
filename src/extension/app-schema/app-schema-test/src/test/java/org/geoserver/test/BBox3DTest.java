@@ -69,7 +69,7 @@ public class BBox3DTest extends AbstractAppSchemaTestSupport {
      */
     @Test
     public void testBboxPost() {
-    	String xml = //
+        String xml = //
             "<wfs:GetFeature " //
                     + FeatureChainingWfsTest.GETFEATURE_ATTRIBUTES //
                     + ">" //
@@ -77,8 +77,8 @@ public class BBox3DTest extends AbstractAppSchemaTestSupport {
                     + "        <ogc:Filter>" //
                     + "            <ogc:BBOX>" //
                     + "              <gml:Envelope srsName=\"EPSG:4979\"> "
-                    + " 					<gml:lowerCorner>-200 -200 0 </gml:lowerCorner> "
-                    + "						<gml:upperCorner> 200 200 50 </gml:upperCorner> "
+                    + "                     <gml:lowerCorner>-200 -200 0 </gml:lowerCorner> "
+                    + "                        <gml:upperCorner> 200 200 50 </gml:upperCorner> "
                     + "              </gml:Envelope> "
                     + "           </ogc:BBOX>" //
                     + "        </ogc:Filter>" //

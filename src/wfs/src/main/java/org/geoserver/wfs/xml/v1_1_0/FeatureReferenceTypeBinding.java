@@ -30,16 +30,16 @@ import org.opengis.feature.type.Name;
  * <p>
  * 
  * <pre>
- *	 <code>
+ *     <code>
  *  &lt;xsd:complexType name=&quot;FeatureReferenceType&quot;&gt;
  *     &lt;xsd:sequence minOccurs=&quot;0&quot;&gt;
  *       &lt;xsd:element ref=&quot;gml:_Feature&quot; /&gt;
  *     &lt;/xsd:sequence&gt;
  *    &lt;xsd:attributeGroup ref=&quot;gml:AssociationAttributeGroup&quot;/&gt;
  *  &lt;/xsd:complexType&gt;
- * 	
+ *     
  * </code>
- *	 </pre>
+ *     </pre>
  * 
  * @generated
  */

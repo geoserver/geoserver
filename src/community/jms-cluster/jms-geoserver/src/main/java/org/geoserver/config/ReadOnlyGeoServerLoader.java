@@ -31,76 +31,76 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class ReadOnlyGeoServerLoader extends DefaultGeoServerLoader {
 
-	private boolean enabled = false;
+    private boolean enabled = false;
 
-	@Autowired
-	public JMSConfiguration config;
+    @Autowired
+    public JMSConfiguration config;
 
-	public ReadOnlyGeoServerLoader(final GeoServerResourceLoader resourceLoader) {
-		super(resourceLoader);
-	}
+    public ReadOnlyGeoServerLoader(final GeoServerResourceLoader resourceLoader) {
+        super(resourceLoader);
+    }
 
-	@PostConstruct
-	private void init() {
-		enabled = ReadOnlyConfiguration.isReadOnly(config);
-	}
+    @PostConstruct
+    private void init() {
+        enabled = ReadOnlyConfiguration.isReadOnly(config);
+    }
 
-	protected synchronized void loadCatalog(Catalog catalog, XStreamPersister xp)
-			throws Exception {
-		if (enabled) {
-			catalog.setResourceLoader(resourceLoader);
-			readCatalog(catalog, xp);
-		} else {
-			super.loadCatalog(catalog, xp);
-		}
-	}
+    protected synchronized void loadCatalog(Catalog catalog, XStreamPersister xp)
+            throws Exception {
+        if (enabled) {
+            catalog.setResourceLoader(resourceLoader);
+            readCatalog(catalog, xp);
+        } else {
+            super.loadCatalog(catalog, xp);
+        }
+    }
 
-	protected synchronized void loadGeoServer(final GeoServer geoServer,
-			XStreamPersister xp) throws Exception {
-		if (enabled) {
-			readConfiguration(geoServer, xp);
-		} else {
-			super.loadGeoServer(geoServer, xp);
-		}
-	}
+    protected synchronized void loadGeoServer(final GeoServer geoServer,
+            XStreamPersister xp) throws Exception {
+        if (enabled) {
+            readConfiguration(geoServer, xp);
+        } else {
+            super.loadGeoServer(geoServer, xp);
+        }
+    }
 
-	@Override
-	protected void initializeStyles(Catalog catalog, XStreamPersister xp)
-			throws IOException {
-		super.initializeStyles(catalog, xp);
-	}
+    @Override
+    protected void initializeStyles(Catalog catalog, XStreamPersister xp)
+            throws IOException {
+        super.initializeStyles(catalog, xp);
+    }
 
-	public synchronized boolean isEnabled() {
-		return enabled;
-	}
+    public synchronized boolean isEnabled() {
+        return enabled;
+    }
 
-	public synchronized void enable(boolean enabled) {
-		this.enabled = enabled;
-		if (enabled) {
-			// remove Default persister
-			if (persister != null) {
-				geoserver.removeListener(persister);
-				persister = null;
-			}
-			// remove Default listener
-			if (listener != null) {
-				geoserver.removeListener(listener);
-				listener = null;
-			}
-		} else {
-			if (listener == null) {
-				// add event listener which persists changes
-				final List<XStreamServiceLoader> loaders = GeoServerExtensions
-						.extensions(XStreamServiceLoader.class);
-				listener = new ServicePersister(loaders, geoserver);
-				geoserver.addListener(listener);
-			}
-			if (persister == null) {
-				persister = new GeoServerPersister(resourceLoader,
-						xpf.createXMLPersister());
-				// attach back the persister
-				geoserver.addListener(persister);
-			}
-		}
-	}
+    public synchronized void enable(boolean enabled) {
+        this.enabled = enabled;
+        if (enabled) {
+            // remove Default persister
+            if (persister != null) {
+                geoserver.removeListener(persister);
+                persister = null;
+            }
+            // remove Default listener
+            if (listener != null) {
+                geoserver.removeListener(listener);
+                listener = null;
+            }
+        } else {
+            if (listener == null) {
+                // add event listener which persists changes
+                final List<XStreamServiceLoader> loaders = GeoServerExtensions
+                        .extensions(XStreamServiceLoader.class);
+                listener = new ServicePersister(loaders, geoserver);
+                geoserver.addListener(listener);
+            }
+            if (persister == null) {
+                persister = new GeoServerPersister(resourceLoader,
+                        xpf.createXMLPersister());
+                // attach back the persister
+                geoserver.addListener(persister);
+            }
+        }
+    }
 }

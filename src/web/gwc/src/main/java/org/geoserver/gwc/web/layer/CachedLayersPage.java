@@ -171,7 +171,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
     private Component actionsLinks(String id, IModel<TileLayer> tileLayerNameModel) {
         final String name = tileLayerNameModel.getObject().getName();
         final String href = ResponseUtils.baseURL(getGeoServerApplication().servletRequest())
-        		+ "gwc/rest/seed/" + name;
+                + "gwc/rest/seed/" + name;
 
         // openlayers preview
         Fragment f = new Fragment(id, "actionsFragment", CachedLayersPage.this);
@@ -278,7 +278,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
         // build the wms request, redirect to it in a new window, reset the selection
         String demoUrl = "'" + ResponseUtils.baseURL(getGeoServerApplication().servletRequest())
-        		+ "gwc/demo/" + layer.getName()
+                + "gwc/demo/" + layer.getName()
                 + "?' + this.options[this.selectedIndex].value";
         menu.add(new AttributeAppender("onchange", new Model<String>("window.open(" + demoUrl
                 + ");this.selectedIndex=0"), ";"));

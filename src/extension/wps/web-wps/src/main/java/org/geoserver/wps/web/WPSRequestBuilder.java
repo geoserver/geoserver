@@ -77,8 +77,8 @@ public class WPSRequestBuilder extends GeoServerBasePage {
                 return new PlainCodePage(xmlWindow, responseWindow, getRequestXML());
             }
         });
-		
-	// the output response window
+        
+    // the output response window
         responseWindow = new ModalWindow("responseWindow");
         add(responseWindow);
         // removed, don't know what it did, but page maps are gone in 1.5...

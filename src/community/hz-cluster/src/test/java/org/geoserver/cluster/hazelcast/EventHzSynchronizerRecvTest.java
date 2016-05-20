@@ -77,7 +77,7 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     
     @Test
     public void testPublishAck() throws Exception {
-    	// This is just testStoreDelete with an extra assert to test if the ack was sent 
+        // This is just testStoreDelete with an extra assert to test if the ack was sent 
         DataStoreInfo info;
         WorkspaceInfo wsInfo;
         final String storeName = "testStore";
@@ -130,10 +130,10 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     protected void expectationTestFTDelete(FeatureTypeInfo info, String ftName, String ftId, String dsId, Class clazz)
             throws Exception {
         expect(getCatalog().getFeatureType(ftId)).andStubReturn(null); // It's been deleted so return null
-		final String id = ftId;
-		expectCatalogGetListeners();
-		CatalogRemoveEvent catEvent = (CatalogRemoveEvent)catResEvent(id, dsId); // Want to make sure the DS is included
-		catListener.handleRemoveEvent(catEvent);expectLastCall();
+        final String id = ftId;
+        expectCatalogGetListeners();
+        CatalogRemoveEvent catEvent = (CatalogRemoveEvent)catResEvent(id, dsId); // Want to make sure the DS is included
+        catListener.handleRemoveEvent(catEvent);expectLastCall();
     }
 
     @Override

@@ -5,6 +5,8 @@
  */
 package org.geoserver.importer;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -56,8 +58,6 @@ import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.Paths;
-import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.coverage.grid.io.HarvestedSource;
@@ -818,11 +818,11 @@ public class Importer implements DisposableBean, ApplicationListener {
                 if (context.getData() instanceof Directory) {
                     directory = (Directory) context.getData();
                 } else if ( context.getData() instanceof SpatialFile ) {
-                    directory = new Directory( ((SpatialFile) context.getData()).getFile().parent() );
+                    directory = new Directory( ((SpatialFile) context.getData()).getFile().getParentFile() );
                 }
                 if (directory != null) {
                     if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("Archiving directory " + directory.getFile().path());
+                        LOGGER.fine("Archiving directory " + directory.getFile().getAbsolutePath());
                     }       
                     try {
                         directory.archive(getArchiveFile(context));
@@ -854,11 +854,11 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     }
     
-    public Resource getArchiveFile(ImportContext context) throws IOException {
+    public File getArchiveFile(ImportContext context) throws IOException {
         //String archiveName = "import-" + task.getContext().getId() + "-" + task.getId() + "-" + task.getData().getName() + ".zip";
         String archiveName = "import-" + context.getId() + ".zip";
-        Resource dir = getCatalog().getResourceLoader().get(Paths.path("uploads", "archives"));
-        return dir.get(archiveName);
+        File dir = getCatalog().getResourceLoader().findOrCreateDirectory("uploads","archives");
+        return new File(dir, archiveName);
     }
     
     public void changed(ImportContext context) {
@@ -1109,7 +1109,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             throws IOException {
         if (data instanceof SpatialFile) {
             SpatialFile sf = (SpatialFile) data;
-            List<HarvestedSource> harvests = sr.harvest(null, sf.getFile().file(),
+            List<HarvestedSource> harvests = sr.harvest(null, sf.getFile(),
                     null);
             checkSingleHarvest(harvests);
         } else if (data instanceof Directory) {
@@ -1494,12 +1494,21 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     //file location methods
-    public Resource getImportRoot() {
-        return catalog.getResourceLoader().get("imports");
+    public File getImportRoot() {
+        try {
+            return catalog.getResourceLoader().findOrCreateDirectory("imports");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public Resource getUploadRoot() {
-        return catalog.getResourceLoader().get("uploads");
+    public File getUploadRoot() {
+        try {
+            return catalog.getResourceLoader().findOrCreateDirectory("uploads");
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void destroy() throws Exception {
@@ -1580,12 +1589,11 @@ public class Importer implements DisposableBean, ApplicationListener {
                 securityManager));
         
         // security
-        xs.allowTypes(new Class[] { ImportContext.class, ImportTask.class });
+        xs.allowTypes(new Class[] { ImportContext.class, ImportTask.class, File.class });
         xs.allowTypeHierarchy(TransformChain.class);
         xs.allowTypeHierarchy(DataFormat.class);
         xs.allowTypeHierarchy(ImportData.class);
         xs.allowTypeHierarchy(ImportTransform.class);
-        xs.allowTypeHierarchy(Resource.class);
 
         return xp;
     }
@@ -1594,8 +1602,8 @@ public class Importer implements DisposableBean, ApplicationListener {
      * Creates a style for the layer being imported from a resource that was included in the 
      * directory or archive that the data is being imported from.
      */
-    StyleInfo createStyleFromFile(Resource styleFile, ImportTask task) {
-        String ext = FilenameUtils.getExtension(styleFile.name());
+    StyleInfo createStyleFromFile(File styleFile, ImportTask task) {
+        String ext = FilenameUtils.getExtension(styleFile.getName());
         if (ext != null) {
             StyleHandler styleHandler = Styles.handler(ext);
             if (styleHandler != null) {
@@ -1614,17 +1622,17 @@ public class Importer implements DisposableBean, ApplicationListener {
                         info.setFormat(styleHandler.getFormat());
                         info.setWorkspace(task.getStore().getWorkspace());
 
-                        try (InputStream in = styleFile.in()) {
+                        try (InputStream in = new FileInputStream(styleFile)) {
                             catalog.getResourcePool().writeStyle(info, in);
                         }
                         return info;
                     }
                     else {
-                        LOGGER.warning("Style file contained no styling: " + styleFile.path());
+                        LOGGER.warning("Style file contained no styling: " + styleFile.getPath());
                     }
                 }
                 catch(Exception e) {
-                    LOGGER.log(Level.WARNING, "Error parsing style: " + styleFile.path(), e);
+                    LOGGER.log(Level.WARNING, "Error parsing style: " + styleFile.getPath(), e);
                 }
             }
             else {

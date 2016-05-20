@@ -23,8 +23,6 @@ import org.geoserver.importer.Importer;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.RemoteData;
 import org.geoserver.importer.bdb.BDBImportStore.BindingType;
-import org.geoserver.platform.resource.Files;
-import org.geoserver.platform.resource.Resource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +44,7 @@ public class BDBImportStoreTest extends ImporterTestSupport {
     }
 
     BDBImportStore store;
-    Resource dbRoot;
+    File dbRoot;
     
     private BindingType bindingType;
 
@@ -59,7 +57,7 @@ public class BDBImportStoreTest extends ImporterTestSupport {
         store = new BDBImportStore(importer);
         store.setBinding(bindingType);
         store.init();
-        dbRoot = importer.getImportRoot().get("bdb");
+        dbRoot = new File(importer.getImportRoot(), "bdb");
     }
     
     // in order to test this, run once, then change the serialVersionUID of ImportContext2
@@ -68,8 +66,10 @@ public class BDBImportStoreTest extends ImporterTestSupport {
         Importer imp =  new Importer(null) {
 
             @Override
-            public Resource getImportRoot() {
-                return Files.asResource(new File("target"));
+            public File getImportRoot() {
+                File root = new File("target");
+                root.mkdirs();
+                return root;
             }
             
         };
@@ -227,7 +227,7 @@ public class BDBImportStoreTest extends ImporterTestSupport {
     public void destroyStore() throws Exception {
         store.destroy();
         // clean up the databse       
-        dbRoot.delete();
+        FileUtils.deleteDirectory(dbRoot);
         
     }
 }

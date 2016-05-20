@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,7 +21,6 @@ import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportStore;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
-import org.geoserver.platform.resource.Resource;
 
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.ClassCatalog;
@@ -114,9 +113,10 @@ public class BDBImportStore implements ImportStore {
         envCfg.setTransactional(true);
         envCfg.setConfigParam("je.log.fileMax", String.valueOf(100 * 1024 * 1024));
 
-        Resource dbRoot = importer.getImportRoot().get("bdb");
+        File dbRoot = new File(importer.getImportRoot(), "bdb");
+        dbRoot.mkdir();
         
-        Environment env = new Environment(dbRoot.dir(), envCfg);
+        Environment env = new Environment(dbRoot, envCfg);
 
         DatabaseConfig dbConfig = new DatabaseConfig();
         dbConfig.setAllowCreate(true);

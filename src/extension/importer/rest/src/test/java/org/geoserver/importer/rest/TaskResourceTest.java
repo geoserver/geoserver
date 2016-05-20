@@ -42,7 +42,6 @@ import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.UpdateMode;
 import org.geoserver.importer.VFSWorker;
-import org.geoserver.platform.resource.Files;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geotools.data.Transaction;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -339,7 +338,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         IOUtils.copy(inputStream, destinationArchive);
 
         VFSWorker vfs = new VFSWorker();
-        vfs.extractTo(Files.asResource(destinationArchive), Files.asResource(tempDir));
+        vfs.extractTo(destinationArchive, tempDir);
 
         File tiff = new File(tempDir, tifname);
         if (!tiff.exists()) {

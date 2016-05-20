@@ -24,7 +24,7 @@ The following table describes the current status indicators.
    * - Connections
      - Refers to the numbers of vector stores, in the above case 4, that were able to connect. 
    * - Memory Usage
-     - The amount of memory current used by GeoServer. In the above example, 55.32 MB of memory is being used. Clicking on the "Free Memory" button,  cleans up memory marked for deletion by running the garbage collector.
+     - The amount of memory current used by GeoServer. In the above example, 118 MB of memory out of a total of 910 MB is being used. Clicking on the "Free Memory" button,  cleans up memory marked for deletion by running the garbage collector.
    * - JVM Version
      - Denotes which version of the JVM (Java Virtual Machine) is been used to power the server. Here the JVM is Apple Inc.: 1.5.0_16.
    * - Native JAI

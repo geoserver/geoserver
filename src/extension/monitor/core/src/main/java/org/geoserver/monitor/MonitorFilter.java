@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.monitor.RequestData.Status;
 import org.geoserver.ows.util.ResponseUtils;
@@ -119,8 +119,8 @@ public class MonitorFilter implements GeoServerFilter {
         if (SecurityContextHolder.getContext() != null 
                 && SecurityContextHolder.getContext().getAuthentication() != null) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth.getPrincipal() != null && auth.getPrincipal() instanceof User) {
-                data.setRemoteUser(((User)auth.getPrincipal()).getUsername());
+            if (auth.getPrincipal() != null && auth.getPrincipal() instanceof UserDetails) {
+                data.setRemoteUser(((UserDetails)auth.getPrincipal()).getUsername());
             }
         }
 

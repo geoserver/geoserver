@@ -15,6 +15,7 @@ import org.geoserver.rest.GeoServerServletConverter;
 import org.geoserver.rest.PageInfo;
 import org.geotools.util.logging.Logging;
 import org.locationtech.geogig.rest.RestletException;
+import org.locationtech.geogig.rest.TaskResultDownloadResource;
 import org.locationtech.geogig.rest.TaskStatusResource;
 import org.locationtech.geogig.rest.osm.OSMRouter;
 import org.locationtech.geogig.rest.postgis.PGRouter;
@@ -104,6 +105,7 @@ public class GeogigDispatcher extends AbstractController {
         router.attach("/tasks", TaskStatusResource.class);
         router.attach("/tasks/{taskId}.{extension}", TaskStatusResource.class);
         router.attach("/tasks/{taskId}", TaskStatusResource.class);
+        router.attach("/tasks/{taskId}/download", TaskResultDownloadResource.class);
 
         Router osm = new OSMRouter();
         router.attach("/repos/{repository}/osm", osm);
@@ -115,6 +117,7 @@ public class GeogigDispatcher extends AbstractController {
         router.attach("/repos/{repository}", RepositoryResource.class);
         router.attach("/repos/{repository}/repo", makeRepoRouter());
         router.attach("/repos/{repository}/import", UploadCommandResource.class);
+        router.attach("/repos/{repository}/import.{extension}", UploadCommandResource.class);
         router.attach("/repos/{repository}/{command}.{extension}", CommandResource.class);
         router.attach("/repos/{repository}/{command}", CommandResource.class);
 

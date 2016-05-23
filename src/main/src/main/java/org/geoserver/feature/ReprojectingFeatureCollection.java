@@ -34,6 +34,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.referencing.operation.OperationNotFoundException;
 import org.opengis.referencing.operation.TransformException;
@@ -102,7 +103,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         CoordinateReferenceSystem source = delegate.getSchema().getCoordinateReferenceSystem();
 
         if (source != null) {
-            MathTransform2D tx = (MathTransform2D) ReferencingFactoryFinder
+            MathTransform tx = ReferencingFactoryFinder
                     .getCoordinateOperationFactory(hints).createOperation(source, target)
                     .getMathTransform();
 

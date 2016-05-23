@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -40,6 +40,7 @@ import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.Hints;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.PointOutsideEnvelopeException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -143,7 +144,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                     final GeometryDescriptor defaultGeometry = store.getSchema().getGeometryDescriptor();
                     if(defaultGeometry != null) {
                         CoordinateReferenceSystem target = defaultGeometry.getCoordinateReferenceSystem();
-                        if (target != null) {
+                        if (target != null /* && !CRS.equalsIgnoreMetadata(collection.getSchema().getCoordinateReferenceSystem(), target) */) {
                             collection = new ReprojectingFeatureCollection(collection, target);
                         }
                     }

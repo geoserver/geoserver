@@ -8,9 +8,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.geoserver.ows.util.ResponseUtils;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.vfny.geoserver.wfs.servlets.TestWfsPost;
+
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class TestWfsPostTest {
 
@@ -27,12 +28,12 @@ public class TestWfsPostTest {
         request.setQueryString(ResponseUtils.getQueryString("form_hf_0=&url=vjoce<>:garbage"));
         request.setRemoteAddr("127.0.0.1");
         request.addHeader("Host", "localhost:8080");
-        request.setParameter("url", "vjoce<>:garbage");
+        request.setupAddParameter("url", "vjoce<>:garbage");
         request.setMethod("GET");
         MockHttpServletResponse response = new MockHttpServletResponse();
         servlet.service(request, response);
         // System.out.println(response.getContentAsString());
         // check xml chars have been escaped
-        assertTrue(response.getContentAsString().contains("java.net.MalformedURLException: no protocol: vjoce&lt;&gt;:garbage"));
+        assertTrue(response.getOutputStreamContent().contains("java.net.MalformedURLException: no protocol: vjoce&lt;&gt;:garbage"));
     }
 }

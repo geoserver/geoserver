@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -34,6 +34,10 @@ public class TurboJPEGMapResponse extends RenderedImageMapResponse {
             .isTurboJpegAvailable();
 
     private final static boolean DISABLE_TURBO = Boolean.getBoolean("disable.turbojpeg");
+
+    public static boolean isDisabled() {
+        return DISABLE_TURBO;
+    }
 
     /**
      * Default capabilities for JPEG .

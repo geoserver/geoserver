@@ -51,7 +51,7 @@ public class StatusPage extends ServerAdminPage {
     private static final String KEY_CONNECTIONS = "connections";
 
     private static final String KEY_MEMORY = "memory";
-    
+
     private static final String KEY_JVM_VERSION = "jvm_version";
     
     private static final String KEY_JAI_AVAILABLE = "jai_available";
@@ -241,9 +241,7 @@ public class StatusPage extends ServerAdminPage {
         final long usedBytes = runtime.totalMemory() - runtime.freeMemory();
         String formattedUsedMemory = formatMemory(usedBytes);
 
-        String formattedMaxMemory = formatMemory(runtime.maxMemory());
-
-        return formattedUsedMemory + " / " + formattedMaxMemory;
+        return formattedUsedMemory;
     }
 
     private String formatMemory(final long bytes) {

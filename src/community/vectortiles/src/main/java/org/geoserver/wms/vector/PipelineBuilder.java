@@ -255,7 +255,7 @@ class PipelineBuilder {
                 clippingEnvelope = renderingArea;
             }
 
-            addLast(new Clip(clippingEnvelope));
+            addLast(new ClipRemoveDegenerativeGeometries(clippingEnvelope));
         }
         return this;
     }

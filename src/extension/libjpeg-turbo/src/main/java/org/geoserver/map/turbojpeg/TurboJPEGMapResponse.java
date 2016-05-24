@@ -35,6 +35,10 @@ public class TurboJPEGMapResponse extends RenderedImageMapResponse {
 
     private final static boolean DISABLE_TURBO = Boolean.getBoolean("disable.turbojpeg");
 
+    public static boolean IsDisabled() {
+        return DISABLE_TURBO;
+    }
+
     /**
      * Default capabilities for JPEG .
      * 

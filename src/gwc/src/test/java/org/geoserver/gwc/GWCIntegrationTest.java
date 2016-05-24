@@ -10,7 +10,13 @@ import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -44,8 +50,10 @@ import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
+import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
@@ -64,6 +72,7 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
 import org.hamcrest.Matchers;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -84,7 +93,13 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     static final String WORKSPACED_STYLE_FILE = "workspacedStyle.sld";
     static final String WORKSPACED_LAYER = "workspacedLayer";
     static final QName WORKSPACED_LAYER_QNAME = new QName(TEST_WORKSPACE_URI, WORKSPACED_LAYER, TEST_WORKSPACE_NAME);
-
+    
+    @Override
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add("gwc-integration-test.xml");
+    }
+    
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -112,6 +127,16 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
                 + layerId
                 + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        assertEquals(200, sr.getStatus());
+        assertEquals("image/png", sr.getContentType());
+    }
+    
+    @Test 
+    public void testRequestReplacement() throws Exception {
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
+                + layerId
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=1");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
     }

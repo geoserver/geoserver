@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -73,6 +73,14 @@ public class SingleQueueFlowController implements FlowController {
 
     public Predicate<Request> getMatcher() {
         return matcher;
+    }
+    
+    /**
+     * Returns the current queue size
+     * @return
+     */
+    public int getRequestsInQueue() {
+        return queue.size();
     }
 
 }

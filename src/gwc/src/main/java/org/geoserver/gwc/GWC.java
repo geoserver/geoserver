@@ -57,6 +57,7 @@ import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
@@ -1231,7 +1232,18 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         FakeHttpServletRequest req = new FakeHttpServletRequest(params, cookies, workspace);
         FakeHttpServletResponse resp = new FakeHttpServletResponse();
 
-        owsDispatcher.handleRequest(req, resp);
+        Request request = Dispatcher.REQUEST.get();
+        Dispatcher.REQUEST.remove();
+        try {
+            owsDispatcher.handleRequest(req, resp);
+        } finally {
+            // reset the old request
+            if(request != null) {
+                Dispatcher.REQUEST.set(request);
+            } else {
+                Dispatcher.REQUEST.remove();
+            }
+        }
         return new ByteArrayResource(resp.getBytes());
     }
     

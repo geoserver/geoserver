@@ -82,15 +82,6 @@
     </snapshots>
   </repository>
 
-  <repository>
-    <id>hibspat</id>
-    <name>Hibernate Spatial</name>
-    <url>http://www.hibernatespatial.org/repository</url>
-    <snapshots>
-      <enabled>true</enabled>
-    </snapshots>
-   </repository>
-
    <repository>
       <id>geosolutions</id>
       <name>geosolutions repository</name>

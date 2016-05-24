@@ -32,11 +32,25 @@ The `Java Advanced Imaging API <http://www.oracle.com/technetwork/java/javase/te
 
 The `Java Image I/O Technology <http://docs.oracle.com/javase/6/docs/technotes/guides/imageio/index.html>`__ (ImageIO) is used for  raster reading and writing. ImageIO affects both WMS and WCS for reading raster data, and is very useful (even if there is no raster data involved) for WMS output as encoding is required when writing PNG/GIF/JPEG images.
 
-By default, GeoServer ships with the "pure java" version of JAI, but **for better performance JAI and ImageIO are available as "java extensions" to be installed into your JDK/JRE**. Native JAI and ImageIO extensions are available for Windows, Linux and Solaris (32 and 64 bit systems).  They are, however, not available for OS X.
+By default, GeoServer ships with the "pure java" version of JAI, but **for better performance JAI and ImageIO are available as "java extensions" to be installed into your JDK/JRE**.
 
-.. warning:: These native installers include a copy of JAI and JAI ImageIO as a "java extension" in your JRE. This may conflict with the pure java copy of JAI and JAI ImageIO included in your GeoServer ``libs`` folder - producing "class cast exceptions" preventing your application server from starting GeoServer.
+Native JAI and ImageIO extensions are available for:
+
++----------+-----------+-----------+
+| System   | 32-bit    | 64-bit    |
++==========+===========+===========+
+| Windows  | available |           |
++----------+-----------+-----------+
+| Linux    | available | available |
++----------+-----------+-----------+
+| Solaris  | available | available |
++----------+-----------+-----------+
+| Max OSX  |           |           |  
++----------+-----------+-----------+
+
+.. warning:: When installed as a "java extension" JAI and JAI ImageIO are unpacked into your JRE as both native code (in ``bin``) and jars (in ``ext/libs``). This installation may conflict with the pure java copy of JAI and ImageIO included in your GeoServer ``WEB-INF/lib`` folder - producing "class cast exceptions" preventing your application server from starting GeoServer.
    
-   After installing the native JAI and ImageIO extensions remove the pure java implementation from your GeoServer instances ``WEB-INF/lib`` folder::
+   If you encounter this problem after installation of native the JAI and ImageIO extensions remove the pure java implementation from your GeoServer instances ``WEB-INF/lib`` folder::
        
        rm jai_core-*jar jai_imageio-*.jar jai_codec-*.jar
    
@@ -99,12 +113,13 @@ Please refer to the `GeoTools page on JAI installation <http://docs.geotools.org
 GeoServer cleanup
 `````````````````
 
-Once the installation is complete, you may optionally remove the original JAI files from the GeoServer instances ``WEB-INF/lib`` folder::
+Once the installation is complete, you may optionally remove the original JAI files from the GeoServer ``WEB-INF/lib`` folder::
 
    jai_core-x.y.z.jar
    jai_imageio-x.y.jar 
    jai_codec-x.y.z.jar
    
+
 where ``x``, ``y``, and ``z`` refer to specific version numbers.
 
 .. _java_policyfiles:

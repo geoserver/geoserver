@@ -19,6 +19,7 @@
     <jline.version>2.12</jline.version>
     <mockito.version>1.8.5</mockito.version>
     <logback.version>1.1.2</logback.version>
+    <cucumber-java.version>1.2.4</cucumber-java.version>
   </properties>
 
   <repositories>
@@ -205,8 +206,40 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>info.cukes</groupId>
+      <artifactId>cucumber-java</artifactId>
+      <version>${cucumber-java.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.cukes</groupId>
+      <artifactId>cucumber-junit</artifactId>
+      <version>${cucumber-java.version}</version>
+      <scope>test</scope>
+    </dependency>    
+    <dependency>
+      <groupId>info.cukes</groupId>
+      <artifactId>cucumber-guice</artifactId>
+      <version>${cucumber-java.version}</version>
+      <scope>test</scope>
+    </dependency>  
+    <dependency>
       <groupId>org.locationtech.geogig</groupId>
       <artifactId>geogig-core</artifactId>
+      <version>${geogig.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-web-api</artifactId>
+      <version>${geogig.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-web-api-functional-tests</artifactId>
       <version>${geogig.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
@@ -248,12 +281,19 @@
       <type>test-jar</type>
       <classifier>tests</classifier>
       <scope>test</scope>
+    </dependency>  
+    <dependency>
+      <groupId>org.xmlunit</groupId>
+      <artifactId>xmlunit-core</artifactId>
+      <version>2.1.0</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
+      <groupId>org.xmlunit</groupId>
+      <artifactId>xmlunit-matchers</artifactId>
+      <version>2.1.0</version>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>com.mockrunner</groupId>
       <artifactId>mockrunner</artifactId>

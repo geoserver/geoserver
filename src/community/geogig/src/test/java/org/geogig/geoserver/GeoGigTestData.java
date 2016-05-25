@@ -94,13 +94,21 @@ public class GeoGigTestData extends ExternalResource {
 
     @Override
     protected void before() throws Throwable {
+    	setUp("testrepo");
+    }
+    
+    public void setUp(String repoName) throws Exception {
         tmpFolder = new TemporaryFolder();
         tmpFolder.create();
-        this.geogig = createGeogig();
+        this.geogig = createRepository(repoName);
     }
 
     @Override
     protected void after() {
+    	tearDown();
+    }
+    
+    public void tearDown() {
         try {
             if (geogig != null) {
                 geogig.close();
@@ -112,10 +120,10 @@ public class GeoGigTestData extends ExternalResource {
     }
 
     protected GeoGIG createGeogig() throws IOException {
-        return createRpository("testrepo");
+        return createRepository("testrepo");
     }
 
-    public GeoGIG createRpository(String name) {
+    public GeoGIG createRepository(String name) {
         File dataDirectory = tmpFolder.getRoot();
         repoDir = new File(dataDirectory, name);
         Assert.assertTrue(repoDir.mkdir());

@@ -28,6 +28,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerApplication;
 import org.locationtech.geogig.api.Context;
 import org.locationtech.geogig.api.ContextBuilder;
@@ -75,6 +76,8 @@ public class RepositoryManager {
     private final RepositoryCache repoCache;
 
     private static RepositoryManager INSTANCE;
+    
+    private Catalog catalog = null;
 
     public static synchronized RepositoryManager get() {
         if (INSTANCE == null) {
@@ -84,7 +87,7 @@ public class RepositoryManager {
         return INSTANCE;
     }
 
-    static void close() {
+    public static void close() {
         if (INSTANCE != null) {
             INSTANCE.repoCache.invalidateAll();
             INSTANCE = null;
@@ -104,8 +107,26 @@ public class RepositoryManager {
     public List<RepositoryInfo> getAll() {
         return store.getRepositories();
     }
+    
+    public void invalidate(final String repoId) {
+    	this.repoCache.invalidate(repoId);
+    }
+    
+    public GeoGIG createRepo(final Hints hints, final String repoId) {
+        Resource root = store.getConfigRoot();
+        File parent = root.parent().dir();
+        File f = new File(parent, repoId);
+        final URI repoURI = f.toURI();
+        hints.set(Hints.REPOSITORY_URL, repoURI);
 
-    public RepositoryInfo get(final String repoId) throws IOException, NoSuchElementException {
+        Context context = GlobalContextBuilder.builder().build(hints);
+
+        GeoGIG geogig = new GeoGIG(context);
+
+        return geogig;
+    }
+
+    public RepositoryInfo get(final String repoId) throws IOException {
         try {
             return store.load(repoId);
         } catch (FileNotFoundException e) {
@@ -114,11 +135,18 @@ public class RepositoryManager {
     }
 
     public List<DataStoreInfo> findGeogigStores() {
-        return findGeogigStores(catalog());
+        return findGeogigStores(getCatalog());
     }
 
-    private Catalog catalog() {
-        return GeoServerApplication.get().getCatalog();
+    public Catalog getCatalog() {
+    	if (catalog == null) {
+    		catalog = GeoServerApplication.get().getCatalog();
+    	}
+        return catalog;
+    }
+    
+    public void setCatalog(Catalog catalog) {
+    	this.catalog = catalog;
     }
 
     static List<DataStoreInfo> findGeogigStores(Catalog catalog) {
@@ -151,7 +179,7 @@ public class RepositoryManager {
         String locationKey = "connectionParameters." + GeoGigDataStoreFactory.REPOSITORY.key;
         filter = and(filter, equal(locationKey, repoId));
         List<DataStoreInfo> dependent;
-        try (CloseableIterator<DataStoreInfo> stores = catalog().list(DataStoreInfo.class,
+        try (CloseableIterator<DataStoreInfo> stores = getCatalog().list(DataStoreInfo.class,
                 filter)) {
             dependent = Lists.newArrayList(stores);
         }
@@ -165,7 +193,7 @@ public class RepositoryManager {
         filter = and(filter, equal(locationKey, repoId));
         List<DataStoreInfo> stores = findDataStores(repoId);
         List<CatalogInfo> dependent = new ArrayList<CatalogInfo>(stores);
-        Catalog catalog = catalog();
+        Catalog catalog = getCatalog();
         for (DataStoreInfo store : stores) {
             List<FeatureTypeInfo> ftypes = catalog.getFeatureTypesByDataStore(store);
             dependent.addAll(ftypes);
@@ -179,14 +207,14 @@ public class RepositoryManager {
 
     public List<LayerInfo> findLayers(DataStoreInfo store) {
         Filter filter = equal("resource.store.id", store.getId());
-        try (CloseableIterator<LayerInfo> it = catalog().list(LayerInfo.class, filter)) {
+        try (CloseableIterator<LayerInfo> it = getCatalog().list(LayerInfo.class, filter)) {
             return Lists.newArrayList(it);
         }
     }
 
     public List<FeatureTypeInfo> findFeatureTypes(DataStoreInfo store) {
         Filter filter = equal("store.id", store.getId());
-        try (CloseableIterator<FeatureTypeInfo> it = catalog().list(FeatureTypeInfo.class,
+        try (CloseableIterator<FeatureTypeInfo> it = getCatalog().list(FeatureTypeInfo.class,
                 filter)) {
             return Lists.newArrayList(it);
         }
@@ -243,7 +271,7 @@ public class RepositoryManager {
 
     public void delete(final String repoId) {
         List<DataStoreInfo> repoStores = findDataStores(repoId);
-        CascadeDeleteVisitor deleteVisitor = new CascadeDeleteVisitor(catalog());
+        CascadeDeleteVisitor deleteVisitor = new CascadeDeleteVisitor(getCatalog());
         for (DataStoreInfo storeInfo : repoStores) {
             storeInfo.accept(deleteVisitor);
         }

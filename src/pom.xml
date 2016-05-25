@@ -72,6 +72,18 @@
     <url>http://download.osgeo.org/webdav/geotools/</url>
     <!-- release repository used by geotools (and third-party dependencies) -->
   </repository>
+   
+   <repository>
+      <id>geosolutions</id>
+      <name>geosolutions repository</name>
+      <url>http://maven.geo-solutions.it/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+     <releases>
+       <enabled>true</enabled>
+     </releases>
+    </repository>
  </repositories>
 
  <dependencyManagement>

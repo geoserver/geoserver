@@ -36,8 +36,9 @@ public class GDALStatus implements ModuleStatus {
     @Override
     public Optional<String> getVersion() {
         Version v = GeoTools.getVersion(GDALUtilities.class);
-        if (v == null)
+        if (v == null) {
             return Optional.empty();
+        }
         return Optional.ofNullable(v.toString());
     }
 

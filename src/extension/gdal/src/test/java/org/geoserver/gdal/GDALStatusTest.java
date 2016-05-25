@@ -12,13 +12,13 @@ public class GDALStatusTest {
     @Test
     public void testGDALStatus() {
         GDALStatus status = new GDALStatus();
-        
-        //these should always return "something"
-        assertTrue(status.getModule().length() > 0 );
-        assertTrue(status.getName().length() > 0 );
-        assertTrue(status.getComponent().get().length() > 0 );
-        assertTrue(status.getMessage().get().length() > 0 );
-        
+
+        // these should always return "something"
+        assertTrue(status.getModule().length() > 0);
+        assertTrue(status.getName().length() > 0);
+        assertTrue(status.getComponent().get().length() > 0);
+        assertTrue(status.getMessage().get().length() > 0);
+
         if (!status.isAvailable()) {
             return; // skip test
         }

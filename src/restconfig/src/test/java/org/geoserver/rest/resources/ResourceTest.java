@@ -26,10 +26,12 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.util.IOUtils;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -159,6 +161,8 @@ public class ResourceTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testSpecialCharacterNames() throws Exception {
+        // if the file system encoded the file with a ? we need to skip this test
+        Assume.assumeTrue(getDataDirectory().get("po?zie").getType() == Type.UNDEFINED);
         XMLUnit.setXpathNamespaceContext(NS_XML);
         Document doc = getAsDOM("/rest/resource/po%c3%abzie?format=xml");
         XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/resource/po%C3%ABzie/caf%C3%A9", 

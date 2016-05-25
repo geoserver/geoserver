@@ -20,6 +20,7 @@ import org.locationtech.geogig.rest.TaskStatusResource;
 import org.locationtech.geogig.rest.osm.OSMRouter;
 import org.locationtech.geogig.rest.postgis.PGRouter;
 import org.locationtech.geogig.rest.repository.CommandResource;
+import org.locationtech.geogig.rest.repository.DeleteRepository;
 import org.locationtech.geogig.rest.repository.FixedEncoder;
 import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.locationtech.geogig.rest.repository.RepositoryRouter;
@@ -108,6 +109,7 @@ public class GeogigDispatcher extends AbstractController {
         router.attach("/tasks/{taskId}/download", TaskResultDownloadResource.class);
 
         Router osm = new OSMRouter();
+        router.attach("/repos/{repository}", DeleteRepository.class);
         router.attach("/repos/{repository}/osm", osm);
 
         Router postgis = new PGRouter();
@@ -117,6 +119,7 @@ public class GeogigDispatcher extends AbstractController {
         router.attach("/repos/{repository}", RepositoryResource.class);
         router.attach("/repos/{repository}/repo", makeRepoRouter());
         router.attach("/repos/{repository}/import", UploadCommandResource.class);
+        router.attach("/repos/{repository}/init", InitCommandResource.class);
         router.attach("/repos/{repository}/import.{extension}", UploadCommandResource.class);
         router.attach("/repos/{repository}/{command}.{extension}", CommandResource.class);
         router.attach("/repos/{repository}/{command}", CommandResource.class);

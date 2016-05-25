@@ -341,8 +341,9 @@ class PipelineBuilder {
         @Override
         protected Geometry _run(Geometry geom) throws Exception {
             // protect against empty input geometry
-            if ((geom == null) || (geom.isEmpty()))
+            if ((geom == null) || (geom.isEmpty())) {
                 return null;
+            }
 
             // if its a geometrycollection we do each piece individually
             if (geom.getGeometryType() == "GeometryCollection") {
@@ -353,8 +354,9 @@ class PipelineBuilder {
             Geometry result = super._run(geom);
 
             // if there's no resulting geometry, don't need to deal with it
-            if ((result == null) || (result.isEmpty()))
+            if ((result == null) || (result.isEmpty())) {
                 return null;
+            }
 
             // make sure the resulting geometry matches the input geometry
 
@@ -382,23 +384,28 @@ class PipelineBuilder {
             for (int t = 0; t < geom.getNumGeometries(); t++) {
                 Geometry g = geom.getGeometryN(0);
                 Geometry clipped = _run(g); // gets the non-degenerative of the result
-                if ((clipped != null) && (!clipped.isEmpty()))
+                if ((clipped != null) && (!clipped.isEmpty())) {
                     result.add(clipped);
+                }
             }
-            if (result.size() == 0)
+            if (result.size() == 0) {
                 return null;
+            }
             return new GeometryCollection((Geometry[]) result.toArray(new Geometry[result.size()]),
                     geom.getFactory());
         }
 
         private Geometry onlyPolygon(Geometry result) {
-            if ((result instanceof Polygon) || (result instanceof MultiPolygon))
+            if ((result instanceof Polygon) || (result instanceof MultiPolygon)) {
                 return result;
+            }
             List polys = com.vividsolutions.jts.geom.util.PolygonExtracter.getPolygons(result);
-            if (polys.size() == 0)
+            if (polys.size() == 0) {
                 return null;
-            if (polys.size() == 1)
+            }
+            if (polys.size() == 1) {
                 return (Polygon) polys.get(0);
+            }
             // this could, theoretically, produce invalid MULTIPOLYGONS since polygons cannot share edges. Taking
             // 2 polygons and putting them in a multipolygon is not always valid. However, many systems will not correctly
             // deal with a GeometryCollection with multiple polygons in them.
@@ -409,25 +416,31 @@ class PipelineBuilder {
         }
 
         private Geometry onlyLines(Geometry result) {
-            if ((result instanceof LineString) || (result instanceof MultiLineString))
+            if ((result instanceof LineString) || (result instanceof MultiLineString)) {
                 return result;
+            }
             List lines = com.vividsolutions.jts.geom.util.LineStringExtracter.getLines(result);
-            if (lines.size() == 0)
+            if (lines.size() == 0) {
                 return null;
-            if (lines.size() == 1)
+            }
+            if (lines.size() == 1) {
                 return (LineString) lines.get(0);
+            }
             return new MultiLineString((LineString[]) lines.toArray(new LineString[lines.size()]),
                     result.getFactory());
         }
 
         private Geometry onlyPoints(Geometry result) {
-            if ((result instanceof Point) || (result instanceof MultiPoint))
+            if ((result instanceof Point) || (result instanceof MultiPoint)) {
                 return result;
+            }
             List pts = com.vividsolutions.jts.geom.util.PointExtracter.getPoints(result);
-            if (pts.size() == 0)
+            if (pts.size() == 0) {
                 return null;
-            if (pts.size() == 1)
+            }
+            if (pts.size() == 1) {
                 return (Point) pts.get(0);
+            }
             return new MultiPoint((Point[]) pts.toArray(new Point[pts.size()]),
                     result.getFactory());
         }

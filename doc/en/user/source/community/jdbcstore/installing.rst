@@ -1,4 +1,4 @@
-.. _community_jdbcconfig_installing:
+.. _community_jdbcstore_installing:
 
 Installing JDBCStore
 ====================

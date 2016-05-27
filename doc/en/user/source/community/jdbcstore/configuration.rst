@@ -12,7 +12,7 @@ The following properties may be set:
 
 - ``import`` : The import configuration option tells GeoServer whether to import the current :ref:`datadir` from the file system to the database or not. If set to true, it will be imported and the config option will be set the value 'false' for the next start up to avoid trying to re-import the catalog  configuration.
 
-- ``initScript``: Path to initialisation script .sql file. Only used if initdb = true.
+- ``initScript``: Path to initialisation script .sql file. Only used if ``initdb`` is true.
 
 - ``ignoreDirs``: specify all subdirectories of the :ref:`datadir` that should be ignored by the JDBCStore, in a comma-separate list. These subdirectories will not be imported and while JDBCStore is running, all access to these subdirectories and their contents will be redirected to the default file system store. This is usually done with the ``data`` directory (which holds data rather than metadata such as images and shapefiles), temporary directories (which are not used for permanent storage) and the catalog directories (when using JDBCConfig, these are unused anyway and they need not be copied into the JDBCStore).
 
@@ -42,9 +42,9 @@ Provide the connection parameters directly in the configuration file. This inclu
 
 - ``pool.poolPreparedStatements``: whether to pool prepared statements
 
-- ``pool.maxOpenPreparedStatements``: size of prepared statement cache, only used if pool.poolPreparedStatements = true
+- ``pool.maxOpenPreparedStatements``: size of prepared statement cache, only used if ``pool.poolPreparedStatements`` is true
 
 - ``pool.testOnBorrow``: whether to validate connections when obtaining from the pool
 
-- ``pool.validationQuery``: validation query for connections from pool, must be set when pool.testOnBorrow = true
+- ``pool.validationQuery``: validation query for connections from pool, must be set when ``pool.testOnBorrow`` is true
 

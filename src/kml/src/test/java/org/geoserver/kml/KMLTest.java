@@ -8,6 +8,7 @@ package org.geoserver.kml;
 import static junit.framework.Assert.assertNull;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -42,6 +43,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Element;
 
 public class KMLTest extends WMSTestSupport {
     
@@ -502,5 +504,33 @@ public class KMLTest extends WMSTestSupport {
         assertEquals("images/layers_1.png", entry.getName());
         zis.closeEntry();
         assertNull(zis.getNextEntry());
+    }
+
+    @Test
+    public void testProjectedGroundOverlayWithPlacemarks() throws Exception {
+        // Tests GEOS-7369, the combination of kmscore = 0, kmplacemark = true, and mode = refresh with data in a 
+        // projected crs results in placemarks being encoded in that projected crs, rather than 4326 that is required
+        // by KML
+        Document dom = getAsDOM("wms?request=getmap&service=wms&version=1.1.1" +
+            "&format=" + KMLMapOutputFormat.MIME_TYPE +
+            "&layers=" + getLayerId(BOULDER) +
+            "&styles=" + MockData.BASIC_POLYGONS.getLocalPart() + "," +
+            "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326&format_options=mode:refresh;kmscore:0;kmplacemark:true");
+
+        // verify that the placemark coordinates are encoded properly
+        assertXpathEvaluatesTo("1", "count(//kml:Folder[1]/kml:GroundOverlay)", dom);
+        assertXpathEvaluatesTo("1", "count(//kml:Folder[1]/kml:Placemark)", dom);
+
+        Element pm = getFirstElementByTagName(dom, "Placemark");
+        assertNotNull(pm);
+        
+        Element point = getFirstElementByTagName(pm, "Point");
+        assertNotNull(point);
+        
+        String[] coords = getFirstElementByTagName(point, "coordinates").getFirstChild().getTextContent().split(",");
+        double[] p = new double[]{Double.parseDouble(coords[0]), Double.parseDouble(coords[1])};
+        
+        assertEquals(-105.2, p[0], 0.1);
+        assertEquals(40.0, p[1], 0.1);
     }
 }

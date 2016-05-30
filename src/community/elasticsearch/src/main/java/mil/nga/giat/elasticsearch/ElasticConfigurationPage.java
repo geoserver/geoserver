@@ -43,6 +43,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -75,7 +76,7 @@ public abstract class ElasticConfigurationPage extends Panel {
     
     private final String useAllMarkupId;
 
-    private static final List GEOMETRY_TYPES = Arrays.asList(Geometry.class,
+    private static final List<Class<? extends Geometry>> GEOMETRY_TYPES = Arrays.asList(Geometry.class,
             GeometryCollection.class, Point.class, MultiPoint.class, LineString.class,
             MultiLineString.class, Polygon.class, MultiPolygon.class);
 
@@ -117,7 +118,7 @@ public abstract class ElasticConfigurationPage extends Panel {
                 for (final ElasticAttribute attribute : attProvider.getItems()) {
                     attribute.setUse(use);
                 }
-                target.addComponent(elasticAttributePanel);
+                target.add(elasticAttributePanel);
             }
         };
         useAllCheckBox.setOutputMarkupId(true);
@@ -138,7 +139,7 @@ public abstract class ElasticConfigurationPage extends Panel {
                 for (final ElasticAttribute attribute : attProvider.getItems()) {
                     attribute.setUseShortName(useShortName);
                 }
-                target.addComponent(elasticAttributePanel);
+                target.add(elasticAttributePanel);
             }
         };
         checkBox.setOutputMarkupId(true);
@@ -264,7 +265,7 @@ public abstract class ElasticConfigurationPage extends Panel {
         GeoServerTablePanel<ElasticAttribute> atts = new GeoServerTablePanel<ElasticAttribute>(
                 "esAttributes", attProvider) {
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<ElasticAttribute> itemModel,
                     Property<ElasticAttribute> property) {
                 ElasticAttribute att = (ElasticAttribute) itemModel.getObject();
                 boolean isGeometry = att.getType() != null
@@ -337,11 +338,11 @@ public abstract class ElasticConfigurationPage extends Panel {
             }
 
             @Override
-            protected void onPopulateItem(Property<ElasticAttribute> property, ListItem item) {
+            protected void onPopulateItem(Property<ElasticAttribute> property, ListItem<Property<ElasticAttribute>> item) {
                 if (property == ElasticAttributeProvider.STORED) {
-                    item.add(new AttributeModifier("style",true,Model.of("text-align:center")));
+                    item.add(new AttributeModifier("style",Model.of("text-align:center")));
                 } else if (property == ElasticAttributeProvider.ANALYZED) {
-                    item.add(new AttributeModifier("style",true,Model.of("text-align:center")));
+                    item.add(new AttributeModifier("style",Model.of("text-align:center")));
                 }
             }
         };
@@ -366,6 +367,15 @@ public abstract class ElasticConfigurationPage extends Panel {
             return (String) getDisplayValue(object);
         }
 
+        @Override
+        public Object getObject(String id, IModel choices) {
+            for (Class<? extends Geometry> c : GEOMETRY_TYPES) {
+                if (id.equals(getDisplayValue(c))) {
+                    return c;
+                }
+            }
+            return null;
+        }
     }
 
     /**

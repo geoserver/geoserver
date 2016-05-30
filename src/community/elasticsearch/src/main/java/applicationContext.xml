@@ -21,4 +21,6 @@ This code is licensed under the GPL 2.0 license, available at the root applicati
 		</property>
 	</bean>
 
+	<bean id="ElasticXStreamPersisterInitializer" class="mil.nga.giat.elasticsearch.ElasticXStreamPersisterInitializer"/>
+
 </beans>

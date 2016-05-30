@@ -22,21 +22,26 @@ Layers can be divided into two types of data: raster and vector. These two forma
 
    * - Field
      - Description
-   * - .. image:: img/data_layers_type1.png
-     - raster (grid)
-   * - .. image:: img/data_layers_type2.png
-     - vector (feature)
+   * - .. image:: img/raster_icon.png
+     - Raster (grid)
+   * - .. image:: img/polygon_icon.png
+     - Polygon
+   * - .. image:: img/line_string_icon.png
+     - Line
+   * - .. image:: img/point_icon.png
+     - Point
 
 Add a Layer
 -----------
 
-At the upper left-hand corner of the layers view page there are two buttons for the adding and removal of layers. The green plus button allows you to add a new layer (referred to as *resource*). The red minus button allows you to remove selected layers.
+At the upper left-hand corner of the layers view page there are two buttons for the adding and removal of layers. 
+The green plus button allows you to add a new layer. The red minus button allows you to remove selected layers.
 
 .. figure:: img/data_layers_add_remove.png
 
    Buttons to Add and Remove a Layer
 
-Clicking the :guilabel:`Add a new resource` button brings up a :guilabel:`New Layer Chooser` panel. The menu displays all currently enabled stores. From this menu, select the Store where the layer should be added.
+Clicking the :guilabel:`Add a new layer` button brings up a :guilabel:`New Layer Chooser` panel. The menu displays all currently enabled stores. From this menu, select the Store where the layer should be added.
 
 .. figure:: img/data_layers_add_chooser.png
 

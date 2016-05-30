@@ -1,0 +1,18 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <wicket:panel>         
+      <h3><wicket:message key="titleEdit"></wicket:message></h3>
+      <div wicket:id="feedback"></div>
+  
+      <ul>            
+        <li>
+          <label><wicket:message key="resource"></wicket:message></label>
+          <input wicket:id="resource" size="40" type="text">
+          <br/><span wicket:id="createDirectory" ><small><wicket:message key="createDirectory"></wicket:message></small></span>
+        </li>        
+        <li>
+          <label><wicket:message key="contents"></wicket:message></label>
+          <textarea wicket:id="contents" style="width: 525px; height: 300px;"></textarea>
+        </li>
+      </ul>
+ </wicket:panel>
+</html>

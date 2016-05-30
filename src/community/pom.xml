@@ -196,6 +196,7 @@
 	<module>gdal</module>
 	<module>gwc-s3</module>
 	<module>ysld</module>
+        <module>web-resource</module>
       </modules>
     </profile>
     <profile>
@@ -421,5 +422,12 @@
         <module>ysld</module>
       </modules>
     </profile>
+    <profile>
+      <id>web-resource</id>
+      <modules>
+        <module>web-resource</module>
+      </modules>
+    </profile>
+
   </profiles>
 </project>

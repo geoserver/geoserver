@@ -53,6 +53,11 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
     }
     
     @Override
+    public Class<? extends GeoServerUserGroupService> getUserGroupServiceClass() {
+        return LDAPUserGroupService.class;
+    }
+    
+    @Override
     public GeoServerAuthenticationProvider createAuthenticationProvider(SecurityNamedServiceConfig config) {
         LDAPSecurityServiceConfig ldapConfig = (LDAPSecurityServiceConfig) config;
 
@@ -148,5 +153,11 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
     public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config)
             throws IOException {
         return new LDAPRoleService();
+    }
+    
+    @Override
+    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config)
+            throws IOException {
+            return new LDAPUserGroupService(config);
     }
 }

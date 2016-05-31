@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,7 +10,8 @@ import org.geoserver.security.config.SecurityAuthProviderConfig;
 public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig 
     implements SecurityAuthProviderConfig {
 
-    
+    private static final long serialVersionUID = 6093735229286602599L;
+
     // extract user data using a distinguished name
     String userDnPattern;
     

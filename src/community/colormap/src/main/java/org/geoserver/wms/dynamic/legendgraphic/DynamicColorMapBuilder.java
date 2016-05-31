@@ -1,3 +1,7 @@
+/* (c) 2013 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.dynamic.legendgraphic;
 
 import java.awt.Dimension;
@@ -116,7 +120,7 @@ public class DynamicColorMapBuilder {
             final double max = (Double) statsFilterFunction.evaluate(coverage, "maximum");
 
             // Getting a colorMap on top of that
-            cmap = (ColorMap) colorMapFilterFunction.evaluate(colorMap, min, max, null, null);
+            cmap = (ColorMap) colorMapFilterFunction.evaluate(colorMap, min, max, null, null, false, 256);
             final Builder cmapLegendBuilder = new ColorMapLegendCreator.Builder();
             if (cmap != null && cmap.getColorMapEntries() != null
                     && cmap.getColorMapEntries().length > 0) {

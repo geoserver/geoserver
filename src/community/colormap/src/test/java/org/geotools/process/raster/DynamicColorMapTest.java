@@ -177,9 +177,9 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
         assertEquals(100.0, Double.parseDouble(entries[3].getQuantity().toString()),TOLERANCE);
         assertEquals(100.01, Double.parseDouble(entries[4].getQuantity().toString()),TOLERANCE);
 
-        assertEquals("#FF", entries[0].getColor().toString().toUpperCase());
-        assertEquals("#FF", entries[1].getColor().toString().toUpperCase());
-        assertEquals("#FF00", entries[2].getColor().toString().toUpperCase());
+        assertEquals("#0000FF", entries[0].getColor().toString().toUpperCase());
+        assertEquals("#0000FF", entries[1].getColor().toString().toUpperCase());
+        assertEquals("#00FF00", entries[2].getColor().toString().toUpperCase());
         assertEquals("#FF0000", entries[3].getColor().toString().toUpperCase());
         assertEquals("#FF0000", entries[4].getColor().toString().toUpperCase());
 

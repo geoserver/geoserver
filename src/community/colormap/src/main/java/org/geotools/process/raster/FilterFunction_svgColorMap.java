@@ -47,6 +47,7 @@ public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
         GradientColorMapGenerator generator = null;
         Resource xmlFile = null;
         if (!colorMap.startsWith(GradientColorMapGenerator.RGB_INLINEVALUE_MARKER)
+                && !colorMap.startsWith(GradientColorMapGenerator.RGBA_INLINEVALUE_MARKER)
                 && !colorMap.startsWith(GradientColorMapGenerator.HEX_INLINEVALUE_MARKER)) {
             
             GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);

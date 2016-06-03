@@ -1,8 +1,12 @@
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geotools.process.raster;
 
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
-import java.io.File;
+import java.awt.Color;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -23,27 +27,37 @@ import org.opengis.filter.capability.FunctionName;
  */
 public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
     
-    /** "/ramps/" or "\ramps\" depending on platform */
-    private final static String STYLES_RAMP = File.separatorChar + "ramps" + File.separatorChar;
-
+    public static final Color TRANSPARENT_COLOR = new Color(0,0,0,0); 
+    
     public static FunctionName NAME = new FunctionNameImpl("colormap",
             parameter("colormap", ColorMap.class),
             parameter("name", String.class),
             parameter("min", Number.class),
-            parameter("max", Number.class));
+            parameter("max", Number.class),
+            parameter("beforeColor", String.class, 0, 1),
+            parameter("afterColor", String.class, 0, 1));
 
     public FilterFunction_svgColorMap() {
         super(NAME);
     }
 
     public Object evaluate(Object feature) {
-        String arg0 = (getExpression(0).evaluate(feature, String.class));
-        double arg1 = (getExpression(1).evaluate(feature, Double.class)).doubleValue();
-        double arg2 = (getExpression(2).evaluate(feature, Double.class)).doubleValue();
-        return evaluate(arg0, arg1, arg2);
+        String colorMap = getParameters().get(0).evaluate(feature, String.class);
+        double min = getParameters().get(1).evaluate(feature, Double.class).doubleValue();
+        double max = getParameters().get(2).evaluate(feature, Double.class).doubleValue();
+        String beforeColor = null;
+        String afterColor = null;
+        int expressionCount = getParameters().size();
+        if(expressionCount >= 4) {
+            beforeColor = getParameters().get(3).evaluate(feature, String.class);
+        }
+        if(expressionCount >= 5) {
+            afterColor = getParameters().get(4).evaluate(feature, String.class);
+        }
+        return evaluate(colorMap, min, max, beforeColor, afterColor);
     }
 
-    public Object evaluate(String colorMap, final double min, final double max) {
+    public Object evaluate(String colorMap, final double min, final double max, String beforeColor, String afterColor) {
         GradientColorMapGenerator generator = null;
         Resource xmlFile = null;
         if (!colorMap.startsWith(GradientColorMapGenerator.RGB_INLINEVALUE_MARKER)
@@ -70,6 +84,8 @@ public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
             } else {
                 generator = GradientColorMapGenerator.getColorMapGenerator(colorMap);
             }
+            generator.setBeforeColor(beforeColor);
+            generator.setAfterColor(afterColor);
             return generator.generateColorMap(min, max);
         } catch (Exception e) {
             // probably a type error

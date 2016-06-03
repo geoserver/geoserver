@@ -116,7 +116,7 @@ public class DynamicColorMapBuilder {
             final double max = (Double) statsFilterFunction.evaluate(coverage, "maximum");
 
             // Getting a colorMap on top of that
-            cmap = (ColorMap) colorMapFilterFunction.evaluate(colorMap, min, max);
+            cmap = (ColorMap) colorMapFilterFunction.evaluate(colorMap, min, max, null, null);
             final Builder cmapLegendBuilder = new ColorMapLegendCreator.Builder();
             if (cmap != null && cmap.getColorMapEntries() != null
                     && cmap.getColorMapEntries().length > 0) {

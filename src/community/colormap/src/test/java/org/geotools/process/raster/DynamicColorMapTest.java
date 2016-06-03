@@ -154,20 +154,20 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
     @Test
     public void testSvgColorMapFilterFunctionRGB() throws Exception {
         final FilterFunction_svgColorMap func = new FilterFunction_svgColorMap();
-        final ColorMap colorMap = (ColorMap) func.evaluate("rgb(0,0,255);rgb(0,255,0);rgb(255,0,0)", 10, 100);
+        final ColorMap colorMap = (ColorMap) func.evaluate("rgb(0,0,255);rgb(0,255,0);rgb(255,0,0)", 10, 100, null, null);
         final ColorMapEntry[] entries = colorMap.getColorMapEntries();
 
         check(entries);
-      }
+    }
 
     @Test
     public void testSvgColorMapFilterFunctionHEX() throws Exception {
         final FilterFunction_svgColorMap func = new FilterFunction_svgColorMap();
-        final ColorMap colorMap = (ColorMap) func.evaluate("#0000FF;#00FF00;#FF0000", 10, 100);
+        final ColorMap colorMap = (ColorMap) func.evaluate("#0000FF;#00FF00;#FF0000", 10, 100, null, null);
         final ColorMapEntry[] entries = colorMap.getColorMapEntries();
 
         check(entries);
-      }
+    }
 
     private void check(ColorMapEntry[] entries) {
         assertEquals(5, entries.length);
@@ -177,11 +177,11 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
         assertEquals(100.0, Double.parseDouble(entries[3].getQuantity().toString()),TOLERANCE);
         assertEquals(100.01, Double.parseDouble(entries[4].getQuantity().toString()),TOLERANCE);
 
-        assertEquals("#0000FF", entries[0].getColor().toString().toUpperCase());
+        assertEquals("#000000", entries[0].getColor().toString().toUpperCase());
         assertEquals("#0000FF", entries[1].getColor().toString().toUpperCase());
         assertEquals("#00FF00", entries[2].getColor().toString().toUpperCase());
         assertEquals("#FF0000", entries[3].getColor().toString().toUpperCase());
-        assertEquals("#FF0000", entries[4].getColor().toString().toUpperCase());
+        assertEquals("#000000", entries[4].getColor().toString().toUpperCase());
 
         assertEquals(0.0, Double.parseDouble(entries[0].getOpacity().toString()), TOLERANCE);
         assertEquals(1.0, Double.parseDouble(entries[1].getOpacity().toString()), TOLERANCE);

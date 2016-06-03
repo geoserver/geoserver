@@ -6,26 +6,23 @@ package org.geogig.geoserver.rest;
 
 import static org.locationtech.geogig.rest.repository.RESTUtils.getStringAttribute;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
-import org.geogig.geoserver.config.ConfigStore;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
-import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestletException;
 import org.locationtech.geogig.api.GeoGIG;
 import org.locationtech.geogig.api.plumbing.ResolveGeogigURI;
 import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.rest.repository.RepositoryProvider;
+import org.restlet.data.Form;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 
@@ -40,6 +37,18 @@ import com.google.common.collect.Iterators;
  * {@link Request} by asking the geoserver's {@link RepositoryManager}
  */
 public class GeoServerRepositoryProvider implements RepositoryProvider {
+
+    /**
+     * Init request command string.
+     */
+    public static final String INIT_CMD = "init";
+
+    /**
+     * Init request form field for specifying the Repository URI.
+     */
+    public static final String REPO_URI_KEY = "repositoryURI";
+
+    private final Map<String, String> repoNameToId = new HashMap<>();
 
     private Optional<String> getRepositoryName(Request request) {
         final String repo = getStringAttribute(request, "repository");
@@ -66,8 +75,6 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
             return Optional.absent();
         }
     }
-    
-    private Map<String, String> repoNameToId = new HashMap<String, String>();
 
     public List<RepositoryInfo> getRepositoryInfos() {
         return RepositoryManager.get().getAll();
@@ -134,11 +141,52 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         });
     }
 
+    private boolean isInitRequest(Request request) {
+        // if the request is a PUT, and the request path ends in "init", it's an INIT request.
+        return Method.PUT.equals(request.getMethod()) && request.getResourceRef() != null &&
+                request.getResourceRef().getPath().endsWith(INIT_CMD);
+    }
+
+    private Optional<URI> getRepositoryURI(Request request) {
+        // look for a repositoryURI in the From
+        if (request.isEntityAvailable()) {
+            try {
+                Form requestForm = request.getEntityAsForm();
+                String repoURI;
+                if (requestForm != null &&
+                        (repoURI = requestForm.getFirstValue(REPO_URI_KEY, null)) != null) {
+                    // the request has a URI in the form
+                    return Optional.of(URI.create(repoURI));
+                }
+            } catch (Exception ex) {
+                // eat it
+                // the request entity is not a form, or there is no form in the request
+            }
+        }
+        // no URI specified in the request form
+        return Optional.absent();
+    }
+
+    private Optional<GeoGIG> getGeogig(URI uri, String repositoryName) {
+        Hints hints = new Hints();
+        hints.set(Hints.REPOSITORY_URL, uri.normalize());
+        hints.set(Hints.REPOSITORY_NAME, repositoryName);
+        return Optional.of(RepositoryManager.get().createRepo(hints));
+    }
+
     @Override
     public Optional<GeoGIG> getGeogig(Request request) {
         Optional<String> repositoryName = getRepositoryName(request);
         if (!repositoryName.isPresent()) {
             return Optional.absent();
+        }
+        // special handling of INIT requests
+        // if the request is an INIT request and has a repositoryURI in the request, use that
+        if (isInitRequest(request)) {
+            Optional<URI> uri = getRepositoryURI(request);
+            if (uri.isPresent()) {
+                return getGeogig(uri.get(), repositoryName.get());
+            }
         }
         return getGeogig(repositoryName.get());
     }
@@ -152,16 +200,16 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
 
         RepositoryManager manager = RepositoryManager.get();
         String repoId = getRepoIdForName(repositoryName);
-        if (repoId == null) {
-        	repoId = UUID.randomUUID().toString();
+        if (null == repoId) {
+            // this should only be the case if we are processing an INIT request, with no request
+            // entity. Create a repo with just the name specified by the user.
+            Hints hints = new Hints();
+            hints.set(Hints.REPOSITORY_NAME, repositoryName);
+            return manager.createRepo(hints);
         }
         try {
             RepositoryInfo info = manager.get(repoId);
             return manager.getRepository(repoId);
-        } catch (NoSuchElementException e) {
-            Hints hints = new Hints();
-            hints.set(Hints.REPOSITORY_NAME, repositoryName);
-            return manager.createRepo(hints, repoId);
         } catch (IOException e) {
             throw new RestletException("Error accessing datastore " + repositoryName,
                     Status.SERVER_ERROR_INTERNAL, e);

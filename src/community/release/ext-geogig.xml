@@ -45,6 +45,10 @@
             <include>jcommander-*.jar</include>
             <!-- jansi libs -->
             <include>jansi-*.jar</include>
+            <!-- Restlet fileupload -->
+            <include>org.restlet.ext.fileupload-*.jar</include>
+            <!-- GeoTools Geopackage libs -->
+            <include>gt-geopkg-*.jar</include>
         </includes>
         <excludes>
             <exclude>*test*</exclude>

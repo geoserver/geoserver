@@ -40,26 +40,10 @@ public class DropDownModel implements IModel<Serializable> {
     @Override
     public Serializable getObject() {
         if (type == null) {
-            // set a default
-            type = DEFAULT_CONFIG;
             // get the type from the model
             RepositoryInfo repo = repoModel.getObject();
             URI location = repo != null ? repo.getLocation() : null;
-            if (location != null) {
-                if (null != location.getScheme()) {
-                    switch (location.getScheme()) {
-                        case "postgresql":
-                            type = PG_CONFIG;
-                            break;
-                        case "file":
-                            type = DIRECTORY_CONFIG;
-                            break;
-                        default:
-                            type = DEFAULT_CONFIG;
-                            break;
-                    }
-                }
-            }
+            type = getType(location);
         }
         return type;
     }
@@ -77,4 +61,17 @@ public class DropDownModel implements IModel<Serializable> {
         type = null;
     }
 
+    public static String getType(URI location) {
+        if (location != null) {
+            if (null != location.getScheme()) {
+                switch (location.getScheme()) {
+                    case "postgresql":
+                        return PG_CONFIG;
+                    case "file":
+                        return DIRECTORY_CONFIG;
+                }
+            }
+        }
+        return DEFAULT_CONFIG;
+    }
 }

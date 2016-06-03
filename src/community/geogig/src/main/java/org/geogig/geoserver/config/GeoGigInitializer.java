@@ -33,7 +33,7 @@ public class GeoGigInitializer implements GeoServerInitializer {
 
     private static final Logger LOGGER = Logging.getLogger(GeoGigInitializer.class);
 
-    private ConfigStore store;
+    private final ConfigStore store;
 
     public static final String REPO_RESOLVER_CLASSNAME = GeoServerStoreRepositoryResolver.class
             .getName();
@@ -47,6 +47,7 @@ public class GeoGigInitializer implements GeoServerInitializer {
         // create RepositoryInfos for each datastore that doesn't have it to preserve backwards
         // compatibility
         Catalog catalog = geoServer.getCatalog();
+        RepositoryManager.get().setCatalog(catalog);
         Map<URI, RepositoryInfo> allByLocation = getAllByLocation();
 
         Multimap<URI, DataStoreInfo> byRepo = storesByRepository(catalog);
@@ -57,14 +58,14 @@ public class GeoGigInitializer implements GeoServerInitializer {
 
                 final RepositoryInfo info = create(repoURI);
 
-                for (DataStoreInfo store : byRepo.get(repoURI)) {
+                for (DataStoreInfo dataStore : byRepo.get(repoURI)) {
                     LOGGER.info(
                             format("Upgrading config for GeoGig store %s to refer to GeoServer's RepositoryInfo %s",
-                                    store.getName(), info.getId()));
-                    Map<String, Serializable> params = store.getConnectionParameters();
+                                    dataStore.getName(), info.getId()));
+                    Map<String, Serializable> params = dataStore.getConnectionParameters();
                     params.put(REPOSITORY.key, info.getId());
                     params.put(RESOLVER_CLASS_NAME.key, REPO_RESOLVER_CLASSNAME);
-                    catalog.save(store);
+                    catalog.save(dataStore);
                 }
             }
         }

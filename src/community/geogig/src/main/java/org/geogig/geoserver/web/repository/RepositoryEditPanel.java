@@ -15,7 +15,9 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geogig.geoserver.config.RepositoryInfo;
+import org.geogig.geoserver.config.RepositoryManager;
 import org.geogig.geoserver.util.PostgresConnectionErrorHandler;
+import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +33,7 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
             final boolean isNew) {
         super(wicketId, model);
 
-        config = new GeoGigRepositoryInfoFormComponent("repositoryConfig", model);
+        config = new GeoGigRepositoryInfoFormComponent("repositoryConfig", model, isNew);
         config.setVisible(true);
         add(config);
 
@@ -49,7 +51,9 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
                 final URI location = repo.getLocation();
                 final RepositoryResolver resolver = RepositoryResolver.lookup(location);
                 final String scheme = location.getScheme();
-                if ("file".equals(scheme)) {
+                if (isNew && repoNameExists(repo.getRepoName())) {
+                    error.addMessageKey("errRepositoryNameExists");
+                } else if ("file".equals(scheme)) {
                     File repoDir = new File(location);
                     final File parent = repoDir.getParentFile();
                     if (!parent.exists() || !parent.isDirectory()) {
@@ -67,8 +71,21 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
                     }
                 } else if ("postgresql".equals(scheme)) {
                     try {
-                        if (resolver.repoExists(location)) {
-                            error.addMessageKey("errRepositoryExists");
+                        if (isNew) {
+                            if (resolver.repoExists(location)) {
+                                error.addMessageKey("errRepositoryExists");
+                            }
+                        } else {
+                            // try to connect
+                            Repository repository = null;
+                            try {
+                                repository = resolver.open(location);
+                            } finally {
+                                if (repository != null) {
+                                    repository.close();
+                                }
+                            }
+
                         }
                     } catch (Exception ex) {
                         // likely failed to connect
@@ -89,5 +106,14 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
     protected void convertInput() {
         RepositoryInfo modelObject = getModelObject();
         setConvertedInput(modelObject);
+    }
+
+    private boolean repoNameExists(String repoName) {
+        for (RepositoryInfo repo : RepositoryManager.get().getAll()) {
+            if (repo.getRepoName().equals(repoName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -39,6 +39,14 @@ public class RepositoryInfo implements Serializable {
 
     private java.net.URI location;
 
+    /**
+     * Stores the "nice" name for a repo. This is the name that is shown in the Repository list, as
+     * well as what is stored in the GeoGIG repository config. It is transient, as we don't want to
+     * serialize this. It's just a place holder for the name until it can be persisted into the repo
+     * config.
+     */
+    private transient String repoName;
+
     public RepositoryInfo() {
         this(null);
     }
@@ -84,14 +92,34 @@ public class RepositoryInfo implements Serializable {
         this.name = name;
     }
 
+    public void setRepoName(String name) {
+        this.repoName = name;
+    }
+
     public String getRepoName() {
-        if (this.location != null)  {
-        	try {
-        		Repository repo = RepositoryResolver.load(this.location);
-        		return repo.command(ResolveRepositoryName.class).call();
-        	} catch (RepositoryConnectionException e) {
-        		Throwables.propagate(e);
-        	}
+        if (this.repoName != null) {
+            return repoName;
+        }
+        if (this.location != null) {
+            Repository repo = null;
+            try {
+                // lookup the resolver
+                RepositoryResolver resolver = RepositoryResolver.lookup(this.location);
+                // if the repo exists, get the name from it
+                if (resolver.repoExists(this.location)) {
+                    // it exists, load it and fetch the name
+                    repo = RepositoryResolver.load(this.location);
+                    return repo.command(ResolveRepositoryName.class).call();
+                }
+                // the repo doesn't exist, derive the name from the location
+                return resolver.getName(this.location);
+            } catch (RepositoryConnectionException e) {
+                Throwables.propagate(e);
+            } finally {
+                if (repo != null) {
+                    repo.close();
+                }
+            }
         }
         return null;
     }

@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -27,6 +27,7 @@ public class WCSNetCDFBaseTest extends WCSKVPTestSupport {
             "user_projections/" + netcdfProjectionsDefinition);
         final File projectionFile = new File(projectionFileDir, netcdfProjectionsDefinition);
         System.setProperty(NetCDFCRSAuthorityFactory.SYSTEM_DEFAULT_USER_PROJ_FILE, projectionFile.getCanonicalPath());
+        testData.copyTo(getClass().getResourceAsStream("reduced-cf-standard-name-table.xml"), "cf-standard-name-table.xml");
     }
 
 }

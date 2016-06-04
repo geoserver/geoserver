@@ -291,7 +291,8 @@ class NetCDFCRSWriter {
             Set<String> keySet = referencingToNetCDFParameters.keySet();
 
             // getting the list of parameters from the GT Referencing Projection 
-            ParameterValueGroup values = conversionFromBase.getParameterValues();
+            ParameterValueGroup values = projection
+                    .getNetcdfParameters(conversionFromBase.getParameterValues());
             List<GeneralParameterValue> valuesList = values.values();
 
             // Set up NetCDF CF parameters to be written

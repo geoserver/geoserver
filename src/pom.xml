@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- 
- Copyright (C) 2015 - Open Source Geospatial Foundation. All rights reserved.
+<!--
+ Copyright (C) 2016 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -73,15 +73,6 @@
     <!-- release repository used by geotools (and third-party dependencies) -->
   </repository>
    
-  <repository>
-    <id>maven-restlet</id>
-    <name>Restlet Maven Repository</name>
-    <url>http://maven.restlet.org</url>
-    <snapshots>
-      <enabled>false</enabled>
-    </snapshots>
-  </repository>
-
    <repository>
       <id>geosolutions</id>
       <name>geosolutions repository</name>

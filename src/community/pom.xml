@@ -432,5 +432,11 @@
         <module>geogig</module>
       </modules>
     </profile>
+    <profile>
+      <id>gwc-sqlite</id>
+      <modules>
+        <module>gwc-sqlite</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

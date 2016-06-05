@@ -17,7 +17,7 @@
   <packaging>jar</packaging>
   <version>2.9-SNAPSHOT</version>
   <name>GeoServer Web Application</name>    
-  <dependencies>  
+  <dependencies>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
@@ -1334,6 +1334,16 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-excel</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>gwc-sqlite</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-gwc-sqlite</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

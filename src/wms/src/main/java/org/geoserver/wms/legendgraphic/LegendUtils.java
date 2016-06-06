@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,7 +23,6 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -83,6 +82,13 @@ public class LegendUtils {
 			throw new NullPointerException(message+" cannot be null");
 	}
 	
+	/**
+	 * Legend layouts
+	 */
+	public enum LegendLayout{
+	    HORIZONTAL,VERTICAL;
+	}
+	
 	public enum VAlign{
 		TOP,MIDDLE,BOTTOM;		
 	}
@@ -128,7 +134,36 @@ public class LegendUtils {
 	/** padding percentage factor at both sides of the legend. */
 	public static final float marginFactor = 0.015f;
 	
+	/**
+	 * default legend graphic layout is vertical
+	 */
+	private static final LegendLayout DEFAULT_LAYOUT = LegendLayout.VERTICAL;
 	
+	/**
+         * default group legend graphic layout is vertical
+         */
+        private static final LegendLayout DEFAULT_GROUPLAYOUT = LegendLayout.VERTICAL;
+
+	/**
+	 * default column height is not limited
+	 */
+	private static final int DEFAULT_COLUMN_HEIGHT = 0;
+
+	/**
+	 * default row width is not limited
+	 */
+	private static final int DEFAULT_ROW_WIDTH = 0;
+
+	/**
+	 * default column number is not limited
+	 */
+	private static final int DEFAULT_COLUMNS = 0;
+
+	/**
+	 * default row number is not limited
+	 */
+	private static final int DEFAULT_ROWS = 0;
+
 	/**
 	 * shared package's logger
 	 */
@@ -136,6 +171,126 @@ public class LegendUtils {
 			.getLogger(LegendUtils.class.getPackage().getName());
 
 	public static final Color DEFAULT_BORDER_COLOR = Color.black;
+	
+	/**
+	 * Retrieves the legend layout from the provided {@link GetLegendGraphicRequest}.
+	 * 
+	 * @param req a {@link GetLegendGraphicRequest} from which we should extract the {@link LegendLayout} information.
+	 * @return the {@link LegendLayout} specified in the provided {@link GetLegendGraphicRequest} or a default DEFAULT_LAYOUT.
+	 * 
+	 */
+	public static LegendLayout getLayout(final GetLegendGraphicRequest req) {
+	    ensureNotNull(req, "GetLegendGraphicRequestre");
+	    final Map<String, Object> legendOptions = req.getLegendOptions();
+	    LegendLayout layout = DEFAULT_LAYOUT;
+	    if (legendOptions != null && legendOptions.get("layout") != null) {
+	        try {
+	            layout = LegendLayout.valueOf(((String) legendOptions.get("layout")).toUpperCase());
+	        } catch (IllegalArgumentException e) {
+	        }
+	    }
+	    return layout;
+	}
+
+	/**
+	 * Retrieves the group legend layout from the provided {@link GetLegendGraphicRequest}.
+	 * 
+	 * @param req a {@link GetLegendGraphicRequest} from which we should extract the group {@link LegendLayout} information.
+	 * @return the group {@link LegendLayout} specified in the provided {@link GetLegendGraphicRequest} or a default DEFAULT_LAYOUT.
+	 * 
+	 */
+	public static LegendLayout getGroupLayout(final GetLegendGraphicRequest req) {
+	    ensureNotNull(req, "GetLegendGraphicRequestre");
+	    final Map<String, Object> legendOptions = req.getLegendOptions();
+	    LegendLayout layout = DEFAULT_LAYOUT;
+	    if (legendOptions != null && legendOptions.get("grouplayout") != null) {
+	        try {
+	            layout = LegendLayout.valueOf(((String) legendOptions.get("grouplayout")).toUpperCase());
+	        } catch (IllegalArgumentException e) {
+	        }
+	    }
+	    return layout;
+	}
+
+	/**
+	 * Retrieves column height of legend from the provided {@link GetLegendGraphicRequest}.
+	 * 
+	 * @param req a {@link GetLegendGraphicRequest} from which we should extract column height information.
+	 * @return the column height specified in the provided {@link GetLegendGraphicRequest} or a default DEFAULT_COLUMN_HEIGHT.
+	 * 
+	 */
+	public static int getColumnHeight(final GetLegendGraphicRequest req) {
+	    ensureNotNull(req, "GetLegendGraphicRequestre");
+	    final Map<String, Object> legendOptions = req.getLegendOptions();
+	    int columnheight = DEFAULT_COLUMN_HEIGHT;
+	    if (legendOptions != null && legendOptions.get("columnheight") != null) {
+	        try {
+	            columnheight = Integer.parseInt((String) legendOptions.get("columnheight"));
+	        } catch (NumberFormatException e) {
+	        }
+	    }
+	    return columnheight;
+	}
+
+	/**
+	 * Retrieves row width of legend from the provided {@link GetLegendGraphicRequest}.
+	 * 
+	 * @param req a {@link GetLegendGraphicRequest} from which we should extract row width information.
+	 * @return the row width specified in the provided {@link GetLegendGraphicRequest} or a default DEFAULT_ROW_WIDTH.
+	 * 
+	 */
+	public static int getRowWidth(final GetLegendGraphicRequest req) {
+	    ensureNotNull(req, "GetLegendGraphicRequestre");
+	    final Map<String, Object> legendOptions = req.getLegendOptions();
+	    int rowwidth = DEFAULT_ROW_WIDTH;
+	    if (legendOptions != null && legendOptions.get("rowwidth") != null) {
+	        try {
+	            rowwidth = Integer.parseInt((String) legendOptions.get("rowwidth"));
+	        } catch (NumberFormatException e) {
+	        }
+	    }
+	    return rowwidth;
+	}
+
+	/**
+	 * Retrieves columns of legend from the provided {@link GetLegendGraphicRequest}.
+	 * 
+	 * @param req a {@link GetLegendGraphicRequest} from which we should extract columns information.
+	 * @return the columns specified in the provided {@link GetLegendGraphicRequest} or a default DEFAULT_COLUMNS.
+	 * 
+	 */
+	public static int getColumns(final GetLegendGraphicRequest req) {
+	    ensureNotNull(req, "GetLegendGraphicRequestre");
+	    final Map<String, Object> legendOptions = req.getLegendOptions();
+	    int columns = DEFAULT_COLUMNS;
+	    if (legendOptions != null && legendOptions.get("columns") != null) {
+	        try {
+	            columns = Integer.parseInt((String) legendOptions.get("columns"));
+	        } catch (NumberFormatException e) {
+	        }
+	    }
+	    return columns;
+	}
+
+	/**
+	 * Retrieves rows of legend from the provided {@link GetLegendGraphicRequest}.
+	 * 
+	 * @param req a {@link GetLegendGraphicRequest} from which we should extract rows information.
+	 * @return the rows specified in the provided {@link GetLegendGraphicRequest} or a default DEFAULT_ROWS.
+	 * 
+	 */
+	public static int getRows(final GetLegendGraphicRequest req) {
+	    ensureNotNull(req, "GetLegendGraphicRequestre");
+	    final Map<String, Object> legendOptions = req.getLegendOptions();
+	    int rows = DEFAULT_ROWS;
+	    if (legendOptions != null && legendOptions.get("rows") != null) {
+	        try {
+	            rows = Integer.parseInt((String) legendOptions.get("rows"));
+	        } catch (NumberFormatException e) {
+	        }
+	    }
+	    return rows;
+	}
 
 	/**
 	 * Retrieves the font from the provided {@link GetLegendGraphicRequest}.

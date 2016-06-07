@@ -156,7 +156,7 @@ This end point allows a file containing spatial data to be added (via a POST or 
      - Creates or overwrites the files for coverage store ``cs``
      - 200
      - :ref:`See note below <rest_api_coveragestores_file_put>`
-     - :set spell spelllang=en_us
+     - 
      - :ref:`configure <rest_api_coveragestores_configure>`, :ref:`coverageName <rest_api_coveragestores_coveragename>`
    * - DELETE
      -

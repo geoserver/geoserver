@@ -30,6 +30,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.DataAccess;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,7 +58,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-@TestSetup(run = TestSetupFrequency.ONCE)
+@TestSetup(run = TestSetupFrequency.REPEAT)
 public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
 
     /**
@@ -81,7 +82,8 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
     @Before
     public void before() throws Exception {
         // protected void onSetUp(SystemTestData testData) throws Exception {
-
+        Catalog catalog = getCatalog();
+        RepositoryManager.get().setCatalog(catalog);
         geogigData.init()//
                 .config("user.name", "gabriel")//
                 .config("user.email", "gabriel@test.com")//
@@ -102,7 +104,7 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
 
         geogigData.add().commit("Added test features");
 
-        Catalog catalog = getCatalog();
+
         CatalogBuilder catalogBuilder = geogigData.newCatalogBuilder(catalog);
         int i = rnd.nextInt();
         catalogBuilder.namespace("geogig.org/" + i).workspace("geogigws" + i)
@@ -131,7 +133,12 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
                 .get(GeoGigDataStoreFactory.REPOSITORY.key);
         RepositoryInfo repositoryInfo = RepositoryManager.get().get(repoId);
         assertNotNull(repositoryInfo);
-        BASE_URL = "/geogig/repos/" + repositoryInfo.getId();
+        BASE_URL = "/geogig/repos/testrepo";
+    }
+   
+    @After
+    public void after() {
+		RepositoryManager.close();
     }
 
     /**

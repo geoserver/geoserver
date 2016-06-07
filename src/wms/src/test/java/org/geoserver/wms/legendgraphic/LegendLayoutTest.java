@@ -11,8 +11,10 @@ import static org.junit.Assert.assertNotNull;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.util.HashMap;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 
 import org.geoserver.catalog.CoverageInfo;
@@ -51,16 +53,19 @@ public class LegendLayoutTest extends BaseLegendTest{
 
             final int HEIGHT_HINT = 30;
             req.setHeight(HEIGHT_HINT);
-
+            HashMap legendOptions = new HashMap();
+            req.setLegendOptions(legendOptions);
+            
             // use default values for the rest of parameters
             this.legendProducer.buildLegendGraphic(req);
 
             BufferedImage vImage = this.legendProducer.buildLegendGraphic(req);
 
             // Change layout
-            HashMap legendOptions = new HashMap();
-            legendOptions.put("layout", "horizontal");
+            legendOptions = new HashMap();
+            legendOptions.put("layout", "horizontal");           
             req.setLegendOptions(legendOptions);
+            
             BufferedImage hImage = this.legendProducer.buildLegendGraphic(req);
 
             // Check rotation
@@ -85,7 +90,7 @@ public class LegendLayoutTest extends BaseLegendTest{
     @org.junit.Test
     public void testClassesHorizontalRaster() throws Exception {
 
-        Style multipleRulesStyle = getCatalog().getStyleByName("rainfall_classes").getStyle();
+        Style multipleRulesStyle = getCatalog().getStyleByName("rainfall_classes_nolabels").getStyle();
 
         assertNotNull(multipleRulesStyle);
 
@@ -110,14 +115,15 @@ public class LegendLayoutTest extends BaseLegendTest{
             legendOptions.put("my", "0");
             legendOptions.put("dx", "0");
             legendOptions.put("dy", "0");
+            legendOptions.put("forceRule", "false"); 
             req.setLegendOptions(legendOptions);
 
             BufferedImage image = this.legendProducer.buildLegendGraphic(req);
-
+            
             // Check output
             assertEquals(HEIGHT_HINT, image.getHeight());
             assertPixel(image, 9, HEIGHT_HINT/2, new Color(115, 38, 0));
-            assertPixel(image, 1012, HEIGHT_HINT/2, new Color(38, 115, 0));
+            assertPixel(image, 230, HEIGHT_HINT/2, new Color(38, 115, 0));
 
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
@@ -136,7 +142,7 @@ public class LegendLayoutTest extends BaseLegendTest{
     @org.junit.Test
     public void testClassesRasterColumnsLimits() throws Exception {
 
-        Style multipleRulesStyle = getCatalog().getStyleByName("rainfall_classes").getStyle();
+        Style multipleRulesStyle = getCatalog().getStyleByName("rainfall_classes_nolabels").getStyle();
 
         assertNotNull(multipleRulesStyle);
 
@@ -163,6 +169,7 @@ public class LegendLayoutTest extends BaseLegendTest{
             legendOptions.put("my", "0");
             legendOptions.put("dx", "0");
             legendOptions.put("dy", "0");
+            legendOptions.put("forceRule", "false"); 
             req.setLegendOptions(legendOptions);
 
             BufferedImage image = this.legendProducer.buildLegendGraphic(req);
@@ -189,7 +196,7 @@ public class LegendLayoutTest extends BaseLegendTest{
     @org.junit.Test
     public void testClassesRasterRowsLimits() throws Exception {
 
-        Style multipleRulesStyle = getCatalog().getStyleByName("rainfall_classes").getStyle();
+        Style multipleRulesStyle = getCatalog().getStyleByName("rainfall_classes_nolabels").getStyle();
 
         assertNotNull(multipleRulesStyle);
 
@@ -210,20 +217,22 @@ public class LegendLayoutTest extends BaseLegendTest{
             // Change layout
             HashMap legendOptions = new HashMap();
             legendOptions.put("layout", "horizontal");
-            legendOptions.put("rowwidth", "285");
+            legendOptions.put("rowwidth", "100");
             legendOptions.put("rows", "2");
             legendOptions.put("mx", "0");
             legendOptions.put("my", "0");
             legendOptions.put("dx", "0");
             legendOptions.put("dy", "0");
+            legendOptions.put("forceRule", "false"); 
             req.setLegendOptions(legendOptions);
 
             BufferedImage image = this.legendProducer.buildLegendGraphic(req);
-
+            File outputfile = new File("C:/image.jpg");
+            ImageIO.write(image, "jpg", outputfile);
             // Check output
             assertEquals(2*HEIGHT_HINT, image.getHeight());
             assertPixel(image, 9, 13, new Color(115, 38, 0));
-            assertPixel(image, 190, 43, new Color(209, 255, 115));
+            assertPixel(image, 110, 43, new Color(38, 115, 0));
 
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
@@ -253,6 +262,7 @@ public class LegendLayoutTest extends BaseLegendTest{
         
         HashMap legendOptions = new HashMap();
         legendOptions.put("layout", "horizontal");
+        legendOptions.put("forceLabels", "off");
         req.setLegendOptions(legendOptions);
         
         this.legendProducer.buildLegendGraphic(req);
@@ -261,7 +271,7 @@ public class LegendLayoutTest extends BaseLegendTest{
 
         assertEquals(HEIGHT_HINT, image.getHeight());
         assertPixel(image, 10, HEIGHT_HINT/2, new Color(192,160,0));
-        assertPixel(image, 235, HEIGHT_HINT/2, new Color(224,64,0));
+        assertPixel(image, 50, HEIGHT_HINT/2, new Color(224,64,0));
         
     }
 }

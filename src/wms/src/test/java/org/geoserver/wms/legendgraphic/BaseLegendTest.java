@@ -44,6 +44,7 @@ public class BaseLegendTest extends WMSTestSupport {
         testData.addStyle("rainfall", MockData.class, catalog);
         testData.addStyle("rainfall_ramp", MockData.class, catalog);
         testData.addStyle("rainfall_classes", MockData.class, catalog);
+        testData.addStyle("rainfall_classes_nolabels", MockData.class, catalog);
         // add raster layer for rendering transform test
         testData.addRasterLayer(new QName("http://www.opengis.net/wcs/1.1.1", "DEM", "wcs"),
                 "tazdem.tiff", "tiff", new HashMap(), MockData.class, catalog);

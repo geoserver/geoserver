@@ -113,6 +113,47 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         assertEquals(newMaximum, wrappedRange.getMaximum(), DELTA);
 
     }
+    
+    /**
+     * Test that the wrapped nodata categories contains the defined nodata as an int
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testIntegerNoDataCategoryWrapping() throws IOException {
+
+        // Setting coverage dimension
+        final CoverageDimensionImpl coverageDim = new CoverageDimensionImpl();
+        final String wrappedName = "wrapped";
+        coverageDim.setName(wrappedName);
+        coverageDim.setDimensionType(SampleDimensionType.SIGNED_16BITS);
+        coverageDim.setRange(NumberRange.create(0d, 10000d));
+
+        // Definition of the nodata
+        final List<Double> nullValues = new ArrayList<Double>();
+        final double noData1 = -32768d;
+        nullValues.add(noData1);
+        coverageDim.setNullValues(nullValues);
+
+        // Quantitative nodata category
+        GridSampleDimension sampleDim = new GridSampleDimension("original", new Category[] { new Category(
+                Vocabulary.formatInternational(VocabularyKeys.NODATA), new Color[] { new Color(0,
+                        0, 0, 0) }, NumberRange.create(-9999, -9999)) }, null);
+
+        // Wrap the dimension
+        GridSampleDimension copy = WrappedSampleDimension.build(sampleDim, coverageDim);
+
+        // Extract categories
+        List<Category> categories = copy.getCategories();
+
+        // Ensure NoData Category is present
+        Category category = categories.get(0);
+        assertTrue(category.getName().equals(Category.NODATA.getName()));
+
+        // Check if it contains sampleToGeophisics and the Range contains the first nodata defined
+        assertEquals(category.getRange().getMinimum(), noData1, DELTA);
+        assertEquals(category.getRange().getMaximum(), noData1, DELTA);
+    }
 
     /**
      * Test that the wrapped nodata categories contains the defined nodata

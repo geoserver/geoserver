@@ -27,6 +27,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.DataStore;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.locationtech.geogig.api.GeoGIG;
@@ -84,6 +85,11 @@ public class GeoGigGeoServerRESTntegrationTest extends CatalogRESTTestSupport {
         // LayerInfo lineLayerInfo = catalog.getLayerByName(layerName);
         // assertNotNull(lineLayerInfo);
     }
+   
+    @After
+    public void after() {
+		RepositoryManager.close();
+    }
 
     /**
      * Override so that default layers are not added
@@ -108,7 +114,7 @@ public class GeoGigGeoServerRESTntegrationTest extends CatalogRESTTestSupport {
     @Test
     public void createDataStoreOldConfigNewRepo() throws Exception {
 
-        GeoGIG geogig = geogigData.createRpository("new_repo_old_config");
+        GeoGIG geogig = geogigData.createRepository("new_repo_old_config");
         try {
             geogig.command(InitOp.class).call();
             final File repo = geogig.command(ResolveGeogigDir.class).getFile().get()
@@ -251,7 +257,7 @@ public class GeoGigGeoServerRESTntegrationTest extends CatalogRESTTestSupport {
                 + " </connectionParameters>\n"//
                 + "</dataStore>\n";
 
-        GeoGIG geogig = geogigData.createRpository("new_repo");
+        GeoGIG geogig = geogigData.createRepository("new_repo");
         try {
             geogig.command(InitOp.class).call();
             File repo = geogig.command(ResolveGeogigDir.class).getFile().get();

@@ -73,6 +73,7 @@
           <descriptor>release/ext-ysld.xml</descriptor>
           <descriptor>release/ext-geogig.xml</descriptor>
           <descriptor>release/ext-jdbcstore.xml</descriptor>
+          <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
         </descriptors>
       </configuration>
      </plugin>
@@ -199,6 +200,7 @@
 	<module>gdal</module>
 	<module>gwc-s3</module>
 	<module>ysld</module>
+        <module>gwc-sqlite</module>
       </modules>
     </profile>
     <profile>

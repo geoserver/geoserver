@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -1282,6 +1282,9 @@ public class WCSDimensionsSubsetHelper {
             throw new UnsupportedOperationException("Only structuredGridCoverage2DReaders are currently supported");
         }
         List<DimensionBean> dimensions = new ArrayList<DimensionBean>();
+        if (accessor == null) {
+            return dimensions;
+        }
         List<String> customDimensions = (List<String>) (accessor != null ? accessor.getCustomDomains() : Collections.emptyList());
         
         // Put custom dimensions as first

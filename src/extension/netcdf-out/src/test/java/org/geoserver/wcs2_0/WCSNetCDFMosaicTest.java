@@ -108,7 +108,6 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
-        testData.copyTo(getClass().getResourceAsStream("reduced-cf-standard-name-table.xml"), "cf-standard-name-table.xml");
         testData.setUpDefaultRasterLayers();
     }
 

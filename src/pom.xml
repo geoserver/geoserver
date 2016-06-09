@@ -1257,6 +1257,7 @@
      <include>**/*.tiff</include>
      <include>**/*.zip</include>
      <include>**/*.json</include>
+     <include>**/*.nc</include>
     </includes>
     <excludes>
      <exclude>**/doc-files/**</exclude>

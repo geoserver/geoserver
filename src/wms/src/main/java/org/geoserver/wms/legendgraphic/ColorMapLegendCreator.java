@@ -14,6 +14,7 @@ import java.awt.RenderingHints;
 import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
+import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -915,10 +916,11 @@ public class ColorMapLegendCreator {
                 finalGraphics.dispose();
             }
         } else {
-            List<BufferedImage> imgs = new ArrayList<BufferedImage>(legendsQueue);
-            finalLegend = LegendMerger.mergeRasterLegends(imgs, (int) dx, (int) dy, (int) margin,
-                    backgroundColor, transparent, true, layout, rowWidth, rows, columnHeight,
-                    columns);
+            List<RenderedImage> imgs = new ArrayList<RenderedImage>(legendsQueue);
+            
+            LegendMerger.MergeOptions options = new LegendMerger.MergeOptions(imgs, (int) dx, (int) dy, (int) margin, backgroundColor, transparent, true, layout, rowWidth, 
+                    rows, columnHeight, columns, null ,false, false);
+            finalLegend = LegendMerger.mergeRasterLegends(options);
         }
 
         return finalLegend;

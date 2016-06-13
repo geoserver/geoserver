@@ -30,6 +30,7 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
+import org.geoserver.wms.legendgraphic.LegendMerger.MergeOptions;
 import org.geoserver.wms.legendgraphic.LegendUtils.LegendLayout;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -429,10 +430,11 @@ public class BufferedImageLegendGraphicBuilder {
                     graphics.dispose();
                 }
                 
+                LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(legendsStack, 0, 0, 0, request, forceLabelsOn, forceLabelsOff);
                 // JD: changed legend behavior, see GEOS-812
                 // this.legendGraphic = scaleImage(mergeLegends(legendsStack), request);
-                BufferedImage image = mergeLegends(legendsStack, applicableRules, request, 
-                        forceLabelsOn, forceLabelsOff);
+                BufferedImage image = LegendMerger.mergeLegends(options, applicableRules, request); 
+                        
                 if(image != null) {
                     layersImages.add(image);
                 }
@@ -587,7 +589,7 @@ public class BufferedImageLegendGraphicBuilder {
         String title=legend.getTitle();
         final BufferedImage image = ImageUtils.createImage(w, h, (IndexColorModel) null,
                 transparent);
-        return LegendMerger.getRenderedLabel(image,title,request);
+        return LegendMerger.getRenderedLabel(image,title, request);
     }
    
     /**
@@ -645,36 +647,6 @@ public class BufferedImageLegendGraphicBuilder {
         }
     }
     
-
-    /**
-     * Receives a list of <code>BufferedImages</code> and produces a new one
-     * which holds all the images in <code>imageStack</code> one above the
-     * other, handling labels.
-     * 
-     * @param imageStack
-     *            the list of BufferedImages, one for each applicable Rule
-     * @param rules
-     *            The applicable rules, one for each image in the stack (if not
-     *            null it's used to compute labels)
-     * @param request
-     *            The request.
-     * @param forceLabelsOn
-     *            true for force labels on also with a single image.
-     * @param forceLabelsOff
-     *            true for force labels off also with more than one rule.
-     * 
-     * @return the stack image with all the images on the argument list.
-     * 
-     * @throws IllegalArgumentException
-     *             if the list is empty
-     */
-    private BufferedImage mergeLegends(List<RenderedImage> imageStack, Rule[] rules, GetLegendGraphicRequest req,
-            boolean forceLabelsOn, boolean forceLabelsOff) {
-
-        return LegendMerger.mergeLegends(imageStack, rules, req, forceLabelsOn, forceLabelsOff);
-
-    }
-    
     /**
      * Receives a list of <code>BufferedImages</code> and produces a new one
      * which holds all the images in <code>imageStack</code> one above the
@@ -699,8 +671,9 @@ public class BufferedImageLegendGraphicBuilder {
      */
     private BufferedImage mergeGroups(List<RenderedImage> imageStack, Rule[] rules, GetLegendGraphicRequest req,
             boolean forceLabelsOn, boolean forceLabelsOff) {
-
-        return LegendMerger.mergeGroups(imageStack, rules, req, forceLabelsOn, forceLabelsOff);
+        LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(imageStack, 0, 0, 0, req, forceLabelsOn, forceLabelsOff);
+        options.setLayout(LegendUtils.getGroupLayout(req));
+        return LegendMerger.mergeGroups(options, rules);
 
     }
 

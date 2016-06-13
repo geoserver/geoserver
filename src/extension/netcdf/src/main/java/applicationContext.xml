@@ -7,6 +7,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+  <bean class="org.geoserver.netcdf.NetCDFStatus"/>  
 
   <bean id="netcdfStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="netcdfRaster" />

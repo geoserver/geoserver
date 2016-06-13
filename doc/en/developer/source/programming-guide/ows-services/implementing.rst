@@ -250,7 +250,7 @@ it directly from sources.
 
    .. code-block: sh
 
-      [src]% mvn -P hello eclipse:eclipse
+      [src] mvn -P hello eclipse:eclipse
    
 #. In eclipse import the new hello module and refresh all modules.
 #. In the ``web-app`` module run the ``Start.java`` main class to start 

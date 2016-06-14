@@ -137,7 +137,7 @@ public class ConfigStore {
         return resource;
     }
 
-    private Resource getConfigRoot() {
+    public Resource getConfigRoot() {
         return resourceLoader.get(CONFIG_DIR_NAME);
     }
 

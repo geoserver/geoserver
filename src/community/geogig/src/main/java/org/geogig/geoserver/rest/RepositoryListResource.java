@@ -121,7 +121,7 @@ public class RepositoryListResource extends Resource {
 
         @Override
         protected void write(XMLStreamWriter w) throws XMLStreamException {
-            w.writeStartElement("repositories");
+            w.writeStartElement("repos");
             for (RepositoryInfo repo : repos) {
                 write(w, repo);
             }
@@ -129,12 +129,12 @@ public class RepositoryListResource extends Resource {
         }
 
         private void write(XMLStreamWriter w, RepositoryInfo repo) throws XMLStreamException {
-            w.writeStartElement("repository");
+            w.writeStartElement("repo");
             element(w, "id", repo.getId());
             RepositoryResolver uriResolver = RepositoryResolver.lookup(repo.getLocation());
             String name = uriResolver.getName(repo.getLocation());
             element(w, "name", name);
-            encodeAlternateAtomLink(w, repo.getId());
+            encodeAlternateAtomLink(w, repo.getRepoName());
             w.writeEndElement();
         }
 

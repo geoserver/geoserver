@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,6 +14,7 @@ import java.awt.RenderingHints;
 import java.awt.RenderingHints.Key;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
+import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
 import org.geoserver.wms.legendgraphic.Cell.RampColorMapEntryLegendBuilder;
 import org.geoserver.wms.legendgraphic.Cell.SingleColorMapEntryLegendBuilder;
 import org.geoserver.wms.legendgraphic.LegendUtils.HAlign;
+import org.geoserver.wms.legendgraphic.LegendUtils.LegendLayout;
 import org.geoserver.wms.legendgraphic.LegendUtils.VAlign;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.styling.ColorMap;
@@ -117,6 +119,16 @@ public class ColorMapLegendCreator {
         private final Map<String, Object> additionalOptions = new HashMap<String, Object>();
 
         private Color backgroundColor;
+        
+        private LegendLayout layout;
+        
+        private int columnHeight;
+        
+        private int rowWidth;
+        
+        private int columns;
+
+        private int rows ;
 
         private String grayChannelName = LegendUtils.DEFAULT_CHANNEL_NAME;
 
@@ -308,6 +320,26 @@ public class ColorMapLegendCreator {
 
         public void setBorderRule(boolean borderRule) {
             this.borderRule = borderRule;
+        }
+        
+        public void setLayout(LegendLayout layout) {
+            this.layout = layout;
+        }
+        
+        public void setColumnHeight(int columnHeight) {
+            this.columnHeight = columnHeight;
+        }
+        
+        public void setRowWidth(int rowWidth) {
+            this.rowWidth = rowWidth;
+        }
+        
+        public void setColumns(int columns) {
+            this.columns = columns;
+        }
+        
+        public void setRows(int rows) {
+            this.rows = rows;
         }
 
         /**
@@ -505,6 +537,16 @@ public class ColorMapLegendCreator {
     private double dy;
 
     private boolean bandInformation;
+    
+    private LegendLayout layout;
+    
+    private int columnHeight;
+    
+    private int rowWidth;
+    
+    private int columns;
+
+    private int rows ;
 
     public ColorMapLegendCreator(final Builder builder) {
         this.backgroundColor = builder.backgroundColor;
@@ -530,7 +572,11 @@ public class ColorMapLegendCreator {
         this.requestedDimension = (Dimension) builder.requestedDimension.clone();
         this.transparent = builder.transparent;
         this.bandInformation = builder.bandInformation;
-
+        this.layout = builder.layout;
+        this.rowWidth = builder.rowWidth;
+        this.rows = builder.rows;
+        this.columnHeight = builder.columnHeight;
+        this.columns = builder.columns;
     }
 
     public synchronized BufferedImage getLegend() {
@@ -825,9 +871,6 @@ public class ColorMapLegendCreator {
     }
 
     private BufferedImage mergeRows(Queue<BufferedImage> legendsQueue) {
-
-        // create the final image
-
         // I am doing a straight cast since I know that I built this
         // dimension object by using the widths and heights of the various
         // bufferedimages for the various bkgColor map entries.
@@ -838,26 +881,49 @@ public class ColorMapLegendCreator {
 
         final int totalWidth = (int) finalDimension.getWidth();
         final int totalHeight = (int) finalDimension.getHeight();
-        final BufferedImage finalLegend = ImageUtils.createImage(totalWidth, totalHeight,
+        BufferedImage finalLegend = ImageUtils.createImage(totalWidth, totalHeight,
                 (IndexColorModel) null, transparent);
-        final Map<Key, Object> hintsMap = new HashMap<Key, Object>();
-        Graphics2D finalGraphics = ImageUtils.prepareTransparency(transparent, backgroundColor,
-                finalLegend, hintsMap);
-        hintsMap.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        finalGraphics.setRenderingHints(hintsMap);
 
-        int topOfRow = (int) (margin + 0.5);
-        for (int i = 0; i < numRows; i++) {
-            final BufferedImage img = legendsQueue.remove();
+        /*
+         * For RAMP type, only HORIZONTAL or VERTICAL condition is valid
+         */
+        if (colorMapType == ColorMapType.RAMP) {
 
-            // draw the image
-            finalGraphics.drawImage(img, (int) (margin + 0.5), topOfRow, null);
-            topOfRow += img.getHeight() + dy;
+            final Map<Key, Object> hintsMap = new HashMap<Key, Object>();
+            Graphics2D finalGraphics = ImageUtils.prepareTransparency(transparent, backgroundColor,
+                    finalLegend, hintsMap);
+            hintsMap.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            finalGraphics.setRenderingHints(hintsMap);
 
+            int topOfRow = (int) (margin + 0.5);
+            for (int i = 0; i < numRows; i++) {
+                final BufferedImage img = legendsQueue.remove();
+
+                // draw the image
+                finalGraphics.drawImage(img, (int) (margin + 0.5), topOfRow, null);
+                topOfRow += img.getHeight() + dy;
+
+            }
+
+            if (this.layout == LegendLayout.HORIZONTAL) {
+                BufferedImage newImage = new BufferedImage(totalHeight, totalWidth,
+                        finalLegend.getType());
+                Graphics2D g2 = newImage.createGraphics();
+                g2.rotate(-Math.PI / 2, 0, 0);
+                g2.drawImage(finalLegend, null, -totalWidth, 0);
+                finalLegend = newImage;
+                g2.dispose();
+                finalGraphics.dispose();
+            }
+        } else {
+            List<RenderedImage> imgs = new ArrayList<RenderedImage>(legendsQueue);
+            
+            LegendMerger.MergeOptions options = new LegendMerger.MergeOptions(imgs, (int) dx, (int) dy, (int) margin, backgroundColor, transparent, true, layout, rowWidth, 
+                    rows, columnHeight, columns, null ,false, false);
+            finalLegend = LegendMerger.mergeRasterLegends(options);
         }
 
-        finalGraphics.dispose();
         return finalLegend;
-    }
 
+    }
 }

@@ -9,7 +9,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
@@ -31,6 +30,8 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
+import org.geoserver.wms.legendgraphic.LegendMerger.MergeOptions;
+import org.geoserver.wms.legendgraphic.LegendUtils.LegendLayout;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
@@ -429,10 +430,11 @@ public class BufferedImageLegendGraphicBuilder {
                     graphics.dispose();
                 }
                 
+                LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(legendsStack, 0, 0, 0, request, forceLabelsOn, forceLabelsOff);
                 // JD: changed legend behavior, see GEOS-812
                 // this.legendGraphic = scaleImage(mergeLegends(legendsStack), request);
-                BufferedImage image = mergeLegends(legendsStack, applicableRules, request, 
-                        forceLabelsOn, forceLabelsOff);
+                BufferedImage image = LegendMerger.mergeLegends(applicableRules, request, options); 
+                        
                 if(image != null) {
                     layersImages.add(image);
                 }
@@ -440,7 +442,7 @@ public class BufferedImageLegendGraphicBuilder {
             
         }
         // all legend graphics are merged if we have a layer group
-        BufferedImage finalLegend = mergeLegends(layersImages,null,request, forceLabelsOn, forceLabelsOff);
+        BufferedImage finalLegend = mergeGroups(layersImages,null,request, forceLabelsOn, forceLabelsOff);
         if(finalLegend == null) {
             throw new IllegalArgumentException("no legend passed");
         }
@@ -587,7 +589,7 @@ public class BufferedImageLegendGraphicBuilder {
         String title=legend.getTitle();
         final BufferedImage image = ImageUtils.createImage(w, h, (IndexColorModel) null,
                 transparent);
-        return getRenderedLabel(image,title,request);
+        return LegendMerger.getRenderedLabel(image,title, request);
     }
    
     /**
@@ -645,42 +647,16 @@ public class BufferedImageLegendGraphicBuilder {
         }
     }
     
-
     /**
-     * Renders a label on the given image, using parameters from the request
-     * for the rendering style.
-     * 
-     * @param image
-     * @param label
-     * @param request
-     *
-     */
-    private BufferedImage getRenderedLabel(BufferedImage image, String label,
-            GetLegendGraphicRequest request) {
-        Font labelFont = LegendUtils.getLabelFont(request);
-        boolean useAA = LegendUtils.isFontAntiAliasing(request);
-                        
-        final Graphics2D graphics = image.createGraphics();
-        graphics.setFont(labelFont);
-        if(useAA) {
-            graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        } else {
-            graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        }
-        return LegendUtils.renderLabel(label, graphics, request);
-    }
-
-    /**
-     * Receives a list of <code>BufferedImages</code> and produces a new one which holds all the
-     * images in <code>imageStack</code> one above the other, handling labels.
+     * Receives a list of <code>BufferedImages</code> and produces a new one
+     * which holds all the images in <code>imageStack</code> one above the
+     * other, handling labels.
      * 
      * @param imageStack
      *            the list of BufferedImages, one for each applicable Rule
      * @param rules
-     *            The applicable rules, one for each image in the stack (if not null it's used to
-     *            compute labels)
+     *            The applicable rules, one for each image in the stack (if not
+     *            null it's used to compute labels)
      * @param request
      *            The request.
      * @param forceLabelsOn
@@ -693,149 +669,13 @@ public class BufferedImageLegendGraphicBuilder {
      * @throws IllegalArgumentException
      *             if the list is empty
      */
-    private BufferedImage mergeLegends(List<RenderedImage> imageStack, Rule[] rules,
-            GetLegendGraphicRequest req, boolean forceLabelsOn, boolean forceLabelsOff) {
+    private BufferedImage mergeGroups(List<RenderedImage> imageStack, Rule[] rules, GetLegendGraphicRequest req,
+            boolean forceLabelsOn, boolean forceLabelsOff) {
+        LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(imageStack, 0, 0, 0, req, forceLabelsOn, forceLabelsOff);
+        options.setLayout(LegendUtils.getGroupLayout(req));
+        return LegendMerger.mergeGroups(rules, options);
 
-        Font labelFont = LegendUtils.getLabelFont(req);
-        boolean useAA = LegendUtils.isFontAntiAliasing(req);
-
-        
-
-        if (imageStack.size() == 0) {
-            return null;
-        }
-
-        final BufferedImage finalLegend;
-
-        if (imageStack.size() == 1 && (!forceLabelsOn || rules == null)) {
-            finalLegend = (BufferedImage) imageStack.get(0);
-        } else {
-            final int imgCount = imageStack.size();
-            final String[] labels = new String[imgCount];
-
-            BufferedImage img = ((BufferedImage) imageStack.get(0));
-
-            int totalHeight = 0;
-            int totalWidth = 0;
-            int[] rowHeights = new int[imgCount];
-            BufferedImage labelsGraphics[] = new BufferedImage[imgCount];
-            for (int i = 0; i < imgCount; i++) {
-                img = (BufferedImage) imageStack.get(i);
-
-                if (forceLabelsOff || rules == null) {
-                    totalWidth = (int) Math.ceil(Math.max(img.getWidth(), totalWidth));
-                    rowHeights[i] = img.getHeight();
-                    totalHeight += img.getHeight();
-                } else {
-
-                    Rule rule = rules[i];
-
-                    // What's the label on this rule? We prefer to use
-                    // the 'title' if it's available, but fall-back to 'name'
-                    final Description description = rule.getDescription();
-                    Locale locale = req.getLocale();
-                    
-                    if (description != null && description.getTitle() != null) {
-                        final InternationalString title = description.getTitle();
-                        if(locale != null) {
-                        	labels[i] = title.toString(locale);
-                        } else {
-                        labels[i] = title.toString();
-                        }
-                    } else if (rule.getName() != null) {
-                        labels[i] = rule.getName();
-                    } else {
-                        labels[i] = "";
-                    }
-                    
-                    if (labels[i] != null && labels[i].length() > 0) {
-                        final BufferedImage renderedLabel = getRenderedLabel(img,labels[i],req);
-                        labelsGraphics[i] = renderedLabel;
-                        final Rectangle2D bounds = new Rectangle2D.Double(0, 0,
-                                renderedLabel.getWidth(), renderedLabel.getHeight());
-
-                        totalWidth = (int) Math.ceil(Math.max(img.getWidth() + bounds.getWidth(),
-                                totalWidth));
-                        rowHeights[i] = (int) Math.ceil(Math.max(img.getHeight(),
-                                bounds.getHeight()));
-                    } else {
-                        totalWidth = (int) Math.ceil(Math.max(img.getWidth(), totalWidth));
-                        rowHeights[i] = (int) Math.ceil(img.getHeight());
-                        labelsGraphics[i] = null;
-                    }
-
-                    totalHeight += rowHeights[i];
-
-                }
-            }
-
-            // buffer the width a bit
-            totalWidth += 2;
-
-            final boolean transparent = req.isTransparent();
-            final Color backgroundColor = LegendUtils.getBackgroundColor(req);
-            final Map<RenderingHints.Key, Object> hintsMap = new HashMap<RenderingHints.Key, Object>();
-            // create the final image
-            finalLegend = ImageUtils.createImage(totalWidth, totalHeight, (IndexColorModel) null,
-                    transparent);
-            Graphics2D finalGraphics = ImageUtils.prepareTransparency(transparent, backgroundColor,
-                    finalLegend, hintsMap);
-
-            int topOfRow = 0;
-
-            for (int i = 0; i < imgCount; i++) {
-                img = (BufferedImage) imageStack.get(i);
-
-                // draw the image
-                int y = topOfRow;
-
-                if (img.getHeight() < rowHeights[i]) {
-                    // move the image to the center of the row
-                    y += (int) ((rowHeights[i] - img.getHeight()) / 2d);
-                }
-
-                finalGraphics.drawImage(img, 0, y, null);
-                if (forceLabelsOff || rules == null) {
-                    topOfRow += rowHeights[i];
-                    continue;
-                }
-
-                finalGraphics.setFont(labelFont);
-
-                if (useAA) {
-                    finalGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-                } else {
-                    finalGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                            RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-                }
-
-                // draw the label
-                if (labels[i] != null && labels[i].length() > 0) {
-                    // first create the actual overall label image.
-                    final BufferedImage renderedLabel = labelsGraphics[i];
-
-                    y = topOfRow;
-
-                    if (renderedLabel.getHeight() < rowHeights[i]) {
-                        y += (int) ((rowHeights[i] - renderedLabel.getHeight()) / 2d);
-                    }
-
-                    finalGraphics.drawImage(renderedLabel, img.getWidth(), y, null);
-                    // cleanup
-                    renderedLabel.flush();
-                    labelsGraphics[i] = null;
-                }
-
-                topOfRow += rowHeights[i];
-            }
-
-            finalGraphics.dispose();
-        }
-        return finalLegend;
     }
-    
-    
 
     /**
      * Returns a <code>java.awt.Shape</code> appropiate to render a legend graphic given the

@@ -84,8 +84,15 @@ Here is a description of the various parameters that can be used in ``LEGEND_OPT
     - **bgColor (hex)** background color for the generated legend, values are expressed in ``0xRRGGBB`` format
     - **dpi (integer)** sets the DPI for the current request, in the same way as it is supported by GetMap. Setting a DPI larger than 91 (the default) makes all fonts, symbols and line widths grow without changing the current scale, making it possible to get a high resolution version of the legend suitable for inclusion in printouts 
     - **forceLabels** "on" means labels will always be drawn, even if only one rule is available. "off" means labels will never be drawn, even if multiple rules are available. Off by default.
+    - **layout** sets icons layout to be **vertical** (default) or **horizontal**.
+    - **columnheight** enables **multicolumn** layout when layout is **vertical**. Each column height is limited by the columnheight value (in pixels).
+    - **rowwidth** enables **multirow** layout when layout is **horizontal**. Each row width is limited by the rowwidth value (in pixels).
+    - **columns** enables **multicolumn** layout when layout is **vertical**. The value is the maximum columns number of legend. The rows used are equal to the next greater integer of <total of icons>/<number of columns>.
+    - **rows** enables **multirow** layout when layout is **horizontal**. The value is the the maximum rows number of legend. The columns used are equal to the next greater integer of <total of icons>/<number of rows>.
+    - **grouplayout** Orientation of groups of layer, possible values are **horizontal** and **vertical** (default if not specified).
+    
 
-Here is a sample request sporting all the options::
+Here is a sample request sporting most the options::
 
   http://localhost:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=topp:states&legend_options=fontName:Times%20New%20Roman;fontAntiAliasing:true;fontColor:0x000033;fontSize:14;bgColor:0xFFFFEE;dpi:180
   
@@ -94,7 +101,16 @@ Here is a sample request sporting all the options::
 
    *Using LEGEND_OPTIONS to control the output*
 
+Controlling legend layout
+-------------------------
 
+A set of LEGEND_OPTIONS keys are used to control icons layout in the produced legend images. In particular, a **vertical** or **horizontal** layout can be chosen.
+
+Multi column or multi row layouts are possible, and are controlled by the columnheight / rowwidth options (to limit each column / row size) or by the columns / rows options (to fix the # of columns / rows to be used).
+
+Both columnheight / columns and rowwidth / rows can be used to limit the whole size of the produced image (some icons are skipped id they do not fit into the given limits).
+
+In addition, orientation of legends in a layergroup can be configured using the grouplayout option.
 
 Raster Legends Explained
 ------------------------

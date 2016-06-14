@@ -40,3 +40,8 @@ Configuring a GeoTIFF data store
      - Location of the GeoTIFF file. This can be an absolute path (such as :file:`file:C:\\Data\\landbase.tif`) or a path relative to GeoServer's data directory (such as :file:`file:data/landbase.tif`).
      
 .. note:: Notice that the GeoTiff plugin is able to handle internal/external overviews and internal/external masks.
+
+Custom CRS definition
+`````````````````````
+
+Creating ancillary ``.prj`` file that contains coordinate reference system defined according to rules described in :ref:`crs_custom` chapter will override internal CRS tags included in the original GeoTIFF file.

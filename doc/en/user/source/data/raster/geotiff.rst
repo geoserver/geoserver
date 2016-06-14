@@ -44,4 +44,4 @@ Configuring a GeoTIFF data store
 Custom CRS definition
 `````````````````````
 
-Creating ancillary ``.prj`` file that contains coordinate reference system defined according to rules described in :ref:`crs_custom` chapter will override internal CRS tags included in the original GeoTIFF file.
+Creating an auxiliary ``.prj`` file that contains coordinate reference system information as described in the :ref:`crs_custom` chapter will override internal CRS tags that are included in the original GeoTIFF file. This can be used to work-around problematic source files without making modifications to the file.

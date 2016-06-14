@@ -18,6 +18,7 @@
         <include>*prettytime*</include>
         <include>*fileupload*</include>
         <include>*commons-vfs2*</include>
+        <include>*commons-exec*</include>
       </includes>
     </fileSet>
   </fileSets>

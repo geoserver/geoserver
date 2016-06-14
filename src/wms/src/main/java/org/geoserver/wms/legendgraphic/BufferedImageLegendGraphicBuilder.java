@@ -433,7 +433,7 @@ public class BufferedImageLegendGraphicBuilder {
                 LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(legendsStack, 0, 0, 0, request, forceLabelsOn, forceLabelsOff);
                 // JD: changed legend behavior, see GEOS-812
                 // this.legendGraphic = scaleImage(mergeLegends(legendsStack), request);
-                BufferedImage image = LegendMerger.mergeLegends(options, applicableRules, request); 
+                BufferedImage image = LegendMerger.mergeLegends(applicableRules, request, options); 
                         
                 if(image != null) {
                     layersImages.add(image);
@@ -673,7 +673,7 @@ public class BufferedImageLegendGraphicBuilder {
             boolean forceLabelsOn, boolean forceLabelsOff) {
         LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(imageStack, 0, 0, 0, req, forceLabelsOn, forceLabelsOff);
         options.setLayout(LegendUtils.getGroupLayout(req));
-        return LegendMerger.mergeGroups(options, rules);
+        return LegendMerger.mergeGroups(rules, options);
 
     }
 

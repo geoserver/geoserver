@@ -65,6 +65,7 @@ We now have to install the native libraries.
 * Assuming you are using a 64 bit Ubuntu 11 Linux Operating System (for instance), click on the linux folder and then on "gdal192-Ubuntu11-gcc4.5.2-x86_64.tar.gz" to download the native libraries archive (Before doing this, make sure to read and agree with the ECWEULA if you intend to use ECW).
 * If you are using a Windows Operating System make sure to download the archive matching your Microsoft Visual C++ Redistributables and your architecture. For example on a 64 bit Windows with 2010 Redistributables, download the gdal-1.9.2-MSVC2010-x64.zip archive
 * Extract the archive on disk and place it in a proper directory on your system.
+* From the :file:`javainfo` directory in the archive, copy the :file:`imageio-ext-gdal-bindings-1.9.2.jar` to the :file:`WEB-INF/lib` directory of your GeoServer installation.
 
    .. warning:: If you are on Windows, make sure that the GDAL DLL files are on your PATH. If you are on Linux, be sure to set the LD_LIBRARY_PATH environment variable to refer to the folder where the SOs are extracted.
 

@@ -10,7 +10,7 @@
  <modelVersion>4.0.0</modelVersion>
  
  <properties>
-    <netcdf.version>4.6.2</netcdf.version>
+    <netcdf.version>4.6.6</netcdf.version>
   </properties>
   
   <!--

@@ -23,6 +23,7 @@
 				<include>gs-gdal-*.jar</include>
 			</includes>
 			<excludes>
+				<exclude>*imageio-ext-gdal-bindings*.jar</exclude>
         <exclude>*arcgrid*.jar</exclude>
         <exclude>*customstreams*.jar</exclude>
       </excludes>

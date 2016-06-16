@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -59,6 +61,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -100,6 +103,20 @@ public class SystemTestData extends CiteTestData {
         public static LayerProperty<ReferencedEnvelope> ENVELOPE = new LayerProperty<ReferencedEnvelope>();
         public static LayerProperty<ReferencedEnvelope> LATLON_ENVELOPE = new LayerProperty<ReferencedEnvelope>();
         public static LayerProperty<Integer> SRS = new LayerProperty<Integer>();
+    }
+    
+    /**
+     * Keys for overriding default layer properties
+     */
+    public static class StyleProperty<T> {
+
+        T get(Map<StyleProperty,Object> map, T def) {
+            return map != null && map.containsKey(this) ? (T) map.get(this) : def;
+        }
+
+        public static StyleProperty<String> FORMAT = new StyleProperty<String>(); 
+        public static StyleProperty<Version> FORMAT_VERSION = new StyleProperty<Version>();
+        public static StyleProperty<LegendInfo> LEGEND_INFO = new StyleProperty<LegendInfo>();
     }
 
     /** data directory root */
@@ -407,7 +424,7 @@ public class SystemTestData extends CiteTestData {
      * @param scope Class from which to load sld resource from.
      */
     public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog) throws IOException {
-        addStyle(ws, name, filename, scope, catalog, null);
+        addStyle(ws, name, filename, scope, catalog, (Map) null);
     }
     
     /**
@@ -425,6 +442,24 @@ public class SystemTestData extends CiteTestData {
     public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog,
             LegendInfo legend) throws IOException {
         
+        addStyle(ws, name, filename, scope, catalog, Collections.singletonMap(StyleProperty.LEGEND_INFO, legend));
+    }
+    
+    /**
+     * Adds a style to the test setup.
+     * <p>
+     * To set up the style a file named <tt>filename</tt> is copied from the classpath relative
+     * to the <tt>scope</tt> parameter.
+     * </p>
+     * @param ws The workspace to include the style in.
+     * @param name The name of the style.
+     * @param filename The filename to copy from classpath.
+     * @param scope Class from which to load sld resource.
+     * @param properties One of the well known style properties
+     */
+    public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog,
+            Map<StyleProperty, Object> properties) throws IOException {
+        
         StyleInfo style = catalog.getStyleByName(ws, name);
         if (style == null) {
             style = catalog.getFactory().createStyle();
@@ -436,9 +471,10 @@ public class SystemTestData extends CiteTestData {
         File styles = data.get(style, "").dir();
         String target = new File( filename ).getName();
         catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, target ), scope);
-        
         style.setFilename(target);
-        style.setLegend(legend);
+        style.setFormat(StyleProperty.FORMAT.get(properties, SLDHandler.FORMAT));
+        style.setFormatVersion(StyleProperty.FORMAT_VERSION.get(properties, SLDHandler.VERSION_10));
+        style.setLegend(StyleProperty.LEGEND_INFO.get(properties, null));
         if (style.getId() == null) {
             catalog.add(style);
         }

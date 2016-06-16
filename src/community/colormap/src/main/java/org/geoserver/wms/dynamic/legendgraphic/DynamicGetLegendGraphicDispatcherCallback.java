@@ -1,3 +1,7 @@
+/* (c) 2013 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.dynamic.legendgraphic;
 
 import java.lang.reflect.Method;
@@ -120,7 +124,7 @@ public class DynamicGetLegendGraphicDispatcherCallback implements DispatcherCall
                     final String processName = processFunction.getName();
 
                     // Checking whether the processFunction is a DynamicColorMapProcess
-                    if (processName.equalsIgnoreCase(DynamicColorMapProcess.NAME)) {
+                    if (processName.equals(DynamicColorMapProcess.NAME) || processName.equals("ras:" + DynamicColorMapProcess.NAME)) {
                         return getColorRampDefinition(processFunction);
                     }
                 }

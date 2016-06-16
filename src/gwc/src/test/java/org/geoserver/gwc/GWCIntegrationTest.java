@@ -8,7 +8,11 @@ package org.geoserver.gwc;
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,7 +38,9 @@ import javax.xml.namespace.QName;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -951,4 +957,57 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertNull("Unexpected cached tile " + cachedTile, loader.find(cachedTile));
     }
 
+    @Test
+    public void testGetCapabilitiesWithLocalWorkspace() throws Exception {
+        // initiating the xpath engine
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
+        namespaces.put("wmts", "http://www.opengis.net/wmts/1.0");
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        // getting capabilities document for CITE workspace
+        Document document = getAsDOM(MockData.CITE_PREFIX + "/gwc/service/wmts?request=GetCapabilities");
+        // checking get capabilities result for CITE workspace
+        List<LayerInfo> citeLayers = getWorkspaceLayers(MockData.CITE_PREFIX);
+        assertThat(Integer.parseInt(xpath.evaluate("count(//wmts:Contents/wmts:Layer)", document)), greaterThan(0));
+        assertThat(Integer.parseInt(xpath.evaluate("count(//wmts:Contents/wmts:Layer)", document)), lessThanOrEqualTo(citeLayers.size()));
+        assertThat(xpath.evaluate("count(//wmts:Contents/wmts:Layer[ows:Identifier='" +
+                MockData.BUILDINGS.getLocalPart() + "'])", document), is("1"));
+    }
+
+    @Test
+    public void testGetTileWithLocalWorkspace() throws Exception {
+        // perform a get tile request using a virtual service
+        MockHttpServletResponse response = getAsServletResponse(MockData.CITE_PREFIX + "/gwc/service/wmts?request=GetTile&layer="
+                + MockData.BASIC_POLYGONS.getLocalPart()
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        // redo the same request
+        response = getAsServletResponse(MockData.CITE_PREFIX + "/gwc/service/wmts?request=GetTile&layer="
+                + MockData.BASIC_POLYGONS.getLocalPart()
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+        // check that we got an hit
+        String cacheResult = (String) response.getHeaderValue("geowebcache-cache-result");
+        assertThat(cacheResult, notNullValue());
+        assertThat(cacheResult, is("HIT"));
+    }
+
+    /**
+     * Helper method that will return the layers that belong to a certain workspace.
+     */
+    private List<LayerInfo> getWorkspaceLayers(String workspaceName) {
+        List<LayerInfo> layers = new ArrayList<>();
+        for (LayerInfo layer : getCatalog().getLayers()) {
+            WorkspaceInfo workspace = layer.getResource().getStore().getWorkspace();
+            if(workspace != null && workspace.getName().equals(workspaceName)) {
+                layers.add(layer);
+            }
+        }
+        return layers;
+    }
 }

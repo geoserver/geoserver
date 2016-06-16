@@ -24,6 +24,9 @@ import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.xml.sax.EntityResolver;
 
+/**
+ * Handler for the dynamic palette style language. See {@link PaletteParser} for details on the grammar
+ */
 public class PaletteStyleHandler extends StyleHandler {
     static final Logger LOGGER = Logging.getLogger(PaletteStyleHandler.class);
 
@@ -54,12 +57,6 @@ public class PaletteStyleHandler extends StyleHandler {
                 }
             }
             
-            // TODO: remove me!!
-            try {
-                LOGGER.info("Palette has been parsed to " + toSLD(sld));
-            } catch(Exception e) {
-                
-            }
             return sld;
         }
 

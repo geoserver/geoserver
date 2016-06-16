@@ -86,18 +86,18 @@ public class PaletteParserTest {
     @Test
     public void testParseBlackWhiteToStyle() throws IOException, TransformerException {
         StyledLayerDescriptor sld = parser.parseStyle(toReader("#000000\n#FFFFFF"));
-        Function cm = checkStyleAndGetColormap(sld);
+        Function cm = assertDynamicColorColormap(sld);
         assertEquals("rgb(0,0,0);rgb(255,255,255)", cm.getParameters().get(0).evaluate(null));
     }
     
     @Test
     public void testParseBlackWhiteTranslucentToStyle() throws IOException, TransformerException {
         StyledLayerDescriptor sld = parser.parseStyle(toReader("#64000000\n#64FFFFFF"));
-        Function cm = checkStyleAndGetColormap(sld);
+        Function cm = assertDynamicColorColormap(sld);
         assertEquals("rgba(0,0,0,0.39);rgba(255,255,255,0.39)", cm.getParameters().get(0).evaluate(null));
     }
 
-    private Function checkStyleAndGetColormap(StyledLayerDescriptor sld)
+    static Function assertDynamicColorColormap(StyledLayerDescriptor sld)
             throws TransformerException {
         // logStyle(sld); 
         NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
@@ -122,13 +122,13 @@ public class PaletteParserTest {
         return cm;
     }
 
-    private void logStyle(StyledLayerDescriptor sld) throws TransformerException {
+    void logStyle(StyledLayerDescriptor sld) throws TransformerException {
         final SLDTransformer tx = new SLDTransformer();
         tx.setIndentation(2);
         tx.transform(sld, System.out);
     }
 
-    private Expression assetIsParameterFunction(Expression e, String key) {
+    private static Expression assetIsParameterFunction(Expression e, String key) {
         Function p1 = (Function) e;
         assertEquals("parameter", p1.getName());
         assertEquals(key, p1.getParameters().get(0).evaluate(null));

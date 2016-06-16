@@ -71,7 +71,6 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
         testData.addRasterLayer(new QName(MockData.DEFAULT_URI, "watertemp_dynamic", MockData.DEFAULT_PREFIX),
                 "test-data/watertemp_dynamic.zip",null, properties, DynamicColorMapTest.class, catalog);
 
-        
         // setup manual statistics
         CoverageInfo coverage = getCatalog().getCoverageByName("watertemp_dynamic");
         CoverageDimensionInfo di = coverage.getDimensions().get(0);
@@ -147,12 +146,30 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
     private void check(ColorMapEntry[] entries) {
         assertEquals(5, entries.length);
 
-        assertColorMapEntry(entries[0], "#000000", 0.0, 9.99);
+        assertColorMapEntry(entries[0], "#000000", 0.0, 10d);
         assertColorMapEntry(entries[1], "#0000FF", 1.0, 10d);
         assertColorMapEntry(entries[2], "#00FF00", 1.0, 55d);
         assertColorMapEntry(entries[3], "#FF0000", 1.0, 100d);
-        assertColorMapEntry(entries[4], "#000000", 0.0, 100.01);
+        assertColorMapEntry(entries[4], "#000000", 0.0, 100d);
     }
+    
+    @Test
+    public void testSvgColorMapFilterFunctionRGBWithExpression() throws Exception {
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
+        checkFunction(ff.function("colormap", ff.literal("rgb(0,0,255);rgb(0,255,0);rgb(255,0,0)"), 
+                ff.literal(10), ff.literal(100)));
+        checkFunction(ff.function("colormap", ff.literal("rgb(0,0,255);rgb(0,255,0);rgb(255,0,0)"), 
+                ff.literal(10), ff.literal(100), ff.literal(null), ff.literal(null), ff.literal("false"), 
+                ff.literal(MAX_PALETTE_COLORS)));
+    }
+    
+    private void checkFunction(Function colorMapFunction) {
+        ColorMap colorMap = (ColorMap) colorMapFunction.evaluate(null);
+        final ColorMapEntry[] entries = colorMap.getColorMapEntries();
+
+        check(entries);
+    }
+
     
     @Test
     public void testBeforeAfterColor() throws Exception {
@@ -164,7 +181,7 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
         assertColorMapEntry(entries[1], "#0000FF", 1.0, 10d);
         assertColorMapEntry(entries[2], "#00FF00", 1.0, 55d);
         assertColorMapEntry(entries[3], "#FF0000", 1.0, 100d);
-        assertColorMapEntry(entries[4], "#000000", 1.0, 100.01);
+        assertColorMapEntry(entries[4], "#000000", 1.0, 100d);
 
     }
     
@@ -254,7 +271,7 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
         assertEquals(5, entries.length);
         assertColorMapEntry(entries[0], "#000000", 0.0, 10d);
         assertColorMapEntry(entries[1], "#0000FF", 1.0, 40d);
-        assertColorMapEntry(entries[2], "#00AB54", 1.0, 70d);
+        assertColorMapEntry(entries[2], "#00A956", 1.0, 70d);
         assertColorMapEntry(entries[3], "#FF0000", 1.0, 100d);
         assertColorMapEntry(entries[4], "#000000", 0.0, Double.POSITIVE_INFINITY);
     }

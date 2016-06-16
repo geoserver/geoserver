@@ -160,9 +160,4 @@ public class PaletteParserTest {
         return new StringReader(palette);
     }
     
-    @Test
-    public void testRedBlue() throws Exception {
-        StyledLayerDescriptor sld = parser.parseStyle(toReader("#FF0000\n#0000FF"));
-        logStyle(sld);
-    }
 }

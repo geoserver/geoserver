@@ -55,9 +55,9 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         // RenderedImageBrowser.showChain(image);
         // System.in.read();
         // heavy rain here
-        assertPixel(image, 32, 74, new Color(36, 36, 237));
+        assertPixel(image, 32, 74, new Color(37, 37, 236));
         // mid value here
-        assertPixel(image, 120, 74, new Color(130, 130, 190));
+        assertPixel(image, 120, 74, new Color(129, 129, 191));
         // dry here
         assertPixel(image, 160, 60, new Color(170, 170, 170));
     }
@@ -68,9 +68,9 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         // RenderedImageBrowser.showChain(image);
         // System.in.read();
         // heavy rain here
-        assertPixel(image, 32, 74, new Color(36, 36, 237, 128));
+        assertPixel(image, 32, 74, new Color(37, 37, 236, 128));
         // mid value here
-        assertPixel(image, 120, 74, new Color(130, 130, 190, 128));
+        assertPixel(image, 120, 74, new Color(129, 129, 191, 128));
         // dry here
         assertPixel(image, 160, 60, new Color(170, 170, 170, 128));
     }
@@ -84,9 +84,9 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         // heavy rain here
         assertPixel(image, 32, 74, new Color(2, 2, 254));
         // mid value here
-        assertPixel(image, 120, 74, new Color(24, 24, 243));
+        assertPixel(image, 120, 74, new Color(25, 25, 243));
         // dry here
-        assertPixel(image, 160, 60, new Color(91, 91, 210));
+        assertPixel(image, 160, 60, new Color(90, 90, 210));
     }
     
     @Test

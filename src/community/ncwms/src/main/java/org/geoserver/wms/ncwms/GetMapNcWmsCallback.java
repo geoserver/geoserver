@@ -125,16 +125,16 @@ public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
                             + " must be specified as 'min,max' where min and max are numbers",
                     ServiceException.INVALID_PARAMETER_VALUE, COLORSCALERANGE);
         }
-        double min = parseDouble(elements[0]);
-        double max = parseDouble(elements[1]);
+        double min = parseDouble(elements[0], COLORSCALERANGE);
+        double max = parseDouble(elements[1], COLORSCALERANGE);
         return NumberRange.create(min, max);
     }
 
-    private double parseDouble(String element) {
+    private double parseDouble(String element, String locator) {
         try {
             return Double.parseDouble(element);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Expected a number but got '" + element + "'");
+            throw new ServiceException("Expected a number but got '" + element + "'", ServiceException.INVALID_PARAMETER_VALUE, locator);
         }
     }
 }

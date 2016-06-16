@@ -164,7 +164,7 @@ public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
         LinearColorMap lcm = toLinearColorMap(sourceCM);
         IndexColorModel icm = lcm.getColorModel();
         cm = SF.createColorMap();
-        cm.addColorMapEntry(entryForValue(min - 1E-2, quantityMapper.apply(min - 1E-2), lcm, icm)); // before color
+        cm.addColorMapEntry(entryForValue(min - Math.ulp(min), quantityMapper.apply(min), lcm, icm)); // before color
         final boolean useIntervals = numColors < MAX_PALETTE_COLORS;
         double step = (max - min) / (numColors);
         // mind, the entry in interval mode defines the color up to that point
@@ -176,16 +176,16 @@ public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
             }
             cm.addColorMapEntry(entryForValue(v, quantityMapper.apply(mapValue), lcm, icm)); 
         }
-        cm.addColorMapEntry(entryForValue(max, quantityMapper.apply(max), lcm, icm)); // last color
+        cm.addColorMapEntry(entryForValue(max - Math.ulp(max), quantityMapper.apply(max), lcm, icm)); // last color
         if(useIntervals) {
             cm.setType(ColorMap.TYPE_INTERVALS);
-            cm.addColorMapEntry(entryForValue(max + 1E-2, Double.POSITIVE_INFINITY, lcm, icm)); // after color
+            cm.addColorMapEntry(entryForValue(max, Double.POSITIVE_INFINITY, lcm, icm)); // after color
         } else {
-            cm.addColorMapEntry(entryForValue(max + 1E-2, quantityMapper.apply(max + 1E-2), lcm, icm)); // after color
+            cm.addColorMapEntry(entryForValue(max, quantityMapper.apply(max), lcm, icm)); // after color
         }
         return cm;
     }
-
+    
     private ColorMapEntry entryForValue(double value, double quantity, LinearColorMap lcm, IndexColorModel icm)
             throws TransformationException {
         ColorMapEntry entry = SF.createColorMapEntry();

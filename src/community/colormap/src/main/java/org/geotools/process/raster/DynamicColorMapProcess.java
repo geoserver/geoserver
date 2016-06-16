@@ -39,15 +39,21 @@ public class DynamicColorMapProcess implements RasterProcess {
                 defaultValue="1", min=0, minValue=0, maxValue=1) float opacity)
             throws ProcessException {
 
+            final RasterSymbolizer rsb_1 = buildRasterSymbolizer(colorMap, opacity);
+        
             RasterSymbolizerHelper rsh = new RasterSymbolizerHelper(coverage, GeoTools.getDefaultHints());
-            // build the RasterSymbolizer
-            StyleBuilder sldBuilder = new StyleBuilder();
-    
-            final RasterSymbolizer rsb_1 = sldBuilder.createRasterSymbolizer();
-            rsb_1.setColorMap(colorMap);
-            rsb_1.setOpacity(sldBuilder.getFilterFactory().literal(opacity));
             rsh.visit(rsb_1);
             return (GridCoverage2D) rsh.getOutput();
+    }
+
+    private RasterSymbolizer buildRasterSymbolizer(ColorMap colorMap, float opacity) {
+        // build the RasterSymbolizer
+        StyleBuilder sldBuilder = new StyleBuilder();
+   
+        final RasterSymbolizer rsb_1 = sldBuilder.createRasterSymbolizer();
+        rsb_1.setColorMap(colorMap);
+        rsb_1.setOpacity(sldBuilder.getFilterFactory().literal(opacity));
+        return rsb_1;
     }
 
 }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geoserver.web.CapabilitiesHomePageLinkProvider;
 import org.geoserver.web.CapabilitiesHomePagePanel;
 import org.geoserver.web.CapabilitiesHomePagePanel.CapsInfo;
@@ -28,14 +30,16 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 public class GWCCapabilitiesHomePageProvider implements CapabilitiesHomePageLinkProvider {
 
     private final GWC gwcFacade;
+    private final GeoServer geoServer;
 
     /**
      * @param gwc
      *            provides access to the {@link GWCConfig configuration} in order to show/hide
      *            getcaps links based on service enablement.
      */
-    public GWCCapabilitiesHomePageProvider(GWC gwc) {
+    public GWCCapabilitiesHomePageProvider(GWC gwc, GeoServer geoServer) {
         this.gwcFacade = gwc;
+        this.geoServer = geoServer;
     }
 
     /**
@@ -61,7 +65,7 @@ public class GWCCapabilitiesHomePageProvider implements CapabilitiesHomePageLink
         }
 
         try {
-            if (gwcConfig.isWMTSEnabled() && null != app.getBean("gwcServiceWMTS")) {
+            if (geoServer.getService(WMTSInfo.class).isEnabled() && null != app.getBean("gwcServiceWMTS")) {
                 gwcCaps.add(new CapsInfo("WMTS", new Version("1.0.0"),
                         "../gwc/service/wmts?REQUEST=GetCapabilities"));
             }

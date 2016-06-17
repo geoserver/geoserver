@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -88,12 +88,9 @@ public class GWCConfigTest extends GeoServerSystemTestSupport {
     public void testIsServiceEnabled() {
         config.setWMSCEnabled(!config.isWMSCEnabled());
         config.setTMSEnabled(!config.isTMSEnabled());
-        config.setWMTSEnabled(!config.isWMTSEnabled());
 
         assertEquals(config.isEnabled("wms"), config.isWMSCEnabled());
         assertEquals(config.isEnabled("WMS"), config.isWMSCEnabled());
-        assertEquals(config.isEnabled("wmts"), config.isWMTSEnabled());
-        assertEquals(config.isEnabled("WMTS"), config.isWMTSEnabled());
         assertEquals(config.isEnabled("tms"), config.isTMSEnabled());
         assertEquals(config.isEnabled("TMS"), config.isTMSEnabled());
 

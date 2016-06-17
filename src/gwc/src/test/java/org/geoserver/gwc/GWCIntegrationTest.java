@@ -56,13 +56,16 @@ import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
+import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geoserver.ows.DispatcherCallback;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
+import org.geoserver.wms.WMSInfo;
 import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
@@ -1009,5 +1012,29 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             }
         }
         return layers;
+    }
+
+    @Test
+    public void testWMTSEnabling() throws Exception {
+        // store original value to restore it
+        boolean initialValue = getGeoServer().getService(WMTSInfo.class).isEnabled();
+        try {
+            LocalWorkspace.set(null);
+            WMTSInfo wmtsInfo = getGeoServer().getService(WMTSInfo.class);
+            wmtsInfo.setEnabled(false);
+            getGeoServer().save(wmtsInfo);
+            MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?service=wmts&version=1.0.0&request=GetCapabilities");
+            assertEquals(400, response.getStatus());
+            WorkspaceInfo citeWorkpsace = getCatalog().getWorkspace(MockData.CITE_PREFIX);
+            LocalWorkspace.set(citeWorkpsace);
+            wmtsInfo.setEnabled(true);
+            getGeoServer().save(wmtsInfo);
+            response = getAsServletResponse("gwc/service/wmts?service=wmts&version=1.0.0&request=GetCapabilities");
+            assertEquals(200, response.getStatus());
+        } finally {
+            // restoring initial configuration value
+            getGeoServer().getService(WMTSInfo.class).setEnabled(initialValue);
+            LocalWorkspace.set(null);
+        }
     }
 }

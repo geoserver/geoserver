@@ -199,6 +199,7 @@
 	<module>gwc-s3</module>
 	<module>ysld</module>
 	<module>ncwms</module>
+        <module>web-resource</module>
       </modules>
     </profile>
     <profile>
@@ -429,6 +430,12 @@
       <modules>
         <module>colormap</module>
         <module>ncwms</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>web-resource</id>
+      <modules>
+        <module>web-resource</module>
       </modules>
     </profile>
   </profiles>

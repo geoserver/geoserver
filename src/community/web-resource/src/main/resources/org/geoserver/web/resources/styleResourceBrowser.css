@@ -1,0 +1,115 @@
+#page {
+    padding-bottom: 10px;
+}
+
+.treeview {
+    height: calc(100vh - 325px);
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.treeview .copy
+{
+  font-weight: bold;
+}
+
+.treeview .cut
+{
+  font-weight: bold;
+  font-style: italic;
+}
+
+.menu-wrapper {
+  display: block;
+  float: left;
+  width: 100%;
+  margin: 0px 0px 15px 0px;
+}
+
+.menu {
+  padding: 0px 5px 0px 5px;  
+  height: 30px;
+  float: left;
+  display: block;
+  background: #c6e09b;
+  border-radius: 5px;
+  moz-border-radius: 5px;
+  webkit-border-radius: 5px;
+  border: 1px solid #c6e09b;
+}
+
+.menu a {
+  display: block;    
+  float: left;
+  height: 24px;
+  cursor: pointer;  
+  padding: 4px 4px 4px 4px;
+  margin: -1px 12px -1px 12px;
+}
+
+.menu a .button-content {
+  height: 16px;
+  display: block;
+  padding: 0px 0px 0px 20px;
+  margin: 4px 0px 4px 0px;
+  background-repeat: no-repeat;
+  background-position: left center;
+  font-weight: 500;
+}
+
+.menu a:hover {
+  background-color: #e3f0ce;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu a:hover .button-content {  
+  color: #004f6c;
+}
+
+.menu a.disabled {
+  cursor: default;
+  background-color: transparent;
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+}
+
+.menu a.disabled .button-content {  
+  color: #a0a0a0;
+}
+
+.menu a #upload {
+  background-image: url("icons/upload.png");
+}
+
+.menu a #download {
+  background-image: url("icons/download.png");
+}
+
+.menu a #new {
+  background-image: url("icons/new.png");
+}
+
+.menu a #edit {
+  background-image: url("icons/edit.png");
+}
+
+.menu a #cut {
+  background-image: url("icons/cut.png");
+}
+
+.menu a #copy {
+  background-image: url("icons/copy.png");
+}
+
+.menu a #paste {
+  background-image: url("icons/paste.png");
+}
+
+.menu a #rename {
+  background-image: url("icons/rename.png");
+}
+
+.menu a #delete {
+  background-image: url("icons/delete.png");
+}

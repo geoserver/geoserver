@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -34,6 +34,8 @@ import org.geowebcache.io.Resource;
 import org.geowebcache.layer.MetaTile;
 import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeType;
+
+import it.geosolutions.jaiext.BufferedImageAdapter;
 
 public class GeoServerMetaTile extends MetaTile {
 
@@ -201,7 +203,8 @@ public class GeoServerMetaTile extends MetaTile {
             break;
         case 2:
             final BufferedImage image = (BufferedImage) metaTileImage;
-            tile = image.getSubimage(x, y, tileWidth, tileHeight);
+            final BufferedImage subimage = image.getSubimage(x, y, tileWidth, tileHeight);
+            tile = new BufferedImageAdapter(subimage);
             break;
         default:
             throw new IllegalStateException(Errors.format(ErrorKeys.ILLEGAL_ARGUMENT_$2,

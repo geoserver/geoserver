@@ -1025,8 +1025,6 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             getGeoServer().save(wmtsInfo);
             MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?service=wmts&version=1.0.0&request=GetCapabilities");
             assertEquals(400, response.getStatus());
-            WorkspaceInfo citeWorkpsace = getCatalog().getWorkspace(MockData.CITE_PREFIX);
-            LocalWorkspace.set(citeWorkpsace);
             wmtsInfo.setEnabled(true);
             getGeoServer().save(wmtsInfo);
             response = getAsServletResponse("gwc/service/wmts?service=wmts&version=1.0.0&request=GetCapabilities");

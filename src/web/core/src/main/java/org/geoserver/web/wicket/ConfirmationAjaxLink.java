@@ -11,6 +11,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
@@ -42,7 +43,8 @@ public abstract class ConfirmationAjaxLink<T> extends SimpleAjaxLink<T> {
                 attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                     @Override
                     public CharSequence getPrecondition(Component component) {
-                        return "if(!confirm('" + confirm.getObject() + "')) return false;";
+                        CharSequence message = JavaScriptUtils.escapeQuotes(confirm.getObject());
+                        return "if(!confirm('" +  message + "')) return false;";
                     }
                 });
             }

@@ -32,6 +32,7 @@ import org.apache.wicket.ajax.attributes.AjaxCallListener;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -460,13 +461,15 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                     @Override
                     public CharSequence getPrecondition(Component component) {
+                        CharSequence message = new ParamResourceModel("confirmOverwrite", AbstractStylePage.this)
+                                .getString();
+                        message = JavaScriptUtils.escapeQuotes(message);
                         return "var val = attrs.event.view.document.gsEditors ? "
                                 + "attrs.event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
                                 + "attrs.event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
                                 + "if(val != '' &&"
                                 + "!confirm('"
-                                + new ParamResourceModel("confirmOverwrite", AbstractStylePage.this)
-                                        .getString() + "')) return false;";
+                                + message + "')) return false;";
                     }
                 });
             }
@@ -510,13 +513,15 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                     @Override
                     public CharSequence getPrecondition(Component component) {
+                        CharSequence message = new ParamResourceModel("confirmOverwrite", AbstractStylePage.this)
+                                .getString();
+                        message = JavaScriptUtils.escapeQuotes(message);
                         return "var val = attrs.event.view.document.gsEditors ? "
                                 + "attrs.event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
                                 + "attrs.event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
                                 + "if(val != '' &&"
                                 + "!confirm('"
-                                + new ParamResourceModel("confirmOverwrite", AbstractStylePage.this)
-                                        .getString() + "')) return false;";
+                                + message + "')) return false;";
                     }
                 });
             }

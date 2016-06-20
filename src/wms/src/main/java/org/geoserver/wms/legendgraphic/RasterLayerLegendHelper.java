@@ -24,6 +24,7 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.GetLegendGraphicRequest;
+import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
 import org.geoserver.wms.legendgraphic.ColorMapLegendCreator.Builder;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.styling.ChannelSelection;
@@ -183,9 +184,22 @@ public class RasterLayerLegendHelper {
 
             // adding the colormap entries
             final ColorMapEntry[] colorMapEntries = cmap.getColorMapEntries();
-            for (ColorMapEntry ce : colorMapEntries)
-                if (ce != null)
-                    cmapLegendBuilder.addColorMapEntry(ce);
+            ColorMapEntryLegendBuilder lastEntry = null;
+            boolean first = true;
+            for (ColorMapEntry ce : colorMapEntries) {
+                if(ce == null) {
+                    continue;
+                }
+                final Double qty = ce.getQuantity().evaluate(null, Double.class);
+                if(cmap.getType() == ColorMap.TYPE_INTERVALS && first && qty < 0 && Double.isInfinite(qty)) {
+                    continue;
+                }
+                lastEntry = cmapLegendBuilder.addColorMapEntry(ce);
+                first = false;
+            }
+            if(lastEntry != null) {
+                lastEntry.setLastRow();
+            }
 
             // check the additional options before proceeding
             cmapLegendBuilder.checkAdditionalOptions();
@@ -266,6 +280,10 @@ public class RasterLayerLegendHelper {
         // blue border
         graphics.setColor(Color.BLUE);
         graphics.drawRect(0, 0, width - 1, height -1 );
+    }
+    
+    protected ColorMapLegendCreator getcMapLegendCreator() {
+        return cMapLegendCreator;
     }
 
 }

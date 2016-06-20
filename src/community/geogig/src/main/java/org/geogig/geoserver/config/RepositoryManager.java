@@ -17,6 +17,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -29,7 +30,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.web.GeoServerApplication;
 import org.locationtech.geogig.api.Context;
 import org.locationtech.geogig.api.ContextBuilder;
 import org.locationtech.geogig.api.GeoGIG;
@@ -37,6 +37,7 @@ import org.locationtech.geogig.api.GlobalContextBuilder;
 import org.locationtech.geogig.api.Ref;
 import org.locationtech.geogig.api.Remote;
 import org.locationtech.geogig.api.porcelain.BranchListOp;
+import org.locationtech.geogig.api.porcelain.ConfigOp;
 import org.locationtech.geogig.api.porcelain.InitOp;
 import org.locationtech.geogig.cli.CLIContextBuilder;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
@@ -112,12 +113,17 @@ public class RepositoryManager {
     	this.repoCache.invalidate(repoId);
     }
     
-    public GeoGIG createRepo(final Hints hints, final String repoId) {
-        Resource root = store.getConfigRoot();
-        File parent = root.parent().dir();
-        File f = new File(parent, repoId);
-        final URI repoURI = f.toURI();
-        hints.set(Hints.REPOSITORY_URL, repoURI);
+    public GeoGIG createRepo(final Hints hints) {
+        // get the Config store location
+        // only generate a location if no URI is set in the hints
+        if (!hints.get(Hints.REPOSITORY_URL).isPresent()) {
+            // no location set yet, generate one
+            Resource root = store.getConfigRoot();
+            File parent = root.parent().dir().getAbsoluteFile();
+            File f = new File(parent, UUID.randomUUID().toString());
+            final URI repoURI = f.toURI().normalize();
+            hints.set(Hints.REPOSITORY_URL, repoURI);
+        }
 
         Context context = GlobalContextBuilder.builder().build(hints);
 
@@ -135,16 +141,13 @@ public class RepositoryManager {
     }
 
     public List<DataStoreInfo> findGeogigStores() {
-        return findGeogigStores(getCatalog());
+        return findGeogigStores(this.catalog);
     }
 
     public Catalog getCatalog() {
-    	if (catalog == null) {
-    		catalog = GeoServerApplication.get().getCatalog();
-    	}
-        return catalog;
+        return this.catalog;
     }
-    
+
     public void setCatalog(Catalog catalog) {
     	this.catalog = catalog;
     }
@@ -179,7 +182,7 @@ public class RepositoryManager {
         String locationKey = "connectionParameters." + GeoGigDataStoreFactory.REPOSITORY.key;
         filter = and(filter, equal(locationKey, repoId));
         List<DataStoreInfo> dependent;
-        try (CloseableIterator<DataStoreInfo> stores = getCatalog().list(DataStoreInfo.class,
+        try (CloseableIterator<DataStoreInfo> stores = this.catalog.list(DataStoreInfo.class,
                 filter)) {
             dependent = Lists.newArrayList(stores);
         }
@@ -193,12 +196,11 @@ public class RepositoryManager {
         filter = and(filter, equal(locationKey, repoId));
         List<DataStoreInfo> stores = findDataStores(repoId);
         List<CatalogInfo> dependent = new ArrayList<CatalogInfo>(stores);
-        Catalog catalog = getCatalog();
         for (DataStoreInfo store : stores) {
-            List<FeatureTypeInfo> ftypes = catalog.getFeatureTypesByDataStore(store);
+            List<FeatureTypeInfo> ftypes = this.catalog.getFeatureTypesByDataStore(store);
             dependent.addAll(ftypes);
             for (FeatureTypeInfo ftype : ftypes) {
-                dependent.addAll(catalog.getLayers(ftype));
+                dependent.addAll(this.catalog.getLayers(ftype));
             }
         }
 
@@ -207,14 +209,14 @@ public class RepositoryManager {
 
     public List<LayerInfo> findLayers(DataStoreInfo store) {
         Filter filter = equal("resource.store.id", store.getId());
-        try (CloseableIterator<LayerInfo> it = getCatalog().list(LayerInfo.class, filter)) {
+        try (CloseableIterator<LayerInfo> it = this.catalog.list(LayerInfo.class, filter)) {
             return Lists.newArrayList(it);
         }
     }
 
     public List<FeatureTypeInfo> findFeatureTypes(DataStoreInfo store) {
         Filter filter = equal("store.id", store.getId());
-        try (CloseableIterator<FeatureTypeInfo> it = getCatalog().list(FeatureTypeInfo.class,
+        try (CloseableIterator<FeatureTypeInfo> it = this.catalog.list(FeatureTypeInfo.class,
                 filter)) {
             return Lists.newArrayList(it);
         }
@@ -229,10 +231,37 @@ public class RepositoryManager {
         return isGeogigDirectory;
     }
 
+    private void handleRepoRename(RepositoryInfo oldRepo, RepositoryInfo newRepo) {
+        if (Objects.equal(oldRepo.getId(), newRepo.getId())) {
+            // repos have the same ID, check the names
+            final String oldName = oldRepo.getRepoName();
+            final String newName = newRepo.getRepoName();
+            if (!Objects.equal(oldName, newName)) {
+                // name has been changed, update the repo
+                try {
+                    getRepository(oldRepo.getId()).command(ConfigOp.class).setAction(
+                            ConfigOp.ConfigAction.CONFIG_SET).setName("repo.name").setScope(
+                            ConfigOp.ConfigScope.LOCAL).setValue(newName).call();
+                } catch (IOException ioe) {
+                    // log?
+                }
+            }
+        }
+    }
+
     public RepositoryInfo save(RepositoryInfo info) {
         Preconditions.checkNotNull(info.getLocation());
         if (info.getId() == null) {
             create(info);
+        } else {
+            // see if the name has changed. If so, update the repo config
+            try {
+                RepositoryInfo currentInfo = get(info.getId());
+                handleRepoRename(currentInfo, info);
+            } catch (IOException ioe) {
+
+            }
+
         }
         // so far we don't need to invalidate the GeoGIG instance from the cache here... re-evaluate
         // if any configuration option would require so in the future
@@ -248,6 +277,7 @@ public class RepositoryManager {
         if (!resolver.repoExists(repoURI)) {
             Hints hints = new Hints();
             hints.set(Hints.REPOSITORY_URL, repoURI);
+            hints.set(Hints.REPOSITORY_NAME, repoInfo.getRepoName());
             Context context = GlobalContextBuilder.builder().build(hints);
             GeoGIG geogig = new GeoGIG(context);
             try {
@@ -271,7 +301,7 @@ public class RepositoryManager {
 
     public void delete(final String repoId) {
         List<DataStoreInfo> repoStores = findDataStores(repoId);
-        CascadeDeleteVisitor deleteVisitor = new CascadeDeleteVisitor(getCatalog());
+        CascadeDeleteVisitor deleteVisitor = new CascadeDeleteVisitor(this.catalog);
         for (DataStoreInfo storeInfo : repoStores) {
             storeInfo.accept(deleteVisitor);
         }

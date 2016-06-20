@@ -87,8 +87,6 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         if (config.isImport()) {
             readCatalog(catalog, xp);
             decImportStep();
-            config.setImport(false);
-            config.save();
         }
     }
 

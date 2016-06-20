@@ -145,4 +145,14 @@ public class PostgresConfigBean implements Serializable {
         bean.setPassword(password);
         return bean;
     }
+
+    public static String parseRepoId(URI location) {
+        // get the path and parse database, repo and schema
+        String uriPath = location.getPath();
+        // URI might have a leading '/'. If it does, skip it
+        int startIndex = uriPath.startsWith(SLASH) ? 1 : 0;
+        String[] paths = uriPath.substring(startIndex).split(SLASH);
+        // last part is the repoID
+        return paths[paths.length-1];
+    }
 }

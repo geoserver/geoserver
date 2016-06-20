@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -45,7 +46,7 @@ class GeoGigRepositoryInfoFormComponent extends FormComponentPanel<RepositoryInf
 
     private WebMarkupContainer settingsContainer;
 
-    GeoGigRepositoryInfoFormComponent(String id, IModel<RepositoryInfo> model) {
+    GeoGigRepositoryInfoFormComponent(String id, IModel<RepositoryInfo> model, boolean isNew) {
         super(id, model);
 
         // add the dropdown to switch between configurations
@@ -65,6 +66,7 @@ class GeoGigRepositoryInfoFormComponent extends FormComponentPanel<RepositoryInf
                 target.addComponent(settingsContainer);
             }
         });
+        dropdownPanel.setEnabled(isNew);
         add(dropdownPanel);
 
         settingsContainer = new WebMarkupContainer("settingsContainer");
@@ -88,6 +90,7 @@ class GeoGigRepositoryInfoFormComponent extends FormComponentPanel<RepositoryInf
         directoryComponent
                 .setVisible(DropDownModel.DIRECTORY_CONFIG.equals(dropDownChoice.getModelObject()
                         .toString()));
+        directoryComponent.setEnabled(isNew);
         settingsContainer.add(directoryComponent);
 
     }
@@ -95,25 +98,32 @@ class GeoGigRepositoryInfoFormComponent extends FormComponentPanel<RepositoryInf
     @Override
     protected void convertInput() {
         RepositoryInfo modelObject = getModelObject();
-        final String repoTypeChoice = dropdownPanel.getFormComponent().getConvertedInput()
-                .toString();
+        // determine type
+        URI location = modelObject.getLocation();
+        final String repoTypeChoice = location != null ? DropDownModel.getType(location) :
+                dropdownPanel.getFormComponent().getConvertedInput().toString();
         if (null != repoTypeChoice) {
+            String repoName = repoNamePanel.getFormComponent().getConvertedInput().toString().trim();
+            modelObject.setRepoName(repoName);
             switch (repoTypeChoice) {
                 case DropDownModel.PG_CONFIG:
                     // PG config used
                     PostgresConfigBean bean = pgPanel.getConvertedInput();
+                    // get the repsoitory ID from the URI, if it's already set
+                    String pgRepoId = modelObject.getLocation() != null ? 
+                            PostgresConfigBean.parseRepoId(modelObject.getLocation()) :
+                            UUID.randomUUID().toString();
                     // build a URI out of the config
-                    URI uri = bean.buildUriForRepo(repoNamePanel.getFormComponent()
-                            .getConvertedInput().toString().trim());
+                    URI uri = bean.buildUriForRepo(pgRepoId);
                     modelObject.setLocation(uri);
                     break;
                 case DropDownModel.DIRECTORY_CONFIG:
-                    // local directory used
-                    String path = directoryComponent.getConvertedInput().trim();
-                    String repoId = repoNamePanel.getFormComponent().getConvertedInput().toString()
-                            .trim();
-                    Path uriPath = Paths.get(path, repoId);
-                    modelObject.setLocation(uriPath.toUri());
+                    if (modelObject.getLocation() == null) {
+                        // local directory used
+                        String path = directoryComponent.getConvertedInput().trim();
+                        Path uriPath = Paths.get(path, UUID.randomUUID().toString());
+                        modelObject.setLocation(uriPath.toUri());
+                    }
                     break;
                 default:
                     throw new IllegalStateException(

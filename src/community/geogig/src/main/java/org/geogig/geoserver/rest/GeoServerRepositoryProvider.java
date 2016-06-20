@@ -7,20 +7,26 @@ package org.geogig.geoserver.rest;
 import static org.locationtech.geogig.rest.repository.RESTUtils.getStringAttribute;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
-import org.geoserver.rest.RestletException;
 import org.locationtech.geogig.api.GeoGIG;
+import org.locationtech.geogig.api.plumbing.ResolveGeogigURI;
+import org.locationtech.geogig.repository.Hints;
+import org.locationtech.geogig.rest.RestletException;
 import org.locationtech.geogig.rest.repository.RepositoryProvider;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Iterators;
 
 /**
@@ -29,22 +35,32 @@ import com.google.common.collect.Iterators;
  */
 public class GeoServerRepositoryProvider implements RepositoryProvider {
 
-    private Optional<String> getRepositoryId(Request request) {
+    /**
+     * Init request command string.
+     */
+    public static final String INIT_CMD = "init";
+
+    private Optional<String> getRepositoryName(Request request) {
         final String repo = getStringAttribute(request, "repository");
         return Optional.fromNullable(repo);
     }
 
     public Optional<RepositoryInfo> findRepository(Request request) {
-        Optional<String> repositoryId = getRepositoryId(request);
-        if (!repositoryId.isPresent()) {
+        Optional<String> repositoryName = getRepositoryName(request);
+        if (!repositoryName.isPresent()) {
             return Optional.absent();
         }
         try {
-            String repoId = repositoryId.get();
-            RepositoryManager repositoryManager = RepositoryManager.get();
-            RepositoryInfo repositoryInfo;
-            repositoryInfo = repositoryManager.get(repoId);
-            return Optional.of(repositoryInfo);
+            String repoName = repositoryName.get();
+            String repoId = getRepoIdForName(repoName);
+            if (repoId != null) {
+                RepositoryManager repositoryManager = RepositoryManager.get();
+                RepositoryInfo repositoryInfo;
+                repositoryInfo = repositoryManager.get(repoId);
+                return Optional.of(repositoryInfo);
+            } else {
+                return Optional.absent();
+            }
         } catch (NoSuchElementException | IOException e) {
             return Optional.absent();
         }
@@ -54,15 +70,46 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         return RepositoryManager.get().getAll();
     }
 
+    private String getRepoIdForName(String repoName) {
+        // get the list of Repos the Manager knows about
+        // loop and return the id if we find one
+        for (RepositoryInfo repo : getRepositoryInfos()) {
+            if (repo.getRepoName().equals(repoName)) {
+                return repo.getId();
+            }
+        }
+        return null;
+    }
+
     @Override
     public void delete(Request request) {
-        // TODO Auto-generated method stub
+        Optional<GeoGIG> geogig = getGeogig(request);
+        Preconditions.checkState(geogig.isPresent(), "No repository to delete.");
+
+        final String repositoryName = getStringAttribute(request, "repository");
+        final String repoId = getRepoIdForName(repositoryName);
+        GeoGIG ggig = geogig.get();
+        Optional<URI> repoUri = ggig.command(ResolveGeogigURI.class).call();
+        Preconditions.checkState(repoUri.isPresent(), "No repository to delete.");
+
+        ggig.close();
+        try {
+            GeoGIG.delete(repoUri.get());
+            RepositoryManager manager = RepositoryManager.get();
+            manager.invalidate(repoId);
+        } catch (Exception e) {
+            Throwables.propagate(e);
+        }
 
     }
 
     @Override
     public void invalidate(String repoName) {
-        // TODO Auto-generated method stub
+        final String repoId = getRepoIdForName(repoName);
+        if (repoId != null) {
+            RepositoryManager manager = RepositoryManager.get();
+            manager.invalidate(repoId);
+        }
     }
 
     @Override
@@ -71,32 +118,55 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         return Iterators.transform(infos.iterator(), new Function<RepositoryInfo, String>() {
             @Override
             public String apply(RepositoryInfo input) {
-                return input.getId();
+                return input.getRepoName();
             }
         });
     }
 
-    @Override
-    public Optional<GeoGIG> getGeogig(Request request) {
-        Optional<String> repositoryId = getRepositoryId(request);
-        if (!repositoryId.isPresent()) {
-            return Optional.absent();
-        }
-        GeoGIG geogig = findRepository(request, repositoryId.get());
-        return Optional.of(geogig);
+    private boolean isInitRequest(Request request) {
+        // if the request is a PUT, and the request path ends in "init", it's an INIT request.
+        return Method.PUT.equals(request.getMethod()) && request.getResourceRef() != null &&
+                request.getResourceRef().getPath().endsWith(INIT_CMD);
     }
 
-    private GeoGIG findRepository(Request request, String repositoryId) {
+    @Override
+    public Optional<GeoGIG> getGeogig(Request request) {
+        Optional<String> repositoryName = getRepositoryName(request);
+        if (!repositoryName.isPresent()) {
+            return Optional.absent();
+        }
+        // look for one with the provided name first
+        Optional<GeoGIG> geogig = getGeogig(repositoryName.get());
+        if (!geogig.isPresent() && isInitRequest(request)) {
+            // special handling of INIT requests
+            geogig = InitRequestHandler.createGeoGIG(request);
+        }
+        if (!geogig.isPresent()) {
+            // if it's still not present, just generate one.
+            // This is so the CommandResource can get into the runCmd code before failing and
+            // generating the correct responses
+            geogig = Optional.fromNullable(RepositoryManager.get().createRepo(new Hints()));
+        }
+        return geogig;
+    }
+
+    public Optional<GeoGIG> getGeogig(String repositoryName) {
+        GeoGIG geogig = findRepository(repositoryName);
+        return Optional.fromNullable(geogig);
+    }
+
+    private GeoGIG findRepository(String repositoryName) {
 
         RepositoryManager manager = RepositoryManager.get();
+        String repoId = getRepoIdForName(repositoryName);
+        if (null == repoId) {
+            return null;
+        }
         try {
-            manager.get(repositoryId);
-            return manager.getRepository(repositoryId);
-        } catch (NoSuchElementException e) {
-            throw new RestletException("No such repository: " + repositoryId,
-                    Status.CLIENT_ERROR_NOT_FOUND);
+            RepositoryInfo info = manager.get(repoId);
+            return manager.getRepository(repoId);
         } catch (IOException e) {
-            throw new RestletException("Error accessing datastore " + repositoryId,
+            throw new RestletException("Error accessing datastore " + repositoryName,
                     Status.SERVER_ERROR_INTERNAL, e);
         }
     }

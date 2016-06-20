@@ -10,10 +10,14 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
 
+import org.locationtech.geogig.api.plumbing.ResolveRepositoryName;
+import org.locationtech.geogig.repository.Repository;
+import org.locationtech.geogig.repository.RepositoryConnectionException;
 import org.locationtech.geogig.repository.RepositoryResolver;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
+import com.google.common.base.Throwables;
 
 public class RepositoryInfo implements Serializable {
 
@@ -34,6 +38,14 @@ public class RepositoryInfo implements Serializable {
     private String name;
 
     private java.net.URI location;
+
+    /**
+     * Stores the "nice" name for a repo. This is the name that is shown in the Repository list, as
+     * well as what is stored in the GeoGIG repository config. It is transient, as we don't want to
+     * serialize this. It's just a place holder for the name until it can be persisted into the repo
+     * config.
+     */
+    private transient String repoName;
 
     public RepositoryInfo() {
         this(null);
@@ -80,11 +92,34 @@ public class RepositoryInfo implements Serializable {
         this.name = name;
     }
 
+    public void setRepoName(String name) {
+        this.repoName = name;
+    }
+
     public String getRepoName() {
-        if (this.location != null)  {
-            // Name is deprecated, use the RepositoryResolver
-            RepositoryResolver uriResolver = RepositoryResolver.lookup(this.location);
-            return uriResolver.getName(this.location);
+        if (this.repoName != null) {
+            return repoName;
+        }
+        if (this.location != null) {
+            Repository repo = null;
+            try {
+                // lookup the resolver
+                RepositoryResolver resolver = RepositoryResolver.lookup(this.location);
+                // if the repo exists, get the name from it
+                if (resolver.repoExists(this.location)) {
+                    // it exists, load it and fetch the name
+                    repo = RepositoryResolver.load(this.location);
+                    return repo.command(ResolveRepositoryName.class).call();
+                }
+                // the repo doesn't exist, derive the name from the location
+                return resolver.getName(this.location);
+            } catch (RepositoryConnectionException e) {
+                Throwables.propagate(e);
+            } finally {
+                if (repo != null) {
+                    repo.close();
+                }
+            }
         }
         return null;
     }

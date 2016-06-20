@@ -43,7 +43,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
 
         // should be light red pixel and the first pixel is there only at the default elevation
         assertPixel(image, 36, 31, new Color(246, 246, 255));
-        assertPixel(image, 68, 72, new Color(255, 185, 185));
+        assertPixel(image, 68, 72, new Color(255, 187, 187));
     }
     
     @Test
@@ -68,7 +68,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
 
         // should be similar to the default, but with different shades of color
         assertPixel(image, 36, 31, new Color(246, 246, 255));
-        assertPixel(image, 68, 72, new Color(255, 182, 182));
+        assertPixel(image, 68, 72, new Color(255, 181, 181));
     }
     
     @Test
@@ -80,7 +80,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
 
         // should be similar to the default, but with different shades of color
         assertPixel(image, 36, 31, new Color(246, 246, 255));
-        assertPixel(image, 68, 72, new Color(255, 182, 182));
+        assertPixel(image, 68, 72, new Color(255, 181, 181));
 
     }
     
@@ -120,7 +120,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         // first range, red-ish
         image = getAsImage(baseUrl + "&TIME=2008-10-31T12:00:00.000Z/2008-10-31T16:00:00.000Z", "image/png");
         assertPixel(image, 36, 31, Color.BLACK);
-        assertPixel(image, 68, 72, new Color(255, 170, 170));
+        assertPixel(image, 68, 72, new Color(255, 172, 172));
     }
     
     @Test 

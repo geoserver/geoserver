@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,6 +22,8 @@ import org.geoserver.wms.legendgraphic.LegendUtils.HAlign;
 import org.geoserver.wms.legendgraphic.LegendUtils.VAlign;
 import org.geotools.styling.ColorMapEntry;
 import org.opengis.style.ColorMap;
+
+import com.vividsolutions.jts.awt.PointShapeFactory.Square;
 
 /**
  * This class mimics a simple cell for the final {@link ColorMap} legend reprensentation.
@@ -104,6 +106,10 @@ public abstract class Cell {
         protected void add(final Cell cell) {
             cells.add(cell);
         }
+        
+        protected void set(final Cell cell, int idx) {
+            cells.set(idx, cell);
+        }
     }
     
     public static abstract class ColorMapEntryLegendBuilder extends Row {
@@ -144,6 +150,10 @@ public abstract class Cell {
         protected String formatQuantity(final double quantity, final int digits, final String unit) {
             final String format ="%." + digits + "f";
             return String.format(Locale.US, format, quantity) + (unit != null ? (" " + unit) : "");
+        }
+        
+        protected void setLastRow() {
+            // nothing to do by default
         }
     }
         
@@ -213,6 +223,8 @@ public abstract class Cell {
 
     public static class RampColorMapEntryLegendBuilder extends ColorMapEntryLegendBuilder {
 
+        private TextManager lastRuleManager;
+
         @SuppressWarnings("deprecation")
         public RampColorMapEntryLegendBuilder(final List<ColorMapEntry> mapEntries,
                 final HAlign hAlign, final VAlign vAling, final Color bkgColor,
@@ -270,23 +282,36 @@ public abstract class Cell {
             
             // Added variation for DynamicColorMap
             String rule;
+            String lastRuleText;
             
             if(formatQuantity){
                 rule = "";
+                lastRuleText = "";
                 if (opacity > 0) {
-                    String symbol = leftEdge ? " > " : " = ";
-                    String value = formatQuantity(quantity, digits, unit);
-                    rule = leftEdge ?  value + " " + symbol + " x" : value + " " /*+ symbol + " x"*/;
+                    String formattedQuantity = formatQuantity(quantity, digits, unit);
+                    if(leftEdge) {
+                        rule = formattedQuantity + " >= x";
+                        lastRuleText = "";
+                    } else {
+                        rule = formattedQuantity  + " ";
+                        lastRuleText = formattedQuantity  + " <= x";
+                    }
                 }
-            }else{
-                String symbol = leftEdge ? " > " : " = ";
-                rule = leftEdge ? Double.toString(quantity) + " " + symbol + " x" : Double
-                        .toString(quantity)
-                        + " " + symbol + " x";            
+            } else {
+                final String formattedQuantity = Double.toString(quantity);
+                if(leftEdge) {
+                    rule = formattedQuantity + " >= x";
+                    lastRuleText = "";
+                } else {
+                    rule = formattedQuantity  + " = x";
+                    lastRuleText = formattedQuantity  + " <= x";
+                }
             }
 
             super.add(new TextManager(rule, vAling, hAlign, bkgColor, requestedDimension, labelFont,
                     labelFontColor, leftEdge, borderColor));
+            lastRuleManager = new TextManager(lastRuleText, vAling, hAlign, bkgColor, requestedDimension, labelFont,
+                    labelFontColor, leftEdge, borderColor);
 
             // add the label the label to the rule so that we draw all text just once
             if (label != null) {
@@ -299,6 +324,12 @@ public abstract class Cell {
             }
 
         }
+        
+        @Override
+        protected void setLastRow() {
+            set(lastRuleManager, 1);
+        }
+        
     }
 
     public static class ClassesEntryLegendBuilder extends ColorMapEntryLegendBuilder {
@@ -354,36 +385,41 @@ public abstract class Cell {
                     .getQuantity(previousCME);
             double quantity2 = LegendUtils.getQuantity(currentCME);
             
-         // Added variation for DynamicColorMap
-            String rule;
+            // Added variation for DynamicColorMap
+            String ruleText;
             String symbol1 = null, symbol2 = null;
+            if (leftEdge)
+                symbol1 = " < ";
+            else {
+                symbol1 = " <= ";
+                symbol2 = " < ";
+            }
             if(formatQuantity){
-                rule = "";
+                ruleText = "";
                 if (opacity > 0) {
-                    if (leftEdge)
-                        symbol1 = " < ";
-                    else {
-                        symbol1 = " <= ";
-                        symbol2 = " < ";
-                    }
                     String value1 = formatQuantity(quantity1, digits, unit);
                     String value2 = formatQuantity(quantity2, digits, unit);
-                    rule = leftEdge ?  value1 + " " + symbol1 + " x" : value1
-                            + " " + symbol1 + " x " + symbol2 + " " + value2;
+                    if(leftEdge) {
+                        ruleText = "x" + symbol1 + value1;
+                    } else if(Double.isInfinite(quantity2)) {
+                        ruleText = value1 + symbol1 + "x";
+                    } else {
+                        ruleText = value1 + symbol1 + "x" + symbol2 + value2;    
+                    }
                 }
-            }else{
-                if (leftEdge)
-                    symbol1 = " < ";
-                else {
-                    symbol1 = " <= ";
-                    symbol2 = " < ";
+            } else {
+                final String value1 = Double.toString(quantity1);
+                final String value2 = Double.toString(quantity2);
+                if(leftEdge) {
+                    ruleText = "x" + symbol1 + value1;
+                } else if(Double.isInfinite(quantity2)) {
+                    ruleText = value1 + symbol1 + "x";
+                } else {
+                    ruleText = value1 + symbol1 + "x" + symbol2 + value2;    
                 }
-                rule = leftEdge ? Double.toString(quantity1) + " " + symbol1 + " x" : Double
-                        .toString(quantity1)
-                        + " " + symbol1 + " x " + symbol2 + " " + Double.toString(quantity2);
             }
             
-            super.add(new TextManager(rule, vAling, hAlign, bkgColor, requestedDimension, labelFont,
+            super.add(new TextManager(ruleText, vAling, hAlign, bkgColor, requestedDimension, labelFont,
                     labelFontColor, leftEdge, borderColor));
 
             // add the label the label to the rule so that we draw all text just once

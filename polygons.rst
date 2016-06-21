@@ -63,7 +63,7 @@ Code
 
 :download:`Download the "Simple polygon" YSLD <artifacts/polygon_simplepolygon.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Simple polygon'
@@ -97,7 +97,7 @@ Code
 
 :download:`Download the "Simple polygon with stroke" YSLD <artifacts/polygon_simplepolygonwithstroke.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Simple polygon with stroke'
@@ -130,7 +130,7 @@ Code
 
 :download:`Download the "Transparent polygon" YSLD <artifacts/polygon_transparentpolygon.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Transparent polygon'
@@ -166,7 +166,7 @@ Code
 
 :download:`Download the "Graphic fill" YSLD <artifacts/polygon_graphicfill.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Graphic fill'
@@ -207,7 +207,7 @@ Code
 
 :download:`Download the "Hatching fill" YSLD <artifacts/polygon_hatchingfill.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Hatching fill'
@@ -247,7 +247,7 @@ Code
 
 :download:`Download the "Polygon with default label" YSLD <artifacts/polygon_polygonwithdefaultlabel.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Polygon with default label'
@@ -283,7 +283,7 @@ Code
 
 :download:`Download the "Label halo" YSLD <artifacts/polygon_labelhalo.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Label halo'
@@ -325,7 +325,7 @@ Code
 
 :download:`Download the "Polygon with styled label" YSLD <artifacts/polygon_polygonwithstyledlabel.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Polygon with styled label'
@@ -374,7 +374,7 @@ Code
 
 :download:`Download the "Attribute-based polygon" YSLD <artifacts/polygon_attributebasedpolygon.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Attribute-based polygon'
@@ -463,7 +463,7 @@ Code
 
 :download:`Download the "Zoom-based polygon" YSLD <artifacts/polygon_zoombasedpolygon.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Zoom-based polygon'

@@ -115,7 +115,7 @@ Code
 
 :download:`Download the "Simple line" YSLD <artifacts/line_simpleline.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Simple Line'
@@ -151,7 +151,7 @@ Code
 
 :download:`Download the "Line with border" YSLD <artifacts/line_linewithborder.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Line with border'
@@ -205,7 +205,7 @@ Code
 
 :download:`Download the "Dashed line" YSLD <artifacts/line_dashedline.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Dashed line'
@@ -239,7 +239,7 @@ Code
 
 :download:`Download the "Railroad (hatching)" YSLD <artifacts/line_railroad.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Railroad (hatching)'
@@ -287,7 +287,7 @@ Code
 
 :download:`Download the "Spaced symbols" YSLD <artifacts/line_dashspace.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   name: Default Styler
@@ -344,7 +344,7 @@ Code
 
 :download:`Download the "Spaced symbols" YSLD <artifacts/line_dashdot.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Dash/Symbol line'
@@ -395,7 +395,7 @@ Code
 
 :download:`Download the "Line with default label" YSLD <artifacts/line_linewithdefaultlabel.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   name: Default Styler
@@ -438,7 +438,7 @@ Code
 
 :download:`Download the "Label following line" YSLD <artifacts/line_labelfollowingline.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Label following line'
@@ -483,7 +483,7 @@ Code
 
 :download:`Download the "Optimized label" YSLD <artifacts/line_optimizedlabel.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Optimized label placement'
@@ -529,7 +529,7 @@ Code
 
 :download:`Download the "Optimized and styled label" YSLD <artifacts/line_optimizedstyledlabel.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Optimized and styled label'
@@ -574,7 +574,7 @@ Code
 
 :download:`Download the "Attribute-based line" YSLD <artifacts/line_attributebasedline.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Attribute-based line'
@@ -669,7 +669,7 @@ Code
 
 :download:`Download the "Zoom-based line" YSLD <artifacts/line_zoombasedline.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Zoom-based line'

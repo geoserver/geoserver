@@ -59,7 +59,7 @@ Code
 
 :download:`Download the "Simple point" YSLD <artifacts/point_simplepoint.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Simple Point'
@@ -96,7 +96,7 @@ Code
 
 :download:`Download the "Simple point with stroke" YSLD <artifacts/point_simplepointwithstroke.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Simple point with stroke'
@@ -133,7 +133,7 @@ Code
 
 :download:`Download the "Rotated square" YSLD <artifacts/point_rotatedsquare.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Rotated square'
@@ -169,7 +169,7 @@ Code
 
 :download:`Download the "Transparent triangle" YSLD <artifacts/point_transparenttriangle.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Transparent triangle'
@@ -206,7 +206,7 @@ Code
 
 :download:`Download the "Point as graphic" YSLD <artifacts/point_pointasgraphic.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Point as graphic'
@@ -246,7 +246,7 @@ Code
 
 :download:`Download the "Point with default label" YSLD <artifacts/point_pointwithdefaultlabel.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Point with default label'
@@ -291,7 +291,7 @@ Code
 
 :download:`Download the "Point with styled label" YSLD <artifacts/point_pointwithstyledlabel.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Point with styled label'
@@ -339,7 +339,7 @@ Code
 
 :download:`Download the "Point with rotated label" YSLD <artifacts/point_pointwithrotatedlabel.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Point with rotated label'
@@ -387,7 +387,7 @@ Code
 
 :download:`Download the "Attribute-based point" YSLD <artifacts/point_attribute.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Attribute-based point'
@@ -489,7 +489,7 @@ Code
 
 :download:`Download the "Zoom-based point" YSLD <artifacts/point_zoom.ysld>`
 
-.. code-block:: python
+.. code-block:: yaml
   :linenos:
 
   title: 'YSLD Cook Book: Zoom-based point'

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -86,10 +86,23 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     int maxSynchronousExecutionTime;
 
     /**
-     * How many seconds a process can run in synchronous mode (with the user polling for its status)
+     * How many seconds a process can run or queue in synchronous mode (with the user waiting on the HTTP
+     * connection) before it gets killed by the WPS container
+     */
+    Integer maxSynchronousTotalTime;
+
+    /**
+     * How many seconds a process can run in asynchronous mode (with the user polling for its status)
      * before it gets killed by the WPS container
      */
     int maxAsynchronousExecutionTime;
+
+    /*
+     * How many seconds a process can run or queue in asynchronous mode (with the user polling for its status)
+     * before it gets killed by the WPS container
+     */
+    Integer maxAsynchronousTotalTime;
+
 
     public WPSInfoImpl() {
         title = "Prototype GeoServer WPS";
@@ -244,6 +257,20 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     }
 
     /**
+     * How many seconds a process can run or queue in synchronous mode (with the user waiting on the HTTP
+     * connection) before it gets killed by the WPS container
+     */
+    @Override
+    public Integer getMaxSynchronousTotalTime() {
+        return (maxSynchronousTotalTime != null) ? maxSynchronousTotalTime : maxSynchronousExecutionTime;
+    }
+
+    @Override
+    public void setMaxSynchronousTotalTime(Integer maxSynchronousTotalTime) {
+        this.maxSynchronousTotalTime = maxSynchronousTotalTime;
+    }
+
+    /**
      * How many seconds a process can run in synchronous mode (with the user polling for its status)
      * before it gets killed by the WPS container
      */
@@ -253,8 +280,22 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     }
 
     @Override
-    public void setMaxAsynchronousExecutionTime(int maxAsynchrornousExecutionTime) {
-        this.maxAsynchronousExecutionTime = maxAsynchrornousExecutionTime;
+    public void setMaxAsynchronousExecutionTime(int maxAsynchronousExecutionTime) {
+        this.maxAsynchronousExecutionTime = maxAsynchronousExecutionTime;
+    }
+
+    /**
+     * How many seconds a process can run in synchronous mode (with the user polling for its status)
+     * before it gets killed by the WPS container
+     */
+    @Override
+    public Integer getMaxAsynchronousTotalTime() {
+        return (maxAsynchronousTotalTime != null) ? maxAsynchronousTotalTime : maxAsynchronousExecutionTime;
+    }
+
+    @Override
+    public void setMaxAsynchronousTotalTime(Integer maxAsynchronousTotalTime) {
+        this.maxAsynchronousTotalTime = maxAsynchronousTotalTime;
     }
 
     @Override
@@ -266,8 +307,12 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
         result = prime * result
                 + ((maxAsynchronousProcesses == null) ? 0 : maxAsynchronousProcesses.hashCode());
         result = prime * result + maxAsynchronousExecutionTime;
+        result = prime * result
+                + ((maxAsynchronousTotalTime == null) ? 0 : maxAsynchronousTotalTime.hashCode());
         result = prime * result + maxComplexInputSize;
         result = prime * result + maxSynchronousExecutionTime;
+        result = prime * result
+                + ((maxSynchronousTotalTime == null) ? 0 : maxSynchronousTotalTime.hashCode());
         result = prime * result
                 + ((maxSynchronousProcesses == null) ? 0 : maxSynchronousProcesses.hashCode());
         result = prime * result + ((processGroups == null) ? 0 : processGroups.hashCode());
@@ -300,9 +345,19 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
             return false;
         if (maxAsynchronousExecutionTime != other.maxAsynchronousExecutionTime)
             return false;
+        if (maxAsynchronousTotalTime == null) {
+            if (other.maxAsynchronousTotalTime != null)
+                return false;
+        } else if (!maxAsynchronousTotalTime.equals(other.maxAsynchronousTotalTime))
+            return false;
         if (maxComplexInputSize != other.maxComplexInputSize)
             return false;
         if (maxSynchronousExecutionTime != other.maxSynchronousExecutionTime)
+            return false;
+        if (maxSynchronousTotalTime == null) {
+            if (other.maxSynchronousTotalTime != null)
+                return false;
+        } else if (!maxSynchronousTotalTime.equals(other.maxSynchronousTotalTime))
             return false;
         if (maxSynchronousProcesses == null) {
             if (other.maxSynchronousProcesses != null)

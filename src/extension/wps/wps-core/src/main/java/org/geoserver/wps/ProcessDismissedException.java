@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -39,7 +39,9 @@ public class ProcessDismissedException extends RuntimeException {
             if(max.isExpired()) {
                 return "The process executed got interrupted because it went "
                         + "beyond the configured limits of "
-                        + (max.getMaxExecutionTime() / 1000 + " seconds");
+                        + "maxExecutionTime " + (max.getMaxExecutionTime() / 1000) + " seconds, "
+                        + "maxTotalTime " + (max.getMaxTotalTime() / 1000) + " seconds"
+                ;
             }
         }
 

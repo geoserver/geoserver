@@ -40,7 +40,10 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         // print(tester.getLastRenderedPage(), true, true);
 
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
-        
+        wps.setMaxAsynchronousTotalTime(6000);
+        wps.setMaxSynchronousTotalTime(120);
+        getGeoServer().save(wps);
+
         // test that components have been filled as expected
         tester.assertComponent("form:keywords", KeywordsEditor.class);
         tester.assertModelValue("form:keywords", wps.getKeywords());
@@ -48,6 +51,26 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         tester.assertModelValue("form:maxAsynchronousProcesses:", 16);
         tester.assertModelValue("form:maxSynchronousExecutionTime:", 60);
         tester.assertModelValue("form:maxAsynchronousExecutionTime:", 600);
+        tester.assertModelValue("form:maxSynchronousTotalTime:", 120);
+        tester.assertModelValue("form:maxAsynchronousTotalTime:", 6000);
+
+    }
+
+    @Test
+    public void testUpgrade() throws Exception {
+        login();
+        
+        // start the page
+        tester.startPage(new WPSAdminPage());
+
+        WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+        getGeoServer().save(wps);
+
+        // test that components have been filled as expected
+        tester.assertModelValue("form:maxSynchronousExecutionTime:", 60);
+        tester.assertModelValue("form:maxAsynchronousExecutionTime:", 600);
+        tester.assertModelValue("form:maxSynchronousTotalTime:", 60);
+        tester.assertModelValue("form:maxAsynchronousTotalTime:", 600);
 
     }
 

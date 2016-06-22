@@ -32,12 +32,14 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.DataAccess;
+import org.json.JSONObject;
 import org.locationtech.geogig.api.GeoGIG;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.web.api.TestData;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.w3c.dom.Document;
 
@@ -126,6 +128,28 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
             return dispatch(request, null);
 
+        }
+
+        public MockHttpServletResponse callInternal(Method method, String resourceUri,
+                JSONObject payload) throws Exception {
+            MockHttpServletRequest request = super.createRequest(resourceUri);
+            request.setMethod(method.getName());
+            // set the JSON payload
+            request.setBodyContent(payload.toString());
+            request.setHeader("Content-Type", "application/json");
+
+            return dispatch(request, null);
+        }
+
+        public MockHttpServletResponse callInternal(Method method, String resourceUri,
+                Form form) throws Exception {
+            MockHttpServletRequest request = super.createRequest(resourceUri);
+            request.setMethod(method.getName());
+            // set the JSON payload
+            request.setBodyContent(form.encode());
+            request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            return dispatch(request, null);
         }
 
         /**
@@ -343,4 +367,21 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         }
     }
 
+    public void call(Method method, String resourceUri, JSONObject payload) {
+        try {
+            resourceUri = replaceVariables(resourceUri);
+            this.lastResponse = helper.callInternal(method, "/geogig" + resourceUri, payload);
+        } catch (Exception e) {
+            Throwables.propagate(e);
+        }
+    }
+
+    public void call(Method method, String resourceUri, Form form) {
+        try {
+            resourceUri = replaceVariables(resourceUri);
+            this.lastResponse = helper.callInternal(method, "/geogig" + resourceUri, form);
+        } catch (Exception e) {
+            Throwables.propagate(e);
+        }
+    }
 }

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.geogig.geoserver.config.RepositoryInfo;
@@ -125,8 +126,16 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
 
     private boolean isInitRequest(Request request) {
         // if the request is a PUT, and the request path ends in "init", it's an INIT request.
-        return Method.PUT.equals(request.getMethod()) && request.getResourceRef() != null &&
-                request.getResourceRef().getPath().endsWith(INIT_CMD);
+        if (Method.PUT.equals(request.getMethod())) {
+            Map<String, Object> attributes = request.getAttributes();
+            if (attributes != null && attributes.containsKey("command")) {
+                return INIT_CMD.equals(attributes.get("command"));
+            } else if (request.getResourceRef() != null) {
+                String path = request.getResourceRef().getPath();
+                return path != null && path.contains(INIT_CMD);
+            }
+        }
+        return false;
     }
 
     @Override

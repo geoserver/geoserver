@@ -19,6 +19,7 @@
         <include>joda-time*.jar</include>
         <include>jcip-annotations*.jar</include>
         <include>ehcache-core*.jar</include>
+        <include>jna*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

@@ -227,7 +227,7 @@ Geocentric transformation, preceded by an ellipsoid to geocentric conversion, an
       PARAMETER["semi_major", 6378137.0], \
       PARAMETER["semi_minor", 6356752.314140356]]]
 
-You can make use of existing grid shift files such as this explicit transformation from NAD27 to WGS84 (made up of a NADCON transform from NAD27 to NAD83 followed by a Molodenski transform from NAD83 to WGS84)::
+You can make use of existing grid shift files such as this explicit transformation from NAD27 to WGS84 made up of a NADCON transform from NAD27 to NAD83 followed by a Molodenski transform converting from the GRS80 Ellipsoid (used by NAD83) to the WGS84 Ellipsoid::
 
     4267,4326=CONCAT_MT[ \
       PARAM_MT["NADCON", \

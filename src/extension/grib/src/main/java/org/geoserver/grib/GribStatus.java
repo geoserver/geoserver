@@ -46,8 +46,8 @@ public class GribStatus implements ModuleStatus {
     }
 
     @Override
-    public Optional<String> getMessage() {  
-        String message = "NetCDFUtilities.isGribAvailable: "+ NetCDFUtilities.isGribAvailable();
+    public Optional<String> getMessage() {
+        String message = "NetCDFUtilities.isGribAvailable: " + NetCDFUtilities.isGribAvailable();
         return Optional.ofNullable(message);
     }
 

@@ -7,7 +7,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-
+  <bean class="org.geoserver.grib.GribStatus"/>  
   <bean id="gribStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="gribRaster" />
     <property name="factoryClass" value="org.geotools.coverage.io.grib.GRIBFormat" />

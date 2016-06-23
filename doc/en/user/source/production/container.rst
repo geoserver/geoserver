@@ -11,7 +11,7 @@ Optimize your JVM
 Set the following performance settings in the Java virtual machine (JVM) for your container.  These settings are not specific to any container.
 
 .. list-table::
-   :widths: 20 80
+   :widths: 40 60
 
    * - **Option**
      - **Description**
@@ -34,7 +34,7 @@ For more information about JVM configuration, see the article `Performance tunin
 
 .. note:: 
    
-   If you're serving just vector data, you'll be streaming, so having more memory won't increase performance.  If you're serving coverages, however, image processing will use a disk cache and benifit from more memory. It is also a good idea to configure the JAI tile cache size (see the Server Config page in the :ref:`web_admin` section) so that it uses 75% of the heap (0.75).
+   If you're serving just vector data, you'll be streaming, so having more memory won't increase performance.  If you're serving coverages, however, image processing will use a tile cache and benifit from more memory. As an administrator you can configure the portion of memory available as a tile cache (see the Server Config page in the :ref:`web_admin` section) - for example to use ``0.75`` to allocate ``75%`` of the heap as a tile cache.
 
 .. note::
    

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -228,14 +228,19 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
           }
       }
       
+      ReferencedEnvelope result;
       if ( !CRS.equalsIgnoreMetadata(declaredCRS, nativeCRS) && 
           php == ProjectionPolicy.REPROJECT_TO_DECLARED ) {
-          return nativeBox.transform(declaredCRS,true); 
+          result = nativeBox.transform(declaredCRS,true); 
       } else if(php == ProjectionPolicy.FORCE_DECLARED) {
-    	  return ReferencedEnvelope.create( (Envelope) nativeBox, declaredCRS);
+    	  result = ReferencedEnvelope.create( (Envelope) nativeBox, declaredCRS);
+      } else {
+          result = nativeBox;
       }
       
-      return nativeBox;
+      // make sure that in no case the actual field value is returned to the client, this
+      // is not a getter, it's a derivative, thus ModificationProxy won't do a copy on its own 
+      return ReferencedEnvelope.create(result);
     }
 
     public ReferencedEnvelope getLatLonBoundingBox() {

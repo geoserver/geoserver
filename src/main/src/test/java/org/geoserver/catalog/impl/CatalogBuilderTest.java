@@ -25,6 +25,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.WMSLayerInfo;

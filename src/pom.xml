@@ -1267,6 +1267,7 @@
      <include>**/*.zip</include>
      <include>**/*.json</include>
      <include>**/*.nc</include>
+     <include>**/*.grib2</include>
     </includes>
     <excludes>
      <exclude>**/doc-files/**</exclude>

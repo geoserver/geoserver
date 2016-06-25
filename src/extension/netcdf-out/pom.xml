@@ -85,7 +85,13 @@
   <dependency>
     <groupId>org.geoserver.extension</groupId>
     <artifactId>gs-netcdf</artifactId>
-	<version>${project.version}</version>
+    <version>${project.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver.extension</groupId>
+    <artifactId>gs-grib</artifactId>
+    <version>${project.version}</version>
+    <scope>test</scope>
   </dependency>
   <dependency>
     <groupId>org.geoserver</groupId>

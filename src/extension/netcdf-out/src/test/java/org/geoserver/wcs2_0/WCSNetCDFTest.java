@@ -38,10 +38,16 @@ import ucar.nc2.dataset.NetcdfDataset;
  */
 public class WCSNetCDFTest extends WCSNetCDFBaseTest {
 
+    public static final double DELTA = 1e-6;
+
     public static QName POLYPHEMUS = new QName(CiteTestData.WCS_URI, "polyphemus", CiteTestData.WCS_PREFIX);
     public static QName NO2 = new QName(CiteTestData.WCS_URI, "NO2", CiteTestData.WCS_PREFIX);
-    public static QName TEMPERATURE_SURFACE = new QName(CiteTestData.WCS_URI, "Temperature_surface",
-            CiteTestData.WCS_PREFIX);
+    public static QName TEMPERATURE_SURFACE_NETCDF = new QName(CiteTestData.WCS_URI,
+            "Temperature_surface_NetCDF", CiteTestData.WCS_PREFIX);
+    public static QName TEMPERATURE_SURFACE_GRIB = new QName(CiteTestData.WCS_URI,
+            "Temperature_surface", CiteTestData.WCS_PREFIX);
+    public static QName SNOW_DEPTH_GRIB = new QName(CiteTestData.WCS_URI,
+            "Snow_depth_water_equivalent_surface", CiteTestData.WCS_PREFIX);
 
     /**
      * Only setup coverages
@@ -65,7 +71,11 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
         testData.addRasterLayer(POLYPHEMUS, "pol.zip", null, null, this.getClass(), getCatalog());
         setupRasterDimension(getLayerId(NO2), ResourceInfo.TIME, DimensionPresentation.LIST, null);
         setupRasterDimension(getLayerId(NO2), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        testData.addRasterLayer(TEMPERATURE_SURFACE, "rotated-pole.nc", null, null, this.getClass(),
+        testData.addRasterLayer(TEMPERATURE_SURFACE_NETCDF, "rotated-pole.nc", null, null,
+                this.getClass(), getCatalog());
+        testData.addRasterLayer(TEMPERATURE_SURFACE_GRIB, "rap-native.grib2", null, null,
+                this.getClass(), getCatalog());
+        testData.addRasterLayer(SNOW_DEPTH_GRIB, "cosmo-eu.grib2", null, null, this.getClass(),
                 getCatalog());
     }
 
@@ -146,18 +156,18 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
     }
 
     /**
-     * Test NetCDF output for a rotated pole projection.
+     * Test NetCDF output from a NetCDF file with a rotated pole projection.
      */
     @Test
-    public void testRotatedPole() throws Exception {
+    public void testNetcdfRotatedPole() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(
                 "ows?request=GetCoverage&service=WCS&version=2.0.1"
-                        + "&coverageid=wcs__Temperature_surface&format=application/x-netcdf");
+                        + "&coverageid=wcs__Temperature_surface_NetCDF&format=application/x-netcdf");
         assertEquals(200, response.getStatus());
         assertEquals("application/x-netcdf", response.getContentType());
         byte[] responseBytes = getBinary(response);
-        File file = File.createTempFile("netcdf-rotated-pole-", "-wcs__Temperature_surface.nc",
-                new File("./target"));
+        File file = File.createTempFile("netcdf-rotated-pole-",
+                "-wcs__Temperature_surface_NetCDF.nc", new File("./target"));
         FileUtils.writeByteArrayToFile(file, responseBytes);
         try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
             assertNotNull(dataset);
@@ -177,7 +187,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             assertEquals("grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
             assertEquals("degrees", rlonVar.findAttribute("units").getStringValue());
             assertArrayEquals(new float[] { -30, -20, -10, 0, 10, 20, 30 },
-                    (float[]) rlonVar.read().copyTo1DJavaArray(), 0.0f);
+                    (float[]) rlonVar.read().copyTo1DJavaArray(), (float) DELTA);
             Variable rlatVar = dataset.findVariable("rlat");
             assertNotNull(rlatVar);
             assertEquals(1, rlatVar.getDimensions().size());
@@ -186,17 +196,18 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             assertEquals("grid_latitude", rlatVar.findAttribute("standard_name").getStringValue());
             assertEquals("degrees", rlatVar.findAttribute("units").getStringValue());
             assertArrayEquals(new float[] { -20, -10, 0, 10, 20 },
-                    (float[]) rlatVar.read().copyTo1DJavaArray(), 0.0f);
+                    (float[]) rlatVar.read().copyTo1DJavaArray(), (float) DELTA);
             // check projection variable
             Variable projVar = dataset.findVariable("rotated_latitude_longitude");
             assertNotNull(projVar);
             assertEquals("rotated_latitude_longitude",
                     projVar.findAttribute("grid_mapping_name").getStringValue());
-            assertEquals(74.0,
-                    projVar.findAttribute("grid_north_pole_longitude").getNumericValue());
-            assertEquals(36.0, projVar.findAttribute("grid_north_pole_latitude").getNumericValue());
-            Variable tempVar = dataset.findVariable("Temperature_surface");
-            // check Temperature_surface variable
+            assertEquals(74.0, projVar.findAttribute("grid_north_pole_longitude").getNumericValue()
+                    .doubleValue(), DELTA);
+            assertEquals(36.0, projVar.findAttribute("grid_north_pole_latitude").getNumericValue()
+                    .doubleValue(), DELTA);
+            // check data variable
+            Variable tempVar = dataset.findVariable("Temperature_surface_NetCDF");
             assertNotNull(tempVar);
             assertEquals("rotated_latitude_longitude",
                     tempVar.findAttribute("grid_mapping").getStringValue());
@@ -208,7 +219,145 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
                     new float[] { 300, 299, 298, 297, 296, 295, 294, 299, 300, 299, 298, 297, 296,
                             295, 298, 299, 300, 299, 298, 297, 296, 297, 298, 299, 300, 299, 298,
                             297, 296, 297, 298, 299, 300, 299, 298 },
-                    (float[]) tempVar.read().copyTo1DJavaArray(), 0.0f);
+                    (float[]) tempVar.read().copyTo1DJavaArray(), (float) DELTA);
+        } finally {
+            FileUtils.deleteQuietly(file);
+        }
+    }
+
+    /**
+     * Test NetCDF output from an RAP native GRIB2 file with a GDS template 32769 rotated pole projection.
+     */
+    @Test
+    public void testRapNativeGribRotatedPole() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(
+                "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                        + "&coverageid=wcs__Temperature_surface&format=application/x-netcdf");
+        assertEquals(200, response.getStatus());
+        assertEquals("application/x-netcdf", response.getContentType());
+        byte[] responseBytes = getBinary(response);
+        File file = File.createTempFile("rap-native-grib-rotated-pole-",
+                "-wcs__Temperature_surface.nc", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, responseBytes);
+        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+            assertNotNull(dataset);
+            // check dimensions
+            Dimension rlonDim = dataset.findDimension("rlon");
+            assertNotNull(rlonDim);
+            assertEquals(7, rlonDim.getLength());
+            Dimension rlatDim = dataset.findDimension("rlat");
+            assertNotNull(rlatDim);
+            assertEquals(5, rlatDim.getLength());
+            // check coordinate variables
+            Variable rlonVar = dataset.findVariable("rlon");
+            assertNotNull(rlonVar);
+            assertEquals(1, rlonVar.getDimensions().size());
+            assertEquals(rlonDim, rlonVar.getDimensions().get(0));
+            assertEquals("grid_longitude", rlonVar.findAttribute("long_name").getStringValue());
+            assertEquals("grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
+            assertEquals("degrees", rlonVar.findAttribute("units").getStringValue());
+            assertArrayEquals(new float[] { -30, -20, -10, 0, 10, 20, 30 },
+                    (float[]) rlonVar.read().copyTo1DJavaArray(), (float) DELTA);
+            Variable rlatVar = dataset.findVariable("rlat");
+            assertNotNull(rlatVar);
+            assertEquals(1, rlatVar.getDimensions().size());
+            assertEquals(rlatDim, rlatVar.getDimensions().get(0));
+            assertEquals("grid_latitude", rlatVar.findAttribute("long_name").getStringValue());
+            assertEquals("grid_latitude", rlatVar.findAttribute("standard_name").getStringValue());
+            assertEquals("degrees", rlatVar.findAttribute("units").getStringValue());
+            assertArrayEquals(new float[] { -20, -10, 0, 10, 20 },
+                    (float[]) rlatVar.read().copyTo1DJavaArray(), (float) DELTA);
+            // check projection variable
+            Variable projVar = dataset.findVariable("rotated_latitude_longitude");
+            assertNotNull(projVar);
+            assertEquals("rotated_latitude_longitude",
+                    projVar.findAttribute("grid_mapping_name").getStringValue());
+            assertEquals(74.0, projVar.findAttribute("grid_north_pole_longitude").getNumericValue()
+                    .doubleValue(), DELTA);
+            assertEquals(36.0, projVar.findAttribute("grid_north_pole_latitude").getNumericValue()
+                    .doubleValue(), DELTA);
+            // check data variable
+            Variable dataVar = dataset.findVariable("Temperature_surface");
+            assertNotNull(dataVar);
+            assertEquals("rotated_latitude_longitude",
+                    dataVar.findAttribute("grid_mapping").getStringValue());
+            assertEquals("K", dataVar.findAttribute("units").getStringValue());
+            assertEquals(2, dataVar.getDimensions().size());
+            assertEquals(rlatDim, dataVar.getDimensions().get(0));
+            assertEquals(rlonDim, dataVar.getDimensions().get(1));
+            assertArrayEquals(
+                    new float[] { 300, 299, 298, 297, 296, 295, 294, 299, 300, 299, 298, 297, 296,
+                            295, 298, 299, 300, 299, 298, 297, 296, 297, 298, 299, 300, 299, 298,
+                            297, 296, 297, 298, 299, 300, 299, 298 },
+                    (float[]) dataVar.read().copyTo1DJavaArray(), (float) DELTA);
+        } finally {
+            FileUtils.deleteQuietly(file);
+        }
+    }
+
+    /**
+     * Test NetCDF output from a COSMO EU GRIB2 file with a GDS template 1 rotated pole projection.
+     */
+    @Test
+    public void testCosmoEuGribRotatedPole() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(
+                "ows?request=GetCoverage&service=WCS&version=2.0.1"
+                        + "&coverageid=wcs__Snow_depth_water_equivalent_surface&format=application/x-netcdf");
+        assertEquals(200, response.getStatus());
+        assertEquals("application/x-netcdf", response.getContentType());
+        byte[] responseBytes = getBinary(response);
+        File file = File.createTempFile("cosmo-eu-grib-rotated-pole-",
+                "-wcs__Snow_depth_water_equivalent_surface.nc", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, responseBytes);
+        try (NetcdfDataset dataset = NetcdfDataset.openDataset(file.getAbsolutePath())) {
+            assertNotNull(dataset);
+            // check dimensions
+            Dimension rlonDim = dataset.findDimension("rlon");
+            assertNotNull(rlonDim);
+            assertEquals(5, rlonDim.getLength());
+            Dimension rlatDim = dataset.findDimension("rlat");
+            assertNotNull(rlatDim);
+            assertEquals(5, rlatDim.getLength());
+            // check coordinate variables
+            Variable rlonVar = dataset.findVariable("rlon");
+            assertNotNull(rlonVar);
+            assertEquals(1, rlonVar.getDimensions().size());
+            assertEquals(rlonDim, rlonVar.getDimensions().get(0));
+            assertEquals("grid_longitude", rlonVar.findAttribute("long_name").getStringValue());
+            assertEquals("grid_longitude", rlonVar.findAttribute("standard_name").getStringValue());
+            assertEquals("degrees", rlonVar.findAttribute("units").getStringValue());
+            assertArrayEquals(new float[] { -18, -8, 2, 12, 22 },
+                    (float[]) rlonVar.read().copyTo1DJavaArray(), (float) DELTA);
+            Variable rlatVar = dataset.findVariable("rlat");
+            assertNotNull(rlatVar);
+            assertEquals(1, rlatVar.getDimensions().size());
+            assertEquals(rlatDim, rlatVar.getDimensions().get(0));
+            assertEquals("grid_latitude", rlatVar.findAttribute("long_name").getStringValue());
+            assertEquals("grid_latitude", rlatVar.findAttribute("standard_name").getStringValue());
+            assertEquals("degrees", rlatVar.findAttribute("units").getStringValue());
+            assertArrayEquals(new float[] { -20, -10, 0, 10, 20 },
+                    (float[]) rlatVar.read().copyTo1DJavaArray(), (float) DELTA);
+            // check projection variable
+            Variable projVar = dataset.findVariable("rotated_latitude_longitude");
+            assertNotNull(projVar);
+            assertEquals("rotated_latitude_longitude",
+                    projVar.findAttribute("grid_mapping_name").getStringValue());
+            assertEquals(-170.0, projVar.findAttribute("grid_north_pole_longitude")
+                    .getNumericValue().doubleValue(), DELTA);
+            assertEquals(40.0, projVar.findAttribute("grid_north_pole_latitude").getNumericValue()
+                    .doubleValue(), DELTA);
+            // check data variable
+            Variable dataVar = dataset.findVariable("Snow_depth_water_equivalent_surface");
+            assertNotNull(dataVar);
+            assertEquals("rotated_latitude_longitude",
+                    dataVar.findAttribute("grid_mapping").getStringValue());
+            assertEquals(2, dataVar.getDimensions().size());
+            assertEquals(rlatDim, dataVar.getDimensions().get(0));
+            assertEquals(rlonDim, dataVar.getDimensions().get(1));
+            assertArrayEquals(
+                    new float[] { 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
+                            113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124 },
+                    (float[]) dataVar.read().copyTo1DJavaArray(), (float) DELTA);
         } finally {
             FileUtils.deleteQuietly(file);
         }

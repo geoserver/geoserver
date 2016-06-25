@@ -307,8 +307,49 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-    </plugins>
-  </build>
+  <profiles>
+    <profile>
+      <id>jacoco</id>
+      <build>
+        <plugins>
+          <plugin>
+            <!--
+             Overriding the root pom's surefire plugin configuration is
+             necessary in order to set argLine to ${argLine} as the value
+             is passed by the jacoco prepare-agent goal
+            -->
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>${argLine}</argLine>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.7.7.201606060606</version>
+            <configuration>
+              <excludes>
+                <exclude>**/*Exception.class</exclude>
+              </excludes>
+            </configuration>
+            <executions>
+              <execution>
+                <id>pre-unit-test</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>post-unit-test</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

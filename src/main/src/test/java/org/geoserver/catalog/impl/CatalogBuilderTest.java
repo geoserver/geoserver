@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -217,6 +217,22 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         // Huston, we have a problem here...
         // assertEquals(9999, dimension.getRange().getMaximum(), 0d);
         assertNull(dimension.getUnit());
+    }
+    
+    @Test
+    public void testNativeBoundsDefensiveCopy() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(cat.getCoverageStoreByName(MockData.TASMANIA_DEM.getLocalPart()));
+        CoverageInfo ci = cb.buildCoverage();
+        
+        // setup the reproject to declared policy, the issue happens only under this condition
+        ReferencedEnvelope nativeBounds = ci.getNativeBoundingBox();
+        for(ProjectionPolicy pp : ProjectionPolicy.values()) {
+            ci.setProjectionPolicy(pp);
+            ReferencedEnvelope bbox = ci.boundingBox();
+            assertNotSame(nativeBounds, bbox);
+        }
     }
     
     @Test

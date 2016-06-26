@@ -10,6 +10,8 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.filechooser.FileSystemView;
 
@@ -24,6 +26,7 @@ import org.apache.wicket.model.Model;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.util.logging.Logging;
 
 public class GeoServerFileChooser extends Panel {
 
@@ -49,6 +52,8 @@ public class GeoServerFileChooser extends Panel {
             // that's ok, we might not be able to get the user home
         }
     }
+    
+    static final Logger LOGGER = Logging.getLogger(GeoServerFileChooser.class);
     
     FileBreadcrumbs breadcrumbs;
     FileDataView fileTable;
@@ -283,11 +288,13 @@ public class GeoServerFileChooser extends Panel {
             try {
                 final String displayName = FileSystemView.getFileSystemView()
                         .getSystemDisplayName(f);
-                if (displayName != null && displayName.length() > 0) {
-                    return displayName;
+                if (displayName != null && !displayName.trim().isEmpty()) {
+                    return displayName.trim();
                 }
                 return FilenameUtils.getPrefix(f.getAbsolutePath());
             } catch (Exception e) {
+                LOGGER.log(Level.FINE, "Failed to get file display name, "
+                        + "on Windows this might be related to a known java bug http://bugs.java.com/bugdatabase/view_bug.do?bug_id=6973685", e);
                 // on windows we can get the occasional NPE due to
                 // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6973685
             }

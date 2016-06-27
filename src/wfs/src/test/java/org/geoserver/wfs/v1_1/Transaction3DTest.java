@@ -4,10 +4,12 @@
  */
 package org.geoserver.wfs.v1_1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.HashMap;
 
 import javax.xml.namespace.QName;
 
@@ -54,7 +56,7 @@ public class Transaction3DTest extends WFSTestSupport {
     
     @Before
     public void revert() throws Exception {
-        getTestData().addVectorLayer(FULL3D, Collections.emptyMap(), getClass(), getCatalog());
+        getTestData().addVectorLayer(FULL3D, new HashMap(), getClass(), getCatalog());
     }
     
     @Test

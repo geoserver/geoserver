@@ -41,8 +41,10 @@ import org.geotools.data.Query;
 import org.geotools.data.ResourceInfo;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.operation.projection.MapProjection;
 import org.junit.Test;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -589,6 +591,21 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(90, bbox.getMaxY(), 0d);
         } finally {
             TestHttpClientProvider.endTest();
+        }
+    }
+    
+    @Test
+    public void testWgs84BoundsFromCompoundCRS() throws Exception {
+        try {
+            MapProjection.SKIP_SANITY_CHECKS = true;
+            CatalogBuilder cb = new CatalogBuilder(getCatalog());
+            ReferencedEnvelope3D bounds = new ReferencedEnvelope3D(142892, 470783, 16, 142900, 470790, 20, CRS.decode("EPSG:7415"));
+            // used to throw an exception here
+            ReferencedEnvelope latLonBounds = cb.getLatLonBounds(bounds, bounds.getCoordinateReferenceSystem());
+            assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), latLonBounds.getCoordinateReferenceSystem()));
+            // System.out.println(latLonBounds);
+        } finally {
+            MapProjection.SKIP_SANITY_CHECKS = false;
         }
     }
 }

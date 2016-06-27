@@ -523,7 +523,7 @@ public class CatalogBuilder {
             if (!CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, declaredCRS)) {
                 // transform
                 try {
-                    ReferencedEnvelope bounds = new ReferencedEnvelope(nativeBounds, declaredCRS);
+                    ReferencedEnvelope bounds = new ReferencedEnvelope(nativeBounds, CRS.getHorizontalCRS(declaredCRS));
                     return bounds.transform(DefaultGeographicCRS.WGS84, true);
                 } catch (Exception e) {
                     throw (IOException) new IOException("transform error").initCause(e);

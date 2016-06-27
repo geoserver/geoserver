@@ -30,6 +30,8 @@ import org.geoserver.wfs.TransactionPlugin;
 import org.geoserver.wfs.WFSException;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope3D;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.opengis.referencing.FactoryException;
@@ -140,9 +142,12 @@ public class GWCTransactionListener implements TransactionPlugin {
             return null;
         }
 
-        final CoordinateReferenceSystem declaredCrs = gwc.getDeclaredCrs(tileLayerName);
+        final CoordinateReferenceSystem declaredCrs = CRS.getHorizontalCRS(gwc.getDeclaredCrs(tileLayerName));
         ReferencedEnvelope merged = new ReferencedEnvelope(declaredCrs);
         for (ReferencedEnvelope env : dirtyList) {
+            if(env instanceof ReferencedEnvelope3D) {
+                env = new ReferencedEnvelope(env, CRS.getHorizontalCRS(env.getCoordinateReferenceSystem()));
+            }
             ReferencedEnvelope transformedDirtyRegion = env.transform(declaredCrs, true, 1000);
             merged.expandToInclude(transformedDirtyRegion);
         }

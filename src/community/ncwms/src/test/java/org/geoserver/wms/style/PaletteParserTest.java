@@ -37,6 +37,7 @@ public class PaletteParserTest {
     @Before
     public void resetEnvFunction() {
         EnvFunction.clearLocalValues();
+        EnvFunction.clearGlobalValues();
     }
 
     @Test
@@ -111,6 +112,7 @@ public class PaletteParserTest {
         // first param, the full data set
         assetIsParameterFunction(dcm.getParameters().get(0), "data");
         // second param, the opacity
+        EnvFunction.clearLocalValues();
         Expression opacity = assetIsParameterFunction(dcm.getParameters().get(1), "opacity");
         assertEquals(1f, opacity.evaluate(null, Float.class), 0f);
         EnvFunction.setLocalValue(PaletteParser.OPACITY, "0.5");

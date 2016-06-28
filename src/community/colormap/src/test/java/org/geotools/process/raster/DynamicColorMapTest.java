@@ -207,22 +207,22 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
         final ColorMap colorMap = (ColorMap) func.evaluate("#0000FF;#00FF00;#FF0000", 10, 100, null, null, true, MAX_PALETTE_COLORS);
         final ColorMapEntry[] entries = colorMap.getColorMapEntries();
 
-        assertEquals(256, entries.length);
+        assertEquals(FilterFunction_svgColorMap.LOG_SAMPLING_DEFAULT + 2, entries.length);
 
         // first and last are transparent
         assertEquals(0, entries[0].getOpacity().evaluate(null, Double.class), TOLERANCE);
-        assertEquals(0, entries[255].getOpacity().evaluate(null, Double.class), TOLERANCE);
+        assertEquals(0, entries[FilterFunction_svgColorMap.LOG_SAMPLING_DEFAULT + 1].getOpacity().evaluate(null, Double.class), TOLERANCE);
 
         // check the logaritmic progression
         double logMin = Math.log(10);
         double logMax = Math.log(100);
-        double step = (logMax - logMin) / MAX_PALETTE_COLORS; 
-        for(int i = 0; i < MAX_PALETTE_COLORS - 1; i++) {
+        double step = (logMax - logMin) / FilterFunction_svgColorMap.LOG_SAMPLING_DEFAULT; 
+        for(int i = 0; i < FilterFunction_svgColorMap.LOG_SAMPLING_DEFAULT - 1; i++) {
             final double v = logMin + step * i;
             double expected = Math.exp(v);
             assertEquals("Failed at " + i, expected, entries[i + 1].getQuantity().evaluate(null, Double.class),TOLERANCE);
         }
-        assertEquals(100, entries[254].getQuantity().evaluate(null, Double.class),TOLERANCE);
+        assertEquals(100, entries[FilterFunction_svgColorMap.LOG_SAMPLING_DEFAULT].getQuantity().evaluate(null, Double.class),TOLERANCE);
     }
     
     @Test

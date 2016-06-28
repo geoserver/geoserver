@@ -82,11 +82,11 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         // RenderedImageBrowser.showChain(image);
         // System.in.read();
         // heavy rain here
-        assertPixel(image, 32, 74, new Color(2, 2, 254));
+        assertPixel(image, 32, 74, new Color(3, 3, 253));
         // mid value here
         assertPixel(image, 120, 74, new Color(25, 25, 243));
         // dry here
-        assertPixel(image, 160, 60, new Color(90, 90, 210));
+        assertPixel(image, 160, 60, new Color(91, 91, 209));
     }
     
     @Test

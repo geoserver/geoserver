@@ -42,6 +42,8 @@ import it.geosolutions.jaiext.piecewise.TransformationException;
  */
 public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
     
+    static final int LOG_SAMPLING_DEFAULT = 16; 
+    
     /**
      * Two colors are used for before and after palette, so this leaves a max of 254 colors to play with
      */
@@ -134,7 +136,7 @@ public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
             if(!logarithmic) {
                 cm = generator.generateColorMap(min, max);
                 if(numColors < MAX_PALETTE_COLORS) {
-                    cm = sampleColorMap(numColors, min, max, cm, Function.identity());
+                    cm = sampleColorMap(numColors, min, max, cm, Function.identity(), numColors < MAX_PALETTE_COLORS);
                 }
             } else {
                 if(min < 1e-2) {
@@ -143,7 +145,8 @@ public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
                 double logMin = Math.log(min);
                 double logMax = Math.log(max);
                 ColorMap logcm = generator.generateColorMap(logMin, logMax);
-                cm = sampleColorMap(numColors, logMin, logMax, logcm, Math::exp);
+                int colors = numColors < MAX_PALETTE_COLORS ? numColors : LOG_SAMPLING_DEFAULT;
+                cm = sampleColorMap(colors, logMin, logMax, logcm, Math::exp, numColors < MAX_PALETTE_COLORS);
             }
             if(LOGGER.isLoggable(Level.FINE)) {
                 final SLDTransformer tx = new SLDTransformer();
@@ -158,14 +161,13 @@ public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
         }
     }
 
-    private ColorMap sampleColorMap(int numColors, double min, double max, ColorMap sourceCM, Function<Double, Double> quantityMapper)
+    private ColorMap sampleColorMap(int numColors, double min, double max, ColorMap sourceCM, Function<Double, Double> quantityMapper, boolean useIntervals)
             throws TransformationException {
         ColorMap cm;
         LinearColorMap lcm = toLinearColorMap(sourceCM);
         IndexColorModel icm = lcm.getColorModel();
         cm = SF.createColorMap();
         cm.addColorMapEntry(entryForValue(min - Math.ulp(min), quantityMapper.apply(min), lcm, icm)); // before color
-        final boolean useIntervals = numColors < MAX_PALETTE_COLORS;
         double step = (max - min) / (numColors);
         // mind, the entry in interval mode defines the color up to that point
         for(int i = 0; i < (numColors - 1); i++) {

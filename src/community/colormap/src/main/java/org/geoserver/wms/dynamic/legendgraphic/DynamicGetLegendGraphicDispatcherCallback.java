@@ -191,7 +191,6 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
                         opacity = ((Number) paramValue).doubleValue();
                     }
                 }
-                ;
             }
             if (cm != null) {
                 StyleBuilder sb = new StyleBuilder();

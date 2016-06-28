@@ -11,6 +11,12 @@
             <#if status.version??>
                 <li><b>Version</b> : ${status.version}</li>
             </#if>
+            <#if status.isEnabled??>
+                <li><b>Enabled</b> : ${status.isEnabled}</li>
+            </#if>
+            <#if status.isAvailable??>
+                <li><b>Available</b> : ${status.isAvailable}</li>
+            </#if>
             <#if status.message??>
                 <li><b>Message</b> : ${status.message!}</li>
             </#if>

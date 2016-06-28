@@ -55,4 +55,13 @@ public class ModuleStatusTest {
         EasyMock.verify(status);
     }
 
+    @Test
+    public void testModuleStatusBooleans() {
+        ModuleStatusImpl impl = new ModuleStatusImpl();
+        impl.setAvailable(false);
+        impl.setEnabled(false);
+        assertEquals(impl.isAvailable(), false);
+        assertEquals(impl.isEnabled(), false);
+    }
+
 }

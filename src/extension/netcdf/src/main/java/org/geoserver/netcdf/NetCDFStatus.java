@@ -11,6 +11,8 @@ import org.geotools.factory.GeoTools;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.Version;
 
+import com.sun.jna.Native;
+
 import ucar.nc2.jni.netcdf.Nc4prototypes;
 
 public class NetCDFStatus implements ModuleStatus {
@@ -48,11 +50,21 @@ public class NetCDFStatus implements ModuleStatus {
     public boolean isEnabled() {
         return true;
     }
+    
+    public String Nc4Version() {
+        try {
+            Nc4prototypes nc4 = (Nc4prototypes) Native.loadLibrary("netcdf", Nc4prototypes.class);
+            return nc4.nc_inq_libvers();
+        } catch (Exception e) {
+            return "unavailable (" + e.getMessage() + ")";
+        }
+    }
 
     @Override
     public Optional<String> getMessage() {
         String message = "NETCDF-4 Binary Available: " + NetCDFUtilities.isNC4CAvailable();
         message += "\nNc4prototypes Version: " + GeoTools.getVersion(Nc4prototypes.class);
+        message += "\nc_inq_libvers: " + Nc4Version();
         return Optional.ofNullable(message);
     }
 

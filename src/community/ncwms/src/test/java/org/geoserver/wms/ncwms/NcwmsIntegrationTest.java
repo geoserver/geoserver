@@ -10,33 +10,46 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.StyleProperty;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.style.PaletteStyleHandler;
 import org.geotools.util.NumberRange;
+import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 public class NcwmsIntegrationTest extends WMSTestSupport {
     
     QName RAIN = new QName(MockTestData.CITE_URI, "rain", MockTestData.CITE_PREFIX);
     String GRAY_BLUE_STYLE = "grayToBlue";
+    XpathEngine xpath;
 
-    @Override
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-        // only the data we register manually is needed
-    }
-    
     // @Override
     // protected String getLogConfiguration() {
     // return "/GEOTOOLS_DEVELOPER_LOGGING.properties";
     // }
+    
+    @Before
+    public void setupXpath() {
+        this.xpath = XMLUnit.newXpathEngine();
+    }
+    
+    @Override
+    protected void registerNamespaces(Map<String, String> namespaces) {
+        namespaces.put("wms", "http://www.opengis.net/wms");
+        namespaces.put("ows", "http://www.opengis.net/ows");
+    }
     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -131,5 +144,25 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         }
         
         assertEquals("Expected amount of colors not found", count, colors.size());
+    }
+    
+    @Test
+    public void testDatasetFiltering() throws Exception {
+        // filter by workspace
+        Document dom = getAsDOM("wms?service=WMS&version=1.3.0&request=GetCapabilities&dataset=cite");
+        // check only the layers in that workspace are there, and are not qualified
+        for (LayerInfo layer : getCatalog().getLayers()) {
+            if("cite".equals(layer.getResource().getStore().getWorkspace().getName()) && !"Geometryless".equals(layer.getName())) {
+                assertEquals("Did not find "+ layer.getName(), 1, xpath.getMatchingNodes("//wms:Layer[wms:Name = '" + layer.getName() + "']", dom).getLength());
+            } else {
+                assertEquals("Found unexpected " + layer.getName(), 0, xpath.getMatchingNodes("//wms:Layer[wms:Name = '" + layer.getName() + "']", dom).getLength());
+            }
+        }
+        
+        // filter by layer
+        dom = getAsDOM("wms?service=WMS&version=1.3.0&request=GetCapabilities&dataset=cite:rain");
+        assertEquals(1, xpath.getMatchingNodes("//wms:Layer[wms:Name = 'rain']", dom).getLength());
+        // root container and the layer itself
+        assertEquals(2, xpath.getMatchingNodes("//wms:Layer", dom).getLength());
     }
 }

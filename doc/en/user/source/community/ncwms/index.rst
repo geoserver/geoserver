@@ -163,3 +163,16 @@ Here are a few examples based on the "ArcSample" arcgrid sample layer, containin
 .. figure:: images/redblue-range.png
    :align: center
    
+ncWMS GetCapabilities extensions
+--------------------------------
+
+ncWMS allows users to filter the contents of a capabilites document by adding a ``&dataset=datasetName`` parameter to the request.
+
+While GeoServer does not have a concept of dataset, the ncWMS extension allows to use the same parameter to filter on workspaces, layers and layer groups, by name.
+
+For example:
+
+  * Getting everything in the "topp" workspace: ``http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities&dataset=topp``
+  * Getting only the "topp:states" layer: ``http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities&dataset=topp:states``
+  * Getting the "tasmania" layer group: ``http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities&dataset=tasmania``
+  

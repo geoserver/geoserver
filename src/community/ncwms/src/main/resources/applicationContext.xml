@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd.spring-beans.dtd">
-<!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
- This code is licensed under the GPL 2.0 license, available at the root
- application directory.
- -->
+<!-- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved. This code is licensed 
+  under the GPL 2.0 license, available at the root application directory. -->
 
 <beans>
-  <bean id="paletteStyleHandler" class="org.geoserver.wms.style.PaletteStyleHandler"/>
-  
+  <bean id="paletteStyleHandler" class="org.geoserver.wms.style.PaletteStyleHandler" />
+
+  <bean id="ncWmsDatasetCallback" class="org.geoserver.wms.ncwms.NcWmsDatasetCallback">
+    <constructor-arg ref="catalog" />
+  </bean>
+
   <bean id="ncWmsGetMapCallback" class="org.geoserver.wms.ncwms.GetMapNcWmsCallback">
     <constructor-arg ref="GIFMapResponse" />
   </bean>

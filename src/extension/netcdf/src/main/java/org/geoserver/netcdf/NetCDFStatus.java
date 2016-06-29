@@ -17,7 +17,7 @@ public class NetCDFStatus implements ModuleStatus {
 
     @Override
     public String getModule() {
-        return "gs-netcdfl";
+        return "gs-netcdf";
     }
 
     @Override

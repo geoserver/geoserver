@@ -12,6 +12,8 @@
         <constructor-arg index="1" value="GeoServer Main"/>
     </bean>
     <bean class="org.geoserver.platform.RenderingEngineStatus"/>
+    <bean class="org.geoserver.platform.SystemPropertyStatus"/>
+    <bean class="org.geoserver.platform.SystemEnvironmentStatus"/>
     
     <!--  lock providers -->
     <bean id="nullLockProvider" class="org.geoserver.platform.resource.NullLockProvider"/>

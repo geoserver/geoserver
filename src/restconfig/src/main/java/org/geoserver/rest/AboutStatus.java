@@ -103,7 +103,7 @@ public class AboutStatus extends ReflectiveResource {
                                         hash.put("version", version);
                                     });
                                     status.getMessage().ifPresent(message -> {
-                                        hash.put("message", message);
+                                        hash.put("message", message.replace("\n", "<br/>"));
                                     });
 
                                     return hash;

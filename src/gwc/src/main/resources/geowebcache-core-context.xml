@@ -7,6 +7,8 @@
 
   <bean id="geoWebCacheExtensions" class="org.geowebcache.GeoWebCacheExtensions"/>
   
+  <bean id="geoWebCacheEnvironment" class="org.geowebcache.GeoWebCacheEnvironment" depends-on="geoWebCacheExtensions"/>
+  
   <bean id="gwcAppCtx" class="org.geowebcache.util.ApplicationContextProvider" />
   
   <bean id="gwcXmlConfigResourceProvider" class="org.geoserver.gwc.config.GeoserverXMLResourceProvider">

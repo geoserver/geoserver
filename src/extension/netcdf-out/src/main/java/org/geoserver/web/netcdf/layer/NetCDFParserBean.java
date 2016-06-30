@@ -84,7 +84,7 @@ public class NetCDFParserBean {
         }
 
         // Check if the file can be parsed
-        if (cfStandardTable != null) {
+        if (cfStandardTable != null && cfStandardTable.getType() != Resource.Type.UNDEFINED) {
             NetCDFCFParser parser = null;
             try {
                 parser = NetCDFCFParser.unmarshallXml(cfStandardTable.file());

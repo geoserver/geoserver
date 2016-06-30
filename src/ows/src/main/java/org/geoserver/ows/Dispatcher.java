@@ -1084,8 +1084,8 @@ public class Dispatcher extends AbstractController {
         return response;
     }
     
-    Collection loadServices() {
-        Collection services = GeoServerExtensions.extensions(Service.class);
+    Collection<Service> loadServices() {
+        Collection<Service> services = GeoServerExtensions.extensions(Service.class);
 
         if (!(new HashSet(services).size() == services.size())) {
             String msg = "Two identical service descriptors found";

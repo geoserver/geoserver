@@ -316,7 +316,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         private void handleService() {
             start("Service");
 
-            final WMSInfo serviceInfo = wmsConfig.getServiceInfo();
+            final WMSInfo serviceInfo = (WMSInfo) wmsConfig.getServiceInfo().clone(true);
             element("Name", "WMS");
             element("Title", serviceInfo.getTitle());
             element("Abstract", serviceInfo.getAbstract());

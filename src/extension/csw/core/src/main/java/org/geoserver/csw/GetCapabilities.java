@@ -278,6 +278,8 @@ public class GetCapabilities {
     }
 
     public CapabilitiesType run(GetCapabilitiesType request) throws CSWException {
+        CSWInfo expandedCsw = (CSWInfo) csw.clone(true);
+        
         // do the version negotiation dance
         SectionsType sections = null;
         List<String> provided = Collections.singletonList(CSW_VERSION);
@@ -303,11 +305,11 @@ public class GetCapabilities {
             ServiceIdentificationType si = owsf.createServiceIdentificationType();
             caps.setServiceIdentification(si);
 
-            si.setTitle(csw.getTitle());
-            si.setAbstract(csw.getAbstract());
+            si.setTitle(expandedCsw.getTitle());
+            si.setAbstract(expandedCsw.getAbstract());
 
             KeywordsType kw = null;
-            List<KeywordInfo> keywords = csw.getKeywords();
+            List<KeywordInfo> keywords = expandedCsw.getKeywords();
             if (keywords != null && keywords.size() > 0) {
                 kw = owsf.createKeywordsType();
                 for (KeywordInfo keyword : keywords) {
@@ -323,10 +325,10 @@ public class GetCapabilities {
             CSW.setValue("CSW");
             si.setServiceType(CSW);
             si.setServiceTypeVersion(CSW_VERSION);
-            si.setFees(csw.getFees());
+            si.setFees(expandedCsw.getFees());
 
-            if (csw.getAccessConstraints() != null) {
-                si.setAccessConstraints(csw.getAccessConstraints());
+            if (expandedCsw.getAccessConstraints() != null) {
+                si.setAccessConstraints(expandedCsw.getAccessConstraints());
             }
         }
 
@@ -341,7 +343,7 @@ public class GetCapabilities {
 
             OnlineResourceType providerSite = owsf.createOnlineResourceType();
             sp.setProviderSite(providerSite);
-            providerSite.setHref((csw.getOnlineResource() != null ? csw.getOnlineResource() : ""));
+            providerSite.setHref((expandedCsw.getOnlineResource() != null ? expandedCsw.getOnlineResource() : ""));
 
             ResponsiblePartySubsetType serviceContact = owsf.createResponsiblePartySubsetType();
             sp.setServiceContact(serviceContact);

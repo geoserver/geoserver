@@ -8,6 +8,9 @@ package org.geoserver.gwc;
 import static com.google.common.collect.Iterators.forEnumeration;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Sets.union;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
@@ -35,6 +38,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -45,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -59,6 +64,10 @@ import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.util.CaseInsensitiveMap;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.kvp.PaletteManager;
 import org.geotools.filter.identity.FeatureIdImpl;
@@ -66,7 +75,9 @@ import org.geotools.filter.text.cql2.CQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geowebcache.GeoWebCacheEnvironment;
 import org.geowebcache.GeoWebCacheException;
+import org.geowebcache.GeoWebCacheExtensions;
 import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.Configuration;
 import org.geowebcache.config.ConfigurationException;
@@ -77,6 +88,7 @@ import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.diskquota.DiskQuotaMonitor;
 import org.geowebcache.diskquota.QuotaStore;
+import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
@@ -101,6 +113,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.opengis.filter.Filter;
+import org.springframework.context.ApplicationContext;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
@@ -131,7 +144,7 @@ public class GWCTest {
     private GWCConfigPersister gwcConfigPersister;
 
     private XMLConfiguration xmlConfig;
-    
+
     private StorageBroker storageBroker;
 
     private GridSetBroker gridSetBroker;
@@ -145,7 +158,7 @@ public class GWCTest {
     private QuotaStore quotaStore;
 
     private DiskQuotaMonitor diskQuotaMonitor;
-    
+
     private ConfigurableQuotaStoreProvider diskQuotaStoreProvider;
 
     private Dispatcher owsDispatcher;
@@ -167,14 +180,27 @@ public class GWCTest {
     private DefaultStorageFinder storageFinder;
 
     private JDBCConfigurationStorage jdbcStorage;
-    
+
+    static Resource tmpDir() throws IOException {
+        Resource root = Files.asResource(new File(System.getProperty("java.io.tmpdir", ".")));
+        Resource directory = Resources.createRandom("tmp", "", root);
+
+        do {
+            FileUtils.forceDelete(directory.dir());
+        } while (Resources.exists(directory));
+
+        FileUtils.forceMkdir(directory.dir());
+
+        return Files.asResource(directory.dir());
+    }
+
     @Rule
     public ExpectedException expected = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
         catalog = mock(Catalog.class);
-        layer = mockLayer("testLayer", new String[]{"style1", "style2"}, PublishedType.RASTER);
+        layer = mockLayer("testLayer", new String[] { "style1", "style2" }, PublishedType.RASTER);
         layerGroup = mockGroup("testGroup", layer);
         mockCatalog();
 
@@ -203,14 +229,50 @@ public class GWCTest {
         owsDispatcher = mock(Dispatcher.class);
         diskQuotaStoreProvider = mock(ConfigurableQuotaStoreProvider.class);
         when(diskQuotaMonitor.getQuotaStoreProvider()).thenReturn(diskQuotaStoreProvider);
-        
+
         storageFinder = mock(DefaultStorageFinder.class);
         jdbcStorage = mock(JDBCConfigurationStorage.class);
+        xmlConfig = mock(XMLConfiguration.class);
+
+        System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
+
+        ApplicationContext appContext = createMock(ApplicationContext.class);
+        GeoWebCacheExtensions gse = new GeoWebCacheExtensions();
+        GeoWebCacheEnvironment genv = new GeoWebCacheEnvironment();
+        gse.setApplicationContext(appContext);
+
+        expect(appContext.getBeanNamesForType(GeoWebCacheEnvironment.class))
+                .andReturn(new String[] { "geoWebCacheEnvironment" });
+        expect(appContext.getBean("geoWebCacheEnvironment")).andReturn(genv).anyTimes();
+
+        expect(appContext.getBeanNamesForType(XMLConfiguration.class))
+                .andReturn(new String[] { "geoWebCacheXMLConfiguration" });
+        expect(appContext.getBean("geoWebCacheXMLConfiguration")).andReturn(xmlConfig).anyTimes();
+
+        replay(appContext);
+
+        List<GeoWebCacheEnvironment> extensions = GeoWebCacheExtensions
+                .extensions(GeoWebCacheEnvironment.class);
+        assertNotNull(extensions);
+        assertEquals(1, extensions.size());
+        assertTrue(extensions.contains(genv));
+        assertTrue(GeoWebCacheEnvironment.ALLOW_ENV_PARAMETRIZATION);
+
+        System.setProperty("TEST_ENV_PROPERTY", "H2");
+        JDBCConfiguration jdbcConfiguration = new JDBCConfiguration();
+        jdbcConfiguration.setDialect("${TEST_ENV_PROPERTY}");
+        File jdbcConfigurationFile = File.createTempFile("jdbcConfigurationFile", ".tmp",
+                tmpDir().dir());
+        jdbcConfiguration.store(jdbcConfiguration, jdbcConfigurationFile);
+
+        jdbcStorage.setApplicationContext(appContext);
+        JDBCConfiguration loadedConf = jdbcConfiguration.load(jdbcConfigurationFile);
+        when(jdbcStorage.getJDBCDiskQuotaConfig()).thenReturn(loadedConf);
 
         mediator = new GWC(gwcConfigPersister, storageBroker, tld, gridSetBroker, tileBreeder,
                 diskQuotaMonitor, owsDispatcher, catalog, catalog, storageFinder, jdbcStorage);
+        mediator.setApplicationContext(appContext);
 
-        xmlConfig = mock(XMLConfiguration.class);
         mediator = spy(mediator);
         when(mediator.getXmlConfiguration()).thenReturn(xmlConfig);
 
@@ -240,8 +302,8 @@ public class GWCTest {
         when(tld.getTileLayer(eq(tileLayer.getName()))).thenReturn(tileLayer);
         when(tld.getTileLayer(eq(tileLayerGroup.getName()))).thenReturn(tileLayerGroup);
 
-        when(tld.getLayerNames()).thenReturn(
-                ImmutableSet.of(tileLayer.getName(), tileLayerGroup.getName()));
+        when(tld.getLayerNames())
+                .thenReturn(ImmutableSet.of(tileLayer.getName(), tileLayerGroup.getName()));
         Iterable<TileLayer> tileLayers = ImmutableList.of((TileLayer) tileLayer,
                 (TileLayer) tileLayerGroup);
         when(tld.getLayerList()).thenReturn(tileLayers);
@@ -415,8 +477,8 @@ public class GWCTest {
         mediator.modifyGridSet(oldName, newGridset);
 
         verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayer.getName()), eq(oldName));
-        verify(storageBroker, times(1))
-                .deleteByGridSetId(eq(tileLayerGroup.getName()), eq(oldName));
+        verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayerGroup.getName()),
+                eq(oldName));
     }
 
     @Test
@@ -455,13 +517,13 @@ public class GWCTest {
         verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayerGroup.getName()),
                 eq("EPSG:4326"));
 
-        verify(storageBroker, never())
-                .deleteByGridSetId(eq(tileLayer.getName()), eq("EPSG:900913"));
+        verify(storageBroker, never()).deleteByGridSetId(eq(tileLayer.getName()),
+                eq("EPSG:900913"));
         verify(storageBroker, never()).deleteByGridSetId(eq(tileLayer.getName()), eq("My4326"));
         verify(storageBroker, never()).deleteByGridSetId(eq(tileLayerGroup.getName()),
                 eq("EPSG:900913"));
-        verify(storageBroker, never())
-                .deleteByGridSetId(eq(tileLayerGroup.getName()), eq("My4326"));
+        verify(storageBroker, never()).deleteByGridSetId(eq(tileLayerGroup.getName()),
+                eq("My4326"));
 
         verify(tld, times(1)).modify(same(tileLayer));
         verify(tld, times(1)).modify(same(tileLayerGroup));
@@ -523,7 +585,7 @@ public class GWCTest {
             assertTrue(true);
         }
 
-        LayerInfo layer2 = mockLayer("layer2", new String[]{}, PublishedType.RASTER);
+        LayerInfo layer2 = mockLayer("layer2", new String[] {}, PublishedType.RASTER);
         LayerGroupInfo group2 = mockGroup("group2", layer, layer2);
 
         when(catalog.getLayerByName(eq(tileLayerName(layer2)))).thenReturn(layer2);
@@ -566,8 +628,8 @@ public class GWCTest {
     @Test
     public void testDeleteCacheByGridSetId() throws Exception {
 
-        when(storageBroker.deleteByGridSetId(eq("layer"), eq("gset1"))).thenThrow(
-                new StorageException("fake"));
+        when(storageBroker.deleteByGridSetId(eq("layer"), eq("gset1")))
+                .thenThrow(new StorageException("fake"));
 
         try {
             mediator.deleteCacheByGridSetId("layer", "gset1");
@@ -596,15 +658,15 @@ public class GWCTest {
     @Test
     public void testTruncateLayerFully() throws Exception {
 
-        when(tld.getTileLayer(eq(tileLayerGroup.getName()))).thenThrow(
-                new GeoWebCacheException("fake"));
+        when(tld.getTileLayer(eq(tileLayerGroup.getName())))
+                .thenThrow(new GeoWebCacheException("fake"));
 
         mediator.truncate(tileLayerGroup.getName());
         verify(storageBroker, never()).deleteByGridSetId(anyString(), anyString());
 
         mediator.truncate(tileLayer.getName());
-        verify(storageBroker, times(tileLayer.getGridSubsets().size())).deleteByGridSetId(
-                anyString(), anyString());
+        verify(storageBroker, times(tileLayer.getGridSubsets().size()))
+                .deleteByGridSetId(anyString(), anyString());
 
     }
 
@@ -648,7 +710,7 @@ public class GWCTest {
 
         int numGridsets = tileLayer.getGridSubsets().size();
         int numFormats = tileLayer.getMimeTypes().size();
-        int numStyles = 1/* default */+ tileLayer.getInfo().cachedStyles().size();
+        int numStyles = 1/* default */ + tileLayer.getInfo().cachedStyles().size();
         final int expected = numGridsets * numFormats * numStyles;
         verify(tileBreeder, times(expected)).dispatchTasks(any(GWCTask[].class));
 
@@ -801,8 +863,8 @@ public class GWCTest {
         assertDispatchMismatch(request, "more than one layer requested");
 
         rawKvp.put("layers", "SomeNonCachedLayer");
-        when(tld.getTileLayer(eq("SomeNonCachedLayer"))).thenThrow(
-                new GeoWebCacheException("layer not found"));
+        when(tld.getTileLayer(eq("SomeNonCachedLayer")))
+                .thenThrow(new GeoWebCacheException("layer not found"));
         assertDispatchMismatch(request, "not a tile layer");
 
         rawKvp.put("layers", tileLayer.getName());
@@ -914,8 +976,8 @@ public class GWCTest {
         assertDispatchMismatch(request, "no parameter filter exists for TIME");
         request.setTime(Collections.emptyList());
 
-        List<Map<String, String>> viewParams = ImmutableList.of((Map<String, String>) ImmutableMap
-                .of("paramKey", "paramVal"));
+        List<Map<String, String>> viewParams = ImmutableList
+                .of((Map<String, String>) ImmutableMap.of("paramKey", "paramVal"));
         request.setViewParams(viewParams);
         assertDispatchMismatch(request, "no parameter filter exists for VIEWPARAMS");
         request.setViewParams(null);
@@ -1061,9 +1123,8 @@ public class GWCTest {
 
         assertEquals(expectedGridset, tileRequest.getGridSetId());
         assertEquals("image/png", tileRequest.getMimeType().getMimeType());
-        assertTrue(
-                "Expected " + Arrays.toString(tileIndex) + " got "
-                        + Arrays.toString(tileRequest.getTileIndex()),
+        assertTrue("Expected " + Arrays.toString(tileIndex) + " got "
+                + Arrays.toString(tileRequest.getTileIndex()),
 
                 Arrays.equals(tileIndex, tileRequest.getTileIndex()));
     }
@@ -1182,7 +1243,8 @@ public class GWCTest {
         Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg",
                 "image/gif");
 
-        SetView<String> formatsWithUtfGrid = union(defaultFormats, Collections.singleton("application/json;type=utfgrid"));
+        SetView<String> formatsWithUtfGrid = union(defaultFormats,
+                Collections.singleton("application/json;type=utfgrid"));
         assertEquals(formatsWithUtfGrid, GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
         assertEquals(formatsWithUtfGrid, GWC.getAdvertisedCachedFormats(PublishedType.REMOTE));
 
@@ -1208,7 +1270,8 @@ public class GWCTest {
         }
 
         // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
-        Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg", "image/gif");
+        Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg",
+                "image/gif");
 
         // see src/test/resources/org/geoserver/gwc/advertised_formats.properties
         Set<String> expectedVector = union(defaultFormats,
@@ -1226,68 +1289,78 @@ public class GWCTest {
 
         assertEquals(expectedGroup, GWC.getAdvertisedCachedFormats(PublishedType.GROUP, urls));
     }
-    
+
     @Test
-    public void testSetBlobStoresNull() throws ConfigurationException{
+    public void testSetBlobStoresNull() throws ConfigurationException {
         expected.expect(NullPointerException.class);
         expected.expectMessage("stores is null");
         mediator.setBlobStores(null);
     }
 
     @Test
-    public void testSetBlobStoresWrapsStorageException() throws Exception{
-        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig>of());
+    public void testSetBlobStoresWrapsStorageException() throws Exception {
+        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig> of());
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
-        
+
         StorageException se = new StorageException("expected");
         doThrow(se).when(composite).setBlobStores(any(Iterable.class));
-        
+
         expected.expect(ConfigurationException.class);
         expected.expectMessage("Error connecting to BlobStore");
-        mediator.setBlobStores(ImmutableList.<BlobStoreConfig>of());
+        mediator.setBlobStores(ImmutableList.<BlobStoreConfig> of());
     }
 
     @Test
-    public void testSetBlobStoresSavesConfig() throws Exception{
-        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig>of());
+    public void testSetBlobStoresSavesConfig() throws Exception {
+        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig> of());
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
 
-        List<BlobStoreConfig> configList = Lists.newArrayList(mock(BlobStoreConfig.class), mock(BlobStoreConfig.class));
+        List<BlobStoreConfig> configList = Lists.newArrayList(mock(BlobStoreConfig.class),
+                mock(BlobStoreConfig.class));
         when(xmlConfig.getBlobStores()).thenReturn(configList);
-        
+
         BlobStoreConfig config = new FileBlobStoreConfig();
-        List<BlobStoreConfig> newStores = ImmutableList.<BlobStoreConfig>of(config);
+        List<BlobStoreConfig> newStores = ImmutableList.<BlobStoreConfig> of(config);
         mediator.setBlobStores(newStores);
-        
+
         verify(composite, times(1)).setBlobStores(same(newStores));
         verify(xmlConfig, times(1)).save();
         assertEquals(newStores, configList);
     }
 
     @Test
-    public void testSetBlobStoresRestoresRuntimeStoresOnSaveFailure() throws Exception{
-        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig>of());
+    public void testSetBlobStoresRestoresRuntimeStoresOnSaveFailure() throws Exception {
+        when(xmlConfig.getBlobStores()).thenReturn(ImmutableList.<BlobStoreConfig> of());
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
 
         doThrow(new IOException("expected")).when(xmlConfig).save();
-        
-        List<BlobStoreConfig> oldStores = Lists.newArrayList(mock(BlobStoreConfig.class), mock(BlobStoreConfig.class));
+
+        List<BlobStoreConfig> oldStores = Lists.newArrayList(mock(BlobStoreConfig.class),
+                mock(BlobStoreConfig.class));
         when(xmlConfig.getBlobStores()).thenReturn(oldStores);
-        
+
         BlobStoreConfig config = new FileBlobStoreConfig();
-        List<BlobStoreConfig> newStores = ImmutableList.<BlobStoreConfig>of(config);
+        List<BlobStoreConfig> newStores = ImmutableList.<BlobStoreConfig> of(config);
         try {
             mediator.setBlobStores(newStores);
             fail("Expected ConfigurationException");
         } catch (ConfigurationException e) {
             assertTrue(e.getMessage().contains("Error saving config"));
         }
-        
+
         verify(xmlConfig, times(1)).save();
         verify(composite, times(1)).setBlobStores(same(newStores));
         verify(composite, times(1)).setBlobStores(eq(oldStores));
+    }
+
+    @Test
+    public void testGeoServerEnvParametrization() throws Exception {
+        if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            assertTrue("${TEST_ENV_PROPERTY}".equals(jdbcStorage.getJDBCDiskQuotaConfig().getDialect()));
+            assertTrue("H2".equals(jdbcStorage.getJDBCDiskQuotaConfig().clone(true).getDialect()));
+        }
     }
 }

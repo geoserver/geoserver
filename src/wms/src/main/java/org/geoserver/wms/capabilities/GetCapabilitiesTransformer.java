@@ -57,6 +57,7 @@ import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.sld.GetStylesResponse;
+import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilities;
 import org.geoserver.wms.GetCapabilitiesRequest;
@@ -82,11 +83,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
-import sun.security.action.GetBooleanAction;
-
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
-import org.geoserver.wfs.json.JSONType;
 
 /**
  * Geotools xml framework based encoder for a Capabilities WMS 1.1.1 document.
@@ -308,19 +306,20 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * Encodes the service metadata section of a WMS capabilities document.
          */
         private void handleService() {
+            WMSInfo expandedService = (WMSInfo) this.serviceInfo.clone(true);
             start("Service");
 
             element("Name", "OGC:WMS");
-            element("Title", serviceInfo.getTitle());
-            element("Abstract", serviceInfo.getAbstract());
+            element("Title", expandedService.getTitle());
+            element("Abstract", expandedService.getAbstract());
 
-            handleKeywordList(serviceInfo.getKeywords());
+            handleKeywordList(expandedService.getKeywords());
 
             AttributesImpl orAtts = new AttributesImpl();
             orAtts.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
             orAtts.addAttribute(XLINK_NS, "xlink:type", "xlink:type", "", "simple");
             
-            String onlineResource = serviceInfo.getOnlineResource();
+            String onlineResource = expandedService.getOnlineResource();
             if (onlineResource == null || onlineResource.trim().length() == 0) {
                 String requestBaseUrl = request.getBaseUrl();
                 onlineResource = buildURL(requestBaseUrl, null, null, URLType.SERVICE);
@@ -339,9 +338,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             ContactInfo contact = geoServer.getSettings().getContact();
             handleContactInfo(contact);
 
-            String fees = serviceInfo.getFees();
+            String fees = expandedService.getFees();
             element("Fees", fees == null ? "none" : fees);
-            String constraints = serviceInfo.getAccessConstraints();
+            String constraints = expandedService.getAccessConstraints();
             element("AccessConstraints", constraints == null ? "none" : constraints);
             end("Service");
         }
@@ -682,11 +681,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 layers = wmsConfig.getLayers();
             }
 
-            //WMSInfo serviceInfo = wmsConfig.getServiceInfo();
-            element("Title", serviceInfo.getTitle());
-            element("Abstract", serviceInfo.getAbstract());
+            WMSInfo expandedService = (WMSInfo) this.serviceInfo.clone(true);
+            element("Title", expandedService.getTitle());
+            element("Abstract", expandedService.getAbstract());
 
-            List<String> srsList = serviceInfo.getSRS();
+            List<String> srsList = expandedService.getSRS();
             Set<String> srs = new HashSet<String>();
             if (srsList != null) {
                 srs.addAll(srsList);
@@ -699,10 +698,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             handleRootBbox(layers);
 
             // handle AuthorityURL
-            handleAuthorityURL(serviceInfo.getAuthorityURLs());
+            handleAuthorityURL(expandedService.getAuthorityURLs());
             
             // handle identifiers
-            handleLayerIdentifiers(serviceInfo.getIdentifiers());
+            handleLayerIdentifiers(expandedService.getIdentifiers());
 
             Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
             

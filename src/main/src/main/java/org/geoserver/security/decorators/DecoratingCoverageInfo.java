@@ -21,6 +21,7 @@ import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.factory.Hints;
@@ -313,5 +314,10 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
     @Override
     public void setNativeCoverageName(String nativeCoverageName) {
         delegate.setNativeCoverageName(nativeCoverageName);
+    }
+
+    @Override
+    public ResourceInfo clone(boolean allowEnvParametrization) {
+        return delegate.clone(allowEnvParametrization);
     }
 }

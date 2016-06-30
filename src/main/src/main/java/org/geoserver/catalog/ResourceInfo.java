@@ -427,4 +427,10 @@ public interface ResourceInfo extends CatalogInfo {
      * @param advertised
      */
     void setAdvertised(boolean advertised);
+
+    /**
+     * @param allowEnvParametrization
+     * @return
+     */
+    ResourceInfo clone(boolean allowEnvParametrization);
 }

@@ -56,9 +56,9 @@ import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
 import org.geoserver.ows.Dispatcher;
-import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
+import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.security.AccessLimits;
@@ -79,6 +79,7 @@ import org.geotools.ows.ServiceException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.GeoWebCacheEnvironment;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
 import org.geowebcache.config.BlobStoreConfig;
@@ -216,6 +217,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     
     private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
     
+    private GeoWebCacheEnvironment gwcEnvironment;
+    
+    final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
     
     public GWC(final GWCConfigPersister gwcConfigPersister, final StorageBroker sb,
             final TileLayerDispatcher tld, final GridSetBroker gridSetBroker,
@@ -319,6 +323,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     public GWCConfig getConfig() {
+        if (gsEnvironment != null && gsEnvironment.isStale()) {
+            syncEnvironment();
+        }
         return gwcConfigPersister.getConfig();
     }
 
@@ -594,6 +601,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @throws InterruptedException 
      */
     void reload() {
+        if (gsEnvironment != null && gsEnvironment.isStale()) {
+            syncEnvironment();
+        }
+        
         final Set<String> currLayerNames = new HashSet<String>(getTileLayerNames());
         try {
             tld.reInit();
@@ -1086,6 +1097,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      *         disabled (i.e. through the {@code GWC_DISKQUOTA_DISABLED=true} environment variable)
      */
     public DiskQuotaConfig getDiskQuotaConfig() {
+        if (gsEnvironment != null && gsEnvironment.isStale()) {
+            syncEnvironment();
+        }
+        
         if (!isDiskQuotaAvailable()) {
             return null;
         }
@@ -1098,6 +1113,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     public void saveConfig(GWCConfig gwcConfig) throws IOException {
+        if (gsEnvironment != null && gsEnvironment.isStale()) {
+            syncEnvironment();
+        }
+        
         gwcConfigPersister.save(gwcConfig);
         
         // make sure we switch to the lock provider just configured
@@ -1105,6 +1124,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     public void saveDiskQuotaConfig(DiskQuotaConfig config, JDBCConfiguration jdbcConfig) throws ConfigurationException, IOException, InterruptedException {
+        if (gsEnvironment != null && gsEnvironment.isStale()) {
+            syncEnvironment();
+        }
+        
         // save the configuration
         checkArgument(isDiskQuotaAvailable(), "DiskQuota is not enabled");
         DiskQuotaMonitor monitor = getDiskQuotaMonitor();
@@ -2185,6 +2208,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     public JDBCConfiguration getJDBCDiskQuotaConfig() throws IOException, org.geowebcache.config.ConfigurationException {
+        if (gsEnvironment != null && gsEnvironment.isStale()) {
+            syncEnvironment();
+        }
+        
         return jdbcConfigurationStorage.getJDBCDiskQuotaConfig();
     }
     
@@ -2196,12 +2223,38 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @throws ConfigurationException
      */
     public void testQuotaConfiguration(JDBCConfiguration jdbcConfiguration) throws ConfigurationException, IOException {
+        if (gsEnvironment != null && gsEnvironment.isStale()) {
+            syncEnvironment();
+        }
+        
         jdbcConfigurationStorage.testQuotaConfiguration(jdbcConfiguration);
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+        
+        this.gwcEnvironment = GeoServerExtensions.bean(GeoWebCacheEnvironment.class);
+        
+        syncEnvironment();
+    }
+
+    /**
+     * @throws IllegalArgumentException
+     */
+    private void syncEnvironment() throws IllegalArgumentException {
+        if (gwcEnvironment != null && gsEnvironment != null) {
+            if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION && gsEnvironment.getProps() != null) {
+                Properties gwcProps = gwcEnvironment.getProps();
+                
+                if (gwcProps == null) {
+                    gwcProps = new Properties();
+                }
+                gwcProps.putAll(gsEnvironment.getProps());
+                
+                gwcEnvironment.setProps(gwcProps);
+            }
+        }
     }
     
     /**
@@ -2414,5 +2467,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         checkNotNull(compositeBlobStore);
         return compositeBlobStore;
     }
-    
+
+    /**
+     * @return the gwcEnvironment
+     */
+    public GeoWebCacheEnvironment getGwcEnvironment() {
+        return gwcEnvironment;
+    }
+
 }

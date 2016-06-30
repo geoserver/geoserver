@@ -6,7 +6,9 @@
 package org.geoserver.web.data.store;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.apache.wicket.Component;
@@ -29,6 +31,8 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -278,6 +282,10 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
     }
 
     protected void clone(final DataStoreInfo source, DataStoreInfo target) {
+        this.clone(source, target, true);
+    }
+    
+    protected void clone(final DataStoreInfo source, DataStoreInfo target, boolean allowEnvParametrization) {
         target.setDescription(source.getDescription());
         target.setEnabled(source.isEnabled());
         target.setName(source.getName());
@@ -285,7 +293,24 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
         target.setType(source.getType());
 
         target.getConnectionParameters().clear();
-        target.getConnectionParameters().putAll(source.getConnectionParameters());
+        
+        if (!allowEnvParametrization) {
+            target.getConnectionParameters().putAll(source.getConnectionParameters());
+        } else {
+            // Resolve GeoServer Environment placeholders
+            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+            
+            for (Entry<String, Serializable> param : source.getConnectionParameters().entrySet()) {
+                String key = param.getKey();
+                Object value = param.getValue();
+                
+                if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                    value = gsEnvironment.resolveValue(value);
+                }
+                
+                target.getConnectionParameters().put(key, (Serializable) value);
+            }
+        }
     }
 
     @Override

@@ -46,6 +46,9 @@
     
     <!-- extensions -->
     <bean id="extensions" class="org.geoserver.platform.GeoServerExtensions"/>
+
+    <!-- environments -->
+    <bean id="environments" class="org.geoserver.platform.GeoServerEnvironment" depends-on="extensions"/>
     
     <!-- the shared filter factory -->
     <bean id="filterFactory" class="org.geotools.filter.FilterFactoryImpl"/>

@@ -55,15 +55,21 @@ public class ReaderDimensionsAccessor {
 
         @Override
         public int compare(Object o1, Object o2) {
-            if(o1 instanceof Date && o2 instanceof Date) {
-                return ((Date) o1).compareTo((Date) o2);
-            } else if(o1 instanceof DateRange && o2 instanceof DateRange) {
-                return ((DateRange) o1).getMinValue().compareTo(((DateRange) o2).getMinValue());
-            } else {
-                throw new IllegalArgumentException("Unexpected, values to be ordered have to " +
-                        "be either all Date objects, or all DateRange objects, instead they are: " 
-                        + o1 + ", " + o2);
-            }
+            // the domain can be a mix of dates and ranges
+            if(o1 instanceof Date) {
+                if(o1 instanceof DateRange) {
+                    return ((Date) o1).compareTo(((DateRange) o2).getMinValue());
+                } else {
+                    return ((Date) o1).compareTo((Date) o2);
+                }
+            } else if(o1 instanceof DateRange) {
+                if(o2 instanceof Date) {
+                    return ((DateRange) o1).getMinValue().compareTo((Date) o2);
+                } else {
+                    return ((DateRange) o1).getMinValue().compareTo(((DateRange) o2).getMinValue());
+                }
+            } 
+            throw new IllegalArgumentException("Unxpected object type found, was expecting date or date range but found " + o1 + " and " + o2);
         }
         
     };
@@ -75,14 +81,20 @@ public class ReaderDimensionsAccessor {
 
         @Override
         public int compare(Object o1, Object o2) {
-            if(o1 instanceof Double && o2 instanceof Double) {
-                return ((Double) o1).compareTo((Double) o2);
-            } else if(o1 instanceof NumberRange && o2 instanceof NumberRange) {
-                return ((NumberRange<Double>) o1).getMinValue().compareTo(((NumberRange<Double>) o2).getMinValue());
-            } else {
-                throw new IllegalArgumentException("Unexpected, values to be ordered have to " +
-                        "be either all Double objects, or all NumberRange objects");
-            }
+            if(o1 instanceof Double) {
+                if(o2 instanceof Double) {
+                    return ((Double) o1).compareTo((Double) o2);
+                } else if(o2 instanceof NumberRange) {
+                    return ((Double) o1).compareTo(((NumberRange<Double>) o2).getMinValue());
+                }
+            } else if(o1 instanceof NumberRange) {
+                if(o2 instanceof NumberRange) {
+                    return ((NumberRange<Double>) o1).getMinValue().compareTo(((NumberRange<Double>) o2).getMinValue());
+                } else {
+                    return ((NumberRange<Double>) o1).getMinValue().compareTo((Double) o2);
+                }
+            } 
+            throw new IllegalArgumentException("Unxpected object type found, was expecting double or range of doubles but found " + o1 + " and " + o2);
         }
         
     };
@@ -147,9 +159,15 @@ public class ReaderDimensionsAccessor {
     private Object parseTimeOrRange(SimpleDateFormat df, String timeOrRange) throws ParseException {
         if(timeOrRange.contains("/")) {
             String[] splitted = timeOrRange.split("/");
-            Date start = df.parse(splitted[0]);
-            Date end = df.parse(splitted[1]);
-            return new DateRange(start, end);
+            final String strStart = splitted[0];
+            final String strEnd = splitted[1];
+            if(strStart != null && strStart.equals(strEnd)) {
+                return df.parse(strStart);
+            } else {
+                Date start = df.parse(strStart);
+                Date end = df.parse(strEnd);
+                return new DateRange(start, end);
+            }
         } else {
             return df.parse(timeOrRange);
         }
@@ -163,8 +181,13 @@ public class ReaderDimensionsAccessor {
     private Object parseNumberOrRange(String val) {
         if(val.contains("/")) {
             String[] splitted = val.split("/");
-            double start = Double.parseDouble(splitted[0]);
-            double end = Double.parseDouble(splitted[1]);
+            final String strStart = splitted[0];
+            final String strEnd = splitted[1];
+            if(strStart.equals(strEnd)) {
+                return Double.parseDouble(strStart);
+            }
+            double start = Double.parseDouble(strStart);
+            double end = Double.parseDouble(strEnd);
             return new NumberRange<Double>(Double.class, start, end);
         } else {
             return Double.parseDouble(val);

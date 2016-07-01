@@ -25,7 +25,9 @@ import org.eclipse.emf.common.util.EList;
 import org.geoserver.csw.kvp.GetCapabilitiesKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.ows.xml.v1_0.OWS;
+import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.test.RunTestSetup;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.filter.v1_1.OGC;
@@ -203,5 +205,30 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
             csw.setCiteCompliant(false);
             getGeoServer().save(csw);
         }
+    }
+    
+    @Test public void testGeoServerEnvParametrization() throws Exception {
+        CSWInfo csw = getGeoServer().getService(CSWInfo.class);
+        try {
+            if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                System.setProperty("TEST_SYS_PROPERTY", "Test Property Set");
+                csw.setAbstract("${TEST_SYS_PROPERTY}");
+                getGeoServer().save(csw);
+                
+                Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities");
+                //print(dom);
+                checkValidationErrors(dom);
+                
+                // basic check on xpath node
+                assertXpathEvaluatesTo("1", "count(/csw:Capabilities)", dom);
+
+                assertEquals("1", xpath.evaluate("count(//ows:ServiceIdentification/ows:Abstract)", dom));
+                assertEquals("Test Property Set", xpath.evaluate("//ows:ServiceIdentification/ows:Abstract", dom));
+            }
+        } finally {
+            csw.setCiteCompliant(false);
+            csw.setAbstract(null);
+            getGeoServer().save(csw);
+        }        
     }
 }

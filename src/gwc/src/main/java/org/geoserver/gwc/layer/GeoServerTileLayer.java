@@ -361,6 +361,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
         ResourceInfo resourceInfo = getResourceInfo();
         if (resourceInfo != null) {
+            resourceInfo = resourceInfo.clone(true);
             title = resourceInfo.getTitle();
             description = resourceInfo.getAbstract();
             keywords = new ArrayList<String>();

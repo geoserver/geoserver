@@ -238,4 +238,10 @@ public interface ServiceInfo extends Info {
     
     Map<Object,Object> getClientProperties();
 
+    /**
+     * 
+     * @param source
+     * @param allowEnvParametrization
+     */
+    public ServiceInfo clone(boolean allowEnvParametrization);
 }

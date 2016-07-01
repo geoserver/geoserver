@@ -5,22 +5,24 @@
  */
 package org.geoserver.wcs;
 
+import static junit.framework.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.geoserver.data.test.MockData.*;
-import static org.junit.Assert.*;
+import static org.geoserver.data.test.MockData.TASMANIA_DEM;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -294,5 +296,29 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         String base = "//wcs:CoverageOfferingBrief[wcs:name='sf:timeranges']//wcs:lonLatEnvelope";
         assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", base + "/gml:timePosition[1]", dom);
         assertXpathEvaluatesTo("2008-11-07T00:00:00.000Z", base + "/gml:timePosition[2]", dom);
+    }
+    
+    @Test public void testGeoServerEnvParametrization() throws Exception {
+        WCSInfo wcs = getGeoServer().getService(WCSInfo.class);
+        try {
+            if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                System.setProperty("TEST_SYS_PROPERTY", "Test Property Set");
+                wcs.setAbstract("${TEST_SYS_PROPERTY}");
+                getGeoServer().save(wcs);
+                
+                Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities");
+                //print(dom);
+                
+                // basic check on xpath node
+                assertXpathEvaluatesTo("1", "count(/wcs:WCS_Capabilities)", dom);
+
+                assertEquals("1", xpath.evaluate("count(//wcs:Service/wcs:description)", dom));
+                assertEquals("Test Property Set", xpath.evaluate("//wcs:Service/wcs:description", dom));
+            }
+        } finally {
+            wcs.setCiteCompliant(false);
+            wcs.setAbstract(null);
+            getGeoServer().save(wcs);
+        }        
     }
 }

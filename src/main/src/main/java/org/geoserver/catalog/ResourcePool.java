@@ -56,6 +56,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.feature.retype.RetypingFeatureSource;
+import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
@@ -495,13 +496,15 @@ public class ResourcePool {
      */
     public DataAccessFactory getDataStoreFactory( DataStoreInfo info ) throws IOException {
         DataAccessFactory factory = null;
-    
+        
+        DataStoreInfo expandedStore = clone(info, true);
+        
         if ( info.getType() != null ) {
-            factory = DataStoreUtils.aquireFactory( info.getType() );    
+            factory = DataStoreUtils.aquireFactory( expandedStore.getType() );    
         }
-    
-        if ( factory == null && info.getConnectionParameters() != null ) {
-            Map<String, Serializable> params = getParams( info.getConnectionParameters(), catalog.getResourceLoader() );
+
+        if ( factory == null && expandedStore.getConnectionParameters() != null ) {
+            Map<String, Serializable> params = getParams( expandedStore.getConnectionParameters(), catalog.getResourceLoader() );
             factory = DataStoreUtils.aquireFactory( params);    
         }
    
@@ -519,6 +522,9 @@ public class ResourcePool {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public DataAccess<? extends FeatureType, ? extends Feature> getDataStore( DataStoreInfo info ) throws IOException {
+        
+        DataStoreInfo expandedStore = clone(info, true);
+        
         DataAccess<? extends FeatureType, ? extends Feature> dataStore = null;
         try {
             String id = info.getId();
@@ -528,7 +534,7 @@ public class ResourcePool {
                     dataStore = dataStoreCache.get( id );
                     if ( dataStore == null ) {
                         //create data store
-                        Map<String, Serializable> connectionParameters = info.getConnectionParameters();
+                        Map<String, Serializable> connectionParameters = expandedStore.getConnectionParameters();
                         
                         // call this method to execute the hack which recognizes 
                         // urls which are relative to the data directory
@@ -655,9 +661,15 @@ public class ResourcePool {
         @SuppressWarnings("unchecked")
         Map<K,V> params = Collections.synchronizedMap(new HashMap<K,V>(m));
         
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+        
         for (Entry<K,V> entry : params.entrySet()) {
             String key = (String) entry.getKey();
             Object value = entry.getValue();
+            
+            if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                value = gsEnvironment.resolveValue(value);
+            }
 
             //TODO: this code is a pretty big hack, using the name to 
             // determine if the key is a url, could be named something else
@@ -1382,6 +1394,8 @@ public class ResourcePool {
     private GridCoverageReader getGridCoverageReader(CoverageStoreInfo info, CoverageInfo coverageInfo, String coverageName, Hints hints) 
         throws IOException {
         
+        CoverageStoreInfo expandedStore = clone(info, true);
+        
         final AbstractGridFormat gridFormat = info.getFormat();
         if(gridFormat == null) {
             throw new IOException("Could not find the raster plugin for format " + info.getType());
@@ -1430,7 +1444,7 @@ public class ResourcePool {
                     // Getting coverage reader using the format and the real path.
                     //
                     // /////////////////////////////////////////////////////////
-                    final String url = info.getURL();
+                    final String url = expandedStore.getURL();
                     GeoServerResourceLoader loader = catalog.getResourceLoader();
                     final File obj = loader.url(url);
 
@@ -1640,6 +1654,9 @@ public class ResourcePool {
      * @throws IOException
      */
     public WebMapServer getWebMapServer(WMSStoreInfo info) throws IOException {
+        
+        WMSStoreInfo expandedStore = clone(info, true);
+        
         try {
             String id = info.getId();
             WebMapServer wms = wmsCache.get(id);
@@ -1647,8 +1664,8 @@ public class ResourcePool {
                 synchronized (wmsCache) {
                     wms = wmsCache.get(id);
                     if (wms == null) {
-                        HTTPClient client = getHTTPClient(info);
-                        String capabilitiesURL = info.getCapabilitiesURL();
+                        HTTPClient client = getHTTPClient(expandedStore);
+                        String capabilitiesURL = expandedStore.getCapabilitiesURL();
                         URL serverURL = new URL(capabilitiesURL);
                         wms = new WebMapServer(serverURL, client);
                         
@@ -2323,5 +2340,118 @@ public class ResourcePool {
         ContentFeatureSource featureSource;
         featureSource = contentDataStore.getFeatureSource(nativeName);
         featureSource.getState().flush();
+    }
+    
+    public DataStoreInfo clone(final DataStoreInfo source, boolean allowEnvParametrization) {
+        DataStoreInfo target = catalog.getFactory().createDataStore();
+        target.setEnabled(source.isEnabled());
+        target.setName(source.getName());
+        target.setDescription(source.getDescription());
+        target.setWorkspace(source.getWorkspace());
+        target.setType(source.getType());
+
+        target.getConnectionParameters().clear();
+        
+        if (!allowEnvParametrization) {
+            target.getConnectionParameters().putAll(source.getConnectionParameters());
+        } else {
+            // Resolve GeoServer Environment placeholders
+            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+
+            if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                target.setDescription((String) gsEnvironment.resolveValue(source.getDescription()));
+            }
+
+            if(source != null && source.getConnectionParameters() != null) {
+                for (Entry<String, Serializable> param : source.getConnectionParameters().entrySet()) {
+                    String key = param.getKey();
+                    Object value = param.getValue();
+                    
+                    if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                        value = gsEnvironment.resolveValue(value);
+                    }
+                    
+                    target.getConnectionParameters().put(key, (Serializable) value);
+                }
+            }
+        }
+        
+        return target;
+    }
+
+    public CoverageStoreInfo clone(final CoverageStoreInfo source, boolean allowEnvParametrization) {
+        CoverageStoreInfo target = catalog.getFactory().createCoverageStore();
+        target.setDescription(source.getDescription());
+        target.setEnabled(source.isEnabled());
+        target.setName(source.getName());
+        target.setType(source.getType());
+        target.setWorkspace(source.getWorkspace());
+        
+        target.getConnectionParameters().clear();
+        
+        if (!allowEnvParametrization) {
+            target.setURL(source.getURL());
+            target.getConnectionParameters().putAll(source.getConnectionParameters());
+        } else {
+            // Resolve GeoServer Environment placeholders
+            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+
+            if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                target.setURL((String) gsEnvironment.resolveValue(source.getURL()));
+            } else {
+                target.setURL(source.getURL());
+            }
+
+            for (Entry<String, Serializable> param : source.getConnectionParameters().entrySet()) {
+                String key = param.getKey();
+                Object value = param.getValue();
+                
+                if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                    value = gsEnvironment.resolveValue(value);
+                }
+                
+                target.getConnectionParameters().put(key, (Serializable) value);
+            }
+        }
+        
+        return target;
+    }
+    
+    public WMSStoreInfo clone(final WMSStoreInfo source, boolean allowEnvParametrization) {
+        WMSStoreInfo target = catalog.getFactory().createWebMapServer();
+        target.setDescription(source.getDescription());
+        target.setEnabled(source.isEnabled());
+        target.setName(source.getName());
+        target.setType(source.getType());
+        target.setWorkspace(source.getWorkspace());
+
+        setConnectionParameters(source, target);            
+
+        if (allowEnvParametrization) {
+            // Resolve GeoServer Environment placeholders
+            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+            
+            if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                target.setCapabilitiesURL((String) gsEnvironment.resolveValue(source.getCapabilitiesURL()));
+                target.setUsername((String) gsEnvironment.resolveValue(source.getUsername()));
+                target.setPassword((String) gsEnvironment.resolveValue(source.getPassword()));
+            }
+        }
+        
+        return target;
+    }
+    
+    /**
+     * @param source
+     * @param target
+     */
+    private void setConnectionParameters(final WMSStoreInfo source, WMSStoreInfo target) {
+        target.setCapabilitiesURL(source.getCapabilitiesURL());
+        target.setUsername(source.getUsername());
+        target.setPassword(source.getPassword());
+        target.setUseConnectionPooling(source.isUseConnectionPooling());
+        target.setMaxConnections(source.getMaxConnections());
+        target.setConnectTimeout(source.getConnectTimeout());
+        target.setReadTimeout(source.getReadTimeout());
     }
 }

@@ -11,7 +11,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.SerializationUtils;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataLinkInfo;
+import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -19,15 +22,17 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.util.Assert;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.geoserver.catalog.DataLinkInfo;
 
 /**
  * Default implementation of {@link ResourceInfo}.
@@ -376,38 +381,24 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((_abstract == null) ? 0 : _abstract.hashCode());
+        result = prime * result + ((getAbstract() == null) ? 0 : getAbstract().hashCode());
         result = prime * result + ((alias == null) ? 0 : alias.hashCode());
-        result = prime * result
-                + ((description == null) ? 0 : description.hashCode());
+        result = prime * result + ((getDescription() == null) ? 0 : getDescription().hashCode());
         result = prime * result + (enabled ? 1231 : 1237);
         result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((getKeywords() == null) ? 0 : getKeywords().hashCode());
+        result = prime * result + ((latLonBoundingBox == null) ? 0 : latLonBoundingBox.hashCode());
         result = prime * result
-                + ((keywords == null) ? 0 : keywords.hashCode());
-        result = prime
-                * result
-                + ((latLonBoundingBox == null) ? 0 : latLonBoundingBox
-                        .hashCode());
-        result = prime * result
-                + ((metadataLinks == null) ? 0 : metadataLinks.hashCode());
+                + ((getMetadataLinks() == null) ? 0 : getMetadataLinks().hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result
-                + ((namespace == null) ? 0 : namespace.hashCode());
-        result = prime
-                * result
-                + ((nativeBoundingBox == null) ? 0 : nativeBoundingBox
-                        .hashCode());
-        result = prime * result
-                + ((nativeCRS == null) ? 0 : nativeCRS.hashCode());
-        result = prime * result
-                + ((nativeName == null) ? 0 : nativeName.hashCode());
-        result = prime
-                * result
-                + ((projectionPolicy == null) ? 0 : projectionPolicy.hashCode());
+        result = prime * result + ((namespace == null) ? 0 : namespace.hashCode());
+        result = prime * result + ((nativeBoundingBox == null) ? 0 : nativeBoundingBox.hashCode());
+        result = prime * result + ((nativeCRS == null) ? 0 : nativeCRS.hashCode());
+        result = prime * result + ((nativeName == null) ? 0 : nativeName.hashCode());
+        result = prime * result + ((projectionPolicy == null) ? 0 : projectionPolicy.hashCode());
         result = prime * result + ((srs == null) ? 0 : srs.hashCode());
         result = prime * result + ((store == null) ? 0 : store.hashCode());
-        result = prime * result + ((title == null) ? 0 : title.hashCode());
+        result = prime * result + ((getTitle() == null) ? 0 : getTitle().hashCode());
         return result;
     }
 
@@ -421,20 +412,20 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
             return false;
         
         final ResourceInfo other = (ResourceInfo) obj;
-        if (_abstract == null) {
+        if (getAbstract() == null) {
             if (other.getAbstract() != null)
                 return false;
-        } else if (!_abstract.equals(other.getAbstract()))
+        } else if (!getAbstract().equals(other.getAbstract()))
             return false;
         if (alias == null) {
             if (other.getAlias() != null)
                 return false;
         } else if (!alias.equals(other.getAlias()))
             return false;
-        if (description == null) {
+        if (getDescription() == null) {
             if (other.getDescription() != null)
                 return false;
-        } else if (!description.equals(other.getDescription()))
+        } else if (!getDescription().equals(other.getDescription()))
             return false;
         if (enabled != other.isEnabled())
             return false;
@@ -443,20 +434,20 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
                 return false;
         } else if (!id.equals(other.getId()))
             return false;
-        if (keywords == null) {
+        if (getKeywords() == null) {
             if (other.getKeywords() != null)
                 return false;
-        } else if (!keywords.equals(other.getKeywords()))
+        } else if (!getKeywords().equals(other.getKeywords()))
             return false;
         if (latLonBoundingBox == null) {
             if (other.getLatLonBoundingBox() != null)
                 return false;
         } else if (!latLonBoundingBox.equals(other.getLatLonBoundingBox()))
             return false;
-        if (metadataLinks == null) {
+        if (getMetadataLinks() == null) {
             if (other.getMetadataLinks() != null)
                 return false;
-        } else if (!metadataLinks.equals(other.getMetadataLinks()))
+        } else if (!getMetadataLinks().equals(other.getMetadataLinks()))
             return false;
         if (name == null) {
             if (other.getName() != null)
@@ -498,11 +489,90 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
                 return false;
         } else if (!store.equals(other.getStore()))
             return false;
-        if (title == null) {
+        if (getTitle() == null) {
             if (other.getTitle() != null)
                 return false;
-        } else if (!title.equals(other.getTitle()))
+        } else if (!getTitle().equals(other.getTitle()))
             return false;
         return true;
+    }
+
+    @Override
+    public ResourceInfo clone(boolean allowEnvParametrization) {
+
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions
+                .bean(GeoServerEnvironment.class);
+
+        ResourceInfo target = (ResourceInfo) SerializationUtils.clone(this);
+
+        if (target != null) {
+            if (allowEnvParametrization && gsEnvironment != null
+                    && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                target.setName((String) gsEnvironment.resolveValue(name));
+                target.setTitle((String) gsEnvironment.resolveValue(title));
+                target.setDescription((String) gsEnvironment.resolveValue(description));
+                target.setAbstract((String) gsEnvironment.resolveValue(_abstract));
+            }
+
+            List<KeywordInfo> kws = null;
+            if (keywords != null) {
+                kws = new ArrayList<KeywordInfo>();
+                if (allowEnvParametrization && gsEnvironment != null
+                        && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                    for (KeywordInfo kw : keywords) {
+                        Keyword expandedKw = new Keyword((String) gsEnvironment.resolveValue(kw.getValue()));
+                        expandedKw.setLanguage((String) gsEnvironment.resolveValue(kw.getLanguage()));
+                        expandedKw.setVocabulary((String) gsEnvironment.resolveValue(kw.getVocabulary()));
+                        kws.add(expandedKw);
+                    }
+                } else {
+                    kws.addAll(keywords);
+                }
+            }
+
+            List<MetadataLinkInfo> mds = null;
+            if (metadataLinks != null) {
+                mds = new ArrayList<MetadataLinkInfo>();
+                if (allowEnvParametrization && gsEnvironment != null
+                        && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                    for (MetadataLinkInfo md : metadataLinks) {
+                        MetadataLinkInfo expandedMd = new MetadataLinkInfoImpl();
+                        expandedMd.setType((String) gsEnvironment.resolveValue(md.getType()));
+                        expandedMd.setContent((String) gsEnvironment.resolveValue(md.getContent()));
+                        expandedMd.setMetadataType((String) gsEnvironment.resolveValue(md.getMetadataType()));
+                        expandedMd.setAbout((String) gsEnvironment.resolveValue(md.getAbout()));
+                        mds.add(expandedMd);
+                    }
+                } else {
+                    mds.addAll(metadataLinks);
+                }
+            }
+
+            List<DataLinkInfo> dls = null;
+            if (dataLinks != null) {
+                dls = new ArrayList<DataLinkInfo>();
+                if (allowEnvParametrization && gsEnvironment != null
+                        && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                    for (DataLinkInfo dl : dataLinks) {
+                        DataLinkInfo expandedDl = new DataLinkInfoImpl();
+                        expandedDl.setType((String) gsEnvironment.resolveValue(dl.getType()));
+                        expandedDl.setContent((String) gsEnvironment.resolveValue(dl.getContent()));
+                        expandedDl.setAbout((String) gsEnvironment.resolveValue(dl.getAbout()));
+                        dls.add(expandedDl);
+                    }
+                } else {
+                    dls.addAll(dataLinks);
+                }
+            }
+
+            ((ResourceInfoImpl) target).setKeywords(kws);
+            ((ResourceInfoImpl) target).setMetadataLinks(mds);
+            ((ResourceInfoImpl) target).setDataLinks(dls);
+        }
+
+        target.setCatalog(catalog);
+        target.setStore(store);
+
+        return target;
     }
 }

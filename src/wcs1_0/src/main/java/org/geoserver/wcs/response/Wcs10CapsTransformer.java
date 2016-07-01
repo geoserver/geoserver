@@ -249,16 +249,17 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 attributes.addAttribute("", "version", "version", "", CUR_VERSION);
             }
             start("wcs:Service", attributes);
-            if (wcs.getMetadataLink() != null) {
-                handleMetadataLink(wcs.getMetadataLink(), "simple");
+            WCSInfo expandedService = (WCSInfo) wcs.clone(true);
+            if (expandedService.getMetadataLink() != null) {
+                handleMetadataLink(expandedService.getMetadataLink(), "simple");
             }
-            element("wcs:description", wcs.getAbstract());
-            element("wcs:name", wcs.getName());
-            element("wcs:label", wcs.getTitle());
-            handleKeywords(wcs.getKeywords());
+            element("wcs:description", expandedService.getAbstract());
+            element("wcs:name", expandedService.getName());
+            element("wcs:label", expandedService.getTitle());
+            handleKeywords(expandedService.getKeywords());
             handleContact();
 
-            String fees = wcs.getFees();
+            String fees = expandedService.getFees();
 
             if ((fees == null) || "".equals(fees)) {
                 fees = "NONE";
@@ -266,7 +267,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
             element("wcs:fees", fees);
 
-            String accessConstraints = wcs.getAccessConstraints();
+            String accessConstraints = expandedService.getAccessConstraints();
 
             if ((accessConstraints == null) || "".equals(accessConstraints)) {
                 accessConstraints = "NONE";

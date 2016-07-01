@@ -125,7 +125,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
                     
                     dqConfig.getGlobalQuota().setValue(chosenQuota.doubleValue(), chosenUnit);
                     try {
-                        gwc.saveDiskQuotaConfig(dqConfig, jdbcConfig);
+                        gwc.saveDiskQuotaConfig(dqConfig, jdbcConfig.clone(false));
                     } catch(Exception e) {
                         LOGGER.log(Level.SEVERE, "Failed to save the JDBC configuration", e);
                         error("Failure occurred while saving the JDBC configuration" 

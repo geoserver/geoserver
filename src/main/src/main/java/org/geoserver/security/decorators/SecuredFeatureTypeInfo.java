@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.security.AccessLevel;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.VectorAccessLimits;
@@ -110,6 +111,11 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
 
     public DataStoreInfo getStore() {
         return (DataStoreInfo) SecuredObjects.secure(delegate.getStore(), policy);
+    }
+
+    @Override
+    public ResourceInfo clone(boolean allowEnvParametrization) {
+        return delegate.clone(allowEnvParametrization);
     }
     
 }

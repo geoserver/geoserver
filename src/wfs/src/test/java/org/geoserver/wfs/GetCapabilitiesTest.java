@@ -5,10 +5,19 @@
  */
 package org.geoserver.wfs;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
+
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -19,6 +28,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.junit.Before;
 import org.junit.Test;
@@ -171,7 +181,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
     public void testTypeNames() throws Exception {
         // filter on an existing namespace
         Document doc = getAsDOM("wfs?service=WFS&version=1.0.0&request=getCapabilities");
-        print (doc);
+        //print (doc);
         Element e = doc.getDocumentElement();
         assertEquals("WFS_Capabilities", e.getLocalName());
 
@@ -242,6 +252,40 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         } finally {
             layer.setAdvertised(true);
             getCatalog().save(layer);
+        }
+    }
+    
+    @Test public void testGeoServerEnvParametrization() throws Exception {
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        
+        try {
+            if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                System.setProperty("TEST_SYS_PROPERTY", "Test Property Set");
+                wfs.setAbstract("${TEST_SYS_PROPERTY}");
+                getGeoServer().save(wfs);
+                
+                Document dom = getAsDOM("wfs?request=GetCapabilities");
+                //print(dom);
+                
+                // basic check on xpath node
+                Element e = dom.getDocumentElement();
+                assertEquals("WFS_Capabilities", e.getLocalName());
+
+                // init xmlunit
+                Map<String, String> namespaces = new HashMap<String, String>();
+                namespaces.put("wfs", "http://www.opengis.net/wfs");
+                namespaces.put("ows", "http://www.opengis.net/ows/1.1");
+                namespaces.put("gml", "http://www.opengis.net/gml");
+                namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+                XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+                XpathEngine xpath =  XMLUnit.newXpathEngine();
+                assertEquals("1", xpath.evaluate("count(//ows:ServiceIdentification/ows:Abstract)", dom));
+                assertEquals("Test Property Set", xpath.evaluate("//ows:ServiceIdentification/ows:Abstract", dom));
+            }
+        } finally {
+            wfs.setCiteCompliant(false);
+            wfs.setAbstract(null);
+            getGeoServer().save(wfs);
         }
     }
 }

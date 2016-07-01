@@ -17,6 +17,7 @@ public abstract class CSWSimpleTestSupport extends CSWTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         testData.setUpSecurity();
         System.setProperty("DefaultCatalogStore", "org.geoserver.csw.store.simple.GeoServerSimpleCatalogStore");
+        System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
         
         // copy all records into the data directory
         File root = testData.getDataDirectoryRoot();

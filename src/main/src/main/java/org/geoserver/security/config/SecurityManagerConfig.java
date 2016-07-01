@@ -9,9 +9,13 @@ package org.geoserver.security.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.SerializationUtils;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerAuthenticationProvider;
+import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.rememberme.RememberMeServicesConfig;
 
 
@@ -112,6 +116,24 @@ public class SecurityManagerConfig implements SecurityConfig {
     }
     public void setConfigPasswordEncrypterName(String configPasswordEncrypterName) {
         this.configPasswordEncrypterName = configPasswordEncrypterName;
+    }
+
+    @Override
+    public SecurityConfig clone(boolean allowEnvParametrization) {
+        
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+        
+        SecurityManagerConfig target = (SecurityManagerConfig) SerializationUtils.clone(this);
+        
+        if (target != null) {
+            if (allowEnvParametrization && gsEnvironment != null
+                    && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                target.setConfigPasswordEncrypterName((String) gsEnvironment.resolveValue(configPasswordEncrypterName));
+                target.setRoleServiceName((String)gsEnvironment.resolveValue(roleServiceName));
+            }
+        }
+        
+        return target;
     }
 
 }

@@ -37,6 +37,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.platform.GeoServerExtensions;
@@ -326,16 +327,17 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             *
             */
             protected void handleService() {
+                WFSInfo expandedWfs = (WFSInfo) wfs.clone(true);
                 start("Service");
-                element("Name", wfs.getName());
-                element("Title", wfs.getTitle());
-                element("Abstract", wfs.getAbstract());
+                element("Name", expandedWfs.getName());
+                element("Title", expandedWfs.getTitle());
+                element("Abstract", expandedWfs.getAbstract());
 
-                handleKeywords(wfs.getKeywords());
+                handleKeywords(expandedWfs.getKeywords());
 
                 element("OnlineResource", buildURL(request.getBaseUrl(), "wfs", null, URLType.SERVICE));
-                element("Fees", wfs.getFees());
-                element("AccessConstraints", wfs.getAccessConstraints());
+                element("Fees", expandedWfs.getFees());
+                element("AccessConstraints", expandedWfs.getAccessConstraints());
                 end("Service");
             }
 
@@ -1043,18 +1045,19 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             }
             
             protected void serviceIdentification(String version) {
+                WFSInfo expandedWfs = (WFSInfo) wfs.clone(true);
                 start("ows:ServiceIdentification");
 
-                element("ows:Title", wfs.getTitle());
-                element("ows:Abstract", wfs.getAbstract());
+                element("ows:Title", expandedWfs.getTitle());
+                element("ows:Abstract", expandedWfs.getAbstract());
 
-                keywords(wfs.getKeywords());
+                keywords(expandedWfs.getKeywords());
 
                 element("ows:ServiceType", "WFS");
                 element("ows:ServiceTypeVersion", version);
 
-                element("ows:Fees", wfs.getFees());
-                element("ows:AccessConstraints", wfs.getAccessConstraints());
+                element("ows:Fees", expandedWfs.getFees());
+                element("ows:AccessConstraints", expandedWfs.getAccessConstraints());
 
                 end("ows:ServiceIdentification");
             }

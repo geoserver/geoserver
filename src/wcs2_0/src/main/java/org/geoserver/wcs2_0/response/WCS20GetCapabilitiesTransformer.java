@@ -313,12 +313,13 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
          *             For any errors.
          */
         private void handleServiceIdentification() {
+            WCSInfo expandedService = (WCSInfo) wcs.clone(true);
             start("ows:ServiceIdentification");
 
-            element("ows:Title", wcs.getTitle());
-            element("ows:Abstract", wcs.getAbstract());
+            element("ows:Title", expandedService.getTitle());
+            element("ows:Abstract", expandedService.getAbstract());
             
-            handleKeywords(wcs.getKeywords());
+            handleKeywords(expandedService.getKeywords());
 
             element("ows:ServiceType", "urn:ogc:service:wcs"); // TODO: check this: some docs specify a "OGC WCS" string
             element("ows:ServiceTypeVersion", WCS20Const.V201);
@@ -365,13 +366,13 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             // element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_array-subsetting/1.0/conf/array-subsetting");
             // element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_range-subsetting/1.0/conf/nested-subsetting");
 
-            String fees = wcs.getFees();
+            String fees = expandedService.getFees();
             if ( isBlank(fees)) {
                 fees = "NONE";
             }
             element("ows:Fees", fees);
 
-            String accessConstraints = wcs.getAccessConstraints();
+            String accessConstraints = expandedService.getAccessConstraints();
             if ( isBlank(accessConstraints)) {
                 accessConstraints = "NONE";
             }

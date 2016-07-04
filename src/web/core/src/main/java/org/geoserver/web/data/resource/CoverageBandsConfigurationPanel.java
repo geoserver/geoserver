@@ -26,8 +26,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.convert.IConverter;
-import org.apache.wicket.util.convert.converter.DoubleConverter;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -36,6 +34,8 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.DecimalListTextField;
+import org.geoserver.web.wicket.DecimalTextField;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
@@ -53,86 +53,6 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
 
     private GeoServerTablePanel<CoverageDimensionInfo> bands;
 
-    /** 
-     * A TextField to handle Double numbers also supporting -Infinity and Infinity values.
-     */
-    static class DoubleTextField extends TextField<Double>{
-
-        public DoubleTextField(String id, IModel<Double> model) {
-            super(id, model, Double.class);
-        }
-
-        @Override
-        public <C> IConverter<C> getConverter(Class<C> type) {
-            return (IConverter<C>) new DoubleInfinityConverter();
-        }
-    }
-
-    /**
-     * A Double numbers converter supporting -Infinity and Infinity too.
-     */
-    static class DoubleInfinityConverter extends DoubleConverter {
-        @Override
-        public Double convertToObject(String value, Locale locale) {
-           if (value.equals("-\u221E")) {
-               return new Double(Double.NEGATIVE_INFINITY);
-           } else if (value.equals("\u221E")) {
-               return new Double(Double.POSITIVE_INFINITY);
-           } else {
-               return super.convertToObject(value, locale);
-           }
-        }
-
-        @Override
-        public String convertToString(Double value, Locale locale) {
-            return super.convertToString(value, Locale.US);
-        }
-    }
-
-    /**
-     * An IModel implementation to deal with list of double values.
-     */
-    static class DoubleListModel implements IModel {
-
-        private final IModel wrapped;
-
-        @Override
-        public void detach() {
-            
-        }
-
-        public DoubleListModel(IModel wrapped) {
-            this.wrapped = wrapped;
-        }
-
-        @Override
-        public Object getObject() {
-            List<Double> nullValues = (List<Double>)wrapped.getObject();
-            if (nullValues != null && nullValues.size() > 0) {
-                return nullValues.get(0).toString();
-            }
-            return "-";
-        }
-
-        @Override
-        public void setObject(Object object) {
-            String val = (String) object;
-            List<Double> vals = (List<Double>) wrapped.getObject();
-            vals.clear();
-            // Parsing double values
-            if (!val.equalsIgnoreCase("-")) {
-                String[] values;
-                if (val.contains(",")) {
-                    values = val.split(",");
-                } else {
-                    values = new String[]{val.trim()};
-                }
-                for (String value : values) {
-                    vals.add(Double.parseDouble(value.trim()));
-                }
-            }
-        }
-    }
 
     public CoverageBandsConfigurationPanel(String id, final IModel model) {
         super(id, model);
@@ -150,7 +70,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                 }
                 if ("nullValues".equals(property.getName())) {
                     Fragment f = new Fragment(id, "nulltext", CoverageBandsConfigurationPanel.this);
-                    Component text = new TextField("nulltext", new DoubleListModel(property.getModel(itemModel)));
+                    Component text = new DecimalListTextField("nulltext", (IModel<List>) property.getModel(itemModel));
                     f.add(text);
                     return f;
                 }
@@ -162,13 +82,13 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                 }
                if ("minRange".equals(property.getName())) {
                     Fragment f = new Fragment(id, "minRange", CoverageBandsConfigurationPanel.this);
-                    Component min = new DoubleTextField("minRange", (IModel<Double>) property.getModel(itemModel));
+                    Component min = new DecimalTextField("minRange", (IModel<Double>) property.getModel(itemModel));
                     f.add(min);
                     return f;
                 }
                 if ("maxRange".equals(property.getName())) {
                     Fragment f = new Fragment(id, "maxRange", CoverageBandsConfigurationPanel.this);
-                    Component max = new DoubleTextField("maxRange", (IModel<Double>) property.getModel(itemModel));                    
+                    Component max = new DecimalTextField("maxRange", (IModel<Double>) property.getModel(itemModel));                    
                     f.add(max);
                     return f;
                 }
@@ -282,7 +202,27 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
 
                 @Override
                 public Object getPropertyValue(CoverageDimensionInfo item) {
-                    return item.getNullValues();
+                    return new IModel<List<Double>>() {
+
+                        @Override
+                        public void detach() {
+                            // TODO Auto-generated method stub
+                            
+                        }
+
+                        @Override
+                        public List<Double> getObject() {
+                            return item.getNullValues();
+                        }
+
+                        @Override
+                        public void setObject(List<Double> object) {
+                            List<Double> values = item.getNullValues();
+                            values.clear();
+                            values.addAll(object);
+                        }
+                        
+                    };
                 }
 
             });

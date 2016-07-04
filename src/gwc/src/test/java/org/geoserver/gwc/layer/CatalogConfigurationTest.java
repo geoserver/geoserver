@@ -8,10 +8,14 @@ package org.geoserver.gwc.layer;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
@@ -32,12 +36,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.google.common.collect.Iterators;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.ows.LocalWorkspace;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
 import org.junit.After;
@@ -83,8 +91,8 @@ public class CatalogConfigurationTest {
         defaults.setCacheLayersByDefault(false);
         defaults.setCacheNonDefaultStyles(true);
 
-        layer1 = mockLayer("layer1", new String[]{}, PublishedType.RASTER);
-        layer2 = mockLayer("layer2", new String[]{}, PublishedType.RASTER);
+        layer1 = mockLayer("layer1", "test", new String[]{}, PublishedType.RASTER);
+        layer2 = mockLayer("layer2", "test", new String[]{}, PublishedType.RASTER);
         layerWithNoTileLayer = mockLayer("layerWithNoTileLayer", new String[]{}, PublishedType.RASTER);
 
 
@@ -461,6 +469,48 @@ public class CatalogConfigurationTest {
             }
         } finally {
             service.shutdown();
+        }
+    }
+
+    @Test
+    public void getLayerByIdWithLocalWorkspace() {
+        try {
+            // create test workspaces
+            WorkspaceInfo testWorkspace = new WorkspaceInfoImpl();
+            testWorkspace.setName("test");
+            WorkspaceInfo otherWorkspace = new WorkspaceInfoImpl();
+            otherWorkspace.setName("other");
+            // setting the local workspace equal to layers workspace
+            LocalWorkspace.set(testWorkspace);
+            assertThat(config.getTileLayerById(layer1.getId()), notNullValue());
+            assertThat(config.getTileLayerById(layer2.getId()), notNullValue());
+            // setting the local workspace different from layers workspaces
+            LocalWorkspace.set(otherWorkspace);
+            assertThat(config.getTileLayerById(layer1.getId()), nullValue());
+            assertThat(config.getTileLayerById(layer2.getId()), nullValue());
+        } finally {
+            // cleaning
+            LocalWorkspace.set(null);
+        }
+    }
+
+    @Test
+    public void getLayersWithLocalWorkspace() {
+        try {
+            // create test workspaces
+            WorkspaceInfo testWorkspace = new WorkspaceInfoImpl();
+            testWorkspace.setName("test");
+            WorkspaceInfo otherWorkspace = new WorkspaceInfoImpl();
+            otherWorkspace.setName("other");
+            // setting the local workspace equal to layers workspace
+            LocalWorkspace.set(testWorkspace);
+            assertThat(Iterators.size(config.getLayers().iterator()), is(2));
+            // setting the local workspace different from layers workspaces
+            LocalWorkspace.set(otherWorkspace);
+            assertThat(Iterators.size(config.getLayers().iterator()), is(0));
+        } finally {
+            // cleaning
+            LocalWorkspace.set(null);
         }
     }
 }

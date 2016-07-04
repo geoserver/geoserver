@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,11 +7,21 @@ package org.geoserver.gwc.dispatch;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.ServiceException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 /**
  * Adapts plain incoming requests to be resolved to the GWC proxy service.
@@ -29,21 +39,132 @@ import org.geoserver.ows.Request;
 public class GwcServiceDispatcherCallback extends AbstractDispatcherCallback implements
         DispatcherCallback {
 
+    // contains the current gwc operation
+    public static final ThreadLocal<String> GWC_OPERATION = new ThreadLocal<>();
+
+    private static final Pattern GWC_VIRTUAL_SERVICE_PATTERN = Pattern.compile("([^/]+)/gwc/service");
+
+    private final Catalog catalog;
+
+    public GwcServiceDispatcherCallback(Catalog catalog) {
+        this.catalog = catalog;
+    }
+
+    @Override
+    public void finished(Request request) {
+        // cleaning the current thread local operation
+        GWC_OPERATION.remove();
+    }
+
     @Override
     public Request init(Request request) {
         String context = request.getContext();
-        if (context == null || !context.startsWith("gwc/service")) {
+        if (context == null || !isGwcServiceTargeted(context)) {
             return null;
         }
 
-        Map<String, String> kvp = new HashMap<String, String>();
+        // storing the current operation
+        GWC_OPERATION.set((String) request.getKvp().get("REQUEST"));
+
+        Map<String, String> kvp = new HashMap<>();
         kvp.put("service", "gwc");
         kvp.put("version", "1.0.0");
         kvp.put("request", "dispatch");
+
+        // if we are in the presence of virtual service we need to adapt the request
+        WorkspaceInfo localWorkspace = LocalWorkspace.get();
+        if (localWorkspace != null) {
+            // this is a virtual service request
+            String layerName = (String) request.getKvp().get("LAYER");
+            if (layerName == null) {
+                layerName = (String) request.getKvp().get("layer");
+            }
+            if (layerName != null) {
+                // we have a layer name as parameter we need to adapt it (gwc doesn't care about workspaces)
+                layerName = CatalogConfiguration.removeWorkspacePrefix(layerName, catalog);
+                layerName = localWorkspace.getName() + ":" + layerName;
+                // we set the layer parameter with GWC expected name
+                kvp.put("LAYER", layerName);
+            }
+            // we need to setup a proper context path (gwc doesn't expect the workspace to be part of the URL)
+            request.setHttpRequest(new VirtualServiceRequest(request.getHttpRequest(), localWorkspace.getName(), layerName));
+        }
+
         request.setKvp(kvp);
         request.setRawKvp(kvp);
 
         return request;
     }
 
+    /**
+     * Helper method that checks if the GWC service is targeted based on the request context.
+     */
+    private boolean isGwcServiceTargeted(String context) {
+        if (context.startsWith("gwc/service")) {
+            // is gwc is targeted
+            return true;
+        }
+        // we may be in the context of a virtual service
+        Matcher matcher = GWC_VIRTUAL_SERVICE_PATTERN.matcher(context);
+        if (matcher.matches()) {
+            // this is a virtual service, let's see if we have a valid workspace
+            if(LocalWorkspace.get() == null) {
+                // the workspace name has to be valid
+                throw new ServiceException("No such workspace '" + matcher.group(1) + "'");
+            }
+            // the local workspace is set so we have a valid workspace
+            return true;
+        }
+        // this request is not targeting gwc service
+        return false;
+    }
+
+    /**
+     * Helper wrapper that allow to match GWC expectations. GWC doesn't have the concept of workspaces,
+     * so he always expect a layer name to be prefixed by is workspace.
+     */
+    private final class VirtualServiceRequest extends HttpServletRequestWrapper {
+
+        private final String localWorkspaceName;
+        private final String layerName;
+
+        private final Map<String, String[]> parameters;
+
+        public VirtualServiceRequest(HttpServletRequest request, String localWorkspaceName, String layerName) {
+            super(request);
+            this.localWorkspaceName = localWorkspaceName;
+            this.layerName = layerName;
+            parameters = new HashMap<>(request.getParameterMap());
+            if (layerName != null) {
+                parameters.put("layer", new String[]{layerName});
+            }
+        }
+
+        @Override
+        public String getContextPath() {
+            // to GWC the workspace is part of the request context
+            return super.getContextPath() + "/" + localWorkspaceName;
+        }
+
+        @Override
+        public String getParameter(String name) {
+            if (layerName != null && name.equalsIgnoreCase("layer")) {
+                return layerName;
+            }
+            return super.getParameter(name);
+        }
+
+        @Override
+        public Map<String, String[]> getParameterMap() {
+            return parameters;
+        }
+
+        @Override
+        public String[] getParameterValues(String name) {
+            if (layerName != null && name.equalsIgnoreCase("layer")) {
+                return new String[]{layerName};
+            }
+            return super.getParameterValues(name);
+        }
+    }
 }

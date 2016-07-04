@@ -34,8 +34,11 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
+import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
@@ -164,6 +167,24 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     
     @Override
     public String getName() {
+        // getting the current gwc operation
+        String gwcOperation = GwcServiceDispatcherCallback.GWC_OPERATION.get();
+        // checking if we are in the context of a get capabilities request
+        if (gwcOperation != null && gwcOperation.equalsIgnoreCase("GetCapabilities")) {
+            // this is a get capabilities request, we need to check if we are in the context of virtual service
+            return getNoPrefixedNameIfVirtualService();
+        }
+        return info.getName();
+    }
+
+    private String getNoPrefixedNameIfVirtualService() {
+        // let's see if this a virtual service request
+        WorkspaceInfo localWorkspace = LocalWorkspace.get();
+        if (localWorkspace != null) {
+            // yes this is a virtual service request so removing the workspace prefix
+            return CatalogConfiguration.removeWorkspacePrefix(info.getName(), catalog);
+        }
+        // this a normal request so just returning the prefixed layer name
         return info.getName();
     }
 

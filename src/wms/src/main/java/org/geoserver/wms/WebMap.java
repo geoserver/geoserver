@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -122,6 +122,18 @@ public abstract class WebMap {
     }
     
     public String getAttachmentFileName() {        
+        String filename = getSimpleAttachmentFileName();
+        if (filename != null && extension != null) {
+            return filename  + extension;
+        }
+        return filename;
+    }
+
+    /**
+     * Returns the filename with no extension
+     * @return
+     */
+    public String getSimpleAttachmentFileName() {
         // see if we can get the original request, before the group expansion happened
         Request request = Dispatcher.REQUEST.get();
         String filename = null;
@@ -144,8 +156,8 @@ public abstract class WebMap {
                 filename = sb.toString();
             }
         }
-        if (filename != null && extension != null) {
-            filename = filename.replace(":", "-") + extension;
+        if (filename != null) {
+            filename = filename.replace(":", "-");
         }
         return filename;
     }

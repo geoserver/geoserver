@@ -5,12 +5,14 @@
  */
 package org.geoserver;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geotools.util.logging.Logging;
+import org.springframework.security.core.Authentication;
 
 /**
  * The global configuration lock. At the moment it is called by coarse grained request level
@@ -25,6 +27,10 @@ import org.geotools.util.logging.Logging;
  * 
  */
 public class GeoServerConfigurationLock {
+    
+    /** DEFAULT_TRY_LOCK_TIMEOUT_MS */
+    private static final int DEFAULT_TRY_LOCK_TIMEOUT_MS = 3000;
+
     private static final Level LEVEL = Level.FINE;
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerConfigurationLock.class);
@@ -36,6 +42,8 @@ public class GeoServerConfigurationLock {
     };
 
     private boolean enabled;
+
+    private Authentication auth;
 
     public GeoServerConfigurationLock() {
         String pvalue = System.getProperty("GeoServerConfigurationLock.enabled");
@@ -59,21 +67,66 @@ public class GeoServerConfigurationLock {
             return;
         }
 
-        Lock lock;
-        if (type == LockType.WRITE) {
-            lock = readWriteLock.writeLock();
-        } else {
-            lock = readWriteLock.readLock();
-        }
-        if (LOGGER.isLoggable(LEVEL)) {
-            LOGGER.log(LEVEL, "Thread " + Thread.currentThread().getId() + " locking in mode "
-                    + type);
-        }
+        Lock lock = getLock(type);
+        
         lock.lock();
+        
         if (LOGGER.isLoggable(LEVEL)) {
             LOGGER.log(LEVEL, "Thread " + Thread.currentThread().getId() + " got the lock in mode "
                     + type);
         }
+    }
+    
+    /**
+     * Tries to open a lock in the specified mode. Acquires the lock if it is available and returns immediately with the value true. 
+     * If the lock is not available then this method will return immediately with the value false.
+     * 
+     * A typical usage idiom for this method would be:
+     * 
+     * <pre>
+     *  Lock lock = ...;
+     *  if (lock.tryLock()) {
+     *    try {
+     *      // manipulate protected state
+     *    } finally {
+     *      lock.unlock();
+     *    }
+     *  } else {
+     *    // perform alternative actions
+     *  }}
+     * </pre>
+     * 
+     * This usage ensures that the lock is unlocked if it was acquired, and doesn't try to unlock if the lock was not acquired.
+     *  
+     * @param type
+     * @return true if the lock was acquired and false otherwise
+     */
+    public boolean tryLock(LockType type) {
+        if (!enabled) {
+            return true;
+        }
+
+        Lock lock = getLock(type);
+        
+        boolean res = false;
+        try {
+            res = lock.tryLock(DEFAULT_TRY_LOCK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            LOGGER.log(Level.WARNING, "Thread " + Thread.currentThread().getId() + " thrown an InterruptedException on GeoServerConfigurationLock TryLock.", e);
+            res = false;
+        }
+        
+        if (LOGGER.isLoggable(LEVEL)) {
+            if (res) {
+                LOGGER.log(LEVEL, "Thread " + Thread.currentThread().getId() + " got the lock in mode "
+                        + type);
+            } else {
+                LOGGER.log(LEVEL, "Thread " + Thread.currentThread().getId() + " could not get the lock in mode "
+                        + type);
+            }
+        }
+        
+        return res;
     }
 
     /**
@@ -87,12 +140,8 @@ public class GeoServerConfigurationLock {
             return;
         }
 
-        Lock lock;
-        if (type == LockType.WRITE) {
-            lock = readWriteLock.writeLock();
-        } else {
-            lock = readWriteLock.readLock();
-        }
+        Lock lock  = getLock(type);
+        
         if (LOGGER.isLoggable(LEVEL)) {
             LOGGER.log(LEVEL, "Thread " + Thread.currentThread().getId()
                     + " releasing the lock in mode " + type);
@@ -106,6 +155,38 @@ public class GeoServerConfigurationLock {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    /**
+     * @return the auth
+     */
+    public Authentication getAuth() {
+        return auth;
+    }
+
+    /**
+     * @param auth the auth to set
+     */
+    public void setAuth(Authentication auth) {
+        this.auth = auth;
+    }
+
+    /**
+     * @param type
+     * @return
+     */
+    private Lock getLock(LockType type) {
+        Lock lock;
+        if (type == LockType.WRITE) {
+            lock = readWriteLock.writeLock();
+        } else {
+            lock = readWriteLock.readLock();
+        }
+        if (LOGGER.isLoggable(LEVEL)) {
+            LOGGER.log(LEVEL, "Thread " + Thread.currentThread().getId() + " locking in mode "
+                    + type);
+        }
+        return lock;
     }
 
 }

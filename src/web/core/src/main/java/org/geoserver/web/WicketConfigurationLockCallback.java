@@ -9,6 +9,8 @@ import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.GeoServerConfigurationLock.LockType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Protects the catalog and configuration from concurrent access from the web GUI side (will stay
@@ -44,8 +46,14 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     public void onEndRequest() {
         LockType type = THREAD_LOCK.get();
         if (type != null) {
-            THREAD_LOCK.remove();
-            locker.unlock(type);
+
+            boolean lockTaken = locker.tryLock(type);
+
+            if (lockTaken) {
+                THREAD_LOCK.remove();
+                locker.unlock(type);
+                locker.setAuth(null);
+            }
         }
     }
 
@@ -67,8 +75,18 @@ public class WicketConfigurationLockCallback implements WicketCallback {
         }
 
         // and lock
-        THREAD_LOCK.set(type);
-        locker.lock(type);
+        boolean lockTaken = locker.tryLock(type);
+
+        if (lockTaken) {
+            THREAD_LOCK.set(type);
+            locker.unlock(type);
+
+            if (GeoServerSecuredPage.class.isAssignableFrom(requestTarget) &&
+                 !GeoServerUnlockablePage.class.isAssignableFrom(requestTarget)) {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                locker.setAuth(auth);
+            }
+        }
     }
 
     @Override

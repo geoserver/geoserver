@@ -11,18 +11,19 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
-import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.request.IRequestHandler;
-import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.geoserver.GeoServerConfigurationLock;
+import org.geoserver.GeoServerConfigurationLock.LockType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -31,8 +32,10 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AdminRequest;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.ServerBusyPage;
 import org.geoserver.web.UnauthorizedPage;
 import org.geoserver.web.data.layer.LayerPage;
 import org.geoserver.web.data.layer.NewFeatureTypePage;
@@ -48,6 +51,9 @@ import org.geoserver.web.data.workspace.WorkspacePage;
 import org.geotools.data.property.PropertyDataStoreFactory;
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupport {
 
@@ -215,6 +221,38 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         tester.assertErrorMessages(new String[]{"Could not find data store \"cdf\" in workspace \"cdf\""});
     }
 
+    @Test
+    public void testStoreEditServerBusyPage() throws Exception {
+        login();
+
+        List<GrantedAuthority> l= new ArrayList<GrantedAuthority>();
+        l.add(new SimpleGrantedAuthority("ROLE_ANONYMOUS"));
+        
+        final LockType type = LockType.WRITE;
+        final GeoServerConfigurationLock locker = (GeoServerConfigurationLock) GeoServerExtensions.bean("configurationLock");
+
+        if (locker != null) {
+            Thread configWriter = new Thread(){
+                public void run() {
+                    try{
+                        // Acquiring Configuration Lock as another user
+                        locker.setEnabled(true);
+                        locker.setAuth(new UsernamePasswordAuthenticationToken("anonymousUser","", l));
+                        locker.lock(type);
+                        Thread.sleep(10000);
+                    } catch(InterruptedException v){
+                    } finally {
+                        locker.unlock(type);
+                    }
+                }
+            };
+            configWriter.start();
+            tester.startPage(DataAccessEditPage.class, new PageParameters().add("wsName", "cite").add("storeName", "cite"));
+            tester.assertRenderedPage(ServerBusyPage.class);
+            tester.assertNoErrorMessage();
+        }
+    }
+    
     @Test
     public void testLayerGroupAllPageAsAdmin() throws Exception {
         login();

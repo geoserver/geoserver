@@ -34,9 +34,9 @@ public class DecimalListTextField extends TextField<List> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <C> IConverter<C> getConverter(Class<C> type) {
+    public IConverter getConverter(Class type) {
         if (List.class.isAssignableFrom(type)) {
-            return (IConverter<C>) decimalListConverter;
+            return (IConverter) decimalListConverter;
         }
         return super.getConverter(type);
     }

@@ -9,7 +9,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import org.apache.wicket.util.convert.IConverter;
-import org.apache.wicket.util.convert.converter.DoubleConverter;
+import org.apache.wicket.util.convert.converters.DoubleConverter;
 
 /**
  * A {@link IConverter} for {@code java.lang.Double} representations that allows for arbitrary number of decimal places, since the default TextField rounds up

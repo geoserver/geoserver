@@ -16,12 +16,12 @@ import org.apache.wicket.util.convert.IConverter;
  * @author Andrea Aime - GeoSolutions
  */
 @SuppressWarnings("serial")
-public class DecimalListConverter implements IConverter<List<Double>> {
+public class DecimalListConverter implements IConverter {
 
     private DecimalConverter converter = new DecimalConverter();
 
     @Override
-    public List<Double> convertToObject(String value, Locale locale)
+    public Object convertToObject(String value, Locale locale)
             throws ConversionException {
         List<Double> result = new ArrayList<>();
         if(value != null && !"-".equals(value.trim())) {
@@ -38,7 +38,8 @@ public class DecimalListConverter implements IConverter<List<Double>> {
     }
 
     @Override
-    public String convertToString(List<Double> value, Locale locale) {
+    public String convertToString(Object o, Locale locale) {
+        List<Double> value = (List<Double>) o;
         if(value == null || value.isEmpty()) {
             return "-";
         } else {

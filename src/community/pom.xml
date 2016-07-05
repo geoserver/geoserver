@@ -201,6 +201,7 @@
 	<module>gwc-s3</module>
 	<module>ysld</module>
         <module>gwc-sqlite</module>
+        <module>backup-restore</module>
       </modules>
     </profile>
     <profile>
@@ -424,6 +425,12 @@
       <id>ysld</id>
       <modules>
         <module>ysld</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>backup-restore</id>
+      <modules>
+        <module>backup-restore</module>
       </modules>
     </profile>
     <profile>

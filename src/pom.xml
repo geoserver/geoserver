@@ -1019,7 +1019,18 @@
       <groupId>org.restlet</groupId>
       <artifactId>org.restlet</artifactId>
       <version>1.0.8</version>
+
+      <!-- Classifier selects a hacked JAR where we've removed a class we don't need and which has a security vulnerability.  This should be removed when we update to A current version of Restlet (2.2 or later)-->
+      <classifier>noobjrep</classifier> 
+
     </dependency>
+    <dependency>
+      <groupId>org.restlet</groupId>
+      <artifactId>org.restlet</artifactId>
+      <version>1.0.8</version>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.restlet</groupId>
       <artifactId>org.restlet.ext.fileupload</artifactId>

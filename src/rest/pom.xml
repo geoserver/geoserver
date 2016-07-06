@@ -26,10 +26,18 @@
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.restlet</groupId>
       <artifactId>org.restlet</artifactId>
+      <classifier>noobjrep</classifier> <!-- remove after upgrading Restlet -->
     </dependency>
+    <dependency>
+      <groupId>org.restlet</groupId>
+      <artifactId>org.restlet</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.restlet</groupId>
       <artifactId>org.restlet.ext.freemarker</artifactId>

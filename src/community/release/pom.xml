@@ -75,6 +75,11 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-ncwms</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
      <artifactId>gs-geopkg</artifactId>
      <version>${project.version}</version>
    </dependency>

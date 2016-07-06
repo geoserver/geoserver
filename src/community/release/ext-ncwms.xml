@@ -11,6 +11,7 @@
       <includes>
         <include>gs-colormap*.jar</include>
         <include>gs-ncwms*.jar</include>
+        <include>gt-brewer*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

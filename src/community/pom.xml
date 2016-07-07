@@ -74,6 +74,7 @@
           <descriptor>release/ext-jdbcstore.xml</descriptor>
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
+          <descriptor>release/ext-geogig.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -194,6 +195,7 @@
         <module>wps-remote</module>
         <module>wps-jdbc</module>
         <module>release</module>
+        <module>geogig</module>
 	<module>gwc-distributed</module>
 	<module>jdbcstore</module>
 	<module>gdal</module>
@@ -444,6 +446,12 @@
       <id>gwc-sqlite</id>
       <modules>
         <module>gwc-sqlite</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>geogig</id>
+      <modules>
+        <module>geogig</module>
       </modules>
     </profile>
   </profiles>

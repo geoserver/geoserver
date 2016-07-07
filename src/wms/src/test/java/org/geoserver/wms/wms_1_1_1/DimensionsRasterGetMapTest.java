@@ -141,6 +141,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
             assertEquals("application/vnd.ogc.se_xml", resp.getContentType());
             assertTrue(resp.getContentAsString().contains("This animation request used more time"));
         } finally {
+            wms.getMetadata().remove(WMS.MAX_RENDERING_TIME);
+            gs.save(wms);
             getMap.setGetMapCallbacks(originalCallbacks);
         }
     }

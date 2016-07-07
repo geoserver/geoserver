@@ -27,11 +27,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.DimensionDescriptor;
+import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.data.Query;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
+import org.geotools.util.Range;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
+import org.opengis.filter.FilterFactory;
+import org.opengis.filter.PropertyIsBetween;
+import org.opengis.filter.expression.PropertyName;
 
 /**
  * Centralizes the metadata extraction and parsing used to read dimension informations out of a
@@ -47,6 +58,8 @@ public class ReaderDimensionsAccessor {
     private static final Logger LOGGER = Logging.getLogger(ReaderDimensionsAccessor.class);
 
     private static final String UTC_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    
+    private static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     
     /**
      * Comparator for the TreeSet made either by Date objects, or by DateRange objects
@@ -147,6 +160,47 @@ public class ReaderDimensionsAccessor {
         }
 
         return values;
+    }
+    
+    /**
+     * Returns the set of time values supported by the raster, sorted by time, in the
+     * specified range.
+     * They are either {@link Date} objects, or {@link DateRange} objects, according to what
+     * the underlying reader provides.
+     * 
+     *
+     * @throws IOException 
+     */
+    public TreeSet<Object> getTimeDomain(DateRange range, int maxEntries) throws IOException {
+        if (!hasTime()) {
+            Collections.emptySet();
+        }
+        
+        TreeSet<Object> result = null;
+        if(reader instanceof StructuredGridCoverage2DReader) {
+            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+            result = getDimensionValuesInRange("time", range, maxEntries, sr);
+        }
+        
+        // if we got here, the optimization did not work, do the normal path
+        if(result == null) {
+            result = new TreeSet<Object>();
+            TreeSet<Object> fullDomain = getElevationDomain();
+
+            for (Object o : fullDomain) {
+                if(o instanceof Date) {
+                    if(range.contains((Date) o)) {
+                        result.add(o);
+                    }
+                } else if(o instanceof DateRange) {
+                    if(range.intersects((DateRange) o)) {
+                        result.add(o);
+                    }
+                }
+            }
+        }
+        
+        return result;
     }
     
     /**
@@ -282,6 +336,79 @@ public class ReaderDimensionsAccessor {
         }
 
         return elevations;
+    }
+    
+    
+    /**
+     * Returns the set of elevation values supported by the raster, sorted from smaller to bigger, in the
+     * specified range.
+     * They are either {@link Double} objects, or {@link NumberRange} objects, according to what
+     * the underlying reader provides.
+     *
+     * @throws IOException 
+     */
+    public TreeSet<Object> getElevationDomain(NumberRange range, int maxEntries) throws IOException {
+        if (!hasElevation()) {
+            Collections.emptySet();
+        }
+        
+        // special optimization for structured coverage readers
+        TreeSet<Object> result = null;
+        if(reader instanceof StructuredGridCoverage2DReader) {
+            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+            result = getDimensionValuesInRange("elevation", range, maxEntries, sr);
+        }
+        
+        // if we got here, the optimization did not work, do the normal path
+        if(result == null) {
+            result = new TreeSet<Object>();
+            TreeSet<Object> fullDomain = getElevationDomain();
+
+            for (Object o : fullDomain) {
+                if(o instanceof Double) {
+                    if(range.contains((Number) o)) {
+                        result.add(o);
+                    }
+                } else if(o instanceof NumberRange) {
+                    if(range.intersects((NumberRange) o)) {
+                        result.add(o);
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+
+    private TreeSet<Object> getDimensionValuesInRange(String dimensionName, Range range,
+            int maxEntries, StructuredGridCoverage2DReader sr) throws IOException {
+        final String name = sr.getGridCoverageNames()[0];
+        List<DimensionDescriptor> descriptors = sr.getDimensionDescriptors(name);
+        for (DimensionDescriptor descriptor : descriptors) {
+            // do we find the time, and can we optimize?
+            if (dimensionName.equalsIgnoreCase(descriptor.getName())
+                    && descriptor.getEndAttribute() == null) {
+                GranuleSource gs = sr.getGranules(name, true);
+                final Query query = new Query(gs.getSchema().getName().getLocalPart());
+                // The NetCDF plug-in gets a corrupted cache if we provide a property list
+                // query.setPropertyNames(Arrays.asList(descriptor.getStartAttribute()));
+                final PropertyName attribute = FF.property(descriptor.getStartAttribute());
+                final PropertyIsBetween rangeFilter = FF.between(attribute,
+                        FF.literal(range.getMinValue()), FF.literal(range.getMaxValue()));
+                query.setFilter(rangeFilter);
+                query.setMaxFeatures(maxEntries);
+
+                FeatureCollection collection = gs.getGranules(query);
+
+                // collect all unique values (can't do ranges now, we don't have a multi-attribute unique visitor)
+                UniqueVisitor visitor = new UniqueVisitor(attribute);
+                collection.accepts(visitor, null);
+                TreeSet<Object> result = new TreeSet<>(visitor.getUnique());
+                return result;
+            }
+        }
+
+        return null;
     }
 
     

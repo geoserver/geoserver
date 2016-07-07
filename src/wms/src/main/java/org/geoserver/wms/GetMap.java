@@ -13,16 +13,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.media.jai.RenderedImageList;
 
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -50,6 +54,8 @@ import org.geotools.styling.FeatureTypeConstraint;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
+import org.geotools.util.DateRange;
+import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -68,7 +74,7 @@ import com.vividsolutions.jts.geom.Envelope;
 public class GetMap {
 
     private static final Logger LOGGER = Logging.getLogger(GetMap.class);
-
+    
     private FilterFactory ff;
 
     private final WMS wms;
@@ -204,23 +210,38 @@ public class GetMap {
             delegate = new MetatileMapOutputFormat(request, (RenderedImageMapOutputFormat) delegate);
         }
 
+        // check if the format can do animations
+        final boolean isMultivaluedSupported = (cap != null ? cap.isMultivalueRequestsSupported() : false);
+        
         //
         // Test if the parameter "TIME" or ELEVATION are present in the WMS
         // request
         // TIME
         List<Object> times = request.getTime();
         final int numTimes = times.size();
+        boolean singleTimeRange = numTimes == 1 && times.get(0) instanceof DateRange;
 
         // ELEVATION
-        final List<Object> elevations = request.getElevation();
+        List<Object> elevations = request.getElevation();
         final int numElevations = elevations.size();
+        boolean singleElevationRange = numElevations == 1 && elevations.get(0) instanceof NumberRange;
 
         // handling time series and elevation series
-        final boolean isMultivaluedSupported = (cap != null ? cap.isMultivalueRequestsSupported() : false);
-        if(numTimes > 1 && isMultivaluedSupported) {
+        MaxAnimationTimeHelper maxAnimationTimeHelper = new MaxAnimationTimeHelper(wms, request);
+        int maxAllowedFrames = wms.getMaxAllowedFrames();
+        if((numTimes > 1 || singleTimeRange) && isMultivaluedSupported) {
             WebMap map = null;
             List<RenderedImage> images = new ArrayList<RenderedImage>();
+            if(singleTimeRange) {
+                List<Object> expandTimeList = expandTimeList((DateRange) times.get(0), request, maxAllowedFrames);
+                if(expandTimeList.size() == 0) {
+                    return executeInternal(mapContent, request, delegate, Arrays.asList(times.get(0)), elevations);
+                } else {
+                    times = expandTimeList;
+                }
+            }
             for (Object currentTime : times) {
+                maxAnimationTimeHelper.checkTimeout();
                 map = executeInternal(mapContent, request, delegate, Arrays.asList(currentTime), elevations);
                 
                 // remove layers to start over again
@@ -231,10 +252,19 @@ public class GetMap {
             }
             RenderedImageList imageList = new RenderedImageList(images);
             return new  RenderedImageMap(mapContent, imageList , map.getMimeType());
-        } else if(numElevations > 1 && isMultivaluedSupported) {
+        } else if((numElevations > 1 || singleElevationRange) && isMultivaluedSupported) {
             WebMap map = null;
             List<RenderedImage> images = new ArrayList<RenderedImage>();
-            for (Object currentElevation : elevations){
+            if(singleElevationRange) {
+                List<Object> expandElevationList = expandElevationList((NumberRange) elevations.get(0), request, maxAllowedFrames);
+                if(expandElevationList.size() == 0) {
+                    map = executeInternal(mapContent, request, delegate, times, Arrays.asList(elevations.get(0)));
+                } else {
+                    elevations = expandElevationList;
+                }
+            }
+            for (Object currentElevation : elevations) {
+                maxAnimationTimeHelper.checkTimeout();
                 map = executeInternal(mapContent, request, delegate, times, Arrays.asList(currentElevation));
                 
                 // remove layers to start over again
@@ -249,6 +279,94 @@ public class GetMap {
             return executeInternal(mapContent, request, delegate, times, elevations);    
         }
 
+    }
+
+    private List<Object> expandTimeList(DateRange queryRange, GetMapRequest request, int maxAllowedFrames) {
+        TreeSet<Date> result = new TreeSet<>(); 
+        try {
+            for (MapLayerInfo l : request.getLayers()) {
+                ResourceInfo ri = l.getLayerInfo().getResource();
+                if(ri == null) {
+                    continue;
+                }
+                DimensionInfo timeInfo = ri.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+                if(timeInfo == null) {
+                    continue;
+                }
+                
+                // it has time configured
+                if(l.getType() == MapLayerInfo.TYPE_VECTOR) {
+                    TreeSet<Object> times = wms.queryFeatureTypeTimes(l.getFeature(), queryRange, maxAllowedFrames);
+                    accumulateTimes(result, times, maxAllowedFrames);
+                } else if(l.getType() == MapLayerInfo.TYPE_RASTER) {
+                    TreeSet<Object> times = wms.queryCoverageTimes(l.getCoverage(), queryRange, maxAllowedFrames);
+                    accumulateTimes(result, times, maxAllowedFrames);
+                }
+            }
+        } catch (IOException e) {
+            throw new ServiceException("Failed to compute list of times in the range " + queryRange, e);
+        }
+        
+        return new ArrayList<>(result);
+    }
+
+    private void accumulateTimes(TreeSet<Date> result, TreeSet<Object> times, int maxAllowedFrames) {
+        for (Object time : times) {
+            if(time instanceof Date) {
+                result.add((Date) time);
+            } else if(time instanceof DateRange) {
+                DateRange range = ((DateRange) time);
+                Date rangeMid = new Date((range.getMinValue().getTime() + range.getMaxValue().getTime()) / 2);
+                result.add(rangeMid);
+            }
+            if(result.size() > maxAllowedFrames) {
+                throw new ServiceException("Too many steps in the animation");
+            }
+        }
+    }
+    
+    private List<Object> expandElevationList(NumberRange queryRange, GetMapRequest request, int maxAllowedFrames) {
+        TreeSet<Double> result = new TreeSet<>(); 
+        try {
+            for (MapLayerInfo l : request.getLayers()) {
+                ResourceInfo ri = l.getLayerInfo().getResource();
+                if(ri == null) {
+                    continue;
+                }
+                DimensionInfo elevationInfo = ri.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+                if(elevationInfo == null) {
+                    continue;
+                }
+                
+                // it has elevaton configured
+                if(l.getType() == MapLayerInfo.TYPE_VECTOR) {
+                    TreeSet<Object> elevations = wms.queryFeatureTypeElevations(l.getFeature(), queryRange, maxAllowedFrames);
+                    accumulateElevations(result, elevations, maxAllowedFrames);
+                } else if(l.getType() == MapLayerInfo.TYPE_RASTER) {
+                    TreeSet<Object> elevations = wms.queryCoverageElevations(l.getCoverage(), queryRange, maxAllowedFrames);
+                    accumulateElevations(result, elevations, maxAllowedFrames);
+                }
+            }
+        } catch (IOException e) {
+            throw new ServiceException("Failed to compute list of times in the range " + queryRange, e);
+        }
+        
+        return new ArrayList<>(result);
+    }
+    
+    private void accumulateElevations(TreeSet<Double> result, TreeSet<Object> elevations, int maxAllowedFrames) {
+        for (Object elevation : elevations) {
+            if(elevation instanceof Number) {
+                result.add(((Number) elevation).doubleValue());
+            } else if(elevation instanceof NumberRange) {
+                NumberRange range = ((NumberRange) elevation);
+                double rangeMid = (range.getMinimum() + range.getMaximum()) / 2;
+                result.add(rangeMid);
+            }
+            if(result.size() > maxAllowedFrames) {
+                throw new ServiceException("Too many steps in the animation");
+            }
+        }
     }
 
     /**

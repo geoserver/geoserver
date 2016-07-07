@@ -150,7 +150,7 @@ public class AnimatorTest extends WMSTestSupport {
             assertEquals(4, reader.getNumImages(true));
 
             IIOMetadata imageMetadata = reader.getImageMetadata(0);
-            System.out.println(Arrays.toString(imageMetadata.getMetadataFormatNames()));
+            LOGGER.info(Arrays.toString(imageMetadata.getMetadataFormatNames()));
             IIOMetadataNode node = (IIOMetadataNode) imageMetadata
                     .getAsTree("javax_imageio_gif_image_1.0");
             // print("", node);

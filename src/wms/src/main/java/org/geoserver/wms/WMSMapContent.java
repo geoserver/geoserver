@@ -65,6 +65,8 @@ public class WMSMapContent extends MapContent {
     private List<GetMapCallback> callbacks;
     
     private Map<String, Object> metadata = new HashMap<>();
+    
+    private Integer maxRenderingTime;
 
     public int getTileSize() {
         return tileSize;
@@ -415,5 +417,5 @@ public class WMSMapContent extends MapContent {
     public Map<String, Object> getMetadata() {
         return metadata;
     }
-
+    
 }

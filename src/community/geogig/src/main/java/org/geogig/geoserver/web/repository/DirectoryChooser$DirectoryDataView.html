@@ -1,0 +1,34 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+	<table wicket:id="fileTable">
+		<thead>
+			<tr>
+				<th style="width:3em" align="right"></th>
+				<th style="width:35em" align="left">
+					<wicket:message key="DirectoryChooser$DirectoryDataView.name">Name</wicket:message>
+				</th>
+				<th style="width:15em" align="right">
+					<wicket:message key="DirectoryChooser$DirectoryDataView.lastModified">Last modified</wicket:message>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="3" style="padding:0px">
+				<div wicket:id="fileContent">
+					<table>
+						<tr wicket:id="files">
+							<td style="width:3em" align="right"><img wicket:id="icon"></img></td>
+							<td style="width:35em" align="left"><a href="#" wicket:id="nameLink"><span wicket:id="name"></span></a></td>
+							<td style="width:15em" wicket:id="lastModified" align="right"></td>
+						</tr>
+					</table>
+				</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</wicket:panel>
+</body>
+</html>

@@ -21,6 +21,7 @@ import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.rest.JettisonRepresentation;
 import org.locationtech.geogig.rest.RestletException;
 import org.locationtech.geogig.rest.Variants;
+import org.locationtech.geogig.rest.repository.DeleteRepository;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -28,7 +29,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 
 import com.google.common.base.Function;
@@ -37,14 +37,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
- * Access point to a single repository.
- * <p>
- * Defines the following repository ends points:
- * <ul>
- * <li>{@code /manifest}
- * </ul>
+ * Access point to a single repository. Provides a Repository information response for <b>GET</b>
+ * requests. Performs a Repository delete operation for <b>DELETE</b> requests.
  */
-public class RepositoryResource extends Resource {
+public class RepositoryResource extends DeleteRepository {
 
     private static final Variant HTML = new Variant(MediaType.TEXT_HTML);
 
@@ -124,7 +120,7 @@ public class RepositoryResource extends Resource {
 
     private static class RepositorytRepresentation extends JettisonRepresentation {
 
-        private RepositoryInfo repo;
+        private final RepositoryInfo repo;
 
         public RepositorytRepresentation(MediaType mediaType, String baseURL, RepositoryInfo repo) {
             super(mediaType, baseURL);
@@ -135,9 +131,7 @@ public class RepositoryResource extends Resource {
         protected void write(XMLStreamWriter w) throws XMLStreamException {
             w.writeStartElement("repository");
             element(w, "id", repo.getId());
-            RepositoryResolver uriResolver = RepositoryResolver.lookup(repo.getLocation());
-            String name = uriResolver.getName(repo.getLocation());
-            element(w, "name", name);
+            element(w, "name", repo.getRepoName());
             element(w, "location", repo.getLocation());
             w.writeEndElement();
         }

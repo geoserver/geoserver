@@ -18,8 +18,9 @@ import javax.xml.stream.XMLStreamWriter;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.format.FreemarkerFormat;
-import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.rest.JettisonRepresentation;
+import org.locationtech.geogig.rest.Variants;
+import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -30,6 +31,7 @@ import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -48,6 +50,10 @@ public class RepositoryListResource extends Resource {
 
     @Override
     public Variant getPreferredVariant() {
+        Optional<Variant> byExtension = Variants.getVariantByExtension(getRequest(), getVariants());
+        if (byExtension.isPresent()) {
+            return byExtension.get();
+        }
         List<MediaType> acceptedMediaTypes = Lists.transform(
                 getRequest().getClientInfo().getAcceptedMediaTypes(),
                 new Function<Preference<MediaType>, MediaType>() {
@@ -111,7 +117,7 @@ public class RepositoryListResource extends Resource {
 
     private static class RepositoryListRepresentation extends JettisonRepresentation {
 
-        private List<RepositoryInfo> repos;
+        private final List<RepositoryInfo> repos;
 
         public RepositoryListRepresentation(MediaType mediaType, String baseURL,
                 List<RepositoryInfo> repos) {
@@ -131,10 +137,10 @@ public class RepositoryListResource extends Resource {
         private void write(XMLStreamWriter w, RepositoryInfo repo) throws XMLStreamException {
             w.writeStartElement("repo");
             element(w, "id", repo.getId());
-            RepositoryResolver uriResolver = RepositoryResolver.lookup(repo.getLocation());
-            String name = uriResolver.getName(repo.getLocation());
-            element(w, "name", name);
-            encodeAlternateAtomLink(w, repo.getRepoName());
+
+            element(w, "name", repo.getRepoName());
+            encodeAlternateAtomLink(w, RepositoryProvider.BASE_REPOSITORY_ROUTE + "/" +
+                    repo.getRepoName());
             w.writeEndElement();
         }
 

@@ -29,7 +29,7 @@ class RepositoryCache {
 
     private static final Logger LOGGER = Logging.getLogger(RepositoryCache.class);
 
-    private LoadingCache<String, GeoGIG> repoCache;
+    private final LoadingCache<String, GeoGIG> repoCache;
 
     public RepositoryCache(final RepositoryManager repoManager) {
 
@@ -39,13 +39,16 @@ class RepositoryCache {
                 String repoId = notification.getKey();
                 GeoGIG geogig = notification.getValue();
                 if (geogig != null) {
+                    URI location = null;
                     try {
-                        URI location = geogig.getRepository().getLocation();
-                        LOGGER.fine(
-                                format("Closing cached GeoGig repository instance %s", location));
+                        if (geogig.getContext() != null) {
+                            location = geogig.getRepository().getLocation();
+                        }
+                        LOGGER.fine(format("Closing cached GeoGig repository instance %s",
+                                location != null ? location : repoId));
                         geogig.close();
-                        LOGGER.finer(
-                                format("Closed cached GeoGig repository instance %s", location));
+                        LOGGER.finer(format("Closed cached GeoGig repository instance %s",
+                                location != null ? location : repoId));
                     } catch (RuntimeException e) {
                         LOGGER.log(Level.WARNING, format(
                                 "Error disposing GeoGig repository instance for id %s", repoId), e);
@@ -55,7 +58,7 @@ class RepositoryCache {
         };
 
         final CacheLoader<String, GeoGIG> loader = new CacheLoader<String, GeoGIG>() {
-            private RepositoryManager manager = repoManager;
+            private final RepositoryManager manager = repoManager;
 
             @Override
             public GeoGIG load(final String repoId) throws Exception {

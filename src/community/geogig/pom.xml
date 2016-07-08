@@ -232,6 +232,13 @@
     </dependency>
     <dependency>
       <groupId>org.locationtech.geogig</groupId>
+      <artifactId>geogig-geotools</artifactId>
+      <version>${geogig.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.locationtech.geogig</groupId>
       <artifactId>geogig-web-api</artifactId>
       <version>${geogig.version}</version>
       <classifier>tests</classifier>

@@ -13,6 +13,7 @@
   </bean>
   <bean id="GWCCapabilitiesHomePageProvider" class="org.geoserver.gwc.web.GWCCapabilitiesHomePageProvider">
     <constructor-arg ref="gwcFacade"/>
+    <constructor-arg ref="geoServer"/>
   </bean>
 
   <bean id="gwcCategory" class="org.geoserver.web.Category">
@@ -80,5 +81,15 @@
 
   <bean id="diskQuotaWarningProvider" class="org.geoserver.gwc.web.diskquota.DiskQuotaWarningProvider"/>
   
-  <bean class="org.geoserver.gwc.web.blob.FileBlobStoreType" /> 
+  <bean class="org.geoserver.gwc.web.blob.FileBlobStoreType" />
+
+  <bean id="wmtsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
+    <property name="id" value="wmts"/>
+    <property name="titleKey" value="wmts.title"/>
+    <property name="descriptionKey" value="wmts.description"/>
+    <property name="componentClass" value="org.geoserver.gwc.web.wmts.WMTSAdminPage"/>
+    <property name="icon" value="server_tile_map.png"/>
+    <property name="category" ref="servicesCategory"/>
+    <property name="serviceClass" value="org.geoserver.gwc.wmts.WMTSInfo"/>
+  </bean>
 </beans>

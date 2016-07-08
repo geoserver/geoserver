@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,7 +7,9 @@ package org.geoserver.gwc.config;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geowebcache.service.Service;
 
 /**
@@ -20,14 +22,16 @@ import org.geowebcache.service.Service;
 public class GWCServiceEnablementInterceptor implements MethodInterceptor {
 
     private GWC gwcFacade;
+    private final GeoServer geoServer;
 
     /**
      * @param gwc
      *            provides access to the {@link GWCConfig configuration} to check whether a service
      *            is {@link GWC#isServiceEnabled(Service) enabled}.
      */
-    public GWCServiceEnablementInterceptor(final GWC gwc) {
+    public GWCServiceEnablementInterceptor(final GWC gwc, GeoServer geoServer) {
         this.gwcFacade = gwc;
+        this.geoServer = geoServer;
     }
 
     /**
@@ -40,7 +44,13 @@ public class GWCServiceEnablementInterceptor implements MethodInterceptor {
         final String methodName = invocation.getMethod().getName();
         if ("getConveyor".equals(methodName) || "handleRequest".equals(methodName)) {
             final org.geowebcache.service.Service service = (Service) invocation.getThis();
-            if (!gwcFacade.isServiceEnabled(service)) {
+            boolean serviceEnabled;
+            if (service.getPathName().equals("wmts")) {
+                serviceEnabled = geoServer.getService(WMTSInfo.class).isEnabled();
+            } else {
+                serviceEnabled = gwcFacade.isServiceEnabled(service);
+            }
+            if (!serviceEnabled) {
                 throw new org.geowebcache.service.HttpErrorCodeException(400, "Service is disabled");
             }
         }

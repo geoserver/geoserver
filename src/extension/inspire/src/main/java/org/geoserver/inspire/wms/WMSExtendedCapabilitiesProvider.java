@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,7 +9,6 @@ import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
-import static org.geoserver.inspire.InspireSchema.COMMON_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.VS_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.VS_SCHEMA;
 
@@ -20,6 +19,7 @@ import java.util.Set;
 
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.inspire.ViewServicesUtils;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
@@ -59,9 +59,7 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
 
     @Override
     public void registerNamespaces(NamespaceSupport namespaces) {
-        namespaces.declarePrefix("inspire_vs", VS_NAMESPACE);
-        namespaces
-                .declarePrefix("inspire_common", COMMON_NAMESPACE);
+        ViewServicesUtils.registerNameSpaces(namespaces);
     }
 
     @Override
@@ -86,32 +84,7 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
         String language = (String) serviceMetadata.get(LANGUAGE.key);
 
         // IGN : INSPIRE SCENARIO 1
-        tx.start("inspire_vs:ExtendedCapabilities");
-        tx.start("inspire_common:MetadataUrl");
-        tx.start("inspire_common:URL");
-        tx.chars(metadataURL);
-        tx.end("inspire_common:URL");
-        if (mediaType != null) {
-            tx.start("inspire_common:MediaType");
-            tx.chars(mediaType);
-            tx.end("inspire_common:MediaType");
-        }
-        tx.end("inspire_common:MetadataUrl");
-        tx.start("inspire_common:SupportedLanguages");
-        language = language != null ? language : "eng";
-        tx.start("inspire_common:DefaultLanguage");
-        tx.start("inspire_common:Language");
-        tx.chars(language);
-        tx.end("inspire_common:Language");
-        tx.end("inspire_common:DefaultLanguage");
-        tx.end("inspire_common:SupportedLanguages");
-        tx.start("inspire_common:ResponseLanguage");
-        tx.start("inspire_common:Language");
-        tx.chars(language);
-        tx.end("inspire_common:Language");
-        tx.end("inspire_common:ResponseLanguage");
-        tx.end("inspire_vs:ExtendedCapabilities");
-
+        ViewServicesUtils.addScenario1Elements(tx, metadataURL, mediaType, language);
     }
 
     Attributes atts(String... atts) {

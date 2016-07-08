@@ -13,6 +13,7 @@ import java.io.File;
 import java.net.URI;
 
 import org.geogig.web.functional.WebAPICucumberHooks;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.locationtech.geogig.api.GeoGIG;
@@ -69,8 +70,7 @@ public class PluginWebAPICucumberHooks {
      *         }
      *     }
      * }
-     * </pre>
-     * To access the <b>success</b> value, the String "response.success" should be passed in.
+     * </pre> To access the <b>success</b> value, the String "response.success" should be passed in.
      * <p>
      * To access the <b>name</b> value, the String "response.repo.name" should be passed in.
      *
@@ -91,6 +91,70 @@ public class PluginWebAPICucumberHooks {
             path = path.getJSONObject(paths[i]);
         }
         return path.getString(paths[paths.length - 1]);
+    }
+
+    private JSONArray getArrayFromJSONResponse(String jsonPath) throws JSONException {
+        String response = context.getLastResponseText();
+        JSONObject jsonResponse = new JSONObject(response);
+        // find the JSON object
+        String[] paths = jsonPath.split("\\.");
+        JSONObject path = jsonResponse;
+        for (int i = 0; i < paths.length - 1; ++i) {
+            // drill down
+            path = path.getJSONObject(paths[i]);
+        }
+        return path.getJSONArray(paths[paths.length - 1]);
+    }
+
+    private JSONObject getObjectFromJSONResponse(String jsonPath) throws JSONException {
+        String response = context.getLastResponseText();
+        JSONObject jsonResponse = new JSONObject(response);
+        // find the JSON object
+        String[] paths = jsonPath.split("\\.");
+        JSONObject path = jsonResponse;
+        for (int i = 0; i < paths.length; ++i) {
+            // drill down
+            path = path.getJSONObject(paths[i]);
+        }
+        return path;
+    }
+
+    @Then("^the json response \"([^\"]*)\" should contain \"([^\"]*)\" (\\d+) times$")
+    public void checkJSONResponseContins(final String jsonArray, final String attribute,
+            final int count) throws JSONException {
+        JSONArray response = getArrayFromJSONResponse(jsonArray);
+        assertEquals("JSON Response doesn't contain expected response correct number of times",
+                count, response.length());
+    }
+
+    @Then("^the json response \"([^\"]*)\" should contain \"([^\"]*)\"$")
+    public void checkJSONResponseContins(final String jsonArray, final String attribute) throws JSONException {
+        JSONObject response = getObjectFromJSONResponse(jsonArray);
+        assertTrue("JSON Response missing \"" + attribute + "\"", response.has(attribute));
+    }
+
+    @Then("^the json response \"([^\"]*)\" attribute \"([^\"]*)\" should each contain \"([^\"]*)\"$")
+    public void checkJSONArrayContains(final String jsonArray, final String attribute,
+            final String expected) throws JSONException {
+        JSONArray array = getArrayFromJSONResponse(jsonArray);
+        for (int i = 0; i < array.length(); ++i ) {
+            JSONObject obj = array.getJSONObject(i);
+            String actual = obj.getString(attribute);
+            assertTrue("JSON response doesn't contain expected value, has: " + actual,
+                    actual.contains(expected));
+        }
+    }
+
+    @Then("^I save the first href link from \"([^\"]*)\" as \"([^\"]*)\"$")
+    public void saveHrefLinkFromJSONResponse(final String jsonArray, final String href) throws JSONException {
+        // get the first href link from the response
+        JSONArray array = getArrayFromJSONResponse(jsonArray);
+        JSONObject obj = array.getJSONObject(0);
+        String link = obj.getString("href");
+        // strip everything up to "repos" off the front of the href link
+        String linkEnd = link.substring(link.indexOf("/repos"));
+        // store the linkEnd
+        context.setVariable(href, linkEnd);
     }
 
     @Then("^the json object \"([^\"]*)\" equals \"([^\"]*)\"$")

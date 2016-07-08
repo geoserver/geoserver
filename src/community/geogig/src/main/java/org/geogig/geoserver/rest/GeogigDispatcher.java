@@ -100,7 +100,9 @@ public class GeogigDispatcher extends AbstractController {
         Router router = createRoot();
 
         router.attach("/repos", RepositoryListResource.class);
+        router.attach("/repos.{extension}", RepositoryListResource.class);
         router.attach("/repos/", RepositoryListResource.class);
+        router.attach("/repos.{extension}/", RepositoryListResource.class);
 
         router.attach("/tasks.{extension}", TaskStatusResource.class);
         router.attach("/tasks", TaskStatusResource.class);
@@ -109,12 +111,12 @@ public class GeogigDispatcher extends AbstractController {
         router.attach("/tasks/{taskId}/download", TaskResultDownloadResource.class);
 
         Router osm = new OSMRouter();
-        router.attach("/repos/{repository}", DeleteRepository.class);
         router.attach("/repos/{repository}/osm", osm);
 
         Router postgis = new PGRouter();
         router.attach("/repos/{repository}/postgis", postgis);
 
+        // GET and DELETE requests are handled in the same resource
         router.attach("/repos/{repository}.{extension}", RepositoryResource.class);
         router.attach("/repos/{repository}", RepositoryResource.class);
         router.attach("/repos/{repository}/repo", makeRepoRouter());

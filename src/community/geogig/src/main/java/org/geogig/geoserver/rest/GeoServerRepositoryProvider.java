@@ -97,7 +97,7 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         try {
             GeoGIG.delete(repoUri.get());
             RepositoryManager manager = RepositoryManager.get();
-            manager.invalidate(repoId);
+            manager.delete(repoId);
         } catch (Exception e) {
             Throwables.propagate(e);
         }

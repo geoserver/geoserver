@@ -1,11 +1,16 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.data.resource;
 
+import org.apache.wicket.ajax.AjaxEventBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Test;
 
@@ -19,6 +24,30 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.startPage(new ResourceConfigurationPage(layer, false));
         tester.assertLabel("publishedinfoname", layer.getResource().getPrefixedName());
         tester.assertComponent("publishedinfo:tabs:panel:theList:0:content", BasicResourceConfig.class);
+    }
+    
+    @Test
+    public void testUpdateResource() {
+        LayerInfo layer = getGeoServerApplication().getCatalog().getLayers().get(0);
+
+        login();
+        ResourceConfigurationPage page = new ResourceConfigurationPage(layer, false);
+        
+        tester.startPage(page);
+        tester.assertContainsNot("the_geom");
+        
+        FeatureTypeInfo info = getCatalog().getResourceByName(MockData.BRIDGES.getLocalPart(), FeatureTypeInfo.class);
+
+        //Apply the new feature to the page
+        page.add(new AjaxEventBehavior("ondblclick") {
+            public void onEvent(AjaxRequestTarget target) {
+                page.updateResource(info, target);
+            }
+        });
+        tester.executeAjaxEvent(page, "ondblclick");
+        
+        //verify contents were updated
+        tester.assertContains("the_geom");
     }
     
     // I can't make the last assertion work, my wicket-fu is not good enough or else the

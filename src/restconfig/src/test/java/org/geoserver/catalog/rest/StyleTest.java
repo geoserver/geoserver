@@ -384,6 +384,17 @@ public class StyleTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testDeleteWithLayerReferenceAndRecurse() throws Exception {
+        assertNotNull( catalog.getStyleByName( "Ponds" ) );
+
+        MockHttpServletResponse response =
+                deleteAsServletResponse("/rest/styles/Ponds?recurse=true");
+        assertEquals( 200, response.getStatus() );
+
+        assertNull( catalog.getStyleByName( "Ponds" ) );
+    }
+
+    @Test
     public void testDeleteWithoutPurge() throws Exception {
         String xml = newSLDXML();
 

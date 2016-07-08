@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+    <fieldset>
+        <div wicket:id="rootDirectory"></div>
+        <label for="templatePath"><wicket:message key="templatePath"/></label>
+        <input id="templatePath" wicket:id="templatePath" type="text" style="width: 300px;"/>
+        <label for="rowRangeCount"><wicket:message key="rowRangeCount"/></label>
+        <input id="rowRangeCount" wicket:id="rowRangeCount" type="text"/>
+        <label for="columnRangeCount"><wicket:message key="columnRangeCount"/></label>
+        <input id="columnRangeCount" wicket:id="columnRangeCount" type="text" class="long"/>
+        <label for="poolSize"><wicket:message key="poolSize"/></label>
+        <input id="poolSize" wicket:id="poolSize" type="text"/>
+        <label for="poolReaperIntervalMs"><wicket:message key="poolReaperIntervalMs"/></label>
+        <input id="poolReaperIntervalMs" wicket:id="poolReaperIntervalMs" type="text"/>
+        <label for="eagerDelete"><wicket:message key="eagerDelete"/></label>
+        <input id="eagerDelete" wicket:id="eagerDelete" type="checkbox"/>
+        <label for="useCreateTime"><wicket:message key="useCreateTime"/></label>
+        <input id="useCreateTime" wicket:id="useCreateTime" type="checkbox"/>
+        <wicket:child/>
+    </fieldset>
+</wicket:panel>
+</body>
+</html>

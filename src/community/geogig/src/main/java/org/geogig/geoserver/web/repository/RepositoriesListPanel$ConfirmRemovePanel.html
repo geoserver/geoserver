@@ -1,0 +1,35 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+    <div>
+      <h3>
+      <wicket:message key="RepositoriesListPanel$ConfirmRemovePanel.title">Confirm repository removal</wicket:message>
+      </h3>
+    </div>
+    <div>
+      <h2>
+      <span wicket:id="aboutRemoveMsg">You are about to remove repository X</span>
+      </h2>
+    </div>
+    <div wicket:id="removedObjects">
+        <wicket:message
+            key="RepositoriesListPanel$ConfirmRemovePanel.removedObjects">The following objects will be removed</wicket:message>:
+        <ul class="plain-ul">
+            <li wicket:id="storesRemoved" class="plain-li"><wicket:message key="RepositoriesListPanel$ConfirmRemovePanel.stores"/>:
+                <span wicket:id="stores"></span></li>
+            <li wicket:id="layersRemoved"><wicket:message key="RepositoriesListPanel$ConfirmRemovePanel.layers" />:
+                <span wicket:id="layers"></span></li>
+        </ul>
+    </div>
+
+    <div wicket:id="modifiedObjects">
+        <wicket:message
+            key="RepositoriesListPanel$ConfirmRemovePanel.modifiedObjects">The following objects will be modified as a result</wicket:message>:
+        <ul class="plain-ul">
+            <li wicket:id="groupsModified"><wicket:message key="RepositoriesListPanel$ConfirmRemovePanel.groups" />:
+                <span wicket:id="groups"></span></li>
+        </ul>
+    </div>
+</wicket:panel>
+</body>
+</html>

@@ -36,7 +36,7 @@ The process of getting community commit access is as follows:
 
 #. **Print, sign, scan and send the contributor agreement**
    
-   * `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.tx>`_
+   * `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.txt>`_
    * `individual_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`__
    
    Scanned assignment agreement can be emailed `info@osgeo.org <mailto:info@osgeo.org>`_ at OSGeo.
@@ -89,21 +89,16 @@ in GeoServer. But over time some rules and conventions have emerged:
    When adding new source files to the repository remember to add the standard
    copyright header::
 
-      /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+      /* (c) 2016 Open Source Geospatial Foundation - all rights reserved
        * This code is licensed under the GPL 2.0 license, available at the root
        * application directory.
        */
 
-   When updating a file .. update the header::
+   When updating a file that does not have an existing header, add one (as above).
 
-      /* (c) 2013-2014 Open Source Geospatial Foundation - all rights reserved
-       * This code is licensed under the GPL 2.0 license, available at the root
-       * application directory.
-       */
-
-   When adding content from another organisation maintain copyright history and original license. Only add (c) OSGeo if you have made modifications to the file for GeoServer::
+   When adding content from another organisation maintain copyright history and original license. Only add Open Source Geospatial Foundation if you have made modifications to the file for GeoServer::
    
-      /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+      /* (c) 2016 Open Source Geospatial Foundation - all rights reserved
        * (c) 2014 OpenPlans
        * (c) 2008-2010 GeoSolutions
        * 

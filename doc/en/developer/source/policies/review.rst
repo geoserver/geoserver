@@ -47,7 +47,7 @@ The following checks can be performed quickly and represent common mistakes or o
 
 * *Presence of a proposal*, if required. For any large change our process demands a formal proposal to be made and discussed in the community before a pull request gets made. If the pull request is made anyways, point them to the process and warn that the community might eventually request changes in the approach
 
-* *Copyright headers* are present or have been updated. Every source file needs a copyright header to be present and up to date. For new files ask the contributor to add the header, for files that have been updated for the first time this year, ask the header to have been updated to include the current year.
+* *Copyright headers* are present. Every source file needs a copyright header to be present. For new files ask the contributor to add the header. Copyright headers do not need to be updated for changes to existing files.
 
 * *No commented out code sections*. The version control is able to tell differences between existing and past versions of a certain file, thus, the commit should not contain commented out code sections.
 

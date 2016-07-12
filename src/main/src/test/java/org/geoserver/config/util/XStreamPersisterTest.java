@@ -305,9 +305,8 @@ public class XStreamPersisterTest {
         DataStoreInfo ds2 = persister.load( in( out ), DataStoreInfo.class );
         assertEquals( "bar", ds2.getName() );
         
-        //TODO: reenable when resolving proxy commited
-        //assertNotNull( ds2.getWorkspace() );
-        //assertEquals( "foo", ds2.getWorkspace().getId() );
+        assertNotNull( ds2.getWorkspace() );
+        assertEquals( "foo", ds2.getWorkspace().getId() );
         
         Document dom = dom( in( out ) );
         assertEquals( "dataStore", dom.getDocumentElement().getNodeName() );
@@ -336,9 +335,8 @@ public class XStreamPersisterTest {
         DataStoreInfo ds2 = persister.load( in( out ), DataStoreInfo.class );
         assertEquals( "bar", ds2.getName() );
         
-        //TODO: reenable when resolving proxy commited
-        //assertNotNull( ds2.getWorkspace() );
-        //assertEquals( "foo", ds2.getWorkspace().getId() );
+        assertNotNull( ds2.getWorkspace() );
+        assertEquals( "foo", ds2.getWorkspace().getId() );
         
         Document dom = dom( in( out ) );
         assertEquals( "dataStore", dom.getDocumentElement().getNodeName() );
@@ -362,9 +360,8 @@ public class XStreamPersisterTest {
         CoverageStoreInfo ds2 = persister.load( in( out ), CoverageStoreInfo.class );
         assertEquals( "bar", ds2.getName() );
         
-        //TODO: reenable when resolving proxy commited
-        //assertNotNull( ds2.getWorkspace() );
-        //assertEquals( "foo", ds2.getWorkspace().getId() );
+        assertNotNull( ds2.getWorkspace() );
+        assertEquals( "foo", ds2.getWorkspace().getId() );
         
         Document dom = dom( in( out ) );
         assertEquals( "coverageStore", dom.getDocumentElement().getNodeName() );
@@ -393,9 +390,8 @@ public class XStreamPersisterTest {
         CoverageStoreInfo ds2 = persister.load( in( out ), CoverageStoreInfo.class );
         assertEquals( "bar", ds2.getName() );
         
-        //TODO: reenable when resolving proxy commited
-        //assertNotNull( ds2.getWorkspace() );
-        //assertEquals( "foo", ds2.getWorkspace().getId() );
+        assertNotNull( ds2.getWorkspace() );
+        assertEquals( "foo", ds2.getWorkspace().getId() );
         
         Document dom = dom( in( out ) );
         assertEquals( "coverageStore", dom.getDocumentElement().getNodeName() );
@@ -423,7 +419,6 @@ public class XStreamPersisterTest {
         assertEquals(WMSStoreInfoImpl.DEFAULT_CONNECT_TIMEOUT, wms2.getConnectTimeout());
         assertEquals(WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT, wms2.getReadTimeout());
         
-        //TODO: reenable when resolving proxy commited
         assertNotNull( wms2.getWorkspace() );
         assertEquals( "foo", wms2.getWorkspace().getId() );
         
@@ -458,7 +453,6 @@ public class XStreamPersisterTest {
         assertEquals(WMSStoreInfoImpl.DEFAULT_CONNECT_TIMEOUT, wms2.getConnectTimeout());
         assertEquals(WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT, wms2.getReadTimeout());
         
-        //TODO: reenable when resolving proxy commited
         assertNotNull( wms2.getWorkspace() );
         assertEquals( "foo", wms2.getWorkspace().getId() );
         

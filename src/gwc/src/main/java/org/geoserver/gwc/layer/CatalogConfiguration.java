@@ -24,12 +24,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.common.base.Predicates;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.GWC;
+import org.geoserver.ows.LocalWorkspace;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.Configuration;
 import org.geowebcache.config.XMLGridSubset;
@@ -210,7 +213,11 @@ public class CatalogConfiguration implements Configuration {
                 }
             };
 
-            return Iterables.transform(layerIds, lazyLayerFetch);
+            // removing the NULL results
+            return Iterables.filter(
+                Iterables.transform(layerIds, lazyLayerFetch),
+                Predicates.notNull()
+            );
         } finally {
             lock.releaseReadLock();
         }
@@ -281,6 +288,27 @@ public class CatalogConfiguration implements Configuration {
         lock.acquireReadLock();
         try {
             layer = layerCache.get(layerId);
+            // let's see if this a virtual service request
+            WorkspaceInfo localWorkspace = LocalWorkspace.get();
+            if (localWorkspace != null) {
+                // yup this is a virtual service request, so we need to filter layers per workspace
+                WorkspaceInfo layerWorkspace;
+                LayerInfo layerInfo = layer.getLayerInfo();
+                if (layerInfo != null) {
+                    // this is a normal layer
+                    layerWorkspace = layer.getLayerInfo().getResource().getStore().getWorkspace();
+                } else {
+                    // this is a layer group
+                    layerWorkspace = layer.getLayerGroupInfo().getWorkspace();
+                }
+                // check if the layer doesn't have an workspace (this is possible for layer groups)
+                if (layerWorkspace == null) {
+                    // no workspace means that it doesn't belong to this workspace
+                    return null;
+                }
+                // if the layer matches the virtual service workspace we return the layer otherwise NULL is returned
+                return localWorkspace.getName().equals(layerWorkspace.getName()) ? layer : null;
+            }
         } catch (ExecutionException e) {
             throw propagate(e.getCause());
         } catch (UncheckedExecutionException e) {
@@ -708,5 +736,24 @@ public class CatalogConfiguration implements Configuration {
         } finally {
             lock.releaseWriteLock();
         }
+    }
+
+    /**
+     * Helper method that will remove the workspace prefix from a layer name.
+     * If the layer is not prefixed by an workspace name the layer name will be returned as is.
+     */
+    public static String removeWorkspacePrefix(String layerName, Catalog catalog) {
+        // checking if we have an workspace prefix
+        int workspaceSeparatorIndex = layerName.indexOf(":");
+        if (workspaceSeparatorIndex >= 0 && workspaceSeparatorIndex + 1 < layerName.length()) {
+            // let's check if we really have a workspace name as prefix
+            String workspaceName = layerName.substring(0, workspaceSeparatorIndex);
+            if (catalog.getWorkspaceByName(workspaceName) != null) {
+                // we really have an workspace as prefix so let's remove it
+                return layerName.substring(workspaceSeparatorIndex + 1);
+            }
+        }
+        // we are already good
+        return layerName;
     }
 }

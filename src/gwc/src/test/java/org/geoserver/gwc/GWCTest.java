@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -779,12 +779,6 @@ public class GWCTest {
         defaults.setTMSEnabled(false);
         assertFalse(mediator.isServiceEnabled(service));
 
-        when(service.getPathName()).thenReturn("wmts");
-        defaults.setWMTSEnabled(true);
-        assertTrue(mediator.isServiceEnabled(service));
-        defaults.setWMTSEnabled(false);
-        assertFalse(mediator.isServiceEnabled(service));
-
         when(service.getPathName()).thenReturn("somethingElse");
         assertTrue(mediator.isServiceEnabled(service));
     }
@@ -1180,7 +1174,7 @@ public class GWCTest {
     public void testGetDefaultAdvertisedCachedFormats() {
         // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
         Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg",
-                "image/gif");
+                "image/gif", "image/vnd.jpeg-png");
 
         SetView<String> formatsWithUtfGrid = union(defaultFormats, Collections.singleton("application/json;type=utfgrid"));
         assertEquals(formatsWithUtfGrid, GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
@@ -1208,7 +1202,7 @@ public class GWCTest {
         }
 
         // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
-        Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg", "image/gif");
+        Set<String> defaultFormats = ImmutableSet.of("image/png", "image/png8", "image/jpeg", "image/gif", "image/vnd.jpeg-png");
 
         // see src/test/resources/org/geoserver/gwc/advertised_formats.properties
         Set<String> expectedVector = union(defaultFormats,

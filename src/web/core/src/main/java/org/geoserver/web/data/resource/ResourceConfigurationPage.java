@@ -181,7 +181,7 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
      */
     public void updateResource(ResourceInfo info, final AjaxRequestTarget target) {
         myResourceModel.setObject(info);
-        visitChildren(TextField.class, (component, visit) -> {
+        visitChildren((component, visit) -> {
             if (component instanceof ResourceConfigurationPanel) {
                 ResourceConfigurationPanel rcp = (ResourceConfigurationPanel) component;
                 rcp.resourceUpdated(target);

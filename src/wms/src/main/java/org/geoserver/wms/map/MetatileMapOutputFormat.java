@@ -37,6 +37,8 @@ import org.geotools.resources.i18n.ErrorKeys;
 import org.geotools.resources.i18n.Errors;
 import org.geotools.util.logging.Logging;
 
+import it.geosolutions.jaiext.BufferedImageAdapter;
+
 /**
  * Wrapping map producer that performs on the fly meta tiling wrapping another map producer. It will
  * first peek inside a tile cache to see if the requested tile has already been computed, if so,
@@ -289,7 +291,8 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                             LOGGER.finer("Metatile split on BufferedImage");
                         }
                         final BufferedImage image = (BufferedImage) metaTile;
-                        tile = image.getSubimage(x, y, tileSize, tileSize);
+                        final BufferedImage subimage = image.getSubimage(x, y, tileSize, tileSize);
+                        tile = new BufferedImageAdapter(subimage);
                         break;
                     default:
                         throw new IllegalStateException(Errors.format(ErrorKeys.ILLEGAL_ARGUMENT_$2,

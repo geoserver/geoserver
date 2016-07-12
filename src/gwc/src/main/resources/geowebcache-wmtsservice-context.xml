@@ -19,12 +19,12 @@
     </property>
     <property name="interceptorNames">
       <list>
-          <!-- allow any other advise defined elsewhere and named "gwcWMTSServiceInterceptor*" 
+          <!-- allow any other advise defined elsewhere and named "gwcWMTSServiceInterceptor*"
                to be added to the interceptors list -->
           <value>gwcWMTSServiceInterceptor*</value>
       </list>
     </property>
   </bean>
   <alias name="gwcServiceWMTSProxy" alias="gwcServiceWMTS"/>
-	
+
 </beans>

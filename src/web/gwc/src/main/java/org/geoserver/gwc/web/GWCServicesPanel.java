@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -24,8 +24,6 @@ public class GWCServicesPanel extends Panel {
 
         final IModel<Boolean> wmsCEnabledModel = new PropertyModel<Boolean>(gwcConfigModel,
                 "WMSCEnabled");
-        final IModel<Boolean> wmtsEnabledModel = new PropertyModel<Boolean>(gwcConfigModel,
-                "WMTSEnabled");
         final IModel<Boolean> tmsEnabledModel = new PropertyModel<Boolean>(gwcConfigModel,
                 "TMSEnabled");
         final IModel<Boolean> securityEnabledModel = new PropertyModel<Boolean>(gwcConfigModel,
@@ -35,7 +33,6 @@ public class GWCServicesPanel extends Panel {
                 "GWCSettingsPage.enableWMSIntegration.title"));
 
         add(checkbox("enableWMSC", wmsCEnabledModel, "GWCSettingsPage.enableWMSC.title"));
-        add(checkbox("enableWMTS", wmtsEnabledModel, "GWCSettingsPage.enableWMTS.title"));
         add(checkbox("enableTMS", tmsEnabledModel, "GWCSettingsPage.enableTMS.title"));
         add(checkbox("enableSecurity", securityEnabledModel, "GWCSettingsPage.enableSecurity.title"));
 

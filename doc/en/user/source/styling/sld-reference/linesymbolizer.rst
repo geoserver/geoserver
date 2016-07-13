@@ -197,10 +197,10 @@ on the left of it.
             <PerpendicularOffset>3</PerpendicularOffset>
           </LineSymbolizer>
           
-.. figure:: img/line_offset.png
+.. figure:: img/line_dashoffset.png
    :align: center
 
-   *Left offset line*
+   *Left offset dashed line*
 
 Offsetting polygons
 -------------------

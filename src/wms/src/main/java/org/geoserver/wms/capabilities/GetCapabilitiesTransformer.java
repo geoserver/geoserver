@@ -1,10 +1,11 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.capabilities;
 
+import static org.geoserver.ows.util.ResponseUtils.appendPath;
 import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
@@ -1286,7 +1287,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 attrs.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
                 attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
                 
-                String legendUrl = buildURL(request.getBaseUrl(), legend.getOnlineResource(), null, URLType.RESOURCE);
+                String legendUrl = buildURL(request.getBaseUrl(), 
+                		appendPath("styles", legend.getOnlineResource()), null, URLType.RESOURCE);
                 attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendUrl);
 
                 element("OnlineResource", null, attrs);

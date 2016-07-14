@@ -176,12 +176,6 @@
     <groupId>org.geoserver</groupId>
     <artifactId>gs-gwc</artifactId>
     <version>${gs.version}</version>
-    <exclusions>
-    	<exclusion>
-    		<groupId>net.sf.json-lib</groupId>
-      		<artifactId>json-lib</artifactId>
-    	</exclusion>
-    </exclusions>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>

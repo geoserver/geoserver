@@ -58,10 +58,10 @@
         <property name="ignoreResourceNotFound" value="true"/>
         <property name="locations">
             <list>
-                <value>classpath*:geofence-datasource-ovr.properties</value>
                 <!-- This location is relative to the datadir -->
                 <value>file:geofence/geofence-datasource-ovr.properties</value> <!-- optional -->
                 <value>${geofence-ovr}</value> <!-- optional -->
+                <value>classpath*:geofence-datasource-ovr.properties</value>
             </list>
         </property>
         <property name="properties"> 

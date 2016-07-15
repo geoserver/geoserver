@@ -223,6 +223,42 @@ Details
 
 In this example, **line 8** sets the color of the lines to be blue (``'#0000FF'``) and **line 8** sets the width of the lines to be 3 pixels. **Line 9** determines the composition of the line dashes. The value of ``5 2`` creates a repeating pattern of 5 pixels of drawn line, followed by 2 pixels of omitted line.
 
+Offset line
+-----------
+
+This example alters the :ref:`ysld_cookbook_lines_simpleline` to add a perpendicular offset line on the left side of the line, at five pixels distance.
+
+.. figure:: images/line_dashoffset.png
+
+   Dashed line
+
+Code
+~~~~
+
+:download:`Download the "Offset line" YSLD <artifacts/line_offsetline.ysld>`
+
+.. code-block:: yaml
+  :linenos:
+
+  title: 'YSLD Cook Book: Dashed line'
+  feature-styles:
+  - name: name
+    rules:
+    - symbolizers:
+      - line:
+          stroke-color: '#000000'
+          stroke-width: 2
+      - line:
+          stroke-color: '#0000FF'
+          stroke-width: 3
+          stroke-dasharray: 5 2
+          offset: 3
+
+Details
+~~~~~~~
+
+In this example, **lines 6-8** draw a simple black line like in the Simple line example. **Lines 9-12** draw a blue dashed line like in the above Dashed line example. **Line 13** modifies the dashed line with a 3 pixel offset from the line geometry.
+
 
 Railroad (hatching)
 -------------------

@@ -8,9 +8,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.locationtech.geogig.api.porcelain.ConfigOp.ConfigAction.CONFIG_LIST;
+import static org.locationtech.geogig.api.porcelain.ConfigOp.ConfigScope.LOCAL;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Map;
 
 import org.geogig.web.functional.WebAPICucumberHooks;
 import org.json.JSONArray;
@@ -18,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.locationtech.geogig.api.GeoGIG;
 import org.locationtech.geogig.api.plumbing.ResolveGeogigURI;
+import org.locationtech.geogig.api.porcelain.ConfigOp;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 
@@ -172,15 +176,10 @@ public class PluginWebAPICucumberHooks {
 
     @When("^I call \"([^\"]*)\" with the System Temp Directory as the parentDirectory$")
     public void callURLWithJSONPaylod(final String methodAndURL) throws JSONException {
-        final int idx = methodAndURL.indexOf(' ');
-        checkArgument(idx > 0, "No METHOD given in URL definition: '%s'", methodAndURL);
-        final String httpMethod = methodAndURL.substring(0, idx);
-        String resourceUri = methodAndURL.substring(idx + 1).trim();
-        Method method = Method.valueOf(httpMethod);
         // build JSON payload
         JSONObject payload = new JSONObject();
         payload.put("parentDirectory", SYSTEM_TEMP_PATH);
-        context.call(method, resourceUri, payload);
+        callURLWithJSONPayload(methodAndURL, payload);
     }
 
     @When("^I call \"([^\"]*)\" with a URL encoded Form containing a parentDirectory parameter$")
@@ -208,6 +207,60 @@ public class PluginWebAPICucumberHooks {
         // request.
         String parentDir = new File(repoURI).getParentFile().getParentFile().getAbsolutePath();
         assertEquals("Unexpected parent directory", SYSTEM_TEMP_PATH, parentDir);
+    }
+
+    @Then("^the Author config of repository \"([^\"]*)\" is set$")
+    public void checkAuthorConfig(final String repo) throws Exception {
+        GeoGIG geogig = context.getRepo(repo);
+        final Optional<URI> repoLocation = geogig.command(ResolveGeogigURI.class).call();
+        assertTrue("Expected Repository location to be present", repoLocation.isPresent());
+        // get the config
+        Optional<Map<String, String>> optConfig = geogig.command(ConfigOp.class).setAction(CONFIG_LIST)
+                .setScope(LOCAL).call();
+        // asseert the user.name and user.email config
+        assertTrue("GeoGig repo config missing", optConfig.isPresent());
+        Map<String, String> config = optConfig.get();
+        assertTrue("\"user.name\" missing in repository config", config.containsKey("user.name"));
+        assertEquals("GeoGig User", config.get("user.name"));
+
+        assertTrue("\"user.email\" missing in repository config", config.containsKey("user.email"));
+        assertEquals("geogig@geogig.org", config.get("user.email"));
+    }
+
+    @When("^I call \"([^\"]*)\" with Author and the System Temp Directory as the parentDirectory$")
+    public void callURLWithJSONPayloadAndAuthor(final String methodAndURL) throws JSONException {
+        // build the JSON payload
+        JSONObject payload = new JSONObject();
+        payload.put("parentDirectory", SYSTEM_TEMP_PATH);
+        // add in author details
+        payload.put("authorName", "GeoGig User");
+        payload.put("authorEmail", "geogig@geogig.org");
+        callURLWithJSONPayload(methodAndURL, payload);
+    }
+
+    private void callURLWithJSONPayload(final String methodAndURL, JSONObject payload)
+            throws JSONException {
+        final int idx = methodAndURL.indexOf(' ');
+        checkArgument(idx > 0, "No METHOD given in URL definition: '%s'", methodAndURL);
+        final String httpMethod = methodAndURL.substring(0, idx);
+        String resourceUri = methodAndURL.substring(idx + 1).trim();
+        Method method = Method.valueOf(httpMethod);
+        context.call(method, resourceUri, payload);
+    }
+
+    @When("^I call \"([^\"]*)\" with a URL encoded Form containing a parentDirectory parameter and Author$")
+    public void callURLWithFormPaylodWithAuthor(final String methodAndURL) throws JSONException {
+        final int idx = methodAndURL.indexOf(' ');
+        checkArgument(idx > 0, "No METHOD given in URL definition: '%s'", methodAndURL);
+        final String httpMethod = methodAndURL.substring(0, idx);
+        String resourceUri = methodAndURL.substring(idx + 1).trim();
+        Method method = Method.valueOf(httpMethod);
+        // build URL encoded Form
+        Form form = new Form();
+        form.add("parentDirectory", SYSTEM_TEMP_PATH);
+        form.add("authorName", "GeoGig User");
+        form.add("authorEmail", "geogig@geogig.org");
+        context.call(method, resourceUri, form);
     }
 
     @Then("^the parent directory of repository \"([^\"]*)\" is NOT the System Temp directory$")

@@ -4,6 +4,11 @@
  */
 package org.geogig.geoserver.rest;
 
+import static org.geogig.geoserver.rest.InitRequestHandler.AUTHOR_EMAIL;
+import static org.geogig.geoserver.rest.InitRequestHandler.AUTHOR_NAME;
+import static org.locationtech.geogig.api.porcelain.ConfigOp.ConfigAction.CONFIG_SET;
+import static org.locationtech.geogig.api.porcelain.ConfigOp.ConfigScope.LOCAL;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -18,6 +23,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.locationtech.geogig.api.plumbing.ResolveRepositoryName;
+import org.locationtech.geogig.api.porcelain.ConfigOp;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.rest.repository.CommandResource;
 import org.restlet.data.Request;
@@ -39,6 +45,9 @@ public class InitCommandResource extends CommandResource {
         Representation representation = super.runCommand(variant, request);
 
         if (getResponse().getStatus() == Status.SUCCESS_CREATED) {
+            // set the Author name and email from the Init request
+            setAuthor(request);
+            // get the repository name
             String repositoryName = geogig.get().command(ResolveRepositoryName.class).call();
             // save the repo in the Manager
             RepositoryInfo repoInfo = saveRepository();
@@ -46,6 +55,23 @@ public class InitCommandResource extends CommandResource {
             setUpDataStore(catalog, repositoryName, repoInfo);
         }
         return representation;
+    }
+
+    private void setAuthor(Request request) {
+        // get request attributes. If author info was requested, it will be stored there.
+        Map<String, Object> attributes = request.getAttributes();
+        if (attributes.containsKey(AUTHOR_NAME)) {
+            // set the author name
+            geogig.get().command(ConfigOp.class).setAction(CONFIG_SET).setScope(LOCAL)
+                    .setName("user.name")
+                    .setValue(attributes.get(AUTHOR_NAME).toString()).call();
+        }
+        if (attributes.containsKey(AUTHOR_EMAIL)) {
+            // set the author email
+            geogig.get().command(ConfigOp.class).setAction(CONFIG_SET).setScope(LOCAL)
+                    .setName("user.email")
+                    .setValue(attributes.get(AUTHOR_EMAIL).toString()).call();
+        }
     }
 
     private RepositoryInfo saveRepository() {
@@ -85,7 +111,7 @@ public class InitCommandResource extends CommandResource {
             DataStoreInfo dsInfo = catalog.getDataStoreByName(ws, storeName);
             String repoId = (String) dsInfo.getConnectionParameters()
                     .get(GeoGigDataStoreFactory.REPOSITORY.key);
-            RepositoryInfo info = RepositoryManager.get().get(repoId);
+            RepositoryManager.get().get(repoId);
         } catch (IOException e) {
             Throwables.propagate(e);
         }

@@ -68,3 +68,47 @@ Feature: Plugin Initialize Repository
     And the response ContentType should be "application/json"
     And the json object "response.success" equals "false"
     And the json object "response.error" equals "Cannot run init on an already initialized repository."
+
+  Scenario: Verify JSON fomratted response of Init with JSON formatted request parameters and Author
+    Given There is an empty multirepo server
+    When I call "PUT /repos/repo1/init.json" with Author and the System Temp Directory as the parentDirectory
+    Then the response status should be '201'
+    And the response ContentType should be "application/json"
+    And the json object "response.success" equals "true"
+    And the json object "response.repo.name" equals "repo1"
+    And the json object "response.repo.href" ends with "/repos/repo1.json"
+    And the parent directory of repository "repo1" equals System Temp directory
+    And the Author config of repository "repo1" is set
+
+  Scenario: Verify XML fomratted response of Init with JSON formatted request parameters and Author
+    Given There is an empty multirepo server
+    When I call "PUT /repos/repo1/init" with Author and the System Temp Directory as the parentDirectory
+    Then the response status should be '201'
+    And the response ContentType should be "application/xml"
+    And the xpath "/response/success/text()" equals "true"
+    And the xpath "/response/repo/name/text()" equals "repo1"
+    And the xpath "/response/repo/atom:link/@href" contains "/repos/repo1.xml"
+    And the parent directory of repository "repo1" equals System Temp directory
+    And the Author config of repository "repo1" is set
+
+  Scenario: Verify JSON fomratted response of Init with URL Form encoded request parameters and Author
+    Given There is an empty multirepo server
+    When I call "PUT /repos/repo1/init.json" with a URL encoded Form containing a parentDirectory parameter and Author
+    Then the response status should be '201'
+    And the response ContentType should be "application/json"
+    And the json object "response.success" equals "true"
+    And the json object "response.repo.name" equals "repo1"
+    And the json object "response.repo.href" ends with "/repos/repo1.json"
+    And the parent directory of repository "repo1" equals System Temp directory
+    And the Author config of repository "repo1" is set
+
+  Scenario: Verify XML fomratted response of Init with URL Form encoded request parameters and Author
+    Given There is an empty multirepo server
+    When I call "PUT /repos/repo1/init" with a URL encoded Form containing a parentDirectory parameter and Author
+    Then the response status should be '201'
+    And the response ContentType should be "application/xml"
+    And the xpath "/response/success/text()" equals "true"
+    And the xpath "/response/repo/name/text()" equals "repo1"
+    And the xpath "/response/repo/atom:link/@href" contains "/repos/repo1.xml"
+    And the parent directory of repository "repo1" equals System Temp directory
+    And the Author config of repository "repo1" is set

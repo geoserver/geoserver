@@ -70,10 +70,28 @@ class InitRequestHandler {
      * Database option for password.
      */
     static final String DB_PASSWORD = "dbPassword";
+    /**
+     * GeoGig author name.
+     */
+    static final String AUTHOR_NAME = "authorName";
+    /**
+     * GeoGig author email.
+     */
+    static final String AUTHOR_EMAIL = "authorEmail";
 
     private void addParameter(Map<String, String> params, String key, String value) {
         if (value != null) {
             params.put(key, value);
+        }
+    }
+
+    private void updateRequestWithAuthor(Request request, Map<String, String> params) {
+        // store author name and email in the attributes, if they were provided
+        if (params.containsKey(AUTHOR_NAME)) {
+            request.getAttributes().put(AUTHOR_NAME, params.get(AUTHOR_NAME));
+        }
+        if (params.containsKey(AUTHOR_EMAIL)) {
+            request.getAttributes().put(AUTHOR_EMAIL, params.get(AUTHOR_EMAIL));
         }
     }
 
@@ -94,6 +112,8 @@ class InitRequestHandler {
         addParameter(params, DB_SCHEMA, json.optString(DB_SCHEMA, null));
         addParameter(params, DB_USER, json.optString(DB_USER, null));
         addParameter(params, DB_PASSWORD, json.optString(DB_PASSWORD, null));
+        addParameter(params, AUTHOR_NAME, json.optString(AUTHOR_NAME, null));
+        addParameter(params, AUTHOR_EMAIL, json.optString(AUTHOR_EMAIL, null));
     }
 
     /**
@@ -113,10 +133,12 @@ class InitRequestHandler {
         addParameter(params, DB_SCHEMA, form.getFirstValue(DB_SCHEMA, null));
         addParameter(params, DB_USER, form.getFirstValue(DB_USER, null));
         addParameter(params, DB_PASSWORD, form.getFirstValue(DB_PASSWORD, null));
+        addParameter(params, AUTHOR_NAME, form.getFirstValue(AUTHOR_NAME, null));
+        addParameter(params, AUTHOR_EMAIL, form.getFirstValue(AUTHOR_EMAIL, null));
     }
 
     private Map<String, String> getRequestParameters(Request request) {
-        HashMap<String, String> params = new HashMap<>(8);
+        HashMap<String, String> params = new HashMap<>(10);
         if (request.isEntityAvailable()) {
             Representation entity = request.getEntity();
             final MediaType reqMediaType = entity.getMediaType();
@@ -143,6 +165,9 @@ class InitRequestHandler {
             }
             // no parameters specified
         }
+        // the request body was just consumed and can't be retrieved again. If we parsed Author info,
+        // store that on the request for later processing.
+        updateRequestWithAuthor(request, params);
         return params;
     }
 

@@ -91,3 +91,64 @@ The method of setting the Java system property is dependent on the servlet conta
      </java-config>
      ...
 
+Require files to exist
+----------------------
+
+If the data directory is on a network filesystem, it can be desirable for security reasons to require one or more files or directories to exist before GeoServer will start, to prevent GeoServer from falling back into a default insecure configuration if the data directory appears to be empty because of the loss of this network resource.
+
+To require files or directories to exist, use any of the methods above to set ``GEOSERVER_REQUIRE_FILE``. Do not specify a mount point as this will still exist if a network filesystem is unavailable; instead specify a file or directory *inside* a network mount. For example:
+
+Environment variable:
+
+.. code-block:: console
+
+   export GEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml
+
+Servlet context parameter:
+
+.. code-block:: xml
+
+   <web-app>
+     ...
+     <context-param>
+       <param-name>GEOSERVER_REQUIRE_FILE</param-name>
+       <param-value>/mnt/server/geoserver_data/global.xml</param-value>
+     </context-param>
+     ...
+   </web-app>
+
+Java system property:
+
+.. code-block:: console
+
+   CATALINA_OPTS="-DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml"
+
+Multiple files
+^^^^^^^^^^^^^^
+
+To specify multiple files or directories that must exist, separate them with the path separator (``:`` on Linux, ``;`` on Windows):
+
+Environment variable:
+
+.. code-block:: console
+
+   export GEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml:/mnt/server/data
+
+Servlet context parameter:
+
+.. code-block:: xml
+
+   <web-app>
+     ...
+     <context-param>
+       <param-name>GEOSERVER_REQUIRE_FILE</param-name>
+       <param-value>/mnt/server/geoserver_data/global.xml:/mnt/server/data</param-value>
+     </context-param>
+     ...
+   </web-app>
+
+Java system property:
+
+.. code-block:: console
+
+   CATALINA_OPTS="-DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml:/mnt/server/data"

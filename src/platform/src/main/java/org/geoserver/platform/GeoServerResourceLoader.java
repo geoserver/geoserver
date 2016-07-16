@@ -591,6 +591,11 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
         final String[] typeStrs = { "Java environment variable ",
                 "Servlet context parameter ", "System environment variable " };
 
+        String requireFileVar = "GEOSERVER_REQUIRE_FILE";
+        requireFile(System.getProperty(requireFileVar), typeStrs[0] + requireFileVar);
+        requireFile(servContext.getInitParameter(requireFileVar), typeStrs[1] + requireFileVar);
+        requireFile(System.getenv(requireFileVar), typeStrs[2] + requireFileVar);
+
         final String[] varStrs = { "GEOSERVER_DATA_DIR", "GEOSERVER_DATA_ROOT" };
 
         String dataDirStr = null;
@@ -655,6 +660,25 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
         }
         
         return dataDirStr;
+    }
+
+    /**
+     * Check that required files exist and throw {@link IllegalArgumentException} if they do not.
+     * 
+     * @param files either a single file name or a list of file names separated by {@link File#pathSeparator}
+     * @param source description of source from which file name(s) obtained
+     */
+    static void requireFile(String files, String source) {
+        if (files == null || files.isEmpty()) {
+            return;
+        } else {
+            for (String file : files.split(File.pathSeparator)) {
+                if (!(new File(file)).exists()) {
+                    throw new IllegalArgumentException(
+                            "Missing required file: " + file + " From: " + source + ": " + files);
+                }
+            }
+        }
     }
 
     @Override

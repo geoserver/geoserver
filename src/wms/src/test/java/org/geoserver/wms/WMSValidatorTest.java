@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.easymock.classextension.EasyMock;
-import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -35,12 +34,12 @@ public class WMSValidatorTest extends GeoServerMockTestSupport {
                     FeatureTypeInfo info = (FeatureTypeInfo) r;
                     AttributeTypeInfoImpl geom1 = new AttributeTypeInfoImpl();
                     geom1.setName("geom");
-                    EasyMock.expect(info.getAttributes()).andReturn(Arrays.asList((AttributeTypeInfo) geom1)).anyTimes();
+                    EasyMock.expect(info.getAttributes()).andReturn(Arrays.asList(geom1)).anyTimes();
                     AttributeTypeInfoImpl geom2 = new AttributeTypeInfoImpl();
                     geom2.setName("geom");
                     geom2.setBinding(Polygon.class);
                     try {
-                        EasyMock.expect(info.attributes()).andReturn(Arrays.asList((AttributeTypeInfo) geom2)).anyTimes();
+                        EasyMock.expect(info.attributes()).andReturn(Arrays.asList(geom2)).anyTimes();
                     } catch (IOException e) {
                         // will not happen
                     }

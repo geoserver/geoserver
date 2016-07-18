@@ -9,8 +9,6 @@ import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.GeoServerConfigurationLock.LockType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Protects the catalog and configuration from concurrent access from the web GUI side (will stay
@@ -27,6 +25,8 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     GeoServerConfigurationLock locker;
 
     static ThreadLocal<LockType> THREAD_LOCK = new ThreadLocal<GeoServerConfigurationLock.LockType>();
+    
+    static ThreadLocal<Class<? extends IRequestablePage>> THREAD_REQUESTED_PAGE = new ThreadLocal<Class<? extends IRequestablePage>>();
 
     public WicketConfigurationLockCallback(GeoServerConfigurationLock locker) {
         this.locker = locker;
@@ -46,45 +46,58 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     public void onEndRequest() {
         LockType type = THREAD_LOCK.get();
         if (type != null) {
+            THREAD_LOCK.remove();
 
-            boolean lockTaken = locker.tryLock(type);
-
-            if (lockTaken) {
-                THREAD_LOCK.remove();
-                locker.unlock(type);
-                locker.setAuth(null);
+            if (THREAD_REQUESTED_PAGE.get() != null) {
+                THREAD_REQUESTED_PAGE.remove();
             }
+            
+            locker.unlock(type);
         }
     }
 
     @Override
     public void onRequestTargetSet(Class<? extends IRequestablePage> requestTarget) {
-        // we can have many of these calls per http call, avoid locking multiple times,
-        // onEndRequest will be called just once
+        if (!GeoServerUnlockablePage.class.isAssignableFrom(requestTarget)) {
+            // we can have many of these calls per http call, avoid locking multiple times,
+            // onEndRequest will be called just once
+            LockType type = THREAD_LOCK.get();
+            if (type != null || requestTarget == null) {
+                return;
+            }
+    
+            // setup a write lock for secured pages, a read one for the others
+            if (GeoServerSecuredPage.class.isAssignableFrom(requestTarget)) {
+                type = LockType.WRITE;
+            }
+            if (type == null) {
+                type = LockType.READ;
+            }
+    
+            // and lock
+            boolean lockTaken = locker.tryLock(type);
+    
+            if (lockTaken) {
+                THREAD_LOCK.set(type);
+                THREAD_REQUESTED_PAGE.set(requestTarget);
+            }
+        }
+    }
+    
+    @Override
+    public void onRequestTargetSet(RequestCycle cycle,
+            Class<? extends IRequestablePage> requestTarget) {
+        WicketCallback.super.onRequestTargetSet(cycle, requestTarget);
+        
         LockType type = THREAD_LOCK.get();
-        if (type != null || requestTarget == null) {
-            return;
-        }
+        Class<? extends IRequestablePage> requestedPage = THREAD_REQUESTED_PAGE.get();
+        
+        // Check if the configuration is locked and the page is safe...
+        if (type != null && requestedPage != null && requestedPage != requestTarget) {
+            boolean lockTaken = locker.tryLock(type);
 
-        // setup a write lock for secured pages, a read one for the others
-        if (GeoServerSecuredPage.class.isAssignableFrom(requestTarget)) {
-            type = LockType.WRITE;
-        }
-        if (type == null) {
-            type = LockType.READ;
-        }
-
-        // and lock
-        boolean lockTaken = locker.tryLock(type);
-
-        if (lockTaken) {
-            THREAD_LOCK.set(type);
-            locker.unlock(type);
-
-            if (GeoServerSecuredPage.class.isAssignableFrom(requestTarget) &&
-                 !GeoServerUnlockablePage.class.isAssignableFrom(requestTarget)) {
-                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                locker.setAuth(auth);
+            if (!lockTaken && !GeoServerUnlockablePage.class.isAssignableFrom(requestTarget)) {
+                cycle.setResponsePage(ServerBusyPage.class);
             }
         }
     }

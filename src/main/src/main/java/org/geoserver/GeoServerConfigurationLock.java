@@ -11,6 +11,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 
@@ -29,7 +30,7 @@ import org.springframework.security.core.Authentication;
 public class GeoServerConfigurationLock {
     
     /** DEFAULT_TRY_LOCK_TIMEOUT_MS */
-    private static final int DEFAULT_TRY_LOCK_TIMEOUT_MS = 3000;
+    private static final int DEFAULT_TRY_LOCK_TIMEOUT_MS = 5000;
 
     private static final Level LEVEL = Level.FINE;
 
@@ -42,8 +43,6 @@ public class GeoServerConfigurationLock {
     };
 
     private boolean enabled;
-
-    private Authentication auth;
 
     public GeoServerConfigurationLock() {
         String pvalue = System.getProperty("GeoServerConfigurationLock.enabled");
@@ -110,7 +109,11 @@ public class GeoServerConfigurationLock {
         
         boolean res = false;
         try {
-            res = lock.tryLock(DEFAULT_TRY_LOCK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            long lockTimeOut = DEFAULT_TRY_LOCK_TIMEOUT_MS;
+            if(GeoServerExtensions.getProperty("CONFIGURATION_TRYLOCK_TIMEOUT") != null) {
+                lockTimeOut = Long.valueOf(GeoServerExtensions.getProperty("CONFIGURATION_TRYLOCK_TIMEOUT"));
+            }
+            res = lock.tryLock(lockTimeOut, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             LOGGER.log(Level.WARNING, "Thread " + Thread.currentThread().getId() + " thrown an InterruptedException on GeoServerConfigurationLock TryLock.", e);
             res = false;
@@ -155,20 +158,6 @@ public class GeoServerConfigurationLock {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    /**
-     * @return the auth
-     */
-    public Authentication getAuth() {
-        return auth;
-    }
-
-    /**
-     * @param auth the auth to set
-     */
-    public void setAuth(Authentication auth) {
-        this.auth = auth;
     }
 
     /**

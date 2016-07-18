@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.wicket.request.http.WebRequest;
-import org.geoserver.GeoServerConfigurationLock;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -54,13 +52,6 @@ public class GeoServerSecuredPage extends GeoServerBasePage {
         }
         else if (!getPageAuthorizer().isAccessAllowed(this.getClass(), auth))
             setResponsePage(UnauthorizedPage.class);
-        
-        GeoServerConfigurationLock locker = (GeoServerConfigurationLock) GeoServerExtensions.bean("configurationLock");
-        
-        if (locker != null && auth != null && locker.getAuth() != null && !locker.getAuth().getName().equals(auth.getName())) {
-            setResponsePage(ServerBusyPage.class);
-        }
-
     }
 
     /**

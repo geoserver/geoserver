@@ -15,7 +15,6 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.ServerBusyPage;
 import org.geoserver.web.data.store.DataAccessEditPage;
 import org.junit.Test;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -27,6 +26,8 @@ public class ServerBusyPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testStoreEditServerBusyPage() throws Exception {
+        System.setProperty("CONFIGURATION_TRYLOCK_TIMEOUT", "0");
+        
         login();
 
         List<GrantedAuthority> l= new ArrayList<GrantedAuthority>();
@@ -41,7 +42,6 @@ public class ServerBusyPageTest extends GeoServerWicketTestSupport {
                 public void run() {
                     // Acquiring Configuration Lock as another user
                     locker.setEnabled(true);
-                    locker.setAuth(new UsernamePasswordAuthenticationToken("anonymousUser","", l));
                     locker.lock(type);
 
                     try {
@@ -51,7 +51,6 @@ public class ServerBusyPageTest extends GeoServerWicketTestSupport {
                     } finally {
                         try {
                             locker.unlock(type);
-                            locker.setAuth(null);
                         } catch(Exception e) {
                             
                         }
@@ -70,12 +69,8 @@ public class ServerBusyPageTest extends GeoServerWicketTestSupport {
             }
             tester.assertNoErrorMessage();
 
-            // Waste some time just to be sure the lock has been released...
-            Thread.sleep(5000);
-            
             try {
                 locker.unlock(type);
-                locker.setAuth(null);
             } catch(Exception e) {
                 
             }

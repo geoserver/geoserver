@@ -1,5 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,7 +11,7 @@ import org.apache.wicket.model.ResourceModel;
 /**
  * Displays a message suggesting the user to login or to elevate his privileges
  */
-public class ServerBusyPage extends GeoServerBasePage {
+public class ServerBusyPage extends GeoServerBasePage implements GeoServerUnlockablePage {
 
     public ServerBusyPage() {
         IModel model = new ResourceModel( "ServerBusyPage.serverBusyMessage" );

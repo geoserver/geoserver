@@ -326,7 +326,7 @@ public class Resources {
     public static void copy (File data, Resource directory) throws IOException {
         String filename = data.getName();
         try(InputStream in = new FileInputStream(data)) {
-            copy(data, directory.get(filename));
+            copy(in, directory.get(filename));
         }
     }
     

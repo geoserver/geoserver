@@ -139,8 +139,8 @@ public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
                     cm = sampleColorMap(numColors, min, max, cm, Function.identity(), numColors < MAX_PALETTE_COLORS);
                 }
             } else {
-                if(min < 1e-2) {
-                    throw new InvalidParameterException("Min range value must be positive (and greater than 0.01) in log scale mode");
+                if(min <= 0) {
+                    throw new InvalidParameterException("Min range value must be positive in log scale mode");
                 }
                 double logMin = Math.log(min);
                 double logMax = Math.log(max);

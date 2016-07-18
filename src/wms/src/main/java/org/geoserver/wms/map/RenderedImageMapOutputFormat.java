@@ -167,7 +167,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /** A logger for this class. */
-    private static final Logger LOGGER = Logging.getLogger(RenderedImageMapOutputFormat.class);
+    public static final Logger LOGGER = Logging.getLogger(RenderedImageMapOutputFormat.class);
 
     /** Which format to encode the image in if one is not supplied */
     private static final String DEFAULT_MAP_FORMAT = "image/png";
@@ -517,17 +517,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         
         onBeforeRender(renderer);
         
-        int localMaxRenderingTime = 0;
-        Object timeoutOption = request.getFormatOptions().get("timeout");
-        if (timeoutOption != null) {
-            try {
-                localMaxRenderingTime = Integer.parseInt(timeoutOption.toString());
-            } catch (NumberFormatException e) {
-                LOGGER.log(Level.WARNING,"Could not parse format_option \"timeout\": "+timeoutOption, e);
-            }
-        }
-        int maxRenderingTime = getMaxRenderingTime(localMaxRenderingTime);
-        
+        int maxRenderingTime = wms.getMaxRenderingTime(request);
         ServiceException serviceException = null;
         boolean saveMap = (request.getRawKvp() != null && WMSServiceExceptionHandler
                 .isPartialMapExceptionType(request.getRawKvp().get("EXCEPTIONS")));
@@ -634,25 +624,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 preparedImage, hintsMap);
     }
     
-    /**
-     * Timeout on the smallest nonzero value of the WMS timeout and the timeout format option
-     * If both are zero then there is no timeout
-     * 
-     * @param localMaxRenderingTime
-     *
-     */
-    public int getMaxRenderingTime(int localMaxRenderingTime) {
-        
-        int maxRenderingTime = wms.getMaxRenderingTime() * 1000;
-        
-        if (maxRenderingTime == 0) {
-            maxRenderingTime = localMaxRenderingTime;
-        } else if (localMaxRenderingTime != 0) {
-            maxRenderingTime = Math.min(maxRenderingTime, localMaxRenderingTime);
-        }
-        
-        return maxRenderingTime;
-    }
+    
 
     /**
      * Allows subclasses to customize the renderer before the paint method gets invoked

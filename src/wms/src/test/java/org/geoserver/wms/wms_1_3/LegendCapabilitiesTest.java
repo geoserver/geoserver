@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -41,7 +42,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
     private static final int LEGEND_WIDTH = 22;
     private static final int LEGEND_HEIGHT = 22;
     private static final String LEGEND_FORMAT = "image/jpeg";
-    private static final String IMAGE_URL = "styles/legend.png";
+    private static final String IMAGE_URL = "legend.png";
     private static final String BASE = "src/test/resources/geoserver";
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -93,6 +94,6 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo(String.valueOf(LEGEND_WIDTH), legendUrlPath + "/@width", dom);
         assertXpathEvaluatesTo(String.valueOf(LEGEND_HEIGHT), legendUrlPath + "/@height", dom);
         assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPath + "/wms:Format", dom);
-        assertXpathEvaluatesTo(BASE+"/"+IMAGE_URL, legendUrlPath + "/wms:OnlineResource/@xlink:href", dom);
+        assertXpathEvaluatesTo(BASE+"/styles/"+IMAGE_URL, legendUrlPath + "/wms:OnlineResource/@xlink:href", dom);
     }
 }

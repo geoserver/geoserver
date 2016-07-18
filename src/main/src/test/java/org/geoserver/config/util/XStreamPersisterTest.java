@@ -56,6 +56,8 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
+import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
+import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.config.ContactInfo;
@@ -303,9 +305,38 @@ public class XStreamPersisterTest {
         DataStoreInfo ds2 = persister.load( in( out ), DataStoreInfo.class );
         assertEquals( "bar", ds2.getName() );
         
-        //TODO: reenable when resolving proxy commited
-        //assertNotNull( ds2.getWorkspace() );
-        //assertEquals( "foo", ds2.getWorkspace().getId() );
+        assertNotNull( ds2.getWorkspace() );
+        assertEquals( "foo", ds2.getWorkspace().getId() );
+        
+        Document dom = dom( in( out ) );
+        assertEquals( "dataStore", dom.getDocumentElement().getNodeName() );
+    }
+    
+    @Test
+    public void testDataStoreReferencedByName() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+        
+        DataStoreInfo ds1 = cFactory.createDataStore();
+        ds1.setName( "bar" );
+        ds1.setWorkspace( ws );
+        catalog.detach(ds1);
+        ((DataStoreInfoImpl)ds1).setId(null);
+        
+        ByteArrayOutputStream out = out();
+        XStreamPersister persister = new XStreamPersisterFactory().createXMLPersister();
+        persister.setReferenceByName(true);
+        
+        persister.save( ds1 , out );
+        
+        DataStoreInfo ds2 = persister.load( in( out ), DataStoreInfo.class );
+        assertEquals( "bar", ds2.getName() );
+        
+        assertNotNull( ds2.getWorkspace() );
+        assertEquals( "foo", ds2.getWorkspace().getId() );
         
         Document dom = dom( in( out ) );
         assertEquals( "dataStore", dom.getDocumentElement().getNodeName() );
@@ -329,9 +360,38 @@ public class XStreamPersisterTest {
         CoverageStoreInfo ds2 = persister.load( in( out ), CoverageStoreInfo.class );
         assertEquals( "bar", ds2.getName() );
         
-        //TODO: reenable when resolving proxy commited
-        //assertNotNull( ds2.getWorkspace() );
-        //assertEquals( "foo", ds2.getWorkspace().getId() );
+        assertNotNull( ds2.getWorkspace() );
+        assertEquals( "foo", ds2.getWorkspace().getId() );
+        
+        Document dom = dom( in( out ) );
+        assertEquals( "coverageStore", dom.getDocumentElement().getNodeName() );
+    }
+    
+    @Test
+    public void testCoverageStoreReferencedByName() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+        
+        CoverageStoreInfo cs1 = cFactory.createCoverageStore();
+        cs1.setName( "bar" );
+        cs1.setWorkspace( ws );
+        catalog.detach(cs1);
+        ((CoverageStoreInfoImpl)cs1).setId(null);
+        
+        ByteArrayOutputStream out = out();
+        XStreamPersister persister = new XStreamPersisterFactory().createXMLPersister();
+        persister.setReferenceByName(true);
+        
+        persister.save( cs1 , out );
+        
+        CoverageStoreInfo ds2 = persister.load( in( out ), CoverageStoreInfo.class );
+        assertEquals( "bar", ds2.getName() );
+        
+        assertNotNull( ds2.getWorkspace() );
+        assertEquals( "foo", ds2.getWorkspace().getId() );
         
         Document dom = dom( in( out ) );
         assertEquals( "coverageStore", dom.getDocumentElement().getNodeName() );
@@ -359,7 +419,40 @@ public class XStreamPersisterTest {
         assertEquals(WMSStoreInfoImpl.DEFAULT_CONNECT_TIMEOUT, wms2.getConnectTimeout());
         assertEquals(WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT, wms2.getReadTimeout());
         
-        //TODO: reenable when resolving proxy commited
+        assertNotNull( wms2.getWorkspace() );
+        assertEquals( "foo", wms2.getWorkspace().getId() );
+        
+        Document dom = dom( in( out ) );
+        assertEquals( "wmsStore", dom.getDocumentElement().getNodeName() );
+    }
+    
+    @Test
+    public void testWMSStoreReferencedByName() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+        
+        WMSStoreInfo wms1 = cFactory.createWebMapServer();
+        wms1.setName( "bar" );
+        wms1.setWorkspace( ws );
+        wms1.setCapabilitiesURL( "http://fake.host/wms?request=GetCapabilities&service=wms");
+        catalog.detach(wms1);
+        ((WMSStoreInfoImpl)wms1).setId(null);
+        
+        ByteArrayOutputStream out = out();
+        XStreamPersister persister = new XStreamPersisterFactory().createXMLPersister();
+        persister.setReferenceByName(true);
+        
+        persister.save( wms1, out );
+        
+        WMSStoreInfo wms2 = persister.load( in( out ), WMSStoreInfo.class );
+        assertEquals( "bar", wms2.getName() );
+        assertEquals(WMSStoreInfoImpl.DEFAULT_MAX_CONNECTIONS, wms2.getMaxConnections());
+        assertEquals(WMSStoreInfoImpl.DEFAULT_CONNECT_TIMEOUT, wms2.getConnectTimeout());
+        assertEquals(WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT, wms2.getReadTimeout());
+        
         assertNotNull( wms2.getWorkspace() );
         assertEquals( "foo", wms2.getWorkspace().getId() );
         

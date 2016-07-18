@@ -48,6 +48,7 @@ import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategyFactory;
 import org.geoserver.wms.dimension.DimensionFilterBuilder;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
+import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
@@ -67,11 +68,16 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.styling.Style;
 import org.geotools.util.Converters;
+import org.geotools.util.DateRange;
+import org.geotools.util.NumberRange;
+import org.geotools.util.Range;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.PropertyIsBetween;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
@@ -1122,6 +1128,39 @@ public class WMS implements ApplicationContextAware {
     }
 
     /**
+     * Query and returns the times for the given layer, in the given time range
+     * @throws IOException 
+     */
+    public TreeSet<Object> queryCoverageTimes(CoverageInfo coverage, DateRange queryRange,
+            int maxAnimationSteps) throws IOException {
+        // grab the time metadata
+        DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        if (time == null || !time.isEnabled()) {
+            throw new ServiceException("Layer " + coverage.getPrefixedName()
+                    + " does not have time support enabled");
+        }
+        
+        GridCoverage2DReader reader = null;
+        try {
+            reader = (GridCoverage2DReader) coverage.getGridCoverageReader(null, null);
+        } catch (Throwable t) {
+            throw new ServiceException("Unable to acquire a reader for this coverage " + coverage.prefixedName(), t);
+        }
+        if (reader  == null) {
+            throw new ServiceException("Unable to acquire a reader for this coverage " + coverage.prefixedName());
+        }
+        ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
+        return dimensions.getTimeDomain(queryRange, maxAnimationSteps);
+    }
+    
+    /**
+     * Query and returns the times for the given layer, in the given time range
+     */
+    public TreeSet<Object> queryFeatureTypeTimes(FeatureTypeInfo typeInfo, DateRange range, int maxItems) throws IOException {
+        return queryFeatureTypeDimension(typeInfo, range, maxItems, ResourceInfo.TIME);
+    }
+
+    /**
      * Returns the list of time values for the specified typeInfo based on the dimension
      * representation: all values for {@link DimensionPresentation#LIST}, otherwise min and max
      * 
@@ -1133,7 +1172,7 @@ public class WMS implements ApplicationContextAware {
         // grab the time metadata
         DimensionInfo time = typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) {
-            throw new ServiceException("Layer " + typeInfo.getPrefixedName()
+            throw new ServiceException("Layer " + typeInfo.prefixedName()
                     + " does not have time support enabled");
         }
 
@@ -1168,6 +1207,32 @@ public class WMS implements ApplicationContextAware {
 
         return result;
     }
+    
+    /**
+     * Query and returns the elevations for the given layer, in the given time range
+     * @throws IOException 
+     */
+    public TreeSet<Object> queryCoverageElevations(CoverageInfo coverage, NumberRange queryRange,
+            int maxAnimationSteps) throws IOException {
+        // grab the metadata
+        DimensionInfo elevation = coverage.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+        if (elevation == null || !elevation.isEnabled()) {
+            throw new ServiceException("Layer " + coverage.prefixedName()
+                    + " does not have elevation support enabled");
+        }
+        
+        GridCoverage2DReader reader = null;
+        try {
+            reader = (GridCoverage2DReader) coverage.getGridCoverageReader(null, null);
+        } catch (Throwable t) {
+            throw new ServiceException("Unable to acquire a reader for this coverage " + coverage.prefixedName(), t);
+        }
+        if (reader  == null) {
+            throw new ServiceException("Unable to acquire a reader for this coverage " + coverage.prefixedName());
+        }
+        ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
+        return dimensions.getElevationDomain(queryRange, maxAnimationSteps);
+    }
 
     /**
      * Returns the list of elevation values for the specified typeInfo based on the dimension
@@ -1182,7 +1247,7 @@ public class WMS implements ApplicationContextAware {
         DimensionInfo elevation = typeInfo.getMetadata().get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
         if (elevation == null || !elevation.isEnabled()) {
-            throw new ServiceException("Layer " + typeInfo.getPrefixedName()
+            throw new ServiceException("Layer " + typeInfo.prefixedName()
                     + " does not have elevation support enabled");
         }
 
@@ -1217,6 +1282,42 @@ public class WMS implements ApplicationContextAware {
             }
         }
 
+        return result;
+    }
+    
+    /**
+     * Query and returns the times for the given layer, in the given time range
+     */
+    public TreeSet<Object> queryFeatureTypeElevations(FeatureTypeInfo typeInfo, NumberRange range, int maxItems) throws IOException {
+        return queryFeatureTypeDimension(typeInfo, range, maxItems, ResourceInfo.ELEVATION);
+    }
+    
+    /**
+     * Query and returns the dimension values for the given layer, in the given range
+     */
+    TreeSet<Object> queryFeatureTypeDimension(FeatureTypeInfo typeInfo, Range range, int maxItems, String dimensionName) throws IOException {
+        // grab the metadata
+        DimensionInfo di = typeInfo.getMetadata().get(dimensionName, DimensionInfo.class);
+        if (di == null || !di.isEnabled()) {
+            throw new ServiceException("Layer " + typeInfo.prefixedName()
+                    + " does not have " + dimensionName + " support enabled");
+        }
+
+        // filter by date range
+        FeatureSource fs = getFeatureSource(typeInfo);
+        // build query to grab the time values
+        final Query query = new Query(fs.getSchema().getName().getLocalPart());
+        query.setPropertyNames(Arrays.asList(di.getAttribute()));
+        final PropertyName attribute = ff.property(di.getAttribute());
+        final PropertyIsBetween rangeFilter = ff.between(attribute, ff.literal(range.getMinValue()), ff.literal(range.getMaxValue()));
+        query.setFilter(rangeFilter);
+        query.setMaxFeatures(maxItems);
+        FeatureCollection collection = fs.getFeatures(query);
+        
+        // collect all unique values (can't do ranges now, we don't have a multi-attribute unique visitor)
+        UniqueVisitor visitor = new UniqueVisitor(attribute);
+        collection.accepts(visitor, null);
+        TreeSet<Object> result = new TreeSet<>(visitor.getUnique());
         return result;
     }
 
@@ -1310,6 +1411,18 @@ public class WMS implements ApplicationContextAware {
      */
     FeatureCollection getDimensionCollection(FeatureTypeInfo typeInfo, DimensionInfo dimension)
             throws IOException {
+        FeatureSource source = getFeatureSource(typeInfo);
+
+        // build query to grab the dimension values
+        final Query dimQuery = new Query(source.getSchema().getName().getLocalPart());
+        dimQuery.setPropertyNames(Arrays.asList(dimension.getAttribute()));
+        return source.getFeatures(dimQuery);
+    }
+
+    /**
+     * Returns the feature source for the given feature type
+     */
+    FeatureSource getFeatureSource(FeatureTypeInfo typeInfo) {
         // grab the feature source
         FeatureSource source = null;
         try {
@@ -1317,13 +1430,9 @@ public class WMS implements ApplicationContextAware {
         } catch (IOException e) {
             throw new ServiceException(
                     "Could not get the feauture source to list time info for layer "
-                            + typeInfo.getPrefixedName(), e);
+                            + typeInfo.prefixedName(), e);
         }
-
-        // build query to grab the dimension values
-        final Query dimQuery = new Query(source.getSchema().getName().getLocalPart());
-        dimQuery.setPropertyNames(Arrays.asList(dimension.getAttribute()));
-        return source.getFeatures(dimQuery);
+        return source;
     }
     
 
@@ -1376,6 +1485,70 @@ public class WMS implements ApplicationContextAware {
 
         Filter result = builder.getFilter();
         return result;
+    }
+
+    
+    /**
+     * Returns the max rendering time taking into account the server limits and the request options
+     * @param request
+     * @return
+     */
+    public int getMaxRenderingTime(GetMapRequest request) {
+        int localMaxRenderingTime = 0;
+        Object timeoutOption = request.getFormatOptions().get("timeout");
+        if (timeoutOption != null) {
+            try {
+                localMaxRenderingTime = Integer.parseInt(timeoutOption.toString());
+            } catch (NumberFormatException e) {
+                RenderedImageMapOutputFormat.LOGGER.log(Level.WARNING,"Could not parse format_option \"timeout\": "+timeoutOption, e);
+            }
+        }
+        int maxRenderingTime = getMaxRenderingTime(localMaxRenderingTime);
+        return maxRenderingTime;
+    }
+    
+    /**
+     * Returns the max rendering time for animations taking into account the server limits and the request options
+     * @param request
+     * @return
+     */
+    public int getMaxAnimationRenderingTime(GetMapRequest request) {
+        int localMaxRenderingTime = 0;
+        Object timeoutOption = request.getFormatOptions().get("timeout");
+        if (timeoutOption != null) {
+            try {
+                localMaxRenderingTime = Integer.parseInt(timeoutOption.toString());
+            } catch (NumberFormatException e) {
+                RenderedImageMapOutputFormat.LOGGER.log(Level.WARNING,"Could not parse format_option \"timeout\": "+timeoutOption, e);
+            }
+        }
+        Long maxRenderingTime = getMaxAnimatorRenderingTime();
+        if(maxRenderingTime == null) {
+            return localMaxRenderingTime;
+        } else if(localMaxRenderingTime == 0) {
+            return maxRenderingTime.intValue();
+        } else {
+            return Math.min(maxRenderingTime.intValue(), localMaxRenderingTime);
+        }
+    }
+    
+    /**
+     * Timeout on the smallest nonzero value of the WMS timeout and the timeout format option
+     * If both are zero then there is no timeout
+     * 
+     * @param localMaxRenderingTime
+     *
+     */
+    private int getMaxRenderingTime(int localMaxRenderingTime) {
+        int maxRenderingTime = getMaxRenderingTime() * 1000;
+        
+        if (maxRenderingTime == 0) {
+            maxRenderingTime = localMaxRenderingTime;
+        } else if (localMaxRenderingTime != 0) {
+            maxRenderingTime = Math.min(maxRenderingTime, localMaxRenderingTime);
+        }
+        
+        return maxRenderingTime;
     }
 
     /**

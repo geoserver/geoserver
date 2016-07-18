@@ -93,8 +93,8 @@ public class PaletteParser {
         cmFunction.literal(toColorExpressions(colorMap));
         cmFunction.function("env").literal(RANGE_MIN).function("bandStats").literal(0).literal("minimum").end().end();
         cmFunction.function("env").literal(RANGE_MAX).function("bandStats").literal(0).literal("maximum").end().end();
-        cmFunction.function("env").literal(COLOR_BEFORE).literal("rgba(0,0,0,0)").end();
-        cmFunction.function("env").literal(COLOR_AFTER).literal("rgba(0,0,0,0)").end();
+        cmFunction.function("env").literal(COLOR_BEFORE).literal("rgba(255,255,255,0)").end();
+        cmFunction.function("env").literal(COLOR_AFTER).literal("rgba(255,255,255,0)").end();
         cmFunction.function("env").literal(LOGSCALE).literal("false").end();
         cmFunction.function("env").literal(NUMCOLORS).literal("254").end();
         cmFunction.end();

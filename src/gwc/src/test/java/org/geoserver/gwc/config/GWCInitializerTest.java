@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -24,11 +24,14 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerFacade;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
 import org.geoserver.gwc.layer.LegacyTileLayerInfoLoader;
 import org.geoserver.gwc.layer.TileLayerCatalog;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
+import org.geoserver.gwc.wmts.WMTSInfo;
+import org.geoserver.gwc.wmts.WMTSInfoImpl;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSInfo;
@@ -52,18 +55,28 @@ public class GWCInitializerTest {
 
     private TileLayerCatalog tileLayerCatalog;
 
+    private GeoServerFacade geoServerFacade;
+
+    private WMTSInfo wmtsInfo = new WMTSInfoImpl();
+
     @Before
     public void setUp() throws Exception {
 
         configPersister = mock(GWCConfigPersister.class);
-        when(configPersister.getConfig()).thenReturn(GWCConfig.getOldDefaults());
+        GWCConfig config = GWCConfig.getOldDefaults();
+        config.setWMTSEnabled(false);
+        when(configPersister.getConfig()).thenReturn(config);
 
         rawCatalog = mock(Catalog.class);
         tileLayerCatalog = mock(TileLayerCatalog.class);
         initializer = new GWCInitializer(configPersister, rawCatalog, tileLayerCatalog);
 
-        geoServer = mock(GeoServer.class);
+        wmtsInfo.setEnabled(true);
+        geoServerFacade = mock(GeoServerFacade.class);
+        when(geoServerFacade.getService(WMTSInfo.class)).thenReturn(wmtsInfo);
 
+        geoServer = mock(GeoServer.class);
+        when(geoServer.getFacade()).thenReturn(geoServerFacade);
     }
 
     @Test
@@ -113,7 +126,7 @@ public class GWCInitializerTest {
         // run layer initialization
         initializer.initialize(geoServer);
 
-        verify(configPersister, times(2)).save(captor.capture());
+        verify(configPersister, times(3)).save(captor.capture());
         assertTrue(captor.getAllValues().get(0).isDirectWMSIntegrationEnabled());
 
         assertFalse(wmsInfo.getMetadata().containsKey(GWCInitializer.WMS_INTEGRATION_ENABLED_KEY));
@@ -153,6 +166,19 @@ public class GWCInitializerTest {
         verify(tileLayerCatalog, times(1)).save(eq(groupInfo));
         assertFalse(LegacyTileLayerInfoLoader.hasTileLayerDef(group.getMetadata()));
         verify(rawCatalog, times(1)).save(eq(group));
+    }
 
+    @Test
+    public void testUpgradeWithWmtsEnablingInfo() throws Exception {
+        // force configuration initialisation
+        when(configPersister.findConfigFile()).thenReturn(null);
+        assertTrue(wmtsInfo.isEnabled());
+        // run layer initialization
+        initializer.initialize(geoServer);
+        // checking that the configuration was saved
+        verify(geoServer).save(same(wmtsInfo));
+        verify(configPersister, times(2)).save(configPersister.getConfig());
+        // checking that the service info have been updated with gwc configuration value
+        assertFalse(wmtsInfo.isEnabled());
     }
 }

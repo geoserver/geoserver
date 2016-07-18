@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.geoserver.platform.ServiceException;
 import org.geowebcache.locks.LockProvider;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 import org.geowebcache.storage.blobstore.memory.CacheProvider;
@@ -31,10 +32,10 @@ public class GWCConfig implements Cloneable, Serializable {
 
     private boolean WMSCEnabled;
 
-    private boolean WMTSEnabled;
-
     private boolean TMSEnabled;
-    
+
+    private Boolean WMTSEnabled;
+
     private boolean securityEnabled;
 
     /**
@@ -178,14 +179,6 @@ public class GWCConfig implements Cloneable, Serializable {
         WMSCEnabled = wMSCEnabled;
     }
 
-    public boolean isWMTSEnabled() {
-        return WMTSEnabled;
-    }
-
-    public void setWMTSEnabled(boolean wMTSEnabled) {
-        WMTSEnabled = wMTSEnabled;
-    }
-
     public boolean isTMSEnabled() {
         return TMSEnabled;
     }
@@ -312,7 +305,6 @@ public class GWCConfig implements Cloneable, Serializable {
         setDefaultVectorCacheFormats(oldDefaultFormats);
         setDirectWMSIntegrationEnabled(false);
         setWMSCEnabled(true);
-        setWMTSEnabled(true);
         setTMSEnabled(true);
         setEnabledPersistence(true);
         setInnerCachingEnabled(false);
@@ -370,7 +362,7 @@ public class GWCConfig implements Cloneable, Serializable {
             return isWMSCEnabled();
         }
         if ("wmts".equalsIgnoreCase(serviceId)) {
-            return isWMTSEnabled();
+            throw new RuntimeException("To check if WMTS service is enable or disable use service info.");
         }
         if ("tms".equalsIgnoreCase(serviceId)) {
             return isTMSEnabled();
@@ -476,5 +468,13 @@ public class GWCConfig implements Cloneable, Serializable {
      */
     public void setCacheConfigurations(Map<String, CacheConfiguration> cacheConfigurations) {
         this.cacheConfigurations = new HashMap<String, CacheConfiguration>(cacheConfigurations);
+    }
+
+    public Boolean isWMTSEnabled() {
+        return WMTSEnabled;
+    }
+
+    public void setWMTSEnabled(Boolean WMTSEnabled) {
+        this.WMTSEnabled = WMTSEnabled;
     }
 }

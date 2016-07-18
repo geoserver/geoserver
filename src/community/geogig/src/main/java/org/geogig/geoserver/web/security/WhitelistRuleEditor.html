@@ -1,0 +1,41 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title>Remotes</title>
+</head>
+<body>
+<wicket:panel>
+<form wicket:id="form">
+	<ul>
+		<li>
+  		<fieldset>
+        <legend>Edit white list rule</legend>
+      </fieldset>
+		</li>
+		<li>
+			<fieldset>
+		    <label for="name">Name</label>
+		    <input type="text" class="text" wicket:id="name"></input>
+			</fieldset>
+		</li>
+		<li>
+			<fieldset>
+		    <label for="pattern">Pattern</label>
+		    <input type="text" class="text" wicket:id="pattern"></input>
+			</fieldset>
+		</li>
+		<li>
+			<fieldset>
+		    <label for="requireSSL">SSL Required</label>
+		    <input type="checkbox" wicket:id="requireSSL"></input>
+			</fieldset>
+		</li>
+	</ul>
+  <div wicket:id="feedback"></div>
+  <div class="button-group selfclear">
+    <a href="#" wicket:id="submit"><wicket:message key="save">Save</wicket:message></a>
+    <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+  </div>
+</form>
+</wicket:panel>
+</body>
+</html>

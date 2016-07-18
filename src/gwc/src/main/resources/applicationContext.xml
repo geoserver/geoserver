@@ -108,24 +108,35 @@
 
   <bean id="gwcServiceWMSInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
     <constructor-arg ref="gwcFacade" />
+    <constructor-arg ref="geoServer" />
   </bean>
   <bean id="gwcServiceTMSInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
     <constructor-arg ref="gwcFacade" />
+    <constructor-arg ref="geoServer" />
   </bean>
   <bean id="gwcWMTSServiceInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
     <constructor-arg ref="gwcFacade" />
+    <constructor-arg ref="geoServer" />
   </bean>
   <bean id="gwcServiceVEInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
     <constructor-arg ref="gwcFacade" />
+    <constructor-arg ref="geoServer" />
   </bean>
   <bean id="gwcServiceKMLInterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
     <constructor-arg ref="gwcFacade" />
+    <constructor-arg ref="geoServer" />
   </bean>
   <bean id="gwcServiceGMapsterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
     <constructor-arg ref="gwcFacade" />
+    <constructor-arg ref="geoServer" />
   </bean>
   <bean id="gwcServiceMGMapsterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
     <constructor-arg ref="gwcFacade" />
+    <constructor-arg ref="geoServer" />
   </bean>
 
+  <bean id="wmtsLoader" class="org.geoserver.gwc.wmts.WMTSXStreamLoader">
+    <constructor-arg ref="resourceLoader"/>
+  </bean>
+  <bean id="wmtsFactoryExtension" class="org.geoserver.gwc.wmts.WMTSFactoryExtension"/>
 </beans>

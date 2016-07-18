@@ -6,6 +6,7 @@
 package org.geoserver.test;
 
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -35,6 +36,10 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.stream.ImageInputStream;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -1244,6 +1249,27 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         assertEquals(mime, resp.getContentType());
         InputStream is = getBinaryInputStream(resp);
         return ImageIO.read(is);
+    }
+    
+    /**
+     * Retrieves the request result as a list of BufferedImages from an animated format (works with GIF,
+     * other formats are not tested so far).
+     */
+    protected List<BufferedImage> getAsAnimation(String path, String mime) throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse(path);
+
+        assertEquals(mime, resp.getContentType());
+        try (ImageInputStream is = ImageIO.createImageInputStream(getBinaryInputStream(resp))) {
+            ImageReader reader = ImageIO.getImageReaders(is).next();
+            reader.setInput(is);
+
+            final int numImages = reader.getNumImages(true);
+            List<BufferedImage> result = new ArrayList<>(numImages);
+            for (int i = 0; i < numImages; i++) {
+                result.add(reader.read(i));
+            }
+            return result;
+        }
     }
 
     /**

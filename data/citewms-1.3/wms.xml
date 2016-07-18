@@ -41,4 +41,25 @@
   <maxRequestMemory>0</maxRequestMemory>
   <maxRenderingTime>0</maxRenderingTime>
   <maxRenderingErrors>0</maxRenderingErrors>
+  <getMapMimeTypeCheckingEnabled>true</getMapMimeTypeCheckingEnabled>
+  <getMapMimeTypes>
+    <string>text/html; subtype=openlayers</string>
+    <string>image/png</string>
+    <string>image/png; mode=8bit</string>
+    <string>application/pdf</string>
+    <string>image/jpeg</string>
+    <string>application/atomxml</string>
+    <string>image/gif</string>
+    <string>application/vnd.google-earth.kmlxml</string>
+    <string>image/geotiff</string>
+    <string>application/rssxml</string>
+    <string>image/svgxml</string>
+    <string>image/geotiff8</string>
+    <string>application/json;type=utfgrid</string>
+    <string>application/vnd.google-earth.kmlxml;mode=networklink</string>
+    <string>image/tiff</string>
+    <string>application/vnd.google-earth.kmz</string>
+    <string>image/tiff8</string>
+  </getMapMimeTypes>
+
 </wms>

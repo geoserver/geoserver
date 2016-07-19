@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
-import org.springframework.security.core.Authentication;
 
 /**
  * The global configuration lock. At the moment it is called by coarse grained request level
@@ -30,7 +29,9 @@ import org.springframework.security.core.Authentication;
 public class GeoServerConfigurationLock {
     
     /** DEFAULT_TRY_LOCK_TIMEOUT_MS */
-    private static final int DEFAULT_TRY_LOCK_TIMEOUT_MS = 5000;
+    private static final long DEFAULT_TRY_LOCK_TIMEOUT_MS =
+            (GeoServerExtensions.getProperty("CONFIGURATION_TRYLOCK_TIMEOUT") != null ? 
+                Long.valueOf(GeoServerExtensions.getProperty("CONFIGURATION_TRYLOCK_TIMEOUT")) : 5000);
 
     private static final Level LEVEL = Level.FINE;
 
@@ -109,11 +110,7 @@ public class GeoServerConfigurationLock {
         
         boolean res = false;
         try {
-            long lockTimeOut = DEFAULT_TRY_LOCK_TIMEOUT_MS;
-            if(GeoServerExtensions.getProperty("CONFIGURATION_TRYLOCK_TIMEOUT") != null) {
-                lockTimeOut = Long.valueOf(GeoServerExtensions.getProperty("CONFIGURATION_TRYLOCK_TIMEOUT"));
-            }
-            res = lock.tryLock(lockTimeOut, TimeUnit.MILLISECONDS);
+            res = lock.tryLock(DEFAULT_TRY_LOCK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             LOGGER.log(Level.WARNING, "Thread " + Thread.currentThread().getId() + " thrown an InterruptedException on GeoServerConfigurationLock TryLock.", e);
             res = false;

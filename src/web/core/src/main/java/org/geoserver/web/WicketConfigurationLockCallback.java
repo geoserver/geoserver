@@ -57,10 +57,16 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     }
 
     @Override
+    @Deprecated
     public void onRequestTargetSet(Class<? extends IRequestablePage> requestTarget) {
+        onRequestTargetSet(null, requestTarget);
+    }
+    
+    @Override
+    public void onRequestTargetSet(RequestCycle cycle,
+            Class<? extends IRequestablePage> requestTarget) {
+        
         if (!GeoServerUnlockablePage.class.isAssignableFrom(requestTarget)) {
-            // we can have many of these calls per http call, avoid locking multiple times,
-            // onEndRequest will be called just once
             LockType type = THREAD_LOCK.get();
             if (type != null || requestTarget == null) {
                 return;
@@ -82,18 +88,13 @@ public class WicketConfigurationLockCallback implements WicketCallback {
                 THREAD_REQUESTED_PAGE.set(requestTarget);
             }
         }
-    }
-    
-    @Override
-    public void onRequestTargetSet(RequestCycle cycle,
-            Class<? extends IRequestablePage> requestTarget) {
-        WicketCallback.super.onRequestTargetSet(cycle, requestTarget);
-        
+
+        // Check if we need to redirect the user to a "Server Busy" page
         LockType type = THREAD_LOCK.get();
         Class<? extends IRequestablePage> requestedPage = THREAD_REQUESTED_PAGE.get();
         
         // Check if the configuration is locked and the page is safe...
-        if (type != null && requestedPage != null && requestedPage != requestTarget) {
+        if (cycle != null && type != null && requestedPage != null && requestedPage != requestTarget) {
             boolean lockTaken = locker.tryLock(type);
 
             if (!lockTaken && !GeoServerUnlockablePage.class.isAssignableFrom(requestTarget)) {

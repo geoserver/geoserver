@@ -25,7 +25,7 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     GeoServerConfigurationLock locker;
 
     static ThreadLocal<LockType> THREAD_LOCK = new ThreadLocal<GeoServerConfigurationLock.LockType>();
-
+    
     public WicketConfigurationLockCallback(GeoServerConfigurationLock locker) {
         this.locker = locker;
     }
@@ -50,25 +50,48 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     }
 
     @Override
+    @Deprecated
     public void onRequestTargetSet(Class<? extends IRequestablePage> requestTarget) {
-        // we can have many of these calls per http call, avoid locking multiple times,
-        // onEndRequest will be called just once
+        onRequestTargetSet(null, requestTarget);
+    }
+    
+    @Override
+    public void onRequestTargetSet(RequestCycle cycle,
+            Class<? extends IRequestablePage> requestTarget) {
+        
+        if (!GeoServerUnlockablePage.class.isAssignableFrom(requestTarget)) {
+            LockType type = THREAD_LOCK.get();
+            if (type != null || requestTarget == null) {
+                return;
+            }
+    
+            // setup a write lock for secured pages, a read one for the others
+            if (GeoServerSecuredPage.class.isAssignableFrom(requestTarget)) {
+                type = LockType.WRITE;
+            }
+            if (type == null) {
+                type = LockType.READ;
+            }
+    
+            // and lock
+            boolean lockTaken = locker.tryLock(type);
+    
+            if (lockTaken) {
+                THREAD_LOCK.set(type);
+            }
+        }
+
+        // Check if we need to redirect the user to a "Server Busy" page
         LockType type = THREAD_LOCK.get();
-        if (type != null || requestTarget == null) {
-            return;
-        }
+        
+        // Check if the configuration is locked and the page is safe...
+        if (cycle != null && type != null) {
+            boolean lockTaken = locker.tryLock(type);
 
-        // setup a write lock for secured pages, a read one for the others
-        if (GeoServerSecuredPage.class.isAssignableFrom(requestTarget)) {
-            type = LockType.WRITE;
+            if (!lockTaken && !GeoServerUnlockablePage.class.isAssignableFrom(requestTarget)) {
+                cycle.setResponsePage(ServerBusyPage.class);
+            }
         }
-        if (type == null) {
-            type = LockType.READ;
-        }
-
-        // and lock
-        THREAD_LOCK.set(type);
-        locker.lock(type);
     }
 
     @Override

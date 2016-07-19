@@ -34,10 +34,24 @@ public interface WicketCallback {
     /**
      * Called when a request target is set on the request cycle
      * 
+     * This method is taken for retro-compatibility with old GeoServer verisons
+     * 
      * @param requestTarget
+     * @deprecated replaced by {@link #onRequestTargetSet(cycle, requestTarget)}
      */
     void onRequestTargetSet(Class<? extends IRequestablePage> requestTarget);
 
+    /**
+     * Called when a request target is set on the request cycle
+     * 
+     * @param cycle
+     * @param requestTarget
+     */
+    default void onRequestTargetSet(RequestCycle cycle, 
+            Class<? extends IRequestablePage> requestTarget) {
+        onRequestTargetSet(requestTarget);
+    }
+    
     /**
      * Called when a runtime exception is thrown, just before the actual handling of the runtime
      * exception.

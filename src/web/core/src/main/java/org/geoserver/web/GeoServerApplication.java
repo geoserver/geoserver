@@ -340,19 +340,19 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
         
         @Override
         public void onRequestHandlerScheduled(RequestCycle cycle, IRequestHandler handler) {
-            processHandler(handler);
+            processHandler(cycle, handler);
         }
 
-        private void processHandler(IRequestHandler handler) {
+        private void processHandler(RequestCycle cycle, IRequestHandler handler) {
             if(handler instanceof IPageRequestHandler) {
                 IPageRequestHandler pageHandler = (IPageRequestHandler) handler;
                 Class<? extends IRequestablePage> pageClass = pageHandler.getPageClass();
                 for (WicketCallback callback : callbacks) {
-                    callback.onRequestTargetSet(pageClass);
+                    callback.onRequestTargetSet(cycle, pageClass);
                 }
             } else if(handler instanceof IRequestHandlerDelegate) {
                 IRequestHandlerDelegate delegator = (IRequestHandlerDelegate) handler;
-                processHandler(delegator.getDelegateHandler());
+                processHandler(cycle, delegator.getDelegateHandler());
             }
             
         }
@@ -360,7 +360,7 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
         @Override
         public void onRequestHandlerResolved(org.apache.wicket.request.cycle.RequestCycle cycle,
                 IRequestHandler handler) {
-            processHandler(handler);
+            processHandler(cycle, handler);
         }
 
         @Override

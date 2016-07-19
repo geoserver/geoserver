@@ -26,8 +26,6 @@ public class WicketConfigurationLockCallback implements WicketCallback {
 
     static ThreadLocal<LockType> THREAD_LOCK = new ThreadLocal<GeoServerConfigurationLock.LockType>();
     
-    static ThreadLocal<Class<? extends IRequestablePage>> THREAD_REQUESTED_PAGE = new ThreadLocal<Class<? extends IRequestablePage>>();
-
     public WicketConfigurationLockCallback(GeoServerConfigurationLock locker) {
         this.locker = locker;
     }
@@ -47,11 +45,6 @@ public class WicketConfigurationLockCallback implements WicketCallback {
         LockType type = THREAD_LOCK.get();
         if (type != null) {
             THREAD_LOCK.remove();
-
-            if (THREAD_REQUESTED_PAGE.get() != null) {
-                THREAD_REQUESTED_PAGE.remove();
-            }
-            
             locker.unlock(type);
         }
     }
@@ -85,16 +78,14 @@ public class WicketConfigurationLockCallback implements WicketCallback {
     
             if (lockTaken) {
                 THREAD_LOCK.set(type);
-                THREAD_REQUESTED_PAGE.set(requestTarget);
             }
         }
 
         // Check if we need to redirect the user to a "Server Busy" page
         LockType type = THREAD_LOCK.get();
-        Class<? extends IRequestablePage> requestedPage = THREAD_REQUESTED_PAGE.get();
         
         // Check if the configuration is locked and the page is safe...
-        if (cycle != null && type != null && requestedPage != null && requestedPage != requestTarget) {
+        if (cycle != null && type != null) {
             boolean lockTaken = locker.tryLock(type);
 
             if (!lockTaken && !GeoServerUnlockablePage.class.isAssignableFrom(requestTarget)) {

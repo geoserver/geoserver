@@ -35,44 +35,44 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(StyleNewPage.class);
         tester.assertNoErrorMessage();
         
-        tester.assertComponent("form:name", TextField.class);
-        tester.assertComponent("form:styleEditor:editorContainer:editorParent:editor", TextArea.class);
-        tester.assertComponent("uploadForm:filename", FileUploadField.class);
+        tester.assertComponent("styleForm:context:panel:name", TextField.class);
+        tester.assertComponent("styleForm:styleEditor:editorContainer:editorParent:editor", TextArea.class);
+        tester.assertComponent("styleForm:context:panel:filename", FileUploadField.class);
         
         //Load the legend
-        tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
         
-        tester.assertComponent("form:legendPanel", ExternalGraphicPanel.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel", ExternalGraphicPanel.class);
         
-        tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
-        tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
-        tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
-        tester.assertComponent("form:legendPanel:container:list:format", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
         
-        tester.assertModelValue("form:name", null);
+        tester.assertModelValue("styleForm:context:panel:name", "");
     }
     
     @Test
     public void testUpload() throws Exception {
-        FormTester upload = tester.newFormTester("uploadForm");
+        FormTester upload = tester.newFormTester("styleForm");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
         
         
-        upload.setFile("filename", styleFile, "application/xml");
-        upload.submit();
+        upload.setFile("context:panel:filename", styleFile, "application/xml");
+        tester.clickLink("styleForm:context:panel:upload", true);
         
         tester.assertRenderedPage(StyleNewPage.class);
-        tester.assertModelValue("form:styleEditor", sld);
+        tester.assertModelValue("styleForm:styleEditor", sld);
     }
     
     @Test
     public void testNoLegend() throws Exception {
-        FormTester form = tester.newFormTester("form");
+        FormTester form = tester.newFormTester("styleForm");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
-        form.setValue("name", "nolegendtest");
+        form.setValue("context:panel:name", "nolegendtest");
         form.submit();
         
         tester.assertRenderedPage(StylePage.class);
@@ -83,27 +83,27 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testLegend() throws Exception {
-        tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
         //Make sure the fields we are editing actually exist
-        tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
-        tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
-        tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
-        tester.assertComponent("form:legendPanel:container:list:format", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
         
         //Publish the legend.png so we can see it
         java.io.File file = getResourceLoader().createFile("styles","legend.png");
         getResourceLoader().copyFromClassPath( "legend.png", file,  getClass());
         
-        FormTester form = tester.newFormTester("form", false);
+        FormTester form = tester.newFormTester("styleForm", false);
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
-        form.setValue("name", "legendtest");
-        form.setValue("legendPanel:container:list:onlineResource", "legend.png");
-        form.setValue("legendPanel:container:list:width", "100");
-        form.setValue("legendPanel:container:list:height", "100");
-        form.setValue("legendPanel:container:list:format", "image/png");
-        form.setValue("format", "sld");
+        form.setValue("context:panel:name", "legendtest");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "legend.png");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:width", "100");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:height", "100");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:format", "image/png");
+        form.setValue("context:panel:format", "sld");
         form.submit();
         tester.assertNoErrorMessage();
         tester.assertRenderedPage(StylePage.class);
@@ -114,22 +114,22 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testLegendWrongValues() throws Exception{
-        tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
         //Make sure the fields we are editing actually exist
-        tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
-        tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
-        tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
-        tester.assertComponent("form:legendPanel:container:list:format", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
         
-        FormTester form = tester.newFormTester("form", false);
+        FormTester form = tester.newFormTester("styleForm", false);
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
-        form.setValue("name", "legendwrongvaluestest");
-        form.setValue("legendPanel:container:list:onlineResource", "thisisnotavalidurl");
-        form.setValue("legendPanel:container:list:width", "-1");
-        form.setValue("legendPanel:container:list:height", "-1");
-        form.setValue("legendPanel:container:list:format", "image/png");        
+        form.setValue("context:panel:name", "legendwrongvaluestest");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "thisisnotavalidurl");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:width", "-1");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:height", "-1");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:format", "image/png");        
         form.submit();
         tester.assertErrorMessages("Graphic resource must be a png, gif or jpeg",
                                    "The value of 'Width' must be at least 0.", 
@@ -139,7 +139,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testMissingName() throws Exception {
-        FormTester form = tester.newFormTester("form");
+        FormTester form = tester.newFormTester("styleForm");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
@@ -152,8 +152,8 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testMissingStyle() throws Exception {
-        FormTester form = tester.newFormTester("form");
-        form.setValue("name", "test");
+        FormTester form = tester.newFormTester("styleForm");
+        form.setValue("context:panel:name", "test");
         form.submit();
        
         
@@ -163,18 +163,18 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testNewStyleRepeatedName() throws Exception {
-        FormTester form = tester.newFormTester("form");
+        FormTester form = tester.newFormTester("styleForm");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
-        form.setValue("name", "repeatedname");
+        form.setValue("context:panel:name", "repeatedname");
         form.submit();               
         tester.assertRenderedPage(StylePage.class);
         
         tester.startPage(StyleNewPage.class);
-        form = tester.newFormTester("form");                
+        form = tester.newFormTester("styleForm");                
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
-        form.setValue("name", "repeatedname");
+        form.setValue("context:panel:name", "repeatedname");
         form.submit();               
         tester.assertRenderedPage(StyleNewPage.class);
         
@@ -183,11 +183,11 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testNewStyle() throws Exception {        
-        FormTester form = tester.newFormTester("form");
+        FormTester form = tester.newFormTester("styleForm");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
-        form.setValue("name", "test");
+        form.setValue("context:panel:name", "test");
         form.submit(); 
         
         tester.assertRenderedPage(StylePage.class);
@@ -197,8 +197,8 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testNewStyleNoSLD() throws Exception {
         
-        FormTester form = tester.newFormTester("form");
-        form.setValue("name", "test");
+        FormTester form = tester.newFormTester("styleForm");
+        form.setValue("context:panel:name", "test");
         form.submit();
         
         tester.assertRenderedPage(StyleNewPage.class);

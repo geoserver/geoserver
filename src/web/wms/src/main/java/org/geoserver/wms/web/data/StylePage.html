@@ -3,18 +3,22 @@
 <title><wicket:message key="title">Styles</wicket:message></title>
 </head>
 <body>
-<wicket:extend>
-      <div wicket:id="table"></div>
-      
-      <wicket:fragment wicket:id="header">
+    <wicket:extend>
+    <div wicket:id="table"></div>
+    
+    <wicket:fragment wicket:id="header">
         <ul>
-            <li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
-            <li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
+            <li><a class="add-link" href="#" wicket:id="addNew">
+                <wicket:message key="addNew" />
+            </a></li>
+            <li><a class="remove-link" href="#" wicket:id="removeSelected">
+                <wicket:message key="removeSelected" />
+            </a></li>
         </ul>
-      </wicket:fragment>
-      
-      <!-- the cascade delete confirmation dialog -->
-      <div wicket:id="dialog"></div>
+    </wicket:fragment>
+    
+    <!-- the cascade delete confirmation dialog -->
+    <div wicket:id="dialog"></div>
 </wicket:extend>
 </body>
 </html>

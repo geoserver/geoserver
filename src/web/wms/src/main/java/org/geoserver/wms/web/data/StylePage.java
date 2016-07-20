@@ -73,7 +73,7 @@ public class StylePage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         
         // the add button
-        header.add(new BookmarkablePageLink("addNew", StyleNewPage.class));
+        header.add(new BookmarkablePageLink<StyleNewPage>("addNew", StyleNewPage.class));
         
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog) {
@@ -96,9 +96,9 @@ public class StylePage extends GeoServerSecuredPage {
         return header;
     }
 
-    Component styleLink( String id, IModel model ) {
-        IModel nameModel = StyleProvider.NAME.getModel(model);
-        IModel wsModel = StyleProvider.WORKSPACE.getModel(model);
+    Component styleLink( String id, IModel<StyleInfo> model ) {
+        IModel<?> nameModel = StyleProvider.NAME.getModel(model);
+        IModel<?> wsModel = StyleProvider.WORKSPACE.getModel(model);
         
         String name = (String) nameModel.getObject();
         String wsName = (String) wsModel.getObject();
@@ -107,12 +107,12 @@ public class StylePage extends GeoServerSecuredPage {
             StyleEditPage.NAME, name, StyleEditPage.WORKSPACE, wsName);
     }
 
-    Component workspaceLink( String id, IModel model ) {
-        IModel wsNameModel = StyleProvider.WORKSPACE.getModel(model);
+    Component workspaceLink( String id, IModel<StyleInfo> model ) {
+        IModel<?> wsNameModel = StyleProvider.WORKSPACE.getModel(model);
         String wsName = (String) wsNameModel.getObject();
         if (wsName != null) {
             return new SimpleBookmarkableLink(
-                id, WorkspaceEditPage.class, new Model(wsName), "name", wsName);
+                id, WorkspaceEditPage.class, new Model<String>(wsName), "name", wsName);
         }
         else {
             return new WebMarkupContainer(id);

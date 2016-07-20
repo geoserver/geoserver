@@ -110,10 +110,10 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
     
         tester.startPage(StyleNewPage.class);
         tester.assertRenderedPage(StyleNewPage.class);
-        tester.assertModelValue("form:workspace", null);
+        tester.assertModelValue("styleForm:context:panel:workspace", null);
         
         DropDownChoice choice = 
-            (DropDownChoice) tester.getComponentFromLastRenderedPage("form:workspace");
+            (DropDownChoice) tester.getComponentFromLastRenderedPage("styleForm:context:panel:workspace");
         assertTrue(choice.isNullValid());
         assertFalse(choice.isRequired());
     }
@@ -126,10 +126,10 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(StyleNewPage.class);
     
         Catalog cat = getCatalog();
-        tester.assertModelValue("form:workspace", cat.getWorkspaceByName("cite"));
+        tester.assertModelValue("styleForm:context:panel:workspace", cat.getWorkspaceByName("cite"));
         
         DropDownChoice choice = 
-            (DropDownChoice) tester.getComponentFromLastRenderedPage("form:workspace");
+            (DropDownChoice) tester.getComponentFromLastRenderedPage("styleForm:context:panel:workspace");
         assertFalse(choice.isNullValid());
         assertTrue(choice.isRequired());
     }
@@ -142,9 +142,9 @@ public class AdminPrivilegesTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(StyleEditPage.class);
 
         //assert all form components disabled except for cancel
-        assertFalse(tester.getComponentFromLastRenderedPage("form:name").isEnabled());
-        assertFalse(tester.getComponentFromLastRenderedPage("form:workspace").isEnabled());
-        assertFalse(tester.getComponentFromLastRenderedPage("form:copy").isEnabled());
+        assertFalse(tester.getComponentFromLastRenderedPage("styleForm:context:panel:name").isEnabled());
+        assertFalse(tester.getComponentFromLastRenderedPage("styleForm:context:panel:workspace").isEnabled());
+        assertFalse(tester.getComponentFromLastRenderedPage("styleForm:context:panel:copy").isEnabled());
         assertTrue(tester.getComponentFromLastRenderedPage("cancel").isEnabled());
     }
 }

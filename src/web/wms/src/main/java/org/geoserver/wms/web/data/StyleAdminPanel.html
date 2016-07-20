@@ -1,0 +1,74 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head>
+    <title>
+      <wicket:message key="title">Style Admin Panel</wicket:message>
+    </title>
+  </head>
+  <body>
+    <wicket:panel>
+      <div class="selfclear clearBoth" style="padding-top: 2em;">
+          <fieldset class="leftwise" style="width: 45%; margin-right: 5%; margin-bottom: 0px">
+            <legend>
+              <span><wicket:message key="styleDataSpan">Style Info</wicket:message></span>
+            </legend>
+            <ul>
+              <li>
+                <label for="name"><wicket:message key="name">Name</wicket:message></label>
+                <input wicket:id="name" class="text"></input>
+              </li>
+              <li>
+                <label for="workspace"><wicket:message key="workspace">Workspace</wicket:message></label>
+                <select wicket:id="workspace"></select>
+              </li>
+              <li>
+                <label for="format"><wicket:message key="format">Format</wicket:message></label>
+                <select wicket:id="format"></select>
+                <div wicket:id="formatReadOnly" class="info-link" style="display: inline-block;">
+                  <wicket:message key="formatReadOnly"></wicket:message>
+                </div>
+              </li>
+            </ul>
+          <div style="padding-top: 2em"><fieldset style="margin-bottom: 0em">
+            <legend>
+              <span><wicket:message key="styleContentSpan">Style Content</wicket:message></span>
+            </legend>
+            <ul>
+              <li>
+                <label for="name"><wicket:message key="generateNew">GenerateNew</wicket:message></label>
+                <select wicket:id="templates"></select>
+                <a href="#" wicket:id="generate"><wicket:message key="generate">Generate</wicket:message></a>
+              </li>
+              <li>
+                <label for="name"><wicket:message key="copyFrom">CopyFrom</wicket:message></label>
+                <select wicket:id="existingStyles"></select>
+                <a href="#" wicket:id="copy"><wicket:message key="copy">Copy</wicket:message></a>
+              </li>
+              <li>
+                <label for="filename"><wicket:message key="styleFile">Style file</wicket:message></label>
+                <input type="file" wicket:id="filename"></input> 
+                <a href="#" wicket:id="upload"><wicket:message key="upload">Upload</wicket:message></a>
+              </li>
+            </ul>
+          </fieldset></div>
+          </fieldset>
+          <fieldset class="rightwise" style="width: 45%; margin-right: 5%">
+            <legend>
+              <span><wicket:message key="legendSpan">Legend</wicket:message></span>
+            </legend>
+            <ul>
+              <li>
+                <label for="legend"><wicket:message key="legend">Legend</wicket:message></label>
+                <span wicket:id="legendPanel"></span>
+              </li>
+              <li>
+                <a href="#" wicket:id="preview"><wicket:message key="preview">Preview Legend</wicket:message></a>
+                <div wicket:id="legendContainer">
+                  <img wicket:id="legendImg"></img>
+                </div>
+              </li>
+            </ul>
+          </fieldset>
+      </div>
+    </wicket:panel>
+  </body>
+</html>

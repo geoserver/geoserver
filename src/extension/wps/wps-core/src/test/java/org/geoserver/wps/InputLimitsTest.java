@@ -592,21 +592,19 @@ public class InputLimitsTest extends WPSTestSupport {
             "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
                 + urlEncode("id=x1"));
 
-        MonkeyProcess.wait("x1", 1100);
-        MonkeyProcess.exit("x1", null, false);
-
         String statusLocationX2 = submitAsynchronousRequest(
             "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
                 + urlEncode("id=x2"));
-
-        MonkeyProcess.wait("x2", 1100);
-        MonkeyProcess.exit("x2", null, false);
 
         String statusLocationX3 = submitAsynchronousRequest(
             "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
                 + urlEncode("id=x3"));
 
+        MonkeyProcess.wait("x1", 1100);
+        MonkeyProcess.wait("x2", 1100);
         MonkeyProcess.wait("x3", 1100);
+        MonkeyProcess.exit("x1", null, false);
+        MonkeyProcess.exit("x2", null, false);
         MonkeyProcess.progress("x3", 54f, false);
 
         // First request should succeed

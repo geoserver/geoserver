@@ -17,10 +17,10 @@ import org.geoserver.web.GeoServerApplication;
  * A loadable model for the registered style list that does sort the styles too 
  */
 @SuppressWarnings("serial")
-public class StylesModel extends LoadableDetachableModel {
+public class StylesModel extends LoadableDetachableModel<List<StyleInfo>> {
 
     @Override
-    protected Object load() {
+    protected List<StyleInfo> load() {
         List<StyleInfo> styles = new ArrayList<StyleInfo>(GeoServerApplication.get().getCatalog().getStyles());
         Collections.sort(styles, new StyleNameComparator());
         return styles;

@@ -35,6 +35,7 @@ import org.w3c.dom.Document;
 public class StyleEditPageTest extends GeoServerWicketTestSupport {
     
     StyleInfo buildingsStyle;
+    StyleEditPage edit;
 
     @Before
     public void setUp() throws Exception {
@@ -49,7 +50,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             }
             buildingsStyle = getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart());
         }
-        StyleEditPage edit = new StyleEditPage(buildingsStyle);
+        edit = new StyleEditPage(buildingsStyle);
         tester.startPage(edit);
     }
 
@@ -59,20 +60,20 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         tester.debugComponentTrees();
-        tester.assertComponent("form:name", TextField.class);
-        tester.assertComponent("form:styleEditor:editorContainer:editorParent:editor", TextArea.class);
+        tester.assertComponent("styleForm:context:panel:name", TextField.class);
+        tester.assertComponent("styleForm:styleEditor:editorContainer:editorParent:editor", TextArea.class);
         
         //Load the legend
-        tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
         
-        tester.assertComponent("form:legendPanel", ExternalGraphicPanel.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel", ExternalGraphicPanel.class);
         
-        tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
-        tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
-        tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
-        tester.assertComponent("form:legendPanel:container:list:format", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
         
-        tester.assertModelValue("form:name", "Buildings");
+        tester.assertModelValue("styleForm:context:panel:name", "Buildings");
         
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         assertNotNull( loader );
@@ -85,7 +86,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
         //GEOS-3257, actually drag into xml and compare with xmlunit to avoid 
         // line ending problems
-        String xml = tester.getComponentFromLastRenderedPage("form:styleEditor").getDefaultModelObjectAsString();
+        String xml = tester.getComponentFromLastRenderedPage("styleForm:styleEditor").getDefaultModelObjectAsString();
         xml = xml.replaceAll("&lt;","<").replaceAll("&gt;",">").replaceAll("&quot;", "\"");
         Document d2 = db.parse( new ByteArrayInputStream(xml
             .getBytes()));
@@ -100,8 +101,8 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testMissingName() throws Exception {
-        FormTester form = tester.newFormTester("form");
-        form.setValue("name", "");
+        FormTester form = tester.newFormTester("styleForm");
+        form.setValue("context:panel:name", "");
         form.submit();
         
         tester.assertRenderedPage(StyleEditPage.class);
@@ -110,8 +111,8 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testChangeName() throws Exception {
-        FormTester form = tester.newFormTester("form");
-        form.setValue("name", "BuildingsNew");
+        FormTester form = tester.newFormTester("styleForm");
+        form.setValue("context:panel:name", "BuildingsNew");
         form.submit();
         
         assertNull(getCatalog().getStyleByName("Buildings"));
@@ -131,7 +132,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             "</StyledLayerDescriptor>";
 
         // tester.debugComponentTrees();
-        tester.newFormTester("form").setValue("styleEditor:editorContainer:editorParent:editor", xml);
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
         tester.executeAjaxEvent("validate", "click");
         tester.assertNoErrorMessage();
@@ -149,9 +150,9 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             // print(tester.getLastRenderedPage(), true, true);
             
             // test the copy style link
-            tester.newFormTester("form").select("templates", 1);
-            tester.executeAjaxEvent("form:templates", "onchange");
-            Component generateLink = tester.getComponentFromLastRenderedPage("form:generate");
+            tester.newFormTester("styleForm").select("context:panel:templates", 1);
+            tester.executeAjaxEvent("styleForm:context:panel:templates", "onchange");
+            Component generateLink = tester.getComponentFromLastRenderedPage("styleForm:context:panel:generate");
             tester.executeAjaxEvent(generateLink, "onClick");
             // check single quote in the message has been escaped
             assertTrue(tester.getLastResponseAsString().contains("l\\'éditeur"));
@@ -173,9 +174,9 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             // print(tester.getLastRenderedPage(), true, true);
             
             // test the copy style link
-            tester.newFormTester("form").select("existingStyles", 1);
-            tester.executeAjaxEvent("form:existingStyles", "onchange");
-            Component copyLink = tester.getComponentFromLastRenderedPage("form:copy");
+            tester.newFormTester("styleForm").select("context:panel:existingStyles", 1);
+            tester.executeAjaxEvent("styleForm:context:panel:existingStyles", "onchange");
+            Component copyLink = tester.getComponentFromLastRenderedPage("styleForm:context:panel:copy");
             tester.executeAjaxEvent(copyLink, "onClick");
             // check single quote in the message has been escaped
             assertTrue(tester.getLastResponseAsString().contains("l\\'éditeur"));

@@ -14,15 +14,12 @@ import java.util.List;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.web.data.style.StyleDetachableModel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 
@@ -40,7 +37,7 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
     public static Property<StyleInfo> WORKSPACE = 
             new BeanProperty<StyleInfo>( "workspace", "workspace.name" );
 
-    static List PROPERTIES = Arrays.asList(NAME, WORKSPACE);
+    static List<Property<StyleInfo>> PROPERTIES = Arrays.asList(NAME, WORKSPACE);
     
     public StyleProvider() {
         setSort(new SortParam<Object>(NAME.getName(), true));
@@ -58,7 +55,7 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
         return PROPERTIES;
     }
 
-    public IModel newModel(StyleInfo object) {
+    public IModel<StyleInfo> newModel(StyleInfo object) {
         return new StyleDetachableModel(object );
     }
     

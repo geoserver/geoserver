@@ -2,11 +2,15 @@
 <head></head>
 <body>
 <wicket:panel>
-  <div wicket:id="container">
+  <div wicket:id="externalGraphicContainer">
     <ul wicket:id="list">
-      <li><label for="onlineResource"><wicket:message key="onlineResource">URL:</wicket:message></label></li>
-      <li><input wicket:id="onlineResource" type="text" class="text"></input>
-      <a href="#" wicket:id="autoFill"><wicket:message key="autoFill">Auto-detect image size and type</wicket:message></a></li>
+      <li>
+        <label for="onlineResource"><wicket:message key="onlineResource">URL:</wicket:message></label>
+      </li>
+      <li>
+        <input wicket:id="onlineResource" type="text" class="text"></input><br>
+        <a href="#" wicket:id="autoFill"><wicket:message key="autoFill">Auto-detect image size and type</wicket:message></a>
+      </li>
       <li><label for="width"><wicket:message key="width">Width</wicket:message></label></li>
       <li><input wicket:id="width" type="text" class="text"></input></li>
       <li><label for="height"><wicket:message key="height">Height</wicket:message></label></li>

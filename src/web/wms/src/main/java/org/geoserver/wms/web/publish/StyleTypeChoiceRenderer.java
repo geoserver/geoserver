@@ -8,13 +8,13 @@ import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.StyleType;
 
 @SuppressWarnings("serial")
-public class StyleTypeChoiceRenderer extends ChoiceRenderer {
+public class StyleTypeChoiceRenderer extends ChoiceRenderer<StyleType> {
 
-    public Object getDisplayValue(Object object) {
+    public Object getDisplayValue(StyleType object) {
         return object.toString();
     }
 
-    public String getIdValue(Object object, int index) {
+    public String getIdValue(StyleType object, int index) {
         return object.toString();
     }
 

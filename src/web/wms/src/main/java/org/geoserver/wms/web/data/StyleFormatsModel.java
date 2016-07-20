@@ -8,23 +8,21 @@ package org.geoserver.wms.web.data;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleHandler;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
  * Model for collection of available style formats.
  */
-public class StyleFormatsModel extends LoadableDetachableModel {
+public class StyleFormatsModel extends LoadableDetachableModel<List<String>> {
+
+    private static final long serialVersionUID = -5591450369784953326L;
+
     @Override
-    protected Object load() {
+    protected List<String> load() {
         List<StyleHandler> handlers = GeoServerApplication.get().getBeansOfType(StyleHandler.class);
         return Lists.transform(handlers, new Function<StyleHandler,String>() {
             @Nullable

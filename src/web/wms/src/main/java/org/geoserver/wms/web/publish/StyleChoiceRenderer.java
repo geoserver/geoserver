@@ -9,14 +9,14 @@ import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geoserver.catalog.StyleInfo;
 
 @SuppressWarnings("serial")
-public class StyleChoiceRenderer extends ChoiceRenderer {
+public class StyleChoiceRenderer extends ChoiceRenderer<StyleInfo> {
 
-    public Object getDisplayValue(Object object) {
-        return ((StyleInfo) object).prefixedName();
+    public Object getDisplayValue(StyleInfo object) {
+        return object.prefixedName();
     }
 
-    public String getIdValue(Object object, int index) {
-        return ((StyleInfo) object).getId();
+    public String getIdValue(StyleInfo object, int index) {
+        return object.getId();
     }
 
 }

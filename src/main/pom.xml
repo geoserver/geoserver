@@ -49,6 +49,7 @@
   <dependency>
    <groupId>commons-beanutils</groupId>
    <artifactId>commons-beanutils</artifactId>
+   <classifier>noclassprop</classifier>
   </dependency>
   <dependency>
    <groupId>commons-fileupload</groupId>

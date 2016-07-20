@@ -45,6 +45,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
             }
         });
         tester.executeAjaxEvent(page, "ondblclick");
+        print(tester.getLastRenderedPage(), true, true);
         
         //verify contents were updated
         tester.assertContains("the_geom");

@@ -1469,7 +1469,7 @@
        <skipPoms>false</skipPoms>
        <verbose>false</verbose>
        <injectAllReactorProjects>true</injectAllReactorProjects>
-       <runOnlyOnce>true</runOnlyOnce>
+       <runOnlyOnce>${git.commit.runOnlyOnce}</runOnlyOnce>
        <!--
        In order to use native git (3+ times faster) add the following in ~/.m2/settings.xml
        <profiles>
@@ -1694,6 +1694,7 @@
   <hibernate-spatial-version>1.1.1</hibernate-spatial-version>
   <hibernate-spatial-h2-version>1.1.1</hibernate-spatial-h2-version>
   <git.commit.useNative>false</git.commit.useNative>
+  <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
  </properties>
 
  <profiles>

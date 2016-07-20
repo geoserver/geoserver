@@ -18,7 +18,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testBasic() {
-        LayerInfo layer = getGeoServerApplication().getCatalog().getLayers().get(0);
+        LayerInfo layer = getGeoServerApplication().getCatalog().getLayerByName(getLayerId(MockData.BASIC_POLYGONS));
 
         login();
         tester.startPage(new ResourceConfigurationPage(layer, false));
@@ -28,7 +28,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testUpdateResource() {
-        LayerInfo layer = getGeoServerApplication().getCatalog().getLayers().get(0);
+        LayerInfo layer = getGeoServerApplication().getCatalog().getLayerByName(getLayerId(MockData.GEOMETRYLESS));
 
         login();
         ResourceConfigurationPage page = new ResourceConfigurationPage(layer, false);

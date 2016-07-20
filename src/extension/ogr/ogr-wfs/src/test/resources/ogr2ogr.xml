@@ -9,6 +9,13 @@
             <type>binary</type> <!-- not really required, it’s the default -->
         </Format>
         <Format>
+            <ogrFormat>GPKG</ogrFormat>
+            <formatName>OGR-GPKG</formatName>
+            <fileExtension>.db</fileExtension>
+            <singleFile>true</singleFile>
+            <type>binary</type> <!-- not really required, it’s the default -->
+        </Format>
+        <Format>
             <ogrFormat>MapInfo File</ogrFormat>
             <formatName>OGR-MIF</formatName>
             <fileExtension>.mif</fileExtension>

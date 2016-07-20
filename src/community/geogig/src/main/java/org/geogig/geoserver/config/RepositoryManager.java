@@ -7,7 +7,6 @@ package org.geogig.geoserver.config;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.equal;
-import static org.geoserver.catalog.Predicates.isNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,8 +50,10 @@ import org.opengis.filter.Filter;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.base.Supplier;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class RepositoryManager {
@@ -77,7 +78,7 @@ public class RepositoryManager {
     private final RepositoryCache repoCache;
 
     private static RepositoryManager INSTANCE;
-    
+
     private Catalog catalog = null;
 
     public static synchronized RepositoryManager get() {
@@ -108,11 +109,11 @@ public class RepositoryManager {
     public List<RepositoryInfo> getAll() {
         return store.getRepositories();
     }
-    
+
     public void invalidate(final String repoId) {
-    	this.repoCache.invalidate(repoId);
+        this.repoCache.invalidate(repoId);
     }
-    
+
     public GeoGIG createRepo(final Hints hints) {
         // get the Config store location
         // only generate a location if no URI is set in the hints
@@ -149,7 +150,7 @@ public class RepositoryManager {
     }
 
     public void setCatalog(Catalog catalog) {
-    	this.catalog = catalog;
+        this.catalog = catalog;
     }
 
     static List<DataStoreInfo> findGeogigStores(Catalog catalog) {
@@ -158,9 +159,21 @@ public class RepositoryManager {
     }
 
     static List<DataStoreInfo> findGeogigStoresWithOldConfiguration(Catalog catalog) {
-        org.opengis.filter.Filter filter = and(equal("type", GeoGigDataStoreFactory.DISPLAY_NAME),
-                isNull("connectionParameters." + GeoGigDataStoreFactory.RESOLVER_CLASS_NAME.key));
-        return findGeoGigStores(catalog, filter);
+        // NOTE: Using a pre Filter and a post Predicate instead of a single AND Filter because
+        // JDBCConfig doesn't know how to translate a connectionParameters.resolver Filter into an
+        // SQL expression
+        org.opengis.filter.Filter preFilter = equal("type", GeoGigDataStoreFactory.DISPLAY_NAME);
+        List<DataStoreInfo> stores = findGeoGigStores(catalog, preFilter);
+
+        Predicate<DataStoreInfo> postFilter = new Predicate<DataStoreInfo>() {
+            @Override
+            public boolean apply(DataStoreInfo st) {
+                return !st.getConnectionParameters()
+                        .containsKey(GeoGigDataStoreFactory.RESOLVER_CLASS_NAME.key);
+            }
+        };
+
+        return Lists.newArrayList(Iterables.filter(stores, postFilter));
     }
 
     private static List<DataStoreInfo> findGeoGigStores(Catalog catalog,
@@ -239,9 +252,9 @@ public class RepositoryManager {
             if (!Objects.equal(oldName, newName)) {
                 // name has been changed, update the repo
                 try {
-                    getRepository(oldRepo.getId()).command(ConfigOp.class).setAction(
-                            ConfigOp.ConfigAction.CONFIG_SET).setName("repo.name").setScope(
-                            ConfigOp.ConfigScope.LOCAL).setValue(newName).call();
+                    getRepository(oldRepo.getId()).command(ConfigOp.class)
+                            .setAction(ConfigOp.ConfigAction.CONFIG_SET).setName("repo.name")
+                            .setScope(ConfigOp.ConfigScope.LOCAL).setValue(newName).call();
                 } catch (IOException ioe) {
                     // log?
                 }

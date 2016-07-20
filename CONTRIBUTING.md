@@ -49,6 +49,14 @@ The following guidelines are meant to ensure that your pull request is as easy a
 * Fix one thing at a time
 
   Do not batch up multiple unrelated changes into a single patch. If you want to fix multiple issues work on them separately and submit separate patches for them.
+  
+* Always add a test
+
+  Given a large code base, the large number of external contributors, and the fast evolution of the code base, tests are really the only line of defense against accidental breakage of the contributed functionality. That is why we always demand to have at least one test, it's not a "punishment", but a basic guarantee your changes will still be there, and working, in future releases.
+  
+* Referer to a Jira ticket from the commit message
+
+  Release managers generate a changelog by checking the tickets resolved for a given target version, if there is none, your contribution won't show up. So always create a ticket associated to your commits, and refer to it from your commit message. 
 
 * Be patient
 

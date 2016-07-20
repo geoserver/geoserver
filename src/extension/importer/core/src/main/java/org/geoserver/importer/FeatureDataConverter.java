@@ -201,7 +201,7 @@ public class FeatureDataConverter {
         @Override
         public SimpleFeatureType convertType(SimpleFeatureType featureType, VectorFormat format,
                 ImportData data, ImportTask item) {
-            SimpleFeatureType converted = featureType;
+            SimpleFeatureType converted = DEFAULT.convertType(featureType, format, data, item );
             String featureTypeName = convertTypeName(featureType.getTypeName());
             // trim the length of the name
             // by default, postgis table/index names need to fit in 64 characters

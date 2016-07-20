@@ -25,6 +25,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.ogr.core.Format;
 import org.geoserver.ogr.core.FormatConverter;
+import org.geoserver.ogr.core.OutputType;
 import org.geoserver.ogr.core.ToolWrapper;
 import org.geoserver.ogr.core.ToolWrapperFactory;
 import org.geoserver.platform.Operation;
@@ -187,7 +188,18 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
 
     @Override
     public String getPreferredDisposition(Object value, Operation operation) {
-        return DISPOSITION_ATTACH;
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+        String outputFormat = request.getOutputFormat();
+        
+        Format format = formats.get(outputFormat);
+        List<Query> queries = request.getQueries();
+        if (format == null) {
+            throw new WFSException("Unknown output format " + outputFormat);
+        } else if(format.getType() == OutputType.BINARY || queries.size() > 1) {
+            return DISPOSITION_ATTACH;
+        } else {
+            return DISPOSITION_INLINE;
+        } 
     }
     
     @Override
@@ -199,12 +211,14 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         List<Query> queries = request.getQueries();
         if (format == null) {
             throw new WFSException("Unknown output format " + outputFormat);
-        } else if (!format.isSingleFile() || queries.size() > 1) {
-            String outputFileName = queries.get(0).getTypeNames().get(0).getLocalPart();
-            return outputFileName + ".zip";
         } else {
-            return null;
-        }
+            String outputFileName = queries.get(0).getTypeNames().get(0).getLocalPart();
+            if(!format.isSingleFile() || queries.size() > 1) {
+                return outputFileName + ".zip";
+            } else {
+                return outputFileName + format.getFileExtension();
+            }
+        } 
     }
     
     /**

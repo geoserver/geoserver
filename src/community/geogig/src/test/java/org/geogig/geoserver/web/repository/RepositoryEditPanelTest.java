@@ -4,8 +4,6 @@
  */
 package org.geogig.geoserver.web.repository;
 
-import static org.geoserver.web.GeoServerWicketTestSupport.tester;
-
 import java.util.List;
 
 import org.apache.wicket.Page;

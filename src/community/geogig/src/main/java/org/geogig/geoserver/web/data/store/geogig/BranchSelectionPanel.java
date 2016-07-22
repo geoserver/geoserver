@@ -18,7 +18,7 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.geoserver.catalog.DataStoreInfo;
-import org.locationtech.geogig.api.Ref;
+import org.locationtech.geogig.model.Ref;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Supplier;

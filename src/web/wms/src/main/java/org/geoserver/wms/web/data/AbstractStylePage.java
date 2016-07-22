@@ -43,12 +43,14 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.image.NonCachingImage;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Bytes;
+import org.apache.wicket.util.time.Time;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleGenerator;
@@ -260,11 +262,16 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         legendContainer = new WebMarkupContainer("legendContainer");
         legendContainer.setOutputMarkupId(true);
         add(legendContainer);
-        legend = new Image("legend");
+        legend = new NonCachingImage("legend");
         legendContainer.add(legend);
         legend.setVisible(false);
         legend.setOutputMarkupId(true);
         legend.setImageResource(new DynamicWebResource() {
+            
+            @Override
+            protected int getCacheDuration() {
+                return 0;
+            }
 
             @Override
             protected ResourceState getResourceState() {
@@ -319,6 +326,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     @Override
                     public String getContentType() {
                         return "image/png";
+                    }
+                    
+                    @Override
+                    public Time lastModifiedTime() {
+                        return Time.now();
                     }
                 };
             }
@@ -395,6 +407,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 lastStyle = editor.getInput();
 
                 legend.setVisible(true);
+
                 target.addComponent(legendContainer);
             }
 

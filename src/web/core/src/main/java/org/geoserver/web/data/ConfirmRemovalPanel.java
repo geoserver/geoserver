@@ -31,6 +31,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
 
@@ -120,6 +121,14 @@ public class ConfirmRemovalPanel extends Panel {
         if(groups.size() == 0)
             grr.setVisible(false);
         grr.add(new Label("groups", names(groups)));
+        
+        // removed styles
+        WebMarkupContainer syr = new WebMarkupContainer("stylesRemoved");
+        removed.add(syr);
+        List<StyleInfo> styles = visitor.getObjects(StyleInfo.class, DELETE);
+        if(styles.size() == 0)
+            syr.setVisible(false);
+        syr.add(new Label("styles", names(styles)));
         
         // modified objects root (we show it if any modified object is on the list)
         WebMarkupContainer modified = new WebMarkupContainer("modifiedObjects");

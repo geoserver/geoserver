@@ -145,7 +145,7 @@ public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
         String xml = IOUtils.toString(LocalWFSSettingsTest.class.getResourceAsStream("wms.xml"));
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/workspaces/sf/settings",
                 xml, "text/xml");
-        assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatusCode());
         Document dom = getAsDOM("/rest/services/wms/workspaces/sf/settings.xml");
         assertXpathEvaluatesTo("true", "/wms/enabled", dom);
     }

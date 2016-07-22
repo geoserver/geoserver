@@ -139,7 +139,7 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
         String xml = IOUtils.toString(LocalWFSSettingsTest.class.getResourceAsStream("wfs.xml"));
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/workspaces/sf/settings",
                 xml, "text/xml");
-        assertEquals(200, response.getStatus());
+        assertEquals(200, response.getStatusCode());
         Document dom = getAsDOM("/rest/services/wfs/workspaces/sf/settings.xml");
         assertXpathEvaluatesTo("true", "/wfs/enabled", dom);
     }

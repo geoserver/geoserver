@@ -6,8 +6,8 @@ package org.geogig.geoserver.rest;
 
 import static org.geogig.geoserver.rest.InitRequestHandler.AUTHOR_EMAIL;
 import static org.geogig.geoserver.rest.InitRequestHandler.AUTHOR_NAME;
-import static org.locationtech.geogig.api.porcelain.ConfigOp.ConfigAction.CONFIG_SET;
-import static org.locationtech.geogig.api.porcelain.ConfigOp.ConfigScope.LOCAL;
+import static org.locationtech.geogig.porcelain.ConfigOp.ConfigAction.CONFIG_SET;
+import static org.locationtech.geogig.porcelain.ConfigOp.ConfigScope.LOCAL;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,9 +22,9 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.locationtech.geogig.api.plumbing.ResolveRepositoryName;
-import org.locationtech.geogig.api.porcelain.ConfigOp;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
+import org.locationtech.geogig.plumbing.ResolveRepositoryName;
+import org.locationtech.geogig.porcelain.ConfigOp;
 import org.locationtech.geogig.rest.repository.CommandResource;
 import org.restlet.data.Request;
 import org.restlet.data.Status;

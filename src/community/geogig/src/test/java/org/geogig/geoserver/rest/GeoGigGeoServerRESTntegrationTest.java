@@ -30,10 +30,10 @@ import org.geotools.data.DataStore;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
-import org.locationtech.geogig.api.GeoGIG;
-import org.locationtech.geogig.api.plumbing.ResolveGeogigDir;
-import org.locationtech.geogig.api.porcelain.InitOp;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
+import org.locationtech.geogig.plumbing.ResolveGeogigDir;
+import org.locationtech.geogig.porcelain.InitOp;
+import org.locationtech.geogig.repository.GeoGIG;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 

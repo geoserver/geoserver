@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
 
-import org.locationtech.geogig.api.plumbing.ResolveRepositoryName;
+import org.locationtech.geogig.plumbing.ResolveRepositoryName;
 import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryConnectionException;
 import org.locationtech.geogig.repository.RepositoryResolver;

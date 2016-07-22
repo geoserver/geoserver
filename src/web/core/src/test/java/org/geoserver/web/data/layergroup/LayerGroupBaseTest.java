@@ -9,6 +9,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -42,6 +43,17 @@ public abstract class LayerGroupBaseTest extends GeoServerWicketTestSupport {
         CatalogBuilder builder = new CatalogBuilder(catalog);
         builder.calculateLayerGroupBounds(lg);
         catalog.add(lg);
+        
+        WorkspaceInfo ws = catalog.getWorkspaceByName("cite");
+        LayerGroupInfo wslg = catalog.getFactory().createLayerGroup();
+      
+        wslg.setName("bridges");
+        wslg.setWorkspace(ws);
+        wslg.getLayers().add(catalog.getLayerByName(bridges));
+        wslg.getStyles().add(catalog.getStyleByName(bridges));
+        builder = new CatalogBuilder(catalog);
+        builder.calculateLayerGroupBounds(wslg);
+        catalog.add(wslg);
     }
     
     public void setNativeBox(Catalog catalog, String name) throws Exception {

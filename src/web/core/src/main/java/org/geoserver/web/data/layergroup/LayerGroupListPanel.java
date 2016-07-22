@@ -13,6 +13,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
@@ -30,14 +31,18 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
     static Property<LayerGroupInfo> WORKSPACE = new BeanProperty<LayerGroupInfo>("workspace",
             "workspace.name");
 
-    public LayerGroupListPanel(String id) {
+    public LayerGroupListPanel(String id, WorkspaceInfo workspace) {
         super(id, new GeoServerDataProvider<LayerGroupInfo>() {
 
-        	private static final long serialVersionUID = 6471805356307807737L;
+            private static final long serialVersionUID = 6471805356307807737L;
 
-			@Override
+            @Override
             protected List<LayerGroupInfo> getItems() {
-                return getCatalog().getLayerGroups();
+                if (workspace == null) {
+                    return getCatalog().getLayerGroups();
+                } else {
+                    return getCatalog().getLayerGroupsByWorkspace(workspace);
+                }
             }
 
             @Override

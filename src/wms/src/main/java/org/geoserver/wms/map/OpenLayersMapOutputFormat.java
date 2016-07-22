@@ -39,9 +39,14 @@ import org.geotools.map.Layer;
 import org.geotools.map.WMSLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
+import org.geotools.renderer.crs.ProjectionHandler;
+import org.geotools.renderer.crs.ProjectionHandlerFinder;
+import org.geotools.renderer.crs.WrappingProjectionHandler;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.ProjectedCRS;
 
@@ -164,6 +169,18 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             map.put("request", request);
             map.put("yx", String.valueOf(isWms13FlippedCRS(request.getCrs())));
             map.put("maxResolution", new Double(getMaxResolution(mapContent.getRenderingArea())));
+            ProjectionHandler handler = null;
+            try {
+                handler = ProjectionHandlerFinder.getHandler(
+                        new ReferencedEnvelope(request.getCrs()), 
+                        request.getCrs(), wms.isContinuousMapWrappingEnabled());
+            } catch (MismatchedDimensionException e) {
+                LOGGER.log(Level.FINER, e.getMessage(), e);
+            } catch (FactoryException e) {
+                LOGGER.log(Level.FINER, e.getMessage(), e);
+            }
+            map.put("global", String.valueOf(
+                    handler != null && handler instanceof WrappingProjectionHandler));
 
             String baseUrl = ResponseUtils.buildURL(request.getBaseUrl(), "/", null, URLType.RESOURCE);
             String queryString = null;

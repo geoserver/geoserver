@@ -21,6 +21,7 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.string.Strings;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.web.gridset.GridSetListTablePanel;
@@ -98,7 +99,14 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         @Override
         protected Component getComponentForProperty(String id, IModel<GridSet> itemModel,
                 Property<GridSet> property) {
-            // TODO Auto-generated method stub
+            // Property objects are package access, so we can't statically reference them here
+            // see org.geoserver.gwc.web.gridset.ACTION_LINK
+            final String propertyName = property.getName();
+            // the Remove link property name is the empty string. If that is the property name,
+            // return the actionLink here.
+            if (Strings.isEmpty(propertyName)) {
+                return actionLink(id, itemModel.getObject().getName());
+            }
             return null;
         }
 

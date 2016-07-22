@@ -337,13 +337,16 @@ fi
 
 ln -sf ../../../doc/en/user/build/html user
 ln -sf ../../../doc/en/developer/build/html developer
+ln -sf ../../../doc/en/release/README.txt readme
+
 htmldoc=geoserver-$tag-htmldoc.zip
 if [ -e $htmldoc ]; then
   rm -f $htmldoc 
 fi
-zip -r $htmldoc user developer
+zip -r $htmldoc user developer readme
 unlink user
 unlink developer
+unlink readme
 
 popd > /dev/null
 

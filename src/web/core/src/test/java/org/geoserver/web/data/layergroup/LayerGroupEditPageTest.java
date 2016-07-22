@@ -22,9 +22,11 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.web.data.resource.MetadataLinkEditor;
 import org.geoserver.web.wicket.DecimalTextField;
 import org.geoserver.web.wicket.EnvelopePanel;
+import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
 
 
 public class LayerGroupEditPageTest extends LayerGroupBaseTest {
@@ -179,6 +181,58 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         
         assertEquals(layerCount, rowCount);
     }
+    
+    @Test
+    public void testLayerLinkWithWorkspace() {
+        LayerGroupEditPage page = new LayerGroupEditPage(
+                new PageParameters().add("workspace", "cite").add("group", "bridges"));
+        // Create the new page
+        tester.startPage(page);
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+        // Click on the link
+        tester.clickLink("publishedinfo:tabs:panel:layers:addLayer");
+        tester.assertNoErrorMessage();
+        // Ensure that the Layer List page is rendered correctly
+        tester.assertComponent("publishedinfo:tabs:panel:layers:popup:content:listContainer:items", DataView.class);
+        // Get the DataView containing the Layer List
+        DataView<?> dataView = (DataView<?>) page.lgEntryPanel.get("popup:content:listContainer:items");
+        // Ensure that the Row count is equal to the Layers in the Catalog
+        Catalog catalog = getGeoServerApplication().getCatalog();
+        
+        
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory2();
+        final Filter filter = ff.equal(ff.property("resource.store.workspace.id"), 
+                ff.literal(catalog.getWorkspaceByName("cite").getId()),true);
+
+        int layerCount = catalog.count(LayerInfo.class, filter);
+        int rowCount = (int) dataView.getRowCount();
+        
+        assertEquals(layerCount, rowCount);
+    }
+    
+    @Test
+    public void testLayerGroupLinkWithWorkspace() {
+        LayerGroupEditPage page = new LayerGroupEditPage(
+                new PageParameters().add("workspace", "cite").add("group", "bridges"));
+        // Create the new page
+        tester.startPage(page);
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+        // Click on the link
+        tester.clickLink("publishedinfo:tabs:panel:layers:addLayerGroup");
+        tester.assertNoErrorMessage();
+        // Ensure that the Layer List page is rendered correctly
+        tester.assertComponent("publishedinfo:tabs:panel:layers:popup:content:listContainer:items", DataView.class);
+        // Get the DataView containing the Layer List
+        DataView<?> dataView = (DataView<?>) page.lgEntryPanel.get("popup:content:listContainer:items");
+        // Ensure that the Row count is equal to the Layers in the Catalog
+        Catalog catalog = getGeoServerApplication().getCatalog();
+
+        int layerGroupCount = catalog.getLayerGroupsByWorkspace("cite").size();
+        int rowCount = (int) dataView.getRowCount();
+        
+        assertEquals(layerGroupCount, rowCount);
+    }
+    
     
     @Test
     public void testMetadataLinks() {

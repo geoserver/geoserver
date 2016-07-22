@@ -114,7 +114,7 @@ public class LayerGroupEntryPanel extends Panel {
                 popupWindow.setInitialHeight( 375 );
                 popupWindow.setInitialWidth( 525 );
                 popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
-                popupWindow.setContent( new LayerListPanel(popupWindow.getContentId()) {
+                popupWindow.setContent( new LayerListPanel(popupWindow.getContentId(), layerGroup.getWorkspace()) {
                     private static final long serialVersionUID = -47811496174289699L;
 
                     @Override
@@ -141,7 +141,7 @@ public class LayerGroupEntryPanel extends Panel {
                 popupWindow.setInitialHeight( 375 );
                 popupWindow.setInitialWidth( 525 );
                 popupWindow.setTitle(new ParamResourceModel("chooseLayerGroup", this));
-                popupWindow.setContent( new LayerGroupListPanel(popupWindow.getContentId()) {
+                popupWindow.setContent( new LayerGroupListPanel(popupWindow.getContentId(), layerGroup.getWorkspace()) {
                     private static final long serialVersionUID = 4052338807144204692L;
 
                     @Override

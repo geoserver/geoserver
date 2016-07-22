@@ -55,6 +55,7 @@
        
     <bean class="org.geoserver.config.GeoServerPropertyOverrideConfigurer" >
         <constructor-arg ref="dataDirectory"/>
+        <property name="order" value="200"/>
         <property name="ignoreResourceNotFound" value="true"/>
         <property name="locations">
             <list>

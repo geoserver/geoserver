@@ -30,12 +30,21 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
     }
 
     @Override
-    protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
+    public void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
         super.initXStreamPersister(xp, gs);
+        initXStreamPersister(xp);
+    }
+
+    /**
+     * Sets up aliases and allowed types for the xstream persister
+     * @param xs
+     */
+    public static void initXStreamPersister(XStreamPersister xp) {
         XStream xs = xp.getXStream();
         xs.alias( "wfs", WFSInfo.class, WFSInfoImpl.class );
         xs.alias( "version", WFSInfo.Version.class);
         xs.alias( "gml", GMLInfo.class, GMLInfoImpl.class );
+        // modify the WFSSettingsResource when 
         xs.allowTypes(new Class[] { WFSInfo.Version.class, GMLInfo.class, GMLInfoImpl.class });
     }
     

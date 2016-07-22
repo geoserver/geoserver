@@ -1,0 +1,18 @@
+<csw:GetRecords xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://purl.org/dc/terms/"
+  xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco"
+  xmlns:gmi="http://www.isotc211.org/2005/gmi" xmlns:ows="http://www.opengis.net/ows" service="CSW"
+  version="2.0.2" resultType="results" startPosition="1" maxRecords="6"
+>
+  <csw:Query typeNames="csw:Record">
+    <csw:ElementSetName>full</csw:ElementSetName>
+    <csw:Constraint version="1.1.0">
+      <ogc:Filter>
+        <ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="">
+          <ogc:PropertyName>csw:AnyText</ogc:PropertyName>
+          <ogc:Literal>%Greece%</ogc:Literal>
+        </ogc:PropertyIsLike>
+      </ogc:Filter>
+    </csw:Constraint>
+  </csw:Query>
+</csw:GetRecords>

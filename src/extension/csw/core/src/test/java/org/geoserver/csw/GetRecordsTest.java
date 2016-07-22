@@ -529,6 +529,17 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
     }
     
     @Test 
+    public void testLikeNoEscape() throws Exception {
+        String request = getResourceAsString("GetRecordsAnyTextNoEscape.xml");
+        Document d = postAsDOM("csw", request);
+        checkValidationErrors(d, new CSWConfiguration());
+        // print(d);
+        
+        assertXpathEvaluatesTo("1", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("Tourism--Greece", "//csw:SearchResults/csw:Record/dc:subject", d);
+    }
+    
+    @Test 
     public void testStartPositionOverNumberOfRecords() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&startPosition=50&maxRecords=10";
         Document d = getAsDOM(request, "ISO-8859-1");

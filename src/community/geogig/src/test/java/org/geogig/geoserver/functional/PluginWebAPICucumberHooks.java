@@ -8,8 +8,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.locationtech.geogig.api.porcelain.ConfigOp.ConfigAction.CONFIG_LIST;
-import static org.locationtech.geogig.api.porcelain.ConfigOp.ConfigScope.LOCAL;
+import static org.locationtech.geogig.porcelain.ConfigOp.ConfigAction.CONFIG_LIST;
+import static org.locationtech.geogig.porcelain.ConfigOp.ConfigScope.LOCAL;
 
 import java.io.File;
 import java.net.URI;
@@ -19,14 +19,15 @@ import org.geogig.web.functional.WebAPICucumberHooks;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.locationtech.geogig.api.GeoGIG;
-import org.locationtech.geogig.api.plumbing.ResolveGeogigURI;
-import org.locationtech.geogig.api.porcelain.ConfigOp;
+import org.locationtech.geogig.plumbing.ResolveGeogigURI;
+import org.locationtech.geogig.porcelain.ConfigOp;
+import org.locationtech.geogig.repository.GeoGIG;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;

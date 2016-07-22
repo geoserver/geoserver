@@ -30,8 +30,8 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
-import org.locationtech.geogig.api.Ref;
-import org.locationtech.geogig.api.SymRef;
+import org.locationtech.geogig.model.Ref;
+import org.locationtech.geogig.model.SymRef;
 
 public class RemotesListPanel extends GeoServerTablePanel<RemoteInfo> {
 

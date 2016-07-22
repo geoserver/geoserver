@@ -13,11 +13,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.util.Random;
 import java.util.Set;
-
-import javax.servlet.ServletOutputStream;
 
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
@@ -36,9 +33,9 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.DataAccess;
 import org.json.JSONObject;
-import org.locationtech.geogig.api.GeoGIG;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
+import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.web.api.TestData;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;

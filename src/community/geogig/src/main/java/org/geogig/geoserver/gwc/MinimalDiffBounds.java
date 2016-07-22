@@ -6,12 +6,12 @@ package org.geogig.geoserver.gwc;
 
 import static com.google.common.base.Optional.fromNullable;
 
-import org.locationtech.geogig.api.AbstractGeoGigOp;
-import org.locationtech.geogig.api.ObjectId;
-import org.locationtech.geogig.api.Ref;
-import org.locationtech.geogig.api.RevTree;
-import org.locationtech.geogig.api.plumbing.ResolveTreeish;
-import org.locationtech.geogig.api.plumbing.diff.PreOrderDiffWalk;
+import org.locationtech.geogig.model.ObjectId;
+import org.locationtech.geogig.model.Ref;
+import org.locationtech.geogig.model.RevTree;
+import org.locationtech.geogig.plumbing.ResolveTreeish;
+import org.locationtech.geogig.plumbing.diff.PreOrderDiffWalk;
+import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.storage.ObjectDatabase;
 
 import com.google.common.base.Optional;

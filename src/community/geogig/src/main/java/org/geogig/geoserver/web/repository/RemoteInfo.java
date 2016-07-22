@@ -12,8 +12,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.locationtech.geogig.api.Ref;
-import org.locationtech.geogig.api.Remote;
+import org.locationtech.geogig.model.Ref;
+import org.locationtech.geogig.repository.Remote;
 
 import com.google.common.base.Objects;
 

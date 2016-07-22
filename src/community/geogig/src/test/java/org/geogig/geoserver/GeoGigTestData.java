@@ -42,31 +42,31 @@ import org.geotools.util.Converters;
 import org.junit.Assert;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TemporaryFolder;
-import org.locationtech.geogig.api.AbstractGeoGigOp;
-import org.locationtech.geogig.api.Context;
-import org.locationtech.geogig.api.FeatureBuilder;
-import org.locationtech.geogig.api.GeoGIG;
-import org.locationtech.geogig.api.GlobalContextBuilder;
-import org.locationtech.geogig.api.NodeRef;
-import org.locationtech.geogig.api.ObjectId;
-import org.locationtech.geogig.api.RevFeature;
-import org.locationtech.geogig.api.RevFeatureType;
-import org.locationtech.geogig.api.RevTree;
-import org.locationtech.geogig.api.TestPlatform;
-import org.locationtech.geogig.api.plumbing.FindTreeChild;
-import org.locationtech.geogig.api.plumbing.ResolveGeogigDir;
-import org.locationtech.geogig.api.plumbing.RevObjectParse;
-import org.locationtech.geogig.api.porcelain.AddOp;
-import org.locationtech.geogig.api.porcelain.BranchCreateOp;
-import org.locationtech.geogig.api.porcelain.CheckoutOp;
-import org.locationtech.geogig.api.porcelain.CommitOp;
-import org.locationtech.geogig.api.porcelain.ConfigOp;
-import org.locationtech.geogig.api.porcelain.ConfigOp.ConfigAction;
-import org.locationtech.geogig.api.porcelain.InitOp;
 import org.locationtech.geogig.cli.test.functional.CLITestContextBuilder;
+import org.locationtech.geogig.data.FeatureBuilder;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
+import org.locationtech.geogig.model.NodeRef;
+import org.locationtech.geogig.model.ObjectId;
+import org.locationtech.geogig.model.RevFeature;
+import org.locationtech.geogig.model.RevFeatureType;
+import org.locationtech.geogig.model.RevTree;
+import org.locationtech.geogig.plumbing.FindTreeChild;
+import org.locationtech.geogig.plumbing.ResolveGeogigDir;
+import org.locationtech.geogig.plumbing.RevObjectParse;
+import org.locationtech.geogig.porcelain.AddOp;
+import org.locationtech.geogig.porcelain.BranchCreateOp;
+import org.locationtech.geogig.porcelain.CheckoutOp;
+import org.locationtech.geogig.porcelain.CommitOp;
+import org.locationtech.geogig.porcelain.ConfigOp;
+import org.locationtech.geogig.porcelain.InitOp;
+import org.locationtech.geogig.porcelain.ConfigOp.ConfigAction;
+import org.locationtech.geogig.repository.AbstractGeoGigOp;
+import org.locationtech.geogig.repository.Context;
+import org.locationtech.geogig.repository.GeoGIG;
+import org.locationtech.geogig.repository.GlobalContextBuilder;
 import org.locationtech.geogig.repository.WorkingTree;
+import org.locationtech.geogig.test.TestPlatform;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -94,9 +94,9 @@ public class GeoGigTestData extends ExternalResource {
 
     @Override
     protected void before() throws Throwable {
-    	setUp("testrepo");
+        setUp("testrepo");
     }
-    
+
     public void setUp(String repoName) throws Exception {
         tmpFolder = new TemporaryFolder();
         tmpFolder.create();
@@ -105,9 +105,9 @@ public class GeoGigTestData extends ExternalResource {
 
     @Override
     protected void after() {
-    	tearDown();
+        tearDown();
     }
-    
+
     public void tearDown() {
         try {
             if (geogig != null) {
@@ -359,7 +359,7 @@ public class GeoGigTestData extends ExternalResource {
 
         @SuppressWarnings("unchecked")
         Optional<RevFeature> revFeature = (Optional<RevFeature>) run(
-                context.command(RevObjectParse.class).setObjectId(featureRef.objectId()));
+                context.command(RevObjectParse.class).setObjectId(featureRef.getObjectId()));
 
         String id = featureRef.name();
         Feature feature = new FeatureBuilder(type).build(id, revFeature.get());

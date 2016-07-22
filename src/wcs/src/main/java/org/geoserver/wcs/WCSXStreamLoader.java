@@ -41,6 +41,14 @@ public class WCSXStreamLoader extends XStreamServiceLoader<WCSInfo> {
     @Override
     public void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
         super.initXStreamPersister(xp, gs);
+        initXStreamPersister(xp);
+    }
+
+    /**
+     * Sets up aliases and allowed types for the xstream persister
+     * @param xs
+     */
+    public static void initXStreamPersister(XStreamPersister xp) {
         xp.getXStream().alias("wcs", WCSInfo.class, WCSInfoImpl.class);
     }
 

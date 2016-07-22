@@ -13,9 +13,8 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.format.DataFormat;
-import org.geoserver.wfs.GMLInfoImpl;
 import org.geoserver.wfs.WFSInfo;
-import org.geoserver.wfs.WFSInfoImpl;
+import org.geoserver.wfs.WFSXStreamLoader;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -44,9 +43,7 @@ public class WFSSettingsResource extends ServiceSettingsResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setHideFeatureTypeAttributes();
-        persister.getXStream().alias("wfs", WFSInfoImpl.class);
-        persister.getXStream().alias("version", WFSInfo.Version.class);
-        persister.getXStream().alias("gml", GMLInfoImpl.class);
+        WFSXStreamLoader.initXStreamPersister(persister);
     }
 
     static class WFSSettingsHTMLFormat extends CatalogFreemarkerHTMLFormat {

@@ -157,16 +157,16 @@ public class SecureXStream extends XStream {
                 sb.append("If you are a user, you can set a variable named ").append(WHITELIST_KEY)
                         .append("\n")
                         .append("  with a semicolon separated list of fully qualified names, or patterns\n")
-                        .append("  to match several classes.The variable can be set as a system variable\n")
-                        .append("  a enviromment variable, or a servlet context variable, just like \n")
+                        .append("  to match several classes.The variable can be set as a system variable,\n")
+                        .append("  an environment variable, or a servlet context variable, just like\n")
                         .append("  GEOSERVER_DATA_DIR.\n")
-                        .append("  For example, in order to authorize the org.geoserver.Foo class, \n")
+                        .append("  For example, in order to authorize the org.geoserver.Foo class,\n")
                         .append("  plus any class in the org.geoserver.custom package, one could set\n")
                         .append("  a system variable: \n").append("  -D").append(WHITELIST_KEY)
                         .append("=org.geoserver.Foo;org.geoserver.custom.**\n");
                 sb.append(
-                        "If instead you are a developer, you can call allowTypes/allowTypeHierarchy against \n")
-                        .append("  the XStream used for serialization by rolling a custom \n")
+                        "If instead you are a developer, you can call allowTypes/allowTypeHierarchy against\n")
+                        .append("  the XStream used for serialization by rolling a custom\n")
                         .append("  XStreamPersisterInitializer or customizing your XStreamServiceLoader.");
                 LOGGER.log(Level.SEVERE, sb.toString(), e.getMessage());
 

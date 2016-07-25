@@ -132,11 +132,16 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
         public MockHttpServletResponse callInternal(Method method, String resourceUri,
                 JSONObject payload) throws Exception {
+            return callWithContentTypeInternal(method, resourceUri, payload, "application/json");
+        }
+
+        public MockHttpServletResponse callWithContentTypeInternal(Method method, String resourceUri,
+                JSONObject payload, String contentType) throws Exception {
             MockHttpServletRequest request = super.createRequest(resourceUri);
             request.setMethod(method.getName());
             // set the JSON payload
             request.setContent(payload.toString().getBytes());
-            request.setContentType("application/json");
+            request.setContentType(contentType);
 
             return dispatch(request, null);
         }
@@ -373,6 +378,25 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         try {
             resourceUri = replaceVariables(resourceUri);
             this.lastResponse = helper.callInternal(method, "/geogig" + resourceUri, payload);
+        } catch (Exception e) {
+            Throwables.propagate(e);
+        }
+    }
+
+    /**
+     * Invokes URI request with specified Content-Type. This is used for testing mismatches in request
+     * body content and the Content-Type header.
+     * @param method HTTP Method to invoke
+     * @param resourceUri URI address to which to send the request
+     * @param payload JSON object payload to encode into the request
+     * @param contentType Specific Content-Type header value to send
+     */
+    public void callWithContentType(Method method, String resourceUri, JSONObject payload,
+            String contentType) {
+        try {
+            resourceUri = replaceVariables(resourceUri);
+            this.lastResponse = helper.callWithContentTypeInternal(method, "/geogig" + resourceUri,
+                    payload, contentType);
         } catch (Exception e) {
             Throwables.propagate(e);
         }

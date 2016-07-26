@@ -27,7 +27,6 @@ import org.restlet.data.Method;
 
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
-
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
@@ -276,5 +275,27 @@ public class PluginWebAPICucumberHooks {
         // request.
         String parentDir = new File(repoURI).getParentFile().getParentFile().getAbsolutePath();
         assertNotEquals("Unexpected parent directory", SYSTEM_TEMP_PATH, parentDir);
+    }
+
+    @When("^I call \"([^\"]*)\" with an unsupported media type$")
+    public void callURLWithUnsupportedMediaType(final String methodAndURL) throws JSONException {
+        final int idx = methodAndURL.indexOf(' ');
+        checkArgument(idx > 0, "No METHOD given in URL definition: '%s'", methodAndURL);
+        final String httpMethod = methodAndURL.substring(0, idx);
+        String resourceUri = methodAndURL.substring(idx + 1).trim();
+        Method method = Method.valueOf(httpMethod);
+        // build the JSON payload
+        JSONObject payload = new JSONObject();
+        payload.put("parentDirectory", SYSTEM_TEMP_PATH);
+        // add in author details
+        payload.put("authorName", "GeoGig User");
+        payload.put("authorEmail", "geogig@geogig.org");
+        context.callWithContentType(method, resourceUri, payload, "application/xml");
+    }
+
+    @Then("^there should be no \"([^\"]*)\" created$")
+    public void checkRepoNotInitialized(final String repo) throws Exception {
+        GeoGIG geogig = context.getRepo(repo);
+        assertTrue("Expected repository to NOT EXIST", null == geogig);
     }
 }

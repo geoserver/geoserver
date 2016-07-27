@@ -3,6 +3,8 @@ cache:
   directories:
     - "$HOME/.m2"
 language: java
+before_install:
+  - sed -i.bak -e 's|https://nexus.codehaus.org/snapshots/|https://oss.sonatype.org/content/repositories/codehaus-snapshots/|g' ~/.m2/settings.xml
 before_script:
   - cd src
 script:

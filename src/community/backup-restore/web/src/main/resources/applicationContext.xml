@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!-- 
+ (c) 2016 Open Source Geospatial Foundation - all rights reserved
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+-->
+<beans>
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-backup-restore-web,"/>
+    <constructor-arg index="1" value="Backup/Restore Web"/>
+  </bean>
+  <!-- 
+    wicket ui stuff
+   -->
+  <bean id="backupRestoreExecutionsMenuPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="backupRestoreExecutions" />
+    <property name="category" ref="dataCategory"/>
+    <property name="titleKey" value="BackupRestoreDataPage.menu" />
+    <property name="descriptionKey" value="BackupRestoreDataPage.description" />
+    <property name="componentClass" value="org.geoserver.backuprestore.web.BackupRestoreDataPage" />
+    <property name="order" value="1000"/>
+    <property name="icon" value="database_save.png"/>
+  </bean>
+
+</beans>

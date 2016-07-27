@@ -16,7 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
+import java.net.URI;
 import java.util.List;
 import java.util.Random;
 
@@ -45,6 +45,9 @@ import org.locationtech.geogig.plumbing.RefParse;
 import org.locationtech.geogig.plumbing.ResolveTreeish;
 import org.locationtech.geogig.plumbing.RevObjectParse;
 import org.locationtech.geogig.repository.GeoGIG;
+import org.locationtech.geogig.repository.Repository;
+import org.locationtech.geogig.repository.RepositoryResolver;
+import org.locationtech.geogig.storage.ConfigDatabase;
 import org.locationtech.geogig.storage.ObjectSerializingFactory;
 import org.locationtech.geogig.storage.datastream.DataStreamSerializationFactoryV1;
 import org.opengis.feature.Feature;
@@ -55,7 +58,6 @@ import org.w3c.dom.Document;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -131,9 +133,13 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
         assertNotNull(dataStore);
         assertTrue(dataStore instanceof GeoGigDataStore);
 
-        String repoId = (String) dsInfo.getConnectionParameters()
+        String repoStr = (String) dsInfo.getConnectionParameters()
                 .get(GeoGigDataStoreFactory.REPOSITORY.key);
-        RepositoryInfo repositoryInfo = RepositoryManager.get().get(repoId);
+        // resolve the repo
+        URI repoURI = new URI(repoStr);
+        RepositoryResolver resolver = RepositoryResolver.lookup(repoURI);
+        String repoName = resolver.getName(repoURI);
+        RepositoryInfo repositoryInfo = RepositoryManager.get().getByRepoName(repoName);
         assertNotNull(repositoryInfo);
         BASE_URL = "/geogig/repos/testrepo";
     }

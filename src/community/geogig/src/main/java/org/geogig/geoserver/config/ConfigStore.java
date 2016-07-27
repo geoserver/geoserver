@@ -64,7 +64,7 @@ public class ConfigStore {
     /**
      * Regex pattern to assert the format of ids on {@link #save(RepositoryInfo)}
      */
-    private static final Pattern UUID_PATTERN = Pattern
+    public static final Pattern UUID_PATTERN = Pattern
             .compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
     private static final String CONFIG_DIR_NAME = "geogig/config/repos";

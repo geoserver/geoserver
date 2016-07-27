@@ -6,10 +6,10 @@ package org.geogig.geoserver.web.data.store.geogig;
 
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.BRANCH;
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.REPOSITORY;
-import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.RESOLVER_CLASS_NAME;
 
-import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.geogig.geoserver.config.GeoServerStoreRepositoryResolver;
+import org.geogig.geoserver.config.GeoServerGeoGigRepositoryResolver;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.geogig.geoserver.web.repository.RepositoryEditFormPanel;
@@ -38,6 +38,7 @@ import org.geoserver.web.data.store.DataAccessNewPage;
 import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
+import org.locationtech.geogig.repository.RepositoryResolver;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
@@ -53,7 +54,7 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
 
     private final ModalWindow modalWindow;
 
-    private final IModel<String> repositoryIdModel;
+    private final IModel<String> repositoryUriModel;
 
     private final IModel<String> branchNameModel;
 
@@ -73,13 +74,11 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
 
         final IModel<Map<String, Serializable>> paramsModel = new PropertyModel<>(model,
                 "connectionParameters");
-        paramsModel.getObject().put(RESOLVER_CLASS_NAME.key,
-                GeoServerStoreRepositoryResolver.class.getName());
 
-        this.repositoryIdModel = new MapModel(paramsModel, REPOSITORY.key);
+        this.repositoryUriModel = new MapModel(paramsModel, REPOSITORY.key);
         this.branchNameModel = new MapModel(paramsModel, BRANCH.key);
 
-        this.originalRepo = repositoryIdModel.getObject();
+        this.originalRepo = repositoryUriModel.getObject();
         this.originalBranch = branchNameModel.getObject();
 
         add(repository = createRepositoryPanel());
@@ -96,7 +95,7 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
         IModel<List<String>> choices = new RepositoryListDettachableModel();
 
         RepoInfoChoiceRenderer choiceRenderer = new RepoInfoChoiceRenderer();
-        DropDownChoice<String> choice = new DropDownChoice<>("geogig_repository", repositoryIdModel,
+        DropDownChoice<String> choice = new DropDownChoice<>("geogig_repository", repositoryUriModel,
                 choices, choiceRenderer);
         choice.setLabel(new ResourceModel("repository"));
         choice.setNullValid(true);
@@ -110,7 +109,7 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
             protected void onUpdate(AjaxRequestTarget target) {
                 String branchName = null;
                 // do not lose the original branch if the user is moving around the repo choices
-                if (Objects.equal(originalRepo, repositoryIdModel.getObject())) {
+                if (Objects.equal(originalRepo, repositoryUriModel.getObject())) {
                     branchName = originalBranch;
                 }
                 branchNameModel.setObject(branchName);
@@ -125,7 +124,7 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
 
         final String panelId = "branch";
         BranchSelectionPanel selectionPanel;
-        selectionPanel = new BranchSelectionPanel(panelId, repositoryIdModel, branchNameModel,
+        selectionPanel = new BranchSelectionPanel(panelId, repositoryUriModel, branchNameModel,
                 form);
         selectionPanel.setOutputMarkupId(true);
         return selectionPanel;
@@ -216,7 +215,7 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
     @SuppressWarnings("unchecked")
     private void updateRepository(final Form<DataStoreInfo> form, AjaxRequestTarget target,
             RepositoryInfo info) {
-        repository.setModelObject(info.getId());
+        repository.setModelObject(GeoServerGeoGigRepositoryResolver.getURI(info.getRepoName()));
         branchNameModel.setObject(null);
         branch.updateChoices(true, form);
         target.addComponent(repository);
@@ -241,12 +240,12 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
         @Override
         protected List<String> load() {
             List<RepositoryInfo> all = RepositoryManager.get().getAll();
-            List<String> ids = new ArrayList<>(all.size());
+            List<String> uris = new ArrayList<>(all.size());
             for (RepositoryInfo info : all) {
-                ids.add(info.getId());
+                uris.add(GeoServerGeoGigRepositoryResolver.getURI(info.getRepoName()));
             }
-            Collections.sort(ids);
-            return ids;
+            Collections.sort(uris);
+            return uris;
         }
     }
 
@@ -254,14 +253,15 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
         private static final long serialVersionUID = -7350304450283044479L;
 
         @Override
-        public Object getDisplayValue(String id) {
-            RepositoryInfo info;
+        public Object getDisplayValue(String repoUriStr) {
             try {
-                info = RepositoryManager.get().get(id);
-            } catch (IOException e) {
+                URI repoUri = new URI(repoUriStr);
+                RepositoryResolver resolver = RepositoryResolver.lookup(repoUri);
+                RepositoryInfo info = RepositoryManager.get().getByRepoName(resolver.getName(repoUri));
+                return info.getRepoName() + " (" + info.getLocation() + ")";
+            } catch (URISyntaxException e) {
                 throw Throwables.propagate(e);
             }
-            return info.getRepoName() + " (" + info.getLocation() + ")";
         }
 
         @Override

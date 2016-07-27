@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.geogig.geoserver.GeoGigTestData;
 import org.geogig.geoserver.GeoGigTestData.CatalogBuilder;
+import org.geogig.geoserver.config.RepositoryManager;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -26,6 +27,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
 import org.geoserver.wms.WMSInfo;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
@@ -48,19 +50,24 @@ public class GeogigLayerIntegrationListenerTest extends GeoServerSystemTestSuppo
                 .commit("created type trees")//
                 .get();
 
-        geogigData.insert("points",//
-                "p1=geom:POINT(0 0)",//
-                "p2=geom:POINT(1 1)",//
+        geogigData.insert("points", //
+                "p1=geom:POINT(0 0)", //
+                "p2=geom:POINT(1 1)", //
                 "p3=geom:POINT(2 2)");
 
-        geogigData.insert("lines",//
-                "l1=geom:LINESTRING(-10 0, 10 0)",//
+        geogigData.insert("lines", //
+                "l1=geom:LINESTRING(-10 0, 10 0)", //
                 "l2=geom:LINESTRING(0 0, 180 0)");
 
         geogigData.add().commit("Added test features");
         // need to instantiate the listerner so it can register with the test GeoServer instance
         new GeogigLayerIntegrationListener(getGeoServer());
 
+    }
+
+    @After
+    public void after() {
+        RepositoryManager.close();
     }
 
     @Test

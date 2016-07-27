@@ -23,25 +23,7 @@
       <url>https://repository.apache.org/content/repositories/releases/</url>
     </repository>
 
-    <repository>
-      <!-- needed for JMS deps -->
-      <id>apache-snapshots</id>
-      <name>Apache Snapshot Maven Repository</name>
-      <url>https://repository.apache.org/content/repositories/snapshots/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
 
-    <repository>
-      <!-- needed for JMS deps -->
-      <id>fuse</id>
-      <name>FUSE Source Maven Repository</name>
-      <url>http://repo.fusesource.com/nexus/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
   </repositories>
   <profiles>
     <profile>

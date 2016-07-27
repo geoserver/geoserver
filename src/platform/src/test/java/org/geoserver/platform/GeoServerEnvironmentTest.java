@@ -4,15 +4,12 @@
  */
 package org.geoserver.platform;
 
-import org.geowebcache.GeoWebCacheExtensions;
-
 import junit.framework.TestCase;
 
 /**
- * Unit test suite for {@link GeoWebCacheExtensions}
+ * Unit test suite for {@link GeoServerEnvironment}
  * 
- * @author Gabriel Roldan (TOPP)
- * @version $Id$
+ * @author Alessio Fabiani, GeoSolutions
  */
 public class GeoServerEnvironmentTest extends TestCase {
 

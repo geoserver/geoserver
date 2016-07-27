@@ -114,4 +114,12 @@ public class GeoServerPropertyConfigurer extends PropertyPlaceholderConfigurer {
             }
         }
     }
+    
+    public void reload() throws IOException {
+        if (localProperties != null) {
+            for (Properties props : localProperties) {
+                loadProperties(props);
+            }
+        }
+    }
 }

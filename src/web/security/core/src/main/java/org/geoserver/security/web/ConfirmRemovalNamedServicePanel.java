@@ -8,7 +8,7 @@ package org.geoserver.security.web;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 public class ConfirmRemovalNamedServicePanel<T extends SecurityNamedServiceConfig> extends  AbstractConfirmRemovalPanel<T> {
@@ -26,7 +26,7 @@ public class ConfirmRemovalNamedServicePanel<T extends SecurityNamedServiceConfi
 
     @Override
     protected String getConfirmationMessage(SecurityNamedServiceConfig object) throws Exception{
-        return (String) BeanUtils.getProperty(object, "name");
+        return OwsUtils.property(object, "name", String.class);
     }
  
 

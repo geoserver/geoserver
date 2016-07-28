@@ -21,6 +21,7 @@ import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.ows.util.OwsUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ItemProcessor;
@@ -73,6 +74,9 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             if (isNew()) {
                 // Disabling additional validators
                 ((CatalogImpl) getCatalog()).setExtendedValidation(false);
+                
+                // Resolving Collections
+                OwsUtils.resolveCollections(resource);
             }
 
             LOGGER.info("Processing resource: " + resource + " - Progress: ["

@@ -14,6 +14,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataUtilities;
+import org.geotools.renderer.markwkt.WKTMarkFactory;
 import org.geotools.styling.*;
 
 import javax.annotation.Nonnull;
@@ -1078,6 +1079,19 @@ public class GeoServerDataDirectory {
         return r;
     }
     
+    /**
+     * Set the the root directory to look for WKTLib files as the styles directory
+     */
+    public void setWKTLibRoot() {
+        WKTMarkFactory wp = new WKTMarkFactory();
+        URL styleUrl = null;
+        try {
+            styleUrl = new URL("file:" + root().toString() + "/" + STYLE_DIR);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        wp.setRoot(styleUrl);
+    }
 
     /**
      * Retrieve a resource in the the styles directory. An empty path will retrieve
@@ -1110,6 +1124,7 @@ public class GeoServerDataDirectory {
     public @Nonnull Resource get(StyleInfo si, String... path) {
         WorkspaceInfo workspace = si != null ? si.getWorkspace() : null;
         final Resource r;
+        setWKTLibRoot();
         if (workspace == null) {
             r = getStyles(path);
         } else {

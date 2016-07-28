@@ -5,6 +5,9 @@
  */
 package org.geoserver.flow.config;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -13,6 +16,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.geoserver.config.GeoServerPluginConfigurator;
 import org.geoserver.flow.ControlFlowConfigurator;
 import org.geoserver.flow.FlowController;
 import org.geoserver.flow.controller.BasicOWSController;
@@ -27,7 +31,10 @@ import org.geoserver.flow.controller.SingleIpFlowController;
 import org.geoserver.flow.controller.UserConcurrentFlowController;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
 
@@ -37,7 +44,7 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - OpenGeo
  * @author Juan Marin, OpenGeo
  */
-public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
+public class DefaultControlFlowConfigurator implements ControlFlowConfigurator, GeoServerPluginConfigurator {
     static final Pattern RATE_PATTERN = Pattern.compile("(\\d+)/([smhd])(;(\\d+)s)?");
 
     static final Logger LOGGER = Logging.getLogger(DefaultControlFlowConfigurator.class);
@@ -193,6 +200,54 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
 
     public long getTimeout() {
         return timeout;
+    }
+
+    @Override
+    public List<Resource> getFileLocations() throws IOException {
+        List<Resource> configurationFiles = new ArrayList<>();
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        if (loader != null) {
+            Resource controlflow = loader.get(PROPERTYFILENAME);
+        
+            configurationFiles.add(controlflow);
+        } else if (this.configFile != null && this.configFile.getResource() != null) {
+            configurationFiles.add(this.configFile.getResource());
+        }
+        return configurationFiles;
+    }
+
+    @Override
+    public void saveConfiguration(GeoServerResourceLoader resourceLoader) throws IOException {
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        if (loader != null) {
+            for(Resource controlflow : getFileLocations()) {
+                Resource targetDir = 
+                        Files.asResource(resourceLoader.findOrCreateDirectory(Paths.convert(loader.getBaseDirectory(), controlflow.parent().dir())));
+                
+                Resources.copy(controlflow.file(), targetDir);
+            }
+        } else if (this.configFile != null && this.configFile.getResource() != null) {
+            Resources.copy(this.configFile.getFile(), Files.asResource(resourceLoader.getBaseDirectory()));
+        } else if (this.configFile != null && this.configFile.getProperties() != null) {
+            File controlFlowConfigurationFile = Resources.file(resourceLoader.get(PROPERTYFILENAME), true);
+            OutputStream out = Files.out(controlFlowConfigurationFile);
+            try {
+                this.configFile.getProperties().store(out, "");
+            } finally {
+                out.flush();
+                out.close();
+            }
+        }
+    }
+
+    @Override
+    public void loadConfiguration(GeoServerResourceLoader resourceLoader) throws IOException {
+        synchronized (this) {
+            Resource controlflow = resourceLoader.get(PROPERTYFILENAME);
+            if (Resources.exists(controlflow)) {
+                configFile = new PropertyFileWatcher(controlflow);
+            }
+        }
     }
 
 }

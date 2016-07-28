@@ -303,8 +303,8 @@ public class GWCTest {
 
     @After
     public void tearDown() {
-        System.setProperty("ALLOW_ENV_PARAMETRIZATION", "false");
-        System.setProperty("TEST_ENV_PROPERTY", "");
+        System.clearProperty("ALLOW_ENV_PARAMETRIZATION");
+        System.clearProperty("TEST_ENV_PROPERTY");
         GWC.set(null);
     }
 

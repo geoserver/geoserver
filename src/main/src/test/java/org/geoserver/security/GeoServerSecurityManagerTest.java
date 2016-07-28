@@ -208,7 +208,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         } finally {
             config.setRoleServiceName(oldRoleServiceName);
             secMgr.saveSecurityConfig(config);
-            System.setProperty("TEST_SYS_PROPERTY", "");
+            System.clearProperty("TEST_SYS_PROPERTY");
         }
     }
 }

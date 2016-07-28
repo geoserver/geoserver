@@ -293,5 +293,12 @@ public interface GeoServer {
      * @throws Exception 
      */
     void reload() throws Exception;
-    
+
+    /**
+     * Clears up all of the caches as well as the configuration information
+     * and substitutes the current catalog with the new one
+     * @throws Exception 
+     */
+    void reload(Catalog catalog) throws Exception;
+
 }

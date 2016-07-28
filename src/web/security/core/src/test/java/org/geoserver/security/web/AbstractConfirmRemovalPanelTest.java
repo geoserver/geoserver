@@ -54,7 +54,11 @@ public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurit
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();
         
-        assertTrue(  labelTextForRemovedObjects().matches(getRemoveableObjectRegExp()));
+        String labelTextForRemovedObjects = labelTextForRemovedObjects();
+        String removeableObjectRegExp = getRemoveableObjectRegExp();
+        LOGGER.info("matching " + labelTextForRemovedObjects + " with " + removeableObjectRegExp);
+        System.out.println("matching " + labelTextForRemovedObjects + " with " + removeableObjectRegExp);
+        assertTrue(  labelTextForRemovedObjects.matches(removeableObjectRegExp));
         
         tester.assertVisible("form:panel:removedObjects");
         tester.assertInvisible("form:panel:problematicObjects");

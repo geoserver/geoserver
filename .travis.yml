@@ -5,10 +5,8 @@ cache:
 language: java
 before_install:
   - rm ~/.m2/settings.xml
-before_script:
-  - cd src
 script:
-  - mvn -B -U -T2 -fae -Prelease clean install -Dtest.maxHeapSize=512M -Djava.awt.headless=true
+  - mvn -f src/pom.xml -B -U -T2 -fae -Prelease clean install && mvn -f src/community/pom.xml -B -U -T2 -fae -DskipTests -Prelease -PcommunityRelease clean install
 notifications:
   email:
     on_success: never

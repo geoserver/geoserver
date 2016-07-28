@@ -8,8 +8,8 @@ package org.geoserver.security.web.user;
 import java.util.List;
 import java.util.SortedSet;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.wicket.model.Model;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.web.AbstractConfirmRemovalPanel;
@@ -30,7 +30,7 @@ public class ConfirmRemovalUserPanel extends AbstractConfirmRemovalPanel<GeoServ
 
     @Override
     protected String getConfirmationMessage(GeoServerUser object) throws Exception{
-        StringBuffer buffer = new StringBuffer(BeanUtils.getProperty(object, "username"));
+        StringBuffer buffer = new StringBuffer(OwsUtils.property(object, "username", String.class));
         if ((Boolean)getDefaultModelObject()) {
             SortedSet<GeoServerRole> roles = GeoServerApplication.get().getSecurityManager()
                 .getActiveRoleService().getRolesForUser(object.getUsername());

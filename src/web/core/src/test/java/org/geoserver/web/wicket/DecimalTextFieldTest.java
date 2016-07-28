@@ -60,6 +60,15 @@ public class DecimalTextFieldTest {
     }
     
     @Test
+    public void testNaN() throws Exception {
+        theValue = Double.NaN;
+        setUp();
+        FormTester ft = tester.newFormTester("form");
+        ft.submit();
+        assertEquals((Double)Double.NaN, theValue);
+    }
+    
+    @Test
     public void testLocale() throws Exception {
         FormTester ft = tester.newFormTester("form");
         ft.setValue("input", "12,15");

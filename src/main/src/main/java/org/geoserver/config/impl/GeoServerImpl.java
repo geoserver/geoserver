@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.Wrapper;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.LocalWorkspaceCatalog;
 import org.geoserver.config.ConfigurationListener;
@@ -429,10 +428,6 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     }
 
     public void reload() throws Exception {
-        this.reload(null);
-    }
-    
-    public void reload(Catalog catalog) throws Exception {
         // notify start of reload
         List<GeoServerLifecycleHandler> handlers = GeoServerExtensions
                 .extensions(GeoServerLifecycleHandler.class);
@@ -453,22 +448,8 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
             // reload configuration
             GeoServerLoaderProxy loader = GeoServerExtensions.bean(GeoServerLoaderProxy.class);
             synchronized (org.geoserver.config.GeoServer.CONFIGURATION_LOCK) {
-                getCatalog().getResourcePool().dispose();                
-
-                if(catalog != null) {
-                    dispose();
-                    
-                    //reload catalog, make sure we reload the underlying catalog, not any wrappers
-                    Catalog oldCatalog = getCatalog();
-                    if ( oldCatalog instanceof Wrapper ) {
-                        oldCatalog = ((Wrapper)getCatalog()).unwrap(Catalog.class);
-                    }
-                    
-                    ((CatalogImpl)oldCatalog).sync((CatalogImpl) catalog);
-                    ((CatalogImpl)oldCatalog).resolve();
-                } else {
-                    loader.reload();
-                }
+                getCatalog().getResourcePool().dispose();
+                loader.reload();
             }
         } finally {
             // notify end of reload

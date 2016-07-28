@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
-import org.geoserver.config.GeoServerPluginConfigurator;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.jdbcconfig.JDBCGeoServerLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -25,7 +24,7 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.web.context.ServletContextAware;
 
-public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryBean implements GeoServerPluginConfigurator, ServletContextAware {
+public abstract class JDBCLoaderPropertiesFactoryBean extends PropertiesFactoryBean implements ServletContextAware {
 
     private static final Logger LOGGER = Logging.getLogger(JDBCGeoServerLoader.class);
     

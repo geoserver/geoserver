@@ -95,10 +95,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         assertEquals(validPassword, new String(generatedPW));
         assertFalse(masterPWInfoFileContains(validPassword));
         assertTrue(masterPWInfoFileContains(GeoServerUser.ADMIN_USERNAME));
-        //dumpPWInfoFile();
-        
-        // assert configuration reload works properly
-        secMgr.reload();
+        //dumpPWInfoFile();                
     }
     
     @Test

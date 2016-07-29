@@ -24,6 +24,9 @@ import java.util.TreeSet;
 
 import javax.annotation.Nullable;
 
+import org.geogig.geoserver.config.GeoServerGeoGigRepositoryResolver;
+import org.geogig.geoserver.config.RepositoryInfo;
+import org.geogig.geoserver.config.RepositoryManager;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -59,8 +62,8 @@ import org.locationtech.geogig.porcelain.BranchCreateOp;
 import org.locationtech.geogig.porcelain.CheckoutOp;
 import org.locationtech.geogig.porcelain.CommitOp;
 import org.locationtech.geogig.porcelain.ConfigOp;
-import org.locationtech.geogig.porcelain.InitOp;
 import org.locationtech.geogig.porcelain.ConfigOp.ConfigAction;
+import org.locationtech.geogig.porcelain.InitOp;
 import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.repository.Context;
 import org.locationtech.geogig.repository.GeoGIG;
@@ -115,6 +118,7 @@ public class GeoGigTestData extends ExternalResource {
                 geogig = null;
             }
         } finally {
+            RepositoryManager.close();
             tmpFolder.delete();
         }
     }
@@ -513,8 +517,12 @@ public class GeoGigTestData extends ExternalResource {
                 throw Throwables.propagate(e);
             }
             assertTrue(repositoryUrl.exists() && repositoryUrl.isDirectory());
-
-            connParams.put(GeoGigDataStoreFactory.REPOSITORY.key, repositoryUrl.getAbsolutePath());
+            // make sure the Repository is in the Repo Manager
+            RepositoryInfo info = new RepositoryInfo();
+            info.setLocation(geogig.getRepository().getLocation());
+            RepositoryManager.get().save(info);
+            connParams.put(GeoGigDataStoreFactory.REPOSITORY.key,
+                    GeoServerGeoGigRepositoryResolver.getURI(info.getRepoName()));
             connParams.put(GeoGigDataStoreFactory.DEFAULT_NAMESPACE.key, ns.getURI());
             catalog.add(ds);
 

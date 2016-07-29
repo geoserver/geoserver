@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.Random;
 import java.util.Set;
 
@@ -36,6 +37,7 @@ import org.json.JSONObject;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.repository.GeoGIG;
+import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.web.api.TestData;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -229,7 +231,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
     protected TestData createRepo(String name) throws Exception {
         GeoGigTestData testData = new GeoGigTestData();
         testData.setUp(name);
-        testData.init();
+        testData.init().config("user.name", "John").config("user.email", "John.Doe@example.com");
         GeoGIG geogig = testData.getGeogig();
 
         Catalog catalog = helper.getCatalog();
@@ -248,9 +250,13 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         assertNotNull(dataStore);
         assertTrue(dataStore instanceof GeoGigDataStore);
 
-        String repoId = (String) dsInfo.getConnectionParameters()
+        String repoStr = (String) dsInfo.getConnectionParameters()
                 .get(GeoGigDataStoreFactory.REPOSITORY.key);
-        RepositoryInfo repositoryInfo = RepositoryManager.get().get(repoId);
+        // resolve the repo
+        URI repoURI = new URI(repoStr);
+        RepositoryResolver resolver = RepositoryResolver.lookup(repoURI);
+        String repoName = resolver.getName(repoURI);
+        RepositoryInfo repositoryInfo = RepositoryManager.get().getByRepoName(repoName);
         assertNotNull(repositoryInfo);
         return new TestData(geogig);
     }

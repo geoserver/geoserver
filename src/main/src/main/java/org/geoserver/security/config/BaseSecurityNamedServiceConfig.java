@@ -6,6 +6,10 @@
 
 package org.geoserver.security.config;
 
+import org.apache.commons.lang.SerializationUtils;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
+
 /**
  * Base class for named security service configuration objects.
  * 
@@ -77,6 +81,23 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
     public String toString() {
         return "BaseSecurityNamedServiceConfig [name=" + name + ", className="
                 + className + ", id=" + id + "]";
+    }
+
+    @Override
+    public SecurityConfig clone(boolean allowEnvParametrization) {
+        
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+        
+        BaseSecurityNamedServiceConfig target = (BaseSecurityNamedServiceConfig) SerializationUtils.clone(this);
+        
+        if (target != null) {
+            if (allowEnvParametrization && gsEnvironment != null
+                    && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                target.setName((String) gsEnvironment.resolveValue(name));
+            }
+        }
+        
+        return target;
     }
     
 }

@@ -5,6 +5,7 @@
 package org.geogig.geoserver.rest;
 
 import static org.locationtech.geogig.rest.repository.RESTUtils.getStringAttribute;
+import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import org.geogig.geoserver.config.PostgresConfigBean;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.locationtech.geogig.api.GeoGIG;
+import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.rest.RestletException;
 import org.restlet.data.Form;
@@ -150,7 +151,7 @@ class InitRequestHandler {
                     addParameters(params, form);
                 } catch (Exception ex) {
                     throw new RestletException("Error parsing URL encoded form request",
-                            Status.CLIENT_ERROR_BAD_REQUEST, ex);
+                            CLIENT_ERROR_BAD_REQUEST, ex);
                 }
             } else if (MediaType.APPLICATION_JSON.equals(reqMediaType)) {
                 // JSON encoded parameters
@@ -159,9 +160,13 @@ class InitRequestHandler {
                     JSONObject jsonObj = jsonRep.toJsonObject();
                     addParameters(params, jsonObj);
                 } catch (IOException | JSONException ex) {
-                    throw new RestletException("Error parsing JSON request",
-                            Status.CLIENT_ERROR_BAD_REQUEST, ex);
+                    throw new RestletException("Error parsing JSON request",CLIENT_ERROR_BAD_REQUEST,
+                            ex);
                 }
+            } else if (null != reqMediaType) {
+                // unsupported MediaType
+                throw new RestletException("Unsupported Request MediaType: " + reqMediaType,
+                        CLIENT_ERROR_BAD_REQUEST);
             }
             // no parameters specified
         }

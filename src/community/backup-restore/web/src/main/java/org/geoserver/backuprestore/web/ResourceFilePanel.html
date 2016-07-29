@@ -1,0 +1,21 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+  <form wicket:id="form">
+    <ul>
+      <li>
+        <label for="file"><wicket:message key="file">file</wicket:message> *</label>
+        <input type="text" wicket:id="file" id="file" size="50" />
+        <a href="#" wicket:id="chooser"><wicket:message key="browse"></wicket:message>...</a>
+      </li>
+    </ul>
+  
+    <!--div class="button-group selfclear">
+      <a href="#" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></a>
+    </div-->
+  
+  </form>
+  <div wicket:id="dialog"></div>
+</wicket:panel>
+</body>
+</html>

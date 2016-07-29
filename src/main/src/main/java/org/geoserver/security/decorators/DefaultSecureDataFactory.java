@@ -5,13 +5,12 @@
  */
 package org.geoserver.security.decorators;
 
-import java.util.Iterator;
-
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.security.AccessLevel;
 import org.geoserver.security.Response;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
@@ -26,6 +25,7 @@ import org.geotools.data.simple.SimpleFeatureLocking;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.wms.WebMapServer;
+
 
 /**
  * The default secured wrapper factory, used as a fallback when no other, more
@@ -52,6 +52,7 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
                 || FeatureCollection.class.isAssignableFrom(clazz)
                 || FeatureIterator.class.isAssignableFrom(clazz) 
                 || GridCoverage2DReader.class.isAssignableFrom(clazz)
+                || StructuredGridCoverage2DReader.class.isAssignableFrom(clazz)
                 || AbstractGridFormat.class.isAssignableFrom(clazz)
                 || WebMapServer.class.isAssignableFrom(clazz);
     }
@@ -114,14 +115,16 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
         } else if (FeatureIterator.class.isAssignableFrom(clazz)) {
             return new SecuredFeatureIterator((FeatureIterator) object); 
         }
-        
+
         // try coverage readers and formats
-        if(GridCoverage2DReader.class.isAssignableFrom(clazz)) {
+        if (StructuredGridCoverage2DReader.class.isAssignableFrom(clazz)) {
+            return new SecuredStructuredGridCoverage2DReader((StructuredGridCoverage2DReader) object, policy);
+        } else if(GridCoverage2DReader.class.isAssignableFrom(clazz)) {
             return new SecuredGridCoverage2DReader((GridCoverage2DReader) object, policy);
         } else if(AbstractGridFormat.class.isAssignableFrom(clazz)) {
             return new SecuredGridFormat((AbstractGridFormat) object, policy);
         }
-        
+
         // wms cascading related
         if(WebMapServer.class.isAssignableFrom(clazz)) {
             try {

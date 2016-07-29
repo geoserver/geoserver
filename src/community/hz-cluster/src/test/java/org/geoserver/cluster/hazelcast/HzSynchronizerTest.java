@@ -5,6 +5,18 @@
  */
 package org.geoserver.cluster.hazelcast;
 
+import static org.easymock.EasyMock.anyLong;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createMockBuilder;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertThat;
+
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
@@ -14,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
 import org.easymock.EasyMock;
@@ -25,6 +38,9 @@ import org.geoserver.cluster.ClusterConfigWatcher;
 import org.geoserver.cluster.Event;
 import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.junit.Before;
 
 import com.google.common.collect.Sets;
@@ -35,10 +51,6 @@ import com.hazelcast.core.Member;
 import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
 
-import static org.easymock.EasyMock.*;
-import static org.hamcrest.Matchers.hasItems;
-import static org.junit.Assert.assertThat;
-
 public abstract class HzSynchronizerTest {
 
     final public static String TOPIC_NAME = "geoserver.config";
@@ -48,11 +60,29 @@ public abstract class HzSynchronizerTest {
 
 	// We're going to set up the synchronizer manually so ignore the spring context.
     //}
+    
+    public static Resource tmpDir() throws IOException {
+        Resource root = Files.asResource(new File(System.getProperty("java.io.tmpdir", ".")));
+        Resource directory = Resources.createRandom("tmp", "", root);
+
+        do {
+            FileUtils.forceDelete(directory.dir());
+        } while (Resources.exists(directory));
+
+        FileUtils.forceMkdir(directory.dir());
+
+        return Files.asResource(directory.dir());
+    }
+
+    
     @Before
     @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         hz = createMock(HazelcastInstance.class);
-        cluster = createMock(HzCluster.class);
+        // Create a "partial mock" of the HzCluster
+        cluster = createMockBuilder(HzCluster.class)
+                .addMockedMethods("getHz", "isEnabled", "getRawCatalog", "getAckTimeoutMillis")
+                .createMock();
         topic = createMock(ITopic.class);
         ackTopic = createMock(ITopic.class);
         configWatcher = createMock(ClusterConfigWatcher.class);
@@ -75,7 +105,6 @@ public abstract class HzSynchronizerTest {
         expect(this.cluster.isEnabled()).andStubReturn(true);
         expect(this.cluster.getRawCatalog()).andStubReturn(catalog);;
         expect(this.cluster.getAckTimeoutMillis()).andStubReturn(100);
-        
         
         expect(hz.<Event>getTopic(TOPIC_NAME)).andStubReturn(topic);
         expect(topic.addMessageListener(capture(captureTopicListener))).andReturn("fake-id"); 

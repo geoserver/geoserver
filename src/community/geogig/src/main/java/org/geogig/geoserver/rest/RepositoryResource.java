@@ -17,7 +17,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.format.FreemarkerFormat;
-import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.rest.JettisonRepresentation;
 import org.locationtech.geogig.rest.RestletException;
 import org.locationtech.geogig.rest.Variants;

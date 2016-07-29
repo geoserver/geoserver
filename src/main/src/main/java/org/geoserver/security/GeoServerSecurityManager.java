@@ -364,59 +364,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextLoadedEvent) {
-            
-            try {
-                Resource masterPasswordInfo = security().get(MASTER_PASSWD_INFO_FILENAME);
-                if (masterPasswordInfo.getType() != Type.UNDEFINED) {
-                    LOGGER.warning(masterPasswordInfo.path() + " is a security risk. Please read this file and remove it afterward");
-                }
-            } catch (Exception e1) {
-                throw new RuntimeException(e1);
-            }
-
-            // migrate from old security config
-            try {
-                Version securityVersion = getSecurityVersion();
-
-                boolean migratedFrom21 = false;
-                if (securityVersion.compareTo(VERSION_2_2) < 0) {
-                    migratedFrom21 = migrateFrom21();
-                }
-                if (securityVersion.compareTo(VERSION_2_3) < 0) {
-                    removeErroneousAccessDeniedPage();
-                    migrateFrom22(migratedFrom21);
-                }
-                if (securityVersion.compareTo(VERSION_2_4) < 0) {
-                    migrateFrom23();
-                }
-                if (securityVersion.compareTo(VERSION_2_5) < 0) {
-                    migrateFrom24();
-                }
-                if (securityVersion.compareTo(CURR_VERSION) < 0) {
-                    writeCurrentVersion();
-                }
-            } catch (Exception e1) {
-                throw new RuntimeException(e1);
-            }
-
-            // read config and initialize... we do this now since we can be ensured that the spring
-            // context has been property initialized, and we can successfully look up security
-            // plugins
-            KeyStoreProvider keyStoreProvider = getKeyStoreProvider();
-            try {
-                // check for an outstanding masster password change
-                keyStoreProvider.commitMasterPasswordChange();
-                // check if there is an outstanding master password change in case of SPrin injection
-                init();
-                for (GeoServerSecurityProvider securityProvider 
-                        : GeoServerExtensions.extensions(GeoServerSecurityProvider.class))
-                {
-                    securityProvider.init(this);
-                }
-            } catch (Exception e) {
-                throw new BeanCreationException("Error occured reading security configuration", e);
-            }
-
+            reload();
         }
         if (event instanceof ContextClosedEvent) {
             try {
@@ -424,6 +372,64 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error destroying security manager", e);
             }
+        }
+    }
+
+    /**
+     * Reload the configuration which may have been updated in the meanwhile;
+     * after a restore as an instance.
+     */
+    public void reload() {
+        try {
+            Resource masterPasswordInfo = security().get(MASTER_PASSWD_INFO_FILENAME);
+            if (masterPasswordInfo.getType() != Type.UNDEFINED) {
+                LOGGER.warning(masterPasswordInfo.path() + " is a security risk. Please read this file and remove it afterward");
+            }
+        } catch (Exception e1) {
+            throw new RuntimeException(e1);
+        }
+
+        // migrate from old security config
+        try {
+            Version securityVersion = getSecurityVersion();
+
+            boolean migratedFrom21 = false;
+            if (securityVersion.compareTo(VERSION_2_2) < 0) {
+                migratedFrom21 = migrateFrom21();
+            }
+            if (securityVersion.compareTo(VERSION_2_3) < 0) {
+                removeErroneousAccessDeniedPage();
+                migrateFrom22(migratedFrom21);
+            }
+            if (securityVersion.compareTo(VERSION_2_4) < 0) {
+                migrateFrom23();
+            }
+            if (securityVersion.compareTo(VERSION_2_5) < 0) {
+                migrateFrom24();
+            }
+            if (securityVersion.compareTo(CURR_VERSION) < 0) {
+                writeCurrentVersion();
+            }
+        } catch (Exception e1) {
+            throw new RuntimeException(e1);
+        }
+
+        // read config and initialize... we do this now since we can be ensured that the spring
+        // context has been property initialized, and we can successfully look up security
+        // plugins
+        KeyStoreProvider keyStoreProvider = getKeyStoreProvider();
+        try {
+            // check for an outstanding masster password change
+            keyStoreProvider.commitMasterPasswordChange();
+            // check if there is an outstanding master password change in case of SPrin injection
+            init();
+            for (GeoServerSecurityProvider securityProvider 
+                    : GeoServerExtensions.extensions(GeoServerSecurityProvider.class))
+            {
+                securityProvider.init(this);
+            }
+        } catch (Exception e) {
+            throw new BeanCreationException("Error occured reading security configuration", e);
         }
     }
 
@@ -1630,7 +1636,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
         SecurityManagerConfig oldConfig = new SecurityManagerConfig(this.securityConfig);
         
         SecurityConfigValidator validator = new SecurityConfigValidator(this);
-        validator.validateManagerConfig(config,oldConfig);
+        validator.validateManagerConfig((SecurityManagerConfig)config.clone(true),(SecurityManagerConfig)oldConfig.clone(true));
         
         //save the current config to fall back to                
         
@@ -2834,7 +2840,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
     <T extends SecurityConfig> T loadConfig( Class<T> config, Resource resource, XStreamPersister xp ) throws IOException {
         InputStream in = resource.in();
         try {
-            Object loaded = xp.load(in, SecurityConfig.class);
+            Object loaded = xp.load(in, SecurityConfig.class).clone(true);
             return config.cast( loaded );
         }
         finally {
@@ -2848,7 +2854,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
         throws IOException {
         InputStream fin = directory.get(filename).in();
         try {
-            return xp.load(fin, SecurityConfig.class);
+            return xp.load(fin, SecurityConfig.class).clone(true);
         }
         finally {
             fin.close();

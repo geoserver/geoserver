@@ -335,18 +335,30 @@ public class NewLayerPage extends GeoServerSecuredPage {
     LayerInfo buildLayerInfo(Resource resource) {
         Catalog catalog = getCatalog();
         StoreInfo store = catalog.getStore(getSelectedStoreId(), StoreInfo.class);
-
+        StoreInfo expandedStore = null;
+        
+        if(store instanceof DataStoreInfo) {
+            DataStoreInfo dstore = (DataStoreInfo) store;
+            expandedStore = getCatalog().getResourcePool().clone(dstore, true);
+        } else if(store instanceof CoverageStoreInfo) {
+            CoverageStoreInfo cstore = (CoverageStoreInfo) store;
+            expandedStore = getCatalog().getResourcePool().clone(cstore, true);
+        } else if(store instanceof WMSStoreInfo) {
+            WMSStoreInfo wmsInfo = (WMSStoreInfo) store;
+            expandedStore = getCatalog().getResourcePool().clone(wmsInfo, true);
+        }
+        
         // try to build from coverage store or data store
         try {
             CatalogBuilder builder = new CatalogBuilder(catalog);
-            builder.setStore(store);
-            if (store instanceof CoverageStoreInfo) {
+            builder.setStore(expandedStore);
+            if (expandedStore instanceof CoverageStoreInfo) {
                 CoverageInfo ci = builder.buildCoverage(resource.getName().getLocalPart());
                 return builder.buildLayer(ci);
-            } else if (store instanceof DataStoreInfo) {
+            } else if (expandedStore instanceof DataStoreInfo) {
                 FeatureTypeInfo fti = builder.buildFeatureType(resource.getName());
                 return builder.buildLayer(fti);
-            } else if (store instanceof WMSStoreInfo) {
+            } else if (expandedStore instanceof WMSStoreInfo) {
                 WMSLayerInfo wli = builder.buildWMSLayer(resource.getLocalName());
                 return builder.buildLayer(wli);
             } 
@@ -358,12 +370,12 @@ public class NewLayerPage extends GeoServerSecuredPage {
 
         // handle the case in which the store was not found anymore, or was not
         // of the expected type
-        if (store == null)
+        if (expandedStore == null)
             throw new IllegalArgumentException(
                     "Store is missing from configuration!");
         else
             throw new IllegalArgumentException(
-                    "Don't know how to deal with this store " + store);
+                    "Don't know how to deal with this store " + expandedStore);
     }
     
     /**

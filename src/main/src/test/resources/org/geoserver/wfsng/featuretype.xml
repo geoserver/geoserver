@@ -1,0 +1,68 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--26446fc6:155fd437873:-7fff</id>
+  <name>sf_archsites</name>
+  <nativeName>sf_archsites</nativeName>
+  <namespace>
+    <id></id>
+  </namespace>
+  <title>Spearfish archeological sites</title>
+  <description>Sample data from GRASS, archeological sites location, Spearfish, South Dakota, USA</description>
+  <keywords>
+    <string>spearfish</string>
+    <string>archeology</string>
+    <string>archsites</string>
+    <string>sfArchsites</string>
+  </keywords>
+  <nativeCRS class="projected">PROJCS[&quot;NAD27 / UTM zone 13N&quot;, 
+  GEOGCS[&quot;NAD27&quot;, 
+    DATUM[&quot;North American Datum 1927&quot;, 
+      SPHEROID[&quot;Clarke 1866&quot;, 6378206.4, 294.9786982138982, AUTHORITY[&quot;EPSG&quot;,&quot;7008&quot;]], 
+      TOWGS84[2.478, 149.752, 197.726, 0.526, -0.498, 0.501, 0.685], 
+      AUTHORITY[&quot;EPSG&quot;,&quot;6267&quot;]], 
+    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+    UNIT[&quot;degree&quot;, 0.017453292519943295], 
+    AXIS[&quot;Geodetic longitude&quot;, EAST], 
+    AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;4267&quot;]], 
+  PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]], 
+  PARAMETER[&quot;central_meridian&quot;, -105.0], 
+  PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
+  PARAMETER[&quot;scale_factor&quot;, 0.9996], 
+  PARAMETER[&quot;false_easting&quot;, 500000.0], 
+  PARAMETER[&quot;false_northing&quot;, 0.0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;Easting&quot;, EAST], 
+  AXIS[&quot;Northing&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;26713&quot;]]</nativeCRS>
+  <srs>EPSG:26713</srs>
+  <nativeBoundingBox>
+    <minx>589679.6156834407</minx>
+    <maxx>608539.9255432346</maxx>
+    <miny>4914207.377632101</miny>
+    <maxy>4926780.831506638</maxy>
+    <crs class="projected">EPSG:26713</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-103.87468832015055</minx>
+    <maxx>-103.6353703087709</maxx>
+    <miny>44.374847442280334</miny>
+    <maxy>44.4905992384073</maxy>
+    <crs>GEOGCS[&quot;WGS84(DD)&quot;, 
+  DATUM[&quot;WGS84&quot;, 
+    SPHEROID[&quot;WGS84&quot;, 6378137.0, 298.257223563]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH]]</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--26446fc6:155fd437873:-8000</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

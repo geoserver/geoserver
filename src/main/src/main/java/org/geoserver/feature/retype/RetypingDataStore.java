@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -57,6 +57,10 @@ public class RetypingDataStore implements DataStore {
         this.wrapped = wrapped;
         // force update of type mapping maps
         getTypeNames();
+    }
+    
+    public DataStore getWrapped() {
+        return wrapped;
     }
 
     public void createSchema(SimpleFeatureType featureType) throws IOException {

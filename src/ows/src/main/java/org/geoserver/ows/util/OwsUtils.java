@@ -206,6 +206,7 @@ public class OwsUtils {
 
     /**
      * Reflectivley retreives a propety from a java bean.
+     * @param <T>
      *
      * @param object The java bean.
      * @param property The property to retreive.
@@ -213,12 +214,12 @@ public class OwsUtils {
      *
      * @return The property, or null if it could not be found..
      */
-    public static Object property(Object object, String property, Class type) {
+    public static <T> T property(Object object, String property, Class<T> type) {
         Method getter = getter(object.getClass(), property, type);
 
         if (getter != null) {
             try {
-                return getter.invoke(object, null);
+                return type.cast(getter.invoke(object, (Object[])null));
             } catch (Exception e) {
                 //TODO: log this
             }

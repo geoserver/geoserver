@@ -171,18 +171,6 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
         }
 
     }
-
-    public void runOracleStoreProcedure(String sql) throws Exception {
-        Connection conn = getConnection();
-        CallableStatement cs = null;
-        try {
-            cs = conn.prepareCall(sql);
-            cs.execute();
-        } finally {
-            cs.close();
-            conn.close();
-        }
-    }
     
     public void run(String input, boolean replaceNewLine) throws Exception {
         if (replaceNewLine) {

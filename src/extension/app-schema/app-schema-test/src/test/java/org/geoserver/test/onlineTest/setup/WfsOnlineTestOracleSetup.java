@@ -66,7 +66,7 @@ public class WfsOnlineTestOracleSetup extends AbstractReferenceDataSetup {
         for (String sql : sqls) {          
             if (sql.startsWith("CALL")) {
                 String formattedSP = "{" + sql + "}";            
-                this.runOracleStoreProcedure(formattedSP);
+                this.run(formattedSP);
                 continue;
             }
             this.run(sql);
@@ -78,7 +78,7 @@ public class WfsOnlineTestOracleSetup extends AbstractReferenceDataSetup {
     // these private helper class might be useful in the future. feel free to change its access
     // modifier
     private void setDataVersion(double version) throws Exception {
-        this.runOracleStoreProcedure("{CALL DROP_TABLE('" + versiontbl + "')}");
+        this.run("{CALL DROP_TABLE('" + versiontbl + "')}");
         this.run("CREATE TABLE " + versiontbl + " (" + "NAME VARCHAR2(100 BYTE) NOT NULL, "
                 + "VERSION NUMBER(25,2)," + "INSERT_DATE DATE)");
         this.run("insert into " + versiontbl

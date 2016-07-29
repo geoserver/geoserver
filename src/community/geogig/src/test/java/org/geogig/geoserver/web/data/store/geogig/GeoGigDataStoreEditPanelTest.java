@@ -4,6 +4,7 @@
  */
 package org.geogig.geoserver.web.data.store.geogig;
 
+import static org.geogig.geoserver.config.GeoServerGeoGigRepositoryResolver.getURI;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -24,7 +25,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
-import org.geogig.geoserver.config.GeoServerStoreRepositoryResolver;
+import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -85,11 +86,8 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
         storeInfo.setName("dummy_geogig");
         storeInfo.setType((new GeoGigDataStoreFactory()).getDisplayName());
         storeInfo.setWorkspace(catalog.getDefaultWorkspace());
-        storeInfo.getConnectionParameters().put(GeoGigDataStoreFactory.RESOLVER_CLASS_NAME.key,
-                GeoServerStoreRepositoryResolver.class.getName());
         storeInfo.getConnectionParameters().put(GeoGigDataStoreFactory.BRANCH.key, "alpha");
-        storeInfo.getConnectionParameters().put(GeoGigDataStoreFactory.REPOSITORY.key,
-                "94bcb762-9ee9-4b43-a912-063509966988");
+        storeInfo.getConnectionParameters().put(GeoGigDataStoreFactory.REPOSITORY.key, null);
         catalog.save(storeInfo);
         final String storeId = storeInfo.getId();
         login();
@@ -137,12 +135,15 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
     public void testRefreshBranchListWithBadConnectionParams() throws Exception {
         startPanelForNewStore();
         editForm.getModelObject().getConnectionParameters()
-                .put(GeoGigDataStoreFactory.REPOSITORY.key, UUID.randomUUID().toString());
+                .put(GeoGigDataStoreFactory.REPOSITORY.key, getURI("dummy_repo_2"));
 
         final FormTester formTester = tester.newFormTester("dataStoreForm");
         final String base = "dataStoreForm:parametersPanel:";
         BranchSelectionPanel branchPanel = (BranchSelectionPanel) tester
                 .getComponentFromLastRenderedPage(base + "branch");
+        RepositoryInfo repoInfo = mock(RepositoryInfo.class);
+        when(repoInfo.getId()).thenReturn(UUID.randomUUID().toString());
+        when(mockManager.getByRepoName("dummy_repo_2")).thenReturn(repoInfo);
         when(mockManager.listBranches(anyString())).thenThrow(new IOException("Could not connect"));
         branchPanel.setRepositoryManager(Suppliers.ofInstance(mockManager));
         String submitLink = base + "branch:refresh";
@@ -159,7 +160,7 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
     public void testRefreshBranchList() throws Exception {
         startPanelForNewStore();
         editForm.getModelObject().getConnectionParameters()
-                .put(GeoGigDataStoreFactory.REPOSITORY.key, UUID.randomUUID().toString());
+                .put(GeoGigDataStoreFactory.REPOSITORY.key, getURI("dummy_repo_3"));
 
         final FormTester formTester = tester.newFormTester("dataStoreForm");
         final String base = "dataStoreForm:parametersPanel:";
@@ -169,8 +170,11 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
         ObjectId dummyId = ObjectId.forString("dummy");
         final List<Ref> branches = Arrays.asList(new Ref("master", dummyId), new Ref("alpha",
                 dummyId), new Ref("sandbox", dummyId));
+        RepositoryInfo repoInfo = mock(RepositoryInfo.class);
+        when(repoInfo.getId()).thenReturn(UUID.randomUUID().toString());
 
         branchPanel.setRepositoryManager(Suppliers.ofInstance(mockManager));
+        when(mockManager.getByRepoName("dummy_repo_3")).thenReturn(repoInfo);
         when(mockManager.listBranches(anyString())).thenReturn(branches);
         String dropDownPath = base + "branch:branchDropDown";
         final DropDownChoice choice = (DropDownChoice) tester

@@ -15,8 +15,8 @@ import java.util.NoSuchElementException;
 
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
-import org.locationtech.geogig.plumbing.ResolveGeogigURI;
-import org.locationtech.geogig.repository.GeoGIG;
+import org.locationtech.geogig.api.GeoGIG;
+import org.locationtech.geogig.api.plumbing.ResolveGeogigURI;
 import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.rest.RestletException;
 import org.locationtech.geogig.rest.repository.RepositoryProvider;

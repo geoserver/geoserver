@@ -4,9 +4,21 @@ Authentication
 ==============
 
 This page manages the authentication options, including authentication providers and the authentication chain.
+
+Anonymous authentication
+------------------------
+
+By default, GeoServer will allow anonymous access to the :ref:`web_admin`. Without authentication, users will still be able to view the :ref:`layerpreview`, capabilities documents, and basic GeoServer details. Anonymous access can be disabled by clearing the :guilabel:`Allow anonymous authentication` check box. Anonymous users navigating to the GeoServer page will get an HTTP 401 status code, which typically results in a browser-based request for credentials.
+
+.. note:: Read more about :ref:`security_auth_webadmin`.
+
+.. figure:: images/auth_anonymous.png
+   :align: center
+
+   *Anonymous authentication checkbox*
    
 Authentication filters
-----------------------
+------------------------
 
 This section manages the Authentication Filters (adding, removing, and editing). Several authentication filters are configured by default (anonymous, basic, form, rememberme), but others can be added to the list.
 
@@ -15,14 +27,8 @@ This section manages the Authentication Filters (adding, removing, and editing).
    
    *List of authentication filters*
 
-Anonymous access
-~~~~~~~~~~~~~~~~
-
-By default, GeoServer will allow anonymous access to the :ref:`web_admin`. Without authentication, users will still be able to view the :ref:`layerpreview`, capabilities documents, and basic GeoServer details. Anonymous access can by removing the :guilabel:`anonymous` authentication filter. If removed, anonymous users navigating to the GeoServer page will get an HTTP 401 status code, which typically results in a browser-based request for credentials.
-
-Credentials From Headers filter
+Credentials From Headers Filter
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 This filter allows gathering user credentials (username and password) from request headers in a flexible and configurable way.
 
 .. figure:: images/auth_filter_credentials_from_header.png

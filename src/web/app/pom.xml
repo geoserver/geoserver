@@ -1339,21 +1339,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>backup-restore</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community.backuprestore</groupId>
-          <artifactId>gs-backup-restore-rest</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.geoserver.community.backuprestore</groupId>
-          <artifactId>gs-backup-restore-web</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>ncwms</id>
       <dependencies>
         <dependency>

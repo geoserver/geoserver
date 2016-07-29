@@ -9,9 +9,8 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-            <include>gwc-distributed-*.jar</include>
-            <include>gs-gwc-distributed-*.jar</include>
-            <include>hazelcast*.jar</include>
+		<include>gs-gwc-distributed-*.jar</include>
+		<include>hazelcast*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

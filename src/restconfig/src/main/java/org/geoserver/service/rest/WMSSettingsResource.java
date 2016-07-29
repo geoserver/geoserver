@@ -17,7 +17,6 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
-import org.geoserver.wms.WMSXStreamLoader;
 import org.geoserver.wms.WatermarkInfo;
 import org.geoserver.wms.WatermarkInfoImpl;
 import org.restlet.Context;
@@ -49,7 +48,8 @@ public class WMSSettingsResource extends ServiceSettingsResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setHideFeatureTypeAttributes();
-        WMSXStreamLoader.initXStreamPersister(persister);
+        persister.getXStream().alias("wms", WMSInfoImpl.class);
+        persister.getXStream().alias("class", WatermarkInfo.class, WatermarkInfoImpl.class);
     }
 
     static class WMSSettingsHTMLFormat extends CatalogFreemarkerHTMLFormat {

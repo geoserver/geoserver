@@ -4,7 +4,6 @@
  */
 package org.geogig.geoserver.rest;
 
-import static org.junit.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
@@ -17,7 +16,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 import org.geogig.geoserver.GeoGigTestData;
@@ -36,15 +34,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.locationtech.geogig.api.GeoGIG;
+import org.locationtech.geogig.api.ObjectId;
+import org.locationtech.geogig.api.Ref;
+import org.locationtech.geogig.api.RevObject;
+import org.locationtech.geogig.api.plumbing.RefParse;
+import org.locationtech.geogig.api.plumbing.ResolveTreeish;
+import org.locationtech.geogig.api.plumbing.RevObjectParse;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
-import org.locationtech.geogig.model.ObjectId;
-import org.locationtech.geogig.model.Ref;
-import org.locationtech.geogig.model.RevObject;
-import org.locationtech.geogig.plumbing.RefParse;
-import org.locationtech.geogig.plumbing.ResolveTreeish;
-import org.locationtech.geogig.plumbing.RevObjectParse;
-import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.storage.ObjectSerializingFactory;
 import org.locationtech.geogig.storage.datastream.DataStreamSerializationFactoryV1;
 import org.opengis.feature.Feature;
@@ -56,7 +54,6 @@ import org.w3c.dom.Document;
 import com.google.common.base.Throwables;
 import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -107,6 +104,7 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
 
         geogigData.add().commit("Added test features");
 
+
         CatalogBuilder catalogBuilder = geogigData.newCatalogBuilder(catalog);
         int i = rnd.nextInt();
         catalogBuilder.namespace("geogig.org/" + i).workspace("geogigws" + i)
@@ -137,10 +135,10 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
         assertNotNull(repositoryInfo);
         BASE_URL = "/geogig/repos/testrepo";
     }
-
+   
     @After
     public void after() {
-        RepositoryManager.close();
+		RepositoryManager.close();
     }
 
     /**
@@ -259,10 +257,8 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
 
         ObjectSerializingFactory factory = DataStreamSerializationFactoryV1.INSTANCE;
 
-        List<RevObject> objects = Lists
-                .newArrayList(new ObjectStreamIterator(responseStream, factory));
-        assertFalse(objects.isEmpty());
-        RevObject actual = objects.get(objects.size() - 1);
+        Iterator<RevObject> objects = new ObjectStreamIterator(responseStream, factory);
+        RevObject actual = Iterators.getLast(objects);
         assertEquals(expected, actual);
     }
 

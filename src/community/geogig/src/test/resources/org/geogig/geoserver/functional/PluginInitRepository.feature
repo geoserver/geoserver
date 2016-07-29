@@ -112,9 +112,3 @@ Feature: Plugin Initialize Repository
     And the xpath "/response/repo/atom:link/@href" contains "/repos/repo1.xml"
     And the parent directory of repository "repo1" equals System Temp directory
     And the Author config of repository "repo1" is set
-
-  Scenario: Verify Init with unsupported MediaType does not create a repository with defualt settings
-    Given There is an empty multirepo server
-    When I call "PUT /repos/repo1/init.json" with an unsupported media type
-    Then the response status should be '400'
-    And there should be no "repo1" created

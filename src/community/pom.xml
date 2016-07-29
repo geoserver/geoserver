@@ -201,7 +201,6 @@
 	<module>gdal</module>
 	<module>gwc-s3</module>
 	<module>ysld</module>
-        <module>backup-restore</module>
 	<module>ncwms</module>
         <module>web-resource</module>
         <module>gwc-sqlite</module>
@@ -428,12 +427,6 @@
       <id>ysld</id>
       <modules>
         <module>ysld</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>backup-restore</id>
-      <modules>
-        <module>backup-restore</module>
       </modules>
     </profile>
     <profile>

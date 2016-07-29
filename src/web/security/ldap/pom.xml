@@ -55,7 +55,7 @@
     -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk15on</artifactId>
+      <artifactId>bcprov-jdk14</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

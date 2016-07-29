@@ -53,14 +53,6 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
     @Override
     protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
         super.initXStreamPersister(xp, gs);
-        initXStreamPersister(xp);
-    }
-
-    /**
-     * Sets up aliases and allowed types for the xstream persister
-     * @param xs
-     */
-    public static void initXStreamPersister(XStreamPersister xp) {
         XStream xs = xp.getXStream();
         xs.alias("wms", WMSInfo.class, WMSInfoImpl.class);
         xs.registerConverter(new WMSInfoConverter(xs));
@@ -103,7 +95,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
      * 
      * @since 2.1.3
      */
-    static class WMSInfoConverter extends ReflectionConverter {
+    class WMSInfoConverter extends ReflectionConverter {
 
         public WMSInfoConverter(XStream xs) {
             super(xs.getMapper(), xs.getReflectionProvider());

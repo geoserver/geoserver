@@ -28,6 +28,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.locationtech.geogig.api.plumbing.ResolveRepositoryName;
 import org.w3c.dom.Document;
 
 @TestSetup(run = TestSetupFrequency.REPEAT)

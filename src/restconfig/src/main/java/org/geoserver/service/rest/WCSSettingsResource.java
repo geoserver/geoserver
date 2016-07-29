@@ -16,7 +16,6 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.WCSInfoImpl;
-import org.geoserver.wcs.WCSXStreamLoader;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -45,7 +44,7 @@ public class WCSSettingsResource extends ServiceSettingsResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setHideFeatureTypeAttributes();
-        WCSXStreamLoader.initXStreamPersister(persister);
+        persister.getXStream().alias("wcs", WCSInfoImpl.class);
     }
 
     static class WCSSettingsHTMLFormat extends CatalogFreemarkerHTMLFormat {

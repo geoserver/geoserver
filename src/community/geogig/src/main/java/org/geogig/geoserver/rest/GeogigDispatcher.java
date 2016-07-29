@@ -20,6 +20,7 @@ import org.locationtech.geogig.rest.TaskStatusResource;
 import org.locationtech.geogig.rest.osm.OSMRouter;
 import org.locationtech.geogig.rest.postgis.PGRouter;
 import org.locationtech.geogig.rest.repository.CommandResource;
+import org.locationtech.geogig.rest.repository.DeleteRepository;
 import org.locationtech.geogig.rest.repository.FixedEncoder;
 import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.locationtech.geogig.rest.repository.RepositoryRouter;

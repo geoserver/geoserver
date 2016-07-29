@@ -8,8 +8,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.locationtech.geogig.porcelain.ConfigOp.ConfigAction.CONFIG_LIST;
-import static org.locationtech.geogig.porcelain.ConfigOp.ConfigScope.LOCAL;
+import static org.locationtech.geogig.api.porcelain.ConfigOp.ConfigAction.CONFIG_LIST;
+import static org.locationtech.geogig.api.porcelain.ConfigOp.ConfigScope.LOCAL;
 
 import java.io.File;
 import java.net.URI;
@@ -19,9 +19,9 @@ import org.geogig.web.functional.WebAPICucumberHooks;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.locationtech.geogig.plumbing.ResolveGeogigURI;
-import org.locationtech.geogig.porcelain.ConfigOp;
-import org.locationtech.geogig.repository.GeoGIG;
+import org.locationtech.geogig.api.GeoGIG;
+import org.locationtech.geogig.api.plumbing.ResolveGeogigURI;
+import org.locationtech.geogig.api.porcelain.ConfigOp;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 
@@ -275,27 +275,5 @@ public class PluginWebAPICucumberHooks {
         // request.
         String parentDir = new File(repoURI).getParentFile().getParentFile().getAbsolutePath();
         assertNotEquals("Unexpected parent directory", SYSTEM_TEMP_PATH, parentDir);
-    }
-
-    @When("^I call \"([^\"]*)\" with an unsupported media type$")
-    public void callURLWithUnsupportedMediaType(final String methodAndURL) throws JSONException {
-        final int idx = methodAndURL.indexOf(' ');
-        checkArgument(idx > 0, "No METHOD given in URL definition: '%s'", methodAndURL);
-        final String httpMethod = methodAndURL.substring(0, idx);
-        String resourceUri = methodAndURL.substring(idx + 1).trim();
-        Method method = Method.valueOf(httpMethod);
-        // build the JSON payload
-        JSONObject payload = new JSONObject();
-        payload.put("parentDirectory", SYSTEM_TEMP_PATH);
-        // add in author details
-        payload.put("authorName", "GeoGig User");
-        payload.put("authorEmail", "geogig@geogig.org");
-        context.callWithContentType(method, resourceUri, payload, "application/xml");
-    }
-
-    @Then("^there should be no \"([^\"]*)\" created$")
-    public void checkRepoNotInitialized(final String repo) throws Exception {
-        GeoGIG geogig = context.getRepo(repo);
-        assertTrue("Expected repository to NOT EXIST", null == geogig);
     }
 }

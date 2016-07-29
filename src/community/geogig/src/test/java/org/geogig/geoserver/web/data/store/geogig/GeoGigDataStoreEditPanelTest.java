@@ -37,9 +37,9 @@ import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.StoreExtensionPoints;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.geogig.api.ObjectId;
+import org.locationtech.geogig.api.Ref;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
-import org.locationtech.geogig.model.ObjectId;
-import org.locationtech.geogig.model.Ref;
 
 import com.google.common.base.Suppliers;
 

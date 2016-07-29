@@ -8,7 +8,6 @@ package org.geoserver.web.data.store;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geotools.data.wms.WebMapServer;
@@ -65,13 +64,7 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
      * </p>
      */
     protected void doSaveStore(WMSStoreInfo info) {
-        Catalog catalog = getCatalog();
-        WMSStoreInfo expandedStore = catalog.getFactory().createWebMapServer();
-        
-        // Cloning into "expandedStore" through the super class "clone" method
-        clone(info, expandedStore);
-        getCatalog().validate(expandedStore, false).throwIfInvalid();
-        
+        getCatalog().validate(info, false).throwIfInvalid();
         getCatalog().save(info);
         doReturn(StorePage.class);
     }

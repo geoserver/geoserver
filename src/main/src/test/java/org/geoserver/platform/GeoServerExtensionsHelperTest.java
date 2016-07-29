@@ -28,7 +28,7 @@ public class GeoServerExtensionsHelperTest {
 
     @After
     public void tearDown() throws Exception {
-        System.clearProperty("TEST_PROPERTY");
+        System.setProperty("TEST_PROPERTY", "");
         GeoServerExtensionsHelper.init(null);
     }
     

@@ -34,8 +34,6 @@ import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.platform.GeoServerEnvironment;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
@@ -108,14 +106,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         form.add(new Label("service.enabled", new StringResourceModel("service.enabled", this).setParameters(getServiceName())));
         form.add(new TextField("maintainer"));
         TextField onlineResource = new TextField("onlineResource");
-        
-        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
-        
-        // AF: Disable Binding if GeoServer Env Parametrization is enabled!
-        if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-            onlineResource.add(new UrlValidator());
-        }
-        
+        onlineResource.add(new UrlValidator());
         form.add(onlineResource);
         form.add(new CheckBox("enabled"));
         form.add(new CheckBox("citeCompliant"));

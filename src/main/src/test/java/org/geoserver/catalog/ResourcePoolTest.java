@@ -6,12 +6,7 @@
 
 package org.geoserver.catalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -35,8 +30,6 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.GeoServerEnvironment;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
@@ -68,12 +61,8 @@ import org.w3c.dom.Element;
 @Category(SystemTest.class)
 public class ResourcePoolTest extends GeoServerSystemTestSupport {
     
-    static {
-        System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
-    }
-    
     private static File rockFillSymbolFile;
-
+    
     protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
     
     @Override
@@ -94,9 +83,6 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         rockFillSymbolFile = new File(images, image.getName()).getCanonicalFile();
         
         testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
-        
-        FileUtils.copyFileToDirectory(new File("./src/test/resources/geoserver-environment.properties"), 
-                testData.getDataDirectoryRoot());
     }
 
     @Override
@@ -372,43 +358,6 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
                 }
             }
         }
-    }
-    
-    @RunTestSetup
-    @Test public void testEnvParametrizationValues() throws Exception {
-        
-        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
 
-        DataStoreInfo ds = getCatalog().getFactory().createDataStore();
-        ds.getConnectionParameters().put("host", "${jdbc.host}");
-        ds.getConnectionParameters().put("port", "${jdbc.port}");
-
-        try {
-            final String dsName = "GS-ENV-TEST-DS";
-            ds.setName(dsName);
-            ds.setDescription("${test.env}");
-
-            getCatalog().save(ds);
-
-            ds = getCatalog().getDataStoreByName(dsName);
-
-            DataStoreInfo expandedDs = getCatalog().getResourcePool().clone(ds, true);
-
-            assertTrue(ds.getDescription().equals("${test.env}"));
-            assertTrue(ds.getConnectionParameters().get("host").equals("${jdbc.host}"));
-            assertTrue(ds.getConnectionParameters().get("port").equals("${jdbc.port}"));
-            
-            if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-                assertTrue(expandedDs.getDescription().equals(gsEnvironment.resolveValue("${test.env}")));
-                assertTrue(expandedDs.getConnectionParameters().get("host").equals(gsEnvironment.resolveValue("${jdbc.host}")));
-                assertTrue(expandedDs.getConnectionParameters().get("port").equals(gsEnvironment.resolveValue("${jdbc.port}")));
-            } else {
-                assertTrue(expandedDs.getDescription().equals("${test.env}"));
-                assertTrue(expandedDs.getConnectionParameters().get("host").equals("${jdbc.host}"));
-                assertTrue(expandedDs.getConnectionParameters().get("port").equals("${jdbc.port}"));                
-            }
-        } finally {
-            getCatalog().remove(ds);
-        }
     }
 }

@@ -5,7 +5,6 @@
 package org.geoserver.web.wicket;
 
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -38,14 +37,11 @@ public class DecimalConverter extends DoubleConverter {
         if (value == null || value.trim().length() == 0) {
             return null;
         }
-        final NumberFormat format = getNumberFormat(locale);
-        final DecimalFormatSymbols symbols = ((DecimalFormat)format).getDecimalFormatSymbols();
-        if (value.equals(symbols.getNaN())) {
-            return new Double(Double.NaN);
-        } else if (value.equals(symbols.getInfinity())) {
-            return new Double(Double.POSITIVE_INFINITY);
-        } else if (value.equals("-"+symbols.getInfinity())) {
+
+        if (value.equals("-\u221E")) {
             return new Double(Double.NEGATIVE_INFINITY);
+        } else if (value.equals("\u221E")) {
+            return new Double(Double.POSITIVE_INFINITY);
         } else {
             return super.convertToObject(value, locale);
         }

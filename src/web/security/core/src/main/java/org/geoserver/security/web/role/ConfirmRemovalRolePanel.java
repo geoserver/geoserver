@@ -8,7 +8,7 @@ package org.geoserver.security.web.role;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.web.AbstractConfirmRemovalPanel;
 
@@ -27,7 +27,7 @@ public class ConfirmRemovalRolePanel extends  AbstractConfirmRemovalPanel<GeoSer
 
     @Override
     protected String getConfirmationMessage(GeoServerRole object) throws Exception{
-        return (String) BeanUtils.getProperty(object, "authority");
+        return OwsUtils.property(object, "authority", String.class);
     }
  
 

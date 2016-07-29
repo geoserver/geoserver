@@ -117,6 +117,21 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("NamedPlaces.1107531895891",
                 "//wfs:FeatureCollection/gml:featureMembers/cite:NamedPlaces/@gml:id", doc);
     }
+    
+    @Test
+    public void testGetWithTwoFeatureId() throws Exception {
+
+        Document doc;
+        doc = getAsDOM("wfs?request=GetFeature&&version=1.1.0&service=wfs&featureid=Fifteen.1,Fifteen.2");
+
+        // print(doc);
+        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen)",
+                doc);
+
+        XMLAssert.assertXpathExists("//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen[@gml:id='Fifteen.1']", doc);
+        XMLAssert.assertXpathExists("//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen[@gml:id='Fifteen.2']", doc);
+    }
 
     @Test
     public void testPost() throws Exception {

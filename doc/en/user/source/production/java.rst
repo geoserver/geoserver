@@ -48,11 +48,13 @@ Native JAI and ImageIO extensions are available for:
 | Max OSX  |           |           |  
 +----------+-----------+-----------+
 
-.. warning:: When installed as a "java extension" JAI and JAI ImageIO are unpacked into your JRE as both native code (in ``bin``) and jars (in ``ext/libs``). This installation may conflict with the pure java copy of JAI and ImageIO included in your GeoServer ``WEB-INF/lib`` folder - producing "class cast exceptions" preventing your application server from starting GeoServer.
-   
-   If you encounter this problem after installation of native the JAI and ImageIO extensions remove the pure java implementation from your GeoServer instances ``WEB-INF/lib`` folder::
-       
-       rm jai_core-*jar jai_imageio-*.jar jai_codec-*.jar
+.. warning:: A system installations of JAI and ImageIO may conflict with the pure java copy of JAI and ImageIO included in your GeoServer ``WEB-INF/lib`` folder - producing "class cast exceptions" preventing your application server from starting GeoServer.
+    
+    * When installed as a "java extension" JAI and JAI ImageIO are unpacked into your JRE as both native code (in ``bin``) and jars (in ``ext/libs``). If you encounter this problem after installation of native the JAI and ImageIO extensions remove the pure java implementation from your GeoServer instances ``WEB-INF/lib`` folder::
+        
+        rm jai_core-*jar jai_imageio-*.jar jai_codec-*.jar
+
+    * On OSX jars may be installed in ``~/Library/Java/Extensions``, we advise removing these jars if present as they are no longer maintained by Apple.
    
 .. note:: Native ImageIO encoding may not always be the best choice, we recommend the built-in :ref:`PNGJ based encoder <JAI>` and :ref:`community_libjpeg-turbo` for png8 and jpeg encoding performance.
    

@@ -31,29 +31,29 @@ public class ClassificationStatsPPIO extends XMLPPIO {
         ClassificationStats results = (ClassificationStats) object;
 
         h.startDocument();
-        h.startElement(null, null, "Results", null);
+        h.startElement("", "", "Results", null);
 
         for (int i = 0; i < results.size(); i++) {
             Range range = results.range(i);
 
             AttributesImpl atts = new AttributesImpl();
-            atts.addAttribute(null, null, "lowerBound", null, range.getMin().toString());
-            atts.addAttribute(null, null, "upperBound", null, range.getMax().toString());
-            atts.addAttribute(null, null, "count", null, results.count(i).toString());
+            atts.addAttribute("", "", "lowerBound", null, range.getMin().toString());
+            atts.addAttribute("", "", "upperBound", null, range.getMax().toString());
+            atts.addAttribute("", "", "count", null, results.count(i).toString());
             
-            h.startElement(null, null, "Class", atts);
+            h.startElement("", "", "Class", atts);
             for (Statistic stat : results.getStats()) {
-                h.startElement(null, null, stat.name(), null);
+                h.startElement("", "", stat.name(), null);
                 
                 String value = String.valueOf(results.value(i, stat));
                 h.characters(value.toCharArray(), 0, value.length());
                 
-                h.endElement(null, null, stat.name());
+                h.endElement("", "", stat.name());
             }
-            h.endElement(null, null, "Class");
+            h.endElement("", "", "Class");
         }
 
-        h.endElement(null, null, "Results");
+        h.endElement("", "", "Results");
         h.endDocument();
     }
 

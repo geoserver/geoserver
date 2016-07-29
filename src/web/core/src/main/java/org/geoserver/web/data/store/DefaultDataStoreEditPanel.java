@@ -27,6 +27,8 @@ import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
 import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
@@ -148,6 +150,8 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
     private Panel getInputComponent(final String componentId, final IModel paramsModel,
             final ParamInfo paramMetadata) {
 
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+        
         final String paramName = paramMetadata.getName();
         final String paramLabel = paramMetadata.getName();
         final boolean required = paramMetadata.isRequired();
@@ -201,17 +205,26 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             
             // if it can be a reference to the local filesystem make sure it's valid
             FormComponent<String> fc = ((ParamPanel) tp).getFormComponent();
+            
+            // AF: Disable Validator if GeoServer Env Parametrization is enabled!
             if (paramName.equalsIgnoreCase("url")) {
-                fc.add(new FileExistsValidator());
+                if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                    fc.add(new FileExistsValidator());
+                }
             }
             // make sure the proper value is returned, but don't set it for strings otherwise
             // we incur in a wicket bug (the empty string is not converter back to a null)
             // GR: it doesn't work for File neither.
             // AA: better not mess with files, the converters turn data dir relative to
             // absolute and bye bye data dir portability
-            if (binding != null && !String.class.equals(binding) && !File.class.equals(binding)
-                    && !URL.class.equals(binding) && !binding.isArray()) {
-                fc.setType(binding);
+            
+            
+            // AF: Disable Binding if GeoServer Env Parametrization is enabled!
+            if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                if (binding != null && !String.class.equals(binding) && !File.class.equals(binding)
+                        && !URL.class.equals(binding) && !binding.isArray()) {
+                    fc.setType(binding);
+                }
             }
             parameterPanel = tp;
         }

@@ -8,6 +8,9 @@ package org.geoserver.service.rest;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import org.apache.commons.io.IOUtils;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -129,6 +132,16 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
         assertEquals(200, response.getStatus());
         Document dom = getAsDOM("/rest/services/wfs/workspaces/sf/settings.xml");
         assertXpathEvaluatesTo("false", "/wfs/enabled", dom);
+    }
+    
+    @Test
+    public void testPutFullAsXML() throws Exception {
+        String xml = IOUtils.toString(LocalWFSSettingsTest.class.getResourceAsStream("wfs.xml"));
+        MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/workspaces/sf/settings",
+                xml, "text/xml");
+        assertEquals(200, response.getStatus());
+        Document dom = getAsDOM("/rest/services/wfs/workspaces/sf/settings.xml");
+        assertXpathEvaluatesTo("true", "/wfs/enabled", dom);
     }
 
     @Test

@@ -6,9 +6,9 @@ package org.geogig.geoserver.security;
 
 import javax.annotation.Nullable;
 
-import org.locationtech.geogig.api.AbstractGeoGigOp;
-import org.locationtech.geogig.api.hooks.CannotRunGeogigOperationException;
-import org.locationtech.geogig.api.hooks.CommandHook;
+import org.locationtech.geogig.hooks.CannotRunGeogigOperationException;
+import org.locationtech.geogig.hooks.CommandHook;
+import org.locationtech.geogig.repository.AbstractGeoGigOp;
 
 /**
  * Classpath {@link CommandHook command hook} that logs remotes related command events to by simply

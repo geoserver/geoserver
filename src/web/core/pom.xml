@@ -128,7 +128,7 @@
    </dependency>
    <dependency>
     <groupId>org.bouncycastle</groupId>
-    <artifactId>bcprov-jdk14</artifactId>    
+    <artifactId>bcprov-jdk15on</artifactId>    
   </dependency>
   </dependencies>
 

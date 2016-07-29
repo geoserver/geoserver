@@ -28,8 +28,8 @@ import org.geoserver.test.TestSetupFrequency;
 import org.geoserver.wms.WMSInfo;
 import org.junit.Rule;
 import org.junit.Test;
-import org.locationtech.geogig.api.ObjectId;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
+import org.locationtech.geogig.model.ObjectId;
 
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class GeogigLayerIntegrationListenerTest extends GeoServerSystemTestSupport {

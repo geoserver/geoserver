@@ -4,10 +4,10 @@
  */
 package org.geogig.geoserver.config;
 
-
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.equal;
+import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.REPOSITORY;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -138,8 +139,19 @@ public class RepositoryManager {
         try {
             return store.load(repoId);
         } catch (FileNotFoundException e) {
-            throw new NoSuchElementException("No repository named " + repoId + " exists");
+            throw new NoSuchElementException("No repository with ID " + repoId + " exists");
         }
+    }
+
+    public RepositoryInfo getByRepoName(final String name) {
+        List<RepositoryInfo> all = getAll();
+        for (RepositoryInfo info : all) {
+            if (info.getRepoName().equals(name)) {
+                return info;
+            }
+        }
+        // didn't find it
+        throw new NoSuchElementException("No repository with ID " + name + " exists");
     }
 
     public List<DataStoreInfo> findGeogigStores() {
@@ -169,8 +181,14 @@ public class RepositoryManager {
         Predicate<DataStoreInfo> postFilter = new Predicate<DataStoreInfo>() {
             @Override
             public boolean apply(DataStoreInfo st) {
-                return !st.getConnectionParameters()
-                        .containsKey(GeoGigDataStoreFactory.RESOLVER_CLASS_NAME.key);
+                final Map<String, Serializable> conParams = st.getConnectionParameters();
+                if (conParams.containsKey(REPOSITORY.key)) {
+                    final File repoConfigFile = new File(conParams.get(REPOSITORY.key).toString());
+                    if (repoConfigFile.isDirectory()) {
+                        return true;
+                    }
+                }
+                return false;
             }
         };
 

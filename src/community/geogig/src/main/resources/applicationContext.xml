@@ -6,10 +6,6 @@
     <constructor-arg ref="resourceLoader"/>
   </bean>
   
-  <bean id="geogigInitializer" class="org.geogig.geoserver.config.GeoGigInitializer">
-    <constructor-arg ref="geogigConfigStore"/>
-  </bean>
-  
   <bean id="geogigRepoManager" class="org.geogig.geoserver.config.RepositoryManager">
     <constructor-arg ref="geogigConfigStore"/>
   </bean>

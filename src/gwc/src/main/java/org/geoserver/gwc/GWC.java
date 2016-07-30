@@ -16,6 +16,7 @@ import static org.geowebcache.seed.GWCTask.TYPE.TRUNCATE;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +47,7 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.impl.ProxyUtils;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.config.GWCConfigPersister;
@@ -67,6 +69,7 @@ import org.geoserver.security.DataAccessLimits;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.decorators.SecuredLayerInfo;
+import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.RenderedImageMap;
@@ -670,6 +673,29 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (!tileLayer.isEnabled()) {
             requestMistmatchTarget.append("tile layer disabled");
             return null;
+        }
+
+        if (getConfig().isSecurityEnabled()) {
+            String bboxstr = request.getRawKvp().get("BBOX");
+            String srs = request.getRawKvp().get("SRS");
+            ReferencedEnvelope bbox = null;
+            try {
+                bbox = (ReferencedEnvelope) new BBoxKvpParser().parse(bboxstr);
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid bbox for layer '" + layerName + "': " + bboxstr);
+            }
+            if (srs != null) {
+                try {
+                    bbox = new ReferencedEnvelope(bbox, CRS.decode(srs));
+                } catch (Exception e) {
+                    throw new RuntimeException("Can't decode SRS for layer '" + layerName + "': " + srs);
+                }
+            }
+            try {
+                verifyAccessLayer(layerName, bbox);
+            } catch (ServiceException e) {
+                return null;
+            }
         }
 
         ConveyorTile tileReq = prepareRequest(tileLayer, request, requestMistmatchTarget);
@@ -2079,6 +2105,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
         if (boundingBox != null) {
             for (LayerInfo layerInfo : layerInfos) {
+                // Unwrap potential proxy instances, so the instanceof SecuredLayerInfo check works.
+                if(layerInfo instanceof Proxy) {
+                    layerInfo = ProxyUtils.unwrap(layerInfo, Proxy.getInvocationHandler(layerInfo).getClass());
+                }
+
                 if(layerInfo instanceof SecuredLayerInfo) {
                     // test layer bbox limits
                     SecuredLayerInfo securedLayerInfo = (SecuredLayerInfo) layerInfo;

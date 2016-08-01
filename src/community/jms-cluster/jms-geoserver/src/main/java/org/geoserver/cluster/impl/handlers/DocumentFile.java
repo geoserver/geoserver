@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,16 +23,10 @@ import org.jdom.JDOMException;
  */
 public class DocumentFile {
 
-    private final Resource path;
+    private final String resourceName;
+    private final String resourcePath;
 
     private final String body;
-
-    /**
-     * @return the path
-     */
-    public final Resource getPath() {
-        return path;
-    }
 
     /**
      * @return the body containing the parsed file
@@ -53,7 +47,8 @@ public class DocumentFile {
         if (!Resources.exists(path)) {
             throw new IllegalArgumentException("Unable to locate the file path: \'" + path + "\'");
         }
-        this.path = path;
+        this.resourceName = path.name();
+        this.resourcePath = path.path();
         this.body = document;
     }
 
@@ -61,10 +56,19 @@ public class DocumentFile {
         if (!Resources.exists(path)) {
             throw new IllegalArgumentException("Unable to locate the file path: \'" + path + "\'");
         }
-        this.path = path;
+        this.resourceName = path.name();
+        this.resourcePath = path.path();
         try (InputStream in = path.in()) {
             this.body = IOUtils.toString(in);
         }
+    }
+
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public String getResourcePath() {
+        return resourcePath;
     }
 
     /**
@@ -75,7 +79,7 @@ public class DocumentFile {
      * @throws IOException
      */
     public void writeTo(Resource file) throws JDOMException, IOException {
-        try (OutputStream out = path.out()) {
+        try (OutputStream out = file.out()) {
             IOUtils.write(body, out);
         }
     }

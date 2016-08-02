@@ -346,7 +346,8 @@ public class RepositoryManager {
     }
 
     public Repository getRepository(String repositoryId) throws IOException {
-        return repoCache.get(repositoryId);
+        Repository repository = repoCache.get(repositoryId);
+        return repository;
     }
 
     public void delete(final String repoId) {

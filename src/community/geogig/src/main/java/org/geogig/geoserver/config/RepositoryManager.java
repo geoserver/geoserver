@@ -102,9 +102,11 @@ public class RepositoryManager {
         return new StaticSupplier();
     }
 
-    public RepositoryManager(ConfigStore store) {
+    public RepositoryManager(ConfigStore store, Catalog catalog) {
         checkNotNull(store);
+        checkNotNull(catalog);
         this.store = store;
+        this.catalog = catalog;
         this.repoCache = new RepositoryCache(this);
     }
 

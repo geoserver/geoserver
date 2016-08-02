@@ -213,7 +213,8 @@ class InitRequestHandler {
                     // use the defaukt in PostgresConfigBean
                 }
             }
-            final String uri = bean.buildUriForRepo(UUID.randomUUID().toString()).toString();
+            final String uri = bean.buildUriForRepo(
+                    hints.get(Hints.REPOSITORY_NAME).get().toString()).toString();
             hints.set(Hints.REPOSITORY_URL, uri);
         }
     }

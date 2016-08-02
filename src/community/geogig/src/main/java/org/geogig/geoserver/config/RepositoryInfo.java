@@ -10,14 +10,11 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
 
-import org.locationtech.geogig.plumbing.ResolveRepositoryName;
-import org.locationtech.geogig.repository.Repository;
-import org.locationtech.geogig.repository.RepositoryConnectionException;
 import org.locationtech.geogig.repository.RepositoryResolver;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
-import com.google.common.base.Throwables;
+import com.google.common.base.Preconditions;
 
 public class RepositoryInfo implements Serializable {
 
@@ -97,33 +94,13 @@ public class RepositoryInfo implements Serializable {
     }
 
     public String getRepoName() {
-        if (this.repoName != null) {
-            return repoName;
+        Preconditions.checkState(this.location != null, "repository location is unset");
+        if (this.repoName == null) {
+            // lookup the resolver
+            RepositoryResolver resolver = RepositoryResolver.lookup(this.location);
+            this.repoName = resolver.getName(this.location);
         }
-        if (this.location != null) {
-            Repository repo = null;
-            try {
-                // lookup the resolver
-                RepositoryResolver resolver = RepositoryResolver.lookup(this.location);
-                // if the repo exists, get the name from it
-                if (resolver.repoExists(this.location)) {
-                    // it exists, load it and fetch the name
-                    repo = RepositoryResolver.load(this.location);
-                    this.repoName = repo.command(ResolveRepositoryName.class).call();
-                } else {
-                    // the repo doesn't exist, derive the name from the location
-                    this.repoName = resolver.getName(this.location);
-                }
-                return this.repoName;
-            } catch (RepositoryConnectionException e) {
-                Throwables.propagate(e);
-            } finally {
-                if (repo != null) {
-                    repo.close();
-                }
-            }
-        }
-        return null;
+        return this.repoName;
     }
 
     @Override

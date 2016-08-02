@@ -8,6 +8,7 @@
   
   <bean id="geogigRepoManager" class="org.geogig.geoserver.config.RepositoryManager">
     <constructor-arg ref="geogigConfigStore"/>
+    <constructor-arg ref="catalog" />
   </bean>
 
   <bean id="geoGigGeoServerLifeCycleListener" class="org.geogig.geoserver.config.GeoGigGeoServerLifeCycleListener">

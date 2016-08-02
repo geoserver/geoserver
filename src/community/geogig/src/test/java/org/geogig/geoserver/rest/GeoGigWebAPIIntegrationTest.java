@@ -88,7 +88,6 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
     public void before() throws Exception {
         // protected void onSetUp(SystemTestData testData) throws Exception {
         Catalog catalog = getCatalog();
-        RepositoryManager.get().setCatalog(catalog);
         geogigData.init()//
                 .config("user.name", "gabriel")//
                 .config("user.email", "gabriel@test.com")//

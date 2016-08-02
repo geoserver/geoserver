@@ -4,6 +4,7 @@
  */
 package org.geogig.geoserver.config;
 
+import static com.google.common.base.Preconditions.checkState;
 import static java.lang.String.format;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ class RepositoryCache {
 
     public RepositoryCache(final RepositoryManager repoManager) {
 
-        RemovalListener<String, GeoGIG> listener = new RemovalListener<String, GeoGIG>() {
+        RemovalListener<String, GeoGIG> disposingListener = new RemovalListener<String, GeoGIG>() {
             @Override
             public void onRemoval(RemovalNotification<String, GeoGIG> notification) {
                 String repoId = notification.getKey();
@@ -65,9 +66,11 @@ class RepositoryCache {
                 try {
                     RepositoryInfo repoInfo = manager.get(repoId);
                     URI repoLocation = repoInfo.getLocation();
+                    // RepositoryResolver.load returns an open repository or fails
                     Repository repo = RepositoryResolver.load(repoLocation);
+                    checkState(repo.isOpen());
+
                     GeoGIG geogig = new GeoGIG(repo);
-                    geogig.getRepository();
                     return geogig;
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING,
@@ -81,7 +84,7 @@ class RepositoryCache {
         repoCache = CacheBuilder.newBuilder()//
                 .softValues()//
                 .expireAfterAccess(5, TimeUnit.MINUTES)//
-                .removalListener(listener)//
+                .removalListener(disposingListener)//
                 .build(loader);
     }
 

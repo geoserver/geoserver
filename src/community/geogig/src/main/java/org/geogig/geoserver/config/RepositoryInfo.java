@@ -10,14 +10,10 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
 
-import org.locationtech.geogig.plumbing.ResolveRepositoryName;
-import org.locationtech.geogig.repository.Repository;
-import org.locationtech.geogig.repository.RepositoryConnectionException;
 import org.locationtech.geogig.repository.RepositoryResolver;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
-import com.google.common.base.Throwables;
 
 public class RepositoryInfo implements Serializable {
 
@@ -97,31 +93,14 @@ public class RepositoryInfo implements Serializable {
     }
 
     public String getRepoName() {
-        if (this.repoName != null) {
-            return repoName;
-        }
         if (this.location != null) {
-            Repository repo = null;
-            try {
+            if (this.repoName == null) {
                 // lookup the resolver
                 RepositoryResolver resolver = RepositoryResolver.lookup(this.location);
-                // if the repo exists, get the name from it
-                if (resolver.repoExists(this.location)) {
-                    // it exists, load it and fetch the name
-                    repo = RepositoryResolver.load(this.location);
-                    return repo.command(ResolveRepositoryName.class).call();
-                }
-                // the repo doesn't exist, derive the name from the location
-                return resolver.getName(this.location);
-            } catch (RepositoryConnectionException e) {
-                Throwables.propagate(e);
-            } finally {
-                if (repo != null) {
-                    repo.close();
-                }
+                this.repoName = resolver.getName(this.location);
             }
         }
-        return null;
+        return this.repoName;
     }
 
     @Override

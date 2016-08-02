@@ -109,10 +109,12 @@ public class RepositoryInfo implements Serializable {
                 if (resolver.repoExists(this.location)) {
                     // it exists, load it and fetch the name
                     repo = RepositoryResolver.load(this.location);
-                    return repo.command(ResolveRepositoryName.class).call();
+                    this.repoName = repo.command(ResolveRepositoryName.class).call();
+                } else {
+                    // the repo doesn't exist, derive the name from the location
+                    this.repoName = resolver.getName(this.location);
                 }
-                // the repo doesn't exist, derive the name from the location
-                return resolver.getName(this.location);
+                return this.repoName;
             } catch (RepositoryConnectionException e) {
                 Throwables.propagate(e);
             } finally {

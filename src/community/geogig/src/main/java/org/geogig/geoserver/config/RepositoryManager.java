@@ -49,6 +49,7 @@ import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryResolver;
 import org.opengis.filter.Filter;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -81,7 +82,7 @@ public class RepositoryManager {
 
     private static RepositoryManager INSTANCE;
 
-    private Catalog catalog = null;
+    private Catalog catalog;
 
     public static synchronized RepositoryManager get() {
         if (INSTANCE == null) {
@@ -139,7 +140,7 @@ public class RepositoryManager {
 
     public RepositoryInfo get(final String repoId) throws IOException {
         try {
-            return store.load(repoId);
+            return store.get(repoId);
         } catch (FileNotFoundException e) {
             throw new NoSuchElementException("No repository with ID " + repoId + " exists");
         }
@@ -164,6 +165,7 @@ public class RepositoryManager {
         return this.catalog;
     }
 
+    @VisibleForTesting
     public void setCatalog(Catalog catalog) {
         this.catalog = catalog;
     }

@@ -17,14 +17,6 @@
     <name>GeoFence Server</name>
     <description>GeoFence security internal server</description>
 
-    <repositories>
-        <repository>
-            <id>wicket-dnd</id>
-            <name>Wicket-dnd Repository</name>
-            <url>http://wicket-dnd.googlecode.com/svn/repo</url>
-        </repository>
-    </repositories>
-
     <dependencies>
          <dependency>
             <groupId>com.googlecode.genericdao</groupId>

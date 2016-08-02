@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.URI;
 
 import org.locationtech.geogig.repository.Context;
-import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryConnectionException;
 import org.locationtech.geogig.repository.RepositoryResolver;
@@ -83,8 +82,7 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
         try {
             RepositoryInfo info = repoMgr.getByRepoName(name);
             String repositoryId = info.getId();
-            GeoGIG gig = repoMgr.getRepository(repositoryId);
-            Repository repo = gig.getRepository();
+            Repository repo = repoMgr.getRepository(repositoryId);
             checkState(repo.isOpen(), "RepositoryManager returned a closed repository for %s",
                     name);
             return repo;

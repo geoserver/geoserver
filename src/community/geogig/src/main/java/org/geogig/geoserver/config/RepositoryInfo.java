@@ -14,7 +14,6 @@ import org.locationtech.geogig.repository.RepositoryResolver;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 
 public class RepositoryInfo implements Serializable {
 
@@ -94,11 +93,12 @@ public class RepositoryInfo implements Serializable {
     }
 
     public String getRepoName() {
-        Preconditions.checkState(this.location != null, "repository location is unset");
-        if (this.repoName == null) {
-            // lookup the resolver
-            RepositoryResolver resolver = RepositoryResolver.lookup(this.location);
-            this.repoName = resolver.getName(this.location);
+        if (this.location != null) {
+            if (this.repoName == null) {
+                // lookup the resolver
+                RepositoryResolver resolver = RepositoryResolver.lookup(this.location);
+                this.repoName = resolver.getName(this.location);
+            }
         }
         return this.repoName;
     }

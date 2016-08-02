@@ -30,9 +30,9 @@ import org.locationtech.geogig.porcelain.RemoteAddOp;
 import org.locationtech.geogig.porcelain.RemoteListOp;
 import org.locationtech.geogig.porcelain.RemoteRemoveOp;
 import org.locationtech.geogig.repository.Context;
-import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.GeogigTransaction;
 import org.locationtech.geogig.repository.Remote;
+import org.locationtech.geogig.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,7 +120,7 @@ public abstract class RepositoryEditFormPanel extends Panel {
         }
 
         ArrayList<RemoteInfo> list = new ArrayList<>();
-        GeoGIG geogig;
+        Repository geogig;
         try {
             geogig = RepositoryManager.get().getRepository(repoId);
             if (geogig != null) {
@@ -157,13 +157,13 @@ public abstract class RepositoryEditFormPanel extends Panel {
     private void onSave(RepositoryInfo repoInfo, AjaxRequestTarget target) {
         RepositoryManager manager = RepositoryManager.get();
         // update remotes
-        GeoGIG geogig;
+        Repository geogig;
         try {
             repoInfo = manager.save(repoInfo);
             geogig = manager.getRepository(repoInfo.getId());
         } catch (Exception e) {
-            form.error("Unable to connect to repository " + repoInfo.getLocation() +
-                    "\n" + e.getMessage());
+            form.error("Unable to connect to repository " + repoInfo.getLocation() + "\n"
+                    + e.getMessage());
             target.add(form);
             return;
         }
@@ -175,8 +175,8 @@ public abstract class RepositoryEditFormPanel extends Panel {
             }
         };
 
-        Map<Integer, RemoteInfo> currentRemotes = new HashMap<>(Maps.uniqueIndex(
-                loadRemoteInfos(repoInfo), keyFunction));
+        Map<Integer, RemoteInfo> currentRemotes = new HashMap<>(
+                Maps.uniqueIndex(loadRemoteInfos(repoInfo), keyFunction));
 
         Set<RemoteInfo> newRemotes = Sets.newHashSet(remotes.getRemotes());
         if (!currentRemotes.isEmpty() || !newRemotes.isEmpty()) {
@@ -232,8 +232,8 @@ public abstract class RepositoryEditFormPanel extends Panel {
                 try {
                     cmd.call();
                 } catch (RuntimeException e) {
-                    throw new RuntimeException("Error adding remote " + ri.getName() + ": "
-                            + e.getMessage(), e);
+                    throw new RuntimeException(
+                            "Error adding remote " + ri.getName() + ": " + e.getMessage(), e);
                 }
             } else {
                 // handle upadtes
@@ -249,8 +249,8 @@ public abstract class RepositoryEditFormPanel extends Panel {
                             .setPassword(ri.getPassword());
                     addop.call();
                 } catch (RuntimeException e) {
-                    throw new RuntimeException("Error updating remote " + ri.getName() + ": "
-                            + e.getMessage(), e);
+                    throw new RuntimeException(
+                            "Error updating remote " + ri.getName() + ": " + e.getMessage(), e);
                 }
 
             }

@@ -15,7 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geotools.util.logging.Logging;
-import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryResolver;
 
@@ -30,24 +29,21 @@ class RepositoryCache {
 
     private static final Logger LOGGER = Logging.getLogger(RepositoryCache.class);
 
-    private final LoadingCache<String, GeoGIG> repoCache;
+    private final LoadingCache<String, Repository> repoCache;
 
     public RepositoryCache(final RepositoryManager repoManager) {
 
-        RemovalListener<String, GeoGIG> disposingListener = new RemovalListener<String, GeoGIG>() {
+        RemovalListener<String, Repository> disposingListener = new RemovalListener<String, Repository>() {
             @Override
-            public void onRemoval(RemovalNotification<String, GeoGIG> notification) {
+            public void onRemoval(RemovalNotification<String, Repository> notification) {
                 String repoId = notification.getKey();
-                GeoGIG geogig = notification.getValue();
-                if (geogig != null) {
-                    URI location = null;
+                Repository repository = notification.getValue();
+                if (repository != null) {
                     try {
-                        if (geogig.getContext() != null) {
-                            location = geogig.getRepository().getLocation();
-                        }
+                        URI location = repository.getLocation();
                         LOGGER.fine(format("Closing cached GeoGig repository instance %s",
                                 location != null ? location : repoId));
-                        geogig.close();
+                        repository.close();
                         LOGGER.finer(format("Closed cached GeoGig repository instance %s",
                                 location != null ? location : repoId));
                     } catch (RuntimeException e) {
@@ -58,11 +54,11 @@ class RepositoryCache {
             }
         };
 
-        final CacheLoader<String, GeoGIG> loader = new CacheLoader<String, GeoGIG>() {
+        final CacheLoader<String, Repository> loader = new CacheLoader<String, Repository>() {
             private final RepositoryManager manager = repoManager;
 
             @Override
-            public GeoGIG load(final String repoId) throws Exception {
+            public Repository load(final String repoId) throws Exception {
                 try {
                     RepositoryInfo repoInfo = manager.get(repoId);
                     URI repoLocation = repoInfo.getLocation();
@@ -70,8 +66,7 @@ class RepositoryCache {
                     Repository repo = RepositoryResolver.load(repoLocation);
                     checkState(repo.isOpen());
 
-                    GeoGIG geogig = new GeoGIG(repo);
-                    return geogig;
+                    return repo;
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING,
                             format("Error loading GeoGig repository instance for id %s", repoId),
@@ -88,7 +83,7 @@ class RepositoryCache {
                 .build(loader);
     }
 
-    public GeoGIG get(String repositoryId) throws IOException {
+    public Repository get(String repositoryId) throws IOException {
         try {
             return repoCache.get(repositoryId);
         } catch (ExecutionException e) {

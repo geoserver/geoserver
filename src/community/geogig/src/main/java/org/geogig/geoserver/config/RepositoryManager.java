@@ -46,6 +46,7 @@ import org.locationtech.geogig.repository.GlobalContextBuilder;
 import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.repository.Remote;
 import org.locationtech.geogig.repository.Repository;
+import org.locationtech.geogig.repository.RepositoryConnectionException;
 import org.locationtech.geogig.repository.RepositoryResolver;
 import org.opengis.filter.Filter;
 
@@ -56,6 +57,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.base.Supplier;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -119,23 +121,35 @@ public class RepositoryManager {
         this.repoCache.invalidate(repoId);
     }
 
-    public GeoGIG createRepo(final Hints hints) {
+    @Nullable
+    public Repository createRepo(final Hints hints) {
         // get the Config store location
         // only generate a location if no URI is set in the hints
-        if (!hints.get(Hints.REPOSITORY_URL).isPresent()) {
+        URI repoURI;
+        if (hints.get(Hints.REPOSITORY_URL).isPresent()) {
+            repoURI = URI.create(hints.get(Hints.REPOSITORY_URL).get().toString());
+        } else {
             // no location set yet, generate one
             Resource root = store.getConfigRoot();
             File parent = root.parent().dir().getAbsoluteFile();
             File f = new File(parent, UUID.randomUUID().toString());
-            final URI repoURI = f.toURI().normalize();
+            repoURI = f.toURI().normalize();
             hints.set(Hints.REPOSITORY_URL, repoURI);
         }
 
         Context context = GlobalContextBuilder.builder().build(hints);
-
-        GeoGIG geogig = new GeoGIG(context);
-
-        return geogig;
+        RepositoryResolver repositoryResolver = RepositoryResolver.lookup(repoURI);
+        final boolean exists = repositoryResolver.repoExists(repoURI);
+        Repository repository = context.repository();
+        if (exists) {
+            try {
+                repository.open();
+            } catch (RepositoryConnectionException e) {
+                e.printStackTrace();
+                throw Throwables.propagate(e);
+            }
+        }
+        return repository;
     }
 
     public RepositoryInfo get(final String repoId) throws IOException {
@@ -326,12 +340,12 @@ public class RepositoryManager {
     }
 
     public List<Ref> listBranches(final String repositoryId) throws IOException {
-        GeoGIG geogig = getRepository(repositoryId);
+        Repository geogig = getRepository(repositoryId);
         List<Ref> refs = geogig.command(BranchListOp.class).call();
         return refs;
     }
 
-    public GeoGIG getRepository(String repositoryId) throws IOException {
+    public Repository getRepository(String repositoryId) throws IOException {
         return repoCache.get(repositoryId);
     }
 

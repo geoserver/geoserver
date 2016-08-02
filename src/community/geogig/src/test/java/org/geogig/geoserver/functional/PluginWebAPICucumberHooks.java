@@ -21,12 +21,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.locationtech.geogig.plumbing.ResolveGeogigURI;
 import org.locationtech.geogig.porcelain.ConfigOp;
-import org.locationtech.geogig.repository.GeoGIG;
+import org.locationtech.geogig.repository.Repository;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
@@ -197,7 +198,7 @@ public class PluginWebAPICucumberHooks {
 
     @Then("^the parent directory of repository \"([^\"]*)\" equals System Temp directory$")
     public void checkRepositoryParent(final String repo) throws Exception {
-        GeoGIG geogig = context.getRepo(repo);
+        Repository geogig = context.getRepo(repo);
         final Optional<URI> repoLocation = geogig.command(ResolveGeogigURI.class).call();
         assertTrue("Expected Repository location to be present", repoLocation.isPresent());
         URI repoURI = repoLocation.get();
@@ -211,7 +212,7 @@ public class PluginWebAPICucumberHooks {
 
     @Then("^the Author config of repository \"([^\"]*)\" is set$")
     public void checkAuthorConfig(final String repo) throws Exception {
-        GeoGIG geogig = context.getRepo(repo);
+        Repository geogig = context.getRepo(repo);
         final Optional<URI> repoLocation = geogig.command(ResolveGeogigURI.class).call();
         assertTrue("Expected Repository location to be present", repoLocation.isPresent());
         // get the config
@@ -265,7 +266,7 @@ public class PluginWebAPICucumberHooks {
 
     @Then("^the parent directory of repository \"([^\"]*)\" is NOT the System Temp directory$")
     public void checkRepositoryParent2(final String repo) throws Exception {
-        GeoGIG geogig = context.getRepo(repo);
+        Repository geogig = context.getRepo(repo);
         final Optional<URI> repoLocation = geogig.command(ResolveGeogigURI.class).call();
         assertTrue("Expected Repository location to be present", repoLocation.isPresent());
         URI repoURI = repoLocation.get();
@@ -295,7 +296,7 @@ public class PluginWebAPICucumberHooks {
 
     @Then("^there should be no \"([^\"]*)\" created$")
     public void checkRepoNotInitialized(final String repo) throws Exception {
-        GeoGIG geogig = context.getRepo(repo);
+        Repository geogig = context.getRepo(repo);
         assertTrue("Expected repository to NOT EXIST", null == geogig);
     }
 }

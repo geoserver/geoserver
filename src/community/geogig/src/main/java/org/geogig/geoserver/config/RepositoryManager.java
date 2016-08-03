@@ -150,7 +150,6 @@ public class RepositoryManager implements GeoServerInitializer {
             try {
                 repository.open();
             } catch (RepositoryConnectionException e) {
-                e.printStackTrace();
                 throw Throwables.propagate(e);
             }
         }
@@ -220,21 +219,25 @@ public class RepositoryManager implements GeoServerInitializer {
     private static List<DataStoreInfo> findGeoGigStores(Catalog catalog,
             org.opengis.filter.Filter filter) {
         List<DataStoreInfo> geogigStores;
-        CloseableIterator<DataStoreInfo> stores = catalog.list(DataStoreInfo.class, filter);
-        try {
-            geogigStores = Lists.newArrayList(stores);
-        } finally {
-            stores.close();
+        try (CloseableIterator<DataStoreInfo> dataStores = catalog.list(DataStoreInfo.class, filter)) {
+            geogigStores = Lists.newArrayList(dataStores);
         }
 
         return geogigStores;
     }
 
     public List<DataStoreInfo> findDataStores(final String repoId) {
+        // get the name
+        String repoName = null;
+        try {
+            repoName = this.get(repoId).getRepoName();
+        } catch (IOException ioe) {
+            Throwables.propagate(ioe);
+        }
         Filter filter = equal("type", GeoGigDataStoreFactory.DISPLAY_NAME);
 
         String locationKey = "connectionParameters." + GeoGigDataStoreFactory.REPOSITORY.key;
-        filter = and(filter, equal(locationKey, repoId));
+        filter = and(filter, equal(locationKey, GeoServerGeoGigRepositoryResolver.getURI(repoName)));
         List<DataStoreInfo> dependent;
         try (CloseableIterator<DataStoreInfo> stores = this.catalog.list(DataStoreInfo.class,
                 filter)) {
@@ -244,14 +247,10 @@ public class RepositoryManager implements GeoServerInitializer {
     }
 
     public List<? extends CatalogInfo> findDependentCatalogObjects(final String repoId) {
-        Filter filter = equal("type", GeoGigDataStoreFactory.DISPLAY_NAME);
-
-        String locationKey = "connectionParameters." + GeoGigDataStoreFactory.REPOSITORY.key;
-        filter = and(filter, equal(locationKey, repoId));
         List<DataStoreInfo> stores = findDataStores(repoId);
-        List<CatalogInfo> dependent = new ArrayList<CatalogInfo>(stores);
-        for (DataStoreInfo store : stores) {
-            List<FeatureTypeInfo> ftypes = this.catalog.getFeatureTypesByDataStore(store);
+        List<CatalogInfo> dependent = new ArrayList<>(stores);
+        for (DataStoreInfo dataStore : stores) {
+            List<FeatureTypeInfo> ftypes = this.catalog.getFeatureTypesByDataStore(dataStore);
             dependent.addAll(ftypes);
             for (FeatureTypeInfo ftype : ftypes) {
                 dependent.addAll(this.catalog.getLayers(ftype));

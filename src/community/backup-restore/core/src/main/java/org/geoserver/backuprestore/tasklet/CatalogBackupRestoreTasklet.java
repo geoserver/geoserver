@@ -59,7 +59,10 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 
 /**
- * TODO
+ * Concrete implementation of the {@link AbstractCatalogBackupRestoreTasklet}.
+ * <br>
+ * Actually takes care of dumping/restoring everything is not a {@link ResourceInfo},
+ * like the GeoServer settings, logging and global/local (workspaces) infos.
  * 
  * @author Alessio Fabiani, GeoSolutions
  *

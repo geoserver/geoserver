@@ -5,6 +5,7 @@
 package org.geoserver.backuprestore;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.StepExecution;
 
 /**
  * Base Class for {@link JobExecution} wrappers. Those will be used to share objects, I/O parameters and GeoServer B/R specific variables and the
@@ -122,6 +124,24 @@ public abstract class AbstractExecutionAdapter {
         return delegate.getExitStatus();
     }
 
+    /**
+     * Set {@link ExitStatus} of the current Spring Batch Execution
+     * @param exitStatus
+     */
+    public void setExitStatus(ExitStatus exitStatus) {
+        delegate.setExitStatus(exitStatus);
+    }
+    
+    /**
+     * Returns all {@link StepExecution}s of the current
+     * Spring Batch Execution
+     * 
+     * @return
+     */
+    public Collection<StepExecution> getStepExecutions() {
+        return delegate.getStepExecutions();
+    }
+    
     /**
      * The Spring Batch {@link JobInstance}
      * 

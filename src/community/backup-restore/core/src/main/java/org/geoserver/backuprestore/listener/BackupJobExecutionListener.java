@@ -8,13 +8,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geoserver.GeoServerConfigurationLock;
-import org.geoserver.GeoServerConfigurationLock.LockType;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupExecutionAdapter;
+import org.geoserver.backuprestore.BackupRestoreCallback;
 import org.geoserver.backuprestore.utils.BackupUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
@@ -40,24 +41,22 @@ public class BackupJobExecutionListener implements JobExecutionListener {
      */
     private static final Logger LOGGER = Logging.getLogger(BackupJobExecutionListener.class);
 
-    public static final LockType lockType = LockType.WRITE;
-
     private Backup backupFacade;
 
     private BackupExecutionAdapter backupExecution;
 
-    GeoServerConfigurationLock locker;
-
-    public BackupJobExecutionListener(Backup backupFacade, GeoServerConfigurationLock locker) {
+    public BackupJobExecutionListener(Backup backupFacade) {
         this.backupFacade = backupFacade;
-        this.locker = locker;
     }
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
         // Acquire GeoServer Configuration Lock in READ mode
-        locker.lock(lockType);
-
+        List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
+        for (BackupRestoreCallback callback : callbacks) {
+            callback.onBeginRequest(Backup.BACKUP_JOB_NAME);
+        }
+        
         if (backupFacade.getBackupExecutions().get(jobExecution.getId()) != null) {
             this.backupExecution = backupFacade.getBackupExecutions().get(jobExecution.getId());
         } else {
@@ -127,8 +126,6 @@ public class BackupJobExecutionListener implements JobExecutionListener {
                     BackupUtils.compressTo(sourceFolder, backupExecution.getArchiveFile());
                 }
             }
-
-            // Collect errors
         } catch (NoSuchJobExecutionException | IOException e) {
             if (!bestEffort) {
                 this.backupExecution.addFailureExceptions(Arrays.asList(e));
@@ -137,8 +134,15 @@ public class BackupJobExecutionListener implements JobExecutionListener {
                 this.backupExecution.addWarningExceptions(Arrays.asList(e));
             }
         } finally {
-            // Release locks on GeoServer Configuration
-            locker.unlock(lockType);
+            // Release locks on GeoServer Configuration:
+            try {
+                List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
+                for (BackupRestoreCallback callback : callbacks) {
+                    callback.onEndRequest();
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
+            }
         }
     }
 }

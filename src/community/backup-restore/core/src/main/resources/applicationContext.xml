@@ -22,6 +22,10 @@
 
 	<import resource="backup-batch-context.xml" />
 
+	<bean id="backupConfigurationLockCallback" class="org.geoserver.backuprestore.BackupRestoreConfigurationLockCallback">
+		<constructor-arg ref="configurationLock"/>
+	</bean>
+	
 	<bean id="backupFacade" class="org.geoserver.backuprestore.Backup">
 		<constructor-arg ref="catalog" />
 		<constructor-arg ref="resourceLoader" />
@@ -31,11 +35,15 @@
 		<bean id="catalogBackupTasklet" class="org.geoserver.backuprestore.tasklet.CatalogBackupRestoreTasklet">
 			<constructor-arg ref="backupFacade" />
 			<constructor-arg ref="xstreamPersisterFactory" />
+			<!-- milliseconds: 10 minutes timeout for the tasklet -->
+			<property name="timeout" value="600000"/>
 		</bean>
 		
 		<bean id="catalogSecurityManagerTasklet" class="org.geoserver.backuprestore.tasklet.CatalogSecurityManagerTasklet">
 			<constructor-arg ref="backupFacade" />
 			<constructor-arg ref="xstreamPersisterFactory" />
+			<!-- milliseconds: 10 minutes timeout for the tasklet -->
+			<property name="timeout" value="600000"/>
 		</bean>
 	
 	<bean id="chunkTimeoutPolicy" class="org.springframework.batch.repeat.policy.TimeoutTerminationPolicy">
@@ -50,7 +58,6 @@
 	<!-- The main Job Listener: This is responsible of both pre/post-processing before/afer the Job execution and managing configuration locks -->
 		<bean id="backupJobExecutionListener" class="org.geoserver.backuprestore.listener.BackupJobExecutionListener">
 			<constructor-arg ref="backupFacade"/>
-			<constructor-arg ref="configurationLock"/>
 		</bean>
 
 	<!-- CatalogAdditionalResourcesWriter extensions: those can be triggered by the CatalogWriter -->
@@ -72,13 +79,13 @@
 	    	<!-- The default is SyncTaskExecutor -->
     		<batch:flow>
 		    	<batch:step id="backupGeoServerInfos">
-		    		<batch:tasklet allow-start-if-complete="true" ref="catalogBackupTasklet"/>
+		    		<batch:tasklet ref="catalogBackupTasklet"/>
 		    	</batch:step>
 		    </batch:flow>
 		    
 		    <batch:flow>
 		    	<batch:step id="backupGeoServerSecurityManager">
-		    		<batch:tasklet allow-start-if-complete="true" ref="catalogSecurityManagerTasklet"/>
+		    		<batch:tasklet ref="catalogSecurityManagerTasklet"/>
 		    	</batch:step>
 		    </batch:flow>
 
@@ -409,7 +416,6 @@
 	<!-- The main Job Listener: This is responsible of both pre/post-processing before/afer the Job execution and managing configuration locks -->
 		<bean id="restoreJobExecutionListener" class="org.geoserver.backuprestore.listener.RestoreJobExecutionListener">
 			<constructor-arg ref="backupFacade"/>
-			<constructor-arg ref="configurationLock"/>
 		</bean>
 
 		<!-- This specific Listener allows to promote properties setted on Steps to Job Context Scope -->

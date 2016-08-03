@@ -73,12 +73,12 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
+        // Nothing to do.
     }
 
     @Override
     public void setResource(Resource resource) {
-        // TODO Auto-generated method stub
+        // Nothing to do.
     }
 
 }

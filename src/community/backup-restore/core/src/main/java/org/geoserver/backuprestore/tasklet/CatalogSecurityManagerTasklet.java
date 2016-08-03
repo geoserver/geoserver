@@ -28,7 +28,9 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.util.Assert;
 
 /**
- * TODO
+ * Concrete implementation of the {@link AbstractCatalogBackupRestoreTasklet}.
+ * <br>
+ * Actually takes care of dumping/restoring GeoServer Security subsystem.
  * 
  * @author Alessio Fabiani, GeoSolutions
  *

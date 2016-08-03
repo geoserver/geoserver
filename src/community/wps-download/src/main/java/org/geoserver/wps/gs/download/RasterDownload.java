@@ -1,13 +1,11 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.gs.download;
 
-import it.geosolutions.imageio.stream.output.ImageOutputStreamAdapter;
-import it.geosolutions.io.output.adapter.OutputStreamAdapter;
-
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -16,6 +14,7 @@ import java.util.logging.Logger;
 import javax.imageio.stream.ImageOutputStream;
 import javax.media.jai.Interpolation;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.resource.Resource;
@@ -33,8 +32,10 @@ import org.geotools.data.Parameter;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.process.ProcessException;
+import org.geotools.process.raster.BandSelectProcess;
 import org.geotools.process.raster.CropCoverage;
 import org.geotools.referencing.CRS;
+import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
@@ -50,6 +51,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
+
+import it.geosolutions.imageio.stream.output.ImageOutputStreamAdapter;
+import it.geosolutions.io.output.adapter.OutputStreamAdapter;
 
 /**
  * Implements the download services for raster data. If limits are configured this class will use {@link LimitedImageOutputStream}, which raises an
@@ -91,6 +95,7 @@ class RasterDownload {
     /**
      * This method does the following operations:
      * <ul>
+     * <li>Uses only those bands specified by indices (if defined)</li>
      * <li>Reprojection of the coverage (if needed)</li>
      * <li>Clips the coverage (if needed)</li>
      * <li>Scales the coverage to match the target size (if needed)</li>
@@ -107,19 +112,20 @@ class RasterDownload {
      * @param interpolation interpolation method to use when reprojecting / scaling
      * @param targetSizeX the size of the target image along the X axis
      * @param targetSizeY the size of the target image along the Y axis
+     * @param bandIndices the indices of the bands used for the final result
      * @param filter the {@link Filter} to load the data
      *
      */
     public Resource execute(String mimeType, final ProgressListener progressListener,
             CoverageInfo coverageInfo, Geometry roi, CoordinateReferenceSystem targetCRS,
             boolean clip, Filter filter, Interpolation interpolation, Integer targetSizeX,
-            Integer targetSizeY) throws Exception {
+            Integer targetSizeY, int[] bandIndices) throws Exception {
 
-        GridCoverage2D scaledGridCoverage = null, clippedGridCoverage = null, reprojectedGridCoverage = null, originalGridCoverage = null;
+        GridCoverage2D scaledGridCoverage = null, clippedGridCoverage = null, reprojectedGridCoverage = null, bandFilteredCoverage = null, originalGridCoverage = null;
         try {
 
             //
-            // look for output extension. Tiff/tif/geotiff will be all threated as GeoTIFF
+            // look for output extension. Tiff/tif/geotiff will be all treated as GeoTIFF
             //
 
             //
@@ -236,6 +242,32 @@ class RasterDownload {
                 throw new WPSException("The reader did not return any data for current input "
                         + "parameters. It normally means there is nothing there, or the data got filtered out by the ROI or filter");
             }
+            
+            //
+            // STEP 0 - Check for bands, select only those specified
+            //   
+            if (bandIndices!=null && bandIndices.length>0){                
+                //check band indices are valid
+                int sampleDimensionsNumber = originalGridCoverage.getNumSampleDimensions(); 
+                for (int i:bandIndices){
+                    if (i<0 || i>=sampleDimensionsNumber){
+                        throw new WPSException(
+                                "Band index "+i+" is invalid for the current input raster. "
+                                + "This raster contains "+sampleDimensionsNumber+" band"
+                                + (sampleDimensionsNumber>1?"s":""));            
+                    }
+                }
+                BandSelectProcess bandSelectProcess = new BandSelectProcess();
+                
+                //using null for the VisibleSampleDimension parameter of BandSelectProcess.execute. 
+                //GeoTools BandSelector2D takes care of remapping visible band index
+                //or assigns it to first band in order if remapping is not possible
+                bandFilteredCoverage = bandSelectProcess.execute(
+                        originalGridCoverage, bandIndices, null);
+            
+            }else{
+                bandFilteredCoverage = originalGridCoverage;
+            }
 
             //
             // STEP 1 - Reproject if needed
@@ -246,10 +278,10 @@ class RasterDownload {
                 }
                 // avoid doing the transform if this is the identity
                 reprojectedGridCoverage = (GridCoverage2D) Operations.DEFAULT.resample(
-                        originalGridCoverage, targetCRS, null, interpolation);
+                        bandFilteredCoverage, targetCRS, null, interpolation);
 
             } else {
-                reprojectedGridCoverage = originalGridCoverage;
+                reprojectedGridCoverage = bandFilteredCoverage;
             }
 
             //

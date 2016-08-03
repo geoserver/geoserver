@@ -27,7 +27,6 @@ import org.restlet.data.Method;
 
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
-
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;

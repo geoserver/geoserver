@@ -21,6 +21,8 @@ import java.io.Reader;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
@@ -73,6 +75,22 @@ public class ConfigStore {
 
     private final ReadWriteLock lock;
 
+    private static class CachedInfo {
+        final RepositoryInfo info;
+
+        final long lastModified;
+
+        CachedInfo(RepositoryInfo info, long lastModified) {
+            this.info = info;
+            this.lastModified = lastModified;
+        }
+    }
+
+    /**
+     * Map of cached {@link RepositoryInfo} instances key'ed by id
+     */
+    private ConcurrentMap<String, CachedInfo> cache = new ConcurrentHashMap<>();
+
     public ConfigStore(ResourceStore resourceLoader) {
         checkNotNull(resourceLoader, "resourceLoader");
         this.resourceLoader = resourceLoader;
@@ -97,8 +115,11 @@ public class ConfigStore {
         checkNotNull(info.getLocation(), "null location URI: %s", info);
 
         lock.writeLock().lock();
-        try (OutputStream out = resource(info.getId()).out()) {
+        Resource resource = resource(info.getId());
+        try (OutputStream out = resource.out()) {
             getConfigredXstream().toXML(info, new OutputStreamWriter(out, Charsets.UTF_8));
+            long lastmodified = resource.lastmodified();
+            cache.put(info.getId(), new CachedInfo(info, lastmodified));
         } catch (IOException e) {
             throw Throwables.propagate(e);
         } finally {
@@ -112,6 +133,7 @@ public class ConfigStore {
         checkIdFormat(id);
         lock.writeLock().lock();
         try {
+            cache.remove(id);
             return resource(id).delete();
         } finally {
             lock.writeLock().unlock();
@@ -216,13 +238,22 @@ public class ConfigStore {
      * Loads a {@link RepositoryInfo} by {@link RepositoryInfo#getId() id} from its xml file under
      * {@code <data-dir>/geogig/config/repos/}
      */
-    public RepositoryInfo load(final String id) throws IOException {
+    public RepositoryInfo get(final String id) throws IOException {
         checkNotNull(id, "provided a null id");
         checkIdFormat(id);
         lock.readLock().lock();
         try {
+            CachedInfo cached = cache.get(id);
             Resource resource = resource(id);
-            return load(resource);
+            final long lastmodified = resource.lastmodified();
+            RepositoryInfo info;
+            if (cached == null || cached.lastModified < lastmodified) {
+                info = load(resource);
+                cache.put(id, new CachedInfo(info, lastmodified));
+            } else {
+                info = cached.info;
+            }
+            return info;
         } finally {
             lock.readLock().unlock();
         }
@@ -262,12 +293,19 @@ public class ConfigStore {
         }
     };
 
-    private static final Function<Resource, RepositoryInfo> LOADER = new Function<Resource, RepositoryInfo>() {
+    private final Function<Resource, RepositoryInfo> LOADER = new Function<Resource, RepositoryInfo>() {
 
         @Override
-        public RepositoryInfo apply(Resource input) {
+        public RepositoryInfo apply(final Resource resource) {
             try {
-                return load(input);
+                RepositoryInfo loaded = load(resource);
+                CachedInfo cached = cache.get(loaded.getId());
+                if (cached == null) {
+                    long lastModified = resource.lastmodified();
+                    cached = new CachedInfo(loaded, lastModified);
+                    cache.put(loaded.getId(), cached);
+                }
+                return cached.info;
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Error loading RepositoryInfo", e);
                 return null;

@@ -31,7 +31,7 @@
     <typeMappings>
         <FeatureTypeMapping>
             <sourceDataStore>datastore</sourceDataStore>
-            <sourceType>MultivaluedXlinkHrefClientProperty</sourceType>
+            <sourceType>MultivaluedXlinkHref</sourceType>
             <targetElement>gsml:GeologicUnit</targetElement>
             <attributeMappings>
                 <AttributeMapping>

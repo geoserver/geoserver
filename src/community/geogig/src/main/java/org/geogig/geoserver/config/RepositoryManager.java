@@ -29,6 +29,8 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.locationtech.geogig.cli.CLIContextBuilder;
@@ -50,7 +52,6 @@ import org.locationtech.geogig.repository.RepositoryConnectionException;
 import org.locationtech.geogig.repository.RepositoryResolver;
 import org.opengis.filter.Filter;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -61,7 +62,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public class RepositoryManager {
+public class RepositoryManager implements GeoServerInitializer {
     static {
         if (GlobalContextBuilder.builder() == null
                 || GlobalContextBuilder.builder().getClass().equals(ContextBuilder.class)) {
@@ -105,12 +106,16 @@ public class RepositoryManager {
         return new StaticSupplier();
     }
 
-    public RepositoryManager(ConfigStore store, Catalog catalog) {
+    public RepositoryManager(ConfigStore store) {
         checkNotNull(store);
-        checkNotNull(catalog);
         this.store = store;
-        this.catalog = catalog;
         this.repoCache = new RepositoryCache(this);
+    }
+
+    @Override
+    public void initialize(GeoServer geoServer) {
+        // set the catalog\
+        setCatalog(geoServer.getCatalog());
     }
 
     public List<RepositoryInfo> getAll() {
@@ -179,7 +184,6 @@ public class RepositoryManager {
         return this.catalog;
     }
 
-    @VisibleForTesting
     public void setCatalog(Catalog catalog) {
         this.catalog = catalog;
     }

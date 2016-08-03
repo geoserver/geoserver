@@ -10,16 +10,16 @@ package org.geoserver.test;
  * 
  * @author Ben Caradoc-Davies (Transient Software Limited)
  */
-public class MultivaluedXlinkHrefClientPropertyMockData extends AbstractAppSchemaMockData {
+public class MultivaluedXlinkHrefMockData extends AbstractAppSchemaMockData {
 
-    public MultivaluedXlinkHrefClientPropertyMockData() {
+    public MultivaluedXlinkHrefMockData() {
         super(GML32_NAMESPACES);
     }
 
     @Override
     public void addContent() {
-        addFeatureType(GSML_PREFIX, "GeologicUnit", "MultivaluedXlinkHrefClientProperty.xml",
-                "MultivaluedXlinkHrefClientProperty.properties");
+        addFeatureType(GSML_PREFIX, "GeologicUnit", "MultivaluedXlinkHref.xml",
+                "MultivaluedXlinkHref.properties");
     }
 
 }

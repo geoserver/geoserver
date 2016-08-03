@@ -117,7 +117,7 @@ public class FeatureGML32Test extends AbstractAppSchemaTestSupport {
      * Test encoding of a multivalued mapping with an xlink:href ClientProperty.
      */
     @Test
-    public void testMultivaluedXlinkHrefClientProperty() {
+    public void testMultivaluedXlinkHref() {
         Document doc = getAsDOM(
                 "wfs?service=WFS&version=2.0.0&request=GetFeature&typenames=gsml:GeologicUnit");
         LOGGER.info("WFS GetFeature, typename=gsml:GeologicUnit response:\n" + prettyString(doc));

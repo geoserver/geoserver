@@ -13,11 +13,11 @@ import org.w3c.dom.Document;
  * 
  * @author Ben Caradoc-Davies (Transient Software Limited)
  */
-public class MultivaluedXlinkHrefClientPropertyTest extends AbstractAppSchemaTestSupport {
+public class MultivaluedXlinkHrefTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected MultivaluedXlinkHrefClientPropertyMockData createTestData() {
-        return new MultivaluedXlinkHrefClientPropertyMockData();
+    protected MultivaluedXlinkHrefMockData createTestData() {
+        return new MultivaluedXlinkHrefMockData();
     }
 
     /**

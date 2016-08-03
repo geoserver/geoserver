@@ -48,14 +48,12 @@ public class InitCommandResource extends CommandResource {
         if (attributes.containsKey(AUTHOR_NAME)) {
             // set the author name
             geogig.get().command(ConfigOp.class).setAction(CONFIG_SET).setScope(LOCAL)
-                    .setName("user.name")
-                    .setValue(attributes.get(AUTHOR_NAME).toString()).call();
+                    .setName("user.name").setValue(attributes.get(AUTHOR_NAME).toString()).call();
         }
         if (attributes.containsKey(AUTHOR_EMAIL)) {
             // set the author email
             geogig.get().command(ConfigOp.class).setAction(CONFIG_SET).setScope(LOCAL)
-                    .setName("user.email")
-                    .setValue(attributes.get(AUTHOR_EMAIL).toString()).call();
+                    .setName("user.email").setValue(attributes.get(AUTHOR_EMAIL).toString()).call();
         }
     }
 
@@ -63,7 +61,7 @@ public class InitCommandResource extends CommandResource {
         // repo was just created, need to register it with an ID in the manager
         // cretae a RepositoryInfo object
         RepositoryInfo repoInfo = new RepositoryInfo();
-        URI location = geogig.get().getRepository().getLocation();
+        URI location = geogig.get().getLocation();
         if ("file".equals(location.getScheme())) {
             // need the parent
             File parentDir = new File(location).getParentFile();

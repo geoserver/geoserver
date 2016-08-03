@@ -128,14 +128,14 @@ public class ConfigStoreTest {
     public void loadNull() throws Exception {
         thrown.expect(NullPointerException.class);
         thrown.expectMessage("null id");
-        store.load(null);
+        store.get(null);
     }
 
     @Test
     public void loadNonExistent() throws Exception {
         final String dummyId = "94bcb762-9ee9-4b43-a912-063509966989";
         try {
-            store.load(dummyId);
+            store.get(dummyId);
             fail("Expected FileNotFoundException");
         } catch (FileNotFoundException e) {
             assertTrue(e.getMessage().startsWith("File not found: "));
@@ -159,14 +159,14 @@ public class ConfigStoreTest {
         Resource resource = dataDir.get(path);
         Files.write(expected, resource.file(), Charsets.UTF_8);
 
-        RepositoryInfo info = store.load(dummyId);
+        RepositoryInfo info = store.get(dummyId);
         assertNotNull(info);
         assertEquals(dummyId, info.getId());
         assertEquals(new URI("file:/home/test/repo"), info.getLocation());
     }
 
     @Test
-    public void load() throws Exception {
+    public void get() throws Exception {
         final String dummyId = "94bcb762-9ee9-4b43-a912-063509966988";
         String expected = "<RepositoryInfo>"//
                 + "<id>" + dummyId + "</id>"//
@@ -177,7 +177,7 @@ public class ConfigStoreTest {
         Resource resource = dataDir.get(path);
         Files.write(expected, resource.file(), Charsets.UTF_8);
 
-        RepositoryInfo info = store.load(dummyId);
+        RepositoryInfo info = store.get(dummyId);
         assertNotNull(info);
         assertEquals(dummyId, info.getId());
         assertEquals(new URI("file:/home/test/repo"), info.getLocation());
@@ -198,7 +198,7 @@ public class ConfigStoreTest {
         Files.write(expected, resource.file(), Charsets.UTF_8);
         thrown.expect(IOException.class);
         thrown.expectMessage("Unable to load");
-        store.load(dummyId);
+        store.get(dummyId);
     }
 
     @Test
@@ -254,10 +254,10 @@ public class ConfigStoreTest {
         Resource resource = dataDir.get(path);
         Files.write(expected, resource.file(), Charsets.UTF_8);
 
-        assertNotNull(store.load(dummyId));
+        assertNotNull(store.get(dummyId));
         assertTrue(store.delete(dummyId));
         thrown.expect(FileNotFoundException.class);
-        assertNull(store.load(dummyId));
+        assertNull(store.get(dummyId));
     }
 
     @Test

@@ -1279,6 +1279,16 @@
       </dependencies>
    </profile>
    <profile>
+      <id>geogig</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-geogig</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+   </profile>
+   <profile>
       <id>wps-jdbc</id>
       <dependencies>
         <dependency>

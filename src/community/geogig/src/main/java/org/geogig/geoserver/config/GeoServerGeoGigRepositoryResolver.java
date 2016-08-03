@@ -4,17 +4,18 @@
  */
 package org.geogig.geoserver.config;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+
 import java.io.IOException;
 import java.net.URI;
 
 import org.locationtech.geogig.repository.Context;
-import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryConnectionException;
 import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.storage.ConfigDatabase;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 /**
@@ -23,6 +24,7 @@ import com.google.common.base.Strings;
 public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
 
     public static final String GEOSERVER_URI_SCHEME = "geoserver";
+
     public static final int SCHEME_LENGTH = GEOSERVER_URI_SCHEME.length() + "://".length();
 
     public static String getURI(String repoName) {
@@ -52,14 +54,12 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
 
     @Override
     public String getName(URI repoURI) {
-        Preconditions.checkArgument(canHandle(repoURI), "Not a GeoServer GeoGig repository URI: %s",
-                repoURI);
+        checkArgument(canHandle(repoURI), "Not a GeoServer GeoGig repository URI: %s", repoURI);
         // valid looking URI, strip the name part out and get everything after the scheme
         // "geoserver" and the "://"
         String name = repoURI.toString().substring(SCHEME_LENGTH);
         // if it's empty, they didn't provide a name or Id
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(name),
-                "No GeoGig repository Name or ID specified");
+        checkArgument(!Strings.isNullOrEmpty(name), "No GeoGig repository Name or ID specified");
         return name;
     }
 
@@ -82,11 +82,9 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
         try {
             RepositoryInfo info = repoMgr.getByRepoName(name);
             String repositoryId = info.getId();
-            GeoGIG gig = repoMgr.getRepository(repositoryId);
-            Repository repo = gig.getRepository();
-            if (!repo.isOpen()) {
-                repo.open();
-            }
+            Repository repo = repoMgr.getRepository(repositoryId);
+            checkState(repo.isOpen(), "RepositoryManager returned a closed repository for %s",
+                    name);
             return repo;
         } catch (IOException ioe) {
             // didn't find a repo

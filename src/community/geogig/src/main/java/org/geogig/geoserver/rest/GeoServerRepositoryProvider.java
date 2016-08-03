@@ -18,6 +18,7 @@ import org.geogig.geoserver.config.RepositoryManager;
 import org.locationtech.geogig.plumbing.ResolveGeogigURI;
 import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.Hints;
+import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.rest.RestletException;
 import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.restlet.data.Method;
@@ -84,12 +85,12 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
 
     @Override
     public void delete(Request request) {
-        Optional<GeoGIG> geogig = getGeogig(request);
+        Optional<Repository> geogig = getGeogig(request);
         Preconditions.checkState(geogig.isPresent(), "No repository to delete.");
 
         final String repositoryName = getStringAttribute(request, "repository");
         final String repoId = getRepoIdForName(repositoryName);
-        GeoGIG ggig = geogig.get();
+        Repository ggig = geogig.get();
         Optional<URI> repoUri = ggig.command(ResolveGeogigURI.class).call();
         Preconditions.checkState(repoUri.isPresent(), "No repository to delete.");
 
@@ -139,13 +140,13 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
     }
 
     @Override
-    public Optional<GeoGIG> getGeogig(Request request) {
+    public Optional<Repository> getGeogig(Request request) {
         Optional<String> repositoryName = getRepositoryName(request);
         if (!repositoryName.isPresent()) {
             return Optional.absent();
         }
         // look for one with the provided name first
-        Optional<GeoGIG> geogig = getGeogig(repositoryName.get());
+        Optional<Repository> geogig = getGeogig(repositoryName.get());
         if (!geogig.isPresent() && isInitRequest(request)) {
             // special handling of INIT requests
             geogig = InitRequestHandler.createGeoGIG(request);
@@ -159,12 +160,12 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         return geogig;
     }
 
-    public Optional<GeoGIG> getGeogig(String repositoryName) {
-        GeoGIG geogig = findRepository(repositoryName);
+    public Optional<Repository> getGeogig(String repositoryName) {
+        Repository geogig = findRepository(repositoryName);
         return Optional.fromNullable(geogig);
     }
 
-    private GeoGIG findRepository(String repositoryName) {
+    private Repository findRepository(String repositoryName) {
 
         RepositoryManager manager = RepositoryManager.get();
         String repoId = getRepoIdForName(repositoryName);

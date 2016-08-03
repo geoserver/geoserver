@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.Hints;
+import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.rest.RestletException;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -213,7 +214,8 @@ class InitRequestHandler {
                     // use the defaukt in PostgresConfigBean
                 }
             }
-            final String uri = bean.buildUriForRepo(UUID.randomUUID().toString()).toString();
+            final String uri = bean.buildUriForRepo(
+                    hints.get(Hints.REPOSITORY_NAME).get().toString()).toString();
             hints.set(Hints.REPOSITORY_URL, uri);
         }
     }
@@ -237,7 +239,7 @@ class InitRequestHandler {
         return hints;
     }
 
-    static Optional<GeoGIG> createGeoGIG(Request request) {
+    static Optional<Repository> createGeoGIG(Request request) {
         final Hints hints = INSTANCE.createHintsFromRequest(request);
         // now build the repo with the Hints
         return Optional.fromNullable(RepositoryManager.get().createRepo(hints));

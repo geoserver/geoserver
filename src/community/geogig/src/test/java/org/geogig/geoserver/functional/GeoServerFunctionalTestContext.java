@@ -37,6 +37,7 @@ import org.json.JSONObject;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.repository.GeoGIG;
+import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.web.api.TestData;
 import org.opengis.feature.Feature;
@@ -214,7 +215,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      * @return the repository
      */
     @Override
-    public GeoGIG getRepo(String name) {
+    public Repository getRepo(String name) {
         return repoProvider.getGeogig(name).orNull();
     }
 

@@ -109,12 +109,8 @@ class GeoGigRepositoryInfoFormComponent extends FormComponentPanel<RepositoryInf
                 case DropDownModel.PG_CONFIG:
                     // PG config used
                     PostgresConfigBean bean = pgPanel.getConvertedInput();
-                    // get the repsoitory ID from the URI, if it's already set
-                    String pgRepoId = modelObject.getLocation() != null ? 
-                            PostgresConfigBean.parseRepoId(modelObject.getLocation()) :
-                            UUID.randomUUID().toString();
                     // build a URI out of the config
-                    URI uri = bean.buildUriForRepo(pgRepoId);
+                    URI uri = bean.buildUriForRepo(repoName);
                     modelObject.setLocation(uri);
                     break;
                 case DropDownModel.DIRECTORY_CONFIG:

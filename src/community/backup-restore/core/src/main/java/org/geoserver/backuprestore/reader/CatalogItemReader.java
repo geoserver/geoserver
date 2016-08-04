@@ -4,20 +4,13 @@
  */
 package org.geoserver.backuprestore.reader;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.ValidationResult;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.Files;
 import org.opengis.filter.Filter;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.core.io.Resource;
 
 /**
@@ -32,8 +25,6 @@ public class CatalogItemReader<T> extends CatalogReader<T> {
 
     CloseableIterator<T> catalogIterator;
     
-    private Resource resource;
-
     public CatalogItemReader(Class<T> clazz, Backup backupFacade,
             XStreamPersisterFactory xStreamPersisterFactory) {
         super(clazz, backupFacade, xStreamPersisterFactory);
@@ -44,7 +35,7 @@ public class CatalogItemReader<T> extends CatalogReader<T> {
 
     @Override
     public void setResource(Resource resource) {
-        this.resource = resource;
+        // Nothing to do
     }
 
     @Override
@@ -57,14 +48,6 @@ public class CatalogItemReader<T> extends CatalogReader<T> {
         try {
             if (catalogIterator.hasNext()) {
                 T item = (T) catalogIterator.next();
-                
-                try {
-                    firePreRead(item);
-                } catch (IOException e) {
-                    logValidationExceptions((ValidationResult) null, new UnexpectedInputException(
-                            "Could not write data.  The file may be corrupt.", e));
-                }
-                
                 return item;
             }
         } catch (Exception e) {
@@ -74,18 +57,6 @@ public class CatalogItemReader<T> extends CatalogReader<T> {
         return null;
     }
 
-    protected void firePreRead(T item) throws IOException {
-        List<CatalogAdditionalResourcesReader> additionalResourceReaders = GeoServerExtensions
-                .extensions(CatalogAdditionalResourcesReader.class);
-
-        for (CatalogAdditionalResourcesReader rd : additionalResourceReaders) {
-            if (rd.canHandle(item)) {
-                rd.readAdditionalResources(backupFacade, Files.asResource(resource.getFile()),
-                        item);
-            }
-        }
-    }
-    
     @Override
     @SuppressWarnings("unchecked")
     protected void doOpen() throws Exception {

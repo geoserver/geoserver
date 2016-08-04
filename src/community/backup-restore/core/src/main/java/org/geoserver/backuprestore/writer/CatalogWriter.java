@@ -4,17 +4,23 @@
  */
 package org.geoserver.backuprestore.writer;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupRestoreItem;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Files;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStreamWriter;
 import org.springframework.batch.item.file.ResourceAwareItemWriterItemStream;
 import org.springframework.batch.item.util.ExecutionContextUserSupport;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -90,4 +96,16 @@ public abstract class CatalogWriter<T> extends BackupRestoreItem
         return xp.getClassAliasingMapper().serializedClass(clazz);
     }
 
+    @SuppressWarnings("unchecked")
+    protected void firePostWrite(T item, Resource resource) throws IOException {
+        List<CatalogAdditionalResourcesWriter> additionalResourceWriters = GeoServerExtensions
+                .extensions(CatalogAdditionalResourcesWriter.class);
+
+        for (CatalogAdditionalResourcesWriter wr : additionalResourceWriters) {
+            if (wr.canHandle(item)) {
+                wr.writeAdditionalResources(backupFacade, Files.asResource(resource.getFile()),
+                        item);
+            }
+        }
+    }
 }

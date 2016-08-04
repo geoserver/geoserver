@@ -4,11 +4,16 @@
  */
 package org.geoserver.backuprestore.reader;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupRestoreItem;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Files;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemCountAware;
 import org.springframework.batch.item.ItemReader;
@@ -20,6 +25,7 @@ import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
 import org.springframework.batch.item.util.ExecutionContextUserSupport;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -31,10 +37,10 @@ import org.springframework.util.ClassUtils;
  * @author Alessio Fabiani, GeoSolutions
  *
  */
+@SuppressWarnings({ "rawtypes" })
 public abstract class CatalogReader<T> extends BackupRestoreItem<T> implements ItemStream,
         ItemStreamReader<T>, ResourceAwareItemReaderItemStream<T>, InitializingBean {
 
-    @SuppressWarnings("rawtypes")
     protected Class clazz;
 
     public CatalogReader(Class<T> clazz, Backup backupFacade,
@@ -207,6 +213,19 @@ public abstract class CatalogReader<T> extends BackupRestoreItem<T> implements I
 
     }
 
+    @SuppressWarnings({ "unchecked" })
+    protected void firePostRead(T item, Resource resource) throws IOException {
+        List<CatalogAdditionalResourcesReader> additionalResourceReaders = GeoServerExtensions
+                .extensions(CatalogAdditionalResourcesReader.class);
+
+        for (CatalogAdditionalResourcesReader rd : additionalResourceReaders) {
+            if (rd.canHandle(item)) {
+                rd.readAdditionalResources(backupFacade, Files.asResource(resource.getFile()),
+                        item);
+            }
+        }
+    }
+    
     /**
      * Set the flag that determines whether to save internal data for {@link ExecutionContext}. Only switch this to false if you don't want to save
      * any state from this stream, and you don't need it to be restartable. Always set it to false if the reader is being used in a concurrent

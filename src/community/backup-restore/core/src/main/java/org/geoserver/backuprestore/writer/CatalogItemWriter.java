@@ -76,9 +76,14 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
         // Nothing to do.
     }
 
+    /**
+     * Setter for resource. Represents a file that can be written.
+     * 
+     * @param resource
+     */
     @Override
     public void setResource(Resource resource) {
-        // Nothing to do.
+        // Nothing to do
     }
 
 }

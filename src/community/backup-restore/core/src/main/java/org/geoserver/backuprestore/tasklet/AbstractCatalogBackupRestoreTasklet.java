@@ -37,7 +37,6 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.StoppableTasklet;
-import org.springframework.batch.core.step.tasklet.SystemCommandException;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -169,11 +168,22 @@ public abstract class AbstractCatalogBackupRestoreTasklet<T> extends BackupResto
                 return theTask.get();
             } else if (System.currentTimeMillis() - t0 > timeout) {
                 theTask.cancel(interruptOnCancel);
-                throw new SystemCommandException(
-                        "Execution of system command did not finish within the timeout");
-            } else if (execution.isTerminateOnly()) {
+
+                JobInterruptedException exception = new JobInterruptedException(
+                        "Job " + currentExecution
+                                + " did not finish within the timeout.");
+                logValidationExceptions((T) null, exception);
+
+                return RepeatStatus.FINISHED;
+            } else if (execution != null && execution.isTerminateOnly()) {
                 theTask.cancel(interruptOnCancel);
-                throw new JobInterruptedException("Job interrupted while executing.");
+
+                JobInterruptedException exception = new JobInterruptedException(
+                        "Job " + currentExecution
+                                + " interrupted while executing.");
+                logValidationExceptions((T) null, exception);
+
+                return RepeatStatus.FINISHED;
             } else if (stopped) {
                 theTask.cancel(interruptOnCancel);
                 contribution.setExitStatus(ExitStatus.STOPPED);

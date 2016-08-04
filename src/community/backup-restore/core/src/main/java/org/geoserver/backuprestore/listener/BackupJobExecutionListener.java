@@ -8,14 +8,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.BackupExecutionAdapter;
-import org.geoserver.backuprestore.BackupRestoreCallback;
 import org.geoserver.backuprestore.utils.BackupUtils;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
@@ -51,12 +48,6 @@ public class BackupJobExecutionListener implements JobExecutionListener {
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        // Acquire GeoServer Configuration Lock in READ mode
-        List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
-        for (BackupRestoreCallback callback : callbacks) {
-            callback.onBeginRequest(Backup.BACKUP_JOB_NAME);
-        }
-        
         if (backupFacade.getBackupExecutions().get(jobExecution.getId()) != null) {
             this.backupExecution = backupFacade.getBackupExecutions().get(jobExecution.getId());
         } else {
@@ -132,16 +123,6 @@ public class BackupJobExecutionListener implements JobExecutionListener {
                 throw new RuntimeException(e);
             } else {
                 this.backupExecution.addWarningExceptions(Arrays.asList(e));
-            }
-        } finally {
-            // Release locks on GeoServer Configuration:
-            try {
-                List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
-                for (BackupRestoreCallback callback : callbacks) {
-                    callback.onEndRequest();
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
             }
         }
     }

@@ -70,6 +70,7 @@
 	
 	    <batch:listeners>
 	        <!-- Any job specific listeners here -->
+	        <batch:listener ref="backupFacade" />
 	        <batch:listener ref="backupJobExecutionListener" />
 	    </batch:listeners>
     	
@@ -431,6 +432,7 @@
 	
 	    <batch:listeners>
 	        <!-- Any job specific listeners here -->
+	        <batch:listener ref="backupFacade" />
 	        <batch:listener ref="restoreJobExecutionListener" />
 	    </batch:listeners>
 

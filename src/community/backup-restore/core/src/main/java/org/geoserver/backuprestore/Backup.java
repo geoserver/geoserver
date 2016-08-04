@@ -7,6 +7,7 @@ package org.geoserver.backuprestore;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,6 +69,8 @@ public class Backup extends JobExecutionListenerSupport
 
     /* Job Parameters Keys **/
     public static final String PARAM_TIME = "time";
+    
+    public static final String PARAM_JOB_NAME = "job.execution.name";
 
     public static final String PARAM_OUTPUT_FILE_PATH = "output.file.path";
 
@@ -355,6 +358,7 @@ public class Backup extends JobExecutionListenerSupport
         }
 
         paramsBuilder
+                .addString(PARAM_JOB_NAME, BACKUP_JOB_NAME)
                 .addString(PARAM_OUTPUT_FILE_PATH,
                         BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
                 .addLong(PARAM_TIME, System.currentTimeMillis());
@@ -421,6 +425,7 @@ public class Backup extends JobExecutionListenerSupport
         }
 
         paramsBuilder
+                .addString(PARAM_JOB_NAME, RESTORE_JOB_NAME)
                 .addString(PARAM_INPUT_FILE_PATH,
                         BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
                 .addLong(PARAM_TIME, System.currentTimeMillis());
@@ -463,6 +468,28 @@ public class Backup extends JobExecutionListenerSupport
         }
     }
 
+    @Override
+    public void afterJob(JobExecution jobExecution) {
+        // Release locks on GeoServer Configuration:
+        try {
+            List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
+            for (BackupRestoreCallback callback : callbacks) {
+                callback.onEndRequest();
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
+        }
+    }
+
+    @Override
+    public void beforeJob(JobExecution jobExecution) {
+        // Acquire GeoServer Configuration Lock in READ mode
+        List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
+        for (BackupRestoreCallback callback : callbacks) {
+            callback.onBeginRequest(jobExecution.getJobParameters().getString(PARAM_JOB_NAME));
+        }
+    }
+
     /**
      * Stop a running Backup/Restore Execution
      * 
@@ -493,6 +520,16 @@ public class Backup extends JobExecutionListenerSupport
                     jobExecution.setEndTime(new Date());
                     jobRepository.update(jobExecution);
                 }
+            }
+            
+            // Release locks on GeoServer Configuration:
+            try {
+                List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
+                for (BackupRestoreCallback callback : callbacks) {
+                    callback.onEndRequest();
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
             }
         }
     }
@@ -539,6 +576,16 @@ public class Backup extends JobExecutionListenerSupport
                 jobExecution.setStatus(BatchStatus.ABANDONED);
                 jobExecution.setEndTime(new Date());
                 jobRepository.update(jobExecution);
+            }
+            
+            // Release locks on GeoServer Configuration:
+            try {
+                List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
+                for (BackupRestoreCallback callback : callbacks) {
+                    callback.onEndRequest();
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
             }
         }
     }

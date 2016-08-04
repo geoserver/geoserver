@@ -7,17 +7,14 @@ package org.geoserver.backuprestore.listener;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.backuprestore.Backup;
-import org.geoserver.backuprestore.BackupRestoreCallback;
 import org.geoserver.backuprestore.RestoreExecutionAdapter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Wrapper;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.CatalogImpl;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
@@ -47,12 +44,6 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        // Acquire GeoServer Configuration Lock in WRITE mode
-        List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
-        for (BackupRestoreCallback callback : callbacks) {
-            callback.onBeginRequest(Backup.RESTORE_JOB_NAME);
-        }
-
         // Prior starting the JobExecution, lets store a new empty GeoServer Catalog into the context.
         // It will be used to load the resources on a temporary in-memory configuration, which will be
         // swapped at the end of the Restore if everything goes well.
@@ -146,16 +137,6 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
                 throw new RuntimeException(e);
             } else {
                 this.restoreExecution.addWarningExceptions(Arrays.asList(e));
-            }
-        } finally {
-            // Release locks on GeoServer Configuration:
-            try {
-                List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
-                for (BackupRestoreCallback callback : callbacks) {
-                    callback.onEndRequest();
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Could not unlock GeoServer Catalog Configuration!", e);
             }
         }
     }

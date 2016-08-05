@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,13 +15,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.beanutils.ConstructorUtils;
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.config.util.XStreamPersister;
@@ -58,7 +61,7 @@ class ModificationProxyCloner {
      * copying the catalog, and re-attaching to it, in there)
      * 
      * @param source
-     * @return
+     *
      */
     static <T> T clone(T source) {
         // null?
@@ -140,7 +143,7 @@ class ModificationProxyCloner {
         Class<? extends CatalogInfo> sourceClass = object.getClass();
         Class result = CATALOGINFO_INTERFACE_CACHE.get(sourceClass);
         if(result == null) {
-            Class[] interfaces = sourceClass.getInterfaces();
+            List<Class<?>> interfaces = ClassUtils.getAllInterfaces(sourceClass);
             // collect only CatalogInfo related interfaces
             List<Class> cis = new ArrayList<Class>();
             for (Class clazz : interfaces) {
@@ -184,7 +187,7 @@ class ModificationProxyCloner {
      * @param source
      * @param deepCopy If true, a deep copy will be done, otherwise the cloned collection will
      *        contain the exact same objects as the source
-     * @return
+     *
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
@@ -194,7 +197,17 @@ class ModificationProxyCloner {
             // nothing to copy
             return null;
         }
-        Collection<T> copy = source.getClass().newInstance();
+        Collection<T> copy;
+        try {
+            copy = source.getClass().newInstance();
+        } catch (InstantiationException e) {
+            //we'll just pick something
+            if (source instanceof Set) {
+                copy = new HashSet<T>();
+            } else {
+                copy = new ArrayList<T>();
+            }
+        }
         if (deepCopy) {
             for (T object : source) {
                 T objectCopy = clone(object);
@@ -216,7 +229,7 @@ class ModificationProxyCloner {
      * @param source
      * @param deepCopy If true, a deep copy will be done, otherwise the cloned collection will
      *        contain the exact same objects as the source
-     * @return
+     *
      * @throws InstantiationException
      * @throws IllegalAccessException
      */

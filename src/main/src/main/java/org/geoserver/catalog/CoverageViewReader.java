@@ -194,12 +194,12 @@ public class CoverageViewReader implements GridCoverage2DReader {
                     for (CoverageBand band : coverageBands) {
                         if (storedDimensions != null && storedDimensions.size() > 0) {
                             CoverageDimensionInfo dimensionInfo = storedDimensions.get(band.getIndex());
-                            wrappedDims[i] = new WrappedSampleDimension((GridSampleDimension) dims[i],
+                            wrappedDims[i] = WrappedSampleDimension.build((GridSampleDimension) dims[i],
                                     dimensionInfo);
                         } else {
                             CoverageDimensionInfo dimensionInfo = new CoverageDimensionImpl();
                             dimensionInfo.setName(band.getDefinition());
-                            wrappedDims[i] = new WrappedSampleDimension((GridSampleDimension) dims[i],
+                            wrappedDims[i] = WrappedSampleDimension.build((GridSampleDimension) dims[i],
                                     dimensionInfo);
                         }
                         i++;

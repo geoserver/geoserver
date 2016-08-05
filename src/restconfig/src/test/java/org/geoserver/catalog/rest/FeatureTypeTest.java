@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -39,7 +39,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.MultiPolygon;
 
 public class FeatureTypeTest extends CatalogRESTTestSupport {
@@ -154,12 +154,12 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAllUnauthorized() throws Exception {
-        assertEquals( 405, putAsServletResponse("/rest/workspaces/sf/datastores/sf/featuretypes").getStatusCode() );
+        assertEquals( 405, putAsServletResponse("/rest/workspaces/sf/datastores/sf/featuretypes").getStatus() );
     }
     
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
-        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/sf/datastores/sf/featuretypes").getStatusCode() );
+        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/sf/datastores/sf/featuretypes").getStatus() );
     }
     
     @Test
@@ -186,7 +186,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/gs/datastores/pds/featuretypes/", xml, "text/xml");
         
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/datastores/pds/featuretypes/pdsa" ) );
         
@@ -221,7 +221,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =  
             postAsServletResponse( "/rest/workspaces/gs/datastores/pds/featuretypes/", json, "text/json");
         
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/datastores/pds/featuretypes/pdsa" ) );
         
@@ -240,7 +240,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/gs/datastores/pds/featuretypes/pdsa", xml, "text/xml");
-        assertEquals( 405, response.getStatusCode() );
+        assertEquals( 405, response.getStatus() );
     }
     
     @Test
@@ -301,33 +301,33 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         
         // First request should thrown an exception
         MockHttpServletResponse response = getAsServletResponse(requestPath);
-        assertEquals(404, response.getStatusCode());
-        assertTrue(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
                 exception));
         
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
-        assertEquals(404, response.getStatusCode());
-        assertFalse(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
                 exception));
         // No exception thrown
-        assertTrue(response.getOutputStreamContent().isEmpty());
+        assertTrue(response.getContentAsString().isEmpty());
         
         // CASE 2: datastore set
         
         // First request should thrown an exception
         response = getAsServletResponse(requestPath2);
-        assertEquals(404, response.getStatusCode());
-        assertTrue(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
                 exception2));
         
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
-        assertEquals(404, response.getStatusCode());
-        assertFalse(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
                 exception2));
         // No exception thrown
-        assertTrue(response.getOutputStreamContent().isEmpty());
+        assertTrue(response.getContentAsString().isEmpty());
     }
     
     @Test
@@ -338,13 +338,42 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
           "</featureType>";
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature", xml, "text/xml");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         Document dom = getAsDOM("/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.xml");
         assertXpathEvaluatesTo("new title", "/featureType/title", dom );
         
         FeatureTypeInfo ft = catalog.getFeatureTypeByName( "sf", "PrimitiveGeoFeature");
         assertEquals( "new title", ft.getTitle() );
+    }
+    
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        FeatureTypeInfo ft = catalog.getFeatureTypeByName( "sf", "PrimitiveGeoFeature");
+        assertTrue(ft.isEnabled());
+        boolean isAdvertised = ft.isAdvertised();
+        int maxFeatures = ft.getMaxFeatures();
+        int numDecimals = ft.getNumDecimals();
+        boolean isOverridingServiceSRS = ft.isOverridingServiceSRS();
+        boolean getSkipNumberMatched = ft.getSkipNumberMatched();
+        boolean isCircularArcPresent = ft.isCircularArcPresent();
+        
+        String xml = 
+          "<featureType>" + 
+            "<title>new title</title>" +  
+          "</featureType>";
+        MockHttpServletResponse response = 
+            putAsServletResponse("/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature", xml, "text/xml");
+        assertEquals( 200, response.getStatus() );
+        
+        ft = catalog.getFeatureTypeByName( "sf", "PrimitiveGeoFeature");
+        assertTrue(ft.isEnabled());
+        assertEquals(isAdvertised, ft.isAdvertised());
+        assertEquals(maxFeatures, ft.getMaxFeatures());
+        assertEquals(numDecimals, ft.getNumDecimals());
+        assertEquals(isOverridingServiceSRS, ft.isOverridingServiceSRS());
+        assertEquals(getSkipNumberMatched, ft.getSkipNumberMatched());
+        assertEquals(isCircularArcPresent, ft.isCircularArcPresent());
     }
     
     /**
@@ -373,8 +402,8 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         String path = "/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature";
         MockHttpServletResponse response =
                 putAsServletResponse(path, clearLatLonBoundingBox, "text/xml");
-        assertEquals("Couldn't remove lat/lon bounding box:\n" + response.getOutputStreamContent(),
-                200, response.getStatusCode());
+        assertEquals("Couldn't remove lat/lon bounding box:\n" + response.getContentAsString(),
+                200, response.getStatus());
 
         Document dom = getAsDOM(path + ".xml");
         assertXpathEvaluatesTo("0.0", "/featureType/latLonBoundingBox/minx", dom);
@@ -397,8 +426,8 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
               + "</featureType>";
                      
         response = putAsServletResponse(path + ".xml", updateNativeBounds, "text/xml");
-        assertEquals("Couldn't update native bounding box: \n" + response.getOutputStreamContent(),
-                200, response.getStatusCode());
+        assertEquals("Couldn't update native bounding box: \n" + response.getContentAsString(),
+                200, response.getStatus());
         dom = getAsDOM(path + ".xml");
         print(dom);
         assertXpathExists("/featureType/latLonBoundingBox/minx[text()!='0.0']", dom);
@@ -416,7 +445,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
             "</featureType>";
           MockHttpServletResponse response = 
               putAsServletResponse("/rest/workspaces/sf/datastores/sf/featuretypes/NonExistant", xml, "text/xml");
-          assertEquals( 404, response.getStatusCode() );
+          assertEquals( 404, response.getStatus() );
     }
    
     @Test
@@ -431,7 +460,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
             catalog.remove(l);
         }
         assertEquals( 200,  
-            deleteAsServletResponse( "/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature").getStatusCode());
+            deleteAsServletResponse( "/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature").getStatus());
         assertNull( catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
         
         if( catalog.getResourcePool().getFeatureTypeAttributeCache().containsKey( featureTypeId ) ){
@@ -448,7 +477,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
     @Test
     public void testDeleteNonExistant() throws Exception {
         assertEquals( 404,  
-            deleteAsServletResponse( "/rest/workspaces/sf/datastores/sf/featuretypes/NonExistant").getStatusCode());
+            deleteAsServletResponse( "/rest/workspaces/sf/datastores/sf/featuretypes/NonExistant").getStatus());
     }
     
     @Test
@@ -457,9 +486,9 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getLayerByName("sf:PrimitiveGeoFeature"));
         
         assertEquals(403, deleteAsServletResponse( 
-            "/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature").getStatusCode());
+        "/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature").getStatus());
         assertEquals( 200, deleteAsServletResponse( 
-            "/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature?recurse=true").getStatusCode());
+        "/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature?recurse=true").getStatus());
 
         assertNull(catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
         assertNull(catalog.getLayerByName("sf:PrimitiveGeoFeature"));
@@ -476,7 +505,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         
       MockHttpServletResponse response = 
           postAsServletResponse("/rest/workspaces/gs/datastores/ngpds/featuretypes", xml, "text/xml");
-      assertEquals( 201, response.getStatusCode() );
+      assertEquals( 201, response.getStatus() );
       assertNotNull( response.getHeader( "Location") );
       assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/datastores/ngpds/featuretypes/ngpdsa" ) );
     }
@@ -510,7 +539,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             postAsServletResponse("/rest/workspaces/cite/datastores/default/featuretypes", xml, "text/xml");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/cite/datastores/default/featuretypes/states" ) );
         
@@ -536,7 +565,7 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/gs/datastores/pds/featuretypes", xml, "text/xml");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
 
         FeatureTypeInfo ft = catalog.getFeatureTypeByName("gs", "pdsa");
         assertNotNull(ft);

@@ -68,7 +68,7 @@ public interface WCSInfo extends ServiceInfo {
     
     /**
      * Enables the use of subsampling
-     * @return
+     *
      */
     boolean isSubsamplingEnabled();
     

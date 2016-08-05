@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,7 +7,7 @@ package org.geoserver.wps.web;
 
 import java.util.Collections;
 
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.impl.ServiceInfoImpl;
@@ -40,7 +40,10 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         // print(tester.getLastRenderedPage(), true, true);
 
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
-        
+        wps.setMaxAsynchronousTotalTime(6000);
+        wps.setMaxSynchronousTotalTime(120);
+        getGeoServer().save(wps);
+
         // test that components have been filled as expected
         tester.assertComponent("form:keywords", KeywordsEditor.class);
         tester.assertModelValue("form:keywords", wps.getKeywords());
@@ -48,6 +51,26 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         tester.assertModelValue("form:maxAsynchronousProcesses:", 16);
         tester.assertModelValue("form:maxSynchronousExecutionTime:", 60);
         tester.assertModelValue("form:maxAsynchronousExecutionTime:", 600);
+        tester.assertModelValue("form:maxSynchronousTotalTime:", 120);
+        tester.assertModelValue("form:maxAsynchronousTotalTime:", 6000);
+
+    }
+
+    @Test
+    public void testUpgrade() throws Exception {
+        login();
+        
+        // start the page
+        tester.startPage(new WPSAdminPage());
+
+        WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+        getGeoServer().save(wps);
+
+        // test that components have been filled as expected
+        tester.assertModelValue("form:maxSynchronousExecutionTime:", 60);
+        tester.assertModelValue("form:maxAsynchronousExecutionTime:", 600);
+        tester.assertModelValue("form:maxSynchronousTotalTime:", 60);
+        tester.assertModelValue("form:maxAsynchronousTotalTime:", 600);
 
     }
 
@@ -66,7 +89,7 @@ public class WPSAdminPageTest extends WPSPagesTestSupport {
         // start the page with the custom workspace
         login();
         tester.startPage(WPSAdminPage.class,
-                new PageParameters(Collections.singletonMap("workspace", defaultWs.getName())));
+                new PageParameters().add("workspace", defaultWs.getName()));
         // print(tester.getLastRenderedPage(), true, true, true);
 
         // test that components have been filled as expected

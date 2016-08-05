@@ -30,7 +30,7 @@ public class AccessLimits implements Serializable {
     /**
      * The catalog mode for this layer
      * 
-     * @return
+     *
      */
     public CatalogMode getMode() {
         return mode;

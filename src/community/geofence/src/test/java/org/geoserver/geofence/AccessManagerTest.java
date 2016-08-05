@@ -1,24 +1,26 @@
+/* (c) 2013-2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.geofence;
 
-import java.util.Arrays;
+import java.util.*;
 
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.DataStoreInfoImpl;
-import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
-import org.geoserver.catalog.impl.LayerInfoImpl;
-import org.geoserver.catalog.impl.WorkspaceInfoImpl;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.geoserver.catalog.*;
+import org.geoserver.catalog.impl.*;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WorkspaceAccessLimits;
+import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -26,6 +28,10 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
 import org.junit.Test;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.RequestContextListener;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 
 public class AccessManagerTest extends GeofenceBaseTest
@@ -220,7 +226,6 @@ public class AccessManagerTest extends GeofenceBaseTest
      * This test is very similar to testAreaLimited(), but the source resource is set to have the 900913 SRS.
      * We expect that the allowedarea is projected into the resource CRS.
      *
-     * @throws Exception
      */
     public void testArea900913() throws Exception
     {
@@ -255,5 +260,41 @@ public class AccessManagerTest extends GeofenceBaseTest
 
         assertEquals(filter, vl.getReadFilter());
         assertEquals(filter, vl.getWriteFilter());
+    }
+
+    @Test
+    public void testWmsGetMapRequestWithLayerGroupAndNormalLayerAndStyles() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        List<PublishedInfo> layers = new ArrayList<>();
+        layers.add(getCatalog().getLayerByName("Buildings"));
+        layers.add(getCatalog().getLayerByName("DividedRoutes"));
+        List<StyleInfo> styles = new ArrayList<>();
+        styles.add(getCatalog().getLayerByName("Buildings").getDefaultStyle());
+        styles.add(getCatalog().getLayerByName("DividedRoutes").getDefaultStyle());
+        LayerGroupInfoImpl layerGroup = new LayerGroupInfoImpl();
+        layerGroup.setName("layer_group");
+        layerGroup.setLayers(layers);
+        layerGroup.setStyles(styles);
+        getCatalog().add(layerGroup);
+        Map kvp = new HashMap<>();
+        kvp.put("LAYERS", "layer_group,Bridges");
+        kvp.put("layers", "layer_group,Bridges");
+        kvp.put("STYLES", ",lines");
+        Request gsRequest = new Request();
+        gsRequest.setKvp(kvp);
+        gsRequest.setRawKvp(kvp);
+        String service = "WMS";
+        String requestName = "GetMap";
+        Authentication user = new UsernamePasswordAuthenticationToken("admin", "geoserver", Arrays.asList(
+                new GrantedAuthority[] { new SimpleGrantedAuthority("ROLE_ADMINISTRATOR") } ));
+        SecurityContextHolder.getContext().setAuthentication(user);
+        List<MapLayerInfo> mapLayersInfos = new ArrayList<>();
+        mapLayersInfos.add(new MapLayerInfo(getCatalog().getLayerByName("Buildings")));
+        mapLayersInfos.add(new MapLayerInfo(getCatalog().getLayerByName("DividedRoutes")));
+        mapLayersInfos.add(new MapLayerInfo(getCatalog().getLayerByName("Bridges")));
+        GetMapRequest getMap = new GetMapRequest();
+        getMap.setLayers(mapLayersInfos);
+        accessManager.overrideGetMapRequest(gsRequest, service, requestName, user, getMap);
     }
 }

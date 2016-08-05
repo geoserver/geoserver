@@ -14,7 +14,7 @@ import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import net.opengis.wcs20.GetCoverageType;
 import net.opengis.wcs20.InterpolationType;

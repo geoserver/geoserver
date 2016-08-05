@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,7 +8,9 @@ package org.geoserver.script.js;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
@@ -97,10 +99,21 @@ public class JavaScriptPluginTest extends ScriptIntTestSupport {
         Object result = engine.eval("require('geoserver/catalog').namespaces");
         assertTrue(result instanceof NativeArray);
         NativeArray array = (NativeArray) result;
-        assertEquals("correct number of namespaces", 5, array.getLength());
-        Scriptable obj = (Scriptable) array.get(0);
-        assertEquals("first namespace alias", "cite", obj.get("alias", obj));
-        assertEquals("first namespace uri", "http://www.opengis.net/cite", obj.get("uri", obj));
+        assertEquals("incorrect number of namespaces", 5, array.getLength());
+        @SuppressWarnings("serial")
+        Map<String, String> expectedNamespaces = new HashMap<String, String>() {{
+            put("cdf", "http://www.opengis.net/cite/data");
+            put("cgf", "http://www.opengis.net/cite/geometry");
+            put("cite", "http://www.opengis.net/cite");
+            put("gs", "http://geoserver.org");
+            put("sf", "http://cite.opengeospatial.org/gmlsf");
+        }};
+        Map<String, String> actualNamespaces = new HashMap<String, String>();
+        for (Object o : array) {
+            Scriptable s = (Scriptable) o;
+            actualNamespaces.put((String) s.get("alias", s), (String) s.get("uri", s));
+        }
+        assertEquals("unexpected namespaces", expectedNamespaces, actualNamespaces);
     }
 
     /**

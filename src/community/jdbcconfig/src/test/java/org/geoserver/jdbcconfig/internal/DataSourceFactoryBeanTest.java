@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.easymock.classextension.EasyMock;
+import org.geoserver.jdbcloader.DataSourceFactoryBean;
 import org.junit.Test;
 
 import com.google.common.base.Optional;
@@ -121,7 +122,6 @@ public class DataSourceFactoryBeanTest {
 
     /**
      * If JNDI lookup fails, fall back to properties file
-     * @throws Exception
      */
     @Test
     public void testJNDIFail() throws Exception {

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,6 +18,7 @@ import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.IllegalAttributeException;
 import org.geotools.feature.SchemaException;
+import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.spatial.ReprojectingFilterVisitor;
@@ -33,6 +34,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.MathTransform2D;
 import org.opengis.referencing.operation.OperationNotFoundException;
 import org.opengis.referencing.operation.TransformException;
@@ -56,7 +58,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author Justin Deoliveira, The Open Planning Project
  * 
  */
-public class ReprojectingFeatureCollection extends DecoratingFeatureCollection {
+public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollection {
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2(null);
     
     /**
@@ -101,7 +103,7 @@ public class ReprojectingFeatureCollection extends DecoratingFeatureCollection {
         CoordinateReferenceSystem source = delegate.getSchema().getCoordinateReferenceSystem();
 
         if (source != null) {
-            MathTransform2D tx = (MathTransform2D) ReferencingFactoryFinder
+            MathTransform tx = ReferencingFactoryFinder
                     .getCoordinateOperationFactory(hints).createOperation(source, target)
                     .getMathTransform();
 

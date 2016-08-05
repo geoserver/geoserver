@@ -48,7 +48,7 @@ public abstract class NameSpaceTranslator {
      * @param prefix The prefix for which this tranlator will tranlate.
      * A null prefix will affect the NameSpaceElements returned by the
      * access methods.
-     * @see NameSpaceElement(String)
+     * @see #NameSpaceElement(String)
      */
     public NameSpaceTranslator(String prefix) {
         this.prefix = prefix;
@@ -94,7 +94,7 @@ public abstract class NameSpaceTranslator {
      * </p>
      * @param type String the class to attempt to find related elements for.
      * @return Set a set of associated NameSpaceElements
-     * @see String.indexOf(String)
+     * @see String#indexOf(String)
      */
     public Set getAssociatedTypes(String type) {
         if (type == null) {

@@ -17,12 +17,12 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.commons.lang.SystemUtils;
+import org.geoserver.data.util.IOUtils;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resources;
 
 /**
  * Generic file translator getting a set of options, an input file, and an output file
@@ -65,15 +65,15 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
     public void apply(ImportTask task, ImportData data) throws Exception {
         boolean inline = isInline();
         File executable = getExecutable();
-        Resource inputFile = getInputFile(data);
+        File inputFile = getInputFile(data);
         Map<String, File> substitutions = new HashMap<>();
-        substitutions.put("input", inputFile.file());
-        Resource outputDirectory = null;
-        Resource outputFile = null;
+        substitutions.put("input", inputFile);
+        File outputDirectory = null;
+        File outputFile = null;
         if (!inline) {
             outputDirectory = getOutputDirectory(data);
-            outputFile = outputDirectory.get(inputFile.name());
-            substitutions.put("output", outputFile.file());
+            outputFile = new File(outputDirectory, inputFile.getName());
+            substitutions.put("output", outputFile);
         }
 
 
@@ -114,21 +114,21 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
             // if not inline, replace inputs with output
             if (!inline) {
                 List<String> names = getReplacementTargetNames(data);
-                Resource inputParent = inputFile.parent();
+                File inputParent = inputFile.getParentFile();
                 for (String name : names) {
-                    Resource output = outputDirectory.get(name);
-                    Resource input = inputParent.get(name);
-                    if (Resources.exists(output)) {
+                    File output = new File(outputDirectory, name);
+                    File input = new File(inputParent, name);
+                    if (output.exists()) {
                         // uses atomic rename on *nix, delete and copy on Windows
-                        output.renameTo(input);
-                    } else if (Resources.exists(input)) {
+                        IOUtils.rename(output, input);
+                    } else if (input.exists()) {
                         input.delete();
                     }
                 }
             }
         } finally {
             if (outputDirectory != null) {
-                outputDirectory.delete();
+                FileUtils.deleteQuietly(outputDirectory);
             }
         }
     }
@@ -174,26 +174,26 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
      * Returns the list of options to be passed the executable to test its availability and ability
      * to run. e.g. "--help"
      * 
-     * @return
+     *
      */
     protected abstract List<String> getAvailabilityTestOptions();
 
     protected void setupCommandLine(boolean inline, CommandLine cmd) {
         for (String option : options) {
-            cmd.addArgument(option);
+            cmd.addArgument(option, false);
         }
 
         // setup input and output files
         if (inline) {
-            cmd.addArgument("${input}");
+            cmd.addArgument("${input}", false);
         } else {
 
             if (isOutputAfterInput()) {
-                cmd.addArgument("${input}");
-                cmd.addArgument("${output}");
+                cmd.addArgument("${input}", false);
+                cmd.addArgument("${output}", false);
             } else {
-                cmd.addArgument("${output}");
-                cmd.addArgument("${input}");
+                cmd.addArgument("${output}", false);
+                cmd.addArgument("${input}", false);
             }
         }
     }
@@ -203,7 +203,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
      * the output is made of several files)
      * 
      * @param data
-     * @return
+     *
      * @throws IOException
      */
     protected abstract List<String> getReplacementTargetNames(ImportData data) throws IOException;
@@ -211,7 +211,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
     /**
      * Returns true if the command line manipulates the input file directly
      * 
-     * @return
+     *
      */
     protected boolean isInline() {
         return false;
@@ -221,7 +221,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
      * Returns true if in the command line the output file comes after the input one. The default
      * implementation returns true
      * 
-     * @return
+     *
      */
     protected boolean isOutputAfterInput() {
         return true;
@@ -231,23 +231,26 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
      * The command input file
      * 
      * @param data
-     * @return
+     *
      * @throws IOException
      */
-    protected abstract Resource getInputFile(ImportData data) throws IOException;
+    protected abstract File getInputFile(ImportData data) throws IOException;
 
     /**
      * The directory used for outputs, by default, a subdirectory of the input file parent
      * 
      * @param data
-     * @return
+     *
      * @throws IOException
      */
-    protected Resource getOutputDirectory(ImportData data) throws IOException {
-        Resource input = getInputFile(data);
-        Resource parent = input.parent();
-        Resource tempFile = Resources.createRandom("tmp", null, parent);
+    protected File getOutputDirectory(ImportData data) throws IOException {
+        File input = getInputFile(data);
+        File parent = input.getParentFile();
+        File tempFile = File.createTempFile("tmp", null, parent);
         tempFile.delete();
+        if (!tempFile.mkdir()) {
+            throw new IOException("Could not create work directory " + tempFile.getAbsolutePath());
+        }
 
         return tempFile;
     }
@@ -255,7 +258,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
     /**
      * Implementors must provide the executable to be run
      * 
-     * @return
+     *
      */
     protected abstract File getExecutable() throws IOException;
 
@@ -264,7 +267,7 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform imp
      * the searched file name
      * 
      * @param name
-     * @return
+     *
      * @throws IOException
      */
     protected File getExecutableFromPath(String name) throws IOException {

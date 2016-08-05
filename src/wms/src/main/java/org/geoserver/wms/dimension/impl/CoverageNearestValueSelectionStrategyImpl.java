@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -56,8 +56,8 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
     
 
     @Override
-    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName,
-            DimensionInfo dimension, Class<T> clz) {    
+    public Object getDefaultValue(ResourceInfo resource, String dimensionName,
+            DimensionInfo dimension, Class clz) {    
         Object retval = null;
         try {
             GridCoverage2DReader reader = (GridCoverage2DReader) ((CoverageInfo) resource)

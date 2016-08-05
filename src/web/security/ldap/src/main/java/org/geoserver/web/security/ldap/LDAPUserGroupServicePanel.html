@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+    <ul class="leftwise">
+      <li>
+        <fieldset>
+          <legend>
+            <span><wicket:message key="ldapSettings"></wicket:message></span>
+          </legend>
+          <ul>
+            <li>
+              <label for="serverURL"><wicket:message key="serverURL"></wicket:message></label>
+              <input id="serverURL" wicket:id="serverURL" type="text" class="text"></input>
+            </li>
+            
+            <li>
+              <input id="useTLS" wicket:id="useTLS" type="checkbox" class="field checkbox"></input>
+              <label for="useTLS" class="choice"><wicket:message key="useTLS"></wicket:message></label>
+            </li>
+          </ul>
+        </fieldset>
+      </li>
+      <li>
+        <fieldset>  
+          <legend>
+            <span><wicket:message key="groupsOptions"></wicket:message></span>
+          </legend>
+          <ul>
+			  <li>
+			    <label for="groupSearchBase"><wicket:message key="groupSearchBase"></wicket:message></label>
+			    <input id="groupSearchBase" wicket:id="groupSearchBase" type="text" class="text"></input>
+			  </li>			  
+              <li>
+                <label for="allGroupsSearchFilter"><wicket:message key="allGroupsSearchFilter"></wicket:message></label>
+                <input id="allGroupsSearchFilter" wicket:id="allGroupsSearchFilter" type="text" class="text"></input>
+              </li>
+			  <li>
+	            <label for="groupFilter"><wicket:message key="groupNameFilter"></wicket:message></label>
+	            <input id="groupFilter" wicket:id="groupFilter" type="text" class="text"></input>
+	          </li>
+              <li>
+                <label for="groupNameAttribute"><wicket:message key="groupNameAttribute"></wicket:message></label>
+                <input id="groupNameAttribute" wicket:id="groupNameAttribute" type="text" class="text"></input>
+              </li>
+	      </ul>
+	    </fieldset>
+	  </li>
+	   <li>
+        <fieldset>  
+          <legend>
+            <span><wicket:message key="membershipOptions"></wicket:message></span>
+          </legend>
+          <ul>
+              <li>
+                <label for="groupSearchFilter"><wicket:message key="groupMembershipFilter"></wicket:message></label>
+                <input id="groupSearchFilter" wicket:id="groupSearchFilter" type="text" class="text"></input>
+              </li>
+              <li>
+                <label for="groupMembershipAttribute"><wicket:message key="groupMembershipAttribute"></wicket:message></label>
+                <input id="groupMembershipAttribute" wicket:id="groupMembershipAttribute" type="text" class="text"></input>
+              </li>
+          </ul>
+        </fieldset>
+      </li>
+	  <li>
+	    <fieldset>
+          <legend>
+            <span><wicket:message key="usersOptions"></wicket:message></span>
+          </legend>	      
+	      <ul>	      
+              <li>
+                <label for="userSearchBase"><wicket:message key="userSearchBase"></wicket:message></label>
+                <input id="userSearchBase" wicket:id="userSearchBase" type="text" class="text"></input>
+              </li>              
+              <li>
+                <label for="allUsersSearchFilter"><wicket:message key="allUsersSearchFilter"></wicket:message></label>
+                <input id="allUsersSearchFilter" wicket:id="allUsersSearchFilter" type="text" class="text"></input>
+              </li>
+              <li>
+                <label for="userFilter"><wicket:message key="userNameFilter"></wicket:message></label>
+                <input id="userFilter" wicket:id="userFilter" type="text" class="text"></input>
+              </li>
+              <li>
+                <label for="userNameAttribute"><wicket:message key="userNameAttribute"></wicket:message></label>
+                <input id="userNameAttribute" wicket:id="userNameAttribute" type="text" class="text"></input>
+              </li>   
+              <li>
+                <label for="populatedAttributes"><wicket:message key="populatedAttributes"></wicket:message></label>
+                <input id="populatedAttributes" wicket:id="populatedAttributes" type="text" class="text"></input>
+              </li>   
+          </ul>
+        </fieldset>
+      </li>
+      <li>
+         <fieldset>
+          <legend>
+            <span><wicket:message key="authentication"></wicket:message></span>
+          </legend>
+          <ul>
+           <li>
+            <input id="bindBeforeGroupSearch" wicket:id="bindBeforeGroupSearch" type="checkbox" class="field checkbox"></input>
+            <label for="bindBeforeGroupSearch" class="choice">
+              <wicket:message key=needLdapBind></wicket:message>
+            </label>
+           </li>
+           <li>
+              <div wicket:id="authenticationPanel">
+                <ul>
+				   <li>
+				     <label for="user"><wicket:message key="user"></wicket:message></label>
+				     <input id="user" wicket:id="user" type="text"></input>
+				   </li>
+				   <li>
+				     <label for="password"><wicket:message key="password"></wicket:message></label>
+				     <input id="password" wicket:id="password" type="password"></input>
+				   </li>
+			   </ul>
+              </div>
+           </li>
+          </ul>
+         </fieldset>
+      </li>
+    </ul>
+</wicket:extend>
+</body>
+</html>

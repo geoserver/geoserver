@@ -10,7 +10,7 @@ Grid misalignment
 
 Sometimes errors will occur when requesting data from GeoWebCache endpoints.  The error displayed might say that the "resolution is not supported" or the "bounds do not align."  This is due to the client making WMS requests that do not align with the grid of tiles that GeoWebCache has created, such as differing map bounds or layer bounds, or an unsupported resolution.  If you are using OpenLayers as a client, looking at the source code of the included demos may provide more clues to matching up the grid.
 
-An alternative workaround is to enable direct WMS integration with the GeoServer WMS.  You can set this on the :ref:`webadmin_tilecaching_defaults` page.
+An alternative workaround is to enable direct WMS integration with the GeoServer WMS.  You can set this on the :ref:`gwc_webadmin_defaults` page.
 
 
 Direct WMS integration

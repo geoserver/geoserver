@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -30,8 +30,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class ImportResourceTest extends ImporterTestSupport {
 
@@ -80,7 +80,7 @@ public class ImportResourceTest extends ImporterTestSupport {
     public void testGetNonExistantImport() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(("/rest/imports/9999"));
         
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertEquals("Shapefile", source.getString("format"));
         
         ImportContext context = importer.getContext(0);
-        assertEquals(((Directory)context.getData()).getFile().path(), 
+        assertEquals(((Directory)context.getData()).getFile().getPath(), 
             source.getString("location"));
         
         JSONArray files = source.getJSONArray("files");
@@ -142,7 +142,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertEquals("GeoTIFF", source.getString("format"));
         
         ImportContext context = importer.getContext(1);
-        assertEquals(((SpatialFile)context.getTasks().get(0).getData()).getFile().parent().path(), 
+        assertEquals(((SpatialFile)context.getTasks().get(0).getData()).getFile().getParentFile().getPath(), 
             source.getString("location"));
 
         assertEquals("EmissiveCampania.tif", source.getString("file"));
@@ -195,7 +195,7 @@ public class ImportResourceTest extends ImporterTestSupport {
     public void testPost() throws Exception {
         
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports", "");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         assertNotNull( resp.getHeader( "Location") );
 
         int id = lastId();
@@ -212,10 +212,10 @@ public class ImportResourceTest extends ImporterTestSupport {
     public void testPutWithId() throws Exception {
         // propose a new import id
         MockHttpServletResponse resp = putAsServletResponse("/rest/imports/8675309");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
 
         resp = getAsServletResponse("/rest/imports/8675309");
-        assertEquals(200, resp.getStatusCode());
+        assertEquals(200, resp.getStatus());
         JSONObject json = (JSONObject) json(resp);
         JSONObject imprt = json.getJSONObject("import");
         
@@ -223,20 +223,20 @@ public class ImportResourceTest extends ImporterTestSupport {
         
         // now propose a new one that is less than the earlier
         resp = putAsServletResponse("/rest/imports/8675000");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         // it should be one more than the latest
         assertTrue(resp.getHeader("Location").endsWith("/rest/imports/8675310"));
         
         // and just make sure the other parts work
         resp = getAsServletResponse("/rest/imports/8675310");
-        assertEquals(200, resp.getStatusCode());
+        assertEquals(200, resp.getStatus());
         json = (JSONObject) json(resp);
         imprt = json.getJSONObject("import");
         assertEquals(8675310, imprt.getInt("id"));
 
         // now a normal request - make sure it continues the sequence
         resp = postAsServletResponse("/rest/imports/", "");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         assertNotNull( resp.getHeader( "Location") );
         assertTrue(resp.getHeader("Location").endsWith( "/imports/8675311"));
     }
@@ -262,7 +262,7 @@ public class ImportResourceTest extends ImporterTestSupport {
             "}";
         
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports", json, "application/json");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         assertNotNull( resp.getHeader( "Location") );
 
         int id = lastId();
@@ -279,20 +279,20 @@ public class ImportResourceTest extends ImporterTestSupport {
     private MockHttpServletResponse postAsServletResponseNoContentType(String path, String body) throws Exception {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("POST");
-        request.setBodyContent(body);
+        request.setContent(body.getBytes("UTF-8"));
         return dispatch(request);
     }
 
     @Test
     public void testPostNoMediaType() throws Exception {
         MockHttpServletResponse resp = postAsServletResponseNoContentType("/rest/imports", "");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
     }
 
     @Test
     public void testImportSessionIdNotInt() throws Exception {
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports/foo", "");
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
     }
 
     @Test
@@ -302,7 +302,7 @@ public class ImportResourceTest extends ImporterTestSupport {
 
         MockHttpServletRequest req = createRequest("/rest/imports/0");
         req.setMethod("GET");
-        req.setHeader("Accept", "text/html");
+        req.addHeader("Accept", "text/html");
 
         res = dispatch(req);
         assertEquals("text/html", res.getContentType());

@@ -120,7 +120,7 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
 
     /**
      * The exception occurred during the last attempt to load the quota store, if any
-     * @return
+     *
      */
     public Exception getException() {
         return exception;

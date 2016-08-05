@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,6 +12,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -65,7 +66,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo(UNIT_SYMBOL, "//wms:Layer/wms:Dimension/@unitSymbol", dom);
         // check we have the extent
         assertXpathEvaluatesTo("elevation", "//wms:Layer/wms:Dimension/@name", dom);
-        assertXpathEvaluatesTo("0.0", "//wms:Layer/wms:Dimension/@default", dom);
+        assertXpathEvaluatesTo("0", "//wms:Layer/wms:Dimension/@default", dom);
         // and that it is empty
         assertXpathEvaluatesTo("", "//wms:Layer/wms:Dimension", dom);
     }
@@ -234,6 +235,36 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension[@name='time']/@default", dom);
         assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z,2011-05-02T00:00:00.000Z,2011-05-03T00:00:00.000Z,2011-05-04T00:00:00.000Z", 
                 "//wms:Layer/wms:Dimension[@name='time']", dom);
+    }
+    
+    @Test
+    public void testDefaultTimeRangeFixed() throws Exception {
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("P1M/PRESENT");
+        setupResourceDimensionDefaultValue(V_TIME_ELEVATION, ResourceInfo.TIME, defaultValueSetting);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+        // print(dom);
+        
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo("P1M/PRESENT", "//wms:Layer/wms:Dimension/@default", dom);
+    }
+    
+    @Test
+    public void testDefaultElevationRangeFixed() throws Exception {
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.FIXED);
+        defaultValueSetting.setReferenceValue("-100/0");
+        setupResourceDimensionDefaultValue(V_TIME_ELEVATION, ResourceInfo.ELEVATION, defaultValueSetting);
+
+        Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
+        // print(dom);
+        
+        assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
+        assertXpathEvaluatesTo("elevation", "//wms:Layer/wms:Dimension/@name", dom);
+        assertXpathEvaluatesTo("-100/0", "//wms:Layer/wms:Dimension/@default", dom);
     }
 
 }

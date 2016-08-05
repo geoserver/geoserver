@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,7 +17,9 @@ import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 
-public class ScriptSelectionRemovalLink extends AjaxLink {
+public class ScriptSelectionRemovalLink extends AjaxLink<Object> {
+
+    private static final long serialVersionUID = 8837711212090575436L;
 
     GeoServerTablePanel<Script> tablePanel;
 
@@ -42,6 +44,8 @@ public class ScriptSelectionRemovalLink extends AjaxLink {
         // if there is something to cancel, let's warn the user about what
         // could go wrong, and if the user accepts, let's delete what's needed
         dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+            private static final long serialVersionUID = 9062725459934129182L;
+
             protected Component getContents(String id) {
                 // show a confirmation panel for all the objects we have to remove
                 return new Label(id, "Do you want to delete these scripts?");
@@ -68,8 +72,8 @@ public class ScriptSelectionRemovalLink extends AjaxLink {
                 // occurred, so refresh the table
                 if (tablePanel.getSelection().size() == 0) {
                     setEnabled(false);
-                    target.addComponent(ScriptSelectionRemovalLink.this);
-                    target.addComponent(tablePanel);
+                    target.add(ScriptSelectionRemovalLink.this);
+                    target.add(tablePanel);
                 }
             }
 

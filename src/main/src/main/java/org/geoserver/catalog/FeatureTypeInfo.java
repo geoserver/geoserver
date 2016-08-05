@@ -95,7 +95,7 @@ public interface FeatureTypeInfo extends ResourceInfo {
      * Tolerance used to linearize this feature type, as an absolute value expressed in the
      * geometries own CRS
      * 
-     * @return
+     *
      */
     Measure getLinearizationTolerance();
 
@@ -103,27 +103,27 @@ public interface FeatureTypeInfo extends ResourceInfo {
      * Tolerance used to linearize this feature type, as an absolute value expressed in the
      * geometries own CRS
      * 
-     * @return
+     *
      */
     void setLinearizationTolerance(Measure tolerance);
 
     /**
      * True if this feature type info is overriding the WFS global SRS list
      * 
-     * @return
+     *
      */
     boolean isOverridingServiceSRS();
     
     /**
      * Set to true if this feature type info is overriding the WFS global SRS list
-     * @return
+     *
      */
     void setOverridingServiceSRS(boolean overridingServiceSRS);
 
     /**
      * True if this feature type info is overriding the counting of numberMatched.
      *
-     * @return
+     *
      */
     boolean getSkipNumberMatched();
 

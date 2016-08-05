@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -7,10 +7,9 @@ package org.geoserver.wfs.json;
 
 import java.io.Writer;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
-
-import net.sf.json.JSONException;
-import net.sf.json.util.JSONBuilder;
 
 import org.geotools.geometry.jts.coordinatesequence.CoordinateSequences;
 import org.geotools.referencing.CRS;
@@ -29,6 +28,9 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
+import net.sf.json.JSONException;
+import net.sf.json.util.JSONBuilder;
+
 
 /**
  * This class extends the JSONBuilder to be able to write out geometric types.  It is coded
@@ -39,10 +41,13 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
  *
  */
 public class GeoJSONBuilder extends JSONBuilder {
+
     private final Logger LOGGER = org.geotools.util.logging.Logging
     .getLogger(this.getClass());
     
     private CRS.AxisOrder axisOrder = CRS.AxisOrder.EAST_NORTH;
+
+    private int numDecimals = 6;
 
     public GeoJSONBuilder(Writer w) {
         super(w);
@@ -51,8 +56,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     /**
      * Writes any geometry object.  This class figures out which geometry representation to write
      * and calls subclasses to actually write the object.
-     * @param geometry The geoemtry be encoded
-     * @return The JSONBuilder with the new geoemtry
+     * @param geometry The geometry to be encoded
+     * @return The JSONBuilder with the new geometry
      * @throws JSONException If anything goes wrong
      */
     public JSONBuilder writeGeom(Geometry geometry) throws JSONException {
@@ -159,20 +164,22 @@ public class GeoJSONBuilder extends JSONBuilder {
     private JSONBuilder writeCoordinate(double x, double y, double z) {
         this.array();
         if(axisOrder==CRS.AxisOrder.NORTH_EAST){
-            this.value(y);
-            this.value(x);
+            roundedValue(y);
+            roundedValue(x);
         } else {
-            this.value(x);
-            this.value(y);
+            roundedValue(x);
+            roundedValue(y);
         }
         if(!Double.isNaN(z)) {
-            this.value(z);
+            roundedValue(z);
         }
 
         return this.endArray();
     }
 
-    
+    private void roundedValue(double value) {
+        super.value(RoundingUtil.round(value, numDecimals));
+    }
     
     /**
      * Turns an envelope into an array [minX,minY,maxX,maxY]
@@ -183,15 +190,15 @@ public class GeoJSONBuilder extends JSONBuilder {
         this.key("bbox");
         this.array();
         if(axisOrder==CRS.AxisOrder.NORTH_EAST) {
-            this.value(env.getMinY());
-            this.value(env.getMinX());
-            this.value(env.getMaxY());
-            this.value(env.getMaxX());
+            roundedValue(env.getMinY());
+            roundedValue(env.getMinX());
+            roundedValue(env.getMaxY());
+            roundedValue(env.getMaxX());
         } else {
-            this.value(env.getMinX());
-            this.value(env.getMinY());
-            this.value(env.getMaxX());
-            this.value(env.getMaxY());
+            roundedValue(env.getMinX());
+            roundedValue(env.getMinY());
+            roundedValue(env.getMaxX());
+            roundedValue(env.getMaxY());
         }
         return this.endArray();
     }
@@ -286,21 +293,69 @@ public class GeoJSONBuilder extends JSONBuilder {
                 "Unable to determine geometry type " + geometry.getClass());
         }
     }
-    
+
     /**
-     * Overrides to handle the case of encoding {@code java.util.Date} and its date/time/timestamp
+     * Write a java.util.List out as a JSON Array. The values of the array will be converted
+     * using ike standard primitive conversions. If the list contains List or Map objects, they
+     * will be serialized as JSON Arrays and JSON Objects respectively.
+     *
+     * @param list a java.util.List to be serialized as JSON Array
+     */
+    public JSONBuilder writeList(final List list) {
+        this.array();
+        for (final Object o: list) {
+            this.value(o);
+        }
+        return this.endArray();
+    }
+
+    /**
+     * Write a java.util.Map out as a JSON Object. Keys are serialized using the toString method
+     * of the object and values are serialized using primitives conversions. If a value in the map
+     * is a List or Map object, it will be serialized as JSON Array or JSON Object respectively.
+     *
+     * @param map a java.util.Map object to be serialized as a JSON Object
+     */
+    public JSONBuilder writeMap(final Map map) {
+        this.object();
+        for (final Object k: map.keySet()) {
+            this.key(k.toString());
+            this.value(map.get(k));
+        }
+        return this.endObject();
+    }
+
+    /**
+     * Overrides handling of specialized types.
+     *
+     * Overrides the encoding {@code java.util.Date} and its date/time/timestamp
      * descendants, as well as {@code java.util.Calendar} instances as ISO 8601 strings.
-     * 
+     * In addition handles rounding numbers to the specified number of decimal points.
+     *
+     * Overrides the handling of java.util.Map, java.util.List, and Geometry objects
+     * as well.
+     *
      * @see net.sf.json.util.JSONBuilder#value(java.lang.Object)
      */
     @Override
     public GeoJSONBuilder value(Object value) {
-        if (value instanceof java.util.Date || value instanceof Calendar) {
-            value = Converters.convert(value, String.class);
+        if (value == null) {
+            super.value(value);
+        } else if (value instanceof Geometry) {
+            this.writeGeom((Geometry) value);
+        } else if (value instanceof List) {
+            this.writeList((List)value);
+        } else if (value instanceof Map) {
+            this.writeMap((Map)value);
+        } else {
+            if (value instanceof java.util.Date || value instanceof Calendar) {
+                value = Converters.convert(value, String.class);
+            }
+            super.value(value);
         }
-        super.value(value);
         return this;
     }
+
     
     /**
      * Set the axis order to assume all input will be provided in. Has no effect on geometries 
@@ -309,5 +364,9 @@ public class GeoJSONBuilder extends JSONBuilder {
      */
     public void setAxisOrder(CRS.AxisOrder axisOrder) {
         this.axisOrder = axisOrder;
+    }
+
+    public void setNumberOfDecimals(int numberOfDecimals) {
+        this.numDecimals = numberOfDecimals;
     }
 }

@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.9-SNAPSHOT</version>
+    <version>2.10-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>no.ecc.vectortile</groupId>
       <artifactId>java-vector-tile</artifactId>
-      <version>1.0.8</version>
+      <version>1.0.9</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -67,6 +67,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 
 </project>

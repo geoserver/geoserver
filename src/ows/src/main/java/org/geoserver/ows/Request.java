@@ -59,12 +59,17 @@ public class Request {
     protected BufferedReader input;
 
     /**
-     * The ows service,request,version
+     * OWS service (combined with request and version)
      */
     protected String service;
-
+    /**
+     * OWS request (ie operation) combined with service and version
+     */
     protected String request;
 
+    /**
+     * OWS protocol version (combined with service and request)
+     */
     protected String version;
 
     /**
@@ -121,7 +126,7 @@ public class Request {
     
     /**
      * Copy constructor
-     * @param other
+     * @param other request to copy
      */
     public Request(Request other) {
         super();
@@ -148,7 +153,7 @@ public class Request {
 
     /**
      * Returns the raw http request being handled by the {@link Dispatcher}
-     * @return
+     *
      */
     public HttpServletRequest getHttpRequest() {
         return httpRequest;
@@ -156,7 +161,7 @@ public class Request {
 
     /**
      * Returns the raw http response being handled by the {@link Dispatcher}
-     * @return
+     *
      */
     public HttpServletResponse getHttpResponse() {
         return httpResponse;
@@ -164,7 +169,7 @@ public class Request {
 
     /**
      * True if the request is a GET one
-     * @return
+     *
      */
     public boolean isGet() {
         return get;
@@ -201,7 +206,7 @@ public class Request {
 
     /**
      * The service requested 
-     * @return
+     *
      */
     public String getService() {
         return service;
@@ -209,7 +214,7 @@ public class Request {
 
     /**
      * The operation requested against the service
-     * @return
+     *
      */
     public String getRequest() {
         return request;
@@ -217,7 +222,7 @@ public class Request {
 
     /**
      * The service version
-     * @return
+     *
      */
     public String getVersion() {
         return version;
@@ -239,7 +244,7 @@ public class Request {
     
     /**
      * The output format
-     * @return
+     *
      */
     public String getOutputFormat() {
         return outputFormat;
@@ -249,7 +254,7 @@ public class Request {
      * The Operation used to call the service code. Available only after dispatching is done, it
      * provides access to the current service object, and the parsed request
      * 
-     * @return
+     *
      */
     public Operation getOperation() {
         return operation;
@@ -257,7 +262,7 @@ public class Request {
 
     /**
      * The eventual error thrown during request parsing, execution or output writing
-     * @return
+     *
      */
     public Throwable getError() {
         return error;
@@ -269,23 +274,23 @@ public class Request {
 
     /**
      * Allows callbacks to override the http request
-     * @param httpRequest
+     * @param httpRequest http request override
      */
     public void setHttpRequest(HttpServletRequest httpRequest) {
         this.httpRequest = httpRequest;
     }
 
     /**
-     * Allows callbacks to override the http response
-     * @param httpRequest
+     * Allows call backs to override the http response
+     * @param httpResponse http response override
      */
     public void setHttpResponse(HttpServletResponse httpResponse) {
         this.httpResponse = httpResponse;
     }
 
     /**
-     * Allows callbacks to change the GET status
-     * @param httpRequest
+     * Allows call backs to change the GET status
+     * @param get true for iHTTP GET Request
      */
     public void setGet(boolean get) {
         this.get = get;
@@ -293,6 +298,7 @@ public class Request {
 
     /**
      * Flags/unflags the request as a SOAP request.
+     * @param soap true for SOAP request
      */
     public void setSOAP(boolean soap) {
         this.soap = soap;
@@ -326,7 +332,7 @@ public class Request {
 
     /**
      * Allows callbacks to override the parsed kvp map
-     * @param rawKvp
+     * @param rawKvp key value pair map override
      */
     public void setRawKvp(Map rawKvp) {
         this.rawKvp = rawKvp;
@@ -334,23 +340,23 @@ public class Request {
 
     /**
      * Allows callbacks to override/wrap the input reader
-     * @param input
+     * @param input input reader override
      */
     public void setInput(BufferedReader input) {
         this.input = input;
     }
     
     /**
-     * Allows callbacks to override the service
-     * @param service
+     * Allows call backs to override the service
+     * @param service OWS service
      */
     public void setService(String service) {
         this.service = service;
     }
 
     /**
-     * Allows callbacks to override the requested operation
-     * @param service
+     * Allows call backs to override the requested operation
+     * @param request OWS Request (ie operation)
      */
     public void setRequest(String request) {
         this.request = request;
@@ -358,7 +364,7 @@ public class Request {
 
     /**
      * Allows callbacks to override the version
-     * @param service
+     * @param version OWS version
      */
     public void setVersion(String version) {
         this.version = version;
@@ -372,16 +378,16 @@ public class Request {
     }
 
     /**
-     * Allows callbacks to override the service descriptor
-     * @param serviceDescriptor
+     * Allows callbacks to override the service descriptor (id, name and version).
+     * @param serviceDescriptor service descriptor
      */
     public void setServiceDescriptor(Service serviceDescriptor) {
         this.serviceDescriptor = serviceDescriptor;
     }
 
     /**
-     * Allows callbacks to override the output format
-     * @param service
+     * Allows call backs to override the output format
+     * @param outputFormat Output format override
      */
     public void setOutputFormat(String outputFormat) {
         this.outputFormat = outputFormat;
@@ -390,19 +396,21 @@ public class Request {
     /**
      * Sets the operation in use
      * 
-     * @param service
+     * @param operation OWS Operation
      */
     public void setOperation(Operation operation) {
         this.operation = operation;
     }
 
     /**
-     * The context of the url path of the request. 
+     * The context of the url path of the request.
      * <p>
-     * The context is anything before the part that matches an ows service. For instance in: 
+     * The context is anything before the part that matches an ows service. For instance in:
+     * 
      * <pre>
      *   /foo/bar/wfs?...
      * </pre>
+     * <p>
      * The context would be "/foo/bar".
      * </p>
      */
@@ -413,7 +421,7 @@ public class Request {
     /**
      * Sets the context.
      * 
-     * @set {@link #getContext()}
+     * @see #getContext()
      */
     public void setContext(String context) {
         this.context = context;
@@ -422,12 +430,15 @@ public class Request {
     /**
      * The remainder part of the url path after the context.
      * <p>
-     * In the following: 
+     * In the following:
+     * </p>
+     * 
      * <pre>
      *   /foo/bar/wfs?...
      * </pre>
+     * 
      * The path would be "/wfs".
-     * </p>
+     * 
      * @see #getContext()
      */
     public String getPath() {
@@ -445,7 +456,7 @@ public class Request {
     
     /**
      * Allows callbacks to override the operation execution error
-     * @param service
+     * @param error Throwable indication operation failure
      */
     public void setError(Throwable error) {
         this.error = error;
@@ -453,7 +464,7 @@ public class Request {
     
     /**
      * The timestamp when the request hit the server
-     * @return
+     *
      */
     public Date getTimestamp() {
         return timestamp;
@@ -461,7 +472,7 @@ public class Request {
 
     /**
      * Sets the request timestamp
-     * @param timestamp
+     * @param timestamp request timestamp (represented as a Date)
      */
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;

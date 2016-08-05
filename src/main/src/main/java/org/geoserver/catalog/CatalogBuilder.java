@@ -523,7 +523,7 @@ public class CatalogBuilder {
             if (!CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, declaredCRS)) {
                 // transform
                 try {
-                    ReferencedEnvelope bounds = new ReferencedEnvelope(nativeBounds, declaredCRS);
+                    ReferencedEnvelope bounds = new ReferencedEnvelope(nativeBounds, CRS.getHorizontalCRS(declaredCRS));
                     return bounds.transform(DefaultGeographicCRS.WGS84, true);
                 } catch (Exception e) {
                     throw (IOException) new IOException("transform error").initCause(e);
@@ -832,8 +832,7 @@ public class CatalogBuilder {
     /**
      * Builds the default coverage contained in the current store
      * 
-     * @return
-     * @throws Exception
+     *
      */
     public CoverageInfo buildCoverage() throws Exception {
         return buildCoverage(null);
@@ -842,8 +841,7 @@ public class CatalogBuilder {
     /**
      * Builds the default coverage contained in the current store
      * 
-     * @return
-     * @throws Exception
+     *
      */
     public CoverageInfo buildCoverage(String coverageName) throws Exception {
         if (store == null || !(store instanceof CoverageStoreInfo)) {
@@ -1303,7 +1301,7 @@ public class CatalogBuilder {
      * geometryless
      * 
      * @param resource
-     * @return
+     *
      * @throws IOException
      */
     public StyleInfo getDefaultStyle(ResourceInfo resource) throws IOException {
@@ -1524,7 +1522,7 @@ public class CatalogBuilder {
      * Extracts the AttributeTypeInfo by copying them from the specified feature type.
      * @param ft The schema to be harvested
      * @param info The optional feature type info from which all the attributes belong to
-     * @return
+     *
      */
     public List<AttributeTypeInfo> getAttributes(FeatureType ft, FeatureTypeInfo info) {
         List<AttributeTypeInfo> attributes = new ArrayList<AttributeTypeInfo>();

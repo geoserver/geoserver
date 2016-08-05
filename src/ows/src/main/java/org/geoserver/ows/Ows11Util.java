@@ -88,7 +88,7 @@ public class Ows11Util {
     /**
      * Turns a prefix:localName into a Name
      * @param URI
-     * @return
+     *
      */
     public static Name name(String URI) {
     	String[] parsed = URI.trim().split(":");

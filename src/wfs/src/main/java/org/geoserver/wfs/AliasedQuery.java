@@ -65,7 +65,7 @@ class AliasedQuery extends Query {
      * 
      * @param metas
      * @param query
-     * @return
+     *
      * @throws IOException
      */
     static Query fixAliases(List<FeatureTypeInfo> metas, Query query) throws IOException {

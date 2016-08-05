@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2015 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2015 - 2016 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
  
 <beans>
+    <bean class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-main"/>
+        <constructor-arg index="1" value="GeoServer Main"/>
+    </bean>
+    <bean class="org.geoserver.platform.RenderingEngineStatus"/>
+    <bean class="org.geoserver.platform.SystemPropertyStatus"/>
+    <bean class="org.geoserver.platform.SystemEnvironmentStatus"/>
+    
     <!--  lock providers -->
     <bean id="nullLockProvider" class="org.geoserver.platform.resource.NullLockProvider"/>
     <bean id="memoryLockProvider" class="org.geoserver.platform.resource.MemoryLockProvider"/>
@@ -16,13 +24,16 @@
     </bean>
     <bean id="lockProviderInitializer" class="org.geoserver.config.LockProviderInitializer"/>
     
+    <!-- used by alternative resource stores -->
+    <bean id="resourceNotificationDispatcher" class="org.geoserver.platform.resource.SimpleResourceNotificationDispatcher"/>
+    
 	<!-- resources -->
     <bean id="dataDirectoryResourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore">
         <property name="lockProvider" ref="lockProvider"/>
-    </bean>  
-    <bean id="resourceStore" class="org.geoserver.platform.resource.ResourceStoreProxy">
-        <property name="delegate" ref="dataDirectoryResourceStore"/>
     </bean>
+
+    <bean id="resourceStore" class="org.geoserver.platform.resource.ResourceStoreFactory" />
+
     <bean id="resourceLoader" class="org.geoserver.platform.GeoServerResourceLoader">
 	    <constructor-arg ref="resourceStore"/>
     </bean>
@@ -37,6 +48,9 @@
     
     <!-- extensions -->
     <bean id="extensions" class="org.geoserver.platform.GeoServerExtensions"/>
+
+    <!-- environments -->
+    <bean id="environments" class="org.geoserver.platform.GeoServerEnvironment" depends-on="extensions"/>
     
     <!-- the shared filter factory -->
     <bean id="filterFactory" class="org.geotools.filter.FilterFactoryImpl"/>
@@ -181,6 +195,7 @@
         <prop key="/schemas/**">classpathPublisher</prop>
         <prop key="/j_acegi_security_check">classpathPublisher</prop>
         <prop key="/j_spring_security_check">classpathPublisher</prop>
+        <prop key="/login">classpathPublisher</prop>
        </props>
      </property>
   </bean>
@@ -234,7 +249,7 @@
   </bean>
   <bean id="adminRequestTransfer" class="org.geoserver.threadlocals.AdminRequestThreadLocalTransfer"/>
   <bean id="authenticationTransfer" class="org.geoserver.threadlocals.AuthenticationThreadLocalTransfer"/>
-  <bean id="localLayerTransfer" class="org.geoserver.threadlocals.LocalLayerThreadLocalTransfer"/>
+  <bean id="localPublishedTransfer" class="org.geoserver.threadlocals.LocalPublishedThreadLocalTransfer"/>
   <bean id="localWorkspaceTransfer" class="org.geoserver.threadlocals.LocalWorkspaceThreadLocalTransfer"/>
 
   <!-- default style handlers -->

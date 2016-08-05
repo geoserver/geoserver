@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -66,19 +66,6 @@ public class DeveloperToolbar extends Panel {
         wicketPaths.setOutputMarkupId(true);
         add(wicketPaths);
         
-        // controls the xhtml validation filter
-        xhtml = new AjaxCheckBox("xhtml", new XHTMLModel()) {
-            
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                wicketIds.setModelObject(Boolean.TRUE);
-                wicketPaths.setModelObject(Boolean.FALSE);
-                target.addComponent(wicketIds);
-                target.addComponent(wicketPaths);
-            }
-        };
-        add(xhtml);
-
         // controls whether wicket ids are being generated
         wicketIds = new AjaxCheckBox("wicketIds", new PropertyModel(gsApp,
                 "markupSettings.stripWicketTags")) {
@@ -86,7 +73,7 @@ public class DeveloperToolbar extends Panel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 wicketPaths.setModelObject(Boolean.FALSE);
-                target.addComponent(wicketPaths);
+                target.add(wicketPaths);
             }
 
         };
@@ -118,33 +105,5 @@ public class DeveloperToolbar extends Panel {
 
     }
     
-    static class XHTMLModel implements IModel {
-
-        public Object getObject() {
-            GeoServerApplication app = GeoServerApplication.get();
-            boolean enabled = false;
-            for (Object filter : app.getRequestCycleSettings().getResponseFilters()) {
-                if(filter instanceof GeoServerHTMLValidatorResponseFilter) {
-                    enabled = ((GeoServerHTMLValidatorResponseFilter) filter).enabled;
-                }
-            }
-            return enabled;
-        }
-
-        public void setObject(Object object) {
-            GeoServerApplication app = GeoServerApplication.get();
-            for (Object filter : app.getRequestCycleSettings().getResponseFilters()) {
-                if(filter instanceof GeoServerHTMLValidatorResponseFilter) {
-                    ((GeoServerHTMLValidatorResponseFilter) filter).enabled = (Boolean) object;
-                }
-            }
-            
-        }
-
-        public void detach() {
-            // nothing to do here
-        }
-        
-    }
 
 }

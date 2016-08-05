@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.geoserver.ows.LocalLayer;
+import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -178,8 +178,8 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             // TODO: replace service path with call to buildURL since it does this
             // same dance
             String servicePath = "wms";
-            if (LocalLayer.get() != null) {
-                servicePath = LocalLayer.get().getName() + "/" + servicePath;
+            if (LocalPublished.get() != null) {
+                servicePath = LocalPublished.get().getName() + "/" + servicePath;
             }
             if (LocalWorkspace.get() != null) {
                 servicePath = LocalWorkspace.get().getName() + "/" + servicePath;
@@ -256,7 +256,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * type. Ugly, if you come up with better means of doing so, fix it.
      * 
      * @param mapContent
-     * @return
+     *
      */
     private boolean hasOnlyCoverages(WMSMapContent mapContent) {
         for (Layer layer : mapContent.layers()) {
@@ -284,7 +284,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * "dd"), "m", "ft", "km", "mi", "inches".
      * 
      * @param request
-     * @return
+     *
      */
     private String getOL2Units(GetMapRequest request) {
         CoordinateReferenceSystem crs = request.getCrs();
@@ -319,7 +319,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * otherwise the scale won't be shown. 
      * 
      * @param request
-     * @return
+     *
      */
     private String getOL3Units(GetMapRequest request) {
         CoordinateReferenceSystem crs = request.getCrs();
@@ -346,7 +346,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * 
      * 
      * @param rawKvp
-     * @return
+     *
      */
     private List<Map<String, String>> getLayerParameter(Map<String, String> rawKvp) {
         List<Map<String, String>> result = new ArrayList<Map<String, String>>(rawKvp.size());
@@ -374,7 +374,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * "http://localhost:8080/geoserver//wms?LAYERS=..." and Jetty 6.1 won't digest them...
      * 
      * @param baseUrl
-     * @return
+     *
      */
     private String canonicUrl(String baseUrl) {
         if (baseUrl.endsWith("/")) {

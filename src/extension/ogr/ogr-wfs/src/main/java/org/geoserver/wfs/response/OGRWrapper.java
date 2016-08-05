@@ -51,7 +51,7 @@ public class OGRWrapper extends AbstractToolWrapper {
     /**
      * Returns a list of the ogr2ogr supported formats
      * 
-     * @return
+     *
      */
     public Set<String> getSupportedFormats() {
         try {
@@ -96,7 +96,7 @@ public class OGRWrapper extends AbstractToolWrapper {
      * Returns true if ogr2ogr is available, that is, if executing
      * "ogr2ogr --version" returns 0 as the exit code
      * 
-     * @return
+     *
      */
     public boolean isAvailable() {
         List<String> commands = new ArrayList<String>();

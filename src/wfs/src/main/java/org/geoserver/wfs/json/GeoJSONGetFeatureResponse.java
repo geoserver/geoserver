@@ -93,6 +93,8 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
     protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
             Operation describeFeatureType) throws IOException {
 
+        int numDecimals = getNumDecimals(featureCollection.getFeature(), gs, gs.getCatalog());
+
         if (LOGGER.isLoggable(Level.INFO))
             LOGGER.info("about to encode JSON");
         // Generate bounds for every feature?
@@ -123,8 +125,9 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             if (jsonp) {
                 outWriter.write(getCallbackFunction() + "(");
             }
-
+            
             final GeoJSONBuilder jsonWriter = new GeoJSONBuilder(outWriter);
+            jsonWriter.setNumberOfDecimals(numDecimals);
             jsonWriter.object().key("type").value("FeatureCollection");
             if(featureCount != null) {
                 jsonWriter.key("totalFeatures").value(featureCount);

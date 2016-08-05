@@ -19,7 +19,7 @@ public interface JMSConfigurationExt {
 	/**
 	 * returns true if the passed config is different by the default values
 	 * @param config
-	 * @return
+	 *
 	 * @throws IOException
 	 */
 	public boolean override(JMSConfiguration config) throws IOException;

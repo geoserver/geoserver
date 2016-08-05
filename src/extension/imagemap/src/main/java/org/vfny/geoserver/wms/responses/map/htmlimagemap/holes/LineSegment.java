@@ -35,7 +35,7 @@ public class LineSegment {
 	 * 
 	 * @param origin
 	 * @param direction
-	 * @return
+	 *
 	 */
 	public Float intersectsWithRay(Coordinate origin, Coordinate direction)
 	{
@@ -63,7 +63,7 @@ public class LineSegment {
 	 * (null if they don't intersect).
 	 * @param a
 	 * @param b
-	 * @return
+	 *
 	 */
 	public static Coordinate findIntersection(LineSegment a, LineSegment b)
 	{
@@ -99,7 +99,7 @@ public class LineSegment {
 	 * @param value
 	 * @param min
 	 * @param max
-	 * @return
+	 *
 	 */
 	public static double clamp(double value,double min,double max) {
 		if(value>max)

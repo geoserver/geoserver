@@ -7,11 +7,18 @@ package org.geoserver.monitor;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.geoserver.config.GeoServerPluginConfigurator;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -27,17 +34,15 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 /**
  * Configuration object for monitor subsystem.
  * 
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class MonitorConfig implements ApplicationContextAware {
+public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationContextAware {
 
+    protected static final String PROPERTYFILENAME = "monitor.properties";
     private static final Logger LOGGER = Logging.getLogger(MonitorConfig.class);
 
     public static enum Mode {
@@ -56,6 +61,7 @@ public class MonitorConfig implements ApplicationContextAware {
     ApplicationContext context;
     boolean enabled = true;
     Exception error;
+    private GeoServerResourceLoader loader;
     
     public MonitorConfig() {
         props = new Properties();
@@ -67,14 +73,13 @@ public class MonitorConfig implements ApplicationContextAware {
 
         //for backwards compatibility include the hibernate config options
         props.put("hibernate.sync", "async");
+        
+        loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
     }
     
     public MonitorConfig(GeoServerResourceLoader loader) throws IOException {
-        Resource f = loader.get(Paths.path("monitoring", "monitor.properties"));
-        if (!Resources.exists(f)) {
-            IOUtils.copy(MonitorConfig.class.getResourceAsStream("monitor.properties"), 
-                    f.out());
-        }
+        this.loader = loader;
+        Resource f = getConfigurationFile(loader);
         
         fw = new PropertyFileWatcher(f);
     }
@@ -186,11 +191,10 @@ public class MonitorConfig implements ApplicationContextAware {
      * Allows to retrieve a generic property from the configuration. Extensions and plugins are
      * supposed to use the plugin.property naming convention, passing both a prefix and a name
      * 
-     * @param <T>
-     * @param prefix
-     * @param name
-     * @param target
-     * @return
+     * @param prefix namespace prefix
+     * @param name name
+     * @param target Class for conversion
+     *
      */
     public <T> T getProperty(String prefix, String name, Class<T> target) {
         String key = prefix == null ? name : prefix + "." + name;
@@ -230,5 +234,65 @@ public class MonitorConfig implements ApplicationContextAware {
         return props;
     }
 
+    @Override
+    public List<Resource> getFileLocations() throws IOException {
+        List<Resource> configurationFiles = new ArrayList<>();
+        if (loader != null) {
+            Resource f = getConfigurationFile(loader);
+
+            configurationFiles.add(f);
+        } else if (fw != null && fw.getResource() != null) {
+            configurationFiles.add(fw.getResource());
+        }
+        return configurationFiles;
+    }
+
+    /**
+     * @param loader
+     * @return
+     * @throws IOException
+     */
+    public Resource getConfigurationFile(GeoServerResourceLoader loader) throws IOException {
+        Resource f = loader.get(Paths.path("monitoring", MonitorConfig.PROPERTYFILENAME));
+        if (!Resources.exists(f)) {
+            IOUtils.copy(MonitorConfig.class.getResourceAsStream(MonitorConfig.PROPERTYFILENAME), 
+                    f.out());
+        }
+        return f;
+    }
+
+    @Override
+    public void saveConfiguration(GeoServerResourceLoader resourceLoader) throws IOException {
+        if (loader != null) {
+            Resource f = getConfigurationFile(loader);
+        
+            Resource targetDir = 
+                    Files.asResource(resourceLoader.findOrCreateDirectory(Paths.convert(loader.getBaseDirectory(), f.parent().dir())));
+            
+            Resources.copy(f.file(), targetDir);
+        } else if (fw != null && fw.getResource() != null) {
+            Resources.copy(fw.getFile(), Files.asResource(resourceLoader.getBaseDirectory()));
+        } else if (props != null) {
+            File monitoringConfigurationFile = Resources.file(resourceLoader.get(MonitorConfig.PROPERTYFILENAME), true);
+            OutputStream out = Files.out(monitoringConfigurationFile);
+            try {
+                props.store(out, "");
+            } finally {
+                out.flush();
+                out.close();
+            }
+        }
+    }
+
+    @Override
+    public void loadConfiguration(GeoServerResourceLoader resourceLoader) throws IOException {
+        synchronized (this) {
+            Resource f = getConfigurationFile(resourceLoader);
+            if (Resources.exists(f)) {
+                fw = new PropertyFileWatcher(f);
+                fw.setKnownLastModified(System.currentTimeMillis());
+            }
+        }
+    }
     
 }

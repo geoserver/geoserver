@@ -15,7 +15,7 @@ import org.geoserver.wcs2_0.WCSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 /**
  * 
  * @author Simone Giannecchini, GeoSolutions
@@ -94,7 +94,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
     
         assertEquals("application/xml", response.getContentType());
-        Document dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         print(dom);       
     }
 
@@ -106,7 +106,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
     
         assertEquals("application/xml", response.getContentType());
-        Document dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         print(dom);       
     }
 
@@ -118,7 +118,7 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
     
         assertEquals("application/xml", response.getContentType());
-        Document dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         print(dom);        
     }
     

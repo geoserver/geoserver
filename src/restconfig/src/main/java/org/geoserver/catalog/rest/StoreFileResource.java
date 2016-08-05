@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -27,6 +27,7 @@ import org.geoserver.rest.util.RESTUploadPathMapper;
 import org.geoserver.rest.util.RESTUtils;
 import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -152,7 +153,7 @@ public abstract class StoreFileResource extends Resource {
      * @param store
      * @param format
      * @param directory
-     * @return
+     *
      */
     protected List<org.geoserver.platform.resource.Resource> handleFileUpload(String store, String workspace, String format, 
             org.geoserver.platform.resource.Resource directory) {
@@ -169,7 +170,15 @@ public abstract class StoreFileResource extends Resource {
         try {
             String method = (String) getRequest().getResourceRef().getLastSegment();
             if (method != null && method.toLowerCase().startsWith("file.")) {
-                uploadedFile = RESTUtils.handleBinUpload(store + "." + format, workspace, directory, getRequest());
+                // we want to delete the previous dir contents only in case of PUT, not
+                // in case of POST (harvest, available only for raster data)
+                boolean cleanPreviousContents = getRequest().getMethod() == Method.PUT ;
+                Form form = getRequest().getResourceRef().getQueryAsForm();
+                String filename = form.getFirstValue("filename", true);
+                if(filename == null) {
+                    filename = store + "." + format;
+                }
+                uploadedFile = RESTUtils.handleBinUpload(filename, directory, cleanPreviousContents, getRequest(), workspace);
             }
             else if (method != null && method.toLowerCase().startsWith("url.")) {
                 uploadedFile = RESTUtils.handleURLUpload(store + "." + format, workspace, directory, getRequest());
@@ -241,7 +250,7 @@ public abstract class StoreFileResource extends Resource {
      * 
      * @param directory
      * @param format
-     * @return
+     *
      */
     protected org.geoserver.platform.resource.Resource findPrimaryFile(
             org.geoserver.platform.resource.Resource directory, String format) {

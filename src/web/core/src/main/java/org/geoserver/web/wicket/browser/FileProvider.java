@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014, 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,8 +18,9 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
-@SuppressWarnings("serial")
-public class FileProvider extends SortableDataProvider {
+public class FileProvider extends SortableDataProvider<File, String> {
+
+    private static final long serialVersionUID = 2387540012977156321L;
 
     public static final String NAME = "name";
 
@@ -28,9 +29,10 @@ public class FileProvider extends SortableDataProvider {
     public static final String SIZE = "size";
 
     /**
-     * Compares the file names, makes sures directories are listed first
+     * Compares the file names, makes sure directories are listed first
      */
     private static final Comparator<File> FILE_NAME_COMPARATOR = new AbstractFileComparator() {
+        @Override
         public int compareProperty(File o1, File o2) {
             // otherwise compare the name
             return o1.getName().compareToIgnoreCase(o2.getName());
@@ -41,6 +43,7 @@ public class FileProvider extends SortableDataProvider {
      * Compares last modified time
      */
     private static final Comparator<File> FILE_LM_COMPARATOR = new AbstractFileComparator() {
+        @Override
         public int compareProperty(File o1, File o2) {
             long lm1 = o1.lastModified();
             long lm2 = o2.lastModified();
@@ -56,6 +59,7 @@ public class FileProvider extends SortableDataProvider {
      * Compares file size
      */
     private static final Comparator<File> FILE_SIZE_COMPARATOR = new AbstractFileComparator() {
+        @Override
         public int compareProperty(File o1, File o2) {
             long l1 = o1.length();
             long l2 = o2.length();
@@ -70,22 +74,23 @@ public class FileProvider extends SortableDataProvider {
     /**
      * The current directory
      */
-    IModel directory;
+    IModel<File> directory;
 
     /**
      * An eventual file filter
      */
-    IModel fileFilter;
+    IModel<? extends FileFilter> fileFilter;
 
     public FileProvider(File directory) {
-        this.directory = new Model(directory);
+        this.directory = new Model<File>(directory);
     }
 
-    public FileProvider(IModel directory) {
+    public FileProvider(IModel<File> directory) {
         this.directory = directory;
     }
 
-    public Iterator iterator(int first, int count) {
+    @Override
+    public Iterator<File> iterator(long first, long count) {
         List<File> files = getFilteredFiles();
 
         // sorting
@@ -94,10 +99,11 @@ public class FileProvider extends SortableDataProvider {
             Collections.sort(files, comparator);
 
         // paging
-        int last = first + count;
-        if (last > files.size())
+        long last = first + count;
+        if (last > files.size()) {
             last = files.size();
-        return files.subList(first, last).iterator();
+        }
+        return files.subList((int)first, (int)last).iterator();
     }
 
     List<File> getFilteredFiles() {
@@ -119,15 +125,17 @@ public class FileProvider extends SortableDataProvider {
             return Collections.emptyList();
     }
 
-    public IModel model(Object object) {
-        return new Model((File) object);
+    @Override
+    public IModel<File> model(File object) {
+        return new Model<File>(object);
     }
 
-    public int size() {
+    @Override
+    public long size() {
         return getFilteredFiles().size();
     }
 
-    private Comparator<File> getComparator(SortParam sort) {
+    private Comparator<File> getComparator(SortParam<String> sort) {
         if (sort == null)
             return FILE_NAME_COMPARATOR;
 
@@ -151,19 +159,19 @@ public class FileProvider extends SortableDataProvider {
             return new ReverseComparator(comparator);
     }
 
-    public IModel getDirectory() {
+    public IModel<File> getDirectory() {
         return directory;
     }
 
-    public void setDirectory(IModel directory) {
+    public void setDirectory(IModel<File> directory) {
         this.directory = directory;
     }
 
-    public IModel getFileFilter() {
+    public IModel<? extends FileFilter> getFileFilter() {
         return fileFilter;
     }
 
-    public void setFileFilter(IModel fileFilter) {
+    public void setFileFilter(IModel<? extends FileFilter> fileFilter) {
         this.fileFilter = fileFilter;
     }
 
@@ -175,6 +183,7 @@ public class FileProvider extends SortableDataProvider {
     private static abstract class AbstractFileComparator implements
             Comparator<File> {
 
+        @Override
         public final int compare(File o1, File o2) {
             // directories first
             if (o1.isDirectory())
@@ -200,6 +209,7 @@ public class FileProvider extends SortableDataProvider {
             this.comparator = comparator;
         }
 
+        @Override
         public int compare(File o1, File o2) {
             return comparator.compare(o2, o1);
         }
@@ -216,6 +226,7 @@ public class FileProvider extends SortableDataProvider {
             this.delegate = delegate;
         }
 
+        @Override
         public boolean accept(File pathname) {
             if(pathname.isHidden()) {
                 return false;

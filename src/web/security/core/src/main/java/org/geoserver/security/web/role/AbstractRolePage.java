@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -51,11 +51,10 @@ public abstract class AbstractRolePage extends AbstractSecurityPage {
 
         StringResourceModel descriptionModel;
         if (role.getUserName() != null) {
-            descriptionModel = new StringResourceModel("personalizedRole", getPage(), null, 
-                    new Object[]{role.getUserName()});            
+            descriptionModel = new StringResourceModel("personalizedRole", getPage()).setParameters(role.getUserName());            
         }
         else {
-            descriptionModel = new StringResourceModel("anonymousRole", getPage(), null);
+            descriptionModel = new StringResourceModel("anonymousRole", getPage());
         }
         form.add(new Label("description", descriptionModel));
         

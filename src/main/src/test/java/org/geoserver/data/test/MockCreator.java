@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,7 +11,26 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.classextension.EasyMock.createMock;
 import static org.easymock.classextension.EasyMock.createNiceMock;
 import static org.easymock.classextension.EasyMock.replay;
-import static org.geoserver.data.test.CiteTestData.*;
+import static org.geoserver.data.test.CiteTestData.CDF_PREFIX;
+import static org.geoserver.data.test.CiteTestData.CDF_TYPENAMES;
+import static org.geoserver.data.test.CiteTestData.CDF_URI;
+import static org.geoserver.data.test.CiteTestData.CGF_PREFIX;
+import static org.geoserver.data.test.CiteTestData.CGF_TYPENAMES;
+import static org.geoserver.data.test.CiteTestData.CGF_URI;
+import static org.geoserver.data.test.CiteTestData.CITE_PREFIX;
+import static org.geoserver.data.test.CiteTestData.CITE_TYPENAMES;
+import static org.geoserver.data.test.CiteTestData.CITE_URI;
+import static org.geoserver.data.test.CiteTestData.COVERAGES;
+import static org.geoserver.data.test.CiteTestData.DEFAULT_PREFIX;
+import static org.geoserver.data.test.CiteTestData.DEFAULT_RASTER_STYLE;
+import static org.geoserver.data.test.CiteTestData.DEFAULT_URI;
+import static org.geoserver.data.test.CiteTestData.DEFAULT_VECTOR_STYLE;
+import static org.geoserver.data.test.CiteTestData.SF_PREFIX;
+import static org.geoserver.data.test.CiteTestData.SF_TYPENAMES;
+import static org.geoserver.data.test.CiteTestData.SF_URI;
+import static org.geoserver.data.test.CiteTestData.WCS_PREFIX;
+import static org.geoserver.data.test.CiteTestData.WCS_TYPENAMES;
+import static org.geoserver.data.test.CiteTestData.WCS_URI;
 import static org.geoserver.security.SecurityUtils.toBytes;
 
 import java.io.File;
@@ -67,6 +86,7 @@ import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.PasswordValidatorImpl;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLUserGroupService;
+import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.context.ApplicationContext;
 
@@ -84,7 +104,6 @@ public class MockCreator implements Callback {
      * 
      * @param testData Used to access base directory
      * @return GeoServerResourceLoader (registered with GeoServerExtensions)
-     * @throws Exception
      */
     public GeoServerResourceLoader createResourceLoader(MockTestData testData) throws Exception {
         File data = testData.getDataDirectoryRoot();
@@ -207,9 +226,8 @@ public class MockCreator implements Callback {
         expect(secMgr.listMasterPasswordProviders()).andReturn(
             new TreeSet<String>(Arrays.asList(MasterPasswordProvider.DEFAULT_NAME))).anyTimes();
         
-        TemporaryFolder tempFolder = new TemporaryFolder();
-        tempFolder.create();
-        expect(secMgr.masterPasswordProvider()).andReturn(Files.asResource(tempFolder.newFolder())).anyTimes();
+        final File mrPwdFolder = new File(testData.getDataDirectoryRoot(), "master-pwd");
+        expect(secMgr.masterPasswordProvider()).andReturn(Files.asResource(mrPwdFolder)).anyTimes();
     
         //password validators
         PasswordValidator passwdValidator = createNiceMock(PasswordValidator.class);

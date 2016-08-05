@@ -19,6 +19,7 @@
         <include>jta-*.jar</include>
         <include>persistence-api*.jar</include>
         <include>spring-orm-*jar</include>
+        <include>javassist-*jar</include>
       </includes>
     </fileSet>
   </fileSets>

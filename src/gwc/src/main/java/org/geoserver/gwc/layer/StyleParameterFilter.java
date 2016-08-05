@@ -117,7 +117,7 @@ public class StyleParameterFilter extends ParameterFilter {
     
     /**
      * Returns the default style name, or an empty string if set to use the layer specified default
-     * @return
+     *
      */
     public String getRealDefault() {
         // Bypass the special processing this class normally does on the default value
@@ -146,7 +146,7 @@ public class StyleParameterFilter extends ParameterFilter {
     
     /**
      * Get the names of all the styles supported by the layer
-     * @return
+     *
      */
     public Set<String> getLayerStyles() {
         checkInitialized();

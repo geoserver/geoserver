@@ -353,8 +353,7 @@ public class CoverageView implements Serializable {
      * @param storeInfo
      * @param cinfo
      * @param name
-     * @return
-     * @throws Exception
+     *
      */
     private CoverageInfo buildCoverageInfo(CatalogBuilder builder, CoverageStoreInfo storeInfo,
             CoverageInfo cinfo, String name) throws Exception {
@@ -397,7 +396,6 @@ public class CoverageView implements Serializable {
      * @param storeInfo
      * @param builder
      * @param coverageInfo
-     * @throws Exception
      */
     public void updateCoverageInfo(String name, CoverageStoreInfo storeInfo,
             CatalogBuilder builder, CoverageInfo coverageInfo) throws Exception {
@@ -413,7 +411,7 @@ public class CoverageView implements Serializable {
     /**
      * Get the i-th {@link CoverageBand}
      * @param index
-     * @return
+     *
      */
     public CoverageBand getBand(final int index) {
         return coverageBands.get(index);
@@ -422,7 +420,7 @@ public class CoverageView implements Serializable {
     /**
      * Get the {@link CoverageBand}s related to the specified coverageName
      * @param coverageName
-     * @return
+     *
      */
     public List<CoverageBand> getBands(final String coverageName) {
         List<CoverageBand> bands = new ArrayList<CoverageBand>();
@@ -438,7 +436,7 @@ public class CoverageView implements Serializable {
 
     /**
      * Return the number of {@link CoverageBand}s composing the {@link CoverageView}
-     * @return
+     *
      */
     public int getSize() {
         return coverageBands != null ? coverageBands.size() : 0;

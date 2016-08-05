@@ -17,7 +17,7 @@ public interface FormatConverter {
     /**
      * Returns the tool's executable full path.
      * 
-     * @return
+     *
      */
     public String getExecutable();
 
@@ -31,14 +31,14 @@ public interface FormatConverter {
     /**
      * Returns the environment variables that are set prior to invoking the tool's executable.
      * 
-     * @return
+     *
      */
     public Map<String, String> getEnvironment();
 
     /**
      * Provides the environment variables that are set prior to invoking the tool's executable.
      * 
-     * @return
+     *
      */
     public void setEnvironment(Map<String, String> environment);
 
@@ -52,7 +52,7 @@ public interface FormatConverter {
     /**
      * Get a list of supported output formats.
      *
-     * @return
+     *
      */
     public List<Format> getFormats();
 

@@ -13,24 +13,13 @@ as WKT and index them with a spatial index.
 
 .. note:: GeoServer does not come built-in with support for SOLR; it must be installed through this community module. 
 
-SOLR version
-^^^^^^^^^^^^
-
 The GeoServer SOLR extension has been tested with SOLR version 4.8, 4.9, and 4.10.
-
- .. _solr_install:
-
-Supported geometry types
-^^^^^^^^^^^^^^^^^^^^^^^^
 
 The extension supports all WKT geometry types (all linear types, point, lines and polygons, SQL/MMcurves are not supported), 
 plus "bounding box" (available starting SOLR 4.10).
 It does not support the ``solr.LatLonType`` type yet.
 
-More information
-^^^^^^^^^^^^^^^^
-
-The following pages shows how to use the SOLR data store:
+The following pages shows how to use the SOLR data store.
 
 .. toctree::
    :maxdepth: 2

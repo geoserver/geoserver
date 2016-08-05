@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -44,17 +44,17 @@ public class GeometryTextArea extends TextArea<Geometry> {
         setType(Geometry.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public IConverter getConverter(Class<?> type) {
-        return new GeometryConverter();
+    public <C> IConverter<C> getConverter(Class<C> type) {
+        return (IConverter<C>) new GeometryConverter();
     }
-
     /**
      * Converts between String and Geometry
      * 
      * @author Andrea Aime - GeoSolutions
      */
-    private class GeometryConverter implements IConverter {
+    private class GeometryConverter implements IConverter<Object> {
         private static final long serialVersionUID = 5868644160487841740L;
         
         transient GeometryFactory gf = new GeometryFactory();
@@ -78,7 +78,7 @@ public class GeometryTextArea extends TextArea<Geometry> {
                     // fall through
                 }
 
-                ConversionException ce = new ConversionException((String) null);
+                ConversionException ce = new ConversionException(e.getMessage());
                 ce.setResourceKey(GeometryTextArea.class.getSimpleName() + ".parseError");
                 throw ce;
             }

@@ -20,7 +20,7 @@ public interface NearestValueStrategyFactory {
      * object toMatch.
      * 
      * @param toMatch
-     * @return
+     *
      */
     public DimensionDefaultValueSelectionStrategy createNearestValueStrategy(Object toMatch);
     
@@ -30,8 +30,8 @@ public interface NearestValueStrategyFactory {
      * default value in capabilities documents.
      * 
      * @param toMatch
-     * @param fixedCapabilitiesValue, for example "current"
-     * @return
+     * @param fixedCapabilitiesValue for example "current"
+     *
      */
     public DimensionDefaultValueSelectionStrategy createNearestValueStrategy(Object toMatch, String fixedCapabilitiesValue);
 }

@@ -111,7 +111,6 @@ public class DbMappings {
 
     /**
      * @param template
-     * @throws Exception
      */
     public void initDb(final NamedParameterJdbcOperations template) {
 
@@ -191,7 +190,7 @@ public class DbMappings {
     }
 
     /**
-     * @return
+     *
      */
     private Multimap<Class<?>, PropertyTypeDef> loadNestedPropertyTypeDefs() {
 
@@ -267,7 +266,7 @@ public class DbMappings {
 
     /**
      * @param simpleClassName
-     * @return
+     *
      */
     private Class<?> toClass(String simpleClassName) {
         for (Class<?> c : this.typeIds.keySet()) {
@@ -469,7 +468,7 @@ public class DbMappings {
                 + "where type_id = :objectType and name = :propName";
         params = params("objectType", typeId, "propName", propertyName);
         logStatement(query, params);
-        final int exists = template.queryForInt(query, params);
+        final int exists = template.queryForObject(query, params, Integer.class);
 
         PropertyType pType;
 
@@ -514,7 +513,7 @@ public class DbMappings {
 
     /**
      * @param propertyName
-     * @return
+     *
      */
     private String fixCase(String propertyName) {
         if (propertyName.length() > 1) {
@@ -535,7 +534,7 @@ public class DbMappings {
 
     /**
      * @param queryType
-     * @return
+     *
      */
     @SuppressWarnings("unchecked")
     public List<Integer> getConcreteQueryTypes(Class<?> queryType) {
@@ -603,7 +602,7 @@ public class DbMappings {
 
     /**
      * @param info
-     * @return
+     *
      */
     public Iterable<Property> properties(Info object) {
         checkArgument(!(object instanceof Proxy));
@@ -663,7 +662,7 @@ public class DbMappings {
 
     /**
      * @param typeId
-     * @return
+     *
      */
     private ImmutableList<PropertyType> getTypeProperties(Integer typeId) {
         Map<String, PropertyType> properties = this.propertyTypes.get(typeId);

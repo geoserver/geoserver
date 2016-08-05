@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -26,7 +26,6 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
@@ -40,10 +39,13 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.rest.RestletException;
 import org.geotools.util.logging.Logging;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Message;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
 import org.vfny.geoserver.global.ConfigurationException;
 
 import com.noelios.restlet.ext.servlet.ServletCall;
@@ -101,42 +103,6 @@ public class RESTUtils {
         } else {
             return ref.getParentRef().getIdentifier();
         }
-    }
-    
-    /**
-     * This function gets the stream of the request to copy it into a file.
-     * 
-     * This method will create a "data" folder in GEOSERVER_DATA_DIRECTORY if needed.
-     * 
-     * @deprecated use {@link #handleBinUpload(String, File, Request)}.
-     */
-    public static org.geoserver.platform.resource.Resource handleBinUpload(String datasetName, String extension,
-            Request request) throws IOException, ConfigurationException {
-        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        Resource data = loader.get("data");
-        
-        return handleBinUpload( datasetName + "." + extension, null, data, request );
-    }
-
-    /**
-     * Reads content from the body of a request and writes it to a file in the given directory.
-     * 
-     * If the file already exists, the directory content will be deleted recursively 
-     * before creating the new file.
-     * 
-     * @param fileName The name of the file to write out.
-     * @param directory The directory to write the file to
-     * @param request The request.
-     * 
-     * @return The file object representing the newly written file.
-     * 
-     * @throws IOException Any I/O errors that occur.
-     * 
-     * @deprecated use {@link #handleBinUpload(String, File, boolean, Request)}.
-     */
-    public static org.geoserver.platform.resource.Resource handleBinUpload(String fileName, String workSpace, org.geoserver.platform.resource.Resource directory, Request request)
-            throws IOException {
-        return handleBinUpload(fileName, directory, true, request, workSpace);
     }
     
     /**
@@ -421,7 +387,7 @@ public class RESTUtils {
      * @param workspaceName
      * @param storeName
      * @param catalog
-     * @return
+     *
      */
     public static String getItem(String workspaceName, String storeName, Catalog catalog, String key) {
         // Initialization of a null String containing the root directory to use for the input store config
@@ -462,7 +428,7 @@ public class RESTUtils {
      * 
      * @param storeName
      * @param catalog
-     * @return
+     *
      */
     public static MetadataMap loadMapfromStore(String storeName, Catalog catalog) {
        StoreInfo storeInfo = catalog.getStoreByName(storeName, CoverageStoreInfo.class);
@@ -482,7 +448,7 @@ public class RESTUtils {
      * 
      * @param workspaceName
      * @param catalog
-     * @return
+     *
      */
     public static MetadataMap loadMapfromWorkSpace(String workspaceName, Catalog catalog) {
        WorkspaceInfo wsInfo = catalog.getWorkspaceByName(workspaceName);
@@ -499,7 +465,7 @@ public class RESTUtils {
     /**
      * This method is used for extracting the metadata map from the global settings
      * 
-     * @return
+     *
      */
     public static MetadataMap loadMapFromGlobal() {
        GeoServerInfo gsInfo = GeoServerExtensions.bean(GeoServer.class).getGlobal();
@@ -514,10 +480,10 @@ public class RESTUtils {
 
     /**
      * Extraction of the item from the metadata map
-     * @param <T>
      * 
      * @param map
-     * @return
+     * @param key
+     *
      */
     public static String extractMapItem(MetadataMap map, String key) {
        if(map != null && !map.isEmpty()){
@@ -599,4 +565,35 @@ public class RESTUtils {
             IOUtils.closeQuietly(zin);
         }
     }
+
+    /**
+     *
+     * Use this to read or manipulate custom headers in a request or response
+     *
+     * @return headers form
+     */
+    public static Form getHeaders(Message message) {
+        Form headers = (Form) message.getAttributes().get("org.restlet.http.headers");
+        if (headers == null) {
+            headers = new Form();
+            message.getAttributes().put("org.restlet.http.headers", headers);
+        }
+        return headers;
+    }
+
+    /**
+     *
+     * Create an empty response body for HEAD requests
+     *
+     * @return empty representation.
+     */
+    public static Representation emptyBody() {
+        return new Representation() { //empty
+            @Override public ReadableByteChannel getChannel() throws IOException { return null; }
+            @Override public InputStream getStream() throws IOException { return null; }
+            @Override public void write(OutputStream outputStream) throws IOException {}
+            @Override public void write(WritableByteChannel writableChannel) throws IOException {}
+        };
+    }
+
 }

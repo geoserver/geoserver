@@ -14,14 +14,12 @@ package org.geoserver.platform;
 public interface ExtensionFilter {
 
     /**
-     * If any registered {@link ExtensionFilter} returns {@code true} the bean in question will be
-     * removed from the list returned by {@link GeoServerExtensions#extensions(Class)}
+     * If any registered {@link ExtensionFilter} returns {@code true} the bean in question will be removed from the list returned by
+     * {@link GeoServerExtensions#extensions(Class)}
      * 
-     * @param beanId
-     *            The bean id as registered in the Spring context, or {@code null} if the bean is
-     *            coming from the GeoTools SPI bridge
-     * @param bean
-     *            The bean itself
+     * @param beanId The bean id as registered in the Spring context, or {@code null} if the bean is coming from the GeoTools SPI bridge
+     * @param bean The bean itself
+     * @return true to exclude
      */
     boolean exclude(String beanId, Object bean);
 }

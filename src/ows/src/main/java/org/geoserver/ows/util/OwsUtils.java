@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -206,6 +206,7 @@ public class OwsUtils {
 
     /**
      * Reflectivley retreives a propety from a java bean.
+     * @param <T>
      *
      * @param object The java bean.
      * @param property The property to retreive.
@@ -213,12 +214,12 @@ public class OwsUtils {
      *
      * @return The property, or null if it could not be found..
      */
-    public static Object property(Object object, String property, Class type) {
+    public static <T> T property(Object object, String property, Class<T> type) {
         Method getter = getter(object.getClass(), property, type);
 
         if (getter != null) {
             try {
-                return getter.invoke(object, null);
+                return type.cast(getter.invoke(object, (Object[])null));
             } catch (Exception e) {
                 //TODO: log this
             }
@@ -416,21 +417,27 @@ public class OwsUtils {
 
     /**
      * Helper method for updating a collection based property.
+     * Only used if setter is null.
      */
     static void updateCollectionProperty(Object object, Collection newValue, Method getter)
             throws Exception {
         Collection oldValue = (Collection) getter.invoke(object, null);
-        oldValue.clear();
-        oldValue.addAll(newValue);
+        if (oldValue != null) {
+            oldValue.clear();
+            oldValue.addAll(newValue);
+        }
     }
 
     /**
      * Helper method for updating a map based property.
+     * Only used if setter is null.
      */
     static void updateMapProperty(Object object, Map newValue, Method getter) throws Exception {
         Map oldValue = (Map) getter.invoke(object, null);
-        oldValue.clear();
-        oldValue.putAll(newValue);
+        if (oldValue != null) {
+            oldValue.clear();
+            oldValue.putAll(newValue);
+        }
     }
 
 }

@@ -1106,13 +1106,14 @@ Next step is configuring ONCE for coverage (as an instance NO2), an available co
 
 .. code-block:: console
 
-   curl -v -u admin:geoserver -XPOST -H "Content-type: text/xm" -d @"/path/to/coverageconfig.xml" "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/empty/coverages"
+   curl -v -u admin:geoserver -XPOST -H "Content-type: text/xml" -d @"/path/to/coverageconfig.xml" "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/empty/coverages"
 
 Where coverageconfig.xml may look like this
 
-.. code-block:: json
+.. code-block:: xml
 
     <coverage>
+      <nativeCoverageName>NO2</nativeCoverageName>
       <name>NO2</name>
     </coverage>
 

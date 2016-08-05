@@ -1,16 +1,19 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
@@ -19,6 +22,7 @@ import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.CatalogMode;
+import org.geoserver.security.DataAccessLimits;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.TestResourceAccessManager;
 import org.geoserver.security.VectorAccessLimits;
@@ -29,6 +33,8 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.PropertyName;
 import org.w3c.dom.Document;
+
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Performs integration tests using a mock {@link ResourceAccessManager}
@@ -130,6 +136,7 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         addUser("cite_insertfilter", "cite", null, Collections.singletonList("ROLE_DUMMY"));
         addUser("cite_writefilter", "cite", null, Collections.singletonList("ROLE_DUMMY"));
         addUser("cite_writeatts", "cite", null, Collections.singletonList("ROLE_DUMMY"));
+        addUser("cite_mixed", "cite", null, Collections.singletonList("ROLE_DUMMY"));
         
         //------
         
@@ -169,6 +176,9 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         List<PropertyName> writeAtts = Arrays.asList(ff.property("the_geom"), ff.property("FID"));
         tam.putLimits("cite_writeatts", buildings, new VectorAccessLimits(CatalogMode.HIDE, null,
                 null, writeAtts, null));
+        
+        // user with mixed mode access
+        tam.putLimits("cite_mixed", buildings, new VectorAccessLimits(CatalogMode.MIXED, null, Filter.EXCLUDE, null, Filter.EXCLUDE));
     }
 
     @Test
@@ -248,6 +258,41 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name='FID'])", doc);
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name='ADDRESS'])", doc);
 
+    }
+    
+    @Test
+    public void testCapabilitiesMixed() throws Exception {
+        setRequestAuth("admin", "geoserver");
+        Document doc = getAsDOM("cite/wfs?request=GetCapabilities&version=1.1.0&service=wfs");
+        print(doc);
+        assertXpathEvaluatesTo("1", "count(//wfs:FeatureType[wfs:Name='cite:Buildings'])", doc);
+        
+        // this one not
+        setRequestAuth("cite_mixed", "cite");
+        doc = getAsDOM("cite/wfs?request=GetCapabilities&version=1.1.0&service=wfs");
+        print(doc);
+        assertXpathEvaluatesTo("0", "count(//wfs:FeatureType[wfs:Name='cite:Buildings'])", doc);
+    }
+
+    
+    @Test
+    public void testDescribeMixed() throws Exception {
+        // this one should see all types
+        setRequestAuth("admin", "geoserver");
+        Document doc = getAsDOM("cite/wfs?request=DescribeFeatureType&version=1.1.0&service=wfs");
+        // print(doc);
+        assertXpathEvaluatesTo("1", "count(//xsd:complexType[@name='BuildingsType'])", doc);
+        
+        // this one not
+        setRequestAuth("cite_mixed", "cite");
+        doc = getAsDOM("cite/wfs?request=DescribeFeatureType&version=1.1.0&service=wfs");
+        // print(doc);
+        assertXpathEvaluatesTo("0", "count(//xsd:complexType[@name='BuildingsType'])", doc);
+        
+        // and a direct access will fail with an auth challenge
+        setRequestAuth("cite_mixed", "cite");
+        MockHttpServletResponse response = getAsServletResponse("cite/wfs?request=DescribeFeatureType&version=1.1.0&service=wfs&typeName=" + getLayerId(SystemTestData.BUILDINGS));
+        assertEquals(403, response.getStatus());
     }
     
     @Test

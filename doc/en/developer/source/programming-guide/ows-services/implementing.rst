@@ -248,9 +248,9 @@ it directly from sources.
 
 #. From the root of the GeoServer source tree run the following maven command:
 
-   .. code-block: sh
+  .. code-block:: sh
 
-      [src]% mvn -P hello eclipse:eclipse
+    [src] mvn -P hello eclipse:eclipse
    
 #. In eclipse import the new hello module and refresh all modules.
 #. In the ``web-app`` module run the ``Start.java`` main class to start 

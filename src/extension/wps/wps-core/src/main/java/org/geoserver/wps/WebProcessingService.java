@@ -43,7 +43,7 @@ public interface WebProcessingService {
      * Returns the status of a given process execution, either as a {@link ExecuteResponseType} or
      * as a stored response File
      * @param request
-     * @return
+     *
      * @throws WPSException
      */
     Object getExecutionStatus(GetExecutionStatusType request) throws WPSException;
@@ -61,7 +61,7 @@ public interface WebProcessingService {
      * Returns a output stored as a reference in the specified execution
      * 
      * @param request
-     * @return
+     *
      * @throws WPSException
      */
     Resource getExecutionResult(GetExecutionResultType request) throws WPSException;
@@ -70,7 +70,7 @@ public interface WebProcessingService {
      * Dismisses the execution of a currently running process
      * 
      * @param request
-     * @return
+     *
      * @throws WPSException
      */
     ExecuteResponseType dismiss(DismissType request) throws WPSException;

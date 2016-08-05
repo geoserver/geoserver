@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -94,7 +94,42 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
     public boolean canAccess(Authentication user, WorkspaceInfo workspace, AccessMode mode) {
         checkPropertyFile();
         SecureTreeNode node = root.getDeepestNode(new String[] { workspace.getName() });
-        return node.canAccess(user, mode);
+        if(node.canAccess(user, mode)) {
+            return true;
+        }
+        
+        // perform a drill down search, we still allow access to the workspace
+        // if there is anything inside the workspace that can be read (otherwise
+        // we are denying access to everything below it, which is not the spirit of the
+        // tree override design)
+        if(mode == AccessMode.READ && canAccessChild(node, user, mode)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns true if the user can access the specified node, or one of the nodes
+     * below it
+     * 
+     * the specified nodes 
+     * @param node
+     * @param user
+     * @param mode
+     * @return
+     */
+    private boolean canAccessChild(SecureTreeNode node, Authentication user, AccessMode mode) {
+        if(node.canAccess(user, mode)) {
+            return true;
+        }
+        for (SecureTreeNode child : node.getChildren().values()) {
+            if(canAccessChild(child, user, mode)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     public boolean canAccess(Authentication user, LayerInfo layer, AccessMode mode) {

@@ -95,7 +95,6 @@ public class SQLViewTest extends WFSTestSupport {
     /**
      * Checks the setup did the expected job
      *
-     * @throws Exception
      */
     @Test
     public void testStoreSetup() throws Exception {

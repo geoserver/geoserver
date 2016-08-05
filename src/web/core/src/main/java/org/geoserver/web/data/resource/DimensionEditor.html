@@ -4,7 +4,7 @@
   <wicket:panel>
 
     <ul>
-      <li><input type="checkbox" id="enabled" wicket:id="enabled"/>
+      <li><input type="checkbox" wicket:id="enabled"/>
       <wicket:message key="enabled">enabled</wicket:message>
         &nbsp;&nbsp;<em><span wicket:id="noAttributeMsg"></span></em></li>
       <li wicket:id="configContainer">
@@ -28,7 +28,7 @@
             <input type="text" wicket:id="unitSymbol" class="field text" />
           </li>
           <li><label><wicket:message key="presentation">presentation</wicket:message></label>
-            <select id="presentation" wicket:id="presentation"></select>
+            <select wicket:id="presentation"></select>
           </li>
           <li wicket:id="resolutionContainer">
             <div wicket:id="resolutions">

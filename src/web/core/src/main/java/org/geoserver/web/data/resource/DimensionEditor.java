@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,9 +9,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -19,25 +20,30 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
+import org.geoserver.ows.kvp.ElevationKvpParser;
+import org.geoserver.ows.kvp.TimeParser;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.feature.type.DateUtil;
+import org.geotools.util.Range;
+import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.PropertyDescriptor;
 
@@ -48,6 +54,8 @@ import org.opengis.feature.type.PropertyDescriptor;
  */
 @SuppressWarnings("serial")
 public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
+    
+    static final Logger LOGGER = Logging.getLogger(DimensionEditor.class);
 
     List<DimensionPresentation> presentationModes;
     
@@ -76,7 +84,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
     
     boolean time;
     
-    public DimensionEditor(String id, IModel<DimensionInfo> model, ResourceInfo resource, Class type) {
+    public DimensionEditor(String id, IModel<DimensionInfo> model, ResourceInfo resource, Class<?> type) {
         super(id, model);
 
         // double container dance to get stuff to show up and hide on demand (grrr)
@@ -92,14 +100,14 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         final PropertyModel<Boolean> enabledModel = new PropertyModel<Boolean>(model, "enabled");
         enabled = new CheckBox("enabled", enabledModel);
         add(enabled);
-        enabled.add(new AjaxFormComponentUpdatingBehavior("onclick") {
+        enabled.add(new AjaxFormComponentUpdatingBehavior("click") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 Boolean visile = enabled.getModelObject();
 
                 configs.setVisible(visile);
-                target.addComponent(configsContainer);
+                target.add(configsContainer);
             }
 
         });
@@ -187,13 +195,13 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                 presentationModes, new PresentationModeRenderer());
         configs.add(presentation);
         presentation.setRequired(true);
-        presentation.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        presentation.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 boolean visible = presentation.getModelObject() == DimensionPresentation.DISCRETE_INTERVAL;
                 resolutions.setVisible(visible);
-                target.addComponent(resContainer);
+                target.add(resContainer);
             }
 
         });
@@ -232,13 +240,13 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         defaultValueStrategy = new DropDownChoice<DimensionDefaultValueSetting.Strategy>("strategy",
                strategyModel, defaultValueStrategies, new DefaultValueStrategyRenderer());
         configs.add(defaultValueStrategy);
-        defaultValueStrategy.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        defaultValueStrategy.add(new AjaxFormComponentUpdatingBehavior("change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 boolean visible = (defaultValueStrategy.getModelObject() == Strategy.FIXED) || (defaultValueStrategy.getModelObject() == Strategy.NEAREST);
                 referenceValueContainer.setVisible(visible);
-                target.addComponent(defValueContainer);
+                target.add(defValueContainer);
             }
 
         });
@@ -249,22 +257,22 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         
         IModel<String> refValueModel = new PropertyModel<String>(model.getObject().getDefaultValue(), "referenceValue");        
         referenceValue = new TextField<String>("referenceValue", refValueModel);
-        referenceValue.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        referenceValue.add(new AjaxFormComponentUpdatingBehavior("change") {
             
             protected void onUpdate(AjaxRequestTarget target) {
                 refValueValidationMessage.setDefaultModelObject(null);
                 refValueValidationMessage.setVisible(false);
-                target.addComponent(referenceValueContainer);
+                target.add(referenceValueContainer);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, RuntimeException e) {
                 super.onError(target, e);               
                 if (referenceValue.hasErrorMessage()){
-                    refValueValidationMessage.setDefaultModelObject(referenceValue.getFeedbackMessage().getMessage());
+                    refValueValidationMessage.setDefaultModelObject(referenceValue.getFeedbackMessages().first());
                     refValueValidationMessage.setVisible(true);
                 }                
-                target.addComponent(referenceValueContainer);
+                target.add(referenceValueContainer);
             }
         });
         referenceValue.add(new ReferenceValueValidator(id, strategyModel));
@@ -291,7 +299,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         }
     }
 
-    private void disableDimension(Class type, final WebMarkupContainer configs,
+    private void disableDimension(Class<?> type, final WebMarkupContainer configs,
             Label noAttributeMessage) {
         // no attributes of the required type, no party
         enabled.setEnabled(false);
@@ -309,7 +317,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         return true;
     }
 
-    protected void convertInput() {
+    public void convertInput() {
         //Keep the original attributes
         if (!enabled.getModelObject()) {
             setConvertedInput(new DimensionInfoImpl());
@@ -352,7 +360,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             if (defValueSetting.getStrategyType() == Strategy.FIXED || defValueSetting.getStrategyType() == Strategy.NEAREST){
                 referenceValue.processInput();
                 if (referenceValue.hasErrorMessage()){
-                    System.out.println("About to accept erroneous value "+referenceValue.getModelObject());
+                    LOGGER.log(Level.SEVERE, "About to accept erroneous value "+referenceValue.getModelObject());
                 }
                 defValueSetting.setReferenceValue(referenceValue.getModelObject());
             }
@@ -373,7 +381,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * 
      * @param resource
      * @param type
-     * @return
+     *
      */
     List<String> getAttributesOfType(ResourceInfo resource, Class<?> type) {
         List<String> result = new ArrayList<String>();
@@ -400,7 +408,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * 
      * @author Alessio
      */
-    public class PresentationModeRenderer implements IChoiceRenderer<DimensionPresentation> {
+    public class PresentationModeRenderer extends ChoiceRenderer<DimensionPresentation> {
 
         public PresentationModeRenderer() {
             super();
@@ -420,7 +428,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * 
      * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
      */
-    public class DefaultValueStrategyRenderer implements IChoiceRenderer<DimensionDefaultValueSetting.Strategy> {
+    public class DefaultValueStrategyRenderer extends ChoiceRenderer<DimensionDefaultValueSetting.Strategy> {
 
         public DefaultValueStrategyRenderer() {
             super();
@@ -441,7 +449,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
      * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
      *
      */
-    public class ReferenceValueValidator extends AbstractValidator<String> {
+    public class ReferenceValueValidator implements IValidator<String> {
         String dimension;
         IModel<DimensionDefaultValueSetting.Strategy> strategyModel;
         
@@ -451,39 +459,60 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         }
         
         @Override
-        protected void onValidate(IValidatable<String> value) {
-            if ( ((strategyModel.getObject() == Strategy.FIXED) || (strategyModel.getObject() == Strategy.NEAREST)) && value.getValue() == null){
-                error(value, "emptyReferenceValue");
-            }
-            else if (dimension.equals("time")) {
-                try {
-                    DateUtil.parseDateTime(value.getValue());
-                } catch (IllegalArgumentException iae) {
-                    if (strategyModel.getObject() == Strategy.NEAREST) {
-                        if (!DimensionDefaultValueSetting.TIME_CURRENT.equalsIgnoreCase(value
-                                .getValue())) {
-                            error(value, "invalidNearestTimeReferenceValue", Collections
-                                    .singletonMap("value", (Object) value.getValue()));
-                        }
-                    } else {
-                        error(value, "invalidTimeReferenceValue", Collections.singletonMap("value",
-                                (Object) value.getValue()));
-                    }
+        public void validate(IValidatable<String> value) {
+            String stringValue = value.getValue();
+            if ( ((strategyModel.getObject() == Strategy.FIXED) || (strategyModel.getObject() == Strategy.NEAREST)) && stringValue == null){
+                value.error(new ValidationError("emptyReferenceValue").addKey("emptyReferenceValue"));
+            } else if (dimension.equals("time")) {
+                if(!isValidTimeReference(stringValue, strategyModel.getObject())) {
+                    String messageKey = strategyModel.getObject() == Strategy.NEAREST ?  "invalidNearestTimeReferenceValue" : "invalidTimeReferenceValue";
+                    value.error(new ValidationError(messageKey).addKey(messageKey));
                 }
-            }
-            else if (dimension.equals("elevation")) {
-                try {
-                    Double.parseDouble(value.getValue());
-                } catch (NumberFormatException nfe){
-                    error(value, "invalidElevationReferenceValue", Collections.singletonMap("value",
-                            (Object) value.getValue()));
+                
+            } else if (dimension.equals("elevation")) {
+                if(!isValidElevationReference(stringValue)) {
+                    value.error(new ValidationError("invalidElevationReferenceValue")
+                            .addKey("invalidElevationReferenceValue"));
                 }
             }
         }
 
-        @Override
-        public boolean validateOnNullValue() {
-            return true;
+        private boolean isValidElevationReference(String stringValue) {
+            try {
+                ElevationKvpParser parser = GeoServerExtensions.bean(ElevationKvpParser.class);
+                List values = (List) parser.parse(stringValue);
+                // the KVP parser accepts also lists of values, we want a single one 
+                return values.size() == 1;
+            } catch (Exception e) {
+                if(LOGGER.isLoggable(Level.FINER)) {
+                    LOGGER.log(Level.FINER, "Invalid elevation value " + stringValue, e);
+                }
+                return false;
+            }
+        }
+
+        private boolean isValidTimeReference(String stringValue, Strategy strategy) {
+            try {
+                TimeParser parser = new TimeParser();
+                List values = (List) parser.parse(stringValue);
+                // the KVP parser accepts also lists of values, we want a single one
+                if(strategy == Strategy.FIXED) {
+                    // point or range, but just one
+                    return values.size() == 1;
+                } else if(strategy == Strategy.NEAREST) {
+                    // only point value, no ranges allowed
+                    return values.size() == 1 && !(values.get(0) instanceof Range);
+                } else {
+                    // nope, we cannot have a reference value if the strategy is 
+                    // not fixed or nearest
+                    return false;
+                }
+            } catch (Exception e) {
+                if(LOGGER.isLoggable(Level.FINER)) {
+                    LOGGER.log(Level.FINER, "Invalid time value " + stringValue, e);
+                }
+                return false;
+            }
         }
     }
     

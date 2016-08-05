@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -25,7 +25,7 @@ import org.geotools.csw.CSWConfiguration;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DescribeRecordTest extends CSWSimpleTestSupport {
 
@@ -124,8 +124,8 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
         
         // check we can really read those schemas 
         MockHttpServletResponse response = getAsServletResponse("/schemas/csw/2.0.2/rec-dcterms.xsd");
-        assertEquals(200, response.getStatusCode());
-        dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes("UTF-8")));
+        assertEquals(200, response.getStatus());
+        dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes("UTF-8")));
         assertXpathEvaluatesTo("dc:SimpleLiteral", "//xs:element[@name='abstract']/@type", dom);
     }
     

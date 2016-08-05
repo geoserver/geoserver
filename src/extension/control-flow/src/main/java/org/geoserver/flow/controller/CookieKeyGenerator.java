@@ -20,9 +20,6 @@ public class CookieKeyGenerator implements KeyGenerator {
 
     /**
      * Returns an id that can be associated uniquely to this user
-     * 
-     * @param request
-     * @return
      */
     public String getUserKey(Request request) {
         // check if this client already made other connections

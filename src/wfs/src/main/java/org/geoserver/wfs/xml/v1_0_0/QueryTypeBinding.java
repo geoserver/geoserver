@@ -96,8 +96,6 @@ import org.xml.sax.helpers.NamespaceSupport;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class QueryTypeBinding extends AbstractComplexBinding {

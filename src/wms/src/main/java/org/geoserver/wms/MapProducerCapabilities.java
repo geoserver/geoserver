@@ -35,7 +35,7 @@ public class MapProducerCapabilities {
 
     /**
      * If the map producer can be used in a meta-tiling context
-     * @return
+     *
      */
     public boolean isTiledRequestsSupported() {
         return tiledRequestsSupported;
@@ -44,7 +44,7 @@ public class MapProducerCapabilities {
     /**
      * Returns true if the map producer can handle list or results (one per time/elevation/dimension value)
      * instead of a single one 
-     * @return
+     *
      */
     public boolean isMultivalueRequestsSupported() {
         return multivalueRequestsSupported;
@@ -52,7 +52,7 @@ public class MapProducerCapabilities {
 
     /**
      * Returns true if paletted images are supported
-     * @return
+     *
      */
     public boolean isPaletteSupported() {
         return paletteSupported;
@@ -60,7 +60,7 @@ public class MapProducerCapabilities {
 
     /**
      * Returns true if background transparency is supported
-     * @return
+     *
      */
     public boolean isTransparencySupported() {
         return transparencySupported;
@@ -68,7 +68,7 @@ public class MapProducerCapabilities {
 
     /**
      * Returns the MIME TYPE of frames in case of animation is supported by this format
-     * @return
+     *
      */
     public String getFramesMimeType() {
         return framesMimeType;

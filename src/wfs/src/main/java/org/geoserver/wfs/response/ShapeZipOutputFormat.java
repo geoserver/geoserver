@@ -331,7 +331,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
      * Either retrieves the corresponding FeatureTypeInfo from the catalog or fakes one
      * with the necessary information 
      * @param c
-     * @return
+     *
      */
     private FeatureTypeInfo getFeatureTypeInfo(SimpleFeatureType schema) {
         FeatureTypeInfo ftInfo = catalog.getFeatureTypeByName(schema.getName());

@@ -128,7 +128,7 @@ public class GeoFenceConfigurationManager {
 
    /**
     * Returns a copy of the configuration.
-    * @return
+    *
     */
 
     public void setConfigurer(GeoFencePropertyPlaceholderConfigurer configurer) {

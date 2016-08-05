@@ -1,12 +1,16 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+    <bean class="org.geoserver.platform.ModuleStatusImpl">
+      <constructor-arg index="0" value="gs-wms"/>
+      <constructor-arg index="1" value="GeoServer Web Map Service"/>
+    </bean>
 	<bean id="wmsLegacyLoader" class="org.geoserver.wms.WMSLoader"/>
     <bean id="wmsLoader" class="org.geoserver.wms.WMSXStreamLoader">
       <constructor-arg ref="resourceLoader"/>
@@ -571,6 +575,30 @@
     <bean id="JPEGMapResponse" class="org.geoserver.wms.map.JPEGMapResponse">
       <constructor-arg ref="wms" />
     </bean>
+    
+    <bean id="JpegPngMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+      <constructor-arg>
+        <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
+        <value>image/vnd.jpeg-png</value>
+     </constructor-arg>
+      <constructor-arg ref="wms" />
+      <property name="transparencySupported">
+        <description>JPEG-PNG does support transparency</description>
+        <value>true</value>
+      </property>
+      <property name="paletteSupported">
+        <description>JPEG-PNG does support 8-bit indexed color maps</description>
+        <value>true</value>
+      </property>
+      <!-- The extension is actually dynamically determined -->
+      <property name="extension" value="jpg-png"/>
+    </bean>
+    
+    <bean id="JpegPngMapResponse" class="org.geoserver.wms.map.JpegPngMapResponse">
+        <constructor-arg index="0" ref="wms"/>
+        <constructor-arg index="1" ref="JPEGMapResponse"/>
+        <constructor-arg index="2" ref="PNGMapResponse"/>
+    </bean>
 
     <bean id="PDFMapProducer" class="org.geoserver.wms.map.PDFMapOutputFormat">
     </bean>
@@ -586,13 +614,13 @@
     
 
 	<bean id="AtomGeoRSSMapProducer"
-		singleton="true"
+		scope="prototype"
 		class="org.geoserver.wms.georss.AtomGeoRSSMapOutputFormat">
         <constructor-arg index="0" ref="wms"/>
 	</bean>
 
 	<bean id="RSSGeoRSSMapProducer"
-		singleton="true"
+		scope="prototype"
 		class="org.geoserver.wms.georss.RSSGeoRSSMapOutputFormat">
         <constructor-arg index="0" ref="wms"/>
 	</bean>
@@ -640,28 +668,28 @@
     <!-- Default Decoration Plugins -->
     <bean id="image" 
           class="org.geoserver.wms.decoration.WatermarkDecoration"
-          singleton="false"
+          scope="prototype"
      />
 
     <bean id="legend" 
           class="org.geoserver.wms.decoration.LegendDecoration"
-          singleton="false">
+          scope="prototype">
        <constructor-arg ref="wms"/>
     </bean>
 
     <bean id="scaleratio" 
           class="org.geoserver.wms.decoration.ScaleRatioDecoration"
-          singleton="false"
+          scope="prototype"
     />
     
     <bean id="scaleline" 
           class="org.geoserver.wms.decoration.ScaleLineDecoration"
-          singleton="false"
+          scope="prototype"
     />
     
     <bean id="text" 
           class="org.geoserver.wms.decoration.TextDecoration"
-          singleton="false"
+          scope="prototype"
     />
     
     <bean id="wmsWorkspaceQualifier" class="org.geoserver.wms.WMSWorkspaceQualifier">

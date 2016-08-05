@@ -21,7 +21,7 @@ import org.geotools.xml.Encoder;
  */
 public class CSWObjectEncodingResponse extends XmlObjectEncodingResponse {
 
-    public CSWObjectEncodingResponse(Class binding, String elementName, Class xmlConfiguration) {
+    public CSWObjectEncodingResponse(Class<?> binding, String elementName, Class<?> xmlConfiguration) {
         super(binding, elementName, xmlConfiguration);
     }
 
@@ -34,7 +34,7 @@ public class CSWObjectEncodingResponse extends XmlObjectEncodingResponse {
     }
 
     @Override
-    protected void configureEncoder(Encoder encoder, String elementName, Class xmlConfiguration) {
+    protected void configureEncoder(Encoder encoder, String elementName, Class<?> xmlConfiguration) {
         encoder.setNamespaceAware(true);
         encoder.getNamespaces().declarePrefix("ows", OWS.NAMESPACE);
         encoder.getNamespaces().declarePrefix("ogc", OGC.NAMESPACE);

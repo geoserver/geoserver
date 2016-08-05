@@ -50,7 +50,7 @@ public class KmlCentroidBuilder {
      * Selects a representative geometry from the collection (the one covering the biggest area)
      * 
      * @param g
-     * @return
+     *
      */
     private Geometry selectRepresentativeGeometry(GeometryCollection g) {
         GeometryCollection gc = (GeometryCollection) g;

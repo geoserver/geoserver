@@ -59,7 +59,7 @@ class RasterEstimator {
      * @param filter the {@link Filter} to load the data
      * @param targetSizeX the size of the target image along the X axis
      * @param targetSizeY the size of the target image along the Y axis
-     * @return
+     *
      */
     public boolean execute(final ProgressListener progressListener, CoverageInfo coverageInfo,
             Geometry roi, CoordinateReferenceSystem targetCRS, boolean clip, Filter filter,

@@ -47,7 +47,7 @@ public class ISO8601Formatter {
      * interval, if it's a DateRange (and will throw an {@link IllegalArgumentException} otherwise)
      * 
      * @param date
-     * @return
+     *
      */
     public String format(Object date) {
         if(date instanceof Date) {
@@ -70,7 +70,7 @@ public class ISO8601Formatter {
      * Formats the specified Date in ISO8601 format
      * 
      * @param date
-     * @return
+     *
      */
     public String format(Date date) {
         return format(date, new StringBuilder()).toString();

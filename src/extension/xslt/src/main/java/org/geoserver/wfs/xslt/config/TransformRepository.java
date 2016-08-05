@@ -152,7 +152,7 @@ public class TransformRepository {
      * The transform name is the same as the config file, minus the extension
      * 
      * @param file
-     * @return
+     *
      */
     protected String getTransformName(Resource file) {
         String name = file.name();
@@ -167,7 +167,7 @@ public class TransformRepository {
     /**
      * Returns all the transform (either global or feature type specific)
      * 
-     * @return
+     *
      */
     public List<TransformInfo> getAllTransforms() throws IOException {
         Resource root = dataDir.get(Paths.path("wfs", "transform"));
@@ -188,7 +188,7 @@ public class TransformRepository {
     /**
      * Returns all the global transformations (not attached to a particular layer)
      * 
-     * @return
+     *
      */
     public List<TransformInfo> getGlobalTransforms() throws IOException {
         List<TransformInfo> allTransformations = getAllTransforms();
@@ -206,7 +206,7 @@ public class TransformRepository {
      * Returns transformations associated to a specific feature type
      * 
      * @param featureType
-     * @return
+     *
      */
     public List<TransformInfo> getTypeTransforms(FeatureTypeInfo featureType) throws IOException {
         List<TransformInfo> allTransformations = getAllTransforms();
@@ -225,7 +225,7 @@ public class TransformRepository {
      * Returns a specific transformation by hand
      * 
      * @param name
-     * @return
+     *
      */
     public TransformInfo getTransformInfo(String name) throws IOException {
         Resource infoFile = getTransformInfoFile(name);
@@ -237,7 +237,7 @@ public class TransformRepository {
      * latter is not shared with other transformations)
      * 
      * @param info
-     * @return
+     *
      * @throws IOException
      */
     public boolean removeTransformInfo(TransformInfo info) throws IOException {
@@ -270,7 +270,7 @@ public class TransformRepository {
      * Returns the XSLT transformer for a specific {@link TransformInfo}
      * 
      * @param name
-     * @return
+     *
      */
     public Transformer getTransformer(TransformInfo info) throws IOException {
         Resource txFile = getTransformFile(info);
@@ -289,7 +289,7 @@ public class TransformRepository {
     
     /**
      * Returns the stylesheet of a transformation. It is the duty of the caller to close the input stream after reading it.
-     * @return
+     *
      * @throws IOException
      */
     public InputStream getTransformSheet(TransformInfo info) throws IOException {

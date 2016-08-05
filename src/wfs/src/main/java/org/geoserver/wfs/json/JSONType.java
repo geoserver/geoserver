@@ -180,7 +180,7 @@ public enum JSONType {
      * get an array containing all the MimeType handled by this object
      * 
      * @return return a string array of handled MimeType
-     * @return
+     *
      */
     public static String[] getSupportedTypes() {
         if (isJsonpEnabled())

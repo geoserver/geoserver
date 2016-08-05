@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -1672,7 +1672,7 @@ public interface Catalog extends CatalogInfo {
      * 
      * @return the single object of the given {@code type} that matches the given filter, or
      *         {@code null} if no object matches the provided filter.
-     * @throws IllegalArgumentExeption if more than one object of type {@code T} match the provided
+     * @throws IllegalArgumentException if more than one object of type {@code T} match the provided
      *         filter.
      */
     <T extends CatalogInfo> T get(Class<T> type, Filter filter) throws IllegalArgumentException;
@@ -1709,8 +1709,7 @@ public interface Catalog extends CatalogInfo {
      * 
      * @return an iterator over the predicate matching catalog objects that must be closed once
      *         consumed
-     * @throws IllegalArgumentException if {@code sortOrder != null} and {@link #canSort
-     *         !canSort(of, sortOrder)}
+     * @throws IllegalArgumentException if {@code sortOrder != null} and {code !canSort(of, sortOrder)}
      */
     public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of, final Filter filter);
 
@@ -1746,7 +1745,7 @@ public interface Catalog extends CatalogInfo {
      * @param of the type of catalog objects to return. Super interfaces of concrete catalog objects
      *        are allowed (such as {@code StoreInfo.class} and {@code ResourceInfo.class}, although
      *        the more generic {@code Info.class} and {@code CatalogInfo.class} are not.
-     * @param filter the query predicate, use {@link Predicates#ACCEPT_ALL} if needed, {@code null}
+     * @param filter the query predicate, use {@link Predicates#ANY_TEXT} if needed, {@code null}
      *        is not accepted.
      * @param offset {@code null} to return an iterator starting at the first matching object,
      *        otherwise an integer {@code >= 0} to return an iterator positioned at the specified
@@ -1754,12 +1753,11 @@ public interface Catalog extends CatalogInfo {
      * @param count {@code null} to return a non limited in number of elements iterator, an integer
      *        {@code >= 0} otherwise to specify the maximum number of elements the iterator shall
      *        return.
-     * @param sortBy
+     * @param sortBy order for sorting
      * 
      * @return an iterator over the predicate matching catalog objects that must be closed once
      *         consumed
-     * @throws IllegalArgumentException if {@code sortOrder != null} and {@link #canSort
-     *         !canSort(of, sortOrder)}
+     * @throws IllegalArgumentException if {@code sortOrder != null} and [@code !canSort(of, sortOrder)}
      */
     public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
             final Filter filter, @Nullable Integer offset, @Nullable Integer count,
@@ -1767,8 +1765,6 @@ public interface Catalog extends CatalogInfo {
 
     /**
      * Removes all the listeners which are instances of the specified class
-     * 
-     * @param listenerClass
      */
     public void removeListeners(Class listenerClass);
 

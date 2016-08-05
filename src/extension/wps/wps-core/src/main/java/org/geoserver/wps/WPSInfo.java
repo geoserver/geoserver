@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -35,7 +35,7 @@ public interface WPSInfo extends ServiceInfo {
      * Returns the resource expiration timeout (in seconds). Temporary resources such as stored
      * Execute responses and output stored as reference will be deleted after this timeout
      * 
-     * @return
+     *
      */
     int getResourceExpirationTimeout();
 
@@ -50,14 +50,14 @@ public interface WPSInfo extends ServiceInfo {
      * Returns the maximum number of processes that can run in synchronous mode in parallel.
      * Defaults to the number of available CPU cores
      * 
-     * @return
+     *
      */
     public int getMaxSynchronousProcesses();
 
     /**
      * Sets the maximum number of processes that can run in synchronous mode in parallel.
      * 
-     * @return
+     *
      */
     public void setMaxSynchronousProcesses(int maxSynchronousProcesses);
 
@@ -65,7 +65,7 @@ public interface WPSInfo extends ServiceInfo {
      * Returns the maximum number of processes that can run in asynchronous mode in parallel.
      * Defaults to the number of available CPU cores
      * 
-     * @return
+     *
      */
     public int getMaxAsynchronousProcesses();
 
@@ -79,14 +79,14 @@ public interface WPSInfo extends ServiceInfo {
     /**
      * Retrieves the process groups configurations
      * 
-     * @return
+     *
      */
     public List<ProcessGroupInfo> getProcessGroups();
 
     /**
      * Gets the current output storage directory
      * 
-     * @return
+     *
      */
     public String getStorageDirectory();
 
@@ -129,22 +129,48 @@ public interface WPSInfo extends ServiceInfo {
     public abstract int getMaxAsynchronousExecutionTime();
 
     /**
+     * How many seconds a process can run or queue in asynchronous mode (with the user polling for its
+     * status) before it gets killed by the WPS container (0 or a negative value means no limit)
+     */
+    public abstract Integer getMaxAsynchronousTotalTime();
+
+
+    /**
      * Sets how many seconds a process can run in asynchronous mode (with the user polling for its
      * status) before it gets killed by the WPS container (0 or a negative value means no limit)
      */
-    public abstract void setMaxAsynchronousExecutionTime(int maxAsynchrornousExecutionTime);
+    public abstract void setMaxAsynchronousExecutionTime(int maxAsynchronousExecutionTime);
 
     /**
-     * How many seconds a process can run in asynchronous mode (with the user waiting on the HTTP
+     * Sets how many seconds a process can run or queue in asynchronous mode (with the user polling for its
+     * status) before it gets killed by the WPS container (0 or a negative value means no limit)
+     */
+    public abstract void setMaxAsynchronousTotalTime(Integer maxAsynchronousTotalTime);
+
+    /**
+     * How many seconds a process can run in synchronous mode (with the user waiting on the HTTP
      * connection) before it gets killed by the WPS container (0 or a negative value means no limit)
      */
     public abstract int getMaxSynchronousExecutionTime();
 
+     /**
+     * How many seconds a process can run or queue in synchronous mode (with the user waiting on the HTTP
+     * connection) before it gets killed by the WPS container (0 or a negative value means no limit)
+     */
+    public abstract Integer getMaxSynchronousTotalTime();
+
     /**
-     * Sets how many seconds a process can run in asynchronous mode (with the user waiting on the
+     * Sets how many seconds a process can run in synchronous mode (with the user waiting on the
      * HTTP connection) before it gets killed by the WPS container (0 or a negative value means no
      * limit)
      */
     public abstract void setMaxSynchronousExecutionTime(int maxSynchronousExecutionTime);
+
+    /**
+     * Sets how many seconds a process can run or queue in synchronous mode (with the user waiting on the
+     * HTTP connection) before it gets killed by the WPS container (0 or a negative value means no
+     * limit)
+     */
+    public abstract void setMaxSynchronousTotalTime(Integer maxSynchronousTotalTime);
 
 }

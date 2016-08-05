@@ -624,7 +624,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
      * Writes a block reference, given the desired name. The handle is dinamically created.
      * 
      * @param blockName
-     * @return
+     *
      * @throws IOException
      */
     private String writeBlockRecord(String blockName) throws IOException {
@@ -674,7 +674,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
      * Builds a block list for the given feature list.
      * 
      * @param featureList
-     * @return
+     *
      */
     private int countBlocks(List featureList) {
         if (blockNames == null) {
@@ -724,7 +724,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
      * Checks if a geometry is complex and should be exported as a block.
      * 
      * @param geom
-     * @return
+     *
      */
     private boolean isBlockGeometry(Geometry geom) {
         if (geom != null) {

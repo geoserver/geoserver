@@ -1,0 +1,123 @@
+.treeview
+{
+    font-family: Arial, Sans-serif;
+    font-size: 11px;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
+.treeview ul, .treeview li
+{
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    list-style: none;
+}
+
+.treeview input
+{
+    position: absolute;
+    opacity: 0;
+}
+
+.treeview .selectableLabel
+{
+    color: #000000;
+    cursor: pointer;
+}
+
+.treeview .selected
+{
+    background-color: #b0b0d5;
+}
+
+.treeview a:hover
+{
+    text-decoration: underline;
+}
+
+.treeview input + label + ul
+{
+    margin: 0px 0px 0px 22px;
+}
+
+.treeview input + label + ul
+{
+    display: none;
+}
+
+.treeview label::before
+{
+    cursor: pointer;
+}
+
+.treeview input:disabled + label
+{
+    cursor: default;
+    opacity: .6;
+}
+
+.treeview input:checked:not(:disabled) + label + ul
+{
+    display: block;
+}
+
+.treeview label, .treeview label::before
+{
+    background: url("iconsdir.png") no-repeat;
+}
+
+.treeview label, .treeview .leaf, .treeview label::before
+{
+    display: inline-block;
+    height: 16px;
+    line-height: 16px;,
+    vertical-align: middle;
+}
+
+.treeview .leaf
+{
+    background: url("iconleaf.png") no-repeat;
+    background-position: 0 0; 
+    margin: 0 0 0 17px;
+    padding: 0 0 0 20px;
+}
+
+.treeview label
+{
+    background-position: 18px 0;
+}
+
+.treeview label::before
+{
+    content: "";
+    width: 16px;
+    margin: 0 22px 0 0;
+    vertical-align: middle;
+    background-position: 0 -32px;
+}
+
+.treeview input:checked + label::before
+{
+    background-position: 0 -16px;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0)
+{
+    .treeview 
+    {
+        -webkit-animation: webkit-adjacent-element-selector-bugfix infinite 1s;
+    }
+    
+    @-webkit-keyframes webkit-adjacent-element-selector-bugfix 
+    {
+        from 
+        { 
+            padding: 0;
+        } 
+        to 
+        { 
+            padding: 0;
+        }
+    }
+} 

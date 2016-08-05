@@ -73,7 +73,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
      * 
      * </p>
      * 
-     * @param close
+     * @param close iterator to close
      */
     @SuppressWarnings("unchecked")
     final public void close(Iterator close) {

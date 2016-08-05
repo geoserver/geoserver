@@ -255,7 +255,7 @@ public class ExternalSortRegionatingStrategy extends
     /**
      * Returns the value that will be inserted into the H2 index as the sorting field
      * @param f
-     * @return
+     *
      */
     protected Object getSortAttributeValue(SimpleFeature f) {
         return f.getAttribute(attribute);

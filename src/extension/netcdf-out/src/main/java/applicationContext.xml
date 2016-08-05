@@ -7,6 +7,8 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+  <bean class="org.geoserver.netcdfout.NetCDFOutStatus"/>  
+
     <bean id="netcdfCoverageResponseDelegate" class="org.geoserver.wcs.responses.NetCDFCoverageResponseDelegate">
         <constructor-arg ref="geoServer"/>
     </bean>

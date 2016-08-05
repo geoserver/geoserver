@@ -1,12 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.flow.controller;
 
-import static junit.framework.Assert.fail;
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.lang.Thread.State;
 
@@ -15,8 +14,8 @@ import javax.servlet.http.Cookie;
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Base class providing utilities to test flow controllers
@@ -41,7 +40,7 @@ public abstract class AbstractFlowControllerTest {
             while (t.getState() != State.WAITING && t.getState() != State.TIMED_WAITING) {
                 if (System.currentTimeMillis() > (start + maxWait))
                     fail("Waited for the thread to be blocked more than maxWait: " + maxWait);
-                Thread.currentThread().sleep(10);
+                Thread.sleep(10);
             }
         } catch (InterruptedException e) {
             fail("Sometime interrupeted our wait: " + e);
@@ -62,7 +61,7 @@ public abstract class AbstractFlowControllerTest {
             while (t.getState() != State.TERMINATED) {
                 if (System.currentTimeMillis() > (start + maxWait))
                     fail("Waited for the thread to be terminated more than maxWait: " + maxWait);
-                Thread.currentThread().sleep(20);
+                Thread.sleep(20);
             }
         } catch (Exception e) {
             System.out.println("Could not terminate thread " + t);
@@ -84,7 +83,7 @@ public abstract class AbstractFlowControllerTest {
                     t.interrupt();
                 }
 
-                Thread.currentThread().sleep(20);
+                Thread.sleep(20);
             }
         } catch (InterruptedException e) {
             fail("Sometime interrupeted our wait: " + e);
@@ -98,7 +97,7 @@ public abstract class AbstractFlowControllerTest {
         request.setHttpResponse(new MockHttpServletResponse());
         
         if(gsCookieValue != null) {
-            httpRequest.addCookie(new Cookie(CookieKeyGenerator.COOKIE_NAME, gsCookieValue));
+            httpRequest.setCookies(new Cookie(CookieKeyGenerator.COOKIE_NAME, gsCookieValue));
         }
         return request;
     }
@@ -115,7 +114,7 @@ public abstract class AbstractFlowControllerTest {
             httpRequest.setRemoteAddr("127.0.0.1");
         }
         if (!proxyIp.equals("")) {
-            httpRequest.setHeader("x-forwarded-for", proxyIp + ", " + ipAddress);
+            httpRequest.addHeader("x-forwarded-for", proxyIp + ", " + ipAddress);
         }
         return request;
     }

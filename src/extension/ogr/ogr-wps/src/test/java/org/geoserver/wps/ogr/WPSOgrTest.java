@@ -27,12 +27,13 @@ import org.geoserver.wfs.response.Ogr2OgrTestUtil;
 import org.geoserver.wfs.response.OgrConfiguration;
 import org.geoserver.wfs.response.OgrFormat;
 import org.geoserver.wps.WPSTestSupport;
+import org.geotools.data.DataUtilities;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.thoughtworks.xstream.XStream;
 
 public class WPSOgrTest extends WPSTestSupport {
@@ -54,7 +55,7 @@ public class WPSOgrTest extends WPSTestSupport {
 
         XStream xstream = buildXStream();
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(ogrConfigruationName).getFile());
+        File file = DataUtilities.urlToFile(classLoader.getResource(ogrConfigruationName));
         OgrConfiguration ogrConfiguration = (OgrConfiguration) xstream.fromXML(file);
         ogrConfiguration.ogr2ogrLocation = Ogr2OgrTestUtil.getOgr2Ogr();
         ogrConfiguration.gdalData = Ogr2OgrTestUtil.getGdalData();
@@ -121,7 +122,7 @@ public class WPSOgrTest extends WPSTestSupport {
             MockHttpServletResponse r = postAsServletResponse("wps",
                     getWpsRawXML("application/vnd.google-earth.kml; subtype=OGR-KML"));
             assertEquals("application/vnd.google-earth.kml; subtype=OGR-KML", r.getContentType());
-            assertTrue(r.getOutputStreamContent().length() > 0);
+            assertTrue(r.getContentAsString().length() > 0);
 
         } catch (IOException e) {
             System.err.println(e.getStackTrace());
@@ -163,8 +164,8 @@ public class WPSOgrTest extends WPSTestSupport {
             MockHttpServletResponse r = postAsServletResponse("wps",
                     getWpsRawXML("text/csv; subtype=OGR-CSV"));
             assertEquals("text/csv; subtype=OGR-CSV", r.getContentType());
-            assertTrue(r.getOutputStreamContent().length() > 0);
-            assertTrue(r.getOutputStreamContent().contains("WKT,gml_id,STATE_NAME"));
+            assertTrue(r.getContentAsString().length() > 0);
+            assertTrue(r.getContentAsString().contains("WKT,gml_id,STATE_NAME"));
         } catch (IOException e) {
             System.err.println(e.getStackTrace());
         } finally {

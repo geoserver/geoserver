@@ -7,23 +7,15 @@
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>community</artifactId>
-        <version>2.9-SNAPSHOT</version>
+        <version>2.10-SNAPSHOT</version>
     </parent>
 
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-geofence-server</artifactId>
     <packaging>jar</packaging>
-    <version>2.9-SNAPSHOT</version>
+    <version>2.10-SNAPSHOT</version>
     <name>GeoFence Server</name>
     <description>GeoFence security internal server</description>
-
-    <repositories>
-        <repository>
-            <id>wicket-dnd</id>
-            <name>Wicket-dnd Repository</name>
-            <url>http://wicket-dnd.googlecode.com/svn/repo</url>
-        </repository>
-    </repositories>
 
     <dependencies>
          <dependency>
@@ -130,14 +122,16 @@
         </dependency>
 
         <dependency>
-            <groupId>wicket-dnd</groupId>
+            <groupId>com.github.svenmeier.wicket-dnd</groupId>
             <artifactId>wicket-dnd</artifactId>
-            <version>0.4.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wicketstuff</groupId>
-            <artifactId>prototype</artifactId>
-            <version>1.4.7</version>
+            <version>0.7.3</version>
+            <exclusions>
+              <!-- wicket-dnd depends on wicket 7.0 now, we use 7.1.0 -->
+              <exclusion>
+              	 <groupId>org.apache.wicket</groupId>
+              	 <artifactId>wicket-core</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- test dependencies -->
@@ -166,8 +160,8 @@
         </dependency>
         
         <dependency>
-            <groupId>com.mockrunner</groupId>
-            <artifactId>mockrunner</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

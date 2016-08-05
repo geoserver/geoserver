@@ -39,7 +39,6 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
      * Test that bindBeforeGroupSearch correctly enables roles fetching on a
      * server without anonymous access enabled.
      * 
-     * @throws Exception
      */
     @Test
     public void testBindBeforeGroupSearch() throws Exception {
@@ -61,7 +60,6 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
      * Test that without bindBeforeGroupSearch we get an exception during roles
      * fetching on a server without anonymous access enabled.
      * 
-     * @throws Exception
      */
     @Test
     public void testBindBeforeGroupSearchRequiredIfAnonymousDisabled()
@@ -86,7 +84,6 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
      * Test that authentication can be done using the couple userFilter and
      * userFormat instead of userDnPattern.
      * 
-     * @throws Exception
      */
     @Test
     public void testUserFilterAndFormat() throws Exception {
@@ -107,7 +104,6 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
      * Test that authentication can be done using the couple userFilter and
      * userFormat instead of userDnPattern, using placemarks in userFilter.
      * 
-     * @throws Exception
      */
     @Test
     public void testUserFilterPlacemarks() throws Exception {
@@ -138,7 +134,6 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
      * Test that if and adminGroup is defined, the roles contain
      * ROLE_ADMINISTRATOR
      * 
-     * @throws Exception
      */
     @Test
     public void testAdminGroup() throws Exception {
@@ -163,7 +158,6 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
      * Test that if and groupAdminGroup is defined, the roles contain
      * ROLE_GROUP_ADMIN
      * 
-     * @throws Exception
      */
     @Test
     public void testGroupAdminGroup() throws Exception {
@@ -187,7 +181,6 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
     /**
      * Test that active role service is applied in the LDAPAuthenticationProvider
      * 
-     * @throws Exception
      */
     @Test
     public void testRoleService() throws Exception {
@@ -217,7 +210,6 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
      * Test that LDAPAuthenticationProvider finds roles even if there is a colon in 
      * the password
      * 
-     * @throws Exception
      */
     @Test
     public void testColonPassword() throws Exception {

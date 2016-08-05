@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class TransformRestTest extends XSLTTestSupport {
 
@@ -115,7 +115,7 @@ public class TransformRestTest extends XSLTTestSupport {
         		"  </featureType>\n" + 
         		"</transform>\n";
         MockHttpServletResponse response = postAsServletResponse("rest/services/wfs/transforms", xml);
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/rest/services/wfs/transforms/buildings" ) );
         
@@ -129,11 +129,11 @@ public class TransformRestTest extends XSLTTestSupport {
         
         // test for missing params
         MockHttpServletResponse response = postAsServletResponse("rest/services/wfs/transforms?name=general2", xslt, "application/xslt+xml");
-        assertEquals(400, response.getStatusCode());
+        assertEquals(400, response.getStatus());
         
         // now pass all
         response = postAsServletResponse("rest/services/wfs/transforms?name=general2&sourceFormat=gml&outputFormat=HTML&outputMimeType=text/html", xslt, "application/xslt+xml");
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/rest/services/wfs/transforms/general2" ) );
 
@@ -155,7 +155,7 @@ public class TransformRestTest extends XSLTTestSupport {
         		"</transform>";
         
         MockHttpServletResponse response = putAsServletResponse("rest/services/wfs/transforms/general", xml, "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         
         TransformInfo info = repository.getTransformInfo("general");
         assertEquals("text/html", info.getOutputFormat());
@@ -165,7 +165,7 @@ public class TransformRestTest extends XSLTTestSupport {
     public void testPutXSLT() throws Exception {
         String xslt = FileUtils.readFileToString(new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"));
         MockHttpServletResponse response = putAsServletResponse("rest/services/wfs/transforms/general", xslt, "application/xslt+xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         
         TransformInfo info = repository.getTransformInfo("general");
         InputStream is = null;
@@ -183,7 +183,7 @@ public class TransformRestTest extends XSLTTestSupport {
     @Test
     public void testDelete() throws Exception {
         MockHttpServletResponse response = deleteAsServletResponse("rest/services/wfs/transforms/general");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         
         TransformInfo info = repository.getTransformInfo("general");
         assertNull(info);

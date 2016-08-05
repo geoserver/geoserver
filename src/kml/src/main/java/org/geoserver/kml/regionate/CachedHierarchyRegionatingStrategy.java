@@ -212,7 +212,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
      * 
      * @param tileEnvelope
      * @param expectedEnvelope 
-     * @return
+     *
      */
     private boolean envelopeMatch(ReferencedEnvelope tileEnvelope,
             ReferencedEnvelope expectedEnvelope) {
@@ -235,8 +235,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
      * 
      * @param dataDir
      * @param tile
-     * @return
-     * @throws Exception
+     *
      */
     private Set<String> getFeaturesForTile(String dataDir, Tile tile)
             throws Exception {
@@ -280,8 +279,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
      *            the Tile whose features we must find
      * @param conn
      *            the H2 connection
-     * @return
-     * @throws Exception
+     *
      */
     protected Set<String> readFeaturesForTile(Tile tile, Connection conn)
             throws Exception {
@@ -359,7 +357,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
      * 
      * @param tileCoords
      * @param st
-     * @return
+     *
      * @throws SQLException
      */
     private Set<String> computeFids(Tile tile, Connection conn)
@@ -457,8 +455,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
      * @param envelope
      * @param indexConnection
      *            a connection to the feature id cache db
-     * @return
-     * @throws Exception
+     *
      */
     protected abstract FeatureIterator getSortedFeatures(
     		GeometryDescriptor geom, ReferencedEnvelope latLongEnvelope, 
@@ -471,7 +468,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
      * 
      * @param tile
      * @param st
-     * @return
+     *
      * @throws SQLException
      */
     private Set<String> getUpwardFids(Tile tile, Connection conn)
@@ -543,7 +540,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
      * 
      * @param con
      * @param layer
-     * @return
+     *
      */
     protected String getDatabaseName(WMSMapContent con, Layer layer)
         throws Exception {
@@ -585,7 +582,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
          * This code takes care of the first, whilst the second issue remains as a TODO
          * @param x
          * @param y
-         * @return
+         *
          */
         public boolean contains(double x, double y) {
             if(super.contains(x, y)) {
@@ -620,7 +617,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
          * Returns the parent of this tile, or null if this tile is (one of) the
          * root of the current dataset
          * 
-         * @return
+         *
          */
         public Tile getParent() {
             if (envelope.contains((BoundingBox) dataEnvelope)) {

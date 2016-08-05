@@ -835,7 +835,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
      * 
      * @param supportedFormats
      * @param format
-     * @return
+     *
      */
     private String getDeclaredFormat(List<String> supportedFormats, String format) {
         // supported formats may be setup using old style formats, first scan

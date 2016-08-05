@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,6 +12,7 @@ import java.util.Map;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -145,6 +146,16 @@ public class CoverageStoreResource extends AbstractCatalogResource {
     protected void configurePersister(XStreamPersister persister, final DataFormat format ) {
         persister.setCallback( 
             new XStreamPersister.Callback() {
+                @Override
+                protected CatalogInfo getCatalogObject() {
+                    String workspace = getAttribute("workspace");
+                    String coveragestore = getAttribute("coveragestore");
+                    
+                    if (workspace == null || coveragestore == null) {
+                        return null;
+                    }
+                    return catalog.getCoverageStoreByName(workspace, coveragestore);
+                }
                 @Override
                 protected void postEncodeCoverageStore(CoverageStoreInfo cs,
                         HierarchicalStreamWriter writer,

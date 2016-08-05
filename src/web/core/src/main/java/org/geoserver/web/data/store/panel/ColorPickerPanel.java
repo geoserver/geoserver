@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,16 +21,12 @@ import org.geoserver.web.wicket.ColorPickerField;
  * 
  * @author Gabriel Roldan
  */
-@SuppressWarnings("serial")
 public class ColorPickerPanel extends Panel {
 
-	/**
+	private static final long serialVersionUID = 6661147317307298452L;
+
+        /**
 	 * 
-	 * @param id
-	 * @param paramsMap
-	 * @param paramName
-	 * @param paramLabel
-	 * @param required
 	 * @param validators
 	 *            any extra validator that should be added to the input field,
 	 *            or {@code null}
@@ -49,30 +45,33 @@ public class ColorPickerPanel extends Panel {
 
 		// the color picker. Notice that we need to convert between RRGGBB and
 		// #RRGGBB,
-		// passing in a Color.class param is just a trick to force the component
-		// to use
-		// the converter both ways
-		ColorPickerField textField = new ColorPickerField("paramValue",
-				paramVale, Color.class) {
-			@Override
-			public IConverter getConverter(Class type) {
-				return new IConverter() {
+		ColorPickerField textField = new ColorPickerField("paramValue", paramVale) {
+                    private static final long serialVersionUID = 4185457152965032989L;
 
-					public String convertToString(Object value, Locale locale) {
-						String input = (String) value;
-						if (input.startsWith("#"))
-							return input.substring(1);
-						else
-							return input;
-					}
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public <C> IConverter<C> getConverter(Class<C> type) {
+                        if (type.isAssignableFrom(String.class)) {
+                            return (IConverter<C>) new IConverter<String>() {            
+                                private static final long serialVersionUID = 4343895199315509104L;
 
-					public Object convertToObject(String value, Locale locale) {
-						if (value.equals(""))
-							return value;
-						return "#" + value;
-					}
-				};
-			}
+                                public String convertToString(String input, Locale locale) {
+                                    if (input.startsWith("#")) {
+                                        return input.substring(1);
+                                    } else {
+                                        return input;
+                                    }
+                                }
+                
+                                public String convertToObject(String value, Locale locale) {
+                                    if (value.equals(""))
+                                        return value;
+                                    return "#" + value;
+                                }
+                            };
+                        }
+                        return super.getConverter(type);
+                    }
 		};
 		textField.setRequired(required);
 		// set the label to be the paramLabelModel otherwise a validation error

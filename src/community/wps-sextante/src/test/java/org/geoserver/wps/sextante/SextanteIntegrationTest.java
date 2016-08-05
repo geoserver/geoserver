@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,13 +10,12 @@ import static junit.framework.Assert.assertEquals;
 import org.geoserver.wps.WPSTestSupport;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class SextanteIntegrationTest extends WPSTestSupport {
 
     /**
      * Tests raster input and output as arcgrid
-     * @throws Exception
      */
 	@Test
     public void testArcGridInOut() throws Exception {
@@ -70,7 +69,7 @@ public class SextanteIntegrationTest extends WPSTestSupport {
         		"0.5 1.0\n" + 
         		"0.75 1.0\n";
 
-        String actual = sr.getOutputStreamContent();
+        String actual = sr.getContentAsString();
         actual = actual.replace("\r", "");
 
         assertEquals(expected, actual);

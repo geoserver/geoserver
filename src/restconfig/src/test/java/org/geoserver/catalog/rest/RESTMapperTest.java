@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -27,7 +27,7 @@ import org.geotools.data.DataUtilities;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Unit test for evaluating the Default REST PathMapper.
@@ -77,7 +77,7 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
         // Add the workspace "test" to geoserver
         MockHttpServletResponse responseBefore = postAsServletResponse("/rest/workspaces", xml,
                 "text/xml");
-        assertEquals(201, responseBefore.getStatusCode());
+        assertEquals(201, responseBefore.getStatus());
         assertNotNull(responseBefore.getHeader("Location"));
         assertTrue(responseBefore.getHeader("Location").endsWith("/workspaces/test"));
 
@@ -116,7 +116,7 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
                 + "</coverageStore>";
         MockHttpServletResponse responseBefore = putAsServletResponse(
                 "/rest/workspaces/wcs/coveragestores/BlueMarble", xml, "text/xml");
-        assertEquals(200, responseBefore.getStatusCode());
+        assertEquals(200, responseBefore.getStatus());
         // Selection of the coverage store
         CoverageStoreInfo cs = getCatalog().getCoverageStoreByName("wcs", "BlueMarble");
         // Setting of the store configuration
@@ -133,7 +133,7 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
      * Create a fake root directory where the sample data are stored. This directory contains a path with spaces
      * in order to check that no error are thrown with URL encoding.
      * 
-     * @return
+     *
      */
     private File getRootDirectory() {
         File dataDirectoryRoot = getTestData().getDataDirectoryRoot();
@@ -148,7 +148,6 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
      * @param root
      * @param workspace
      * @param coverageStore
-     * @throws Exception
      */
     private void testFile(File root, String workspace, String coverageStore) throws Exception {
         // Selection of a zip file
@@ -157,9 +156,9 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
         // Uploading the file via rest
         MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/" + workspace
                 + "/coveragestores/" + coverageStore + "/file.worldimage", bytes, "application/zip");
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         // Check if the coverage is present
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         Document d = dom(new ByteArrayInputStream(content.getBytes()));
         assertEquals("coverageStore", d.getDocumentElement().getNodeName());
         // Control if the coverage store is present

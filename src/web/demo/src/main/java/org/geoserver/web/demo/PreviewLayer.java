@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -38,6 +38,8 @@ import org.opengis.feature.type.Name;
 
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * A model class for the UI, hides the difference between simple layers and
@@ -81,14 +83,14 @@ public class PreviewLayer {
         return null;
     }
     
-    public ResourceReference getIcon() {
+    public PackageResourceReference getIcon() {
         if(layerInfo != null)
             return CatalogIconFactory.get().getSpecificLayerIcon(layerInfo);
         else
             return CatalogIconFactory.GROUP_ICON;
     }
     
-    public ResourceReference getTypeSpecificIcon() {
+    public PackageResourceReference getTypeSpecificIcon() {
         if(layerInfo != null)
             return CatalogIconFactory.get().getSpecificLayerIcon(layerInfo);
         else
@@ -140,7 +142,7 @@ public class PreviewLayer {
      * Builds a fake GetMap request
      * 
      * @param prefixedName
-     * @return
+     *
      */
     GetMapRequest getRequest() {
         if (request == null) {
@@ -175,7 +177,7 @@ public class PreviewLayer {
      * 
      * @param name
      * @param catalog
-     * @return
+     *
      */
     private List<MapLayerInfo> expandLayers(Catalog catalog) {
         List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
@@ -195,12 +197,15 @@ public class PreviewLayer {
     }
 
     String getBaseUrl(String service, boolean useGlobalRef) {
+        HttpServletRequest req = GeoServerApplication.get().servletRequest();
+        String base = ResponseUtils.baseURL(req);
+
         String ws = getWorkspace();
         if(ws == null || useGlobalRef) {
             // global reference
-            return ResponseUtils.buildURL("../", service, null, URLType.SERVICE);
+            return ResponseUtils.buildURL(base, service, null, URLType.SERVICE);
         } else {
-            return ResponseUtils.buildURL("../", ws + "/" + service, null, URLType.SERVICE);
+            return ResponseUtils.buildURL(base, ws + "/" + service, null, URLType.SERVICE);
         }
     }
 
@@ -209,7 +214,7 @@ public class PreviewLayer {
      * 
      * @param request
      * @param string
-     * @return
+     *
      */
     public String getWmsLink() {
         GetMapRequest request = getRequest();
@@ -230,7 +235,7 @@ public class PreviewLayer {
      * Returns the default GML link for this layer.
      *
      * @param gmlParamsCache optional map where computed GML output params are cached
-     * @return
+     *
      */
     public String getGmlLink(Map<String, GMLOutputParams> gmlParamsCache) {
         GMLOutputParams gmlParams = new GMLOutputParams();

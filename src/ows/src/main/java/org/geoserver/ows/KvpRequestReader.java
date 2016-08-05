@@ -60,7 +60,6 @@ import org.geotools.util.Converters;
  *   }
  *         </code>
  * </pre>
- * </p>
  *
  * @author Justin Deoliveira, The Open Planning Project
  *

@@ -1,12 +1,10 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.script.js;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
@@ -92,7 +90,7 @@ public class JavaScriptPlugin extends ScriptPlugin {
         } catch (IllegalStateException e) {
             throw new RuntimeException("Trouble getting JavaScript library root.", e);
         }
-        String userModulePath = libRoot.file().toURI().toString();
+        String userModulePath = libRoot.dir().toURI().toString();
 
         return (List<String>) Arrays.asList(geoscriptModulePath, geoserverModulePath, userModulePath);
     }

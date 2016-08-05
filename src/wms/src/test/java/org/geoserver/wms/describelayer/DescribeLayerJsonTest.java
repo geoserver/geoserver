@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,7 +17,7 @@ import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Unit test suite for {@link JSONDescribeLayerResponse}
@@ -39,7 +39,6 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
     /**
      * Tests jsonp with custom callback function
      * 
-     * @throws Exception
      */
     @Test
     public void testCustomJSONP() throws Exception {
@@ -60,7 +59,6 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
     /**
      * Tests JSON
      * 
-     * @throws Exception
      */
     @Test
     public void testSimpleJSON() throws Exception {
@@ -93,7 +91,6 @@ public class DescribeLayerJsonTest extends WMSTestSupport {
     /**
      * Tests jsonp with custom callback function
      * 
-     * @throws Exception
      */
     @Test
     public void testJSONLayerGroup() throws Exception {

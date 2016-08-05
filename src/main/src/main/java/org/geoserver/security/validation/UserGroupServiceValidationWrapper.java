@@ -277,7 +277,7 @@ public class UserGroupServiceValidationWrapper extends AbstractSecurityValidator
      * 
      * @param errorid
      * @param args
-     * @return
+     *
      */
     protected IOException createSecurityException (String errorid, Object ...args) {
         UserGroupServiceException ex =  new UserGroupServiceException(errorid,args);

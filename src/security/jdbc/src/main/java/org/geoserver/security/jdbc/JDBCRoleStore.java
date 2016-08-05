@@ -63,7 +63,7 @@ public class JDBCRoleStore extends JDBCRoleService implements GeoServerRoleStore
 
 
     /**
-     * Executes {@link Connection#rollback() and
+     * Executes {@link Connection#rollback()} and
      * frees the connection object
      * 
      * @see org.geoserver.security.jdbc.JDBCRoleService#load()

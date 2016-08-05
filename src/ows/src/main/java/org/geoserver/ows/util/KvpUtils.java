@@ -119,9 +119,8 @@ public class KvpUtils {
      *        its children
      *
      * @return A list of typenames, made from the featureId filters.
-     *
-     * @throws WfsException If the structure can not be read.
      */
+    @SuppressWarnings("rawtypes")
     public static List getTypesFromFids(String rawFidList) {
         List typeList = new ArrayList();
         List unparsed = readNested(rawFidList);
@@ -159,7 +158,7 @@ public class KvpUtils {
      * so this method is just a convenience to maintain backwards compatibility
      * with the old {@link #readFlat(String, String)} and to easy the use of the
      * default tokenizers {@link #KEYWORD_DELIMITER}, {@link #INNER_DELIMETER},
-     * {@link #OUTER_DELIMETER} and {@value #VALUE_DELIMITER}.
+     * {@link #OUTER_DELIMETER} and {@link #VALUE_DELIMITER}.
      * </p>
      * <p>
      * Note that if the list is unspecified (ie. is null) or is unconstrained
@@ -231,9 +230,6 @@ public class KvpUtils {
      *            The tokenized string.
      * 
      * @return A list of lists, containing outer and inner elements.
-     * 
-     * @throws WfsException
-     *             When the string structure cannot be read.
      */
     public static List readNested(String rawList) {
         if (LOGGER.isLoggable(Level.FINEST)) {
@@ -387,7 +383,7 @@ public class KvpUtils {
      * it to the list that is returned.
      * </p>
      * 
-     * @param rawKvp raw or unparsed kvp.
+     * @param kvp raw or unparsed kvp.
      * 
      * @return A list of errors that occured.
      */
@@ -548,9 +544,9 @@ public class KvpUtils {
      * Returns a single value for the specified key from the raw KVP, or throws an exception 
      * if multiple different values are found
      * 
-     * @param kvp
-     * @param key
-     * @return
+     * @param kvp map of key value pairs
+     * @param key key used to lookup a single value
+     *
      */
     public static String getSingleValue(Map kvp, String key) {
         Object value = kvp.get(key);
@@ -581,8 +577,8 @@ public class KvpUtils {
      * servlet container but in a few cases (testing for example) we need to emulate the container
      * instead.
      *  
-     * @param path a url in the form path?k1=v1&k2=v2&,,,
-     * @return
+     * @param path a url in the form path?k1=v1&amp;k2=v2&amp;,,,
+     *
      */
     public static Map<String, Object> parseQueryString(String path) {
         int index = path.indexOf('?');
@@ -768,8 +764,8 @@ public class KvpUtils {
     /**
      * Extracts the first value for the specified parameter (the kvp can contain either a single
      * string, or an array of values)
-     * @param kvp
-     * @param param
+     * @param kvp map of key value pairs
+     * @param param retrieve the first value for the parameter
      */
     public static String firstValue(Map kvp, String param) {
         Object o = kvp.get(param);

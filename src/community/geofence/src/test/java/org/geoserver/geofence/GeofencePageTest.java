@@ -22,6 +22,7 @@ package org.geoserver.geofence;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URISyntaxException;
 
 import static junit.framework.TestCase.assertTrue;
@@ -116,8 +117,9 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testErrorWrongURL()  {
-        TextField servicesUrl = ((TextField)tester.getComponentFromLastRenderedPage("form:servicesUrl"));
-        servicesUrl.setDefaultModel(new Model("fakeurl"));
+        @SuppressWarnings("unchecked")
+		TextField<String> servicesUrl = ((TextField<String>)tester.getComponentFromLastRenderedPage("form:servicesUrl"));
+        servicesUrl.setDefaultModel(new Model<String>("fakeurl"));
 
         tester.clickLink("form:test", true);
 
@@ -148,8 +150,8 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     public void testInvalidateCache()  {
         tester.clickLink("form:invalidate", true);
         String success = new StringResourceModel(GeofencePage.class.getSimpleName() +
-                ".cacheInvalidated", null).getObject();
-        tester.assertInfoMessages(new String[] { success });
+                ".cacheInvalidated").getObject();
+        tester.assertInfoMessages((Serializable[]) new String[] { success });
     }
 
 }

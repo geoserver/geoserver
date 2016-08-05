@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,7 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DimensionsVectorGetFeatureInfoTest extends WMSDynamicDimensionTestSupport {
 
@@ -41,13 +41,13 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDynamicDimensionTestS
      * @param baseFeatureInfo The GetFeatureInfo request, minus x and y
      * @param x
      * @param y
-     * @return
+     *
      */
     String getFeatureAt(String baseFeatureInfo, int x, int y) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(baseFeatureInfo
                 + "&info_format=application/vnd.ogc.gml&x=" + x + "&y=" + y);
         assertEquals("application/vnd.ogc.gml", response.getContentType());
-        Document doc = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));
+        Document doc = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         // print(doc);
         String sCount = xpath.evaluate("count(//sf:TimeElevation)", doc);
         int count = Integer.valueOf(sCount);

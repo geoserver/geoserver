@@ -62,7 +62,7 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
     /**
      * Returns the mapper parameters.
      * 
-     * @return
+     *
      */
     public Map<String, String> getMapperParameters() {
         if(mapperParameters == null) {
@@ -74,7 +74,7 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
     /**
      * Sets the mapper parameters.
      * 
-     * @param mapperParameters
+     * @param mapperParameters mapper parameters
      */
     public void setMapperParameters(Map<String, String> mapperParameters) {
         this.mapperParameters = mapperParameters;

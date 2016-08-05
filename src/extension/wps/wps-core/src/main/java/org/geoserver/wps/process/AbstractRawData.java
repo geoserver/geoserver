@@ -94,7 +94,7 @@ public abstract class AbstractRawData implements RawData {
 	 * Extracts the list of mime types from the metadata entry
 	 * 
 	 * @param p
-	 * @return
+	 *
 	 */
 	public static String[] getMimeTypes(Parameter<?> p) {
 		if (p.metadata != null && p.metadata.get(MIME_TYPES) != null) {
@@ -113,7 +113,7 @@ public abstract class AbstractRawData implements RawData {
 	 * type
 	 * 
 	 * @param resultInfo
-	 * @return
+	 *
 	 */
 	public static Map<String, String> getOutputMimeParameters(Name processName,
 			ProcessFactory pf) {
@@ -145,7 +145,7 @@ public abstract class AbstractRawData implements RawData {
 	 * @param processName
 	 * @param pf
 	 * @param resultName
-	 * @return
+	 *
 	 */
 	public static String getDefaultMime(Name processName, ProcessFactory pf,
 			String resultName) {

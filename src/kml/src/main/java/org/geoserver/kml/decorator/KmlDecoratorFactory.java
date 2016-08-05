@@ -33,7 +33,7 @@ public interface KmlDecoratorFactory {
          * to be skipped and won't be encoded
          * @param feature
          * @param context
-         * @return
+         *
          */
         public Feature decorate(Feature feature, KmlEncodingContext context);
         

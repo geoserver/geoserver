@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,7 +12,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,8 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geoserver.platform.resource.Resource.Lock;
-import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -42,12 +39,11 @@ public final class Files {
      * in the data directory.
      */
     static final class ResourceAdaptor implements Resource {
-        private static final long serialVersionUID = -3529072360389761648L;
         
         final File file;
 
         private ResourceAdaptor(File file) {
-            this.file = file;
+            this.file = file.getAbsoluteFile();
         }
 
         @Override
@@ -69,11 +65,11 @@ public final class Files {
         }
         @Override
         public void addListener(ResourceListener listener) {
-            watcher.addListener( file, path(), listener );
+            watcher.addListener(path(), listener);
         }
         @Override
         public void removeListener(ResourceListener listener) {
-            watcher.removeListener( file, path(), listener );
+            watcher.removeListener(path(), listener);
         }
 
         @Override
@@ -274,79 +270,27 @@ public final class Files {
     }
     
     /**
-     * Used to look up files based on user provided url (or path).
-     * 
-     * This method (originally from vfny GeoserverDataDirectory) is used to process a URL provided
-     * by a user: <i>iven a path, tries to interpret it as a file into the data directory, or as an absolute
-     * location, and returns the actual absolute location of the file.</i>
-     * 
-     * Over time this url method has grown in the telling to support:
-     * <ul>
-     * <li>Actual URL to external resoruce using http or ftp protocol - will return null</li>
-     * <li>File URL - will support absolute file references</li>
-     * <li>File URL - will support relative file references</li>
-     * <li>Fake URLs - sde://user:pass@server:port - will return null.</li>
-     * <li>path - user supplied file path (operating specific specific)</li>
-     * </ul>
-     * 
-     * Note that the baseDirectory is optional (and may be null).
-     * 
-     * @param baseDirectory Optional base directory used to resolve relative file URLs
-     * @param url File URL or path relative to data directory 
-     * 
-     * @return File indicated by provided URL 
+     *
+     * @deprecated use {@link Resources#fromURL(Resource, String)}
      */
+    @Deprecated 
     public static File url(File baseDirectory, String url) {
-        // if path looks like an absolute file: URL, try standard conversion
-        if (url.startsWith("file:/")) {
-            try {
-                return DataUtilities.urlToFile(new URL(url));
-            } catch (Exception e) {
-                // failure, so fall through
-            }
-        }
-
-        // do we ever have something that is not a file system reference?
-        // yes. See GEOS-5931: cases like sde://user:pass@server:port or 
-        // pgraster://user:pass@server:port or similar custom store URLs.
-        if (url.startsWith("file:")) {
-            url = url.substring(5); // remove 'file:' prefix
-
-            File f = new File(url);
-            
-            if (f.isAbsolute() || f.exists()) {
-                return f; // if it's an absolute path, use it as such
-
-            } else {
-                // otherwise try to map it inside the data dir
-                if( baseDirectory != null ){
-                    return new File(baseDirectory, url);
-                }
-                return f; // fine return it as is
-            }
-        } else {
-            // Treating 'url' as a normal file path
-            File file = new File(url);
-            if (file.isAbsolute() || file.exists()) {
-                return file; // if it's an absolute path, use it as such
-            }
-            // otherwise try to map it inside the data dir
-            if( baseDirectory != null ){
-                file = new File(baseDirectory, url);
-                if( file.exists() ){
-                    return file;
-                }
-            }
-            // Allows dealing with custom URL Strings. Don't return a file for them
+        Resource res = Resources.fromURL(asResource(baseDirectory), url);
+        if (res == null) {
             return null;
         }
+        File file = Resources.find(res);
+        if (file == null) {
+            return new File(baseDirectory, res.path());
+        }
+        return file;
     }
     
     /**
      * Adapter allowing a File reference to be quickly used a Resource.
      * 
      * This is used as a placeholder when updating code to use resource, while still maintaining deprecated File methods: 
-     * <pre></code>
+     * <pre><code>
      * //deprecated
      * public FileWatcher( File file ){
      *    this.resource = Files.asResource( file );
@@ -380,9 +324,7 @@ public final class Files {
     /**
      * Safe buffered output stream to temp file, output stream close used to renmae file into place.
      * 
-     * @param file
      * @return buffered output stream to temporary file (output stream close used to rename file into place)
-     * @throws FileNotFoundException
      */
     public static OutputStream out(final File file) throws FileNotFoundException {
         // first save to a temp file
@@ -466,8 +408,7 @@ public final class Files {
      * file that cannot be deleted a warning log will be issued.
      * 
      * @param file File to remove
-     * @throws IOException
-     * @returns true if any file present is removed
+     * @return true if any file present is removed
      */
     public static boolean delete(File file) {
         if( file.isDirectory()){

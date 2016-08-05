@@ -23,7 +23,7 @@ public interface LayerIdentifier {
      * Returns true if the identifier can handle this layer, false otherwise
      * 
      * @param layer
-     * @return
+     *
      */
     boolean canHandle(MapLayerInfo layer);
 
@@ -34,7 +34,6 @@ public interface LayerIdentifier {
      * @param maxFeatures Max number of features to be returned for this identify
      * @return A list of FeatureCollection objects, each feature in them represent an item the user
      *         clicked on
-     * @throws Exception
      */
     List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures)
             throws Exception;

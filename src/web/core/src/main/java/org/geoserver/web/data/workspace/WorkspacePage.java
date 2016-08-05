@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,20 +17,19 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
-import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /**
  * Lists available workspaces, links to them, allows for addition and removal
  */
-@SuppressWarnings("serial")
 public class WorkspacePage extends GeoServerSecuredPage {
+    private static final long serialVersionUID = 3084639304127909774L;
     WorkspaceProvider provider = new WorkspaceProvider();
     GeoServerTablePanel<WorkspaceInfo> table;
     GeoServerDialog dialog;
@@ -39,8 +38,10 @@ public class WorkspacePage extends GeoServerSecuredPage {
     public WorkspacePage() {
         // the middle table
         add(table = new GeoServerTablePanel<WorkspaceInfo>("table", provider, true) {
+            private static final long serialVersionUID = 8028081894753417294L;
+
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<WorkspaceInfo> itemModel,
                     Property<WorkspaceInfo> property) {
                 if ( property == NAME ) {
                     return workspaceLink(id, itemModel);
@@ -57,7 +58,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(table.getSelection().size() > 0);
-                target.addComponent(removal);    
+                target.add(removal);    
             }
         });
         table.setOutputMarkupId(true);
@@ -71,7 +72,7 @@ public class WorkspacePage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         
         // the add button
-        header.add(new BookmarkablePageLink("addNew", WorkspaceNewPage.class));
+        header.add(new BookmarkablePageLink<WorkspaceNewPage>("addNew", WorkspaceNewPage.class));
         
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog));
@@ -83,8 +84,8 @@ public class WorkspacePage extends GeoServerSecuredPage {
         return header;
     }
     
-    Component workspaceLink(String id, final IModel itemModel) {
-        IModel nameModel = NAME.getModel(itemModel);
+    Component workspaceLink(String id, final IModel<WorkspaceInfo> itemModel) {
+        IModel<?> nameModel = NAME.getModel(itemModel);
         return new SimpleBookmarkableLink(id, WorkspaceEditPage.class, nameModel,
                 "name", (String) nameModel.getObject());
     }

@@ -36,7 +36,7 @@ public class TileLayerInfoUtil {
      * Creates a cached tile layer from the given Layer or Layer Group
      * @param info a Layerinfo or LayerGroupInfo
      * @param defaults default configuration
-     * @return
+     *
      */
     public static GeoServerTileLayerInfo loadOrCreate(final CatalogInfo info,
             final GWCConfig defaults) {
@@ -53,7 +53,7 @@ public class TileLayerInfoUtil {
      * Creates a cached tile layer from the given Layer Group
      * @param info the layer group to cache
      * @param defaults default configuration
-     * @return
+     *
      */
     public static GeoServerTileLayerInfoImpl loadOrCreate(final LayerGroupInfo groupInfo,
             final GWCConfig defaults) {
@@ -72,7 +72,7 @@ public class TileLayerInfoUtil {
      * Creates a cached tile layer from the given Layer
      * @param info the layer to cache
      * @param defaults default configuration
-     * @return
+     *
      */
     public static GeoServerTileLayerInfoImpl loadOrCreate(final LayerInfo layerInfo,
             final GWCConfig defaults) {
@@ -182,7 +182,7 @@ public class TileLayerInfoUtil {
      * Find a parameter filter by key from a set of filters.
      * @param paramName
      * @param parameterFilters
-     * @return
+     *
      * @deprecated
      */
     public static ParameterFilter findParameterFilter(final String paramName,

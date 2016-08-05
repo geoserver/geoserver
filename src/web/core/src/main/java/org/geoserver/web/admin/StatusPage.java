@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -51,7 +51,7 @@ public class StatusPage extends ServerAdminPage {
     private static final String KEY_CONNECTIONS = "connections";
 
     private static final String KEY_MEMORY = "memory";
-
+    
     private static final String KEY_JVM_VERSION = "jvm_version";
     
     private static final String KEY_JAI_AVAILABLE = "jai_available";
@@ -75,6 +75,8 @@ public class StatusPage extends ServerAdminPage {
     private static final String KEY_COVERAGEACCESS_KEEP_ALIVE_TIME = "coverage_thread_keepalivetime";
     
     private static final String KEY_UPDATE_SEQUENCE = "update_sequence";
+    
+    private static final String KEY_JAVA_RENDERER = "renderer";
 
     public StatusPage() {
         values = new HashMap<String, String>();
@@ -98,7 +100,8 @@ public class StatusPage extends ServerAdminPage {
         add(new Label("coverage.maxpoolsize", new MapModel(values, KEY_COVERAGEACCESS_MAX_POOL_SIZE)));
         add(new Label("coverage.keepalivetime", new MapModel(values, KEY_COVERAGEACCESS_KEEP_ALIVE_TIME)));
         add(new Label("updateSequence", new MapModel(values, KEY_UPDATE_SEQUENCE)));
-
+        add(new Label("renderer", new MapModel(values, KEY_JAVA_RENDERER)));
+   
         add(new Link("free.locks") {
             private static final long serialVersionUID = 1L;
 
@@ -146,7 +149,7 @@ public class StatusPage extends ServerAdminPage {
                     LOGGER.log(Level.SEVERE, "Error resetting resource caches", t);
                     error(t);
                 }
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         });
         
@@ -160,7 +163,7 @@ public class StatusPage extends ServerAdminPage {
                     LOGGER.log(Level.SEVERE, "An error occurred while reloading the catalog", t);
                     error(t);
                 }
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         });
     }
@@ -188,7 +191,7 @@ public class StatusPage extends ServerAdminPage {
         } else {
             values.put(KEY_JAI_MEM_USAGE, "-");
         }
-        values.put(KEY_JAI_MEM_THRESHOLD, Float.toString(100.0f * jaiCache.getMemoryThreshold()));
+        values.put(KEY_JAI_MEM_THRESHOLD, Integer.toString( (int)( 100.0f * jaiCache.getMemoryThreshold()))+"%");
         values.put(KEY_JAI_TILE_THREADS, Integer.toString(jai.getTileScheduler().getParallelism()));
         values.put(KEY_JAI_TILE_THREAD_PRIORITY, Integer.toString(jai.getTileScheduler()
                 .getPriority()));
@@ -198,22 +201,32 @@ public class StatusPage extends ServerAdminPage {
         values.put(KEY_COVERAGEACCESS_KEEP_ALIVE_TIME, Integer.toString(coverageAccess.getKeepAliveTime()));
 
         values.put(KEY_UPDATE_SEQUENCE, Long.toString(geoServerInfo.getUpdateSequence()));
+        values.put(KEY_JAVA_RENDERER, checkRenderer());
     }
 
     /**
      * Retrieves the GeoServer data directory
-     * @return
+     *
      */
     private String getDataDirectory() {
         GeoServerDataDirectory dd = getGeoServerApplication().getBeanOfType(GeoServerDataDirectory.class);
         return dd.root().getAbsolutePath();
+    }
+    
+    private String checkRenderer() {
+        try {
+            String renderer = sun.java2d.pipe.RenderingEngine.getInstance().getClass().getName();
+            return renderer;
+        } catch(Throwable e) {
+            return "Unknown";
+        }
     }
 
     boolean isNativeJAIAvailable() {
         // we directly access the Mlib Image class, if in the classpath it will tell us if
         // the native extensions are available, if not, an Error will be thrown
         try {
-            Class image = Class.forName("com.sun.medialib.mlib.Image");
+            Class<?> image = Class.forName("com.sun.medialib.mlib.Image");
             return (Boolean) image.getMethod("isAvailable").invoke(null);
         } catch(Throwable e) {
             return false;
@@ -228,7 +241,9 @@ public class StatusPage extends ServerAdminPage {
         final long usedBytes = runtime.totalMemory() - runtime.freeMemory();
         String formattedUsedMemory = formatMemory(usedBytes);
 
-        return formattedUsedMemory;
+        String formattedMaxMemory = formatMemory(runtime.maxMemory());
+
+        return formattedUsedMemory + " / " + formattedMaxMemory;
     }
 
     private String formatMemory(final long bytes) {

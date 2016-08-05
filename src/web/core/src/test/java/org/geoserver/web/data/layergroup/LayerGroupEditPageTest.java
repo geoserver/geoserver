@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,11 +8,12 @@ package org.geoserver.web.data.layergroup;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.Serializable;
+
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.feedback.FeedbackMessage;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -30,7 +31,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
     
     @Test
     public void testComputeBounds() {
-        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters("group=lakes"));
+        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "lakes"));
         tester.startPage(page);
         // print(page, true, false);
         
@@ -53,7 +54,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
     
     @Test
     public void testComputeBoundsFromCRS() {
-        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters("group=lakes"));
+        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "lakes"));
         tester.startPage(page);
         tester.assertRenderedPage(LayerGroupEditPage.class);
         
@@ -87,7 +88,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // should not work, no name provided, so we remain
         // in the same page
         tester.assertRenderedPage(LayerGroupEditPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'Name' is required.", "Field 'Bounds' is required."});
+        tester.assertErrorMessages((Serializable[]) new String[] {"Field 'Name' is required.", "Field 'Bounds' is required."});
     }
     
     @Test
@@ -153,7 +154,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         
         // should work, we switch to the edit page
         tester.assertRenderedPage(LayerGroupEditPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'Bounds' is required."});
+        tester.assertErrorMessages((Serializable[]) new String[] {"Field 'Bounds' is required."});
     }
     
     @Test
@@ -174,7 +175,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         Catalog catalog = getGeoServerApplication().getCatalog();
         
         int layerCount = catalog.count(LayerInfo.class, Filter.INCLUDE);
-        int rowCount = dataView.getRowCount();
+        int rowCount = (int) dataView.getRowCount();
         
         assertEquals(layerCount, rowCount);
     }
@@ -197,9 +198,10 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.setValue("tabs:panel:bounds:maxY", "0");
         form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
         
-        tester.executeAjaxEvent("publishedinfo:tabs:panel:metadataLinks:addlink", "onclick");
-        form.setValue("tabs:panel:metadataLinks:container:table:links:0:urlBorder:metadataLinkURL", "http://test.me");
-        tester.executeAjaxEvent("publishedinfo:tabs:panel:metadataLinks:addlink", "onclick");
+        tester.executeAjaxEvent("publishedinfo:tabs:panel:metadataLinks:addlink", "click");
+        
+        form.setValue("tabs:panel:metadataLinks:container:table:links:0:urlBorder:urlBorder_body:metadataLinkURL", "http://test.me");
+        tester.executeAjaxEvent("publishedinfo:tabs:panel:metadataLinks:addlink", "click");
         
         LayerGroupInfo info = page.getPublishedInfo();
         assertEquals(2, info.getMetadataLinks().size());

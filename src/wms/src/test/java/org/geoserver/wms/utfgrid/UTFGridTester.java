@@ -74,7 +74,7 @@ class UTFGridTester {
     
     /**
      * Returns the number of keys
-     * @return
+     *
      */
     int getKeyCount() {
         return keys.size();
@@ -83,7 +83,7 @@ class UTFGridTester {
     /**
      * Returns the feature for the given grid code
      * @param code
-     * @return
+     *
      */
     JSONObject getFeature(char code) {
         String key = "" + (int) gridToKey(code);

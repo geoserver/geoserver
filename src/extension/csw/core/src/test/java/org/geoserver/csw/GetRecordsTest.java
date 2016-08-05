@@ -380,7 +380,6 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
      * This one comes from the CITE tests, like filters are to be applied in a case insensitive
      * fashion
      * 
-     * @throws Exception
      */
     @Test 
     public void testFullTextSearchCaseInsensitive() throws Exception {
@@ -479,7 +478,6 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
     
     /**
      * From CITE compliance, throw an error if a non spatial property is used in a spatial filter
-     * @throws Exception
      */
     @Test 
     public void testSpatialFilterNonGeomProperty() throws Exception {
@@ -492,7 +490,6 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
     
     /**
      * From CITE compliance, throw an error the output format is not supported
-     * @throws Exception
      */
     @Test 
     public void testUnsupportedOutputFormat() throws Exception {
@@ -529,6 +526,17 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
         
         assertXpathEvaluatesTo("*lorem*", "/csw:Acknowledgement/csw:EchoedRequest/csw:GetRecords/csw:Query/" +
         		"csw:Constraint/ogc:Filter/ogc:PropertyIsLike/ogc:Literal", d);
+    }
+    
+    @Test 
+    public void testLikeNoEscape() throws Exception {
+        String request = getResourceAsString("GetRecordsAnyTextNoEscape.xml");
+        Document d = postAsDOM("csw", request);
+        checkValidationErrors(d, new CSWConfiguration());
+        // print(d);
+        
+        assertXpathEvaluatesTo("1", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("Tourism--Greece", "//csw:SearchResults/csw:Record/dc:subject", d);
     }
     
     @Test 

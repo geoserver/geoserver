@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,9 +22,9 @@ import org.geoserver.web.wicket.browser.GeoServerFileChooser;
  * 
  * @author Andrea Aime
  */
-@SuppressWarnings("serial")
 public class DirectoryParamPanel extends FileParamPanel {
 
+    private static final long serialVersionUID = -8317791966175845831L;
     GeoServerDialog gsDialog;
 
     /**
@@ -37,8 +37,9 @@ public class DirectoryParamPanel extends FileParamPanel {
      * @param validators
      *            any extra validator that should be added to the input field, or {@code null}
      */
-    public DirectoryParamPanel(final String id, final IModel paramValue,
-            final IModel paramLabelModel, final boolean required, IValidator... validators) {
+    @SafeVarargs
+	public DirectoryParamPanel(final String id, final IModel<String> paramValue,
+            final IModel<String> paramLabelModel, final boolean required, IValidator<? super String>... validators) {
         super(id, paramValue, paramLabelModel, required, validators);
 
         // override the dialog component
@@ -50,17 +51,24 @@ public class DirectoryParamPanel extends FileParamPanel {
     protected Component chooserButton(final String windowTitle) {
         AjaxSubmitLink link = new AjaxSubmitLink("chooser") {
 
+            private static final long serialVersionUID = -2860146532287292092L;
+
             @Override
             public boolean getDefaultFormProcessing() {
                 return false;
             }
 
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form form) {
-                gsDialog.setTitle(new Model(windowTitle));
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                gsDialog.setTitle(new Model<String>(windowTitle));
                 gsDialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
-                    @Override
+                    /**
+					 * 
+					 */
+					private static final long serialVersionUID = 1576266249751904398L;
+
+					@Override
                     protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
                         GeoServerFileChooser chooser = (GeoServerFileChooser) contents;
                         String path = ((File) chooser.getDefaultModelObject()).getAbsolutePath();
@@ -68,14 +76,14 @@ public class DirectoryParamPanel extends FileParamPanel {
                         textField.clearInput();
                         textField.setModelValue(new String[] { path });
 
-                        target.addComponent(textField);
+                        target.add(textField);
                         return true;
                     }
 
                     @Override
                     public void onClose(AjaxRequestTarget target) {
                         // update the field with the user chosen value
-                        target.addComponent(textField);
+                        target.add(textField);
                     }
 
                     @Override
@@ -87,7 +95,7 @@ public class DirectoryParamPanel extends FileParamPanel {
                             file = new File(input);
                         }
 
-                        GeoServerFileChooser chooser = new GeoServerFileChooser(id, new Model(file));
+                        GeoServerFileChooser chooser = new GeoServerFileChooser(id, new Model<File>(file));
                         chooser.setFilter(fileFilter);
 
                         return chooser;

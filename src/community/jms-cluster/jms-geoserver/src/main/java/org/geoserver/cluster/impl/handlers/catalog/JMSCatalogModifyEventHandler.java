@@ -90,8 +90,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
 
 	/**
 	 * simulate a catalog.save() rebuilding the EventModify proxy object locally
-	 * {@link
-	 * org.geoserver.catalog.impl.DefaultCatalogFacade.saved(CatalogInfo)}
+	 * {@link org.geoserver.catalog.impl.DefaultCatalogFacade#saved(CatalogInfo)}
 	 * 
 	 * @param catalog
 	 * @param modifyEv
@@ -314,9 +313,7 @@ public class JMSCatalogModifyEventHandler extends JMSCatalogEventHandler {
 
 			// change default workspace in the handled catalog
 			/**
-			 * This piece of code was extracted from: {@link
-			 * org.geoserver.catalog.NamespaceWorkspaceConsistencyListener.
-			 * handleModifyEvent(CatalogModifyEvent)}
+			 * This piece of code was extracted from: {@link org.geoserver.catalog.NamespaceWorkspaceConsistencyListener#handleModifyEvent(CatalogModifyEvent)}
 			 */
 			final List<String> properties = modifyEv.getPropertyNames();
 			if (properties.contains("defaultNamespace")) {

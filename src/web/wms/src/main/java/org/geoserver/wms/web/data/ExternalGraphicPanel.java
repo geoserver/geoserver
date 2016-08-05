@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -33,10 +33,11 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
-import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -88,16 +89,17 @@ public class ExternalGraphicPanel extends Panel {
         
         IModel<String> bind = styleModel.bind("legend.onlineResource");
         onlineResource = new TextField<String>("onlineResource", bind );
-        onlineResource.add(new StringValidator(){
+        onlineResource.add(new IValidator<String>() {
             final List<String> EXTENSIONS = Arrays.asList(new String[]{"png","gif","jpeg","jpg"});
             
-            protected void onValidate(IValidatable<String> input) {
+            @Override
+            public void validate(IValidatable<String> input) {
                 String value = input.getValue();
                 int last = value == null ? -1 : value.lastIndexOf('.');
                 if (last == -1 || !EXTENSIONS.contains( value.substring(last + 1).toLowerCase() ) ){
                     ValidationError error = new ValidationError();
                     error.setMessage( "Not an image" );
-                    error.addMessageKey("nonImage");
+                    error.addKey("nonImage");
                     input.error(error);
                     return;
                 }
@@ -118,19 +120,19 @@ public class ExternalGraphicPanel extends Panel {
                         if("text/html".equals(conn.getContentType())){
                             ValidationError error = new ValidationError();
                             error.setMessage("Unable to access image");
-                            error.addMessageKey("imageUnavailable");
+                            error.addKey("imageUnavailable");
                             input.error(error);
                             return; // error message back!
                         }
                     } catch (MalformedURLException e) {
                         ValidationError error = new ValidationError();
                         error.setMessage("Unable to access image");
-                        error.addMessageKey("imageUnavailable");
+                        error.addKey("imageUnavailable");
                         input.error(error);
                     } catch (IOException e) {
                         ValidationError error = new ValidationError();
                         error.setMessage("Unable to access image");
-                        error.addMessageKey("imageUnavailable");
+                        error.addKey("imageUnavailable");
                         input.error(error);
                     }
                     return; // no further checks possible
@@ -144,13 +146,13 @@ public class ExternalGraphicPanel extends Panel {
                         if (test == null) {
                             ValidationError error = new ValidationError();
                             error.setMessage("File not found in styles directory");
-                            error.addMessageKey("imageNotFound");
+                            error.addKey("imageNotFound");
                             input.error(error);
                         }
                     } catch (IOException e) {
                         ValidationError error = new ValidationError();
                         error.setMessage("File not found in styles directory");
-                        error.addMessageKey("imageNotFound");
+                        error.addKey("imageNotFound");
                         input.error(error);
                     }
                 }
@@ -187,10 +189,10 @@ public class ExternalGraphicPanel extends Panel {
                             return; // error message back!
                         }
                         
-                        format.setModelValue(conn.getContentType());
+                        format.setModelValue(new String[] {conn.getContentType()});
                         BufferedImage image = ImageIO.read(conn.getInputStream());
-                        width.setModelValue("" + image.getWidth());
-                        height.setModelValue("" + image.getHeight());
+                        width.setModelValue(new String[] {"" + image.getWidth()});
+                        height.setModelValue(new String[] {"" + image.getHeight()});
                     } catch (FileNotFoundException notFound ){
                         form.error( "Unable to access "+url);
                     } catch (Exception e) {
@@ -199,9 +201,9 @@ public class ExternalGraphicPanel extends Panel {
                     }
                 }
 
-                target.addComponent(format);
-                target.addComponent(width);
-                target.addComponent(height);
+                target.add(format);
+                target.add(width);
+                target.add(height);
             }
         };
         
@@ -212,16 +214,16 @@ public class ExternalGraphicPanel extends Panel {
         table.add(format);
 
         width = new TextField("width", styleModel.bind("legend.width"), Integer.class);
-        width.add(NumberValidator.minimum(0));
+        width.add(RangeValidator.minimum(0));
         width.setOutputMarkupId(true);
         table.add(width);
 
         height = new TextField("height", styleModel.bind("legend.height"), Integer.class);
-        height.add(NumberValidator.minimum(0));
+        height.add(RangeValidator.minimum(0));
         height.setOutputMarkupId(true);
         table.add(height);
         
-        table.add(new AttributeModifier("style", true, showhideStyleModel));
+        table.add(new AttributeModifier("style", showhideStyleModel));
         
         container.add(table);
         
@@ -242,7 +244,7 @@ public class ExternalGraphicPanel extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 updateVisibility(true);
-                target.addComponent(ExternalGraphicPanel.this);
+                target.add(ExternalGraphicPanel.this);
             }
         };
         container.add(show);
@@ -259,7 +261,7 @@ public class ExternalGraphicPanel extends Panel {
                 height.setModelObject("0");
                 
                 updateVisibility(false);
-                target.addComponent(ExternalGraphicPanel.this);
+                target.add(ExternalGraphicPanel.this);
             }
         };
         container.add(hide);
@@ -278,9 +280,7 @@ public class ExternalGraphicPanel extends Panel {
      * @return baseUrl
      */
     protected String baseURL(Form form) {
-        WebRequest request = (WebRequest) form.getRequest();
-        HttpServletRequest httpServletRequest;
-        httpServletRequest = ((WebRequest) request).getHttpServletRequest();
+        HttpServletRequest httpServletRequest = (HttpServletRequest) form.getRequest().getContainerRequest();
         String baseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");
         if (StringUtils.isEmpty(baseUrl)) {
             GeoServer gs = GeoServerApplication.get().getGeoServer();

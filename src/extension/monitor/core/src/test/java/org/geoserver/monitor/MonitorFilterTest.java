@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,6 +8,9 @@ package org.geoserver.monitor;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -20,10 +23,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.TestCase;
+import static org.easymock.EasyMock.*;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class MonitorFilterTest {
     
@@ -40,9 +50,7 @@ public class MonitorFilterTest {
         
         filter = new MonitorFilter(new Monitor(dao), new MonitorRequestFilter());
         
-        chain = new MockFilterChain();
-        
-        chain.setServlet(new HttpServlet() {
+        chain = new MockFilterChain(new HttpServlet() {
             @Override
             public void service(ServletRequest req, ServletResponse res) throws ServletException,
                     IOException {
@@ -74,7 +82,7 @@ public class MonitorFilterTest {
     
     @Test    
     public void testWithBody() throws Exception {
-        chain.setServlet(new HttpServlet() {
+        chain = new MockFilterChain(new HttpServlet() {
             @Override
             public void service(ServletRequest req, ServletResponse res) throws ServletException,
                     IOException {
@@ -101,7 +109,7 @@ public class MonitorFilterTest {
     
     @Test
     public void testWithLongBody() throws Exception {
-        chain.setServlet(new HttpServlet() {
+        chain = new MockFilterChain(new HttpServlet() {
             @Override
             public void service(ServletRequest req, ServletResponse res) throws ServletException,
                     IOException {
@@ -137,7 +145,7 @@ public class MonitorFilterTest {
         
         filter.monitor.config.props.put("maxBodySize", Integer.toString(UNBOUNDED_BODY_SIZE)); // Ensure the configured property is correct for the tests
         
-        chain.setServlet(new HttpServlet() {
+        chain = new MockFilterChain(new HttpServlet() {
             @Override
             public void service(ServletRequest req, ServletResponse res) throws ServletException,
                     IOException {
@@ -184,7 +192,7 @@ public class MonitorFilterTest {
         // "Referrer" was misspelled in the HTTP spec, check if it works with the "correct" 
         // spelling. 
         MockHttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", null, null);
-        ((MockHttpServletRequest)req).setHeader("Referrer", "http://testhost/testpath");
+        ((MockHttpServletRequest)req).addHeader("Referrer", "http://testhost/testpath");
         filter.doFilter(req, response(), chain);
         
         RequestData data = dao.getLast();
@@ -195,8 +203,38 @@ public class MonitorFilterTest {
 
       
     }
+
+    @Test
+    public void testUserRemoteUser() throws Exception {
+        Object principal = new User("username", "", Collections.<GrantedAuthority>emptyList());
+
+        testRemoteUser(principal);
+    }
+
+    @Test
+    public void testUserDetailsRemoteUser() throws Exception {
+        UserDetails principal = createMock(UserDetails.class);
+
+        expect(principal.getUsername()).andReturn("username");
+        replay(principal);
+
+        testRemoteUser(principal);
+    }
+
+    private void testRemoteUser(Object principal) throws Exception {
+        Authentication authentication = new TestingAuthenticationToken(principal, null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        HttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", null, null);
+        filter.doFilter(req, response(), chain);
+
+        RequestData data = dao.getLast();
+        assertEquals("username", data.getRemoteUser());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
     
-    MockHttpServletRequest request(String method, String path, String remoteAddr, String body, String referer) {
+    MockHttpServletRequest request(String method, String path, String remoteAddr, String body, String referer) throws UnsupportedEncodingException {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setMethod(method);
         req.setServerName("localhost");
@@ -206,9 +244,9 @@ public class MonitorFilterTest {
         if(body==null) body=""; // MockHttpServletRequest#getInputStream doesn't like null bodies 
                                 // and throws NullPointerException. It should probably do something useful like return an empty stream or throw
                                 // IOException.
-        req.setBodyContent(body);
+        req.setContent(body.getBytes("UTF-8"));
         if(referer!=null)
-            req.setHeader("Referer", referer);
+            req.addHeader("Referer", referer);
         return req;
     }
     

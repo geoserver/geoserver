@@ -18,9 +18,7 @@ import org.geotools.xml.Node;
 /**
  * Binding object for the type http://www.opengis.net/ows:AcceptVersionsType.
  *
- * <p>
- *        <pre>
- *         <code>
+ * <pre><code>
  *  &lt;complexType name="AcceptVersionsType"&gt;
  *      &lt;annotation&gt;
  *          &lt;documentation&gt;Prioritized sequence of one or more specification versions accepted by client, with preferred versions listed first. See Version negotiation subclause for more information. &lt;/documentation&gt;
@@ -30,9 +28,7 @@ import org.geotools.xml.Node;
  *      &lt;/sequence&gt;
  *  &lt;/complexType&gt;
  *
- *          </code>
- *         </pre>
- * </p>
+ * </code></pre>
  *
  * @generated
  */

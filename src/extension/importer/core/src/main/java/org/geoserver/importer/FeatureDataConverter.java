@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2013 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -80,7 +80,7 @@ public class FeatureDataConverter {
         ImportData data, ImportTask task) {
 
         SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
-        typeBuilder.setName(convertTypeName(featureType.getTypeName()));
+        typeBuilder.setName(convertTypeName(task != null && task.getLayer().getName() != null ? task.getLayer().getName() : featureType.getTypeName()));
 
         AttributeTypeBuilder attBuilder = new AttributeTypeBuilder();
         for (AttributeDescriptor att : featureType.getAttributeDescriptors()) {
@@ -175,7 +175,7 @@ public class FeatureDataConverter {
                 if (att instanceof GeometryDescriptor) {
                     to.setDefaultGeometry(obj);
                 }
-                else {
+                else if (containsAttribute(to, attName(att.getLocalName()))) {
                     to.setAttribute(attName(att.getLocalName()), obj);
                 }
             }
@@ -185,14 +185,23 @@ public class FeatureDataConverter {
             name = convertAttributeName(name);
             return name.length() > 10 ? name.substring(0,10) : name;
         }
+        
+        private boolean containsAttribute(SimpleFeature ft, String attName) {
+            for (AttributeDescriptor att : ft.getType().getAttributeDescriptors()) {
+                if (att.getLocalName().equals(attName)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     };
-
+    
     public static final FeatureDataConverter TO_POSTGIS = new FeatureDataConverter() {
 
         @Override
         public SimpleFeatureType convertType(SimpleFeatureType featureType, VectorFormat format,
                 ImportData data, ImportTask item) {
-            SimpleFeatureType converted = featureType;
+            SimpleFeatureType converted = DEFAULT.convertType(featureType, format, data, item );
             String featureTypeName = convertTypeName(featureType.getTypeName());
             // trim the length of the name
             // by default, postgis table/index names need to fit in 64 characters

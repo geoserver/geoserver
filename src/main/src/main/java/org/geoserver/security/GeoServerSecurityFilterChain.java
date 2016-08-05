@@ -8,18 +8,16 @@ package org.geoserver.security;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The security filter filter chain.
  * <p>
- * The content of {@link #antPatterns} must be equal to the keys of {@link #filterMap}.
+ * The content of {code antPatterns} must be equal to the keys of {code filterMap}.
+ * #
  * </p>
  * <p>
- * The order of {@link #antPatterns} determines the order of ant pattern matching used by 
+ * The order of {code antPatterns} determines the order of ant pattern matching used by 
  * GeoServerSecurityFilterChainProxy.
  * </p>
  * @author christian
@@ -36,8 +34,8 @@ public class GeoServerSecurityFilterChain implements Serializable {
      * chain patterns 
      */
     public static final String WEB_CHAIN = "/web/**";
-    public static final String FORM_LOGIN_CHAIN = "/j_spring_security_check,/j_spring_security_check/"; 
-    public static final String FORM_LOGOUT_CHAIN = "/j_spring_security_logout,/j_spring_security_logout/";
+    public static final String FORM_LOGIN_CHAIN = "/j_spring_security_check,/j_spring_security_check/,/login"; 
+    public static final String FORM_LOGOUT_CHAIN = "/j_spring_security_logout,/j_spring_security_logout/,/logout";
     public static final String REST_CHAIN = "/rest/**";
     public static final String GWC_WEB_CHAIN = "/gwc/rest/web/**";
     public static final String GWC_REST_CHAIN = "/gwc/rest/**"; 
@@ -148,7 +146,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     /**
      * Create the initial {@link GeoServerSecurityFilterChain} 
      * 
-     * @return
+     *
      */
     public static GeoServerSecurityFilterChain createInitialChain() {
         return new GeoServerSecurityFilterChain(new ArrayList<RequestFilterChain>(INITIAL));

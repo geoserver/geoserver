@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.geoserver.map.turbojpeg.TurboJpegImageWorker;
 import org.geotools.image.ImageWorker;

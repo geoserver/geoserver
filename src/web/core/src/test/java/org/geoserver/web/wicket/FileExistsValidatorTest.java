@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,10 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
-import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.web.StringValidatable;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import com.google.common.io.Files;

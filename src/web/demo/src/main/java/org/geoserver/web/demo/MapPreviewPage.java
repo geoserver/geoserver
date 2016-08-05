@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -50,15 +50,16 @@ import org.geoserver.wms.GetMapOutputFormat;
  * Shows a paged list of the available layers and points to previews
  * in various formats 
  */
-@SuppressWarnings("serial")
 public class MapPreviewPage extends GeoServerBasePage {
 
-    PreviewLayerProvider provider = new PreviewLayerProvider();
+	private static final long serialVersionUID = 1L;
+
+	PreviewLayerProvider provider = new PreviewLayerProvider();
 
     GeoServerTablePanel<PreviewLayer> table;
     
     private transient List<String> availableWMSFormats;
-    private transient List<String> availableWFSFormats;
+    //private transient List<String> availableWFSFormats;
 
     /** GML output params computation may be expensive, results are cached in this map */
     private transient Map<String, GMLOutputParams> gmlParamsCache = new HashMap<String, GMLOutputParams>();
@@ -71,10 +72,11 @@ public class MapPreviewPage extends GeoServerBasePage {
         // build the table
         table = new GeoServerTablePanel<PreviewLayer>("table", provider) {
 
-            @Override
-            protected Component getComponentForProperty(String id,
-                    final IModel itemModel, Property<PreviewLayer> property) {
-                PreviewLayer layer = (PreviewLayer) itemModel.getObject();
+			private static final long serialVersionUID = 1L;
+
+			@Override
+            protected Component getComponentForProperty(String id, IModel<PreviewLayer> itemModel, Property<PreviewLayer> property) {
+                PreviewLayer layer = itemModel.getObject();
 
                 if (property == TYPE) {
                     Fragment f = new Fragment(id, "iconFragment", MapPreviewPage.this);
@@ -208,7 +210,7 @@ public class MapPreviewPage extends GeoServerBasePage {
             String label = translateFormat("format.wms.", wmsOutputFormat);
             // build option with text and value
             Label format = new Label(i + "", label);
-            format.add(new AttributeModifier("value", true, new Model(ResponseUtils.urlEncode(wmsOutputFormat))));
+            format.add(new AttributeModifier("value", new Model<String>(ResponseUtils.urlEncode(wmsOutputFormat))));
             wmsFormats.add(format);
         }
         menu.add(wmsFormats);
@@ -224,7 +226,7 @@ public class MapPreviewPage extends GeoServerBasePage {
                 String label = translateFormat("format.wfs.", wfsOutputFormat);
                 // build option with text and value
                 Label format = new Label(i + "", label);
-                format.add(new AttributeModifier("value", true, new Model<String>(ResponseUtils.urlEncode(wfsOutputFormat))));
+                format.add(new AttributeModifier("value", new Model<String>(ResponseUtils.urlEncode(wfsOutputFormat))));
                 wfsFormats.add(format);
             }
         }
@@ -239,7 +241,7 @@ public class MapPreviewPage extends GeoServerBasePage {
           + getMaxFeatures()
           + "&outputFormat=' + this.options[this.selectedIndex].value";
         String choice = "(this.options[this.selectedIndex].parentNode.label == 'WMS') ? " + wmsUrl + " : " + wfsUrl;
-        menu.add(new AttributeAppender("onchange", new Model("window.open("
+        menu.add(new AttributeAppender("onchange", new Model<String>("window.open("
                 + choice + ");this.selectedIndex=0"), ";"));
         f.add(menu);
         return f;

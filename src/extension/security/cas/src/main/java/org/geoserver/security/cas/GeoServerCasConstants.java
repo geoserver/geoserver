@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.jasig.cas.client.validation.Assertion;
+import org.springframework.security.cas.ServiceProperties;
 
 /**
  * Cas constants and convenience methods used
@@ -21,7 +22,7 @@ import org.jasig.cas.client.validation.Assertion;
 public class GeoServerCasConstants {
 
     public final static String CAS_PROXY_RECEPTOR_PATTERN = "/j_spring_cas_security_proxyreceptor";
-    public final static String ARTIFACT_PARAMETER = "ticket";
+    public final static String ARTIFACT_PARAMETER = ServiceProperties.DEFAULT_CAS_ARTIFACT_PARAMETER;
     public final static String LOGIN_URI = "/login";
     public final static String LOGOUT_URI = "/logout";
     public final static String LOGOUT_URL_PARAM = "url";
@@ -42,14 +43,7 @@ public class GeoServerCasConstants {
      */
     public final static String CAS_ASSERTION_KEY = "org.geoserver.security.cas.CasAssertion";
     
-    
-    /**
-     * This key is used to store the proxy list in {@link Assertion#getAttributes()}.
-     * The main reason is to determine if the ticket was a proxy ticket or a service ticket.
-     * 
-     */
-    public final static String CAS_PROXYLIST_KEY = "_CasProxyListKey";
-    
+        
     /**
      * creates the proxy callback url using the call back url prefix
      * and {@link #CAS_PROXY_RECEPTOR_PATTERN}
@@ -57,7 +51,7 @@ public class GeoServerCasConstants {
      * if the ulrPrefix is null, the return value is null
      * 
      * @param urlPrefix
-     * @return
+     *
      */
     public static String createProxyCallBackURl(String urlPrefix) {
         return createCasURl(urlPrefix, CAS_PROXY_RECEPTOR_PATTERN);
@@ -68,7 +62,7 @@ public class GeoServerCasConstants {
      * 
      * @param casUrlPrefix
      * @param casUri
-     * @return
+     *
      */
     public static String createCasURl(String casUrlPrefix, String casUri) {
         if (casUrlPrefix==null)

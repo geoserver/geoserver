@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,10 +18,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
@@ -34,13 +30,16 @@ import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geotools.data.DataStore;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
 import org.restlet.data.MediaType;
 
 import com.google.common.collect.Lists;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public class RESTDataTest extends ImporterTestSupport {
 
@@ -403,13 +402,13 @@ public class RESTDataTest extends ImporterTestSupport {
     void putTask(int imp, int task, String json) throws Exception {
         MockHttpServletResponse resp = putAsServletResponse(
             String.format("/rest/imports/%d/tasks/%d", imp, task), json, "application/json");
-        assertEquals(204, resp.getStatusCode());
+        assertEquals(204, resp.getStatus());
     }
 
     void putTaskLayer(int imp, int task, String json) throws Exception {
         MockHttpServletResponse resp = putAsServletResponse(
             String.format("/rest/imports/%d/tasks/%d/layer", imp, task), json, "application/json");
-        assertEquals(202, resp.getStatusCode());
+        assertEquals(202, resp.getStatus());
     }
 
     int postNewTaskAsMultiPartForm(int imp, String data) throws Exception {
@@ -429,10 +428,10 @@ public class RESTDataTest extends ImporterTestSupport {
         req.setContentType(multipart.getContentType());
         req.addHeader("Content-Type", multipart.getContentType());
         req.setMethod("POST");
-        req.setBodyContent(bout.toByteArray());
+        req.setContent(bout.toByteArray());
 
         MockHttpServletResponse resp = dispatch(req);
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         assertNotNull( resp.getHeader( "Location") );
 
         assertTrue(resp.getHeader("Location").matches(".*/imports/"+imp+"/tasks/\\d"));
@@ -448,16 +447,19 @@ public class RESTDataTest extends ImporterTestSupport {
         File zip = file(data);
         byte[] payload = new byte[ (int) zip.length()];
         FileInputStream fis = new FileInputStream(zip);
-        fis.read(payload);
-        fis.close();
+        try {
+            fis.read(payload);
+        } finally {
+            fis.close();
+        }
 
         MockHttpServletRequest req = createRequest("/rest/imports/" + imp + "/tasks/" + new File(data).getName());
-        req.setHeader("Content-Type", MediaType.APPLICATION_ZIP.toString());
+        req.addHeader("Content-Type", MediaType.APPLICATION_ZIP.toString());
         req.setMethod("PUT");
-        req.setBodyContent(payload);
+        req.setContent(payload);
 
         MockHttpServletResponse resp = dispatch(req);
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         assertNotNull( resp.getHeader( "Location") );
 
         assertTrue(resp.getHeader("Location").matches(".*/imports/"+imp+"/tasks/\\d"));
@@ -476,7 +478,7 @@ public class RESTDataTest extends ImporterTestSupport {
         MockHttpServletResponse resp = body == null ? postAsServletResponse("/rest/imports", "")
             : postAsServletResponse("/rest/imports", body, "application/json");
         
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         assertNotNull( resp.getHeader( "Location") );
         assertTrue(resp.getHeader("Location").matches(".*/imports/\\d"));
         assertEquals("application/json", resp.getContentType());
@@ -488,6 +490,6 @@ public class RESTDataTest extends ImporterTestSupport {
 
     void postImport(int imp) throws Exception {
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports/" + imp, "");
-        assertEquals(204, resp.getStatusCode());
+        assertEquals(204, resp.getStatus());
     }
 }

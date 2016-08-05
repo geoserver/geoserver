@@ -83,7 +83,6 @@ public class DescribeProcessTest extends WPSTestSupport {
     
     /**
      * Tests encoding of bounding box outputs
-     * @throws Exception
      */
     @Test
     public void testBounds() throws Exception {

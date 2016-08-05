@@ -44,7 +44,7 @@ public class SLDValidator {
      * @param xml
      * @param baseUrl GeoServer base URL
      *
-     * @return
+     *
      */
     @Deprecated
     public List validateSLD(InputStream xml, String baseUrl) {
@@ -57,7 +57,7 @@ public class SLDValidator {
      * @param xml
      * @param baseUrl GeoServer base URL
      *
-     * @return
+     *
      */
     public List validateSLD(InputStream xml) {
         return validateSLD(new InputSource(xml));

@@ -1,4 +1,4 @@
-.. _sec_disable:
+.. _security_disable:
 
 Disabling security
 ==================

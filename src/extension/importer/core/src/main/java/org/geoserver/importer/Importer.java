@@ -1,11 +1,14 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.importer;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -35,7 +39,9 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleGenerator;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersister.CRSConverter;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -52,9 +58,8 @@ import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.Paths;
-import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.coverage.grid.io.HarvestedSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataStore;
@@ -70,6 +75,8 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.simple.SimpleFeature;
@@ -184,6 +191,10 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     public Catalog getCatalog() {
         return catalog;
+    }
+
+    public GeoServer getGeoServer() {
+        return GeoServerExtensions.bean(GeoServer.class);
     }
 
     public ImportContext getContext(long id) {
@@ -345,7 +356,7 @@ public class Importer implements DisposableBean, ApplicationListener {
      * 
      * @param context
      * @param prepData
-     * @return
+     *
      */
     public Long initAsync(final ImportContext context, final boolean prepData) {
         return jobs.submit(new Job<ImportContext>() {
@@ -419,7 +430,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             data.prepare(context.progress());
         }
 
-        if (data instanceof FileData) {
+        if (data instanceof FileData && ((FileData) data).getFile() != null) {
             if (data instanceof Mosaic) {
                 return initForMosaic(context, (Mosaic)data);
             }
@@ -427,7 +438,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                 return initForDirectory(context, (Directory)data);
             }
             else {
-                return initForFile(context, (FileData)data);
+                return initForFile(context, (FileData) data);
             }
         }
         else if (data instanceof Table) {
@@ -665,25 +676,34 @@ public class Importer implements DisposableBean, ApplicationListener {
         if (l.getDefaultStyle() == null) {
             try {
                 StyleInfo style = null;
-                if (r instanceof FeatureTypeInfo) {
-                    //since this resource is still detached from the catalog we can't call
-                    // through to get it's underlying resource, so we depend on the "native"
-                    // type provided from the format
-                    FeatureType featureType =
-                        (FeatureType) task.getMetadata().get(FeatureType.class);
-                    if (featureType != null) {
-                        style = styleGen.createStyle(styleHandler, (FeatureTypeInfo) r, featureType);
-                    } else {
-                        throw new RuntimeException("Unable to compute style");
-                    }
 
+                // first check the case of a style file being uploaded via zip along with rest of files 
+                if (task.getData() instanceof SpatialFile) {
+                    SpatialFile file = (SpatialFile) task.getData();
+                    if (file.getStyleFile() != null) {
+                        style = createStyleFromFile(file.getStyleFile(), task);
+                    }
                 }
-                else if (r instanceof CoverageInfo) {
-                    style = styleGen.createStyle(styleHandler, (CoverageInfo) r);
-                }
-                else {
-                    throw new RuntimeException("Unknown resource type :"
-                            + r.getClass());
+
+                if (style == null) {
+                    if (r instanceof FeatureTypeInfo) {
+                        //since this resource is still detached from the catalog we can't call
+                        // through to get it's underlying resource, so we depend on the "native"
+                        // type provided from the format
+                        FeatureType featureType =
+                                (FeatureType) task.getMetadata().get(FeatureType.class);
+                        if (featureType != null) {
+                            style = styleGen.createStyle(styleHandler, (FeatureTypeInfo) r, featureType);
+                        } else {
+                            throw new RuntimeException("Unable to compute style");
+                        }
+
+                    } else if (r instanceof CoverageInfo) {
+                        style = styleGen.createStyle(styleHandler, (CoverageInfo) r);
+                    } else {
+                        throw new RuntimeException("Unknown resource type :"
+                                + r.getClass());
+                    }
                 }
                 l.setDefaultStyle(style);
             }
@@ -798,11 +818,11 @@ public class Importer implements DisposableBean, ApplicationListener {
                 if (context.getData() instanceof Directory) {
                     directory = (Directory) context.getData();
                 } else if ( context.getData() instanceof SpatialFile ) {
-                    directory = new Directory( ((SpatialFile) context.getData()).getFile().parent() );
+                    directory = new Directory( ((SpatialFile) context.getData()).getFile().getParentFile() );
                 }
                 if (directory != null) {
                     if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("Archiving directory " + directory.getFile().path());
+                        LOGGER.fine("Archiving directory " + directory.getFile().getAbsolutePath());
                     }       
                     try {
                         directory.archive(getArchiveFile(context));
@@ -834,11 +854,11 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     }
     
-    public Resource getArchiveFile(ImportContext context) throws IOException {
+    public File getArchiveFile(ImportContext context) throws IOException {
         //String archiveName = "import-" + task.getContext().getId() + "-" + task.getId() + "-" + task.getData().getName() + ".zip";
         String archiveName = "import-" + context.getId() + ".zip";
-        Resource dir = getCatalog().getResourceLoader().get(Paths.path("uploads", "archives"));
-        return dir.get(archiveName);
+        File dir = getCatalog().getResourceLoader().findOrCreateDirectory("uploads","archives");
+        return new File(dir, archiveName);
     }
     
     public void changed(ImportContext context) {
@@ -1089,7 +1109,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             throws IOException {
         if (data instanceof SpatialFile) {
             SpatialFile sf = (SpatialFile) data;
-            List<HarvestedSource> harvests = sr.harvest(null, sf.getFile().file(),
+            List<HarvestedSource> harvests = sr.harvest(null, sf.getFile(),
                     null);
             checkSingleHarvest(harvests);
         } else if (data instanceof Directory) {
@@ -1474,12 +1494,21 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     //file location methods
-    public Resource getImportRoot() {
-        return catalog.getResourceLoader().get("imports");
+    public File getImportRoot() {
+        try {
+            return catalog.getResourceLoader().findOrCreateDirectory("imports");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public Resource getUploadRoot() {
-        return catalog.getResourceLoader().get("uploads");
+    public File getUploadRoot() {
+        try {
+            return catalog.getResourceLoader().findOrCreateDirectory("uploads");
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void destroy() throws Exception {
@@ -1560,16 +1589,59 @@ public class Importer implements DisposableBean, ApplicationListener {
                 securityManager));
         
         // security
-        xs.allowTypes(new Class[] { ImportContext.class, ImportTask.class });
+        xs.allowTypes(new Class[] { ImportContext.class, ImportTask.class, File.class });
         xs.allowTypeHierarchy(TransformChain.class);
         xs.allowTypeHierarchy(DataFormat.class);
         xs.allowTypeHierarchy(ImportData.class);
         xs.allowTypeHierarchy(ImportTransform.class);
-        xs.allowTypeHierarchy(Resource.class);
 
         return xp;
     }
 
+    /**
+     * Creates a style for the layer being imported from a resource that was included in the 
+     * directory or archive that the data is being imported from.
+     */
+    StyleInfo createStyleFromFile(File styleFile, ImportTask task) {
+        String ext = FilenameUtils.getExtension(styleFile.getName());
+        if (ext != null) {
+            StyleHandler styleHandler = Styles.handler(ext);
+            if (styleHandler != null) {
+                try {
+                    StyledLayerDescriptor sld = styleHandler.parse(styleFile, null, null,
+                            new EntityResolverProvider(getGeoServer()).getEntityResolver());
+
+                    Style style = Styles.style(sld);
+                    if (style != null) {
+                        StyleInfo info = catalog.getFactory().createStyle();
+
+                        String styleName = styleGen.generateUniqueStyleName(task.getLayer().getResource());
+                        info.setName(styleName);
+                        
+                        info.setFilename(styleName + "." +ext);
+                        info.setFormat(styleHandler.getFormat());
+                        info.setWorkspace(task.getStore().getWorkspace());
+
+                        try (InputStream in = new FileInputStream(styleFile)) {
+                            catalog.getResourcePool().writeStyle(info, in);
+                        }
+                        return info;
+                    }
+                    else {
+                        LOGGER.warning("Style file contained no styling: " + styleFile.getPath());
+                    }
+                }
+                catch(Exception e) {
+                    LOGGER.log(Level.WARNING, "Error parsing style: " + styleFile.getPath(), e);
+                }
+            }
+            else {
+                LOGGER.warning("Unable to find style handler for file extension: " + ext);
+            }
+        }
+
+        return null;
+    }
 
 
 }

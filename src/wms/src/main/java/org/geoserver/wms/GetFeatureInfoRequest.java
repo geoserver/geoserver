@@ -178,7 +178,7 @@ public class GetFeatureInfoRequest extends WMSRequest {
 
     /**
      * The property selection, if any
-     * @return
+     *
      */
     public List<List<String>> getPropertyNames() {
         return propertyNames;

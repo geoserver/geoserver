@@ -15,7 +15,7 @@ public interface RoleSource {
      * We need a method to compare different RoleSource.
      * 
      * @param other
-     * @return
+     *
      */
     public boolean equals(RoleSource other);
 }

@@ -600,7 +600,6 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
      * Use this method to avoid to aggressive checks  
      * 
      * 
-     * @return 
      */
     protected boolean isJDBCTest() {
         return false;
@@ -648,7 +647,7 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
 
     /**
      * Accessor for the geoserver master password.
-     * @return
+     *
      */
     protected String getMasterPassword() {
         return new String(getSecurityManager().getMasterPassword());

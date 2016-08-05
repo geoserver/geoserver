@@ -418,7 +418,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
      * Returns true if the request is GWC compatible
      * 
      * @param mapContent
-     * @return
+     *
      */
     @SuppressWarnings("unchecked")
     private boolean isRequestGWCCompatible(GetMapRequest request, int layerIndex, WMS wms) {

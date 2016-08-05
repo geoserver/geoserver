@@ -22,7 +22,7 @@ import org.opengis.filter.identity.FeatureId;
 
 /**
  * Interfaces to a storage for CSW record objects. By default it has to provide support for CSW
- * Dublin Core records (in their {@link CSWRecordDescriptor#RECORD} form, but can publish more
+ * Dublin Core records (in their {@link CSWRecordDescriptor#RECORD_TYPE} form, but can publish more
  * feature types as well (e.g., ISO or ebRIM records)
  * 
  * @author Andrea Aime - GeoSolutions
@@ -42,12 +42,12 @@ public interface CatalogStore {
     FeatureCollection getRecords(Query q, Transaction t, String outputSchema) throws IOException;
 
     /**
-     * Returns the number of records that {@link #getRecords(Query, Transaction)} would return given
+     * Returns the number of records that {@link #getRecords(Query, Transaction, String)} would return given
      * the same query and transaction
      * 
      * @param q
      * @param t
-     * @return
+     *
      * @throws IOException
      */
     int getRecordsCount(Query q, Transaction t) throws IOException;
@@ -73,7 +73,7 @@ public interface CatalogStore {
      * 
      * @param f
      * @param t
-     * @return
+     *
      * @throws IOException
      */
     List<FeatureId> addRecord(Feature f, Transaction t) throws IOException;
@@ -109,14 +109,14 @@ public interface CatalogStore {
      * if the repository item is not found, or the operation is not supported 
      * 
      * @param recordId
-     * @return
+     *
      */
     RepositoryItem getRepositoryItem(String recordId) throws IOException;
 
     /**
      * Returns the store capabilities
      * 
-     * @return
+     *
      */
     CatalogStoreCapabilities getCapabilities();
     

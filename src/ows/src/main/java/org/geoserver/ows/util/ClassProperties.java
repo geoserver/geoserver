@@ -37,7 +37,12 @@ public class ClassProperties {
             final Class<?>[] params = method.getParameterTypes();
             if ((name.startsWith("get") || name.startsWith("is") || COMMON_DERIVED_PROPERTIES
                     .contains(name)) && params.length == 0) {
-                getters.add(method);
+                //Make sure OwsUtils.copy copies resource before anything that depends on it
+                if (name.contains("Resource")) {
+                    getters.add(0, method);
+                } else {
+                    getters.add(method);
+                }
             } else if(name.startsWith("set") && params.length == 1) {
                 setters.add(method);
             }
@@ -70,7 +75,7 @@ public class ClassProperties {
     /**
      * Looks up a setter method by property name.
      * <p>
-     * setter("foo",Integer) -> void setFoo(Integer); 
+     * setter("foo",Integer) --&gt; void setFoo(Integer); 
      * </p>
      * @param property The property.
      * @param type The type of the property.
@@ -105,7 +110,7 @@ public class ClassProperties {
     /**
      * Looks up a getter method by its property name.
      * <p>
-     * getter("foo",Integer) -> Integer getFoo(); 
+     * getter("foo",Integer) --&gt; Integer getFoo(); 
      * </p>
      * @param property The property.
      * @param type The type of the property.

@@ -116,7 +116,7 @@ public class LoggerRule extends java.util.logging.Handler implements TestRule {
     
     /**
      * Get the captured log records
-     * @return
+     *
      */
     public List<LogRecord> records() {
         assumeCaptureWorks();

@@ -10,13 +10,13 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>extension</artifactId>
-  <version>2.9-SNAPSHOT</version>
+  <version>2.10-SNAPSHOT</version>
  </parent>
 
  <groupId>org.geoserver.extension</groupId>
  <artifactId>gs-inspire</artifactId>
  <packaging>jar</packaging>
- <version>2.9-SNAPSHOT</version>
+ <version>2.10-SNAPSHOT</version>
  <name>GeoServer INSPIRE Extensions</name>
 
  <dependencies>
@@ -52,6 +52,11 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
+   <artifactId>gs-gwc</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
    <artifactId>gs-main</artifactId>
    <classifier>tests</classifier>
    <scope>test</scope>
@@ -65,8 +70,8 @@
    <version>${project.version}</version>
   </dependency>
   <dependency>
-    <groupId>com.mockrunner</groupId>
-    <artifactId>mockrunner</artifactId>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-test</artifactId>
     <scope>test</scope>
   </dependency>
   <dependency>

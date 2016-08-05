@@ -10,6 +10,8 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-netcdf*.jar</include>
+        <include>gt-netcdf*.jar</include>
+        <include>gt-coverage-api*.jar</include>
         <include>netcdf*.jar</include>
         <include>cdm*.jar</include>
         <include>httpservices*.jar</include>
@@ -17,6 +19,7 @@
         <include>joda-time*.jar</include>
         <include>jcip-annotations*.jar</include>
         <include>ehcache-core*.jar</include>
+        <include>jna*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

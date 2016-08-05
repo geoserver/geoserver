@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,8 +14,6 @@ import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -39,14 +37,15 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
@@ -71,13 +70,14 @@ import org.geotools.util.logging.Logging;
 /**
  * Allows editing a specific workspace
  */
-@SuppressWarnings("serial")
 public class WorkspaceEditPage extends GeoServerSecuredPage {
+
+    private static final long serialVersionUID = 4341324830412716976L;
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.data.workspace");
     
-    IModel wsModel;
-    IModel nsModel;
+    IModel<WorkspaceInfo> wsModel;
+    IModel<NamespaceInfo> nsModel;
     boolean defaultWs;
 
     SettingsPanel settingsPanel;
@@ -89,11 +89,13 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
      * @param parameters
      */
     public WorkspaceEditPage(PageParameters parameters) {
-        String wsName = parameters.getString("name");
+        String wsName = parameters.get("name").toString();
         WorkspaceInfo wsi = getCatalog().getWorkspaceByName(wsName);
         
         if(wsi == null) {
-            error(new ParamResourceModel("WorkspaceEditPage.notFound", this, wsName).getString());
+            getSession().error(
+                new ParamResourceModel("WorkspaceEditPage.notFound", this, wsName).getString()
+            );
             doReturn(WorkspacePage.class);
             return;
         }
@@ -108,12 +110,14 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
     private void init(WorkspaceInfo ws) {
         defaultWs = ws.getId().equals(getCatalog().getDefaultWorkspace().getId());
         
-        wsModel = new WorkspaceDetachableModel( ws );
+        wsModel = new WorkspaceDetachableModel(ws);
 
         NamespaceInfo ns = getCatalog().getNamespaceByPrefix( ws.getName() );
         nsModel = new NamespaceDetachableModel(ns);
         
-        Form form = new Form( "form", new CompoundPropertyModel( nsModel ) ) {
+        Form<NamespaceInfo> form = new Form<NamespaceInfo>( "form", new CompoundPropertyModel<NamespaceInfo>( nsModel ) ) {
+            private static final long serialVersionUID = 5140757565172795453L;
+
             protected void onSubmit() {
                 try {
                     saveWorkspace();
@@ -128,17 +132,17 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         //check for full admin, we don't allow workspace admins to change all settings
         boolean isFullAdmin = isAuthenticatedAsAdmin();
         
-        TextField name = new TextField("name", new PropertyModel(wsModel, "name"));
+        TextField<String> name = new TextField<String>("name", new PropertyModel<String>(wsModel, "name"));
         name.setRequired(true);
         name.setEnabled(isFullAdmin);
 
         name.add(new XMLNameValidator());
         form.add(name);
-        TextField uri = new TextField("uri", new PropertyModel(nsModel, "uRI"), String.class);
+        TextField<String> uri = new TextField<String>("uri", new PropertyModel<String>(nsModel, "uRI"), String.class);
         uri.setRequired(true);
         uri.add(new URIValidator());
         form.add(uri);
-        CheckBox defaultChk = new CheckBox("default", new PropertyModel(this, "defaultWs"));
+        CheckBox defaultChk = new CheckBox("default", new PropertyModel<Boolean>(this, "defaultWs"));
         form.add(defaultChk);
         defaultChk.setEnabled(isFullAdmin);
 
@@ -159,7 +163,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         SubmitLink submit = new SubmitLink("save");
         form.add(submit);
         form.setDefaultButton(submit);
-        form.add(new BookmarkablePageLink("cancel", WorkspacePage.class));
+        form.add(new BookmarkablePageLink<WorkspacePage>("cancel", WorkspacePage.class));
     }
 
     private void saveWorkspace() {
@@ -226,6 +230,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
      * Data object to hold onto transient settings, and maintain state of enabled for the workspace.
      */
     static class Settings implements Serializable {
+        private static final long serialVersionUID = -5855608735160516252L;
+
         /** track selection */
         Boolean enabled;
 
@@ -235,6 +241,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class ExistingSettingsModel extends LoadableDetachableModel<SettingsInfo> {
 
+        private static final long serialVersionUID = -8203239697623788188L;
         IModel<WorkspaceInfo> wsModel;
 
         ExistingSettingsModel(IModel<WorkspaceInfo> wsModel) {
@@ -251,6 +258,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class NewSettingsModel extends Model<SettingsInfo> {
 
+        private static final long serialVersionUID = -4365626821652771933L;
         IModel<WorkspaceInfo> wsModel;
         SettingsInfo info;
 
@@ -281,15 +289,17 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         }
     }
 
-    class SettingsPanel extends FormComponentPanel {
+    class SettingsPanel extends FormComponentPanel<Serializable> {
 
+        private static final long serialVersionUID = -1580928887379954134L;
+		
         WebMarkupContainer settingsContainer;
         ContactPanel contactPanel;
         WebMarkupContainer otherSettingsPanel;
         Settings set;
 
-        public SettingsPanel(String id, IModel<WorkspaceInfo> model) {
-            super(id, new Model());
+		public SettingsPanel(String id, IModel<WorkspaceInfo> model) {
+            super(id, new Model<>());
 
             SettingsInfo settings = getGeoServer().getSettings(model.getObject());
 
@@ -299,12 +309,14 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                 new ExistingSettingsModel(wsModel) : new NewSettingsModel(wsModel); 
 
             add(new CheckBox("enabled", new PropertyModel<Boolean>(set, "enabled")).
-                add(new AjaxFormComponentUpdatingBehavior("onclick") {
+                add(new AjaxFormComponentUpdatingBehavior("click") {
+                    private static final long serialVersionUID = -7851699665702753119L;
+
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         contactPanel.setVisible(set.enabled);
                         otherSettingsPanel.setVisible(set.enabled);
-                        target.addComponent(settingsContainer);
+                        target.add(settingsContainer);
                     }
                 }));
 
@@ -320,23 +332,22 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             settingsContainer.add(contactPanel);
 
             otherSettingsPanel = new WebMarkupContainer("otherSettings", 
-                new CompoundPropertyModel<GeoServerInfo>(set.model));
+                new CompoundPropertyModel<>(set.model));
             otherSettingsPanel.setOutputMarkupId(true);
             otherSettingsPanel.setVisible(set.enabled);
             otherSettingsPanel.add(new CheckBox("verbose"));
             otherSettingsPanel.add(new CheckBox("verboseExceptions"));
             otherSettingsPanel.add(new CheckBox("localWorkspaceIncludesPrefix"));
-            otherSettingsPanel.add(new TextField<Integer>("numDecimals").add(new MinimumValidator<Integer>(0)));
-            otherSettingsPanel.add(new DropDownChoice("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
-            otherSettingsPanel.add(new TextField("proxyBaseUrl").add(new UrlValidator()));
+            otherSettingsPanel.add(new TextField<Integer>("numDecimals").add(RangeValidator.minimum(0)));
+            otherSettingsPanel.add(new DropDownChoice<String>("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
+            otherSettingsPanel.add(new TextField<String>("proxyBaseUrl").add(new UrlValidator()));
             
             // Addition of pluggable extension points
-            ListView extensions = SettingsPluginPanelInfo.createExtensions("extensions", set.model, 
+            ListView<SettingsPluginPanelInfo> extensions = SettingsPluginPanelInfo.createExtensions("extensions", set.model, 
                     getGeoServerApplication());
             otherSettingsPanel.add(extensions);
-            
-            settingsContainer.add(otherSettingsPanel);
 
+            settingsContainer.add(otherSettingsPanel);
         }
     }
 
@@ -345,6 +356,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
      * the workspace.
      */
     static class Service implements Serializable {
+        private static final long serialVersionUID = 3283857206025172687L;
+
         /** track selection */
         Boolean enabled;
 
@@ -357,6 +370,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class NewServiceModel extends Model<ServiceInfo> {
         
+        private static final long serialVersionUID = -3467556623909292282L;
         IModel<WorkspaceInfo> wsModel;
         Class<ServiceInfo> serviceClass;
         ServiceInfo service;
@@ -394,6 +408,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
     static class ExistingServiceModel extends LoadableDetachableModel<ServiceInfo> {
 
+        private static final long serialVersionUID = -2170117760214309321L;
         IModel<WorkspaceInfo> wsModel;
         Class<ServiceInfo> serviceClass;
 
@@ -408,21 +423,26 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         }
     }
 
-    class ServicesPanel extends FormComponentPanel {
+    class ServicesPanel extends FormComponentPanel<Serializable> {
 
+        private static final long serialVersionUID = 7375904545106343626L;
         List<Service> services;
         
         public ServicesPanel(String id, final IModel<WorkspaceInfo> wsModel) {
-            super(id, new Model());
+            super(id, new Model<>());
 
             services = services(wsModel);
             ListView<Service> serviceList = new ListView<Service>("services", services) {
+
+                private static final long serialVersionUID = -4142739871430618450L;
 
                 @Override
                 protected void populateItem(ListItem<Service> item) {
                     Service service = item.getModelObject();
 
-                    final Link<Service> link = new Link<Service>("link", new Model(service)) {
+                    final Link<Service> link = new Link<Service>("link", new Model<Service>(service)) {
+                        private static final long serialVersionUID = 1111536301891090436L;
+
                         @Override
                         public void onClick() {
                             Service s = getModelObject();
@@ -430,8 +450,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
                             if (s.model instanceof ExistingServiceModel) {
                                 //service that has already been added, 
-                                PageParameters pp = 
-                                        new PageParameters("workspace=" + wsModel.getObject().getName());
+                                PageParameters pp = new PageParameters().add("workspace", wsModel.getObject().getName());
                                 try {
                                     page = s.adminPage.getComponentClass()
                                         .getConstructor(PageParameters.class).newInstance(pp);
@@ -450,7 +469,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                                 }
                                 
                             }
-                            ((BaseServiceAdminPage)page).setReturnPage(WorkspaceEditPage.this);
+                            ((BaseServiceAdminPage<?>)page).setReturnPage(WorkspaceEditPage.this);
                             setResponsePage(page);
                         }
                     };
@@ -459,30 +478,31 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     
                     AjaxCheckBox enabled = 
                         new AjaxCheckBox("enabled", new PropertyModel<Boolean>(service, "enabled")) {
+                        private static final long serialVersionUID = 6369730006169869310L;
+
                         @Override
                         protected void onUpdate(AjaxRequestTarget target) {
                             link.setEnabled(getModelObject());
-                            target.addComponent(link);
+                            target.add(link);
                         }
                     };
                     item.add(enabled);
                     
                     ServiceMenuPageInfo info = service.adminPage;
                     
-                    link.add(new AttributeModifier("title", true, 
-                        new StringResourceModel(info.getDescriptionKey(), (Component) null, null)));
+                    link.add(new AttributeModifier("title", new StringResourceModel(info.getDescriptionKey(), (Component) null, null)));
                     link.add(new Label("link.label", 
                         new StringResourceModel(info.getTitleKey(), (Component) null, null)));
                     
                     Image image;
                     if(info.getIcon() != null) {
                         image = new Image("link.icon", 
-                            new ResourceReference(info.getComponentClass(), info.getIcon()));
+                            new PackageResourceReference(info.getComponentClass(), info.getIcon()));
                     } else {
                         image = new Image("link.icon", 
-                            new ResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
+                            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
                     }
-                    image.add(new AttributeModifier("alt", true, new ParamResourceModel(info.getTitleKey(), null)));
+                    image.add(new AttributeModifier("alt", new ParamResourceModel(info.getTitleKey(), null)));
                     link.add(image);
                     item.add(link);
                 }
@@ -491,7 +511,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         }
 
         List<Service> services(IModel<WorkspaceInfo> wsModel) {
-            List<Service> services = new ArrayList();
+            List<Service> services = new ArrayList<Service>();
             
             for (ServiceMenuPageInfo page : 
                     getGeoServerApplication().getBeansOfType(ServiceMenuPageInfo.class)) {
@@ -502,7 +522,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
                 //if service is disabled, create a placeholder model to hold a newly created one,
                 // otherwise create a live model to the existing service
-                Class<ServiceInfo> serviceClass = (Class<ServiceInfo>) page.getServiceClass();
+                @SuppressWarnings("unchecked")
+				Class<ServiceInfo> serviceClass = (Class<ServiceInfo>) page.getServiceClass();
                 service.model = !service.enabled ? new NewServiceModel(wsModel, serviceClass) :  
                     new ExistingServiceModel(wsModel, serviceClass);
                 services.add(service);

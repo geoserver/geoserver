@@ -156,7 +156,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
     /**
      * Factory method for Tiles File
      * 
-     * @return
+     *
      * @throws IOException
      */
     protected abstract TilesFile createTilesFile() throws IOException;

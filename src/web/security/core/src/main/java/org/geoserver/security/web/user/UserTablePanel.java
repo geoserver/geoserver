@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,6 +18,7 @@ import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
+@SuppressWarnings("serial")
 public class UserTablePanel extends GeoServerTablePanel<GeoServerUser> {
 
     String ugServiceName;
@@ -34,7 +35,7 @@ public class UserTablePanel extends GeoServerTablePanel<GeoServerUser> {
     }
 
     @Override
-    protected Component getComponentForProperty(String id, IModel itemModel,
+    protected Component getComponentForProperty(String id, IModel<GeoServerUser> itemModel,
             Property<GeoServerUser> property) {
 
         if (property == UserListProvider.USERNAME) {

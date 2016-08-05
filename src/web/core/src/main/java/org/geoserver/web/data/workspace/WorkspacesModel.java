@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -18,10 +18,11 @@ import org.geoserver.web.GeoServerApplication;
 /**
  * Simple detachable model listing all the available workspaces
  */
-@SuppressWarnings("serial")
-public class WorkspacesModel extends LoadableDetachableModel {
+public class WorkspacesModel extends LoadableDetachableModel<List<WorkspaceInfo>> {
+    private static final long serialVersionUID = -2014677058862746780L;
+
     @Override
-    protected Object load() {
+    protected List<WorkspaceInfo> load() {
         Catalog catalog = GeoServerApplication.get().getCatalog();
         List<WorkspaceInfo> workspaces = new ArrayList<WorkspaceInfo>(catalog.getWorkspaces());
         Collections.sort(workspaces, new WorkspaceComparator());

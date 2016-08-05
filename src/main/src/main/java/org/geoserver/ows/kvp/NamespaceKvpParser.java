@@ -34,7 +34,7 @@ public class NamespaceKvpParser extends KvpParser {
      * @param value
      *            a list of namespace declarations of the form {@code
      *            <xmlns(foo=http://name.space1)[,xmlns(bar=http://name.space2)]+> }
-     * @return
+     *
      */
     @SuppressWarnings("unchecked")
     @Override

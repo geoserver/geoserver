@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.9-SNAPSHOT</version>
+    <version>2.10-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -24,7 +24,7 @@
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -37,13 +37,10 @@
       <configuration>
         <descriptors>
           <descriptor>release/ext-authkey.xml</descriptor>
-          <descriptor>release/ext-ftp.xml</descriptor>
-          <descriptor>release/ext-python.xml</descriptor>
           <descriptor>release/ext-groovy.xml</descriptor>
           <descriptor>release/ext-javascript.xml</descriptor>
           <descriptor>release/ext-spatialite.xml</descriptor>
           <descriptor>release/ext-jdbcconfig.xml</descriptor>
-          <descriptor>release/ext-sfs.xml</descriptor>
           <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
@@ -70,10 +67,18 @@
           <descriptor>release/ext-gdal-wps.xml</descriptor>
           <descriptor>release/ext-wps-jdbc.xml</descriptor>
           <descriptor>release/ext-vectortiles.xml</descriptor>
+          <descriptor>release/ext-params-extractor.xml</descriptor>
+          <descriptor>release/ext-wps-remote.xml</descriptor>
+          <descriptor>release/ext-python.xml</descriptor>
+          <descriptor>release/ext-ysld.xml</descriptor>
+          <descriptor>release/ext-jdbcstore.xml</descriptor>
+          <descriptor>release/ext-ncwms.xml</descriptor>
+          <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
+          <descriptor>release/ext-geogig.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
-	<plugin>
+     <plugin>
 		<artifactId>maven-jar-plugin</artifactId>
 		<executions>
 			<execution>
@@ -106,12 +111,6 @@
   <!-- profiles for individual modules -->
   <profiles>
     <profile>
-      <id>proxy</id>
-      <modules>
-        <module>proxy</module>
-      </modules>
-    </profile>
-    <profile>
       <id>colormap</id>
       <modules> 
         <module>colormap</module>
@@ -141,18 +140,6 @@
         <module>gpxppio</module>
       </modules>
     </profile>
-    <profile>
-      <id>dbconfig</id>
-      <modules>
-        <module>dbconfig</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>istyler</id>
-      <modules>
-        <module>istyler</module>
-      </modules>
-    </profile>    
     <profile>      
       <id>webservice</id>
       <modules>
@@ -172,14 +159,18 @@
       </modules>
     </profile>
     <profile>
+      <id>params-extractor</id>
+      <modules>
+        <module>params-extractor</module>
+      </modules>
+    </profile>
+    <profile>
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>
         <module>dds</module>
-        <module>ftp</module>
         <module>spatialite</module>
         <module>jdbcconfig</module>
-        <module>sfs</module>
         <module>feature-aggregate</module>
         <module>script</module>
         <module>wms-eo</module>
@@ -195,26 +186,25 @@
         <module>jms-cluster</module>
         <module>hz-cluster</module>
         <module>solr</module>
-	<module>rest-upload</module>
+        <module>rest-upload</module>
         <module>geofence</module>
         <module>geofence-server</module>
         <module>sldService</module>
+        <module>params-extractor</module>
+        <module>vectortiles</module>
+        <module>wps-remote</module>
+        <module>wps-jdbc</module>
         <module>release</module>
+        <module>geogig</module>
 	<module>gwc-distributed</module>
+	<module>jdbcstore</module>
 	<module>gdal</module>
 	<module>gwc-s3</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>gss</id>
-      <modules>
-        <module>gss</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>ftp</id>
-      <modules>
-        <module>ftp</module>
+	<module>ysld</module>
+        <module>backup-restore</module>
+	<module>ncwms</module>
+        <module>web-resource</module>
+        <module>gwc-sqlite</module>
       </modules>
     </profile>
     <profile>
@@ -227,12 +217,6 @@
       <id>sextante</id>
       <modules>
         <module>wps-sextante</module>
-      </modules>
-    </profile>
-    <profile>      
-      <id>sfs</id>
-      <modules>
-        <module>sfs</module>
       </modules>
     </profile>
     <profile>      
@@ -251,6 +235,7 @@
       <id>jdbcconfig</id>
       <modules>
         <module>jdbcconfig</module>
+        <module>jdbcstore</module>
       </modules>
     </profile>
     <profile>
@@ -272,12 +257,6 @@
       </modules>
     </profile>
     <profile>
-      <id>w3ds</id>
-      <modules>
-        <module>w3ds</module>
-      </modules>
-    </profile>
-    <profile>
       <id>wms-eo</id>
       <activation>
         <property><name>wms-eo</name></property>
@@ -286,15 +265,6 @@
         <module>wms-eo</module>
       </modules>
     </profile>	
-    <profile>
-      <id>kml-old</id>
-      <activation>
-        <property><name>kml-old</name></property>
-      </activation> 	  
-      <modules>
-        <module>kml-old</module>
-      </modules>
-    </profile>
     <profile>
       <id>geopkg</id>
       <modules>
@@ -306,18 +276,6 @@
       <id>mbtiles</id>
       <modules>
         <module>mbtiles</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wfs-notification</id>
-      <modules>
-        <module>wfs-notification</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>geoserver-sync</id>
-      <modules>
-        <module>geoserver-sync</module>
       </modules>
     </profile>
     <profile>
@@ -336,12 +294,6 @@
       </activation>
       <modules>
         <module>rest-ext</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>validation</id>
-      <modules>
-        <module>validation</module>
       </modules>
     </profile>
     <profile>      
@@ -428,6 +380,13 @@
         <modules>
           <module>vectortiles</module>
         </modules>
+    </profile>    
+    <profile>
+      <id>jdbcstore</id>
+      <modules>
+        <module>jdbcconfig</module>
+        <module>jdbcstore</module>
+      </modules>
     </profile>
     <profile>
       <id>gdal-translate</id>
@@ -451,6 +410,55 @@
       <id>community-release-module</id>
       <modules>
         <module>release</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wps-remote</id>
+      <modules>
+        <module>wps-remote</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>dem</id>
+      <modules>
+        <module>dem</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ysld</id>
+      <modules>
+        <module>ysld</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>backup-restore</id>
+      <modules>
+        <module>backup-restore</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ncwms</id>
+      <modules>
+        <module>colormap</module>
+        <module>ncwms</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>web-resource</id>
+      <modules>
+        <module>web-resource</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>gwc-sqlite</id>
+      <modules>
+        <module>gwc-sqlite</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>geogig</id>
+      <modules>
+        <module>geogig</module>
       </modules>
     </profile>
   </profiles>

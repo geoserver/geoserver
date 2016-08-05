@@ -3,7 +3,7 @@
 Upgrading existing versions
 ===========================
 
-.. warning:: Be aware that some upgrades are not reversible, meaning that the data directory may be changed so that it is no longer compatible with older versions of GeoServer. See :ref:`migrating_data_directory` for more details.
+.. warning:: Be aware that some upgrades are not reversible, meaning that the data directory may be changed so that it is no longer compatible with older versions of GeoServer. See :ref:`datadir_migrating` for more details.
 
 The general GeoServer upgrade process is as follows:
 

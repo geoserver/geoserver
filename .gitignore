@@ -4,6 +4,7 @@ target
 .classpath
 .project
 .metadata
+.DS_Store
 *.class
 *.pyc
 
@@ -12,3 +13,6 @@ target
 # Intellij
 .idea/
 *.iml
+
+# Cucumber Testing artifacts
+cucumber-report

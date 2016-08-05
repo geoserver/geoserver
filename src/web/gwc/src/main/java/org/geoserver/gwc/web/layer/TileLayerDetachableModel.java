@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,9 +16,10 @@ import org.geowebcache.layer.TileLayer;
  * modifications in a resource stable across page loads.
  * </p>
  */
-@SuppressWarnings("serial")
 class TileLayerDetachableModel extends LoadableDetachableModel<TileLayer> {
 
+    private static final long serialVersionUID = -2511578156425555123L;
+	
     private String name;
 
     public TileLayerDetachableModel(String layerName) {

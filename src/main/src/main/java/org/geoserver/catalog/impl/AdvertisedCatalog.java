@@ -38,8 +38,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
     private LayerGroupVisibilityPolicy layerGroupPolicy = LayerGroupVisibilityPolicy.HIDE_NEVER;
     
     /**
-     * @param catalog, wrapped Catalog
-     * @throws Exception
+     * @param catalog wrapped Catalog
      */
     public AdvertisedCatalog(Catalog catalog) {
         super(catalog);
@@ -57,7 +56,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
      * Hide Layer if Request is GetCapabilities and Layer or its Resource are not advertised.
      * 
      * @param layer
-     * @return
+     *
      */
     private boolean hideLayer(LayerInfo layer) {
         if (!layer.isAdvertised()) {
@@ -71,7 +70,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
      * Hide Resource if it's not advertised and Request is GetCapabilities.
      * 
      * @param resource
-     * @return
+     *
      */
     private boolean hideResource(ResourceInfo resource) {
         if (!resource.isAdvertised()) {

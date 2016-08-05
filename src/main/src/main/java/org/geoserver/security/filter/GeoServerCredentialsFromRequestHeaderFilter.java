@@ -109,7 +109,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends
      * 
      * @param header the String to parse
      * @param pattern the pattern to use. This must contain one group
-     * @return
+     *
      */
     private String parseHeader(String header, Pattern pattern) {
         Matcher m = pattern.matcher(header);
@@ -129,7 +129,6 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends
      * 
      * @param request
      * @param response
-     * @param authkey
      */
     protected void doAuthenticate(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -155,7 +154,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends
                 pw, new ArrayList<GrantedAuthority>());
         Authentication auth = null;
         try {
-            auth = getSecurityManager().authenticate(result);
+            auth = getSecurityManager().authenticationManager().authenticate(result);
         } catch (ProviderNotFoundException e) {
             LOGGER.log(Level.WARNING, "couldn't to authenticate user:" + us);
             return;

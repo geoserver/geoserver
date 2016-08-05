@@ -104,8 +104,6 @@ class NetCDFCRSWriter {
      * Setup lat,lon dimension (or y,x)  and related coordinates variable and add them
      * to the provided dimensionsManager
      * @param dimensionsManager 
-     * @return 
-     * @return 
      */
     public Map<String, NetCDFDimensionMapping> initialize2DCoordinatesDimensions() {
         final RenderedImage image = sampleGranule.getRenderedImage();
@@ -293,7 +291,8 @@ class NetCDFCRSWriter {
             Set<String> keySet = referencingToNetCDFParameters.keySet();
 
             // getting the list of parameters from the GT Referencing Projection 
-            ParameterValueGroup values = conversionFromBase.getParameterValues();
+            ParameterValueGroup values = projection
+                    .getNetcdfParameters(conversionFromBase.getParameterValues());
             List<GeneralParameterValue> valuesList = values.values();
 
             // Set up NetCDF CF parameters to be written

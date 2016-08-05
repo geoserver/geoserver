@@ -7,7 +7,6 @@ package org.geoserver.cluster.hazelcast;
 
 import static java.lang.String.format;
 import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
-import static org.geoserver.cluster.hazelcast.HazelcastUtil.localIPAsString;
 
 import java.util.List;
 import java.util.Queue;
@@ -228,11 +227,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
     }
 
     protected String nodeId() {
-        try {
-            return localIPAsString(cluster.getHz());
-        } catch (RuntimeException e) {
-            return "nodeId not available: " + e.getMessage();
-        }
+        return HazelcastUtil.nodeId(cluster);
     }
 
     public void start() {

@@ -39,18 +39,13 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
     /**
      * Creates the new reader.
      * 
-     * @param wms
-     *            The WMS service config.
+     * @param resolverProvider used to resolve URLs
      */
     public CapabilitiesXmlReader(EntityResolverProvider resolverProvider) {
         super(OWS.GETCAPABILITIES, null, "WMS");
         this.resolverProvider = resolverProvider;
     }
 
-    /**
-     * @param request
-     * @see org.geoserver.ows.XmlRequestReader#read(java.lang.Object, java.io.Reader, java.util.Map)
-     */
     @SuppressWarnings("rawtypes")
     @Override
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
@@ -98,9 +93,7 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
         /**
          * Creates a new CapabilitiesHandler
          * 
-         * @param service
-         *            this is the AbstractService Handling the Request
-         * @param req
+         * @param request this is the AbstractService Handling the Request
          */
         public CapabilitiesHandler(GetCapabilitiesRequest request) {
             this.request = request;

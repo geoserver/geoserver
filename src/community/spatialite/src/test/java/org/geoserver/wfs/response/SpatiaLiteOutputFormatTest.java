@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,7 +23,7 @@ import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
@@ -57,7 +57,6 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test a request with multiple layers.
-     * @throws Exception
      */
     @Test
     public void testMultiResponse() throws Exception {
@@ -74,7 +73,6 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test SPATIALITE Mime format.
-     * @throws Exception
      */
     @Test
     public void testMIMEOutput() throws Exception {
@@ -85,7 +83,6 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test the content disposition
-     * @throws Exception
      */
     @Test
     public void testContentDisposition() throws Exception {
@@ -97,7 +94,6 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
     /**
      * Test if exist WFS Error, checking for Mime Type.
      * If Mime Type is "application/xml", then an error has occurred
-     * @throws Exception
      */
     @Test
     public void testWFSError() throws Exception {
@@ -108,7 +104,6 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test not null content.
-     * @throws Exception
      */
     @Test
     public void testContentNotNull() throws Exception {
@@ -128,7 +123,6 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test a Point geometry.
-     * @throws Exception
      */
     @Test
     public void testPoints() throws Exception {
@@ -147,8 +141,7 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
     //for some odd reason this test does not work... TODO: further investigate
 //    /**
 //     * Test a MultiPoint geometry.
-//     * @throws Exception
-//     */
+////     */
 //    public void testMultiPoints() throws Exception {
 //        MockHttpServletResponse resp = getAsServletResponse(
 //            "wfs?request=GetFeature&typeName=MPoints&outputFormat=spatialite");
@@ -164,7 +157,6 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test a LineString geometry.
-     * @throws Exception
      */
     @Test
     public void testLines() throws Exception {
@@ -182,7 +174,6 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test a MultiLineString geometry.
-     * @throws Exception
      */
     @Test
    public void testMultiLines() throws Exception {
@@ -200,7 +191,6 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test a Polygon geometry.
-     * @throws Exception
      */
     @Test
     public void testPolygons() throws Exception {
@@ -218,7 +208,6 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
 
     /**
      * Test a MultiPolygon geometry.
-     * @throws Exception
      */
     @Test
     public void testMultiPolygons() throws Exception {
@@ -237,7 +226,6 @@ public class SpatiaLiteOutputFormatTest extends WFSTestSupport {
     
     /**
      * Test format option FILENAME.
-     * @throws Exception
      */
     @Test
     public void testCustomFileName() throws Exception {

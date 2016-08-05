@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -29,7 +29,7 @@ public class EmptyPageLinksAuthorizer extends DefaultPageAuthorizer {
 
 
     @Override
-    public boolean isAccessAllowed(Class componentClass, Authentication authentication) {
+    public boolean isAccessAllowed(Class<?> componentClass, Authentication authentication) {
         // if not admin just say no
         if (!super.isAccessAllowed(componentClass, authentication)) {
             return false;
@@ -37,7 +37,7 @@ public class EmptyPageLinksAuthorizer extends DefaultPageAuthorizer {
 
         // hide the page if there is demo around
         GeoServerApplication app = GeoServerApplication.get();
-        for (Class linkClass : linkClasses) {
+        for (Class<?> linkClass : linkClasses) {
             if(app.getBeansOfType(linkClass).size() > 0) {
                 return true;
             }

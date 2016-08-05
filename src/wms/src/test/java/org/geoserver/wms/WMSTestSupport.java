@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -56,7 +56,7 @@ import org.vfny.geoserver.Request;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
@@ -297,7 +297,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      * @param testName
      * @param image
      * @param bgColor
-     * @return
+     *
      */
     protected int countNonBlankPixels(String testName, BufferedImage image, Color bgColor) {
         int pixelsDiffer = 0;
@@ -509,7 +509,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      * @param i
      * @param j
      * @param color
-     * @return
+     *
      */
     protected Color getPixelColor(BufferedImage image, int i, int j) {
         ColorModel cm = image.getColorModel();

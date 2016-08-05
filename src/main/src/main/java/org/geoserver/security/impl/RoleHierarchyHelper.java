@@ -31,7 +31,7 @@ public class RoleHierarchyHelper {
      * Test if roleName is known
      * 
      * @param roleName
-     * @return
+     *
      */
     public boolean containsRole(String roleName) {
         return parentMappings.containsKey(roleName);
@@ -42,7 +42,7 @@ public class RoleHierarchyHelper {
      * role has no parent
      * 
      * @param roleName
-     * @return
+     *
      */
     public String getParent(String roleName) {
         checkRole(roleName);
@@ -57,7 +57,7 @@ public class RoleHierarchyHelper {
      * starting with the parent
      * 
      * @param roleName
-     * @return
+     *
      */
     public List<String> getAncestors(String roleName) {
         checkRole(roleName);
@@ -87,7 +87,7 @@ public class RoleHierarchyHelper {
      * Return child roles
      * 
      * @param roleName
-     * @return
+     *
      */
     public List<String> getChildren(String roleName) {
         checkRole(roleName);
@@ -107,7 +107,7 @@ public class RoleHierarchyHelper {
      * randomly
      * 
      * @param roleName
-     * @return
+     *
      */
     public List<String> getDescendants(String roleName) {
         checkRole(roleName);
@@ -171,7 +171,7 @@ public class RoleHierarchyHelper {
      * Check if the role is a root role
      * 
      * @param roleName
-     * @return
+     *
      */
     public boolean isRoot(String roleName) {
         checkRole(roleName);
@@ -181,7 +181,7 @@ public class RoleHierarchyHelper {
     /**
      * Get a list of root roles
      * 
-     * @return
+     *
      */
     public List<String> getRootRoles() {
         List<String> result = new ArrayList<String>();
@@ -196,7 +196,7 @@ public class RoleHierarchyHelper {
     /**
      * get a list of leaf roles
      * 
-     * @return
+     *
      */
     public List<String> getLeafRoles() {
         List<String> result = new ArrayList<String>();
@@ -217,7 +217,7 @@ public class RoleHierarchyHelper {
      * 
      * @param roleName
      * @param parentName
-     * @return
+     *
      */
     public boolean isValidParent(String roleName,String parentName) {
         if (parentName==null || parentName.length()==0)

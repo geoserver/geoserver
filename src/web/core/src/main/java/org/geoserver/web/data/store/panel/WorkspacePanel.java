@@ -50,7 +50,7 @@ public class WorkspacePanel extends Panel implements ParamPanel {
      * Returns the form component used in the panel in case it is needed for related form components
      * validation
      * 
-     * @return
+     *
      */
     public FormComponent getFormComponent() {
         return choice;

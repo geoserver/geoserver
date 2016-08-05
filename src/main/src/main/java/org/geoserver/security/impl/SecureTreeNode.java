@@ -85,7 +85,7 @@ public class SecureTreeNode {
      * Returns a child with the specified name, or null
      * 
      * @param name
-     * @return
+     *
      */
     public SecureTreeNode getChild(String name) {
         return children.get(name);
@@ -95,7 +95,7 @@ public class SecureTreeNode {
      * Adds a child to this path element
      * 
      * @param name
-     * @return
+     *
      */
     public SecureTreeNode addChild(String name) {
         if (getChild(name) != null)
@@ -118,7 +118,7 @@ public class SecureTreeNode {
      * 
      * @param user
      * @param mode
-     * @return
+     *
      */
     public boolean canAccess(Authentication user, AccessMode mode) {
         Set<String> roles = getAuthorizedRoles(mode);
@@ -173,7 +173,7 @@ public class SecureTreeNode {
      * children as well)
      * 
      * @param pathElements
-     * @return
+     *
      */
     public SecureTreeNode getDeepestNode(String[] pathElements) {
         SecureTreeNode curr = this;
@@ -190,7 +190,7 @@ public class SecureTreeNode {
     /**
      * The children of this secure tree node
      * 
-     * @return
+     *
      */
     Map<String, SecureTreeNode> getChildren() {
         return children;

@@ -50,7 +50,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource{
      * @param wrapped
      * @param targetTypeName 
      * @param targetSchema The target schema can have a different name and less attributes than the original one
-     * @return
+     *
      */
     public static SimpleFeatureSource getRetypingSource(SimpleFeatureSource wrapped, SimpleFeatureType targetSchema) throws IOException {
         FeatureTypeMap map = new FeatureTypeMap(wrapped.getSchema(), targetSchema);

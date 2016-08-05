@@ -7,7 +7,6 @@ package org.geoserver.jdbcconfig.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -27,14 +26,8 @@ public class Util {
      * </ul>
      * </p>
      */
-    public static void runScript(URL script, JdbcOperations jdbc, Logger logger) throws IOException {
-        InputStream stream = script.openStream();
-        List<String> lines;
-        try {
-            lines = org.apache.commons.io.IOUtils.readLines(stream);
-        } finally {
-            stream.close();
-        }
+    public static void runScript(InputStream script, JdbcOperations jdbc, Logger logger) throws IOException {
+        List<String> lines = org.apache.commons.io.IOUtils.readLines(script);
 
         StringBuilder buf = new StringBuilder();
         for (String sql : lines) {

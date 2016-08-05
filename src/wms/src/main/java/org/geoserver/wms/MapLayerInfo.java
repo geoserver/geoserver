@@ -121,7 +121,6 @@ public final class MapLayerInfo {
      * </p>
      * 
      * @return Envelope the feature source bounds.
-     * @throws Exception
      */
     public ReferencedEnvelope getBoundingBox() throws Exception {
         if (layerInfo != null) {
@@ -226,7 +225,7 @@ public final class MapLayerInfo {
     /**
      * Returns the remote feature source in case this layer is a remote WFS layer
      * 
-     * @return
+     *
      */
     public SimpleFeatureSource getRemoteFeatureSource() {
         return remoteFeatureSource;

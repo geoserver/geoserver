@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -46,7 +46,7 @@ ServletWrappingController {
                 LOG.warning("Printing module missing its configuration.  Any actions it takes will fail.");
                 return;
             }
-            initParameters.setProperty("config", config.path());
+            initParameters.setProperty("config", config.file().getAbsolutePath());
         } catch (java.io.IOException e) {
             LOG.warning("Unable to calcule canonical path for MapFish printing servlet. "
                     + "Module will fail when run.  IO Exception is: " + e);

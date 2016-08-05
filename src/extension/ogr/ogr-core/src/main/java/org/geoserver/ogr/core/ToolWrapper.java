@@ -22,21 +22,21 @@ public interface ToolWrapper {
     /**
      * Returns the full path to the executable to run.
      *
-     * @return
+     *
      */
     public String getExecutable();
 
     /**
      * Returns the environment variables that should be set prior to invoking the tool.
      *
-     * @return
+     *
      */
     public Map<String, String> getEnvironment();
 
     /**
      * Returns the command line parameter used to specify the output format.
      * 
-     * @return
+     *
      */
     public String getToolFormatParameter();
 
@@ -50,14 +50,14 @@ public interface ToolWrapper {
     /**
      * Returns a list of the tool supported formats
      * 
-     * @return
+     *
      */
     public Set<String> getSupportedFormats();
 
     /**
      * Returns true if the specified executable command is available and can be run.
      * 
-     * @return
+     *
      */
     public boolean isAvailable();
 

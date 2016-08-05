@@ -55,7 +55,7 @@ public class DirectDownloadSettings implements Serializable {
      *  
      * @param map
      * @param csw
-     * @return
+     *
      */
     public static DirectDownloadSettings getSettingsFromMetadata(MetadataMap map, CSWInfo csw) {
         DirectDownloadSettings settings = null;

@@ -124,7 +124,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
     /**
      * 
      * @param kvp
-     * @return
+     *
      */
     private DomainSubsetType parseDomainSubset(Map kvp) {
         final DomainSubsetType domainSubset = Wcs10Factory.eINSTANCE.createDomainSubsetType();
@@ -478,7 +478,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
      * DEcode the requested CRS following the WCS 1.0 style with LON,LAT axes order.
      * 
      * @param crsName
-     * @return
+     *
      */
     private static CoordinateReferenceSystem decodeCRS100(String crsName) throws WcsException{
         if ("WGS84(DD)".equals(crsName)) {
@@ -500,7 +500,7 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
      * Parses the interpolation parameter from the kvp. If nothing is present the default nearest neighbor is set.
      * 
      * @param kvp
-     * @return
+     *
      */
     private InterpolationMethodType parseInterpolation(Map kvp) {
         if (kvp.containsKey("interpolation")) {

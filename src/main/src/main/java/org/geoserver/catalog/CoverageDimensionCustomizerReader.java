@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,9 +8,11 @@ package org.geoserver.catalog;
 import it.geosolutions.imageio.maskband.DatasetLayout;
 import it.geosolutions.jaiext.range.NoDataContainer;
 
+import java.awt.Color;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -145,7 +147,6 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
      * @param coverageName the specified coverageName. It may be null in case of {@link GridCoverage2DReader}s 
      * with a single coverage, coming from an old catalog where no coverageName has been stored. 
      * @param info the {@link CoverageStoreInfo} instance used to look for {@link CoverageInfo} instances.
-     * @return 
      */
     public static GridCoverageReader wrap(GridCoverage2DReader delegate, String coverageName,
             CoverageStoreInfo info) {
@@ -181,7 +182,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
      * on that store.
      * 
      * @param storeInfo the storeInfo to be used to access the catalog
-     * @return
+     *
      */
     private CoverageInfo getCoverageInfo(CoverageStoreInfo storeInfo) {
         Utilities.ensureNonNull("storeInfo", storeInfo);
@@ -273,7 +274,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                     final int outputDims = dims.length;
                     wrappedDims = new GridSampleDimension[outputDims];
                     for (SampleDimension dim: dims) {
-                        wrappedDims[i] = new WrappedSampleDimension((GridSampleDimension) dim, 
+                        wrappedDims[i] = WrappedSampleDimension.build((GridSampleDimension) dim, 
                                 storedDimensions.get(outputDims != inputDims ? (i > (inputDims - 1 ) ? inputDims - 1 : i) : i));
                         i++;
                     }
@@ -484,6 +485,133 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
      */
     static class WrappedSampleDimension extends GridSampleDimension implements SampleDimension {
 
+        /** The original sample dimension */
+        private GridSampleDimension sampleDim;
+
+        /** The custom categories */
+        private List<Category> customCategories;
+
+        /** The custom noDataValues */
+        private double[] configuredNoDataValues;
+
+        /** The custom unit */
+        private Unit<?> configuredUnit;
+
+        /** The custom range */
+        private NumberRange<? extends Number> configuredRange;
+
+        /** The custom name */
+        private String name;
+
+        /** The custom description */
+        private InternationalString configuredDescription;
+        
+        public static WrappedSampleDimension build(GridSampleDimension sampleDim, CoverageDimensionInfo info) {
+            String name = info.getName();
+            final InternationalString sampleDimDescription = sampleDim.getDescription();
+            InternationalString configuredDescription = (sampleDimDescription == null || !sampleDimDescription.toString()
+                    .equalsIgnoreCase(name)) ? 
+                    new SimpleInternationalString(name) : sampleDimDescription;
+            final List<Category> categories = sampleDim.getCategories();
+            NumberRange configuredRange = info.getRange();
+            final String uom = info.getUnit();
+            Unit defaultUnit = sampleDim.getUnits();
+            Unit unit = defaultUnit;
+            try {
+                if (uom != null) {
+                    unit = Unit.valueOf(uom);
+                }
+            } catch (IllegalArgumentException iae) {
+                if (LOGGER.isLoggable(Level.WARNING) && defaultUnit != null) {
+                    LOGGER.warning("Unable to parse the specified unit (" + uom
+                            + "). Using the previous one: " + defaultUnit.toString());
+                }
+            }
+            Unit configuredUnit = unit;
+
+            // custom null values 
+            final List<Double> nullValues = info.getNullValues();
+            double[] configuredNoDataValues;
+            if (nullValues != null && nullValues.size() > 0) {
+                final int size = nullValues.size();
+                configuredNoDataValues = new double[size];
+                for (int i = 0; i < size ; i++) {
+                    configuredNoDataValues[i] = nullValues.get(i);
+                }
+            } else {
+                configuredNoDataValues = sampleDim.getNoDataValues();
+            }
+
+            // Check if the nodata has been configured
+            boolean nodataConfigured = configuredNoDataValues != null
+                    && configuredNoDataValues.length > 0;
+            // custom categories
+            int numCategories = 0;
+            List<Category> customCategories = new ArrayList<Category>(numCategories);
+            if (categories != null && (numCategories = categories.size()) > 0) {
+                Category wrapped = null;
+                for (Category category : categories) {
+                    wrapped = category;
+                    if (Category.NODATA.getName().equals(category.getName())) {
+                        if (category.isQuantitative()) {
+                            // Get minimum and maximum value
+                            double minimum = nodataConfigured ? configuredNoDataValues[0]
+                                    : category.getRange().getMinimum();
+                            double maximum = nodataConfigured ? configuredNoDataValues[0]
+                                    : category.getRange().getMaximum();
+                            if (Double.isNaN(minimum) && Double.isNaN(maximum)) {
+                                // Create a qualitative category
+                                wrapped = new Category(Category.NODATA.getName(),
+                                        category.getColors()[0], minimum);
+                            } else {
+                                // Create the wrapped category
+                                wrapped = new Category(Category.NODATA.getName(),
+                                        category.getColors(), NumberRange.create(minimum, maximum));
+                            }
+                        }
+                    }
+                    customCategories.add(wrapped);
+                }
+            }
+            // Adding the full data range, it's mandatory to have it if we want the configured range to survive a grid dimension copy 
+            // (but an infinite range is not valid, the Category creation will throw an exception)
+            if(configuredRange != null && !Double.isInfinite(configuredRange.getMinimum()) && !Double.isInfinite(configuredRange.getMaximum())) {
+                Class targetType = categories != null && !categories.isEmpty() ? categories.get(0).getRange().getElementClass() : Double.class;
+                final NumberRange<?> dataRange = configuredRange.castTo(targetType);
+                List<NumberRange<?>> dataRanges = new ArrayList<>();
+                dataRanges.add(dataRange);
+                for (Category category : customCategories) {
+                    List<NumberRange<?>> newDataRanges = new ArrayList<>();
+                    for (NumberRange<?> dr : dataRanges) {
+                        NumberRange<?>[] subtracted = dr.subtract(category.getRange());
+                        for (NumberRange<?> range : subtracted) {
+                            if(!range.isEmpty()) {
+                                newDataRanges.add(range);
+                            }
+                        }
+                    }
+                    dataRanges = newDataRanges;
+                }
+                for (int i = 0; i < dataRanges.size(); i++) {
+                    customCategories.add(new Category("data" + i, (Color) null, dataRanges.get(i)));
+                }
+            }
+            
+            return new WrappedSampleDimension(name, configuredDescription, configuredRange, configuredUnit, configuredNoDataValues, 
+                    (Category[]) customCategories.toArray(new Category[customCategories.size()]), sampleDim);
+        }
+
+        WrappedSampleDimension(String name, InternationalString configuredDescription, NumberRange<? extends Number> configuredRange,
+                Unit<?> configuredUnit, double[] configuredNoDataValues, Category[] customCategories, GridSampleDimension sampleDim) {
+            super(configuredDescription.toString(), customCategories, configuredUnit);
+            this.configuredDescription = configuredDescription;
+            this.configuredRange = configuredRange;
+            this.configuredUnit = configuredUnit;
+            this.configuredNoDataValues = configuredNoDataValues;
+            this.customCategories = Arrays.asList(customCategories);
+            this.sampleDim = sampleDim;
+        }
+        
         @Override
         public SampleDimensionType getSampleDimensionType() {
             return sampleDim.getSampleDimensionType();
@@ -605,103 +733,12 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                 builder = formatRange(builder, null);
                 builder.append(')').append(LINE_SEPARATOR);
                 for (final Category category : customCategories) {
-                    builder.append("  ").append(/*category == main ? '\u2023' : */' ').append(' ')
+                    builder.append("  ").append(' ').append(' ')
                           .append(category).append(LINE_SEPARATOR);
                 }
                 return builder.toString();
             } else {
                 return sampleDim.toString();
-            }
-        }
-
-        /** The original sample dimension */
-        private GridSampleDimension sampleDim;
-
-        /** The custom categories */
-        private List<Category> customCategories;
-
-        /** The custom noDataValues */
-        private double[] configuredNoDataValues;
-
-        /** The custom unit */
-        private Unit<?> configuredUnit;
-
-        /** The custom range */
-        private NumberRange<? extends Number> configuredRange;
-
-        /** The custom name */
-        private String name;
-
-        /** The custom description */
-        private InternationalString configuredDescription;
-
-        public WrappedSampleDimension(GridSampleDimension sampleDim, CoverageDimensionInfo info) {
-            super(sampleDim);
-            this.name = info.getName();
-            final InternationalString sampleDimDescription = sampleDim.getDescription();
-            this.configuredDescription = (sampleDimDescription == null || !sampleDimDescription.toString()
-                    .equalsIgnoreCase(name)) ? 
-                    new SimpleInternationalString(name) : sampleDimDescription;
-            this.sampleDim = sampleDim;
-            final List<Category> categories = sampleDim.getCategories();
-            this.configuredRange = info.getRange();
-            this.customCategories = categories;
-            final String uom = info.getUnit();
-            Unit defaultUnit = sampleDim.getUnits();
-            Unit unit = defaultUnit;
-            try {
-                if (uom != null) {
-                    unit = Unit.valueOf(uom);
-                }
-            } catch (IllegalArgumentException iae) {
-                if (LOGGER.isLoggable(Level.WARNING) && defaultUnit != null) {
-                    LOGGER.warning("Unable to parse the specified unit (" + uom
-                            + "). Using the previous one: " + defaultUnit.toString());
-                }
-            }
-            this.configuredUnit = unit;
-
-            // custom null values 
-            final List<Double> nullValues = info.getNullValues();
-            if (nullValues != null && nullValues.size() > 0) {
-                final int size = nullValues.size();
-                configuredNoDataValues = new double[size];
-                for (int i = 0; i < size ; i++) {
-                    configuredNoDataValues[i] = nullValues.get(i);
-                }
-            } else {
-                this.configuredNoDataValues = sampleDim.getNoDataValues();
-            }
-
-            // Check if the nodata has been configured
-            boolean nodataConfigured = configuredNoDataValues != null
-                    && configuredNoDataValues.length > 0;
-            // custom categories
-            if (categories != null) {
-                this.customCategories = new ArrayList<Category>(categories.size());
-                Category wrapped = null;
-                for (Category category : categories) {
-                    wrapped = category;
-                    if (Category.NODATA.getName().equals(category.getName())) {
-                        if (category.isQuantitative()) {
-                            // Get minimum and maximum value
-                            double minimum = nodataConfigured ? configuredNoDataValues[0]
-                                    : category.getRange().getMinimum();
-                            double maximum = nodataConfigured ? configuredNoDataValues[0]
-                                    : category.getRange().getMaximum();
-                            if (Double.isNaN(minimum) && Double.isNaN(maximum)) {
-                                // Create a qualitative category
-                                wrapped = new Category(Category.NODATA.getName(),
-                                        category.getColors()[0], minimum);
-                            } else {
-                                // Create the wrapped category
-                                wrapped = new Category(Category.NODATA.getName(),
-                                        category.getColors(), NumberRange.create(minimum, maximum));
-                            }
-                        }
-                    }
-                    customCategories.add(wrapped);
-                }
             }
         }
 

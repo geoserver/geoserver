@@ -1,0 +1,14 @@
+<wmts>
+    <id>WMTS-TEST</id>
+    <enabled>false</enabled>
+    <name>WMTS</name>
+    <title>GeoServer Web Map Tile Service</title>
+    <maintainer>geoserver</maintainer>
+    <abstrct>Testing the WMTS service.</abstrct>
+    <accessConstraints>SOME</accessConstraints>
+    <fees>MONEY</fees>
+    <citeCompliant>false</citeCompliant>
+    <onlineResource>http://geoserver.org</onlineResource>
+    <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+    <verbose>false</verbose>
+</wmts>

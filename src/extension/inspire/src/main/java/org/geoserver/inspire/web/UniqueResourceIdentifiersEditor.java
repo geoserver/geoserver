@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -66,7 +66,8 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                 new UniqueResourceIdentifiersProvider(identifiersModel), false) {
 
             @Override
-            protected Component getComponentForProperty(String id, final IModel itemModel,
+            protected Component getComponentForProperty(String id,
+                    IModel<UniqueResourceIdentifier> itemModel,
                     Property<UniqueResourceIdentifier> property) {
                 String name = property.getName();
                 if ("code".equals(name)) {
@@ -115,7 +116,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                             UniqueResourceIdentifier sdi = (UniqueResourceIdentifier) itemModel
                                     .getObject();
                             identifiers.remove(sdi);
-                            target.addComponent(container);
+                            target.add(container);
                         }
                     };
                     removeFragment.add(removeLink);
@@ -129,7 +130,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
         identifiers.setSortable(false);
         identifiers.setFilterable(false);
         container.add(identifiers);
-
+        
         // add new link button
         button = new AjaxButton("addIdentifier") {
 
@@ -138,13 +139,13 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                 UniqueResourceIdentifiers identifiers = identifiersModel.getObject();
                 identifiers.add(new UniqueResourceIdentifier());
 
-                target.addComponent(container);
+                target.add(container);
             }
             
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 // the form validator triggered, but we don't want the msg to display
-                Session.get().cleanupFeedbackMessages();
+                Session.get().getFeedbackMessages().clear(); // formally cleanupFeedbackMessages()
                 Session.get().dirty();
                 onSubmit(target, form);
             }
@@ -174,7 +175,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
     
     
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         UniqueResourceIdentifiersProvider provider = (UniqueResourceIdentifiersProvider) identifiers.getDataProvider();
         UniqueResourceIdentifiers ids = provider.model.getObject();
         setConvertedInput(ids);

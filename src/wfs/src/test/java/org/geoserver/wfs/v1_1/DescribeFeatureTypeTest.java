@@ -122,7 +122,6 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
     /**
      * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
-     * @throws Exception
      */
     @Test
     public void testUerSuppliedTypeNameNamespace() throws Exception {
@@ -138,7 +137,6 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
     /**
      * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
-     * @throws Exception
      */
     @Test
     public void testUerSuppliedTypeNameDefaultNamespace() throws Exception {
@@ -167,7 +165,6 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
      * addresses the typeName either by qualifying it as declared in the getcaps document, or
      * providing an alternate prefix with its corresponding prefix to namespace mapping.
      * 
-     * @throws Exception
      */
     @Test
     public void testCiteCompliance() throws Exception {
@@ -215,7 +212,6 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
     /**
      * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
-     * @throws Exception
      */
     @Test
     public void testPrefixedGetStrictCite() throws Exception {

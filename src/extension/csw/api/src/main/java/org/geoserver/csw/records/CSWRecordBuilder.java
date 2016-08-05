@@ -18,9 +18,6 @@ public class CSWRecordBuilder extends GenericRecordBuilder{
    
     /**
      * Adds an element to the current record
-     * 
-     * @param name
-     * @param values
      */
     public void addElement(String name, String... values) {
         super.addElement(name + ".value", values);
@@ -28,10 +25,6 @@ public class CSWRecordBuilder extends GenericRecordBuilder{
 
     /**
      * Adds an element to the current record with scheme
-     * 
-     * @param name
-     * @param scheme
-     * @param values
      */
     public void addElementWithScheme(String name, String scheme, String value) {
         super.addElement(name + ".value", value);

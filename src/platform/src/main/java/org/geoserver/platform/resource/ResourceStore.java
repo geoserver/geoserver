@@ -86,4 +86,13 @@ public interface ResourceStore {
      * @return true if resource was moved target path
      */
     boolean move( String path, String target);
+    
+    /**
+     * 
+     * The Resource Notification Dispatcher
+     * 
+     * @return resource notification dispatcher
+     */
+    ResourceNotificationDispatcher getResourceNotificationDispatcher();
+
 }

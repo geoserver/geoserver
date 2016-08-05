@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -102,7 +103,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new WCSInterpolationModel()));
  
         Palette<String> interpolationMethods = new Palette<String>("interpolationMethods", LiveCollectionModel
-                .list(new PropertyModel<String>(coverage, "interpolationMethods")),
+                .list(new PropertyModel<List<String>>(coverage, "interpolationMethods")),
                 new WCSInterpolationModel(), new SimpleChoiceRenderer(), 7, false) {
             private static final long serialVersionUID = 6815545819673802290L;
 
@@ -124,6 +125,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         "InterpolationMethodsPalette.availableHeader"));
             }
         };
+        interpolationMethods.add(new DefaultTheme());
         add(interpolationMethods);
 
         // don't allow editing the native format
@@ -132,7 +134,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         add(nativeFormat);
 
         Palette<String> formatPalette = new Palette<String>("formatPalette", LiveCollectionModel
-                .list(new PropertyModel<String>(coverage, "supportedFormats")), new WCSFormatsModel(),
+                .list(new PropertyModel<List<String>>(coverage, "supportedFormats")), new WCSFormatsModel(),
                 new SimpleChoiceRenderer(), 10, false) {
             private static final long serialVersionUID = -2463012775305597908L;
 
@@ -154,6 +156,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         "FormatsPalette.availableHeader"));
             }
         };
+        formatPalette.add(new DefaultTheme());
         add(formatPalette);
    }
     

@@ -10,15 +10,16 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
 /**
- * Provides callbacks for the life cycle of an ows request.
+ * Provides call backs for the life cycle of an ows request.
  * <p>
  * Instances of this interface should be registered in a spring application context like:
- * <pre>
- *  &lt;bean id="myCallback" class="org.acme.MyCallback"/>
- * </pre>
  * </p>
+ * 
+ * <pre>
+ *  &lt;bean id="myCallback" class="org.acme.MyCallback"/&gt;
+ * </pre>
+ * 
  * @author Justin Deoliveira, OpenGEO
- *
  */
 public interface DispatcherCallback {
 

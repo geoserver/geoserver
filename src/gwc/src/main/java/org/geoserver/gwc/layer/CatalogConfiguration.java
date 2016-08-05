@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -24,12 +24,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.common.base.Predicates;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.GWC;
+import org.geoserver.ows.LocalWorkspace;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.Configuration;
 import org.geowebcache.config.XMLGridSubset;
@@ -46,7 +49,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
@@ -63,6 +65,11 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
  * @see CatalogStyleChangeListener
  */
 public class CatalogConfiguration implements Configuration {
+    
+    /**
+     * The configuration lock timeout, in seconds
+     */
+    static final int GWC_CONFIGURATION_LOCK_TIMEOUT = Integer.getInteger("gwc.configuration.lock.timeout", 60);
 
     /**
      * {@link GeoServerTileLayer} cache loader
@@ -80,7 +87,7 @@ public class CatalogConfiguration implements Configuration {
             GeoServerTileLayer tileLayer = null;
             final GridSetBroker gridSetBroker = CatalogConfiguration.this.gridSetBroker;
 
-            lock.readLock().lock();
+            lock.acquireReadLock();
             try {
                 if (pendingDeletes.contains(layerId)) {
                     throw new IllegalArgumentException("Tile layer '" + layerId + "' was deleted.");
@@ -97,7 +104,7 @@ public class CatalogConfiguration implements Configuration {
                 tileLayer = new GeoServerTileLayer(geoServerCatalog, layerId, gridSetBroker,
                         tileLayerInfo);
             } finally {
-                lock.readLock().unlock();
+                lock.releaseReadLock();
             }
             if (null == tileLayer) {
                 throw new IllegalArgumentException("GeoServer layer or layer group '" + layerId
@@ -105,6 +112,7 @@ public class CatalogConfiguration implements Configuration {
             }
             return tileLayer;
         }
+
     }
 
     private static final Logger LOGGER = Logging.getLogger(CatalogConfiguration.class);
@@ -127,7 +135,7 @@ public class CatalogConfiguration implements Configuration {
      */
     private final Set<String> pendingDeletes = new CopyOnWriteArraySet<String>();
 
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final TimeoutReadWriteLock lock = new TimeoutReadWriteLock(GWC_CONFIGURATION_LOCK_TIMEOUT * 1000, "GWC Configuration");
 
     public CatalogConfiguration(final Catalog catalog, final TileLayerCatalog tileLayerCatalog,
             final GridSetBroker gridSetBroker) {
@@ -145,7 +153,7 @@ public class CatalogConfiguration implements Configuration {
                 .maximumSize(100)//
                 .build(new TileLayerLoader(tileLayerCatalog));
     }
-
+    
     /**
      * 
      * @see org.geowebcache.config.Configuration#getIdentifier()
@@ -194,7 +202,7 @@ public class CatalogConfiguration implements Configuration {
      */
     @Override
     public Iterable<GeoServerTileLayer> getLayers() {
-        lock.readLock().lock();
+        lock.acquireReadLock();
         try {
             final Set<String> layerIds = tileLayerCatalog.getLayerIds();
 
@@ -205,9 +213,13 @@ public class CatalogConfiguration implements Configuration {
                 }
             };
 
-            return Iterables.transform(layerIds, lazyLayerFetch);
+            // removing the NULL results
+            return Iterables.filter(
+                Iterables.transform(layerIds, lazyLayerFetch),
+                Predicates.notNull()
+            );
         } finally {
-            lock.readLock().unlock();
+            lock.releaseReadLock();
         }
     }
 
@@ -218,7 +230,7 @@ public class CatalogConfiguration implements Configuration {
      */
     @Override
     public Set<String> getTileLayerNames() {
-        lock.readLock().lock();
+        lock.acquireReadLock();
         try {
             final Set<String> storedNames = tileLayerCatalog.getLayerNames();
             Set<String> names = null;
@@ -248,14 +260,14 @@ public class CatalogConfiguration implements Configuration {
             }
             return names == null ? storedNames : Collections.unmodifiableSet(names);
         } finally {
-            lock.readLock().unlock();
+            lock.releaseReadLock();
         }
     }
 
     @Override
     public boolean containsLayer(String layerId) {
         checkNotNull(layerId, "layer id is null");
-        lock.readLock().lock();
+        lock.acquireReadLock();
         try {
             if (pendingDeletes.contains(layerId)) {
                 return false;
@@ -264,7 +276,7 @@ public class CatalogConfiguration implements Configuration {
             boolean hasLayer = layerIds.contains(layerId);
             return hasLayer;
         } finally {
-            lock.readLock().unlock();
+            lock.releaseReadLock();
         }
     }
 
@@ -273,12 +285,36 @@ public class CatalogConfiguration implements Configuration {
         checkNotNull(layerId, "layer id is null");
 
         GeoServerTileLayer layer;
+        lock.acquireReadLock();
         try {
             layer = layerCache.get(layerId);
+            // let's see if this a virtual service request
+            WorkspaceInfo localWorkspace = LocalWorkspace.get();
+            if (localWorkspace != null) {
+                // yup this is a virtual service request, so we need to filter layers per workspace
+                WorkspaceInfo layerWorkspace;
+                LayerInfo layerInfo = layer.getLayerInfo();
+                if (layerInfo != null) {
+                    // this is a normal layer
+                    layerWorkspace = layer.getLayerInfo().getResource().getStore().getWorkspace();
+                } else {
+                    // this is a layer group
+                    layerWorkspace = layer.getLayerGroupInfo().getWorkspace();
+                }
+                // check if the layer doesn't have an workspace (this is possible for layer groups)
+                if (layerWorkspace == null) {
+                    // no workspace means that it doesn't belong to this workspace
+                    return null;
+                }
+                // if the layer matches the virtual service workspace we return the layer otherwise NULL is returned
+                return localWorkspace.getName().equals(layerWorkspace.getName()) ? layer : null;
+            }
         } catch (ExecutionException e) {
             throw propagate(e.getCause());
         } catch (UncheckedExecutionException e) {
             throw propagate(e.getCause());
+        } finally {
+            lock.releaseReadLock();
         }
 
         return layer;
@@ -293,14 +329,14 @@ public class CatalogConfiguration implements Configuration {
 
         final String layerId;
 
-        lock.readLock().lock();
+        lock.acquireReadLock();
         try {
             layerId = getLayerId(layerName);
             if (layerId == null) {
                 return null;
             }
         } finally {
-            lock.readLock().unlock();
+            lock.releaseReadLock();
         }
         return getTileLayerById(layerId);
     }
@@ -367,7 +403,7 @@ public class CatalogConfiguration implements Configuration {
     @Override
     public int getTileLayerCount() {
         int count = 0;
-        lock.readLock().lock();
+        lock.acquireReadLock();
         try {
             Set<String> layerIds = tileLayerCatalog.getLayerIds();
             if (pendingDeletes.isEmpty()) {
@@ -381,7 +417,7 @@ public class CatalogConfiguration implements Configuration {
                 }
             }
         } finally {
-            lock.readLock().unlock();
+            lock.releaseReadLock();
         }
         return count;
     }
@@ -391,7 +427,7 @@ public class CatalogConfiguration implements Configuration {
      */
     @Override
     public int initialize(GridSetBroker gridSetBroker) {
-        lock.writeLock().lock();
+        lock.acquireWriteLock();
         try {
             LOGGER.info("Initializing GWC configuration based on GeoServer's Catalog");
             this.gridSetBroker = gridSetBroker;
@@ -415,7 +451,7 @@ public class CatalogConfiguration implements Configuration {
             }
             LOGGER.info("GWC configuration based on GeoServer's Catalog loaded successfuly");
         } finally {
-            lock.writeLock().unlock();
+            lock.releaseWriteLock();
         }
         return getTileLayerCount();
     }
@@ -470,7 +506,7 @@ public class CatalogConfiguration implements Configuration {
             return;
         }
 
-        lock.writeLock().lock();
+        lock.acquireWriteLock();
         try {
             boolean pending = pendingModications.containsKey(info.getId());
             boolean exists = null != tileLayerCatalog.getLayerById(info.getId());
@@ -480,11 +516,11 @@ public class CatalogConfiguration implements Configuration {
                     + "' already exists");
             if (pendingDeletes.remove(info.getId())) {
                 LOGGER.finer("Adding a new layer " + info.getName()
-                        + " before saving the deleted one with the same name");
+                        + " before saving the deleted one with the same id");
             }
             pendingModications.put(info.getId(), info);
         } finally {
-            lock.writeLock().unlock();
+            lock.releaseWriteLock();
         }
     }
 
@@ -503,7 +539,7 @@ public class CatalogConfiguration implements Configuration {
         checkNotNull(tileLayer.getInfo().getName(), "name is null");
 
         final GeoServerTileLayerInfo info = tileLayer.getInfo();
-        lock.writeLock().lock();
+        lock.acquireWriteLock();
         try {
             final String layerId = info.getId();
             // check pendingModifications too to catch unsaved adds
@@ -513,7 +549,7 @@ public class CatalogConfiguration implements Configuration {
             pendingModications.put(layerId, info);
             layerCache.invalidate(layerId);
         } finally {
-            lock.writeLock().unlock();
+            lock.releaseWriteLock();
         }
     }
 
@@ -526,12 +562,23 @@ public class CatalogConfiguration implements Configuration {
     @Override
     public boolean removeLayer(final String layerName) {
         checkNotNull(layerName);
-        lock.writeLock().lock();
+        lock.acquireWriteLock();
         try {
             GeoServerTileLayerInfo tileLayerInfo = getTileLayerInfoByName(layerName);
             if (tileLayerInfo != null) {
                 final String layerId = tileLayerInfo.getId();
                 pendingModications.remove(layerId);
+                // cache removal must occur before layerId is added to pendingDeletes
+                // otherwise brokers and blob stores will not be able to obtain
+                // the tile layer information they need to perform cache removal
+                // because the CatalogConfiguration will treat the layer as if
+                // it no longer exists
+                try {
+                    GWC.get().layerRemoved(tileLayerInfo.getName());
+                } catch (RuntimeException e) {
+                    LOGGER.log(Level.SEVERE, "Error deleting tile layer '" + tileLayerInfo.getName()
+                            + "' from cache", e);
+                }
                 pendingDeletes.add(layerId);
                 layerCache.invalidate(layerId);
                 return true;
@@ -539,7 +586,7 @@ public class CatalogConfiguration implements Configuration {
                 return false;
             }
         } finally {
-            lock.writeLock().unlock();
+            lock.releaseWriteLock();
         }
     }
 
@@ -556,23 +603,19 @@ public class CatalogConfiguration implements Configuration {
 
         final GWC mediator = GWC.get();
 
-        final Set<String/* name */> deletedNames = Sets.newHashSet();
         final List<GeoServerTileLayerInfo[/* old, new */]> modifications = Lists.newLinkedList();
 
-        lock.writeLock().lock();
+        lock.acquireWriteLock();
         // perform the transaction while holding the write lock, then downgrade to the read lock and
         // issue the modification events (otherwise another thread asking for any changed layer
         // would lock)
         try {
             for (String deletedId : pendingDeletes) {
                 try {
-                    GeoServerTileLayerInfo info = tileLayerCatalog.delete(deletedId);
-                    if (info != null) {
-                        // remove it from stack copy to avoid notifying its deletion
-                        deletedNames.add(info.getName());
-                    }
+                    tileLayerCatalog.delete(deletedId);
                 } catch (RuntimeException e) {
-                    LOGGER.log(Level.SEVERE, "Error deleting tile layer '" + deletedId + "'", e);
+                    LOGGER.log(Level.SEVERE,
+                            "Error deleting tile layer '" + deletedId + "' from catalog", e);
                 }
             }
 
@@ -589,21 +632,10 @@ public class CatalogConfiguration implements Configuration {
             this.pendingModications.clear();
             this.pendingDeletes.clear();
         } finally {
-            // Downgrade by acquiring read lock before releasing write lock
-            lock.readLock().lock();
-            lock.writeLock().unlock(); // Unlock write, still hold read
+            // Downgrade to read
+            lock.downgradeToReadLock();
             try {
                 // issue notifications
-                for (String deletedLayerName : deletedNames) {
-                    try {
-                        // let the mediator deal with gwc to get rid of all the caches
-                        mediator.layerRemoved(deletedLayerName);
-                    } catch (RuntimeException e) {
-                        LOGGER.log(Level.SEVERE, "Error deleting tile layer '" + deletedLayerName
-                                + "'", e);
-                    }
-                }
-
                 for (GeoServerTileLayerInfo[] oldNew : modifications) {
                     final GeoServerTileLayerInfo old = oldNew[0];
                     final GeoServerTileLayerInfo modified = oldNew[1];
@@ -622,7 +654,7 @@ public class CatalogConfiguration implements Configuration {
                     }
                 }
             } finally {
-                lock.readLock().unlock();
+                lock.releaseReadLock();
             }
         }
     }
@@ -697,12 +729,31 @@ public class CatalogConfiguration implements Configuration {
     }
 
     public void reset() {
-        lock.writeLock().lock();
+        lock.acquireWriteLock();
         try {
             this.layerCache.invalidateAll();
             this.tileLayerCatalog.reset();
         } finally {
-            lock.writeLock().unlock();
+            lock.releaseWriteLock();
         }
+    }
+
+    /**
+     * Helper method that will remove the workspace prefix from a layer name.
+     * If the layer is not prefixed by an workspace name the layer name will be returned as is.
+     */
+    public static String removeWorkspacePrefix(String layerName, Catalog catalog) {
+        // checking if we have an workspace prefix
+        int workspaceSeparatorIndex = layerName.indexOf(":");
+        if (workspaceSeparatorIndex >= 0 && workspaceSeparatorIndex + 1 < layerName.length()) {
+            // let's check if we really have a workspace name as prefix
+            String workspaceName = layerName.substring(0, workspaceSeparatorIndex);
+            if (catalog.getWorkspaceByName(workspaceName) != null) {
+                // we really have an workspace as prefix so let's remove it
+                return layerName.substring(workspaceSeparatorIndex + 1);
+            }
+        }
+        // we are already good
+        return layerName;
     }
 }

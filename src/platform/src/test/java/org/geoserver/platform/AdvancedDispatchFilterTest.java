@@ -1,8 +1,8 @@
 package org.geoserver.platform;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -20,9 +20,8 @@ public class AdvancedDispatchFilterTest {
      */
     @Test
     public void testPathIsNullNPE() {
-        MockHttpServletRequest request = new MyMockRequest();
+        MockHttpServletRequest request = new MyMockRequest("GET", "/test?name=0");
         request.setServerName("localhost");
-        request.setRequestURL("/test?name=0");
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain filterChain = new MockFilterChain();
         
@@ -40,7 +39,7 @@ public class AdvancedDispatchFilterTest {
     @Test
     public void testHandlePathInfoNull() {
         // Ensure null request succeeds
-        MockHttpServletRequest mockRequest = new MyMockRequest();
+        MockHttpServletRequest mockRequest = new MyMockRequest("GET", null);
         mockRequest.setPathInfo(null);
         assertNull(mockRequest.getPathInfo());
 
@@ -65,6 +64,11 @@ public class AdvancedDispatchFilterTest {
      * name MockHttpServletRequest.
      */
     class MyMockRequest extends MockHttpServletRequest {
+
+        public MyMockRequest(String method, String requestURI) {
+            super(method, requestURI);
+        }
+        
         
     }
 }

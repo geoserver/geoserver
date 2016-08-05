@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -178,10 +178,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         ResourceInfo ri = null;
         if (name != null) {
             ri = wms.getResourceInfo(name);
-            if (ri == null) {
-                throw new IllegalArgumentException("Can't find neither a FeatureType nor "
-                        + "a CoverageInfo or WMSLayerInfo named " + name);
-            }                        
+            // ri can be null if the type is the result of a rendering transformation
         }
 
         synchronized (templateConfig) {

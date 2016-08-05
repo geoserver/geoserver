@@ -50,7 +50,7 @@ public class LiveDbmsData extends LiveSystemTestData {
      * The property file containing the token -> value pairs used for filtering
      * and to grab a JDBC datastore connection.
      * 
-     * @return
+     *
      */
     protected File fixture;
 
@@ -102,7 +102,7 @@ public class LiveDbmsData extends LiveSystemTestData {
     /**
      * Looks up the fixture file in the home directory provided that the 
      * @param fixtureId
-     * @return
+     *
      */
     private File lookupFixture(String fixtureId) {
         // first of all, make sure the fixture was not disabled using a system
@@ -221,7 +221,7 @@ public class LiveDbmsData extends LiveSystemTestData {
      * override to use other methods
      * 
      * @param ds
-     * @return
+     *
      * @throws IOException
      */
     protected Connection getDatabaseConnection(DataStore ds) throws IOException {
@@ -234,7 +234,7 @@ public class LiveDbmsData extends LiveSystemTestData {
 
     /**
      * Returns the filtered paths list as a live list (can be modified directly)
-     * @return
+     *
      */
     public List<String> getFilteredPaths() {
         return filteredPaths;

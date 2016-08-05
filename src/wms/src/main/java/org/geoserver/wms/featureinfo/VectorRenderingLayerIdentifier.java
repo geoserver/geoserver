@@ -640,8 +640,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
      * 
      * @author Andrea Aime - GeoSolutions
      * 
-     * @param <T>
-     * @param <F>
+     * @param <T> FeatureType
+     * @param <F> Feature
      */
     static class FeatureInfoFeatureSource extends DecoratingFeatureSource<FeatureType, Feature> {
 

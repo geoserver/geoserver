@@ -306,7 +306,7 @@ public class ServiceException extends org.geoserver.platform.ServiceException {
      * Defaults to <code>geoserver.getMimeType()</code>
      * </p>
      *
-     * @return
+     *
      */
     public String getMimeType(GeoServer geoserver) {
         return "text/xml; charset=" + geoserver.getSettings().getCharset();

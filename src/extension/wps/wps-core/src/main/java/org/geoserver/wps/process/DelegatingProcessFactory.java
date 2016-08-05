@@ -80,7 +80,7 @@ public abstract class DelegatingProcessFactory implements ProcessFactory {
     
     /**
      * Returns the original process factory
-     * @return
+     *
      */
     public ProcessFactory getDelegate() {
         return delegate;
@@ -88,7 +88,7 @@ public abstract class DelegatingProcessFactory implements ProcessFactory {
 
     /**
      * Returns the innermost delegate, this method can be used to check what the original factory was
-     * @return
+     *
      */
     public ProcessFactory getInnermostDelegate() {
         ProcessFactory pf = delegate;

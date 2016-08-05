@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -283,9 +283,9 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
 
     private void addStrokeSymbolizerIfNecessary(Stroke stroke) {
         if (stroke != null) {
-            float[] dashArray = stroke.getDashArray();
+            List<Expression> dashArray = stroke.dashArray();
             Graphic graphicStroke = stroke.getGraphicStroke();
-            if (graphicStroke != null || dashArray != null && dashArray.length > 0) {
+            if (graphicStroke != null || dashArray != null && dashArray.size() > 0) {
                 addSolidLineSymbolier = true;
             }
         }

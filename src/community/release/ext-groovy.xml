@@ -33,6 +33,7 @@
         <include>mysql-connector-java*</include>
         <include>opencsv*</include>
         <include>scala-library*</include>
+        <include>spatialite-jdbc-*</include>
         <include>xmlgraphics-commons*</include>
       </includes>
     </fileSet>

@@ -1,12 +1,16 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+import javax.servlet.Servlet;
+
+import org.easymock.EasyMock;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.filter.GeoServerRoleFilter;
@@ -15,9 +19,9 @@ import org.geoserver.test.SystemTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 @Category(SystemTest.class)
 public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
@@ -37,8 +41,8 @@ public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
         MockHttpServletRequest request = createRequest("/foo");
         
         MockHttpServletResponse response = new MockHttpServletResponse();
-        MockFilterChain chain = new MockFilterChain();
-        chain.addFilter(getSecurityManager().loadFilter("roleConverter"));
+        Servlet servlet = EasyMock.createNiceMock(Servlet.class);
+        MockFilterChain chain = new MockFilterChain(servlet, getSecurityManager().loadFilter("roleConverter"));
         
         GeoServerSecurityFilterChainProxy filterChainProxy = 
             GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);

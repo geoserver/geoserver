@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -37,7 +37,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetCapabilitiesTest extends WFS20TestSupport {
 
@@ -280,7 +280,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/soap+xml");
         assertEquals("application/soap+xml", resp.getContentType());
 
-        Document dom = dom(new ByteArrayInputStream(resp.getOutputStreamContent().getBytes()));
+        Document dom = dom(new ByteArrayInputStream(resp.getContentAsString().getBytes()));
         
         assertEquals("soap:Envelope", dom.getDocumentElement().getNodeName());
         assertEquals(1, dom.getElementsByTagName("wfs:WFS_Capabilities").getLength());

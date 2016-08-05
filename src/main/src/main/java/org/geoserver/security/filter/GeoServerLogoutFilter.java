@@ -120,7 +120,7 @@ public class GeoServerLogoutFilter extends GeoServerSecurityFilter  {
      * without receiving an unnecessary callback. 
      * 
      * @param skipHandlerName 
-     * @return
+     *
      * @throws IOException
      */
     List<LogoutHandler> calculateActiveLogoutHandlers(String... skipHandlerName) throws IOException {

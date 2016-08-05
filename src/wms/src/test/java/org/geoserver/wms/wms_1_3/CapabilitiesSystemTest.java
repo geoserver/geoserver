@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -42,7 +42,7 @@ import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXException;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 /**
  * WMS 1.3 GetCapabilities system tests, following clauses in section 7.2 of <a
  * href="http://portal.opengeospatial.org/files/?artifact_id=14416">OGC document 06-042, OpenGIS Web
@@ -174,7 +174,6 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
      * versions is removed
      * </p>
      * 
-     * @throws Exception
      */
     @Test 
     public void testRequestVersionNumberNegotiation() throws Exception {

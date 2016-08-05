@@ -108,8 +108,7 @@ class RasterDownload {
      * @param targetSizeX the size of the target image along the X axis
      * @param targetSizeY the size of the target image along the Y axis
      * @param filter the {@link Filter} to load the data
-     * @return
-     * @throws Exception
+     *
      */
     public Resource execute(String mimeType, final ProgressListener progressListener,
             CoverageInfo coverageInfo, Geometry roi, CoordinateReferenceSystem targetCRS,
@@ -323,7 +322,6 @@ class RasterDownload {
      * @param gridCoverage gridcoverage to write
      * @return a {@link File} that points to the GridCoverage we wrote.
      * 
-     * @throws Exception
      */
     private Resource writeRaster(String mimeType, CoverageInfo coverageInfo, GridCoverage2D gridCoverage)
             throws Exception {

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -250,7 +250,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     }
 
     List<LayerGroupInfo> wrap(List<LayerGroupInfo> layerGroups) {
-        if (LocalWorkspace.get() != null) {
+        if (useNameDequalifyingProxy()) {
             return NameDequalifyingProxy.createList(layerGroups, LayerGroupInfo.class);
         }
         return layerGroups;

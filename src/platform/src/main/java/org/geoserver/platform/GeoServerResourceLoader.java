@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,16 +11,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -30,6 +33,7 @@ import org.springframework.web.context.ServletContextAware;
  * Access to resources in GeoServer including configuration information and unmanaged cache or log files.
  * <p>
  * The loader maintains a search path in which it will use to look up resources.
+ * </p>
  * <ul>
  * <li>Configuration is accessed using {@link ResourceStore#get(String)} which provides stream based access. If required configuration can be unpacked
  * into a file in the data directory. The most common example is for use as a template.
@@ -37,10 +41,10 @@ import org.springframework.web.context.ServletContextAware;
  * (when upgrading or for use on different nodes in a cluster).</li>
  * <li>
  * </ul>
+ * <p>
  * The {@link #baseDirectory} is a member of this path. Files and directories created by the resource loader are made relative to
  * {@link #baseDirectory}.
  * </p>
- * <p>
  * 
  * <pre>
  * <code>
@@ -51,8 +55,6 @@ import org.springframework.web.context.ServletContextAware;
  * File log = loader.find("logs/geoserver.log");
  * </code>
  * </pre>
- * 
- * </p>
  * 
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  * 
@@ -100,7 +102,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
     /**
      * Creates a new resource loader.
      *
-     * @param baseDirectory The directory in which
+     * @param resourceStore resource store for artifact storage
      */
     public GeoServerResourceLoader(ResourceStore resourceStore) {
         this.resources = resourceStore;
@@ -125,8 +127,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
     /**
      * Adds a location to the path used for resource lookups.
      *
-     * @param A directory containing resources.
-     * @deprecated No longert used
+     * @param searchLocation directory containing resources.
+     * @deprecated No longer used
      */
     public void addSearchLocation(File searchLocation) {
         //searchLocations.add(searchLocation);
@@ -134,8 +136,6 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
 
     /**
      * Sets the search locations used for resource lookups.
-     * 
-     * The {@link #baseDirectory} is always incuded in {@link #searchLocations}.
      *
      * @param searchLocations A set of {@link File}.
      * @deprecated No longer used
@@ -152,10 +152,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
 
     /**
      * Sets the base directory.
-     * 
-     * The base directory is included in {@link #searchLocations}.
      *
-     * @param baseDirectory
+     * @param baseDirectory base of data directory used for file configuration files
      */
     public void setBaseDirectory(File baseDirectory) {
         this.baseDirectory = baseDirectory;
@@ -176,28 +174,50 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
     }
     
     /**
-     * Used to look up files in the data directory based on user provided url (or path).
+     * Used to look up resources based on user provided url (or path) using the Data Directory as base directory.
      * 
-     * This method (originally from vfny GeoserverDataDirectory) is used to process a URL provided
-     * by a user: <i>iven a path, tries to interpret it as a file into the data directory, or as an absolute
-     * location, and returns the actual absolute location of the file.</i>
+     * Convenience method for Resources.fromURL(resources.get(Paths.BASE), url)
      * 
-     * Over time this url method has grown in the telling to support:
-     * <ul>
-     * <li>Actual URL to external resoruce using http or ftp protocol - will return null</li>
-     * <li>File URL - will support absolute file references</li>
-     * <li>File URL - will support relative file references</li>
-     * <li>Fake URLs - sde://user:pass@server:port - will return null.</li>
-     * <li>path - user supplied file path (operating specific specific)</li>
-     * </ul>
+     * See {@link Resources#fromURL(Resource, String)}
      * 
-     * @param url File URL or path relative to data directory 
-     * @return File indicated by provided URL
-     * @see Files#url(File, String)
      */
-    public File url(String url) {
-        return Files.url( baseDirectory, url );
+    public Resource fromURL(String url) {
+        return Resources.fromURL(resources.get(Paths.BASE), url);
     }
+    
+    /**
+     * Used to look up resources based on user provided url using the Data Directory as base directory.
+     * 
+     * Convenience method for Resources.fromURL(resources.get(Paths.BASE), url)
+     * 
+     * See {@link Resources#fromURL(Resource, URL)}
+     * 
+     */
+    public Resource fromURL(URL url) {
+        return Resources.fromURL(resources.get(Paths.BASE), url);
+    }
+    
+    /**
+     * Used to look up resources based on user provided path using the Data Directory as base directory.
+     * 
+     * Convenience method for Resources.fromPath(resources.get(Paths.BASE), path)
+     * 
+     * See {@link Resources#fromPath(String, Resource)}
+     * 
+     */
+    public Resource fromPath(String path) {
+       return Resources.fromPath(path, resources.get(Paths.BASE));
+    }
+    
+    /**
+     *
+     * @deprecated use {@link Resources#fromURL(Resource, String)}
+     */
+    @Deprecated 
+    public File url(String url) {
+        return Files.url(baseDirectory, url);
+    }
+    
     /**
      * Performs file lookup.
      *
@@ -238,17 +258,15 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
     
     /**
      * Performs a resource lookup.
-     * <p>
+     * 
      * <pre>
      * Example:
      *   File f = resourceLoader.find( "data", "shapefiles", "foo.shp" );
-     * </pre> 
-     * </p>
-     * @param location The components of the path of the resource to lookup.
+     * </pre>
      * 
-     * @return The file handle representing the resource, or null if the
-     *  resource could not be found.
-     *  
+     * @param location The components of the path of the resource to lookup.
+     * @return The file handle representing the resource, or null if the resource could not be found.
+     * 
      * @throws IOException Any I/O errors that occur.
      */
     public File find( String... location ) throws IOException {        
@@ -258,18 +276,16 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
 
     /**
      * Performs a resource lookup, optionally specifying a containing directory.
-     * <p>
+     * 
      * <pre>
      * Example:
      *   File f = resourceLoader.find( "data", "shapefiles", "foo.shp" );
-     * </pre> 
-     * </p>
+     * </pre>
+     * 
      * @param parentFile The parent directory, may be null.
      * @param location The components of the path of the resource to lookup.
+     * @return The file handle representing the resource, or null if the resource could not be found.
      * 
-     * @return The file handle representing the resource, or null if the
-     *  resource could not be found.
-     *  
      * @throws IOException Any I/O errors that occur.
      */
     public File find( File parentFile, String... location ) throws IOException {
@@ -379,8 +395,6 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * relative.
      *
      * @return The file handle of the created directory.
-     *
-     * @throws IOException
      */
     public File createDirectory(String location) throws IOException {
         Resource directory = get( Paths.convert(location) );
@@ -396,13 +410,11 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * <p>
      * If <code>location</code> already exists as a file, an IOException is thrown.
      * </p>
-     * @param parent The containing directory, may be null.
+     * @param parentFile The containing directory, may be null.
      * @param location Location of directory to create, either absolute or
      * relative.
      *
      * @return The file handle of the created directory.
-     *
-     * @throws IOException
      */
     public File createDirectory(File parentFile, String location) throws IOException {
         Resource directory = get(Paths.convert(getBaseDirectory(), parentFile, location));
@@ -464,11 +476,13 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * <p>
      * Relative paths are created relative to {@link #baseDirectory}.
      * </p>
+     * <p>
      * If {@link #baseDirectory} is not set, an IOException is thrown.
      * </p>
      * <p>
      * If <code>location</code> already exists as a directory, an IOException is thrown.
      * </p>
+     * 
      * @param location Location of file to create, either absolute or relative.
      * @param parentFile The containing directory for the file.
      * 
@@ -489,7 +503,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * path it is considered to be relative to {@link #getBaseDirectory()}.
       </p>
      * 
-     * @param resource The resource to copy.
+     * @param classpathResource The resource to copy.
      * @param location The destination to copy to.
      */
     public void copyFromClassPath( String classpathResource, String location ) throws IOException {
@@ -550,16 +564,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
             }
         } finally {
             // Clean up
-            try {
-                if(is != null){
-                    is.close();
-                }
-                if(os != null){
-                    os.close();
-                }
-            } catch(IOException e) {
-                // we tried...
-            }
+            IOUtils.closeQuietly(is);
+            IOUtils.closeQuietly(os);
         }
     }
     
@@ -584,6 +590,11 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
         
         final String[] typeStrs = { "Java environment variable ",
                 "Servlet context parameter ", "System environment variable " };
+
+        String requireFileVar = "GEOSERVER_REQUIRE_FILE";
+        requireFile(System.getProperty(requireFileVar), typeStrs[0] + requireFileVar);
+        requireFile(servContext.getInitParameter(requireFileVar), typeStrs[1] + requireFileVar);
+        requireFile(System.getenv(requireFileVar), typeStrs[2] + requireFileVar);
 
         final String[] varStrs = { "GEOSERVER_DATA_DIR", "GEOSERVER_DATA_ROOT" };
 
@@ -651,4 +662,31 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
         return dataDirStr;
     }
 
+    /**
+     * Check that required files exist and throw {@link IllegalArgumentException} if they do not.
+     * 
+     * @param files either a single file name or a list of file names separated by {@link File#pathSeparator}
+     * @param source description of source from which file name(s) obtained
+     */
+    static void requireFile(String files, String source) {
+        if (files == null || files.isEmpty()) {
+            return;
+        } else {
+            for (String file : files.split(File.pathSeparator)) {
+                if (!(new File(file)).exists()) {
+                    throw new IllegalArgumentException(
+                            "Missing required file: " + file + " From: " + source + ": " + files);
+                }
+            }
+        }
+    }
+
+    @Override
+    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
+        return resources.getResourceNotificationDispatcher();
+    }
+
+    public ResourceStore getResourceStore() {
+        return resources;
+    }
 }

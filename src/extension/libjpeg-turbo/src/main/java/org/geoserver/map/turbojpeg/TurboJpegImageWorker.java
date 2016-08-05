@@ -75,7 +75,7 @@ final class TurboJpegImageWorker extends ImageWorker {
      * 
      * @param destination where to write the internal {@link #image} as a JPEG.
      * @param compressionRate percentage of compression.
-     * @return this {@link ImageWorker}.
+     * 
      * @throws IOException In case an error occurs during the search for an {@link ImageOutputStream} or during the eoncding process.
      */
     public final void writeTurboJPEG(final OutputStream destination, final float compressionRate)

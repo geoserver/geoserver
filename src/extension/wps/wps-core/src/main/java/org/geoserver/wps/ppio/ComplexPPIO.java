@@ -70,7 +70,7 @@ public abstract class ComplexPPIO extends ProcessParameterIO {
      * Provides a suitable extension for the output file. Implement this if the file extension is
      * not depend on the object being encoded
      * 
-     * @return
+     *
      */
     public String getFileExtension() {
         return ".bin";
@@ -81,7 +81,7 @@ public abstract class ComplexPPIO extends ProcessParameterIO {
      * implementation simply calls {@link #getFileExtension()}
      * 
      * @param object
-     * @return
+     *
      */
     public String getFileExtension(Object object) {
         return getFileExtension();

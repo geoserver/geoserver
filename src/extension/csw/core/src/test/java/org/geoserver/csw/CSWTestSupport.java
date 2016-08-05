@@ -97,7 +97,7 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
     /**
      * Loads the specified resource into a string
      * @param resourceLocation
-     * @return
+     *
      */
     protected String getResourceAsString(String resourceLocation) throws IOException {
         InputStream is = null; 
@@ -112,7 +112,7 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
     /**
      * Loads the specified resource into a reader
      * @param resourceLocation
-     * @return
+     *
      */
     protected Reader getResourceAsReader(String resourceLocation) throws IOException {
         InputStream is = getClass().getResourceAsStream(resourceLocation);

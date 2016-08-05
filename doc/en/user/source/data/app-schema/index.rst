@@ -1,7 +1,7 @@
 .. _app-schema:
 
-Working with Application Schemas
-================================
+Application schemas
+===================
 
 The application schema support (app-schema) extension provides support for :ref:`app-schema.complex-features` in GeoServer WFS.
 

@@ -93,7 +93,7 @@ public class ServiceAccessRule implements Comparable<ServiceAccessRule>, Seriali
     /**
      * Returns the key for the current rule. No other rule should have the same
      * 
-     * @return
+     *
      */
     public String getKey() {
         return service + "." + method;
@@ -102,7 +102,7 @@ public class ServiceAccessRule implements Comparable<ServiceAccessRule>, Seriali
     /**
      * Returns the list of roles as a comma separated string for this rule
      * 
-     * @return
+     *
      */
     public String getValue() {
         if (roles.isEmpty()) {

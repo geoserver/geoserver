@@ -31,8 +31,6 @@ import org.geotools.xml.InstanceComponent;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class PositionTypeBinding extends AbstractSimpleBinding {

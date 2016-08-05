@@ -1,0 +1,8 @@
+title: ${colorName} point
+symbolizers:
+- point:
+    size: 6
+    symbols:
+    - mark:
+        shape: square
+        fill-color: '${colorCode}'

@@ -94,7 +94,7 @@ public class JDBCUserGroupStore extends JDBCUserGroupService implements GeoServe
     
     /**
      * 
-     * Executes {@link Connection#rollback() and
+     * Executes {@link Connection#rollback() }and
      * frees the connection object
      * @see org.geoserver.security.jdbc.JDBCUserGroupService#load()
      */

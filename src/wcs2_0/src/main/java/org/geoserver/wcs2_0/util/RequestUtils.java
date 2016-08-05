@@ -138,7 +138,7 @@ public class RequestUtils {
      * @param readGG
      * @param interpolation
      * @param hints 
-     * @return
+     *
      * @throws IOException
      */
     public static GridCoverage2D readBestCoverage(
@@ -271,7 +271,7 @@ public class RequestUtils {
      * from the specified {@link CoverageInfo}.
      * 
      * @param reader the {@link GridCoverage2DReader} that we'll read the coverage from
-     * @return
+     *
      */
     static public GridCoverage2D readSampleGridCoverage(GridCoverage2DReader reader)throws Exception {
         //
@@ -323,7 +323,7 @@ public class RequestUtils {
      * from the specified {@link CoverageInfo}.
      * 
      * @param ci the {@link CoverageInfo} that contains the description of the GeoServer coverage to read from.
-     * @return
+     *
      */
     static public GridCoverage2D readSampleGridCoverage(CoverageInfo ci)throws Exception {
         final GridCoverage2DReader reader = getCoverageReader(ci);
@@ -333,9 +333,8 @@ public class RequestUtils {
     /**
      * Grabs the reader from the specified coverage
      * @param ci
-     * @return
+     *
      * @throws IOException
-     * @throws Exception
      */
     public static GridCoverage2DReader getCoverageReader(CoverageInfo ci)
             throws IOException, Exception {
@@ -373,7 +372,7 @@ public class RequestUtils {
             throw new WCS20Exception("Missing service name", OWS20Exception.OWSExceptionCode.MissingParameterValue, "service");
         }
         if( ! "WCS".equals(serviceName)) {
-            throw new WCS20Exception("Error in service name, epected value: WCS", OWS20Exception.OWSExceptionCode.InvalidParameterValue, serviceName);
+            throw new WCS20Exception("Error in service name, expected value: WCS", OWS20Exception.OWSExceptionCode.InvalidParameterValue, serviceName);
         }
     }
 }

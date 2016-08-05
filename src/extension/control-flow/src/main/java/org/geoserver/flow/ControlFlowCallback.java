@@ -1,15 +1,24 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.flow;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.flow.config.DefaultControlFlowConfigurator;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
@@ -17,6 +26,12 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -28,7 +43,7 @@ import org.springframework.context.ApplicationContextAware;
  * @author Andrea Aime - OpenGeo
  */
 public class ControlFlowCallback extends AbstractDispatcherCallback implements
-        ApplicationContextAware {
+    BeanDefinitionRegistryPostProcessor, ApplicationContextAware, GeoServerFilter {
 
     /**
      * Header added to all responses to make it visible how much deplay was applied going thorough
@@ -38,27 +53,42 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
 
     static final Logger LOGGER = Logging.getLogger(ControlFlowCallback.class);
 
+    /**
+     * Container for the original Request object, the controllers and the timeout (to make
+     * sure we are playing with the same objects, regardless of what other machinery
+     * might do to mock up with the Dispatcher.REQUEST thread local).
+     */
     static final class CallbackContext {
         List<FlowController> controllers;
 
         long timeout;
+        
+        Request request;
+        
+        int nestingLevel = 1;
 
-        public CallbackContext(List<FlowController> controllers, long timeout) {
+        public CallbackContext(Request request, List<FlowController> controllers, long timeout) {
             this.controllers = controllers;
             this.timeout = timeout;
+            this.request = request;
         }
 
     }
 
     static ThreadLocal<CallbackContext> REQUEST_CONTROLLERS = new ThreadLocal<CallbackContext>();
 
-    static NestedRequestSentinel SENTINEL = new NestedRequestSentinel();
-
     FlowControllerProvider provider;
 
     AtomicLong blockedRequests = new AtomicLong();
 
     AtomicLong runningRequests = new AtomicLong();
+    
+    public ControlFlowCallback() {
+        // this is just to isolate tests from shared state, at runtime there is only one callback.
+        REQUEST_CONTROLLERS.remove();
+    }
+
+    private ApplicationContext applicationContext;
 
     /**
      * Returns the current number of blocked/queued requests.
@@ -74,98 +104,201 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
         return runningRequests.get();
     }
 
-    public void finished(Request request) {
-        if (SENTINEL.isOutermostRequest() && REQUEST_CONTROLLERS.get() != null) {
-            runningRequests.decrementAndGet();
-            // call back the same controllers we used when the operation started
-            if (REQUEST_CONTROLLERS.get() != null) {
-                CallbackContext context = REQUEST_CONTROLLERS.get();
-                for (FlowController flowController : context.controllers) {
-                    try {
-                        flowController.requestComplete(request);
-                    } catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "Flow controller " + flowController
-                                + " failed to mark the request as complete", e);
-                    }
-                }
-
-            }
-            // clean up the thread local
-            REQUEST_CONTROLLERS.remove();
-
-            // provide some visibility that control flow is running
-            if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info("Running requests: " + getRunningRequests() + ", blocked requests: "
-                        + getBlockedRequests());
-            }
-        }
-        SENTINEL.stop();
-    }
-
     public Operation operationDispatched(Request request, Operation operation) {
-        // tell the recursion sentinel we're starting a request
-        SENTINEL.start();
-        if (SENTINEL.isOutermostRequest()) {
-            blockedRequests.incrementAndGet();
-            long start = System.currentTimeMillis();
+        // if this request is nested, release the previous controllers and grab new ones
+        // Nesting happens only with integrated GWC, sometimes the nested request is similar to the
+        // outside one, e.g., with transparent integration, other times it's completely different, e.g. native
+        // tile services). We cannot afford to have the same controller lock twice, that would cause deadlocks 
+        if (REQUEST_CONTROLLERS.get() != null) {
+            if(LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Nested request found, not locking on it");
+            }
+            REQUEST_CONTROLLERS.get().nestingLevel++;
+            return operation;
+        }
+        
+        blockedRequests.incrementAndGet();
+        long start = System.currentTimeMillis();
+        try {
+            // the operation has not been set in the Request yet by the dispatcher, do so now in
+            // a clone of the Request
+            Request requestWithOperation = null;
+            if(request != null) {
+                requestWithOperation = new Request(request);
+                requestWithOperation.setOperation(operation);
+            }
+            
+            // grab the controllers for this request
+            List<FlowController> controllers = null;
             try {
-                // the operation has not been set in the Request yet by the dispatcher, do so now in
-                // a clone of the Request
-                Request requestWithOperation = null;
-                if(request != null) {
-                    requestWithOperation = new Request(request);
-                    requestWithOperation.setOperation(operation);
+                controllers = provider.getFlowControllers(requestWithOperation);
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE,
+                        "An error occurred setting up the flow controllers to this request", e);
+                return operation;
+            }
+            if (controllers.size() == 0) {
+                LOGGER.info("Control-flow inactive, there are no configured rules");
+            } else {
+                if(LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info("Request [" + requestWithOperation + "] starting, processing through flow controllers");
                 }
-                
-                // grab the controllers for this request
-                List<FlowController> controllers = null;
-                try {
-                    controllers = provider.getFlowControllers(requestWithOperation);
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE,
-                            "An error occurred setting up the flow controllers to this request", e);
-                    return operation;
-                }
-                if (controllers.size() == 0) {
-                    LOGGER.info("Control-flow inactive for , there are no configured rules");
-                } else {
-                    long timeout = provider.getTimeout(requestWithOperation);
-                    CallbackContext context = new CallbackContext(controllers, timeout);
-                    REQUEST_CONTROLLERS.set(context);
-                    long maxTime = timeout > 0 ? System.currentTimeMillis() + timeout : -1;
-                    for (FlowController flowController : controllers) {
-                        if (timeout > 0) {
-                            long maxWait = maxTime - System.currentTimeMillis();
-                            if (!flowController.requestIncoming(requestWithOperation, maxWait)) {
-                                throw new HttpErrorCodeException(503,
-                                        "Requested timeout out while waiting to be executed, please lower your request rate");
-                            }
-                        } else {
-                            flowController.requestIncoming(requestWithOperation, -1);
+
+                long timeout = provider.getTimeout(requestWithOperation);
+                CallbackContext context = new CallbackContext(requestWithOperation, controllers, timeout);
+                REQUEST_CONTROLLERS.set(context);
+                long maxTime = timeout > 0 ? System.currentTimeMillis() + timeout : -1;
+                for (FlowController flowController : controllers) {
+                    if (timeout > 0) {
+                        long maxWait = maxTime - System.currentTimeMillis();
+                        if(LOGGER.isLoggable(Level.FINE)) {
+                            LOGGER.fine("Request [" + requestWithOperation + "] checking flow controller " + flowController);
                         }
+                        if (!flowController.requestIncoming(requestWithOperation, maxWait)) {
+                            throw new HttpErrorCodeException(503,
+                                    "Requested timeout out while waiting to be executed, please lower your request rate");
+                        }
+                        if(LOGGER.isLoggable(Level.FINE)) {
+                            LOGGER.fine("Request [" + requestWithOperation + "] passed flow controller " + flowController);
+                        }
+                    } else {
+                        flowController.requestIncoming(requestWithOperation, -1);
                     }
                 }
-            } finally {
-                blockedRequests.decrementAndGet();
-                runningRequests.incrementAndGet();
-                if (request != null && request.getHttpResponse() != null) {
-                    // report how much time was spent going though the flow controllers
-                    long end = System.currentTimeMillis();
-                    request.getHttpResponse().addHeader(X_RATELIMIT_DELAY,
-                            String.valueOf(end - start));
+            }
+        } finally {
+            blockedRequests.decrementAndGet();
+            runningRequests.incrementAndGet();
+            if(REQUEST_CONTROLLERS.get() != null) {
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info("Request started, running requests: " + getRunningRequests() + ", blocked requests: "
+                            + getBlockedRequests());
                 }
+            }
+            if (request != null && request.getHttpResponse() != null) {
+                // report how much time was spent going though the flow controllers
+                long end = System.currentTimeMillis();
+                request.getHttpResponse().addHeader(X_RATELIMIT_DELAY,
+                        String.valueOf(end - start));
             }
         }
         return operation;
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        if (GeoServerExtensions.bean(FlowControllerProvider.class) == null) {
+            beanFactory.initializeBean(provider, "defaultFlowControllerProvider");
+        }
+        
         // look for a ControlFlowConfigurator in the application context, if none is found, use the
         // default one
         provider = GeoServerExtensions.bean(FlowControllerProvider.class, applicationContext);
         if (provider == null) {
             provider = new DefaultFlowControllerProvider(applicationContext);
         }
+    }
+
+    @Override
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
+            throws BeansException {
+        // Inject DefaultFlowControllerProvider definition it not defined
+        if (GeoServerExtensions.bean(FlowControllerProvider.class, applicationContext) == null) {
+            
+            ConstructorArgumentValues args = new ConstructorArgumentValues();
+            args.addGenericArgumentValue(applicationContext);
+            
+            RootBeanDefinition beanDefinition = 
+                    new RootBeanDefinition(DefaultFlowControllerProvider.class, args, null); //The service implementation
+            
+            beanDefinition.setTargetType(FlowControllerProvider.class); //The service interface
+            beanDefinition.setRole(BeanDefinition.ROLE_APPLICATION);
+            beanDefinition.setScope(BeanDefinition.SCOPE_SINGLETON);
+            
+            registry.registerBeanDefinition("defaultFlowControllerProvider", beanDefinition);
+        }
+        
+        // Inject DefaultControlFlowConfigurator definition it not defined
+        if (GeoServerExtensions.bean(ControlFlowConfigurator.class, applicationContext) == null) {
+            RootBeanDefinition beanDefinition = 
+                    new RootBeanDefinition(DefaultControlFlowConfigurator.class); //The service implementation
+            
+            beanDefinition.setTargetType(ControlFlowConfigurator.class); //The service interface
+            beanDefinition.setRole(BeanDefinition.ROLE_APPLICATION);
+            beanDefinition.setScope(BeanDefinition.SCOPE_SINGLETON);
+            
+            registry.registerBeanDefinition("defaultControlFlowConfigurator", beanDefinition);
+        }
+    }
+    
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // nothing to do
+        
+    }
+    
+    public void finished(Request request) {
+        releaseControllers(false);
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        try {
+            // execute normally
+            chain.doFilter(request, response);
+        } finally {
+            // this is a precaution in case finished() is not called by any reason 
+            releaseControllers(true);
+        }
+        
+    }
+
+    private void releaseControllers(boolean forceRelease) {
+        CallbackContext context = REQUEST_CONTROLLERS.get();
+        try {
+            // will be called twice in normal requests, make sure we check if there
+            // are actually controllers around
+            if (context != null) {
+                context.nestingLevel--;
+                if(context.nestingLevel <= 0 || forceRelease) {
+                    runningRequests.decrementAndGet();
+                    // call back the same controllers we used when the operation started, releasing
+                    // them in inverse order
+                    LOGGER.info("releasing flow controllers for [" + context.request + "]");
+                    final List<FlowController> controllers = context.controllers;
+                    for (int i = controllers.size() - 1; i >= 0; i--) {
+                        FlowController flowController = controllers.get(i);
+                        try {
+                            flowController.requestComplete(context.request);
+                        } catch (Throwable t) {
+                            // catching throwable here is intended, we cannot afford not to
+                            // release controllers, it would eventually lead to deadlock
+                            LOGGER.log(Level.SEVERE, "Flow controller " + flowController
+                                    + " failed to mark the request as complete", t);
+                        }
+                    }
+                    // provide some visibility that control flow is running
+                    if (LOGGER.isLoggable(Level.INFO)) {
+                        LOGGER.info("Request completed, running requests: " + getRunningRequests()
+                                + ", blocked requests: " + getBlockedRequests());
+                    }
+                }
+            }
+        } finally {
+            // clean up the thread local, all controllers have been released
+            if(context != null && (context.nestingLevel <= 0 || forceRelease)) {
+                REQUEST_CONTROLLERS.remove();
+            }
+        }
+    }
+
+    @Override
+    public void destroy() {
+        // nothing to do
     }
 
 }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -33,7 +33,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class StyleTest extends CatalogRESTTestSupport {
 
@@ -144,33 +144,33 @@ public class StyleTest extends CatalogRESTTestSupport {
         
         // First request should thrown an exception
         MockHttpServletResponse response = getAsServletResponse(requestPath);
-        assertEquals(404, response.getStatusCode());
-        assertTrue(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
                 exception));
         
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
-        assertEquals(404, response.getStatusCode());
-        assertFalse(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
                 exception));
         // No exception thrown
-        assertTrue(response.getOutputStreamContent().isEmpty());
+        assertTrue(response.getContentAsString().isEmpty());
         
         // CASE 2: workspace set
         
         // First request should thrown an exception
         response = getAsServletResponse(requestPath2);
-        assertEquals(404, response.getStatusCode());
-        assertTrue(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
                 exception2));
         
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
-        assertEquals(404, response.getStatusCode());
-        assertFalse(response.getOutputStreamContent().contains(
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
                 exception2));
         // No exception thrown
-        assertTrue(response.getOutputStreamContent().isEmpty());
+        assertTrue(response.getContentAsString().isEmpty());
     }
     
     @Test
@@ -183,12 +183,12 @@ public class StyleTest extends CatalogRESTTestSupport {
     @Test
     public void testGetFromWorkspace() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/workspaces/gs/styles/foo.xml"); 
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
         addStyleToWorkspace("foo");
 
         resp = getAsServletResponse("/rest/workspaces/gs/styles/foo.xml");
-        assertEquals(200, resp.getStatusCode());
+        assertEquals(200, resp.getStatus());
 
         Document dom = getAsDOM("/rest/workspaces/gs/styles/foo.xml");
         assertXpathEvaluatesTo("foo", "/style/name", dom);
@@ -216,7 +216,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/styles", xml, SLDHandler.MIMETYPE_10);
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/styles/foo" ) );
         
@@ -231,7 +231,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/gs/styles", xml, SLDHandler.MIMETYPE_10);
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/styles/foo" ) );
         
@@ -247,7 +247,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/styles?name=bar", xml, SLDHandler.MIMETYPE_10);
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/styles/bar" ) );
         
@@ -266,7 +266,7 @@ public class StyleTest extends CatalogRESTTestSupport {
             "</style>";
         MockHttpServletResponse response =
             postAsServletResponse("/rest/workspaces/gs/styles", xml);
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         assertNotNull(cat.getStyleByName("gs", "foo"));
     }
 
@@ -283,7 +283,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/styles/Ponds", xml.getBytes(), "text/xml");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         style = catalog.getStyleByName( "Ponds");
         assertEquals( "Forests.sld", style.getFilename() );
@@ -295,7 +295,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response = 
             putAsServletResponse( "/rest/styles/Ponds", xml, SLDHandler.MIMETYPE_10);
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         Style s = catalog.getStyleByName( "Ponds" ).getStyle();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -320,7 +320,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response =
             putAsServletResponse("/rest/workspaces/gs/styles/foo", xml, "application/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         assertEquals("bar.sld", cat.getStyleByName("gs","foo").getFilename());
     }
 
@@ -335,9 +335,26 @@ public class StyleTest extends CatalogRESTTestSupport {
             
         MockHttpServletResponse response =
             putAsServletResponse("/rest/workspaces/gs/styles/foo", xml, "application/xml");
-        assertEquals(403, response.getStatusCode());
+        assertEquals(403, response.getStatus());
     }
+    @Test
+    public void testStyleNotFoundGloballyWhenInWorkspace() throws Exception {
+        testPostToWorkspace();
 
+        Catalog cat = getCatalog();
+        assertEquals("foo.sld", cat.getStyleByName("gs","foo").getFilename());
+
+        String xml = 
+            "<style>" +
+              "<filename>bar.sld</filename>" +
+            "</style>";
+        
+        MockHttpServletResponse response =
+            putAsServletResponse("/rest/workspaces/gs/styles/foo", xml, "application/xml");
+        assertEquals(200, response.getStatus());
+        response = putAsServletResponse("/rest/styles/gs:foo", xml, "application/xml");
+        assertEquals(404, response.getStatus());
+    }
     @Test
     public void testDelete() throws Exception {
         String xml = 
@@ -350,7 +367,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             deleteAsServletResponse("/rest/styles/dummy");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         assertNull( catalog.getStyleByName( "dummy" ) );
     }
@@ -361,7 +378,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             deleteAsServletResponse("/rest/styles/Ponds");
-        assertEquals( 403, response.getStatusCode() );
+        assertEquals( 403, response.getStatus() );
          
         assertNotNull( catalog.getStyleByName( "Ponds" ) );
     }
@@ -378,7 +395,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
         
         response = deleteAsServletResponse("/rest/styles/foo");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         //ensure the style not deleted on disk
         assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
@@ -396,7 +413,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
         
         response = deleteAsServletResponse("/rest/styles/foo?purge=true");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         //ensure the style not deleted on disk
         assertFalse(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
@@ -410,7 +427,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNotNull(cat.getStyleByName("gs", "foo"));
         
         MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/gs/styles/foo");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         assertNull(cat.getStyleByName("gs", "foo"));
     }
@@ -426,7 +443,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNotNull(rl.find("workspaces", "gs", "styles", "foo.sld"));
         
         MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/gs/styles/foo?purge=true");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         assertNull(cat.getStyleByName("gs", "foo"));
         assertNull(rl.find("workspaces", "gs", "styles", "foo.sld"));
@@ -452,7 +469,7 @@ public class StyleTest extends CatalogRESTTestSupport {
             "</style>";
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/layers/cite:BasicPolygons/styles", xml, "text/xml");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         
         LayerInfo l2 = catalog.getLayerByName( "cite:BasicPolygons" );
         assertEquals( nstyles+1, l2.getStyles().size() );
@@ -472,7 +489,7 @@ public class StyleTest extends CatalogRESTTestSupport {
             "</style>";
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/layers/cite:BasicPolygons/styles?default=true", xml, "text/xml");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         
         LayerInfo l2 = catalog.getLayerByName( "cite:BasicPolygons" );
         assertEquals( nstyles+1, l2.getStyles().size() );
@@ -493,7 +510,7 @@ public class StyleTest extends CatalogRESTTestSupport {
             "</style>";
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/layers/cite:BasicPolygons/styles?default=true", xml, "text/xml");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         
         LayerInfo l2 = catalog.getLayerByName("cite:BasicPolygons");
         assertEquals( nstyles, l2.getStyles().size() );
@@ -511,7 +528,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response =
                 postAsServletResponse( "/rest/styles?name=foo", out.toString(), PropertyStyleHandler.MIMETYPE);
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/styles/foo" ) );
 
@@ -551,7 +568,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response =
             postAsServletResponse( "/rest/styles?name=foo&raw=true", out.toString(), PropertyStyleHandler.MIMETYPE);
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/styles/foo" ) );
 
@@ -589,7 +606,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response =
             putAsServletResponse( "/rest/styles/foo", out.toString(), PropertyStyleHandler.MIMETYPE);
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
 
         Resource style = getDataDirectory().style(getCatalog().getStyleByName("foo"));
         InputStream in = style.in();
@@ -626,7 +643,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response =
             putAsServletResponse( "/rest/styles/foo?raw=true", out.toString(), PropertyStyleHandler.MIMETYPE);
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
 
         Resource style = getDataDirectory().style(getCatalog().getStyleByName("foo"));
         InputStream in = style.in();
@@ -673,7 +690,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response =
                 postAsServletResponse( "/rest/styles?name=foo", xml, SLDHandler.MIMETYPE_11);
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/styles/foo" ) );
 
@@ -694,7 +711,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response =
                 postAsServletResponse( "/rest/workspaces/gs/styles", bytes, "application/zip");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull(cat.getStyleByName("gs", "foo"));
 
         Document d = getAsDOM("/rest/workspaces/gs/styles/foo.sld");
@@ -722,7 +739,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response =
                 putAsServletResponse( "/rest/workspaces/gs/styles/foo.zip", bytes, "application/zip");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         assertNotNull(cat.getStyleByName("gs", "foo"));
 
         Document d = getAsDOM("/rest/workspaces/gs/styles/foo.sld");
@@ -747,7 +764,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response =
                 postAsServletResponse( "/rest/styles", bytes, "application/zip");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull(cat.getStyleByName("foo"));
 
         Document d = getAsDOM("/rest/styles/foo.sld");
@@ -774,7 +791,7 @@ public class StyleTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response =
                 putAsServletResponse( "/rest/styles/foo.zip", bytes, "application/zip");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         assertNotNull(cat.getStyleByName("foo"));
 
         Document d = getAsDOM("/rest/styles/foo.sld");

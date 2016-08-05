@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,7 +20,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.measure.unit.SI;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,6 +56,8 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
+import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
+import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.config.ContactInfo;
@@ -79,11 +83,13 @@ import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.thoughtworks.xstream.XStream;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 
 public class XStreamPersisterTest {
@@ -299,9 +305,38 @@ public class XStreamPersisterTest {
         DataStoreInfo ds2 = persister.load( in( out ), DataStoreInfo.class );
         assertEquals( "bar", ds2.getName() );
         
-        //TODO: reenable when resolving proxy commited
-        //assertNotNull( ds2.getWorkspace() );
-        //assertEquals( "foo", ds2.getWorkspace().getId() );
+        assertNotNull( ds2.getWorkspace() );
+        assertEquals( "foo", ds2.getWorkspace().getId() );
+        
+        Document dom = dom( in( out ) );
+        assertEquals( "dataStore", dom.getDocumentElement().getNodeName() );
+    }
+    
+    @Test
+    public void testDataStoreReferencedByName() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+        
+        DataStoreInfo ds1 = cFactory.createDataStore();
+        ds1.setName( "bar" );
+        ds1.setWorkspace( ws );
+        catalog.detach(ds1);
+        ((DataStoreInfoImpl)ds1).setId(null);
+        
+        ByteArrayOutputStream out = out();
+        XStreamPersister persister = new XStreamPersisterFactory().createXMLPersister();
+        persister.setReferenceByName(true);
+        
+        persister.save( ds1 , out );
+        
+        DataStoreInfo ds2 = persister.load( in( out ), DataStoreInfo.class );
+        assertEquals( "bar", ds2.getName() );
+        
+        assertNotNull( ds2.getWorkspace() );
+        assertEquals( "foo", ds2.getWorkspace().getId() );
         
         Document dom = dom( in( out ) );
         assertEquals( "dataStore", dom.getDocumentElement().getNodeName() );
@@ -325,9 +360,38 @@ public class XStreamPersisterTest {
         CoverageStoreInfo ds2 = persister.load( in( out ), CoverageStoreInfo.class );
         assertEquals( "bar", ds2.getName() );
         
-        //TODO: reenable when resolving proxy commited
-        //assertNotNull( ds2.getWorkspace() );
-        //assertEquals( "foo", ds2.getWorkspace().getId() );
+        assertNotNull( ds2.getWorkspace() );
+        assertEquals( "foo", ds2.getWorkspace().getId() );
+        
+        Document dom = dom( in( out ) );
+        assertEquals( "coverageStore", dom.getDocumentElement().getNodeName() );
+    }
+    
+    @Test
+    public void testCoverageStoreReferencedByName() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+        
+        CoverageStoreInfo cs1 = cFactory.createCoverageStore();
+        cs1.setName( "bar" );
+        cs1.setWorkspace( ws );
+        catalog.detach(cs1);
+        ((CoverageStoreInfoImpl)cs1).setId(null);
+        
+        ByteArrayOutputStream out = out();
+        XStreamPersister persister = new XStreamPersisterFactory().createXMLPersister();
+        persister.setReferenceByName(true);
+        
+        persister.save( cs1 , out );
+        
+        CoverageStoreInfo ds2 = persister.load( in( out ), CoverageStoreInfo.class );
+        assertEquals( "bar", ds2.getName() );
+        
+        assertNotNull( ds2.getWorkspace() );
+        assertEquals( "foo", ds2.getWorkspace().getId() );
         
         Document dom = dom( in( out ) );
         assertEquals( "coverageStore", dom.getDocumentElement().getNodeName() );
@@ -355,7 +419,40 @@ public class XStreamPersisterTest {
         assertEquals(WMSStoreInfoImpl.DEFAULT_CONNECT_TIMEOUT, wms2.getConnectTimeout());
         assertEquals(WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT, wms2.getReadTimeout());
         
-        //TODO: reenable when resolving proxy commited
+        assertNotNull( wms2.getWorkspace() );
+        assertEquals( "foo", wms2.getWorkspace().getId() );
+        
+        Document dom = dom( in( out ) );
+        assertEquals( "wmsStore", dom.getDocumentElement().getNodeName() );
+    }
+    
+    @Test
+    public void testWMSStoreReferencedByName() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+        
+        WMSStoreInfo wms1 = cFactory.createWebMapServer();
+        wms1.setName( "bar" );
+        wms1.setWorkspace( ws );
+        wms1.setCapabilitiesURL( "http://fake.host/wms?request=GetCapabilities&service=wms");
+        catalog.detach(wms1);
+        ((WMSStoreInfoImpl)wms1).setId(null);
+        
+        ByteArrayOutputStream out = out();
+        XStreamPersister persister = new XStreamPersisterFactory().createXMLPersister();
+        persister.setReferenceByName(true);
+        
+        persister.save( wms1, out );
+        
+        WMSStoreInfo wms2 = persister.load( in( out ), WMSStoreInfo.class );
+        assertEquals( "bar", wms2.getName() );
+        assertEquals(WMSStoreInfoImpl.DEFAULT_MAX_CONNECTIONS, wms2.getMaxConnections());
+        assertEquals(WMSStoreInfoImpl.DEFAULT_CONNECT_TIMEOUT, wms2.getConnectTimeout());
+        assertEquals(WMSStoreInfoImpl.DEFAULT_READ_TIMEOUT, wms2.getReadTimeout());
+        
         assertNotNull( wms2.getWorkspace() );
         assertEquals( "foo", wms2.getWorkspace().getId() );
         
@@ -780,7 +877,6 @@ public class XStreamPersisterTest {
     
     /**
      * Test for GEOS-6052
-     * @throws Exception
      */
     @Test
     public void testVirtualTableMissingEscapeSql() throws Exception {
@@ -811,7 +907,6 @@ public class XStreamPersisterTest {
     
     /**
      * Another Test for GEOS-6052
-     * @throws Exception
      */
     @Test
     public void testVirtualTableMissingEscapeSqlDoesntSkipElements() throws Exception {
@@ -996,6 +1091,146 @@ public class XStreamPersisterTest {
         assertEquals(vtc.getSql(),"select * from table\n");        
         assertEquals(vtc.getName(),"sqlview");
     }
+    
+    @SuppressWarnings("serial")
+    @Test
+    public void testVirtualTableMultipleGeoms() throws IOException{
+        Map<String,String> types=new HashMap<String, String>(){{
+            put("southernmost_point","com.vividsolutions.jts.geom.Geometry");
+            put("location_polygon","com.vividsolutions.jts.geom.Geometry");
+            put("centroid","com.vividsolutions.jts.geom.Geometry");
+            put("northernmost_point","com.vividsolutions.jts.geom.Geometry");
+            put("easternmost_point","com.vividsolutions.jts.geom.Geometry");
+            put("location","com.vividsolutions.jts.geom.Geometry");
+            put("location_original","com.vividsolutions.jts.geom.Geometry");
+            put("westernmost_point","com.vividsolutions.jts.geom.Geometry");       
+        }};
+    
+        Map<String,Integer> srids=new HashMap<String, Integer>(){{
+            put("southernmost_point",4326);
+            put("location_polygon",3003);
+            put("centroid",3004);
+            put("northernmost_point",3857);
+            put("easternmost_point",4326);
+            put("location",3003);
+            put("location_original",3004);
+            put("westernmost_point",3857);              
+        }};
+
+        FeatureTypeInfo ft = persister.load( getClass().getResourceAsStream("/org/geoserver/config/virtualtable_error_GEOS-7400.xml") , FeatureTypeInfo.class );
+        VirtualTable vt3 = (VirtualTable) ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
+                
+        assertEquals(8, vt3.getGeometries().size());
+    
+        for(String g:vt3.getGeometries()){          
+                Class<? extends Geometry> geom = vt3.getGeometryType(g);
+                assertEquals(srids.get(g).intValue(), vt3.getNativeSrid(g));
+                assertEquals(types.get(g), geom.getName());
+        }        
+    }
+    
+    /**
+     * Test for GEOS-7444.
+     * Check GridGeometry is correctly unmarshaled when XML elements are
+     * provided on an different order than the marshaling one
+     * @throws Exception
+     */
+    @Test
+    public void testGridGeometry2DConverterUnmarshalling() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+        catalog.add( ws );
+        
+        NamespaceInfo ns = cFactory.createNamespace();
+        ns.setPrefix("acme");
+        ns.setURI("http://acme.org");
+        catalog.add(ns);
+
+        CoverageStoreInfo cs = cFactory.createCoverageStore();
+        cs.setWorkspace(ws);
+        cs.setName("coveragestore");
+        catalog.add(cs);
+
+        CoverageInfo cv = cFactory.createCoverage();
+        cv.setStore(cs);
+        cv.setNamespace(ns);
+        cv.setName("coverage");
+        cv.setAbstract("abstract");
+        cv.setSRS("EPSG:4326");
+        cv.setNativeCRS(CRS.decode("EPSG:4326"));
+        cv.getParameters().put("foo", null);
+        
+        ByteArrayOutputStream out = out();
+        persister.save( cv, out );
+        
+        ByteArrayInputStream in = in( out );
+        Document dom = dom( in );
+        
+        Element crs = dom.createElement("crs");
+        Text t = dom.createTextNode("EPSG:4326");
+        crs.appendChild(t);
+        Element high = dom.createElement("high");
+        t = dom.createTextNode("4029 4029");
+        high.appendChild(t);
+        Element low = dom.createElement("low");
+        t = dom.createTextNode("0 0");
+        low.appendChild(t);
+        Element range = dom.createElement("range");
+        range.appendChild(high);
+        range.appendChild(low);
+        
+        Element translateX = dom.createElement("translateX");
+        t = dom.createTextNode("0");
+        translateX.appendChild(t);
+        Element translateY = dom.createElement("translateY");
+        t = dom.createTextNode("0");
+        translateY.appendChild(t);
+        Element scaleX = dom.createElement("scaleX");
+        t = dom.createTextNode("1");
+        scaleX.appendChild(t);
+        Element scaleY = dom.createElement("scaleY");
+        t = dom.createTextNode("1");
+        scaleY.appendChild(t);
+        Element shearX = dom.createElement("shearX");
+        t = dom.createTextNode("0");
+        shearX.appendChild(t);
+        Element shearY = dom.createElement("shearY");
+        t = dom.createTextNode("0");
+        shearY.appendChild(t);
+        
+        Element transform = dom.createElement("transform");
+        transform.appendChild(translateX);
+        transform.appendChild(translateY);
+        transform.appendChild(scaleX);
+        transform.appendChild(scaleY);
+        transform.appendChild(shearX);
+        transform.appendChild(shearY);
+        
+        Element grid = dom.createElement("grid");
+        grid.setAttribute("dimension", "2");
+        grid.appendChild(crs);
+        grid.appendChild(range);
+        grid.appendChild(transform);
+        
+        Element e = (Element) dom.getElementsByTagName( "coverage" ).item(0);
+        Element params = (Element) dom.getElementsByTagName( "parameters" ).item(0);
+        e.insertBefore(grid, params);
+        
+        in = in( dom );
+        
+        persister.setCatalog( catalog );
+        cv = persister.load( in, CoverageInfo.class );
+        assertNotNull( cv );
+        assertNotNull( cv.getGrid() );
+        assertNotNull( cv.getGrid().getGridRange() );
+        assertNotNull( cv.getCRS() );
+        assertNotNull( cv.getGrid().getGridToCRS() );
+        assertEquals( cv.getGrid().getGridRange().getLow(0), 0);
+    }
+
 
     ByteArrayOutputStream out() {
         return new ByteArrayOutputStream();

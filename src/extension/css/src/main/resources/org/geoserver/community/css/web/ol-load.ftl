@@ -1,5 +1,5 @@
 OpenLayers.DOTS_PER_INCH = 25.4 / 0.28;
-OpenLayers.ImgPath = "../www/openlayers/img/";
+OpenLayers.ImgPath = "${baseUrl}/www/openlayers/img/";
 
 var cfg = {
   maxExtent: new OpenLayers.Bounds(${minx?c}, ${miny?c}, ${maxx?c}, ${maxy?c}),
@@ -13,9 +13,9 @@ var cfg = {
 
 var map = new OpenLayers.Map("${id}", cfg);
 <#if styleWorkspace??>
-map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "../${styleWorkspace}/wms",
+map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "${baseUrl}/${styleWorkspace}/wms",
 <#else>
-map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "../wms",
+map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "${baseUrl}/wms",
 </#if>
     {
       layers: "${layer}",

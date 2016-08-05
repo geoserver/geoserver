@@ -23,7 +23,7 @@ public interface SecuredObjectFactory extends ExtensionPriority {
      * the specified class
      * 
      * @param object
-     * @return
+     *
      */
     boolean canSecure(Class clazz);
 

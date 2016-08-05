@@ -5,6 +5,8 @@
  */
 package org.geoserver.importer.format;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -32,8 +34,6 @@ import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.VectorFormat;
 import org.geoserver.importer.job.ProgressMonitor;
 import org.geoserver.importer.transform.KMLPlacemarkTransform;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resources;
 import org.geotools.data.FeatureReader;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.CRS;
@@ -65,7 +65,7 @@ public class KMLFileFormat extends VectorFormat {
     @SuppressWarnings("rawtypes")
     @Override
     public FeatureReader read(ImportData data, ImportTask task) throws IOException {
-        Resource file = getFileFromData(data);
+        File file = getFileFromData(data);
 
         // we need to get the feature type, to use for the particular parse through the file
         // since we put it on the metadata from the list method, we first check if that's still available
@@ -86,9 +86,9 @@ public class KMLFileFormat extends VectorFormat {
     }
 
     public FeatureReader<SimpleFeatureType, SimpleFeature> read(SimpleFeatureType featureType,
-            Resource file) {
+            File file) {
         try {
-            return new KMLTransformingFeatureReader(featureType, file.in());
+            return new KMLTransformingFeatureReader(featureType, new FileInputStream(file));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -119,8 +119,8 @@ public class KMLFileFormat extends VectorFormat {
 
     @Override
     public boolean canRead(ImportData data) throws IOException {
-        Resource file = getFileFromData(data);
-        return Resources.canRead(file) && "kml".equalsIgnoreCase(FilenameUtils.getExtension(file.name()));
+        File file = getFileFromData(data);
+        return file.canRead() && "kml".equalsIgnoreCase(FilenameUtils.getExtension(file.getName()));
     }
 
     @Override
@@ -130,11 +130,11 @@ public class KMLFileFormat extends VectorFormat {
         return null;
     }
 
-    public Collection<SimpleFeatureType> parseFeatureTypes(String typeName, Resource file)
+    public Collection<SimpleFeatureType> parseFeatureTypes(String typeName, File file)
             throws IOException {
         InputStream inputStream = null;
         try {
-            inputStream = file.in();
+            inputStream = new FileInputStream(file);
             return parseFeatureTypes(typeName, inputStream);
         } finally {
             if (inputStream != null) {
@@ -226,7 +226,7 @@ public class KMLFileFormat extends VectorFormat {
     @Override
     public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor)
             throws IOException {
-        Resource file = getFileFromData(data);
+        File file = getFileFromData(data);
         CatalogBuilder cb = new CatalogBuilder(catalog);
         String baseName = typeNameFromFile(file);
         CatalogFactory factory = catalog.getFactory();
@@ -271,7 +271,7 @@ public class KMLFileFormat extends VectorFormat {
         return Collections.unmodifiableList(result);
     }
 
-    private String typeNameFromFile(Resource file) {
-        return FilenameUtils.getBaseName(file.name());
+    private String typeNameFromFile(File file) {
+        return FilenameUtils.getBaseName(file.getName());
     }
 }

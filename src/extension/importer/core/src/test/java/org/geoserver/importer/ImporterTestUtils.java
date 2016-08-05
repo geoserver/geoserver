@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
-import org.geoserver.platform.resource.Files;
 import org.geotools.factory.Hints;
 
 public class ImporterTestUtils {
@@ -37,7 +36,8 @@ public class ImporterTestUtils {
     public static  File unpack(String path, File dir) throws Exception {
         
         File file = file(path, dir);
-                new VFSWorker().extractTo(Files.asResource(file), Files.asResource(dir));
+        
+        new VFSWorker().extractTo(file, dir);
         if (!file.delete()) {
             // fail early as tests will expect it's deleted
             throw new IOException("deletion failed during extraction");

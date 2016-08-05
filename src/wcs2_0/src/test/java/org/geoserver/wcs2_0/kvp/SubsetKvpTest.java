@@ -16,7 +16,7 @@ import org.geotools.util.logging.Logging;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 /**
  * Testing Scaling Extension KVP
  * @author Simone Giannecchini, GeoSolutions SAS

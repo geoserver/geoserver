@@ -182,7 +182,7 @@ public class RetypingDataStore implements DataStore {
      * Returns the type map given the external type name
      * 
      * @param externalTypeName
-     * @return
+     *
      * @throws IOException
      */
     FeatureTypeMap getTypeMapBackwards(String externalTypeName, boolean checkMap) throws IOException {
@@ -224,7 +224,7 @@ public class RetypingDataStore implements DataStore {
      * replacement
      * 
      * @param original
-     * @return
+     *
      * @throws IOException
      */
     protected SimpleFeatureType transformFeatureType(SimpleFeatureType original) throws IOException {
@@ -247,7 +247,7 @@ public class RetypingDataStore implements DataStore {
      * to be hidden
      * 
      * @param originalName
-     * @return
+     *
      */
     protected String transformFeatureTypeName(String originalName) {
          return originalName.replaceAll(":", "_");
@@ -262,7 +262,7 @@ public class RetypingDataStore implements DataStore {
      * provided typemap
      * @param q
      * @param typeMap
-     * @return
+     *
      * @throws IOException
      */
     Query retypeQuery(Query q, FeatureTypeMap typeMap) {
@@ -276,7 +276,7 @@ public class RetypingDataStore implements DataStore {
      * Retypes a filter making sure the fids are using the internal typename prefix
      * @param filter
      * @param typeMap
-     * @return
+     *
      */
     Filter retypeFilter(Filter filter, FeatureTypeMap typeMap) {
         FidTransformeVisitor visitor = new FidTransformeVisitor(typeMap);

@@ -1,13 +1,12 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web;
 
-import org.apache.wicket.IRequestTarget;
-import org.apache.wicket.Page;
-import org.apache.wicket.RequestCycle;
+import org.apache.wicket.request.component.IRequestablePage;
+import org.apache.wicket.request.cycle.RequestCycle;
 
 /**
  * Pluggable callback exposing the Wicket {@link RequestCycle} stages
@@ -35,17 +34,31 @@ public interface WicketCallback {
     /**
      * Called when a request target is set on the request cycle
      * 
+     * This method is taken for retro-compatibility with old GeoServer verisons
+     * 
+     * @param requestTarget
+     * @deprecated replaced by {@link #onRequestTargetSet(cycle, requestTarget)}
+     */
+    void onRequestTargetSet(Class<? extends IRequestablePage> requestTarget);
+
+    /**
+     * Called when a request target is set on the request cycle
+     * 
+     * @param cycle
      * @param requestTarget
      */
-    void onRequestTargetSet(IRequestTarget requestTarget);
-
+    default void onRequestTargetSet(RequestCycle cycle, 
+            Class<? extends IRequestablePage> requestTarget) {
+        onRequestTargetSet(requestTarget);
+    }
+    
     /**
      * Called when a runtime exception is thrown, just before the actual handling of the runtime
      * exception.
      * 
-     * @param page Any page context where the exception was thrown
-     * @param e The exception
+     * @param cycle The request cycle
+     * @param ex The exception
      */
-    void onRuntimeException(Page page, RuntimeException e);
+    void onRuntimeException(org.apache.wicket.request.cycle.RequestCycle cycle, Exception ex);
 
 }

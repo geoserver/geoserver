@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,7 +17,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -70,7 +70,7 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
             new PropertyModel<Integer>(model, "attribution.logoHeight"),
             Integer.class
         );
-        height.add(NumberValidator.minimum(0));
+        height.add(RangeValidator.minimum(0));
         height.setOutputMarkupId(true);
         add(height);
 
@@ -78,7 +78,7 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
             new PropertyModel<Integer>(model, "attribution.logoWidth"),
             Integer.class
         );
-        width.add(NumberValidator.minimum(0));
+        width.add(RangeValidator.minimum(0));
         width.setOutputMarkupId(true);
         add(width);
 
@@ -92,15 +92,15 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
                         URLConnection conn = url.openConnection();
                         type.getModel().setObject(conn.getContentType());
                         BufferedImage image = ImageIO.read(conn.getInputStream());
-                        height.setModelValue("" + image.getHeight());
-                        width.setModelValue("" + image.getWidth());
+                        height.setModelValue(new String[] {"" + image.getHeight()});
+                        width.setModelValue(new String[] {"" + image.getWidth()});
                     } catch (Exception e) {
                     }
                 }
 
-                target.addComponent(type);
-                target.addComponent(height);
-                target.addComponent(width);
+                target.add(type);
+                target.add(height);
+                target.add(width);
             }
         });
     }

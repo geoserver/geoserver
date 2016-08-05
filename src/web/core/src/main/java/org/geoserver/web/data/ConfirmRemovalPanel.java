@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -31,6 +31,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
 
@@ -47,12 +48,12 @@ public class ConfirmRemovalPanel extends Panel {
         this.roots = roots;
         
         // track objects that could not be removed
-        Map<CatalogInfo, StringResourceModel> notRemoved = new HashMap();
+        Map<CatalogInfo, StringResourceModel> notRemoved = new HashMap<>();
         
         // collect the objects that will be removed (besides the roots)
         Catalog catalog = GeoServerApplication.get().getCatalog();
         CascadeRemovalReporter visitor = new CascadeRemovalReporter(catalog);
-        for (Iterator<CatalogInfo> i = (Iterator<CatalogInfo>) roots.iterator(); i.hasNext();) {
+        for (Iterator<? extends CatalogInfo> i = roots.iterator(); i.hasNext();) {
             CatalogInfo root = i.next();
             StringResourceModel reason = canRemove(root);
             if ( reason != null ) {
@@ -81,7 +82,7 @@ public class ConfirmRemovalPanel extends Panel {
         WebMarkupContainer removed = new WebMarkupContainer("removedObjects");
         List<CatalogInfo> cascaded = visitor.getObjects(CatalogInfo.class, DELETE);
         // remove the resources, they are cascaded, but won't be show in the UI
-        for (Iterator it = cascaded.iterator(); it.hasNext();) {
+        for (Iterator<CatalogInfo> it = cascaded.iterator(); it.hasNext();) {
             CatalogInfo catalogInfo = (CatalogInfo) it.next();
             if(catalogInfo instanceof ResourceInfo)
                 it.remove();
@@ -121,6 +122,14 @@ public class ConfirmRemovalPanel extends Panel {
             grr.setVisible(false);
         grr.add(new Label("groups", names(groups)));
         
+        // removed styles
+        WebMarkupContainer syr = new WebMarkupContainer("stylesRemoved");
+        removed.add(syr);
+        List<StyleInfo> styles = visitor.getObjects(StyleInfo.class, DELETE);
+        if(styles.size() == 0)
+            syr.setVisible(false);
+        syr.add(new Label("styles", names(styles)));
+        
         // modified objects root (we show it if any modified object is on the list)
         WebMarkupContainer modified = new WebMarkupContainer("modifiedObjects");
         modified.setVisible(visitor.getObjects(null, EXTRA_STYLE_REMOVED, GROUP_CHANGED, STYLE_RESET).size() > 0);
@@ -148,7 +157,7 @@ public class ConfirmRemovalPanel extends Panel {
         return roots;
     }
     
-    String names(List objects) {
+    String names(List<?> objects) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < objects.size(); i++) {
             sb.append(name(objects.get(i)));
@@ -167,12 +176,12 @@ public class ConfirmRemovalPanel extends Panel {
         }
     }
     
-    ListView notRemovedList(final Map<CatalogInfo,StringResourceModel> notRemoved) {
-        List<CatalogInfo> items = new ArrayList(notRemoved.keySet());
-        ListView lv = new ListView("notRemovedList", items) {
+    ListView<CatalogInfo> notRemovedList(final Map<CatalogInfo,StringResourceModel> notRemoved) {
+        List<CatalogInfo> items = new ArrayList<>(notRemoved.keySet());
+        ListView<CatalogInfo> lv = new ListView<CatalogInfo>("notRemovedList", items) {
             
             @Override
-            protected void populateItem(ListItem item) {
+            protected void populateItem(ListItem<CatalogInfo> item) {
                 CatalogInfo object = (CatalogInfo) item.getModelObject();
                 StringResourceModel reason = notRemoved.get(object);
                 item.add( new Label( "name", name(object) ) );

@@ -32,8 +32,6 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class SectionsTypeBinding extends AbstractComplexBinding {

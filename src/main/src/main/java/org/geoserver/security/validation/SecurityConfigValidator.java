@@ -55,7 +55,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
      * 
      * @param serviceClass
      * @param className
-     * @return
+     *
      */
     static public SecurityConfigValidator getConfigurationValiator(Class <?> serviceClass, String className) 
             throws SecurityConfigException {

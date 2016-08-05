@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,11 +16,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.geotools.util.logging.Logging;
 
 /**
  * Implementation of ResourceStore backed by the file system.
  */
 public class FileSystemResourceStore implements ResourceStore {
+    
+    static final Logger LOGGER = Logging.getLogger(FileSystemResource.class);
+    
+    /**
+     * When true, the stack trace that got an input stream that wasn't closed is recorded and then
+     * printed out when warning the user about this.
+     */
+    protected static final Boolean TRACE_ENABLED = "true".equalsIgnoreCase(System.getProperty("gs.lock.trace"));
     
     /** LockProvider used to secure resources for exclusive access */
     protected LockProvider lockProvider = new NullLockProvider();
@@ -90,19 +102,6 @@ public class FileSystemResourceStore implements ResourceStore {
         }
     }
     
-    public synchronized void addListener(File file, String path, ResourceListener listener) {
-        if( watcher == null ){
-            watcher = new FileSystemWatcher();
-        }
-        watcher.addListener( file, path, listener );
-    }
-    
-    public synchronized void removeListener(File file, String path, ResourceListener listener) {
-        if( watcher != null ){
-            watcher.removeListener(file, path, listener );
-        }
-    }
-    
     @Override
     public Resource get(String path) {
         path = Paths.valid(path);
@@ -149,7 +148,6 @@ public class FileSystemResourceStore implements ResourceStore {
      * This implementation is a stateless data object, acting as a simple handle around a File.
      */
     class FileSystemResource implements Resource {
-        private static final long serialVersionUID = 5824101017129479435L;
 
         String path;
 
@@ -177,12 +175,12 @@ public class FileSystemResourceStore implements ResourceStore {
         
         @Override
         public void addListener(ResourceListener listener) {
-            FileSystemResourceStore.this.addListener( file, path, listener );
+            getResourceNotificationDispatcher().addListener(path, listener);
         }
         
         @Override
         public void removeListener(ResourceListener listener) {
-            FileSystemResourceStore.this.removeListener( file, path, listener );
+            getResourceNotificationDispatcher().removeListener(path, listener);
         }
         @Override
         public InputStream in() {
@@ -191,12 +189,39 @@ public class FileSystemResourceStore implements ResourceStore {
                 throw new IllegalStateException("File not found " + actualFile);
             }
             final Lock lock = lock();
+            final Throwable tracer;
+            if(TRACE_ENABLED) {
+                tracer = new Exception();
+                tracer.fillInStackTrace();
+            } else {
+                tracer = null;
+            }
             try {
                 return new FileInputStream(file) {
+                    boolean closed = false;
+                    
+                    
                     @Override
                     public void close() throws IOException {
+                        closed = true;
                         super.close();
                         lock.release();
+                    }
+                    
+                    @Override
+                    protected void finalize() throws IOException {
+                        if(!closed) {
+                            String warn = "There is code leaving resource input streams open, locks around them might not be cleared! ";
+                            if(!TRACE_ENABLED) {
+                                warn += "Add -D" + TRACE_ENABLED + "=true to your JVM options to get a full stack trace of the code that acquired the input stream";
+                            }
+                            LOGGER.warning(warn);
+                            
+                            if(TRACE_ENABLED) {
+                                LOGGER.log(Level.WARNING, "The unclosed input stream originated on this stack trace", tracer);
+                            }
+                        }
+                        super.finalize();
                     }
                 };
             } catch (FileNotFoundException e) {
@@ -460,5 +485,20 @@ public class FileSystemResourceStore implements ResourceStore {
             }
         }
 
+    }
+
+    @Override
+    public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
+        if( watcher == null ){
+            watcher = new FileSystemWatcher(new FileSystemWatcher.FileExtractor() {
+
+                @Override
+                public File getFile(String path) {
+                    return Paths.toFile(baseDirectory, path);
+                }
+                
+            });
+        }
+        return watcher;
     }
 }

@@ -64,7 +64,7 @@ public class RulesBuilder {
 	 * @param features
 	 * @param property
 	 * @param classNumber
-	 * @return
+	 *
 	 */
 	public List<Rule> quantileClassification(FeatureCollection features,
 			String property, Class<?> propertyType, int classNumber, boolean open, boolean normalize) {
@@ -98,7 +98,7 @@ public class RulesBuilder {
 	 * @param features
 	 * @param property
 	 * @param classNumber
-	 * @return
+	 *
 	 */
     public List<Rule> equalIntervalClassification(FeatureCollection features, String property,
             Class<?> propertyType, int classNumber, boolean open, boolean normalize) {
@@ -130,7 +130,7 @@ public class RulesBuilder {
 	 *
 	 * @param features
 	 * @param property
-	 * @return
+	 *
 	 */
 	public List<Rule> uniqueIntervalClassification(FeatureCollection features,
 			String property, Class<?> propertyType, int intervals, boolean normalize) throws IllegalArgumentException {
@@ -285,7 +285,7 @@ public class RulesBuilder {
      * build a List of rules
      * @param groups
      * @param property
-     * @return
+     *
      */
     private List<Rule> openRangedRules(RangedClassifier groups, String property, Class<?> propertyType, boolean normalize) {
 
@@ -360,7 +360,7 @@ public class RulesBuilder {
 	 * build a List of rules
 	 * @param groups
 	 * @param property
-	 * @return
+	 *
 	 */
 	private List<Rule> closedRangedRules(RangedClassifier groups, String property, Class<?> propertyType, boolean normalize) {
 
@@ -404,7 +404,7 @@ public class RulesBuilder {
 	 * build a List of rules
 	 * @param groups
 	 * @param property
-	 * @return
+	 *
 	 */
 	private List<Rule> explicitRules(ExplicitClassifier groups, String property, Class<?> propertyType) {
 
@@ -452,7 +452,7 @@ public class RulesBuilder {
      * @param features
      * @param property
      * @param classNumber
-     * @return
+     *
      */
     public List<Rule> jenksClassification(FeatureCollection features, String property, Class<?> propertyType, int classNumber, boolean open, boolean normalize) {
         Classifier groups = null;

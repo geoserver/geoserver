@@ -1,3 +1,7 @@
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.platform.resource;
 
 import static org.junit.Assert.fail;
@@ -26,7 +30,13 @@ public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
     protected Resource getResource(String path) throws Exception {
         File file = Paths.toFile(null, path);
         if (!file.isAbsolute()) {
-            file = Paths.toFile(folder.getRoot(), path);
+            //in linux, an absolute path might appear relative if the root slash has been removed.
+            if (folder.getRoot().getPath().startsWith("/") &&
+                    path.startsWith(folder.getRoot().getPath().substring(1))) {
+                file = Paths.toFile(new File("/"), path);
+            } else {
+                file = Paths.toFile(folder.getRoot(), path);
+            }
         }
         return Files.asResource(file);
     }

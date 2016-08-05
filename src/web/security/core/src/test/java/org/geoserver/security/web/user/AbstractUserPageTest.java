@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -75,14 +75,19 @@ public abstract class AbstractUserPageTest extends AbstractSecurityWicketTestSup
     
     protected void assignRole(String roleName) throws Exception {
         form.setValue("roles:palette:recorder", gaService.getRoleByName(roleName).getAuthority());
-        tester.executeAjaxEvent("form:roles:palette:recorder", "onchange");
+        form.submit();
+        tester.executeAjaxEvent("form:roles:palette:recorder", "change");
         newFormTester();
+        form.setValue("roles:palette:recorder", gaService.getRoleByName(roleName).getAuthority());
     }
     
     protected void assignGroup(String groupName) throws Exception {
-        form.setValue("groups:palette:recorder", ugService.getGroupByGroupname(groupName).getGroupname());
-        tester.executeAjaxEvent("form:groups:palette:recorder", "onchange");
+        String theName = ugService.getGroupByGroupname(groupName).getGroupname();
+        form.setValue("groups:palette:recorder", theName);
+        form.submit();
+        tester.executeAjaxEvent("form:groups:palette:recorder", "change");
         newFormTester();
+        form.setValue("groups:palette:recorder", theName);
     }
 
     
@@ -103,7 +108,7 @@ public abstract class AbstractUserPageTest extends AbstractSecurityWicketTestSup
     }
     
     protected void addUserProperty(String key, String value) {
-        tester.executeAjaxEvent("form:properties:add", "onclick");
+        tester.executeAjaxEvent("form:properties:add", "click");
         //newFormTester();
        
         form.setValue("properties:container:list:0:key", key);

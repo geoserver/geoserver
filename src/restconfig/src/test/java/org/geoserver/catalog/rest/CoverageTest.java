@@ -1,14 +1,14 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.*;
@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CoverageTest extends CatalogRESTTestSupport {
 
@@ -67,7 +67,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = 
             putAsServletResponse( "/rest/workspaces/gs/coveragestores/usaWorldImage/file.worldimage" + 
                 (!autoConfigureCoverage ? "?configure=none" : ""), bytes, "application/zip");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
     }
 
     @Test
@@ -80,12 +80,12 @@ public class CoverageTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAllUnauthorized() throws Exception {
-        assertEquals( 405, putAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble/coverages").getStatusCode() );
+        assertEquals( 405, putAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble/coverages").getStatus() );
     }
 
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
-        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble/coverages").getStatusCode() );
+        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble/coverages").getStatus() );
     }
 
     @Test
@@ -132,33 +132,33 @@ public class CoverageTest extends CatalogRESTTestSupport {
       
       // First request should thrown an exception
       MockHttpServletResponse response = getAsServletResponse(requestPath);
-      assertEquals(404, response.getStatusCode());
-      assertTrue(response.getOutputStreamContent().contains(
+      assertEquals(404, response.getStatus());
+      assertTrue(response.getContentAsString().contains(
               exception));
       
       // Same request with ?quietOnNotFound should not throw an exception
       response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
-      assertEquals(404, response.getStatusCode());
-      assertFalse(response.getOutputStreamContent().contains(
+      assertEquals(404, response.getStatus());
+      assertFalse(response.getContentAsString().contains(
               exception));
       // No exception thrown
-      assertTrue(response.getOutputStreamContent().isEmpty());
+      assertTrue(response.getContentAsString().isEmpty());
       
       // CASE 2: coveragestore set
       
       // First request should thrown an exception
       response = getAsServletResponse(requestPath2);
-      assertEquals(404, response.getStatusCode());
-      assertTrue(response.getOutputStreamContent().contains(
+      assertEquals(404, response.getStatus());
+      assertTrue(response.getContentAsString().contains(
               exception2));
       
       // Same request with ?quietOnNotFound should not throw an exception
       response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
-      assertEquals(404, response.getStatusCode());
-      assertFalse(response.getOutputStreamContent().contains(
+      assertEquals(404, response.getStatus());
+      assertFalse(response.getContentAsString().contains(
               exception2));
       // No exception thrown
-      assertTrue(response.getOutputStreamContent().isEmpty());
+      assertTrue(response.getContentAsString().isEmpty());
   }
 
   @Test
@@ -225,7 +225,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
         
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/coveragestores/usaWorldImage/coverages/usa" ) );
 
@@ -276,7 +276,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
         
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName" ) );
 
@@ -300,9 +300,9 @@ public class CoverageTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response =
                 putAsServletResponse(path, clearLatLonBoundingBox, "text/xml");
         assertEquals(
-                "Couldn't remove lat/lon bounding box: \n" + response.getOutputStreamContent(),
+                "Couldn't remove lat/lon bounding box: \n" + response.getContentAsString(),
                 200,
-                response.getStatusCode());
+                response.getStatus());
         
         Document dom = getAsDOM(path);
         assertXpathEvaluatesTo("0.0", "/coverage/latLonBoundingBox/minx", dom);
@@ -320,11 +320,11 @@ public class CoverageTest extends CatalogRESTTestSupport {
 
         assertEquals(
                 "Couldn't update native bounding box: \n"
-                        + response.getOutputStreamContent(), 200,
-                response.getStatusCode());
+                        + response.getContentAsString(), 200,
+                response.getStatus());
         dom = getAsDOM(path);
         print(dom);
-        assertXpathExists("/coverage/latLonBoundingBox/minx[text()!='0.0']",
+        assertXpathExists("/coverage/nativeBoundingBox/minx[text()!='0.0']",
                 dom);
     }
 
@@ -372,7 +372,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", xml, "text/xml");
-        assertEquals( 405, response.getStatusCode() );
+        assertEquals( 405, response.getStatus() );
     }
 
     @Test
@@ -383,13 +383,32 @@ public class CoverageTest extends CatalogRESTTestSupport {
           "</coverage>";
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", xml, "text/xml");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         Document dom = getAsDOM("/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.xml");
         assertXpathEvaluatesTo("new title", "/coverage/title", dom );
         
         CoverageInfo c = catalog.getCoverageByName( "wcs", "BlueMarble");
         assertEquals( "new title", c.getTitle() );
+    }
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        CoverageInfo c = catalog.getCoverageByName( "wcs", "BlueMarble");
+        
+        assertTrue(c.isEnabled());
+        boolean isAdvertised = c.isAdvertised();
+        
+        String xml = 
+          "<coverage>" + 
+            "<title>new title</title>" +  
+          "</coverage>";
+        MockHttpServletResponse response = 
+            putAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", xml, "text/xml");
+        assertEquals( 200, response.getStatus() );
+        
+        c = catalog.getCoverageByName( "wcs", "BlueMarble");
+        assertTrue(c.isEnabled());
+        assertEquals(isAdvertised, c.isAdvertised());
     }
 
     @Test
@@ -400,7 +419,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
             "</coverage>";
           MockHttpServletResponse response = 
               putAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/NonExistant", xml, "text/xml");
-          assertEquals( 404, response.getStatusCode() );
+          assertEquals( 404, response.getStatus() );
     }
 
     @Test
@@ -410,14 +429,14 @@ public class CoverageTest extends CatalogRESTTestSupport {
             catalog.remove(l);
         }
         assertEquals( 200,  
-            deleteAsServletResponse( "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble").getStatusCode());
+            deleteAsServletResponse( "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble").getStatus());
         assertNull( catalog.getCoverageByName("wcs", "BlueMarble"));
     }
 
     @Test
     public void testDeleteNonExistant() throws Exception {
         assertEquals( 404,  
-            deleteAsServletResponse( "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/NonExistant").getStatusCode());
+            deleteAsServletResponse( "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/NonExistant").getStatus());
     }
 
     @Test
@@ -427,9 +446,9 @@ public class CoverageTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getLayerByName("wcs:BlueMarble"));
         
         assertEquals(403, deleteAsServletResponse( 
-            "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble").getStatusCode());
+        "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble").getStatus());
         assertEquals( 200, deleteAsServletResponse( 
-            "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble?recurse=true").getStatusCode());
+        "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble?recurse=true").getStatus());
 
         assertNull(catalog.getCoverageByName("wcs", "BlueMarble"));
         assertNull(catalog.getLayerByName("wcs:BlueMarble"));
@@ -444,7 +463,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
           "</coverage>";
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/workspaces/wcs/coveragestores/DEM/coverages/DEM", xml, "text/xml");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         Document dom = getAsDOM("/rest/workspaces/wcs/coveragestores/DEM/coverages/tazdem.xml");
         assertXpathEvaluatesTo("new title", "/coverage/title", dom );
@@ -483,7 +502,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
                 "</coverage>";
         response = 
            putAsServletResponse("/rest/workspaces/wcs/coveragestores/DEM/coverages/tazdem", xml, "text/xml");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
 
         c = catalog.getCoverageByName( "wcs", "tazdem");
         dimensions = c.getDimensions();

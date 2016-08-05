@@ -40,7 +40,7 @@ public enum ProjectionPolicy {
      * {@link #FORCE_DECLARED}, is returned.
      * 
      * @param code
-     * @return
+     *
      */
     public static ProjectionPolicy get(Integer code) {
         if (code == null)

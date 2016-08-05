@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,8 +14,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -27,6 +27,8 @@ import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
 import org.geoserver.web.data.store.panel.DropDownChoiceParamPanel;
@@ -126,7 +128,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
 
                 String description = paramMetadata.getTitle();
                 if (description != null) {
-                    inputComponent.add(new SimpleAttributeModifier("title", description));
+                    inputComponent.add(AttributeModifier.replace("title", description));
                 }
                 item.add(inputComponent);
             }
@@ -143,11 +145,13 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
      * properties.
      * 
      * @param paramMetadata
-     * @return
+     *
      */
     private Panel getInputComponent(final String componentId, final IModel paramsModel,
             final ParamInfo paramMetadata) {
 
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+        
         final String paramName = paramMetadata.getName();
         final String paramLabel = paramMetadata.getName();
         final boolean required = paramMetadata.isRequired();
@@ -201,17 +205,26 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             
             // if it can be a reference to the local filesystem make sure it's valid
             FormComponent<String> fc = ((ParamPanel) tp).getFormComponent();
+            
+            // AF: Disable Validator if GeoServer Env Parametrization is enabled!
             if (paramName.equalsIgnoreCase("url")) {
-                fc.add(new FileExistsValidator());
+                if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                    fc.add(new FileExistsValidator());
+                }
             }
             // make sure the proper value is returned, but don't set it for strings otherwise
             // we incur in a wicket bug (the empty string is not converter back to a null)
             // GR: it doesn't work for File neither.
             // AA: better not mess with files, the converters turn data dir relative to
             // absolute and bye bye data dir portability
-            if (binding != null && !String.class.equals(binding) && !File.class.equals(binding)
-                    && !URL.class.equals(binding) && !binding.isArray()) {
-                fc.setType(binding);
+            
+            
+            // AF: Disable Binding if GeoServer Env Parametrization is enabled!
+            if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                if (binding != null && !String.class.equals(binding) && !File.class.equals(binding)
+                        && !URL.class.equals(binding) && !binding.isArray()) {
+                    fc.setType(binding);
+                }
             }
             parameterPanel = tp;
         }

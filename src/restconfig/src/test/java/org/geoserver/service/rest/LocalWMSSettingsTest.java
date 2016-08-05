@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,6 +8,9 @@ package org.geoserver.service.rest;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import org.apache.commons.io.IOUtils;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -23,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
 
@@ -80,7 +83,7 @@ public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
         String input = "{'wms': {'id' : 'wms_sf', 'workspace':{'name':'sf'},'name' : 'WMS', 'enabled': 'true'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/workspaces/sf/settings/",
                 input, "text/json");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         JSON json = getAsJSON("/rest/services/wms/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
@@ -101,7 +104,7 @@ public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
                 + "<interpolation>Nearest</interpolation>" + "</wms>";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/workspaces/sf/settings",
                 xml, "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         Document dom = getAsDOM("/rest/services/wms/workspaces/sf/settings.xml");
         assertEquals("wms", dom.getDocumentElement().getLocalName());
@@ -117,7 +120,7 @@ public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
         String json = "{'wms': {'id':'wms','workspace':{'name':'sf'},'enabled':'false','name':'WMS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/workspaces/sf/settings/",
                 json, "text/json");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON("/rest/services/wms/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
@@ -132,14 +135,24 @@ public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
                 + "</workspace>" + "<enabled>false</enabled>" + "</wms>";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/workspaces/sf/settings",
                 xml, "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM("/rest/services/wms/workspaces/sf/settings.xml");
         assertXpathEvaluatesTo("false", "/wms/enabled", dom);
+    }
+    
+    @Test
+    public void testPutFullAsXML() throws Exception {
+        String xml = IOUtils.toString(LocalWFSSettingsTest.class.getResourceAsStream("wms.xml"));
+        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/workspaces/sf/settings",
+                xml, "text/xml");
+        assertEquals(200, response.getStatus());
+        Document dom = getAsDOM("/rest/services/wms/workspaces/sf/settings.xml");
+        assertXpathEvaluatesTo("true", "/wms/enabled", dom);
     }
 
     @Test
     public void testDelete() throws Exception {
-        assertEquals(200, deleteAsServletResponse("/rest/services/wms/workspaces/sf/settings").getStatusCode());
+        assertEquals(200, deleteAsServletResponse("/rest/services/wms/workspaces/sf/settings").getStatus());
         boolean thrown = false;
         try {
             JSON json = getAsJSON("/rest/services/wms/workspaces/sf/settings.json");

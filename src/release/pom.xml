@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.9-SNAPSHOT</version>
+  <version>2.10-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver</groupId>
  <artifactId>gs-release</artifactId>
@@ -40,6 +40,11 @@
    <groupId>org.eclipse.jetty.toolchain</groupId>
    <artifactId>jetty-schemas</artifactId>
    <version>3.1.M0</version>
+  </dependency>
+  <dependency>
+   <groupId>javax.servlet</groupId>
+   <artifactId>javax.servlet-api</artifactId>
+   <version>${jetty.servlet-api.version}</version>
   </dependency>
   <!--dependency>
    <groupId>org.mortbay.jetty</groupId>
@@ -156,11 +161,6 @@
   <dependency>
    <groupId>org.geoserver.extension</groupId>
    <artifactId>gs-excel</artifactId>
-   <version>${project.version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.geoserver.extension</groupId>
-   <artifactId>gs-geosearch</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>

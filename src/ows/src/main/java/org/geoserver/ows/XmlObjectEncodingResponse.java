@@ -25,9 +25,9 @@ import org.geotools.xml.Encoder;
 public class XmlObjectEncodingResponse extends Response {
 
     protected String elementName;
-    protected Class xmlConfiguration;
+    protected Class<?> xmlConfiguration;
     
-    public XmlObjectEncodingResponse(Class binding, String elementName, Class xmlConfiguration) {
+    public XmlObjectEncodingResponse(Class<?> binding, String elementName, Class<?> xmlConfiguration) {
         super( binding );
         this.elementName = elementName;
         this.xmlConfiguration = xmlConfiguration;
@@ -61,17 +61,17 @@ public class XmlObjectEncodingResponse extends Response {
     /**
      * Allows subclasses to further configure the encoder
      * 
-     * @param encoder
-     * @param elementName2
-     * @param xmlConfiguration2
+     * @param encoder encoder used for output
+     * @param elementName Element being configured
+     * @param xmlConfiguration Configuration
      */
-    protected void configureEncoder(Encoder encoder, String elementName, Class xmlConfiguration) {
+    protected void configureEncoder(Encoder encoder, String elementName, Class<?> xmlConfiguration) {
         // nothing to do here, subclasses will do their own magic
     }
 
     /**
      * Subclasses can override this method to return the necessary schema location declarations
-     * @return
+     *
      */
     protected Map<String, String> getSchemaLocations() {
         return Collections.emptyMap();

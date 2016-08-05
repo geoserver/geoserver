@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -16,7 +16,6 @@ import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
-import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.browser.GeoServerFileChooser;
@@ -48,7 +47,8 @@ public class SpatialFilePanel extends ImportSourcePanel {
     }
 
     public ImportData createImportSource() throws IOException {
-        return FileData.createFromFile(Resources.fromPath(file));
+        File file = new File(this.file);
+        return FileData.createFromFile(file);
     };
     
     Component chooserButton(Form form) {
@@ -76,7 +76,7 @@ public class SpatialFilePanel extends ImportSourcePanel {
                                 fileField.clearInput();
                                 fileField.setModelObject(file.getAbsolutePath());
 
-                                target.addComponent(fileField);
+                                target.add(fileField);
                                 dialog.close(target);
                             }
                         };
@@ -94,14 +94,14 @@ public class SpatialFilePanel extends ImportSourcePanel {
                         fileField.clearInput();
                         //fileField.setModelObject(file);
                         
-                        target.addComponent(fileField);
+                        target.add(fileField);
                         return true;
                     }
 
                     @Override
                     public void onClose(AjaxRequestTarget target) {
                         // update the field with the user chosen value
-                        target.addComponent(fileField);
+                        target.add(fileField);
                     }
 
                 });

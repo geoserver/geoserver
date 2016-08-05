@@ -43,7 +43,7 @@ public abstract class AbstractSecurityValidator {
      * Gets the temp directory, null if not found or not
      * writable 
      * 
-     * @return
+     *
      */
     public File getTempDir() {
         String tempPath = System.getProperty("java.io.tmpdir");
@@ -67,7 +67,7 @@ public abstract class AbstractSecurityValidator {
      * false if file creation causes an {@link IOException}
      * 
      * @param file
-     * @return
+     *
      * @throws SecurityConfigException
      */
     protected boolean checkFile(File file) throws SecurityConfigException {

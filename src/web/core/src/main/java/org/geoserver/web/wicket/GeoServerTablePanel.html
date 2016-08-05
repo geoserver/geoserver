@@ -10,16 +10,10 @@
 	            <span wicket:id="navigatorTop">1|2|3|...</span>
             </div>
             <div class="rightwise">
-                <input id="filter" wicket:id="filter" class="rigthwise search" type="text" size="35" title="Search"/>
+                <input id="filter" wicket:id="filter" class="rigthwise search" type="text" size="35" title="Search" placeholder="Search" wicket:message="placeholder:Search"/>
 	            <input wicket:id="submit" class="noshow" type="submit" value="Search"/>
 	            <script type="text/javascript">
-	              //<![CDATA[
-                  // this one works when the page is loading for the first time
-	              jQuery(document).ready(function() {$('#filter').inlineInfoTextify();});
-                  // this one in ajax popups where the content to textify is generated on the fly
-                  // after the page has been loaded
-	              $('#filter').inlineInfoTextify();
-	              //]]>
+                    $('input, textarea').placeholder();
 	            </script>
             </div>
 	</form>

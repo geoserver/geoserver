@@ -1,27 +1,30 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.web.publish;
 
-import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.image.NonCachingImage;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.request.Url;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -58,14 +61,13 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         defaultStyle.setRequired(true);
         styleContainer.add(defaultStyle);
 
-        final Image defStyleImg = new Image("defaultStyleLegendGraphic");
+        final Image defStyleImg = new NonCachingImage("defaultStyleLegendGraphic");
         defStyleImg.setOutputMarkupId(true);
         styleContainer.add(defStyleImg);
 
         // the wms url is build without qualification to allow usage of global styles,
         // the style name and layer name will be ws qualified instead
-        String wmsURL = getRequest().getRelativePathPrefixToContextRoot();
-        wmsURL += wmsURL.endsWith("/") ? "wms?" : "/wms?";
+        String wmsURL = RequestCycle.get().getUrlRenderer().renderContextRelativeUrl("wms") + "?";
 
         final LegendGraphicAjaxUpdater defaultStyleUpdater;
         defaultStyleUpdater = new LegendGraphicAjaxUpdater(wmsURL, defStyleImg, defaultStyleModel);
@@ -104,10 +106,11 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         "ExtraStylesPalette.availableHeader"));
             }
         };
+        extraStyles.add(new DefaultTheme());
         styleContainer.add(extraStyles);
         
         TextField<Integer> renderingBuffer = new TextField<Integer>("renderingBuffer", new MapModel(new PropertyModel(layerModel, "metadata"), LayerInfo.BUFFER), Integer.class);
-        renderingBuffer.add(NumberValidator.minimum(0));
+        renderingBuffer.add(RangeValidator.minimum(0));
         styleContainer.add(renderingBuffer);
         
         add(new TextField<String>("wmsPath", new PropertyModel<String>(layerModel, "path")));

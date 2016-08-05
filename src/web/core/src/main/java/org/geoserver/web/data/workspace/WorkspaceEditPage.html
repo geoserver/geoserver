@@ -19,9 +19,8 @@
       <input wicket:id="uri" id="uri" type="text" class="text"/>
       <div class="instruct"><wicket:message key="namespaceUriAssocWithWorkspace">The namespace uri associated with this workspace</wicket:message></div>
     </li>
-    <li>
-      <label for="default"><wicket:message key="defaultWorkspace">Default workspace</wicket:message></label>
-      <input wicket:id="default" id="default" type="checkbox"/>
+    <li class="choiceItem">
+      <input wicket:id="default" id="default" type="checkbox"/> <label for="default"><wicket:message key="defaultWorkspace">Default workspace</wicket:message></label>
     </li>
     <!-- Commented out waiting for a consistent work to be done on the other edit pages    
     <li>

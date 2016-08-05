@@ -69,8 +69,7 @@ public class KMLFeatureAccessor {
      * @param mapContent
      * @param wms
      * @param scaleDenominator
-     * @return
-     * @throws Exception
+     *
      */
     public SimpleFeatureCollection loadFeatureCollection(Layer layer, WMSMapContent mapContent,
             WMS wms, double scaleDenominator) throws Exception {
@@ -102,8 +101,7 @@ public class KMLFeatureAccessor {
      * @param mapContent
      * @param wms
      * @param scaleDenominator
-     * @return
-     * @throws Exception
+     *
      */
     public int getFeatureCount(Layer layer, WMSMapContent mapContent, WMS wms,
             double scaleDenominator) throws Exception {
@@ -127,7 +125,7 @@ public class KMLFeatureAccessor {
      * @param wms
      * @param scaleDenominator
      * @param schema
-     * @return
+     *
      * @throws TransformException
      * @throws FactoryException
      */
@@ -285,7 +283,7 @@ public class KMLFeatureAccessor {
      * Joins the provided filters in a single one by and-ing them (and then, simplifying them)
      * 
      * @param filters
-     * @return
+     *
      */
     private Filter joinFilters(Filter... filters) {
         if (filters == null || filters.length == 0) {

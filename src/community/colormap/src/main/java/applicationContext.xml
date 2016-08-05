@@ -10,12 +10,8 @@
     <bean id="dynamicColorMap" class="org.geotools.process.raster.DynamicColorMapProcess">
     </bean>
 
-    <bean id="dynamicColorMapBuilder" class="org.geoserver.wms.dynamic.legendgraphic.DynamicColorMapBuilder">
-        <constructor-arg index="0" ref="catalog"/>
-    </bean>
-
     <!--  GetLegendGraphics callback -->
     <bean id="dynamicGetLegendGraphicCallback" class="org.geoserver.wms.dynamic.legendgraphic.DynamicGetLegendGraphicDispatcherCallback">
-        <constructor-arg index="0" ref="dynamicColorMapBuilder"/>
+        <constructor-arg index="0" ref="catalog"/>
     </bean>
 </beans>

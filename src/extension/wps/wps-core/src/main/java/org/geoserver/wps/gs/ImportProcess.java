@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -32,8 +32,8 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.WPSException;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -55,6 +55,7 @@ import org.geotools.process.factory.DescribeResult;
 import org.geotools.process.gs.GSProcess;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -64,6 +65,7 @@ import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.util.ProgressListener;
 import org.vfny.geoserver.util.WCSUtils;
 
 /**
@@ -88,7 +90,7 @@ public class ImportProcess implements GSProcess {
         DEFAULT_WRITE_PARAMS.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
         DEFAULT_WRITE_PARAMS.setTiling(512, 512);
     }
-    
+
     private Catalog catalog;
 
     public ImportProcess(Catalog catalog) {
@@ -104,8 +106,14 @@ public class ImportProcess implements GSProcess {
             @DescribeParameter(name = "name", min = 0, description = "Name of the new featuretype/coverage (default is the name of the features in the collection)") String name,
             @DescribeParameter(name = "srs", min = 0, description = "Target coordinate reference system (default is based on source when possible)") CoordinateReferenceSystem srs,
             @DescribeParameter(name = "srsHandling", min = 0, description = "Desired SRS handling (default is FORCE_DECLARED, others are REPROJECT_TO_DECLARED or NONE)") ProjectionPolicy srsHandling,
-            @DescribeParameter(name = "styleName", min = 0, description = "Name of the style to be associated with the layer (default is a standard geometry-specific style)") String styleName)
-            throws ProcessException {
+            @DescribeParameter(name = "styleName", min = 0, description = "Name of the style to be associated with the layer (default is a standard geometry-specific style)") String styleName,
+            ProgressListener listener) throws ProcessException {
+        // avoid null checks
+        if(listener == null) {
+            listener = new NullProgressListener();
+        }
+        listener.started();
+        listener.progress(0);
 
         // first off, decide what is the target store
         WorkspaceInfo ws;
@@ -172,6 +180,8 @@ public class ImportProcess implements GSProcess {
                         + ws.getName());
             }
         }
+
+        checkForCancellation(listener);
 
         // check the target style if any
         StyleInfo targetStyle = null;
@@ -243,10 +253,12 @@ public class ImportProcess implements GSProcess {
                 }
             }
 
+            checkForCancellation(listener);
+
             // import the data into the target store
             SimpleFeatureType targetType;
             try {
-                targetType = importDataIntoStore(features, name, (DataStoreInfo) storeInfo);
+                targetType = importDataIntoStore(features, name, (DataStoreInfo) storeInfo, listener);
             } catch (IOException e) {
                 throw new ProcessException("Failed to import data into the target store", e);
             }
@@ -272,9 +284,14 @@ public class ImportProcess implements GSProcess {
                     layerInfo.setDefaultStyle(targetStyle);
                 }
 
+                checkForCancellation(listener);
+
                 catalog.add(typeInfo);
                 catalog.add(layerInfo);
 
+                listener.progress(100);
+                listener.complete();
+                
                 return layerInfo.prefixedName();
             } catch (Exception e) {
                 throw new ProcessException(
@@ -336,6 +353,8 @@ public class ImportProcess implements GSProcess {
                     }
                 }
 
+                checkForCancellation(listener);
+
                 MathTransform tx = CRS.findMathTransform(cvCrs, srs);
 
                 if (!tx.isIdentity() || !CRS.equalsIgnoreMetadata(cvCrs, srs)) {
@@ -361,6 +380,8 @@ public class ImportProcess implements GSProcess {
                         // we tried, no need to fuss around this one
                     }
                 }
+
+                checkForCancellation(listener);
 
                 // add or update the datastore info
                 if (add) {
@@ -389,6 +410,8 @@ public class ImportProcess implements GSProcess {
                 if (name != null) {
                     cinfo.setName(name);
                 }
+
+                checkForCancellation(listener);
 
                 if (!add) {
                     // update the existing
@@ -428,11 +451,14 @@ public class ImportProcess implements GSProcess {
                     // cinfo.setBoundingBox( re );
                 }
 
+                checkForCancellation(listener);
+
                 // add/save
+                LayerInfo layerInfo;
                 if (add) {
                     catalog.add(cinfo);
 
-                    LayerInfo layerInfo = cb.buildLayer(cinfo);
+                    layerInfo = cb.buildLayer(cinfo);
                     if (styleName != null && targetStyle != null) {
                         layerInfo.setDefaultStyle(targetStyle);
                     }
@@ -463,14 +489,15 @@ public class ImportProcess implements GSProcess {
                 } else {
                     catalog.save(cinfo);
 
-                    LayerInfo layerInfo = catalog.getLayerByName(cinfo.getName());
+                    layerInfo = catalog.getLayerByName(cinfo.getName());
                     if (styleName != null && targetStyle != null) {
                         layerInfo.setDefaultStyle(targetStyle);
                     }
 
-                    return layerInfo.prefixedName();
                 }
-
+                listener.progress(100);
+                listener.complete();
+                return layerInfo.prefixedName();
             } catch (MalformedURLException e) {
                 throw new ProcessException("URL Error", e);
             } catch (IOException e) {
@@ -485,7 +512,7 @@ public class ImportProcess implements GSProcess {
     }
 
     private SimpleFeatureType importDataIntoStore(SimpleFeatureCollection features, String name,
-            DataStoreInfo storeInfo) throws IOException, ProcessException {
+            DataStoreInfo storeInfo, ProgressListener listener) throws IOException, ProcessException {
         SimpleFeatureType targetType;
         // grab the data store
         DataStore ds = (DataStore) storeInfo.getDataStore(null);
@@ -534,34 +561,50 @@ public class ImportProcess implements GSProcess {
         Map<String, String> mapping = buildAttributeMapping(sourceType, targetType);
 
         // start a transaction and fill the target with the input features
-        Transaction t = new DefaultTransaction();
         SimpleFeatureStore fstore = (SimpleFeatureStore) ds.getFeatureSource(targetType
                 .getTypeName());
+        Transaction t = new DefaultTransaction();
         fstore.setTransaction(t);
-        SimpleFeatureIterator fi = features.features();
-        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetType);
-        while (fi.hasNext()) {
-            SimpleFeature source = fi.next();
-            fb.reset();
-            for (String sname : mapping.keySet()) {
-                fb.set(mapping.get(sname), source.getAttribute(sname));
+        boolean complete = false;
+        try(SimpleFeatureIterator fi = features.features()) {
+            SimpleFeatureBuilder fb = new SimpleFeatureBuilder(targetType);
+            while (fi.hasNext()) {
+                SimpleFeature source = fi.next();
+                fb.reset();
+                for (String sname : mapping.keySet()) {
+                    fb.set(mapping.get(sname), source.getAttribute(sname));
+                }
+                SimpleFeature target = fb.buildFeature(null);
+                fstore.addFeatures(DataUtilities.collection(target));
+                
+                // we do no report progress as we'd need the collection size
+                // and the collection might be streaming
+                checkForCancellation(listener);
             }
-            SimpleFeature target = fb.buildFeature(null);
-            fstore.addFeatures(DataUtilities.collection(target));
+            t.commit();
+            complete = true;
+        } finally {
+            if(!complete) {
+                t.rollback();
+            }
+            t.close();
         }
-        t.commit();
-        t.close();
 
         return targetType;
     }
 
+    private void checkForCancellation(ProgressListener listener) {
+        if (listener.isCanceled()) {
+            throw new ProcessException(listener.getTask().toString());
+        }
+    }
+
     /**
-     * Applies a set of heuristics to find which target attribute corresponds to a certain input
-     * attribute
+     * Applies a set of heuristics to find which target attribute corresponds to a certain input attribute
      * 
      * @param sourceType
      * @param targetType
-     * @return
+     *
      */
     Map<String, String> buildAttributeMapping(SimpleFeatureType sourceType,
             SimpleFeatureType targetType) {

@@ -25,7 +25,7 @@ public enum EoLayerType {
     
     /**
      * Returns a list of the "normal" layer types
-     * @return
+     *
      */
     public static List<EoLayerType> getRegularTypes() {
         List<EoLayerType> result = new ArrayList<EoLayerType>();
@@ -39,7 +39,7 @@ public enum EoLayerType {
     
     /**
      * Returns a list of the raster layer types
-     * @return
+     *
      */
     public static List<EoLayerType> getRasterTypes(boolean includeIgnore) {
         List<EoLayerType> result = new ArrayList<EoLayerType>();

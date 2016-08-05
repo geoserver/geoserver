@@ -8,11 +8,11 @@ Contributors are asked to provide a Contributor License Agreement for working on
 This agreement can be printed, signed, scanned, and emailed to [info@osgeo.org](mailto:info@osgeo.org) at the Open Source Geospatial Foundation (OSGeo). [OSGeo](http://www.osgeo.org/content/foundation/about.html)
 is the non-profit which holds the GeoServer codebase for the community.
 
-For more information, please review the section on  [submitting patches](http://docs.geoserver.org/latest/en/developer/policies/patches.html) and [making commits](http://docs.geoserver.org/latest/en/developer/policies/committing.html).
+For more information, please review the section on  [submitting pull requests](http://docs.geoserver.org/latest/en/developer/policies/pull_request.html) and [making commits](http://docs.geoserver.org/latest/en/developer/policies/committing.html).
 
 ## Pull Requests
 
-Issuing a pull request requires that you [fork the GeoServer git repository ](https://github.com/geoserver/geoserver/fork_select) into 
+Issuing a pull request requires that you [fork the GeoServer git repository ](https://github.com/geoserver/geoserver) into 
 your own account.
 
 Assuming that `origin` points to your GitHub repository then the workflow becomes:
@@ -49,6 +49,14 @@ The following guidelines are meant to ensure that your pull request is as easy a
 * Fix one thing at a time
 
   Do not batch up multiple unrelated changes into a single patch. If you want to fix multiple issues work on them separately and submit separate patches for them.
+  
+* Always add a test
+
+  Given a large code base, the large number of external contributors, and the fast evolution of the code base, tests are really the only line of defense against accidental breakage of the contributed functionality. That is why we always demand to have at least one test, it's not a "punishment", but a basic guarantee your changes will still be there, and working, in future releases.
+  
+* Referer to a Jira ticket from the commit message
+
+  Release managers generate a changelog by checking the tickets resolved for a given target version, if there is none, your contribution won't show up. So always create a ticket associated to your commits, and refer to it from your commit message. 
 
 * Be patient
 
@@ -62,30 +70,26 @@ The following guidelines are meant to ensure that your pull request is as easy a
 
 ## Commit Guidelines
 
-There is not much in the way of strict commit policies when it comes to committing
-in GeoServer. But over time some rules and conventions have emerged:
+GeoServer does not have much in the way of strict commit policies. Our current conventions are:
 
-1. **Update copyright headers:** When adding new source files to the repository remember to add the standard copyright header:
-
-   ```
-   /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
-    * This code is licensed under the GPL 2.0 license, available at the root
-    * application directory.
-    */
-   ```
-   When updating a file .. update the header:
+1. **Add copyright headers:**
+   * Remember to add a copyright header with the year of creation to any new file. As an example, if you are adding a file in 2016 the copyright header would be:
 
    ```
-   /* (c) 2013-2014 Open Source Geospatial Foundation - all rights reserved
+   /* (c) 2016 Open Source Geospatial Foundation - all rights reserved
     * This code is licensed under the GPL 2.0 license, available at the root
     * application directory.
     */
    ```
 
-   When adding content from another organisation maintain copyright history and original license. Only add (c) OSGeo if you have made modifications to the file for GeoServer:
+   * If you are modifying an existing file that does not have a copyright header, add one as above.
+
+   * Updates to existing files with copyright headers do not require updates to the copyright year.
+
+   * When adding content from another organisation maintain copyright history and original license. Only add Open Source Geospatial Foundation if you have made modifications to the file for GeoServer:
 
    ```
-   /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+   /* (c) 2016 Open Source Geospatial Foundation - all rights reserved
     * (c) 2014 OpenPlans
     * (c) 2008-2010 GeoSolutions
     * 
@@ -97,7 +101,6 @@ in GeoServer. But over time some rules and conventions have emerged:
    ```
 
    In a rare case (as when asking to migrate content from GeoTools) you can obtain permission to change the license to our GPL 2.0 license.
-
 
 2. **Do not commit large amounts of binary data:** In general do not commit any binary data to the repository. There are cases where it is appropriate like some data for a test case, but in these cases the files should be kept as small as possible.
 
@@ -122,7 +125,7 @@ The process of getting community commit access is as follows:
 
 3. **Print, sign, scan and send the contributor agreement:**
 
-   * [corporate_contributor.txt](http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.tx)
+   * [corporate_contributor.txt](http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.txt)
    * [individual_contributor.txt](http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt)
 
    Scanned assignment agreement can be emailed to [info@osgeo.org](mailto:info@osgeo.org) at OpenPlans.

@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,7 +19,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
-import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -167,7 +167,7 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
                 private static final long serialVersionUID = 8562909315041926320L;
 
                 @Override
-                protected Component getComponentForProperty(String id, final IModel itemModel,
+                protected Component getComponentForProperty(String id, final IModel<DefaultValueConfiguration> itemModel,
                         Property<DefaultValueConfiguration> property) {
                     if (DEFAULT_VALUE_EXPRESSION.equals(property)) {
                         Fragment f = new Fragment(id, "ecqlEditor", DynamicDimensionsTabPanel.this);
@@ -178,7 +178,7 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
                                 .getObject()).getDimension();
                         otherDimensions.remove(currentDimension);
                         ta.add(new ECQLValidator().setValidAttributes(otherDimensions));
-                        ta.setModel(property.getModel(itemModel));
+                        ta.setModel((IModel<String>) property.getModel(itemModel));
                         ta.setOutputMarkupId(true);
                         Object currentPolicy = POLICY.getModel(itemModel).getObject();
                         ta.setVisible(DefaultValuePolicy.EXPRESSION.equals(currentPolicy));
@@ -190,17 +190,18 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
                         final DropDownChoice<DefaultValuePolicy> dd = new DropDownChoice<DefaultValueConfiguration.DefaultValuePolicy>(
                                 "choice", Arrays.asList(DefaultValuePolicy.values()));
                         dd.setChoiceRenderer(new EnumChoiceRenderer(DynamicDimensionsTabPanel.this));
-                        dd.setModel(property.getModel(itemModel));
+                        dd.setModel((IModel<DefaultValuePolicy>) property.getModel(itemModel));
                         f.add(dd);
                         return f;
                     }
 
                     return null;
                 }
+                
 
                 @Override
                 protected void onPopulateItem(final Property<DefaultValueConfiguration> property,
-                        final ListItem item) {
+                        final ListItem<Property<DefaultValueConfiguration>> item) {
                     super.onPopulateItem(property, item);
 
                     // assuming that if we got here, everything before it has been populated
@@ -220,13 +221,13 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
                                 DefaultValuePolicy currentPolicy = (DefaultValuePolicy) dd
                                         .getConvertedInput();
                                 ta.setVisible(DefaultValuePolicy.EXPRESSION.equals(currentPolicy));
-                                target.addComponent(ta);
-                                target.addComponent(table);
+                                target.add(ta);
+                                target.add(table);
                             }
                         });
                     }
 
-                    item.add(new AbstractBehavior() {
+                    item.add(new Behavior() {
 
                         private static final long serialVersionUID = 685833036040462732L;
 
@@ -271,13 +272,11 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
         }
 
         @Override
-        protected void convertInput() {
-            visitChildren(TextArea.class, new org.apache.wicket.Component.IVisitor<TextArea<?>>() {
-
-                @Override
-                public Object component(TextArea<?> component) {
-                    component.updateModel();
-                    return null;
+        public void convertInput() {
+            visitChildren(TextArea.class, (component, visit) -> {
+                if (component instanceof TextArea) {
+                    TextArea textArea = (TextArea) component;
+                    textArea.updateModel();
                 }
             });
             setConvertedInput(new DefaultValueConfigurations(configurations));

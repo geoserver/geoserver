@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-16 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -83,7 +83,6 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
      * @param propertyFiles
      *            Property file name and its parent directory map
      * @return This class instance.
-     * @throws Exception
      */
     public static AppSchemaTestOracleSetup getInstance(Map<String, File> propertyFiles)
             throws Exception {
@@ -95,7 +94,6 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
      * 
      * @param propertyFiles Property file name and its parent directory map
      * @return This class instance.
-     * @throws Exception
      */
     public static AppSchemaTestOracleSetup get3DInstance(Map<String, File> propertyFiles)
             throws Exception {
@@ -108,7 +106,6 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
      * 
      * @param propertyFiles Property file name and its feature type directory map
      * @param is3D True if this is a 3D test and needs a particular WKT parser
-     * @throws Exception
      */
     public AppSchemaTestOracleSetup(Map<String, File> propertyFiles, boolean is3D) throws Exception {
         configureFixture();
@@ -292,7 +289,6 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
 
     @Override
     protected void runSqlInsertScript() throws Exception {
-        System.out.println(sql);
         this.run(sql, false);
     }
 }

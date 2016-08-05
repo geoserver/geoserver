@@ -8,7 +8,6 @@ package org.geoserver.security;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -95,7 +94,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     /**
      * Returns the list of configuration parameters supported by the mapper.
      * 
-     * @return
+     *
      */
     public Set<String> getAvailableParameters() {
         return new HashSet<String>();
@@ -104,7 +103,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     /**
      * Configures the mapper parameters.
      * 
-     * @param parameters
+     * @param parameters mapper parameters
      */
     public void configureMapper(Map<String, String> parameters) {
         this.parameters = parameters;
@@ -128,7 +127,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
      * Default implementation always returns an empty string.
      * 
      * @param paramName
-     * @return
+     *
      */
     protected String getDefaultParamValue(String paramName) {
         return "";
@@ -150,7 +149,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
      * 
      * @param errorid
      * @param args
-     * @return
+     *
      */
     protected AuthenticationKeyFilterConfigException createFilterException (String errorid, Object ...args) {
         return new AuthenticationKeyFilterConfigException(errorid,args);

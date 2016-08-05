@@ -76,7 +76,7 @@ public class XmlTestUtil {
      * Match a document where one node matched the XPath expression, and it also matches the given matcher.
      * @param xPath
      * @param matcher
-     * @return
+     *
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Matcher<Document> hasOneNode(final String xPath, final Matcher<? super Node> matcher) {
@@ -86,7 +86,7 @@ public class XmlTestUtil {
      * Match a document where one node matches the XPath expression.
      * @param xPath
      * @param matcher
-     * @return
+     *
      */
     public Matcher<Document> hasOneNode(final String xPath) {
         return hasOneNode(xPath, any(Node.class));
@@ -95,7 +95,7 @@ public class XmlTestUtil {
      * Match a document at least one of the nodes matched by the given XPath expression matches the given matcher.
      * @param xPath
      * @param matcher
-     * @return
+     *
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Matcher<Document> hasNode(final String xPath, final Matcher<Node> matcher) {
@@ -106,7 +106,7 @@ public class XmlTestUtil {
      * Match a document at least one node matches the given XPath.
      * @param xPath
      * @param matcher
-     * @return
+     *
      */
     public Matcher<Document> hasNode(final String xPath) {
         return hasNode(xPath, any(Node.class));
@@ -116,7 +116,7 @@ public class XmlTestUtil {
      * Match a document where the list of nodes selected by the given XPath expression also matches the given matcher.
      * @param xPath
      * @param matcher
-     * @return
+     *
      */
     public Matcher<Document> hasNodes(final String xPath, final Matcher<? extends Iterable<Node>> matcher) {
         return new BaseMatcher<Document>() {
@@ -161,7 +161,7 @@ public class XmlTestUtil {
     /**
      * Make a Java List out of a DOM NodeList.
      * @param nl
-     * @return
+     *
      */
     public static List<Node> nodeCollection(final NodeList nl) {
         return new AbstractList<Node>() {

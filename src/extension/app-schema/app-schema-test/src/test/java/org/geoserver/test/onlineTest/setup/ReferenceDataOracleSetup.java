@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,7 +6,7 @@
 package org.geoserver.test.onlineTest.setup;
 
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
@@ -62,11 +62,11 @@ public class ReferenceDataOracleSetup extends AbstractReferenceDataSetup {
 
     protected void runSqlInsertScript() throws Exception {
         DatabaseUtil du = new DatabaseUtil();
-        ArrayList<String> sqls = du.splitOracleSQLScript(script);
+        List<String> sqls = du.splitOracleSQLScript(script);
         for (String sql : sqls) {           
             if (sql.startsWith("CALL")) {
                 String formattedSP = "{" + sql + "}";              
-                this.runOracleStoreProcedure(formattedSP);
+                this.run(formattedSP);
                 continue;
             }
             this.run(sql);
@@ -78,7 +78,7 @@ public class ReferenceDataOracleSetup extends AbstractReferenceDataSetup {
     // these private helper class might be useful in the future. feel free to change its access
     // modifier
     private void setDataVersion(double version) throws Exception {
-        this.runOracleStoreProcedure("{CALL DROP_TABLE('" + versiontbl + "')}");
+        this.run("{CALL DROP_TABLE('" + versiontbl + "')}");
         this.run("CREATE TABLE " + versiontbl + " (" + "NAME VARCHAR2(100 BYTE) NOT NULL, "
                 + "VERSION NUMBER(25,2)," + "INSERT_DATE DATE)");
         this.run("insert into " + versiontbl

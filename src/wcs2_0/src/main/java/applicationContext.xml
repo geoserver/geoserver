@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights 
-  reserved. This code is licensed under the GPL 2.0 license, available at the 
+<!-- Copyright (c)
+    2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
+    2001 - 2013 OpenPlans - www.openplans.org.
+    This code is licensed under the GPL 2.0 license, available at the 
   root application directory. -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-wcs2_0"/>
+    <constructor-arg index="1" value="GeoServer Web Coverage Service 2.0"/>
+  </bean>
   <!-- wcs service setup, with loggin as an interceptor -->
   <bean id="wcs20ServiceTarget" class="org.geoserver.wcs2_0.DefaultWebCoverageService20">
     <constructor-arg ref="geoServer" />
@@ -60,7 +65,7 @@
 
   <bean id="wcs20GetCapabilitiesResponse"
     class="org.geoserver.wcs2_0.response.WCS20GetCapabilitiesResponse"
-    singleton="false" />
+    scope="prototype" />
 
   <!-- DescribeCoverage -->
   <bean id="wcs20describeCoverageIdKvpParser" class="org.geoserver.ows.FlatKvpParser">
@@ -81,7 +86,7 @@
 
   <bean id="wcs20DescribeCoverageResponse"
     class="org.geoserver.wcs2_0.response.WCS20DescribeCoverageResponse"
-    singleton="false" />
+    scope="prototype" />
 
   <!-- GetCoverage -->
   <bean id="wcs20subsetKvpParser" class="org.geoserver.wcs2_0.kvp.SubsetKvpParser" />

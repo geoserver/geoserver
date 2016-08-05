@@ -21,7 +21,7 @@ import org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
@@ -59,7 +59,6 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
     /**
      * The UTF grid format shows up in the caps document. The format name is freeform
      * 
-     * @throws Exception
      */
     @Test
     public void testCapabilities11() throws Exception {
@@ -72,7 +71,6 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
     /**
      * The UTF grid format shows up in the caps document. WMS 1.3 requires the usage of mime types that will match the result content type
      * 
-     * @throws Exception
      */
     @Test
     public void testCapabilities13() throws Exception {
@@ -111,7 +109,7 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
     private UTFGridTester getAsGridTester(String request, int width, int height, int resolution) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(request);
         if(!response.getContentType().startsWith("application/json")) {
-            System.out.println(response.getOutputStreamContent());
+            System.out.println(response.getContentAsString());
             fail("Expected json but got " + response.getContentType());
         }
         JSON json = json(response);
@@ -147,7 +145,6 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
     /**
      * Using a color classified style. Should not make any different to UTFGrid, as long as we paint all features
      * 
-     * @throws Exception
      */
     @Test
     public void testLineSymbolizerClassified() throws Exception {
@@ -168,7 +165,6 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
     /**
      * Check we get a usable result even with super-thin lines
      * 
-     * @throws Exception
      */
     @Test
     public void testThinLineSymbolizer() throws Exception {
@@ -181,7 +177,6 @@ public class UTFGridIntegrationTest extends WMSTestSupport {
     /**
      * Check we get a correct result with graphic stroked + dash array
      * 
-     * @throws Exception
      */
     @Test
     public void testDotted() throws Exception {

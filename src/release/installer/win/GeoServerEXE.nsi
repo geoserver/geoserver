@@ -2,7 +2,7 @@
 
 ; Define your application name
 !define APPNAME "GeoServer"
-!define VERSION "2.9-SNAPSHOT"
+!define VERSION "2.10-SNAPSHOT"
 ;!define LONGVERSION "2.0.0.0"
 !define APPNAMEANDVERSION "${APPNAME} ${VERSION}"
 
@@ -53,7 +53,7 @@ Var PortHWND
 ;Version Information (Version tab for EXE properties)
 ;VIProductVersion ${LONGVERSION}
 ;VIAddVersionKey ProductName "${APPNAME}"
-;VIAddVersionKey LegalCopyright "Copyright (c) 1999 - 2011 The Open Planning Project"
+;VIAddVersionKey LegalCopyright "Copyright (c) 1999-2016 Open Source Geospatial Foundation"
 ;VIAddVersionKey FileDescription "GeoServer Installer"
 ;VIAddVersionKey ProductVersion "${VERSION}"
 ;VIAddVersionKey FileVersion "${VERSION}"
@@ -796,6 +796,8 @@ Section "Main" SectionMain
     SetOutPath "$INSTDIR\wrapper\lib"
     File /a wrapper.jar
     File /a wrapper.dll
+
+    CreateDirectory "$INSTDIR\work"
 	
     ; Install the service (and start it)
     nsExec::Exec "$INSTDIR\wrapper.exe -it ./wrapper/wrapper.conf wrapper.java.additional.4=-Djetty.port=$Port"
@@ -853,7 +855,7 @@ Section -FinishSection
   ${ElseIf} $IsManual == 1 ; manual
 
     FileOpen $9 startup.bat w ; Opens a Empty File and fills it
-    FileWrite $9 'call "$JavaHome\bin\java.exe" -DGEOSERVER_DATA_DIR="$DataDir" -Xmx512m -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Djetty.port=$Port -Djetty.logs="$INSTDIR\logs" -jar "$INSTDIR\start.jar"'
+    FileWrite $9 'call "$JavaHome\bin\java.exe" -DGEOSERVER_DATA_DIR="$DataDir" -Xmx512m -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Djetty.base="$INSTDIR" -Djetty.port=$Port -Djetty.logs="$INSTDIR\logs" -jar "$INSTDIR\start.jar"'
     FileClose $9 ; Closes the file
 
     FileOpen $9 shutdown.bat w ; Opens a Empty File and fills it

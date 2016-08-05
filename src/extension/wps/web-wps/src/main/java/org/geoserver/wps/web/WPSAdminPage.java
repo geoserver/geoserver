@@ -1,16 +1,18 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.web;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.data.store.panel.DirectoryParamPanel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -46,30 +48,36 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
 
     @Override
     protected void build(IModel info, final Form form) {
-        TextField connectionTimeout = new TextField("connectionTimeout", Integer.class);
-        connectionTimeout.add(new MinimumValidator<Integer>(-1));
+        TextField<Integer> connectionTimeout = new TextField<Integer>("connectionTimeout", Integer.class);
+        connectionTimeout.add(RangeValidator.minimum(-1));
         form.add(connectionTimeout);
         
-        TextField maxSynchProcesses = new TextField("maxSynchronousProcesses", Integer.class);
-        maxSynchProcesses.add(new MinimumValidator<Integer>(1));
+        TextField<Integer> maxSynchProcesses = new TextField<Integer>("maxSynchronousProcesses", Integer.class);
+        maxSynchProcesses.add(RangeValidator.minimum(1));
         form.add(maxSynchProcesses);
         
-        TextField maxSynchExecutionTime = new TextField("maxSynchronousExecutionTime",
-                Integer.class);
-        maxSynchExecutionTime.add(new MinimumValidator<Integer>(-1));
+        TextField<Integer> maxSynchExecutionTime = new TextField<Integer>("maxSynchronousExecutionTime", Integer.class);
+        maxSynchExecutionTime.add(RangeValidator.minimum(-1));
         form.add(maxSynchExecutionTime);
 
-        TextField maxAsynchProcesses = new TextField("maxAsynchronousProcesses", Integer.class);
-        maxAsynchProcesses.add(new MinimumValidator<Integer>(1));
+        TextField<Integer> maxSynchTotalTime = new TextField<Integer>("maxSynchronousTotalTime", Integer.class);
+        maxSynchTotalTime.add(RangeValidator.minimum(-1));
+        form.add(maxSynchTotalTime);
+
+        TextField<Integer> maxAsynchProcesses = new TextField<Integer>("maxAsynchronousProcesses", Integer.class);
+        maxAsynchProcesses.add(RangeValidator.minimum(1));
         form.add(maxAsynchProcesses);
         
-        TextField maxAsynchExecutionTime = new TextField("maxAsynchronousExecutionTime",
-                Integer.class);
-        maxAsynchExecutionTime.add(new MinimumValidator<Integer>(-1));
+        TextField<Integer> maxAsynchExecutionTime = new TextField<Integer>("maxAsynchronousExecutionTime", Integer.class);
+        maxAsynchExecutionTime.add(RangeValidator.minimum(-1));
         form.add(maxAsynchExecutionTime);
 
-        TextField resourceExpirationTimeout = new TextField("resourceExpirationTimeout", Integer.class);
-        resourceExpirationTimeout.add(new MinimumValidator<Integer>(0));
+        TextField<Integer> maxAsynchTotalTime = new TextField<Integer>("maxAsynchronousTotalTime", Integer.class);
+        maxAsynchTotalTime.add(RangeValidator.minimum(-1));
+        form.add(maxAsynchTotalTime);
+
+        TextField<Integer> resourceExpirationTimeout = new TextField<Integer>("resourceExpirationTimeout", Integer.class);
+        resourceExpirationTimeout.add(RangeValidator.minimum(0));
         form.add(resourceExpirationTimeout);
         
         // GeoServerFileChooser chooser = new GeoServerFileChooser("storageDirectory",
@@ -78,6 +86,9 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
                 new PropertyModel<String>(
                 info, "storageDirectory"), new ParamResourceModel("storageDirectory", this), false);
         form.add(chooser);
+
+        form.add(new TotalTimeValidator(maxSynchTotalTime, maxSynchExecutionTime));
+        form.add(new TotalTimeValidator(maxAsynchTotalTime, maxAsynchExecutionTime));
     }
 
     @Override
@@ -85,4 +96,36 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         super.handleSubmit(info);
     }
 
+    /**
+     * Validator that checks that the total time is greater than the execution time
+     */
+    class TotalTimeValidator extends AbstractFormValidator {
+
+        private static final long serialVersionUID = 1L;
+
+        private FormComponent<Integer> totalTime;
+        private FormComponent<Integer> executionTime;
+
+        public TotalTimeValidator(FormComponent<Integer> totalTime,
+                FormComponent<Integer> executionTime) {
+            this.totalTime = totalTime;
+            this.executionTime = executionTime;
+        }
+
+        @Override
+        public FormComponent<?>[] getDependentFormComponents() {
+            return new FormComponent[] {totalTime, executionTime};
+        }
+
+        @Override
+        public void validate(Form<?> form) {
+            if (executionTime.getConvertedInput() != null 
+             && totalTime.getConvertedInput() != null
+             && totalTime.getConvertedInput() != 0
+             && totalTime.getConvertedInput() < executionTime.getConvertedInput()) {
+                form.error(new ParamResourceModel("totalTimeError", getPage())
+                .getString());
+            }
+        }
+    }
 }

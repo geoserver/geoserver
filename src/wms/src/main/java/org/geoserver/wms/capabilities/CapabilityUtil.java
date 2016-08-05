@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -160,7 +160,7 @@ final class CapabilityUtil {
          * </pre> 
          * @param minScaleDenominator Min scale attribute (or element) name
          * @param maxScaleDenominator Max scale attribute (or element) name
-         * @param layer
+         * @param published
          * 
          * @return Max and Min denominator
          * @throws IOException 

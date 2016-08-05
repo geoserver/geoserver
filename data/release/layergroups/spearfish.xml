@@ -1,26 +1,31 @@
 <layerGroup>
   <id>LayerGroupInfoImpl--570ae188:124761b8d78:-7fab</id>
   <name>spearfish</name>
-  <layers>
-    <layer>
+  <mode>SINGLE</mode>
+  <title>Spearfish</title>
+  <abstractTxt>Spearfish City in Lawrence County, South Dakota&#xd;
+&#xd;
+The area covered by the data set is in the vicinity of Spearfish and includes a majority of the Black Hills National Forest (i.e., Mount Rushmore).</abstractTxt>
+  <publishables>
+    <published type="layer">
       <id>LayerInfoImpl--570ae188:124761b8d78:-7fb0</id>
-    </layer>
-    <layer>
+    </published>
+    <published type="layer">
       <id>LayerInfoImpl--570ae188:124761b8d78:-7fc2</id>
-    </layer>
-    <layer>
+    </published>
+    <published type="layer">
       <id>LayerInfoImpl--570ae188:124761b8d78:-7fc4</id>
-    </layer>
-    <layer>
+    </published>
+    <published type="layer">
       <id>LayerInfoImpl--570ae188:124761b8d78:-7fc6</id>
-    </layer>
-    <layer>
+    </published>
+    <published type="layer">
       <id>LayerInfoImpl--570ae188:124761b8d78:-7fca</id>
-    </layer>
-    <layer>
+    </published>
+    <published type="layer">
       <id>LayerInfoImpl--570ae188:124761b8d78:-7fc8</id>
-    </layer>
-  </layers>
+    </published>
+  </publishables>
   <styles>
     <style/>
     <style/>

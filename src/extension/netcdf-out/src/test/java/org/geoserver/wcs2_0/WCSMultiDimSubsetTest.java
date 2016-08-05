@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,7 +29,7 @@ import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValue;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest{
     private static final QName LAMBERTMOSAIC = new QName(CiteTestData.WCS_URI,"lambert",CiteTestData.WCS_PREFIX);
@@ -70,7 +70,6 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest{
     
     /**
      * Tests if we can select a single pixel value using a WCS request
-     * @throws Exception
      */
     @Test
     public void sliceLambert() throws Exception {

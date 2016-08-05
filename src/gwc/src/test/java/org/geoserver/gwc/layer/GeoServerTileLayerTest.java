@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -13,6 +13,10 @@ import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
@@ -23,7 +27,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,24 +42,37 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Keyword;
-import org.geoserver.catalog.LayerInfo;
+
+import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.impl.LegendInfoImpl;
+import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
+import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
+import org.geoserver.wms.GetLegendGraphicOutputFormat;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.capabilities.LegendSample;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -62,26 +83,28 @@ import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.conveyor.Conveyor.CacheResult;
 import org.geowebcache.conveyor.ConveyorTile;
 import org.geowebcache.filter.parameters.ParameterFilter;
-import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.io.Resource;
 import org.geowebcache.layer.ExpirationRule;
+import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.meta.LayerMetaInformation;
+import org.geowebcache.layer.meta.MetadataURL;
 import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.TileObject;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GeoServerTileLayerTest {
 
@@ -120,9 +143,13 @@ public class GeoServerTileLayerTest {
         ns.setPrefix("test");
         ns.setURI("http://goserver.org/test");
 
+        WorkspaceInfo workspaceInfo = new WorkspaceInfoImpl();
+        workspaceInfo.setName("workspace");
+
         DataStoreInfoImpl storeInfo = new DataStoreInfoImpl(null);
         storeInfo.setId("mock-store-info");
         storeInfo.setEnabled(true);
+        storeInfo.setWorkspace(workspaceInfo);
 
         FeatureTypeInfoImpl resource = new FeatureTypeInfoImpl((Catalog) null);
         resource.setStore(storeInfo);
@@ -139,6 +166,15 @@ public class GeoServerTileLayerTest {
                 DefaultGeographicCRS.WGS84));
         resource.setSRS("EPSG:4326");
         resource.setKeywords((List) Arrays.asList(new Keyword("kwd1"), new Keyword("kwd2")));
+
+        // add metadata links
+        MetadataLinkInfoImpl metadataLinkInfo = new MetadataLinkInfoImpl();
+        metadataLinkInfo.setAbout("metadata-about");
+        metadataLinkInfo.setContent("metadata-content");
+        metadataLinkInfo.setId("metadata-id");
+        metadataLinkInfo.setMetadataType("metadata-type");
+        metadataLinkInfo.setType("metadata-format");
+        resource.setMetadataLinks(Collections.singletonList(metadataLinkInfo));
 
         layerInfo = new LayerInfoImpl();
         layerInfo.setId(layerInfoId);
@@ -157,6 +193,12 @@ public class GeoServerTileLayerTest {
         alternateStyle2.setName("alternateStyle-2");
         Set<StyleInfo> alternateStyles = new HashSet<StyleInfo>(Arrays.asList(alternateStyle1,
                 alternateStyle2));
+        LegendInfo legendInfo = new LegendInfoImpl();
+        legendInfo.setWidth(150);
+        legendInfo.setHeight(200);
+        legendInfo.setFormat("image/png");
+        legendInfo.setOnlineResource("some-url                                                                                         ");
+        alternateStyle2.setLegend(legendInfo);
         layerInfo.setStyles(alternateStyles);
 
         layerGroup = new LayerGroupInfoImpl();
@@ -615,5 +657,150 @@ public class GeoServerTileLayerTest {
         layerGroupInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
         assertNull(layerGroupInfoTileLayer.getLayerInfo());
         assertNotNull(layerGroupInfoTileLayer.getLayerGroupInfo());
+    }
+
+    @Test
+    public void testGetLayerNameForGetCapabilitiesRequest() throws NoSuchFieldException, IllegalAccessException {
+        // workspace namespace
+        NamespaceInfo nameSpaceA = new NamespaceInfoImpl();
+        nameSpaceA.setPrefix("workspace-a");
+        nameSpaceA.setURI("http://goserver.org/test");
+        // create the workspace
+        WorkspaceInfo workspaceA = new WorkspaceInfoImpl();
+        workspaceA.setName("workspace-a");
+        // register the workspace in catalog
+        when(catalog.getWorkspaceByName("workspace-a")).thenReturn(workspaceA);
+        // layer resource
+        FeatureTypeInfoImpl resourceA = new FeatureTypeInfoImpl(null);
+        resourceA.setNamespace(nameSpaceA);
+        // create the layer
+        LayerInfoImpl layerA = new LayerInfoImpl();
+        layerA.setResource(resourceA);
+        layerA.setName("layer-a");
+        layerA.setId("layer-a");
+        // register the layer in catalog
+        when(catalog.getLayer("layer-a")).thenReturn(layerA);
+        // creating a layer group without workspace
+        LayerGroupInfoImpl layerGroupA = new LayerGroupInfoImpl();
+        layerGroupA.setName("random-prefix:layer-group-a");
+        layerGroupA.setId("layer-group-a");
+        layerGroupA.setLayers(Collections.singletonList(layerA));
+        // register the layer group in catalog
+        when(catalog.getLayerGroup("layer-group-a")).thenReturn(layerGroupA);
+        // creating the tiled layers
+        GeoServerTileLayer tileLayerA = new GeoServerTileLayer(layerA, defaults, gridSetBroker);
+        GeoServerTileLayer tileLayerB = new GeoServerTileLayer(layerGroupA, defaults, gridSetBroker);
+        // setting the catalog in both tile layers using reflection
+        Field catalogField = GeoServerTileLayer.class.getDeclaredField("catalog");
+        catalogField.setAccessible(true);
+        catalogField.set(tileLayerA, catalog);
+        catalogField.set(tileLayerB, catalog);
+
+        // no local workspace, no gwc operation
+        GwcServiceDispatcherCallback.GWC_OPERATION.remove();
+        assertThat(tileLayerA.getName(), is("workspace-a:layer-a"));
+        assertThat(tileLayerB.getName(), is("random-prefix:layer-group-a"));
+
+        // no local workspace, some gwc operation
+        GwcServiceDispatcherCallback.GWC_OPERATION.set("some-operation");
+        assertThat(tileLayerA.getName(), is("workspace-a:layer-a"));
+        assertThat(tileLayerB.getName(), is("random-prefix:layer-group-a"));
+
+        // no local workspace, get capabilities gwc operation
+        GwcServiceDispatcherCallback.GWC_OPERATION.set("GetCapabilities");
+        assertThat(tileLayerA.getName(), is("workspace-a:layer-a"));
+        assertThat(tileLayerB.getName(), is("random-prefix:layer-group-a"));
+
+        try {
+            // setting a local workspace (workspace-a)
+            LocalWorkspace.set(workspaceA);
+
+            // local workspace, no gwc operation
+            GwcServiceDispatcherCallback.GWC_OPERATION.remove();
+            assertThat(tileLayerA.getName(), is("workspace-a:layer-a"));
+            assertThat(tileLayerB.getName(), is("random-prefix:layer-group-a"));
+
+            // local workspace, some gwc operation
+            GwcServiceDispatcherCallback.GWC_OPERATION.set("some-operation");
+            assertThat(tileLayerA.getName(), is("workspace-a:layer-a"));
+            assertThat(tileLayerB.getName(), is("random-prefix:layer-group-a"));
+
+            // local workspace, get capabilities gwc operation
+            GwcServiceDispatcherCallback.GWC_OPERATION.set("GetCapabilities");
+            assertThat(tileLayerA.getName(), is("layer-a"));
+            assertThat(tileLayerB.getName(), is("random-prefix:layer-group-a"));
+        } finally {
+            // cleaning
+            LocalWorkspace.remove();
+        }
+    }
+
+    @Test
+    public void testGetMetadataUrlsFromLayer() throws MalformedURLException {
+        setupUrlContext();
+        // create a tile layer using a layer
+        GeoServerTileLayer tileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        List<MetadataURL> metadata = tileLayer.getMetadataURLs();
+        assertThat(metadata.size(), is(1));
+        assertThat(metadata.get(0).getType(), is("metadata-type"));
+        assertThat(metadata.get(0).getFormat(), is("metadata-format"));
+        assertThat(metadata.get(0).getUrl(), is(new URL("http://localhost:8080/geoserver/metadata-content")));
+    }
+
+    @Test
+    public void testGetMetadataUrlsFromLayerGroup() throws MalformedURLException {
+        setupUrlContext();
+        // create a tile layer using a layer group
+        GeoServerTileLayer tileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
+        List<MetadataURL> metadata = tileLayer.getMetadataURLs();
+        assertThat(metadata.size(), is(1));
+        assertThat(metadata.get(0).getType(), is("metadata-type"));
+        assertThat(metadata.get(0).getFormat(), is("metadata-format"));
+        assertThat(metadata.get(0).getUrl(), is(new URL("http://localhost:8080/geoserver/metadata-content")));
+    }
+
+    @Test
+    public void testGetLegendsLayer() throws Exception {
+        setupUrlContext();
+        LegendSample legendSample = mock(LegendSample.class);
+        when(legendSample.getLegendURLSize(any(StyleInfo.class))).thenReturn(new Dimension(120, 150));
+        WMS wms = mock(WMS.class);
+        GetLegendGraphicOutputFormat outputFormat = mock(GetLegendGraphicOutputFormat.class);
+        when(wms.getLegendGraphicOutputFormat("image/png")).thenReturn(outputFormat);
+        GeoServerTileLayer tileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker, legendSample, wms);
+        Map<String, TileLayer.LegendInfo> legendsInfo = tileLayer.getLegendsInfo();
+        assertThat(legendsInfo.size(), is(3));
+        // default_style
+        assertThat(legendsInfo.get("default_style"), notNullValue());
+        assertThat(legendsInfo.get("default_style").width, is(120));
+        assertThat(legendsInfo.get("default_style").height, is(150));
+        assertThat(legendsInfo.get("default_style").format, is("image/png"));
+        assertThat(legendsInfo.get("default_style").legendUrl, is("http://localhost:8080/geoserver/ows?service=" +
+                "WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=workspace%3AMockLayerInfoName"));
+        // alternateStyle-1
+        assertThat(legendsInfo.get("alternateStyle-1"), notNullValue());
+        assertThat(legendsInfo.get("alternateStyle-1").width, is(120));
+        assertThat(legendsInfo.get("alternateStyle-1").height, is(150));
+        assertThat(legendsInfo.get("alternateStyle-1").format, is("image/png"));
+        assertThat(legendsInfo.get("alternateStyle-1").legendUrl, is("http://localhost:8080/geoserver/ows?service" +
+                "=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=workspace%3AMockLayerInfoName&style=alternateStyle-1"));
+        // alternateStyle-2
+        assertThat(legendsInfo.get("alternateStyle-2"), notNullValue());
+        assertThat(legendsInfo.get("alternateStyle-2").width, is(150));
+        assertThat(legendsInfo.get("alternateStyle-2").height, is(200));
+        assertThat(legendsInfo.get("alternateStyle-2").format, is("image/png"));
+        assertThat(legendsInfo.get("alternateStyle-2").legendUrl.trim(), is("http://localhost:8080/geoserver/some-url"));
+    }
+
+    private void setupUrlContext() {
+        // setup request context (needed to compute the base url)
+        Request request = mock(Request.class);
+        HttpServletRequest httpRequest = mock(HttpServletRequest.class);
+        when(request.getHttpRequest()).thenReturn(httpRequest);
+        when(httpRequest.getScheme()).thenReturn("http");
+        when(httpRequest.getServerName()).thenReturn("localhost");
+        when(httpRequest.getServerPort()).thenReturn(8080);
+        when(httpRequest.getContextPath()).thenReturn("/geoserver");
+        Dispatcher.REQUEST.set(request);
     }
 }

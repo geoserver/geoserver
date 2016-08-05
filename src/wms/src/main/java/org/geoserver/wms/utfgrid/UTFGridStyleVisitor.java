@@ -146,7 +146,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
      * Returns the function return type, or {@link Object} if it could not be determined
      * 
      * @param f
-     * @return
+     *
      */
     Class getFunctionReturnType(Function f) {
         FunctionName name = f.getFunctionName();

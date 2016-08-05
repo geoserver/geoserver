@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerRoleService;

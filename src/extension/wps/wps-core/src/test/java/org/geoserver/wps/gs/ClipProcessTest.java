@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,7 +19,7 @@ import org.geotools.xml.Parser;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -59,7 +59,7 @@ public class ClipProcessTest extends WPSTestSupport {
         
         Parser p = new Parser(new WFSConfiguration());
         FeatureCollectionType fct = (FeatureCollectionType) p.parse(new ByteArrayInputStream(
-                response.getOutputStreamContent().getBytes()));
+                response.getContentAsString().getBytes()));
         FeatureCollection fc = (FeatureCollection) fct.getFeature().get(0);
 
         assertEquals(1, fc.size());

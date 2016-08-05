@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -28,13 +28,14 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 
 /**
@@ -52,7 +53,6 @@ public class AnimatorTest extends WMSTestSupport {
     /**
      * Testing FrameCatalog constructor from a generic WMS request.
      * 
-     * @throws Exception
      */
     @org.junit.Test
     public void testFrameCatalog() throws Exception {
@@ -86,7 +86,6 @@ public class AnimatorTest extends WMSTestSupport {
     /**
      * Testing FrameVisitor animation frames setup and production.
      * 
-     * @throws Exception
      */
     @org.junit.Test
     public void testFrameVisitor() throws Exception {
@@ -129,14 +128,17 @@ public class AnimatorTest extends WMSTestSupport {
         String requestURL = "wms/animate?layers=" + layerName
                 + "&aparam=fake_param&avalues=val0,val\\,1,val2\\,\\,,val3";
         
-        checkAnimatedGif(requestURL, false);
-        checkAnimatedGif(requestURL + "&format_options=gif_loop_continuously:true", true);
-        checkAnimatedGif(requestURL + "&format_options=gif_loop_continuosly:true", true);
-
+        checkAnimatedGif(requestURL, false, WMS.DISPOSAL_METHOD_DEFAULT);
+        checkAnimatedGif(requestURL + "&format_options=gif_loop_continuously:true", true, WMS.DISPOSAL_METHOD_DEFAULT);
+        checkAnimatedGif(requestURL + "&format_options=gif_loop_continuosly:true", true, WMS.DISPOSAL_METHOD_DEFAULT);
+        // check all valid disposal methods
+        for (String disposal : WMS.DISPOSAL_METHODS) {
+            checkAnimatedGif(requestURL + "&format_options=gif_disposal:" + disposal, false, disposal);
+        }
     }
 
-    private void checkAnimatedGif(String requestURL, boolean loopContinously) throws Exception,
-            IOException {
+    private void checkAnimatedGif(String requestURL, boolean loopContinously, String disposal) 
+            throws Exception, IOException {
         MockHttpServletResponse resp = getAsServletResponse(requestURL);
         
         assertEquals("image/gif", resp.getContentType());
@@ -148,10 +150,22 @@ public class AnimatorTest extends WMSTestSupport {
             assertEquals(4, reader.getNumImages(true));
 
             IIOMetadata imageMetadata = reader.getImageMetadata(0);
-            System.out.println(Arrays.toString(imageMetadata.getMetadataFormatNames()));
+            LOGGER.info(Arrays.toString(imageMetadata.getMetadataFormatNames()));
             IIOMetadataNode node = (IIOMetadataNode) imageMetadata
                     .getAsTree("javax_imageio_gif_image_1.0");
             // print("", node);
+            
+            // check the applied disposal method
+            IIOMetadataNode nodeGCE = (IIOMetadataNode) 
+                    node.getElementsByTagName("GraphicControlExtension").item(0);
+            // assign the proper specified value for the disposal method option
+            if(disposal == "backgroundColor") {
+                disposal = "restoreToBackgroundColor";
+            } else if(disposal == "previous") {
+                disposal = "restoreToPrevious";
+            }
+            assertEquals(disposal, nodeGCE.getAttribute("disposalMethod").toString());
+
             NodeList nodes = node.getElementsByTagName("ApplicationExtensions");
             node = (IIOMetadataNode) nodes.item(0);
             nodes = node.getElementsByTagName("ApplicationExtension");

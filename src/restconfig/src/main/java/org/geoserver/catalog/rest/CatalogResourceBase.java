@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -172,10 +172,14 @@ public abstract class CatalogResourceBase extends ReflectiveResource {
         String calculate = form.getFirstValue("recalculate", true);
         List<String> fieldsToCalculate;
         if (calculate == null) {
-            boolean changedProjection = message.getSRS() != null;
-            boolean changedProjectionPolicy = message.getProjectionPolicy() != null;
-            boolean changedNativeBounds = message.getNativeBoundingBox() != null;
-            boolean changedLatLonBounds = message.getLatLonBoundingBox() != null;
+            boolean changedProjection = message.getSRS() == null || 
+                    !message.getSRS().equals(resource.getSRS());
+            boolean changedProjectionPolicy = message.getProjectionPolicy() == null || 
+                    !message.getProjectionPolicy().equals(resource.getProjectionPolicy());
+            boolean changedNativeBounds = message.getNativeBoundingBox() == null || 
+                    !message.getNativeBoundingBox().equals(resource.getNativeBoundingBox());
+            boolean changedLatLonBounds = message.getLatLonBoundingBox() == null || 
+                    !message.getLatLonBoundingBox().equals(resource.getLatLonBoundingBox());
             boolean changedNativeInterpretation = changedProjectionPolicy || changedProjection;
             fieldsToCalculate = new ArrayList<String>();
             if (changedNativeInterpretation && !changedNativeBounds) {
@@ -191,21 +195,21 @@ public abstract class CatalogResourceBase extends ReflectiveResource {
         if (fieldsToCalculate.contains("nativebbox")) {
             CatalogBuilder builder = new CatalogBuilder(catalog);
             try {
-                resource.setNativeBoundingBox(builder.getNativeBounds(resource));
+                message.setNativeBoundingBox(builder.getNativeBounds(message));
             } catch (IOException e) {
-                String errorMessage = "Error while calculating native bounds for layer: " + resource;
+                String errorMessage = "Error while calculating native bounds for layer: " + message;
                 throw new RestletException(errorMessage, Status.SERVER_ERROR_INTERNAL, e);
             }
         }
         if (fieldsToCalculate.contains("latlonbbox")) {
             CatalogBuilder builder = new CatalogBuilder(catalog);
             try {
-                resource.setLatLonBoundingBox(builder.getLatLonBounds(
-                        resource.getNativeBoundingBox(),
-                        resolveCRS(resource.getSRS())));
+                message.setLatLonBoundingBox(builder.getLatLonBounds(
+                        message.getNativeBoundingBox(),
+                        resolveCRS(message.getSRS())));
             } catch (IOException e) {
                 String errorMessage =
-                        "Error while calculating lat/lon bounds for featuretype: " + resource;
+                        "Error while calculating lat/lon bounds for featuretype: " + message;
                 throw new RestletException(errorMessage, Status.SERVER_ERROR_INTERNAL, e);
             }
         }

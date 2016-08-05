@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,19 +15,22 @@ public class ContactPanel extends Panel {
     public ContactPanel(String id, final IModel<ContactInfo> model) {
         super(id, model);
 
-        add(new TextField("contactPerson" ));
-        add(new TextField("contactOrganization"));
-        add(new TextField("contactPosition"));
-        add(new TextField("addressType"));
-        add(new TextField("address")); 
-        add(new TextField("addressDeliveryPoint"));
-        add(new TextField("addressCity"));
-        add(new TextField("addressState")); 
-        add(new TextField("addressPostalCode"));
-        add(new TextField("addressCountry"));
-        add(new TextField("addressElectronicMailAddress"));
-        add(new TextField("contactVoice"));
-        add(new TextField("contactFacsimile"));
-        add(new TextField("contactEmail"));
+        add(new TextField<String>("contactPerson" ));
+        add(new TextField<String>("contactOrganization"));
+        add(new TextField<String>("contactPosition"));
+        // address
+        add(new TextField<String>("addressType"));
+        add(new TextField<String>("address")); 
+        add(new TextField<String>("addressDeliveryPoint"));
+        add(new TextField<String>("addressCity"));
+        add(new TextField<String>("addressState")); 
+        add(new TextField<String>("addressPostalCode"));
+        add(new TextField<String>("addressCountry"));
+        add(new TextField<String>("addressElectronicMailAddress"));
+        // phone
+        add(new TextField<String>("contactVoice"));
+        add(new TextField<String>("contactFacsimile"));
+        // email
+        add(new TextField<String>("contactEmail"));
     }
 }

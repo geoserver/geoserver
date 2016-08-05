@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -31,8 +31,8 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetFeatureTest extends WFSTestSupport {
 	
@@ -65,16 +65,17 @@ public class GetFeatureTest extends WFSTestSupport {
         String contentType = "application/x-www-form-urlencoded; charset=UTF-8";
         String body = "request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs";
         MockHttpServletRequest request = createRequest("wfs");
-        request.setBodyContent(body);
+        request.setMethod("POST");
+        request.setContent(body.getBytes("UTF-8"));
         // this is normally done by the servlet container, but the mock system won't do it
-        request.setupAddParameter("request", "GetFeature");
-        request.setupAddParameter("typename", "cdf:Fifteen");
-        request.setupAddParameter("version", "1.0.0");
-        request.setupAddParameter("service", "wfs");
+        request.addParameter("request", "GetFeature");
+        request.addParameter("typename", "cdf:Fifteen");
+        request.addParameter("version", "1.0.0");
+        request.addParameter("service", "wfs");
         request.setContentType(contentType);
         MockHttpServletResponse response = dispatch(request);
         try (ByteArrayInputStream bis = new ByteArrayInputStream(
-                response.getOutputStreamContent().getBytes())) {
+                response.getContentAsByteArray())) {
             Document doc = dom(bis);
             assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
@@ -378,7 +379,6 @@ public class GetFeatureTest extends WFSTestSupport {
     /**
      * Tests CQL filter
      * 
-     * @throws Exception
      */
     @Test
     public void testCQLFilter() throws Exception {

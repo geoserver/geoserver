@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -32,7 +32,9 @@ import org.geowebcache.diskquota.storage.StorageUnit;
 
 public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
 
-    public DiskQuotaSettingsPage() throws Exception {
+        private static final long serialVersionUID = 75816375328629448L;
+
+	public DiskQuotaSettingsPage() throws Exception {
         GWC gwc = getGWC();
 
         final boolean diskQuotaModuleDisabled = gwc.getDiskQuotaConfig() == null;
@@ -123,7 +125,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
                     
                     dqConfig.getGlobalQuota().setValue(chosenQuota.doubleValue(), chosenUnit);
                     try {
-                        gwc.saveDiskQuotaConfig(dqConfig, jdbcConfig);
+                        gwc.saveDiskQuotaConfig(dqConfig, jdbcConfig.clone(false));
                     } catch(Exception e) {
                         LOGGER.log(Level.SEVERE, "Failed to save the JDBC configuration", e);
                         error("Failure occurred while saving the JDBC configuration" 
@@ -139,7 +141,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
                 doReturn();
             }
 
@@ -159,14 +161,14 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
 
     private GWC getGWC() {
         final GWC gwc = (GWC) getGeoServerApplication().getBean("gwcFacade");
+        gwc.syncEnv();
         return gwc;
     }
 
     static CheckBox checkbox(String id, IModel<Boolean> model, String titleKey) {
         CheckBox checkBox = new CheckBox(id, model);
         if (null != titleKey) {
-            AttributeModifier attributeModifier = new AttributeModifier("title", true,
-                    new StringResourceModel(titleKey, (Component) null, null));
+            AttributeModifier attributeModifier = new AttributeModifier("title", new StringResourceModel(titleKey, (Component) null, null));
             checkBox.add(attributeModifier);
         }
         return checkBox;

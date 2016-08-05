@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 
 /**
@@ -24,18 +25,18 @@ public class DatabaseUtil {
     public final static String NEWLINE = System.getProperty("line.separator");
 
     /**
+     * Split input stream into a list of sql statements.
+     * <p>
      * there are a number of limitation when using this method. Firstly each separate query in a
      * script must be on a new line so that ";" at the end of the string can be used as a delimiter.
      * Secondly, escape character for $$ $_$ "'" have not been taken into consideration. This will
      * cause an issue if any of the operators are used in string eg 'the $quick brown' We have
      * catered to scenarios for multiple $ quoting on single/multi line.
-     * 
-     * @param f
-     * @return
-     * @throws Exception
+     * </p>
+     * @param inputStream sql statements
+     * @return list of SQL statements
      */
-
-    public ArrayList<String> splitPostgisSQLScript(InputStream inputStream) throws Exception {
+    public List<String> splitPostgisSQLScript(InputStream inputStream) throws Exception {
 
         StringBuilder contents = new StringBuilder();
 
@@ -102,6 +103,20 @@ public class DatabaseUtil {
             idx += sub.length();
         }
         return count;
+    }
+
+    /**
+     * Return a list of SQL statements as a single string including a newline after each statement.
+     * 
+     * @param sqls list of SQL statements
+     * @return string of statements with newline after each
+     */
+    public String rebuildAsSingle(List<String> sqls) {
+        StringBuilder sb = new StringBuilder();
+        for (String sql : sqls) {
+            sb.append(sql).append("\n");
+        }
+        return sb.toString();
     }
 
     /**
@@ -195,12 +210,10 @@ public class DatabaseUtil {
     /**
      * Splits the oracle sql script file into individual statements.
      * 
-     * @param f
-     *            - The oracle sql script
-     * @return - the list of sql statement
-     * @throws Exception
+     * @param inputStream The oracle sql script
+     * @returnlist of sql statements
      */
-    public ArrayList<String> splitOracleSQLScript(InputStream inputStream) throws Exception {
+    public List<String> splitOracleSQLScript(InputStream inputStream) throws Exception {
 
         StringBuilder contents = new StringBuilder();
 

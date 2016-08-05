@@ -79,7 +79,6 @@ public class LDAPTestUtils {
      * Shuts down the embedded server, if there is one. If no server was previously started in this JVM
      * this is silently ignored.
      *
-     * @throws Exception
      * @since 1.3.2
      */
     public static void shutdownEmbeddedServer() throws Exception {
@@ -95,7 +94,6 @@ public class LDAPTestUtils {
      * 
      * @param allowAnonymous
      *            anonymous access is allowed or not
-     * @throws Exception
      */
     public static boolean initLdapServer(boolean allowAnonymous, String ldapServerUrl, String basePath) throws Exception {
         return initLdapServer(allowAnonymous, ldapServerUrl, basePath, "data.ldif");
@@ -106,7 +104,6 @@ public class LDAPTestUtils {
      * 
      * @param allowAnonymous
      *            anonymous access is allowed or not
-     * @throws Exception
      */
     public static boolean initLdapServer(boolean allowAnonymous, String ldapServerUrl, String basePath, String ldifPath) throws Exception {
         try {
@@ -141,7 +138,7 @@ public class LDAPTestUtils {
      * 
      * @param host
      * @param port
-     * @return
+     *
      */
     private static boolean portIsBusy(String host, int port) {
         ServerSocket ss = null;

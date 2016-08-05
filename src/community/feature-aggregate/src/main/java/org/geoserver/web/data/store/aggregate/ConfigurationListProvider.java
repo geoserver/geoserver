@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -22,8 +22,12 @@ class ConfigurationListProvider extends GeoServerDataProvider<AggregateTypeConfi
     public static Property<AggregateTypeConfiguration> SOURCES = new AbstractProperty<AggregateTypeConfiguration>(
             "sources") {
 
-        public IModel getModel(final IModel itemModel) {
-            return new IModel() {
+        private static final long serialVersionUID = 8445881898430736063L;
+
+        public IModel<?> getModel(final IModel<AggregateTypeConfiguration> itemModel) {
+            return new IModel<String>() {
+
+                private static final long serialVersionUID = -1612531825990914783L;
 
                 @Override
                 public void detach() {
@@ -31,19 +35,19 @@ class ConfigurationListProvider extends GeoServerDataProvider<AggregateTypeConfi
                 }
 
                 @Override
-                public Object getObject() {
-                    return getPropertyValue((AggregateTypeConfiguration) itemModel.getObject());
+                public String getObject() {
+                    return getPropertyValue(itemModel.getObject());
                 }
 
                 @Override
-                public void setObject(Object object) {
+                public void setObject(String object) {
                     // read only                    
                 }
             };
         };
         
         @Override
-        public Object getPropertyValue(AggregateTypeConfiguration item) {
+        public String getPropertyValue(AggregateTypeConfiguration item) {
             if (item.getSourceTypes() == null || item.getSourceTypes().size() == 0) {
                 return "";
             } else {
@@ -53,7 +57,7 @@ class ConfigurationListProvider extends GeoServerDataProvider<AggregateTypeConfi
                     sb.append(", ");
                 }
                 sb.setLength(sb.length() - 2);
-                return sb;
+                return sb.toString();
             }
         }
     };
@@ -61,7 +65,7 @@ class ConfigurationListProvider extends GeoServerDataProvider<AggregateTypeConfi
     public static Property<AggregateTypeConfiguration> REMOVE = 
         new PropertyPlaceholder<AggregateTypeConfiguration>( "remove" );
 
-    static List PROPERTIES = Arrays.asList(NAME, SOURCES, REMOVE);
+    static List<org.geoserver.web.wicket.GeoServerDataProvider.Property<AggregateTypeConfiguration>> PROPERTIES = Arrays.asList(NAME, SOURCES, REMOVE);
 
     List<AggregateTypeConfiguration> items;
 

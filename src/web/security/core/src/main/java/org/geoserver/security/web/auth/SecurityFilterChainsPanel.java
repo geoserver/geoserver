@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
@@ -90,7 +90,7 @@ public class SecurityFilterChainsPanel
 //            @Override
 //            protected void onSelectionUpdate(AjaxRequestTarget target) {
 //                if (isAdmin) {
-//                    target.addComponent(removeLink.setEnabled(!getSelection().isEmpty()));
+//                    target.add(removeLink.setEnabled(!getSelection().isEmpty()));
 //                }
 //            }
         });
@@ -121,7 +121,7 @@ public class SecurityFilterChainsPanel
         Serializable msg = null;
         if (e instanceof SecurityConfigException) {
             SecurityConfigException sce = (SecurityConfigException)e;
-            msg = new StringResourceModel("security."+sce.getId(),null,sce.getArgs()).getObject();
+            msg = new StringResourceModel("security."+sce.getId()).setParameters(sce.getArgs()).getObject();
         }
         else {
             msg = e;
@@ -174,7 +174,7 @@ public class SecurityFilterChainsPanel
         }
 
         @Override
-        protected Component getComponentForProperty(String id, IModel itemModel,
+        protected Component getComponentForProperty(String id, IModel<RequestFilterChain> itemModel,
                 Property<RequestFilterChain> property) {
             
             if (property == NAME) {
@@ -204,24 +204,24 @@ public class SecurityFilterChainsPanel
         final RequestFilterChain chain = (RequestFilterChain) itemModel.getObject();
         
         if (chain.canBeRemoved()==false) {
-            ImageAjaxLink blankLink = new ImageAjaxLink( id, new ResourceReference( getClass(), "../img/icons/blank.png") ) {
+            ImageAjaxLink blankLink = new ImageAjaxLink( id, new PackageResourceReference( getClass(), "../img/icons/blank.png") ) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                 }
             };
-            blankLink.getImage().add(new AttributeModifier("alt", true, new Model("")));
+            blankLink.getImage().add(new AttributeModifier("alt", new Model("")));
             add(blankLink);
             return blankLink;
         }
         
-        ImageAjaxLink link = new ImageAjaxLink( id, new ResourceReference( getClass(), "../img/icons/silk/delete.png") ) {
+        ImageAjaxLink link = new ImageAjaxLink( id, new PackageResourceReference( getClass(), "../img/icons/silk/delete.png") ) {
             @Override
             protected void onClick(AjaxRequestTarget target) {                
                 secMgrConfig.getFilterChain().getRequestChains().remove( chain );
-                target.addComponent( tablePanel );
+                target.add( tablePanel );
             }
         };
-        link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
+        link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
         return link;
     }
 
@@ -246,16 +246,16 @@ public class SecurityFilterChainsPanel
             this.theChain = chain;
             this.setOutputMarkupId(true);
             
-            upLink = new ImageAjaxLink( "up", new ResourceReference( getClass(), "../img/icons/silk/arrow_up.png") ) {                                                                                       
+            upLink = new ImageAjaxLink( "up", new PackageResourceReference( getClass(), "../img/icons/silk/arrow_up.png") ) {                                                                                       
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     int index = getChains().indexOf( PositionPanel.this.theChain );
                     getChains().remove( index );
                     getChains().add(Math.max(0, index - 1), PositionPanel.this.theChain);
-                    target.addComponent( tablePanel );
-                    target.addComponent(this);
-                    target.addComponent(downLink);   
-                    target.addComponent(upLink);                    
+                    target.add( tablePanel );
+                    target.add(this);
+                    target.add(downLink);   
+                    target.add(upLink);                    
                 }
                 
                 @Override
@@ -267,20 +267,20 @@ public class SecurityFilterChainsPanel
                     }
                 }
             };
-            upLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("SecurityFilterChainsPanel.th.up", upLink)));
+            upLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("SecurityFilterChainsPanel.th.up", upLink)));
             upLink.setOutputMarkupId(true);
             add( upLink);            
 
-            downLink = new ImageAjaxLink( "down", new ResourceReference( getClass(), "../img/icons/silk/arrow_down.png") ) {
+            downLink = new ImageAjaxLink( "down", new PackageResourceReference( getClass(), "../img/icons/silk/arrow_down.png") ) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                     int index = getChains().indexOf( PositionPanel.this.theChain );
                     getChains().remove( index );
                     getChains().add(Math.min(getChains().size(), index + 1), PositionPanel.this.theChain);
-                    target.addComponent( tablePanel );
-                    target.addComponent(this);                    
-                    target.addComponent(downLink);   
-                    target.addComponent(upLink);                    
+                    target.add( tablePanel );
+                    target.add(this);                    
+                    target.add(downLink);   
+                    target.add(upLink);                    
                 }
                 
                 @Override
@@ -292,7 +292,7 @@ public class SecurityFilterChainsPanel
                     }
                 }
             };
-            downLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("SecurityFilterChainsPanel.th.down", downLink)));
+            downLink.getImage().add(new AttributeModifier("alt", new ParamResourceModel("SecurityFilterChainsPanel.th.down", downLink)));
             downLink.setOutputMarkupId(true);
             add( downLink);
         }

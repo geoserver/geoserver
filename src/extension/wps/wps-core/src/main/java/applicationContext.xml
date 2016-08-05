@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (C) 2014 - 2015 - Open Source Geospatial Foundation. All rights reserved.
+ Copyright (C) 2014 - 2016 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-
+    <bean class="org.geoserver.platform.ModuleStatusImpl">
+      <constructor-arg index="0" value="gs-wps-core"/>
+      <constructor-arg index="1" value="GeoServer Web Processing Service Core"/>
+    </bean>
 	<bean id="wpsFactoryExtension" class="org.geoserver.wps.WPSFactoryExtension"/>
 	
     <!-- depend on the process factory so we can properly initialize the WPSInfo object with the 
@@ -187,7 +190,8 @@
     <bean id="rawDataPPIO" class="org.geoserver.wps.ppio.RawDataPPIO">
       <constructor-arg ref="wpsResourceManager" />
     </bean>
-    
+    <bean id="classificationStatsPPIO" class="org.geoserver.wps.gs.ClassificationStatsPPIO"/>
+
     <!-- Register the GeoServer factory and processes -->
     <bean id="geoserverProcessFactory" class="org.geoserver.wps.jts.SpringBeanProcessFactory">
       <constructor-arg index="0" value="GeoServer specific processes"/>
@@ -203,11 +207,12 @@
     <bean id="pagedUniquePPIO" class="org.geoserver.wps.gs.PagedUniqueProcessPPIO"/>
 
     <bean id="aggregateProcessResultPPIO" class="org.geoserver.wps.gs.AggregateProcessPPIO"/>
+    <bean id="aggregateProcessResultJSONPPIO" class="org.geoserver.wps.gs.AggregateProcessJSONPPIO"/>
 
     <bean id="storeCoverageProcess" class="org.geoserver.wps.gs.StoreCoverage" >
       <constructor-arg index="0" ref="wpsResourceManager"></constructor-arg>
     </bean>
-    
+
     <bean id="georectifyConfiguration" class="org.geoserver.wps.gs.GeorectifyConfiguration" /> 
     <bean id="georectifyCoverage" class="org.geoserver.wps.gs.GeorectifyCoverage">
     	<property name="config" ref="georectifyConfiguration" /> 
@@ -250,21 +255,21 @@
   
     <!-- Definition of how often the scheduled task runs -->
     <bean id="wpsStorageCleanerTask"
-      class="org.springframework.scheduling.timer.ScheduledTimerTask">
+      class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
       <!-- wait 10 seconds before starting repeated execution -->
       <property name="delay" value="10000" />
       <!-- run every 60 seconds -->
       <property name="period" value="60000" />
-      <property name="timerTask" ref="wpsStorageCleaner" />
+      <property name="runnable" ref="wpsStorageCleaner" />
     </bean>
   
     <!--
       And finally the class that instantiates the scheduled tasks and
       makes them run
     -->
-    <bean id="wpstimerFactory" class="org.springframework.scheduling.timer.TimerFactoryBean"
+    <bean id="wpstimerFactory" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean"
       lazy-init="false">
-      <property name="scheduledTimerTasks">
+      <property name="scheduledExecutorTasks">
         <list>
           <ref bean="wpsStorageCleanerTask" />
         </list>

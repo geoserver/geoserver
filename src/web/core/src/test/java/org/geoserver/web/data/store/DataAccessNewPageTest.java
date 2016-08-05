@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -82,7 +82,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
 
         WorkspaceInfo defaultWs = getCatalog().getDefaultWorkspace();
 
-        tester.assertModelValue("dataStoreForm:workspacePanel:border:paramValue", defaultWs);
+        tester.assertModelValue("dataStoreForm:workspacePanel:border:border_body:paramValue", defaultWs);
 
         WorkspaceInfo anotherWs = getCatalog().getFactory().createWorkspace();
         anotherWs.setName("anotherWs");
@@ -92,7 +92,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
         anotherWs = getCatalog().getDefaultWorkspace();
 
         startPage();
-        tester.assertModelValue("dataStoreForm:workspacePanel:border:paramValue", anotherWs);
+        tester.assertModelValue("dataStoreForm:workspacePanel:border:border_body:paramValue", anotherWs);
 
     }
 
@@ -100,7 +100,7 @@ public class DataAccessNewPageTest extends GeoServerWicketTestSupport {
     public void testDefaultNamespace() {
 
         // final String namespacePath =
-        // "dataStoreForm:parameters:1:parameterPanel:border:paramValue";
+        // "dataStoreForm:parameters:1:parameterPanel:border:border_body:paramValue";
         final String namespacePath = "dataStoreForm:parametersPanel:parameters:1:parameterPanel:paramValue";
 
         startPage();

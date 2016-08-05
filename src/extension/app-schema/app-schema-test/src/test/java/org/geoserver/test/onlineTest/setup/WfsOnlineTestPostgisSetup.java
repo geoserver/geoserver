@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,8 +6,9 @@
 package org.geoserver.test.onlineTest.setup;
 
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 import org.geoserver.test.onlineTest.support.DatabaseUtil;
 import org.geotools.data.postgis.PostgisNGDataStoreFactory;
@@ -39,12 +40,10 @@ public class WfsOnlineTestPostgisSetup extends AbstractReferenceDataSetup {
 
     private void runSqlInsertScript() throws Exception {
         DatabaseUtil du = new DatabaseUtil();
-        ArrayList<String> sqls = du.splitPostgisSQLScript(script);
-        for (String sql : sqls) {
-            this.run(sql);
-        }
-        this.setDataVersion(this.scriptVersion);
-
+        List<String> sqls = du.splitPostgisSQLScript(script);
+        sqls.add("set search_path = public;");
+        run(du.rebuildAsSingle(sqls));
+        setDataVersion(scriptVersion);
     }
 
     // these private helper class might be useful in the future. feel free to change its access

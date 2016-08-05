@@ -46,8 +46,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DirectDownloadTest extends GeoServerSystemTestSupport {
 
@@ -120,6 +120,7 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetRecordWithDirectDownloadLink() throws Exception {
         Document dom = getAsDOM(GET_RECORD_REQUEST);
+        print(dom);
 
         // check we have the expected results
         assertXpathEvaluatesTo("1", "count(//csw:Record/dc:identifier)", dom);
@@ -153,7 +154,7 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
 
             String baseLink = DownloadLinkHandler.LINK;
             MockHttpServletRequest request = createRequest(baseLink);
-            baseLink = request.getRequestURL().toString();
+            baseLink = request.getRequestURL() + "?" + request.getQueryString();
             baseLink = baseLink.replace("${nameSpace}", coverageInfo.getNamespace().getName())
                     .replace("${layerName}", coverageInfo.getName()).replace("${version}", "2.0.2");
 
@@ -211,7 +212,7 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse response = getAsServletResponse(downloadLink);
         assertEquals("application/xml", response.getContentType());
 
-        Document domResponse = dom(new ByteArrayInputStream(response.getOutputStreamContent()
+        Document domResponse = dom(new ByteArrayInputStream(response.getContentAsString()
                 .getBytes()));
         Element root = domResponse.getDocumentElement();
         assertEquals("ows:ExceptionReport", root.getNodeName());

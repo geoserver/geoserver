@@ -121,7 +121,7 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
     /**
      * Get the ParameterFilter with the specified key
      * @param key
-     * @return
+     *
      */
     public abstract ParameterFilter getParameterFilter(String key);
 

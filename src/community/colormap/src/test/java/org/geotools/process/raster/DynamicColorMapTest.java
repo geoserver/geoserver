@@ -1,39 +1,44 @@
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geotools.process.raster;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import it.geosolutions.imageio.utilities.ImageIOUtilities;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
+import static org.geotools.process.raster.FilterFunction_svgColorMap.MAX_PALETTE_COLORS;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
+import javax.xml.namespace.QName;
+import javax.xml.transform.TransformerException;
+
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.security.AccessMode;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.ColorMap;
 import org.geotools.styling.ColorMapEntry;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.geotools.styling.SLDTransformer;
+import org.geotools.util.NumberRange;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
+import org.opengis.filter.FilterFactory;
+import org.opengis.filter.expression.Function;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import it.geosolutions.imageio.utilities.ImageIOUtilities;
 
 public class DynamicColorMapTest extends GeoServerSystemTestSupport {
 
@@ -43,18 +48,13 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
 
     GetMapKvpRequestReader requestReader;
 
-    protected static Catalog catalog;
     protected static XpathEngine xp;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        //addUser("admin", "geoxserver", null, Arrays.asList("ROLE_ADMINISTRATOR"));
-        addLayerAccessRule("*", "*", AccessMode.READ, "*");
-        addLayerAccessRule("*", "*", AccessMode.WRITE, "*");
-
-        catalog = getCatalog();
+        Catalog catalog = getCatalog();
 
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("html", "http://www.w3.org/1999/xhtml");
@@ -64,73 +64,25 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xp = XMLUnit.newXpathEngine();
-
-        URL zip = getClass().getResource("test-data/watertemp_dynamic.zip");
-        InputStream is = null;
-        byte[] bytes;
-        try {
-            is = zip.openStream();
-            bytes = IOUtils.toByteArray(is);
-        } finally {
-            IOUtils.closeQuietly(is);
-        }
-
-        URL style = getClass().getResource("test-data/style_rgb.sld");
         
-        GeoServerResourceLoader loader = catalog.getResourceLoader();
-        final String dataDir = loader.getBaseDirectory().getAbsolutePath();
-        try {
-            is = style.openStream();
-            org.geoserver.data.util.IOUtils.copy(is, new File(dataDir + "/styles/style_rgb.sld"));
-        } finally {
-            IOUtils.closeQuietly(is);
-        }
+        testData.addStyle("style_rgb","test-data/style_rgb.sld",DynamicColorMapTest.class, catalog);
+        Map<LayerProperty, Object> properties = new HashMap<>();
+        properties.put(LayerProperty.STYLE, "style_rgb");
+        testData.addRasterLayer(new QName(MockData.DEFAULT_URI, "watertemp_dynamic", MockData.DEFAULT_PREFIX),
+                "test-data/watertemp_dynamic.zip",null, properties, DynamicColorMapTest.class, catalog);
 
-        // Check if the gs workspace exists
-        WorkspaceInfo ws = catalog.getWorkspaceByName("gs");
-        if (ws==null){
-            throw new IllegalArgumentException("Workspace not present");
-        }
-
-        MockHttpServletResponse response = putAsServletResponse(
-                "rest/workspaces/gs/coveragestores/watertemp_dynamic/file.imagemosaic", bytes,
-                "application/zip");
-        assertEquals(201, response.getStatusCode());
-        
-        // Configuring read as immediate instead of using JAI
-//        LayerInfo layer = catalog.getLayerByName("watertemp_dynamic");
-//        MetadataMap metadata = layer.getMetadata();
-//        Map<String, Serializable> map = metadata.getMap();
-//        String xml = 
-//                "<coverage>" +
-//                  "<name>watertemp_dynamic</name>" +
-//                  " <parameters> <entry>" + 
-//      " <string>USE_JAI_IMAGEREAD</string> " +
-//      " <string>true</string>" +
-//    " </entry> "+
-//    " </parameters>" + 
-//                "</coverage>";
-//            MockHttpServletResponse responseUpdate =
-//                putAsServletResponse("rest/workspaces/gs/coveragestores/watertemp_dynamic/coverages/watertemp_dynamic", xml, "text/xml");
-//            assertEquals(200, responseUpdate.getStatusCode());
-    }
-
-    protected final void setUpUsers(Properties props) {
-    }
-
-    protected final void setUpLayerRoles(Properties properties) {
-    }
-
-    @Before
-    @Ignore
-    public void login() throws Exception {
-        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+        // setup manual statistics
+        CoverageInfo coverage = getCatalog().getCoverageByName("watertemp_dynamic");
+        CoverageDimensionInfo di = coverage.getDimensions().get(0);
+        di.setRange(new NumberRange<Double>(Double.class, 0., 0.5));
+        getCatalog().save(coverage);
     }
 
     @Test
     public void testGridCoverageStats() throws Exception {
        
         // check the coverage is actually there
+        Catalog catalog = getCatalog();
         CoverageStoreInfo storeInfo = catalog.getCoverageStoreByName(COVERAGE_NAME);
         assertNotNull(storeInfo);
         CoverageInfo ci = catalog.getCoverageByName(COVERAGE_NAME);
@@ -147,46 +99,180 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
         assertEquals(min, 13.1369, TOLERANCE);
         assertEquals(max, 20.665, TOLERANCE);
         ImageIOUtilities.disposeImage(gridCoverage.getRenderedImage());
-        MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/gs/coveragestores/watertemp_dynamic?recurse=true");
-        assertEquals(200, response.getStatusCode());
+    }
+    
+    @Test
+    public void testGridBandStats() throws Exception {
+        // check the coverage is actually there
+        Catalog catalog = getCatalog();
+        CoverageStoreInfo storeInfo = catalog.getCoverageStoreByName(COVERAGE_NAME);
+        assertNotNull(storeInfo);
+        CoverageInfo ci = catalog.getCoverageByName(COVERAGE_NAME);
+        assertNotNull(ci);
+        assertEquals(storeInfo, ci.getStore());
+
+        // Test on the GridCoverageStats
+        final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        Function minStat = ff.function("bandStats", ff.literal(0), ff.literal("minimum"));
+        Function maxStat = ff.function("bandStats", ff.literal(0), ff.literal("maximum"));
+
+        GridCoverageReader reader = ci.getGridCoverageReader(null, null);
+        GridCoverage2D gridCoverage = (GridCoverage2D) reader.read(null);
+        double min = (Double) minStat.evaluate(gridCoverage);
+        double max = (Double) maxStat.evaluate(gridCoverage);
+        assertEquals(min, 0, TOLERANCE);
+        assertEquals(max, 0.5, TOLERANCE);
+        ImageIOUtilities.disposeImage(gridCoverage.getRenderedImage());
     }
 
     @Test
     public void testSvgColorMapFilterFunctionRGB() throws Exception {
         final FilterFunction_svgColorMap func = new FilterFunction_svgColorMap();
-        final ColorMap colorMap = (ColorMap) func.evaluate("rgb(0,0,255);rgb(0,255,0);rgb(255,0,0)", 10, 100);
+        final ColorMap colorMap = (ColorMap) func.evaluate("rgb(0,0,255);rgb(0,255,0);rgb(255,0,0)", 10, 100, null, null, false, MAX_PALETTE_COLORS);
         final ColorMapEntry[] entries = colorMap.getColorMapEntries();
 
         check(entries);
-      }
+    }
 
     @Test
     public void testSvgColorMapFilterFunctionHEX() throws Exception {
         final FilterFunction_svgColorMap func = new FilterFunction_svgColorMap();
-        final ColorMap colorMap = (ColorMap) func.evaluate("#0000FF;#00FF00;#FF0000", 10, 100);
+        final ColorMap colorMap = (ColorMap) func.evaluate("#0000FF;#00FF00;#FF0000", 10, 100, null, null, false, MAX_PALETTE_COLORS);
         final ColorMapEntry[] entries = colorMap.getColorMapEntries();
 
         check(entries);
-      }
+    }
 
     private void check(ColorMapEntry[] entries) {
         assertEquals(5, entries.length);
-        assertEquals(9.99, Double.parseDouble(entries[0].getQuantity().toString()),TOLERANCE);
-        assertEquals(10.0, Double.parseDouble(entries[1].getQuantity().toString()),TOLERANCE);
-        assertEquals(55.0, Double.parseDouble(entries[2].getQuantity().toString()),TOLERANCE);
-        assertEquals(100.0, Double.parseDouble(entries[3].getQuantity().toString()),TOLERANCE);
-        assertEquals(100.01, Double.parseDouble(entries[4].getQuantity().toString()),TOLERANCE);
 
-        assertEquals("#FF", entries[0].getColor().toString().toUpperCase());
-        assertEquals("#FF", entries[1].getColor().toString().toUpperCase());
-        assertEquals("#FF00", entries[2].getColor().toString().toUpperCase());
-        assertEquals("#FF0000", entries[3].getColor().toString().toUpperCase());
-        assertEquals("#FF0000", entries[4].getColor().toString().toUpperCase());
+        assertColorMapEntry(entries[0], "#000000", 0.0, 10d);
+        assertColorMapEntry(entries[1], "#0000FF", 1.0, 10d);
+        assertColorMapEntry(entries[2], "#00FF00", 1.0, 55d);
+        assertColorMapEntry(entries[3], "#FF0000", 1.0, 100d);
+        assertColorMapEntry(entries[4], "#000000", 0.0, 100d);
+    }
+    
+    @Test
+    public void testSvgColorMapFilterFunctionRGBWithExpression() throws Exception {
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
+        checkFunction(ff.function("colormap", ff.literal("rgb(0,0,255);rgb(0,255,0);rgb(255,0,0)"), 
+                ff.literal(10), ff.literal(100)));
+        checkFunction(ff.function("colormap", ff.literal("rgb(0,0,255);rgb(0,255,0);rgb(255,0,0)"), 
+                ff.literal(10), ff.literal(100), ff.literal(null), ff.literal(null), ff.literal("false"), 
+                ff.literal(MAX_PALETTE_COLORS)));
+    }
+    
+    private void checkFunction(Function colorMapFunction) {
+        ColorMap colorMap = (ColorMap) colorMapFunction.evaluate(null);
+        final ColorMapEntry[] entries = colorMap.getColorMapEntries();
 
-        assertEquals(0.0, Double.parseDouble(entries[0].getOpacity().toString()), TOLERANCE);
-        assertEquals(1.0, Double.parseDouble(entries[1].getOpacity().toString()), TOLERANCE);
-        assertEquals(1.0, Double.parseDouble(entries[2].getOpacity().toString()), TOLERANCE);
-        assertEquals(1.0, Double.parseDouble(entries[3].getOpacity().toString()), TOLERANCE);
-        assertEquals(0.0, Double.parseDouble(entries[4].getOpacity().toString()), TOLERANCE);
+        check(entries);
+    }
+
+    
+    @Test
+    public void testBeforeAfterColor() throws Exception {
+        final FilterFunction_svgColorMap func = new FilterFunction_svgColorMap();
+        final ColorMap colorMap = (ColorMap) func.evaluate("#0000FF;#00FF00;#FF0000", 10, 100, "#FFFFFF", "#000000", false, MAX_PALETTE_COLORS);
+        final ColorMapEntry[] entries = colorMap.getColorMapEntries();
+
+        assertColorMapEntry(entries[0], "#FFFFFF", 1.0, 9.99);
+        assertColorMapEntry(entries[1], "#0000FF", 1.0, 10d);
+        assertColorMapEntry(entries[2], "#00FF00", 1.0, 55d);
+        assertColorMapEntry(entries[3], "#FF0000", 1.0, 100d);
+        assertColorMapEntry(entries[4], "#000000", 1.0, 100d);
+
+    }
+    
+    void assertColorMapEntry(ColorMapEntry cme, String expectedColor, Double expectedOpacity, Double expectedValue) {
+        if(expectedColor != null) {
+            assertEquals(expectedColor, cme.getColor().evaluate(null, String.class));
+        }
+        if(expectedOpacity != null) {
+            if(cme.getOpacity() == null || cme.getOpacity().evaluate(null) == null) {
+                assertEquals(expectedOpacity, 1d, TOLERANCE);
+            } else {
+                assertEquals(expectedOpacity, cme.getOpacity().evaluate(null, Double.class), TOLERANCE);
+            }
+        }
+        if(expectedValue != null) {
+            assertEquals(expectedValue, cme.getQuantity().evaluate(null, Double.class), TOLERANCE);
+        }
+    }
+    
+    @Test
+    public void testLogarithmic() throws Exception {
+        final FilterFunction_svgColorMap func = new FilterFunction_svgColorMap();
+        final ColorMap colorMap = (ColorMap) func.evaluate("#0000FF;#00FF00;#FF0000", 10, 100, null, null, true, MAX_PALETTE_COLORS);
+        final ColorMapEntry[] entries = colorMap.getColorMapEntries();
+
+        assertEquals(FilterFunction_svgColorMap.LOG_SAMPLING_DEFAULT + 2, entries.length);
+
+        // first and last are transparent
+        assertEquals(0, entries[0].getOpacity().evaluate(null, Double.class), TOLERANCE);
+        assertEquals(0, entries[FilterFunction_svgColorMap.LOG_SAMPLING_DEFAULT + 1].getOpacity().evaluate(null, Double.class), TOLERANCE);
+
+        // check the logaritmic progression
+        double logMin = Math.log(10);
+        double logMax = Math.log(100);
+        double step = (logMax - logMin) / FilterFunction_svgColorMap.LOG_SAMPLING_DEFAULT; 
+        for(int i = 0; i < FilterFunction_svgColorMap.LOG_SAMPLING_DEFAULT - 1; i++) {
+            final double v = logMin + step * i;
+            double expected = Math.exp(v);
+            assertEquals("Failed at " + i, expected, entries[i + 1].getQuantity().evaluate(null, Double.class),TOLERANCE);
+        }
+        assertEquals(100, entries[FilterFunction_svgColorMap.LOG_SAMPLING_DEFAULT].getQuantity().evaluate(null, Double.class),TOLERANCE);
+    }
+    
+    @Test
+    public void testOneColor() throws Exception {
+        final FilterFunction_svgColorMap func = new FilterFunction_svgColorMap();
+        final ColorMap colorMap = (ColorMap) func.evaluate("#0000FF;#00FF00;#FF0000", 10, 100, null, null, false, 1);
+        final ColorMapEntry[] entries = colorMap.getColorMapEntries();
+
+        assertEquals(3, entries.length);
+        assertColorMapEntry(entries[0], "#000000", 0.0, 10d);
+        assertColorMapEntry(entries[1], "#FF0000", 1.0, 100d);
+        assertColorMapEntry(entries[2], "#000000", 0.0, Double.POSITIVE_INFINITY);
+    }
+    
+    @Test
+    public void testTwoColors() throws Exception {
+        final FilterFunction_svgColorMap func = new FilterFunction_svgColorMap();
+        final ColorMap colorMap = (ColorMap) func.evaluate("#0000FF;#00FF00;#FF0000", 10, 100, null, null, false, 2);
+        // logColorMap(colorMap);
+        final ColorMapEntry[] entries = colorMap.getColorMapEntries();
+
+        assertEquals(4, entries.length);
+        assertColorMapEntry(entries[0], "#000000", 0.0, 10d);
+        assertColorMapEntry(entries[1], "#0000FF", 1.0, 55d);
+        assertColorMapEntry(entries[2], "#FF0000", 1.0, 100d);
+        assertColorMapEntry(entries[3], "#000000", 0.0, Double.POSITIVE_INFINITY);
+    }
+    
+    void logColorMap(ColorMap colorMap) {
+        SLDTransformer tx = new SLDTransformer();
+        tx.setIndentation(2);
+        try {
+            tx.transform(colorMap, System.out);
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testThreeColors() throws Exception {
+        final FilterFunction_svgColorMap func = new FilterFunction_svgColorMap();
+        final ColorMap colorMap = (ColorMap) func.evaluate("#0000FF;#00FF00;#FF0000", 10, 100, null, null, false, 3);
+        // logColorMap(colorMap);
+        final ColorMapEntry[] entries = colorMap.getColorMapEntries();
+
+        assertEquals(5, entries.length);
+        assertColorMapEntry(entries[0], "#000000", 0.0, 10d);
+        assertColorMapEntry(entries[1], "#0000FF", 1.0, 40d);
+        assertColorMapEntry(entries[2], "#00A956", 1.0, 70d);
+        assertColorMapEntry(entries[3], "#FF0000", 1.0, 100d);
+        assertColorMapEntry(entries[4], "#000000", 0.0, Double.POSITIVE_INFINITY);
     }
 }

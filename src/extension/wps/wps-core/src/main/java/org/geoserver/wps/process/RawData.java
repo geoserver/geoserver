@@ -19,7 +19,7 @@ public interface RawData {
     /**
      * Returns the mime type of the stream's contents
      * 
-     * @return
+     *
      */
     public String getMimeType();
 
@@ -27,7 +27,7 @@ public interface RawData {
      * Gives access to the raw data contents. TODO: decide if this one may be called only once, or
      * if the code should make it possible to extract the stream multiple times
      * 
-     * @return
+     *
      * @throws FileNotFoundException
      */
     public InputStream getInputStream() throws IOException;
@@ -35,7 +35,7 @@ public interface RawData {
     /**
      * Optional field for output raw data, used by WPS to generate a file extension
      * 
-     * @return
+     *
      */
     public String getFileExtension();
 

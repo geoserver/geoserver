@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -62,8 +62,7 @@ public class SecurityHomePageContentProvider implements
             Label mpInfoLabel=null;
             try {
                 mpInfo = manager.get("security").get(GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME);
-                mpInfoLabel=new Label("mpfile", new StringResourceModel("masterPasswordFile", (Component)this, null,
-                        new Object[] {mpInfo.path()}));
+                mpInfoLabel=new Label("mpfile", new StringResourceModel("masterPasswordFile", (Component)this).setParameters(mpInfo.path()));
                 mpInfoLabel.setEscapeModelStrings(false);
                 add(mpInfoLabel);            
                 mpInfoLabel.setVisible(Resources.exists(mpInfo));
@@ -76,8 +75,7 @@ public class SecurityHomePageContentProvider implements
             Label userpropsLabel=null;
             try {
                 userprops = manager.get("security").get("users.properties.old");
-                userpropsLabel=new Label("userpropsold", new StringResourceModel("userPropertiesOldFile", (Component)this, null,
-                        new Object[] {userprops.path()}));
+                userpropsLabel=new Label("userpropsold", new StringResourceModel("userPropertiesOldFile", (Component)this).setParameters(userprops.path()));
                 userpropsLabel.setEscapeModelStrings(false);
                 add(userpropsLabel);            
                 userpropsLabel.setVisible(Resources.exists(userprops));

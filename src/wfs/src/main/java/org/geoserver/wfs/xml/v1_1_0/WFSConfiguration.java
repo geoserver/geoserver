@@ -36,7 +36,6 @@ import org.geoserver.wfs.xml.XSQNameBinding;
 import org.geoserver.wfs.xml.filter.v1_1.FilterTypeBinding;
 import org.geoserver.wfs.xml.filter.v1_1.PropertyNameTypeBinding;
 import org.geoserver.wfs.xml.gml3.CircleTypeBinding;
-import org.geoserver.wfs.xml.xs.DateBinding;
 import org.geotools.data.DataAccess;
 import org.geotools.filter.v1_0.OGCBBOXTypeBinding;
 import org.geotools.filter.v1_1.OGC;
@@ -258,7 +257,6 @@ public class WFSConfiguration extends Configuration {
     @Override
     protected void configureBindings(Map bindings) {
         //register our custom bindings
-        bindings.put(XS.DATE, DateBinding.class);
         bindings.put(OGC.FilterType, FilterTypeBinding.class);
         bindings.put(OGC.PropertyNameType,
             PropertyNameTypeBinding.class);

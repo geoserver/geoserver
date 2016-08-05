@@ -81,7 +81,7 @@ public class WCS2GetCoverageRequestBuilder {
      * @param maxLat
      * @param minLon
      * @param maxLon
-     * @return
+     *
      */
     public WCS2GetCoverageRequestBuilder bbox(double minLon,double maxLon,double minLat, double maxLat){
 	DimensionTrimType latTrim = Wcs20Factory.eINSTANCE.createDimensionTrimType();
@@ -120,7 +120,7 @@ public class WCS2GetCoverageRequestBuilder {
     /**
      * Returns the xml encoding of the created request.
      * @param version
-     * @return
+     *
      * @throws IOException
      */
     public String asXML(String version) throws IOException{

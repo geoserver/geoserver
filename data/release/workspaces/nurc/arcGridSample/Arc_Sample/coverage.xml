@@ -53,7 +53,7 @@
       <scaleX>0.5</scaleX>
       <scaleY>-0.5</scaleY>
       <shearX>0.0</shearX>
-      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
       <translateX>-179.75</translateX>
       <translateY>89.75</translateY>
     </transform>

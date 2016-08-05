@@ -9,7 +9,7 @@ import org.geoserver.ows.KvpParser;
 import org.springframework.util.Assert;
 
 /**
- * Parses double kvp's of the form 'key=<enum value>'.
+ * Parses double kvp's of the form 'key=&lt;enum value&gt;'.
  */
 public class EnumKvpParser extends KvpParser {
     /**

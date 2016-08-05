@@ -1,4 +1,4 @@
-.. _sec_tutorials_j2ee:
+.. _security_tutorials_j2ee:
 
 Configuring J2EE Authentication
 ===============================

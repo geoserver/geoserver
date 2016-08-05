@@ -10,35 +10,21 @@ import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 import javax.xml.namespace.QName;
-
-import net.opengis.ows11.CodeType;
-import net.opengis.ows11.Ows11Factory;
-import net.opengis.wcs10.DescribeCoverageType;
-import net.opengis.wcs10.GetCoverageType;
-import net.opengis.wcs10.Wcs10Factory;
-import net.opengis.wcs11.Wcs11Factory;
-import net.opengis.wfs.DeleteElementType;
-import net.opengis.wfs.DescribeFeatureTypeType;
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.InsertElementType;
-import net.opengis.wfs.LockFeatureType;
-import net.opengis.wfs.LockType;
-import net.opengis.wfs.QueryType;
-import net.opengis.wfs.TransactionType;
-import net.opengis.wfs.UpdateElementType;
-import net.opengis.wfs.WfsFactory;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.monitor.BBoxAsserts;
@@ -49,8 +35,13 @@ import org.geoserver.monitor.MonitorDAO;
 import org.geoserver.monitor.MonitorTestData;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.security.PropertyFileWatcher;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
@@ -74,6 +65,23 @@ import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
+
+import net.opengis.ows11.CodeType;
+import net.opengis.ows11.Ows11Factory;
+import net.opengis.wcs10.DescribeCoverageType;
+import net.opengis.wcs10.GetCoverageType;
+import net.opengis.wcs10.Wcs10Factory;
+import net.opengis.wcs11.Wcs11Factory;
+import net.opengis.wfs.DeleteElementType;
+import net.opengis.wfs.DescribeFeatureTypeType;
+import net.opengis.wfs.GetFeatureType;
+import net.opengis.wfs.InsertElementType;
+import net.opengis.wfs.LockFeatureType;
+import net.opengis.wfs.LockType;
+import net.opengis.wfs.QueryType;
+import net.opengis.wfs.TransactionType;
+import net.opengis.wfs.UpdateElementType;
+import net.opengis.wfs.WfsFactory;
 
 
 
@@ -560,4 +568,27 @@ public class MonitorCallbackTest {
         BBoxAsserts.assertEqualsBbox(new ReferencedEnvelope(48.4,48.4,-123.3,-123.3,logCrs),data.getBbox(), 0.1);
     }
 
+    @Test
+    public void testConfiguration() throws IOException {
+        // store the properties into a temp folder and relaod
+        assertTrue(monitor.getConfig().getFileLocations().isEmpty());
+        
+        File tmpDir = createTempDir();
+        GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(tmpDir);
+        
+        monitor.getConfig().saveConfiguration(resourceLoader);
+        Resource controlFlowProps = Files.asResource(resourceLoader.find("monitor.properties"));
+        assertTrue(Resources.exists(controlFlowProps));
+        
+        PropertyFileWatcher savedProps = new PropertyFileWatcher(controlFlowProps);
+        
+        assertEquals(savedProps.getProperties(), monitor.getConfig().getProperties());
+    }
+    
+    static File createTempDir() throws IOException {
+        File f = File.createTempFile("monitoring", "data", new File("target"));
+        f.delete();
+        f.mkdirs();
+        return f;
+    }
 }

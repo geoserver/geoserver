@@ -11,7 +11,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.security.web.util.RequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * GeoServer {@link RequestMatcher} implementation.
@@ -65,7 +65,7 @@ public  class GeoServerRequestMatcher implements RequestMatcher {
      * in {@link #methods}
      * 
      * @param request
-     * @return
+     *
      */
     protected boolean matchesHTTPMethod(HttpServletRequest request) {
         if (methods==null)

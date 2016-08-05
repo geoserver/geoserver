@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -19,7 +19,7 @@ import org.opengis.referencing.operation.TransformException;
 
 
 /**
- * 
+ * Utility class to work with nested layer groups and extract selected sub-parts of it
  */
 public class LayerGroupHelper {
 
@@ -37,7 +37,7 @@ public class LayerGroupHelper {
     
     /**
      * 
-     * @return
+     *
      */
     public List<LayerInfo> allLayers() {
         List<LayerInfo> layers = new ArrayList<LayerInfo>();
@@ -58,11 +58,31 @@ public class LayerGroupHelper {
                 allLayers((LayerGroupInfo) p, layers);
             }
         }        
-    }     
+    }
+    
+    /**
+     * Returns all the groups contained in this group (including the group itself)
+     * @return
+     */
+    public List<LayerGroupInfo> allGroups() {
+        List<LayerGroupInfo> groups = new ArrayList<LayerGroupInfo>();
+        allGroups(group, groups);
+        return groups;
+    }    
+  
+    private static void allGroups(LayerGroupInfo group, List<LayerGroupInfo> groups) {
+        groups.add(group);
+        for (PublishedInfo p : group.getLayers()) {
+            if (p instanceof LayerGroupInfo) {
+                LayerGroupInfo g = (LayerGroupInfo) p;
+                allGroups(g, groups);
+            } 
+        }
+    }
     
     /**
      * 
-     * @return
+     *
      */
     public List<StyleInfo> allStyles() {
         List<StyleInfo> styles = new ArrayList<StyleInfo>();
@@ -148,7 +168,6 @@ public class LayerGroupHelper {
     /**
      * 
      * @param crs
-     * @throws Exception
      */
     public void calculateBounds(CoordinateReferenceSystem crs) throws Exception {
         List<LayerInfo> layers = allLayers();        
@@ -186,7 +205,6 @@ public class LayerGroupHelper {
     
     /**
      * 
-     * @throws Exception
      */
     public void calculateBounds() throws Exception {
         List<LayerInfo> layers = allLayers();       

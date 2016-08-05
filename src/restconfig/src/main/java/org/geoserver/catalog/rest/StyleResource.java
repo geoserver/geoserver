@@ -413,7 +413,7 @@ public class StyleResource extends AbstractCatalogResource {
      * Returns the sld file in the given directory. If no sld file, throws an exception
      *
      * @param directory
-     * @return
+     *
      */
     private File retrieveSldFile(File directory) {
         File[] matchingFiles = directory.listFiles(new FilenameFilter() {
@@ -453,7 +453,7 @@ public class StyleResource extends AbstractCatalogResource {
      * Returns a list of image files in the given directory
      *
      * @param directory
-     * @return
+     *
      */
     private File[] retrieveImageFiles(File directory) {
         File[] matchingFiles = directory.listFiles(new FilenameFilter() {
@@ -469,7 +469,7 @@ public class StyleResource extends AbstractCatalogResource {
      * Parses the sld file.
      *
      * @param sldFile
-     * @return
+     *
      */
     private Style parseSld(File sldFile) {
         Style style = null;

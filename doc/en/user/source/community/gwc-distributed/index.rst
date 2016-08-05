@@ -16,5 +16,5 @@ Installing the WPS download module
 
 Module description
 ------------------
-More information about Caching Configuration can be found at the :ref:`gwc_config` and :ref:`webadmin_tilecaching_defaults` pages.
+More information about Caching Configuration can be found at the :ref:`gwc_config` and :ref:`gwc_webadmin_defaults` pages.
 

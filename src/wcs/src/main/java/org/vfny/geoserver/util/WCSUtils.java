@@ -111,7 +111,7 @@ public class WCSUtils {
      * 
      * @param coverage
      * @param bounds
-     * @return
+     *
      */
     public static GridCoverage2D crop(
             final GridCoverage2D coverage,
@@ -331,7 +331,7 @@ public class WCSUtils {
      * Computes the size of a grid coverage in bytes given its grid envelope and the target sample model
      * @param envelope
      * @param sm
-     * @return
+     *
      */
     static long getCoverageSize(GridEnvelope2D envelope, SampleModel sm) {
         // === compute the coverage memory usage and compare with limit
@@ -443,7 +443,7 @@ public class WCSUtils {
     /**
      * Guesses the size of the sample able to contain the range fully
      * @param range
-     * @return
+     *
      */
     static int guessSizeFromRange(NumberRange range) {
         double min = range.getMinimum();
@@ -466,7 +466,7 @@ public class WCSUtils {
     /**
      * Utility function to format a byte amount into a human readable string
      * @param bytes
-     * @return
+     *
      */
     static String formatBytes(long bytes) {
         if(bytes < 1024) {
@@ -481,7 +481,7 @@ public class WCSUtils {
     /**
      * Returns the reader hints based on the current WCS configuration
      * @param wcs
-     * @return
+     *
      */
     public static Hints getReaderHints(WCSInfo wcs) {
         Hints hints = new Hints();
@@ -499,7 +499,7 @@ public class WCSUtils {
     /**
      * Returns an eventual filter included among the parsed kvp map of the current
      * request. Will work for CQL_FILTER, FILTER and FEATURE_ID
-     * @return
+     *
      */
     public static Filter getRequestFilter() {
         Request request = Dispatcher.REQUEST.get();

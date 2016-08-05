@@ -25,6 +25,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.ogr.core.Format;
 import org.geoserver.ogr.core.FormatConverter;
+import org.geoserver.ogr.core.OutputType;
 import org.geoserver.ogr.core.ToolWrapper;
 import org.geoserver.ogr.core.ToolWrapperFactory;
 import org.geoserver.platform.Operation;
@@ -110,7 +111,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     /**
      * Returns the ogr2ogr executable full path
      * 
-     * @return
+     *
      */
     @Override
     public String getExecutable() {
@@ -131,7 +132,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     /**
      * Returns the environment variables that are set prior to invoking ogr2ogr
      * 
-     * @return
+     *
      */
     @Override
     public Map<String, String> getEnvironment() {
@@ -187,7 +188,18 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
 
     @Override
     public String getPreferredDisposition(Object value, Operation operation) {
-        return DISPOSITION_ATTACH;
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+        String outputFormat = request.getOutputFormat();
+        
+        Format format = formats.get(outputFormat);
+        List<Query> queries = request.getQueries();
+        if (format == null) {
+            throw new WFSException("Unknown output format " + outputFormat);
+        } else if(format.getType() == OutputType.BINARY || queries.size() > 1) {
+            return DISPOSITION_ATTACH;
+        } else {
+            return DISPOSITION_INLINE;
+        } 
     }
     
     @Override
@@ -199,12 +211,14 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         List<Query> queries = request.getQueries();
         if (format == null) {
             throw new WFSException("Unknown output format " + outputFormat);
-        } else if (!format.isSingleFile() || queries.size() > 1) {
-            String outputFileName = queries.get(0).getTypeNames().get(0).getLocalPart();
-            return outputFileName + ".zip";
         } else {
-            return null;
-        }
+            String outputFileName = queries.get(0).getTypeNames().get(0).getLocalPart();
+            if(!format.isSingleFile() || queries.size() > 1) {
+                return outputFileName + ".zip";
+            } else {
+                return outputFileName + format.getFileExtension();
+            }
+        } 
     }
     
     /**
@@ -220,7 +234,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     /**
      * Get a list of supported ogr formats
      *
-     * @return
+     *
      */
     @Override
     public List<Format> getFormats() {
@@ -322,7 +336,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
      * Writes to disk using shapefile if the feature type allows for it, GML otherwise
      * @param tempDir
      * @param curCollection
-     * @return
+     *
      */
     private File writeToDisk(File tempDir,
             SimpleFeatureCollection curCollection) throws Exception {
@@ -376,7 +390,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     /**
      * Returns true if the schema has just one geometry and the geom type is known
      * @param schema
-     * @return
+     *
      */
     private boolean isShapefileCompatible(SimpleFeatureType schema) {
         GeometryType gt = null;

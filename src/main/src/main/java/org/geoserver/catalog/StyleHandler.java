@@ -88,10 +88,10 @@ public abstract class StyleHandler {
     /**
      * Generates a style from a template using the provided substitutions.
      *
-     * @param type: the template type, see {@link org.geoserver.catalog.StyleType}.
-     * @param color: java.aw.Color to use during substitution
-     * @param colorName: Human readable color name, for use generating comments
-     * @param layerName: Layer name, for use generating comments
+     * @param type the template type, see {@link org.geoserver.catalog.StyleType}.
+     * @param color java.aw.Color to use during substitution
+     * @param colorName Human readable color name, for use generating comments
+     * @param layerName Layer name, for use generating comments
      * 
      * @return The text content of the style template after performing substitutions
      */

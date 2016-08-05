@@ -197,7 +197,7 @@ public class DownloadLinkHandler {
      * Generate download links for the specified info object.
      * 
      * @param info
-     * @return
+     *
      */
     public CloseableIterator<String> generateDownloadLinks(CatalogInfo info) {
         Request request = Dispatcher.REQUEST.get();
@@ -235,7 +235,7 @@ public class DownloadLinkHandler {
      *
      * @param baseURL
      * @param coverageInfo
-     * @return
+     *
      */
     protected CloseableIterator<String> linksFromCoverage(String baseURL, CoverageInfo coverageInfo) {
         GridCoverage2DReader reader;
@@ -285,7 +285,7 @@ public class DownloadLinkHandler {
      * Given a file download link, extract the link with no file references, used to 
      * request the full layer download.
      * 
-     * @return
+     *
      */
     public String extractFullDownloadLink(String link) {
         int resourceIdIndex = link.indexOf(RESOURCE_ID_PARAMETER);

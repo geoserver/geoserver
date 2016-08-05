@@ -8,15 +8,22 @@
     <link href="#" rel="shortcut icon" wicket:id="faviconLink"/>
 	<wicket:link>
       <link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection" />
-      <link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print" /> 
+      </wicket:link>
+      <wicket:link>
+      <link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print" />
+      </wicket:link>
+      <wicket:link> 
 	  <link rel="stylesheet" href="css/geoserver.css" type="text/css" media="screen, projection" />
+	  </wicket:link>
       <!--[if IE]>
+      <wicket:link>
         <link rel="stylesheet" href="css/blueprint/ie.css" type="text/css" media="screen, projection" />
+        </wicket:link>
       <![endif]-->
-      <script type="text/javascript" src="js/jquery-1.2.6.min.js"></script>
-      <script type="text/javascript" src="js/jquery.inline-info.js"></script>
-	</wicket:link>
-</wicket:head>
+      <wicket:link>
+      <script type="text/javascript" src="js/jquery.placeholder.js"></script>
+      </wicket:link>
+	</wicket:head>
 <body>
   <div id="header">
     <div class="wrap">
@@ -24,16 +31,14 @@
       <div class="button-group selfclear">
       <form wicket:id="loginform" method="post" action="../j_spring_security_check">
         <label class="noshow" for="username"><wicket:message key="username">Username</wicket:message></label>
-        <input id="username" type="text" name="username" value="" title="username" wicket:message="title:username"/>
+        <input id="username" type="text" name="username" value="" title="username" placeholder="username" wicket:message="title:username,placeholder:username"/>
         <label class="noshow" for="password"><wicket:message key="password">Password</wicket:message></label>
-        <input id="password" type="password" name="password" value="" title="password" wicket:message="title:password"/>
+        <input id="password" type="password" name="password" value="" title="password" placeholder="password" wicket:message="title:password,placeholder:passwordGeoServer"/>
         <label class="shown" for="_spring_security_remember_me"><wicket:message key="rememberMe">Remember me</wicket:message></label>
         <input id="_spring_security_remember_me" type="checkbox" name="_spring_security_remember_me" />
         <button class="button-login positive icon" type="submit"><div><wicket:message key="login">Login</wicket:message></div></button>
         <script type="text/javascript">
-        //<![CDATA[
-        jQuery(document).ready(function() {$('#username, #password').inlineInfoTextify();});
-        //]]>
+            $('input, textarea').placeholder();
         </script>
       </form>
       <div wicket:id="logoutform">

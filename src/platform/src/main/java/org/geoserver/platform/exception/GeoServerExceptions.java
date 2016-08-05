@@ -32,7 +32,7 @@ public class GeoServerExceptions {
     /**
      * Returns a localized message for the specific exception for the default system locale.
      * 
-     * @see #localize(GeoServerException, Locale)
+     * @see #localize(IGeoServerException, Locale)
      */
     public static String localize(IGeoServerException e) {
         return localize(e, Locale.getDefault());
@@ -42,7 +42,7 @@ public class GeoServerExceptions {
      * Returns a localized message for the specific exception, given the specified
      * locale.
      * <p>
-     * This method processes the {@link ResourceBundleLoader} extension point to find the 
+     * This method processes the {@link ResourceBundle} extension point to find the 
      * appropriate {@link ResourceBundle} containing the localized message. The base name used
      * to look up the message is the name of the exception class. First the fully qualified
      * exception name is used, and if no bundle found, the non qualified name is used. 

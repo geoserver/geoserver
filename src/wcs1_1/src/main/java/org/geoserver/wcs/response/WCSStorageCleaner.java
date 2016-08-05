@@ -55,7 +55,7 @@ public class WCSStorageCleaner extends TimerTask {
      * The file expiration delay in seconds, a file will be deleted when
      * it's been around more than expirationDelay
      * 
-     * @return
+     *
      */
     public long getExpirationDelay() {
         return expirationDelay;

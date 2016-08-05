@@ -46,7 +46,7 @@ public class WMSAccessLimits extends DataAccessLimits {
     /**
      * Acts as a ROI on the returned images
      * 
-     * @return
+     *
      */
     public MultiPolygon getRasterFilter() {
         return rasterFilter;
@@ -55,7 +55,7 @@ public class WMSAccessLimits extends DataAccessLimits {
     /**
      * Wheter to allow GetFeatureInfo cascading or not
      * 
-     * @return
+     *
      */
     public boolean isAllowFeatureInfo() {
         return allowFeatureInfo;

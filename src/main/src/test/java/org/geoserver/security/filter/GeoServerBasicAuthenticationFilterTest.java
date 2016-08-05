@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.security.GeoServerSecurityManager;

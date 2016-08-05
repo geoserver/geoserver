@@ -85,7 +85,7 @@ public abstract class XMLPPIO extends ComplexPPIO {
      * Returns a parser using the given configuration
      * 
      * @param configuration
-     * @return
+     *
      */
     protected Parser getParser(Configuration configuration) {
         Parser parser = new Parser(configuration);

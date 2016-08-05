@@ -1788,7 +1788,6 @@ public class CatalogImplTest {
      * This test cannot work, the catalog subsystem is not thread safe, that's why we have
      * the configuration locks. Re-enable when the catalog subsystem is made thread safe.
      * 
-     * @throws Exception
      */
     @Test
     @Ignore 

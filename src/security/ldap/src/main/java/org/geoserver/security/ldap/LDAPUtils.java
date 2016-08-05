@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -31,7 +31,7 @@ public class LDAPUtils {
      * Creates an LdapContext from a configuration object.
      * 
      * @param ldapConfig
-     * @return
+     *
      */
     public static LdapContextSource createLdapContext(
             LDAPBaseSecurityServiceConfig ldapConfig) {
@@ -63,7 +63,7 @@ public class LDAPUtils {
      * 
      * @param ctx
      * @param template
-     * @return
+     *
      */
     public static SpringSecurityLdapTemplate getLdapTemplateInContext(
             final DirContext ctx,final SpringSecurityLdapTemplate template) {

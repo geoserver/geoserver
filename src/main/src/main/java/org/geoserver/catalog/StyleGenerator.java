@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -83,8 +83,8 @@ public class StyleGenerator {
     /**
      * Generate a style for a resource in the catalog, and add the created style to the catalog.
      * 
-     * @param handler: The StyleHandler used to generate the style. Determines the style format.
-     * @param featureType: The FeatureType to generate the style for. Determines the style type and 
+     * @param handler The StyleHandler used to generate the style. Determines the style format.
+     * @param featureType The FeatureType to generate the style for. Determines the style type and 
      * style name
      * @return The StyleInfo referencing the generated style
      * @throws IOException
@@ -96,10 +96,10 @@ public class StyleGenerator {
     /**
      * Generate a style for a resource in the catalog, and add the created style to the catalog.
      * 
-     * @param handler: The StyleHandler used to generate the style. Determines the style format.
-     * @param featureType: The FeatureType to generate the style for. Determines the style type and 
+     * @param handler The StyleHandler used to generate the style. Determines the style format.
+     * @param featureType The FeatureType to generate the style for. Determines the style type and 
      * style name
-     * @param nativeFeatureType: The geotools feature type, required in cases where featureType is 
+     * @param nativeFeatureType The geotools feature type, required in cases where featureType is 
      * missing content
      * @return The StyleInfo referencing the generated style
      * @throws IOException
@@ -132,8 +132,8 @@ public class StyleGenerator {
     /**
      * Generate a style for a resource in the catalog, and add the created style to the catalog.
      * 
-     * @param handler: The StyleHandler used to generate the style. Determines the style format.
-     * @param coverage: The CoverageInfo to generate the style for. Determines the style type and 
+     * @param handler The StyleHandler used to generate the style. Determines the style format.
+     * @param coverage The CoverageInfo to generate the style for. Determines the style type and 
      * style name
      * @return The StyleInfo referencing the generated style
      * @throws IOException
@@ -145,9 +145,9 @@ public class StyleGenerator {
     /**
      * Generate a style of the give style type. 
      * 
-     * @param handler: The StyleHandler used to generate the style. Determines the style format.
-     * @param styleType: The type of template, see {@link org.geoserver.catalog.StyleType}.
-     * @param layerName: The name of the style/layer; used in comments.
+     * @param handler The StyleHandler used to generate the style. Determines the style format.
+     * @param styleType The type of template, see {@link org.geoserver.catalog.StyleType}.
+     * @param layerName The name of the style/layer; used in comments.
      * @return The generated style, as a String.
      * @throws IOException
      */
@@ -167,10 +167,17 @@ public class StyleGenerator {
         }
     }
 
+    /**
+     * Generates a unique style name for the specified resource.
+     */
+    public String generateUniqueStyleName(ResourceInfo resource) {
+        return workspace != null ?
+            findUniqueStyleName(resource, workspace) : findUniqueStyleName(resource);
+    }
+
     StyleInfo doCreateStyle(StyleHandler handler, StyleType styleType, ResourceInfo resource) throws IOException {
         // find a new style name
-        String styleName = workspace != null ?
-            findUniqueStyleName(resource, workspace) : findUniqueStyleName(resource);
+        String styleName = generateUniqueStyleName(resource);
 
         // variable replacement
         String styleData = generateStyle(handler, styleType, styleName);

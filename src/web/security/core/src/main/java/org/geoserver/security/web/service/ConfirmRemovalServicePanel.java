@@ -7,8 +7,9 @@ package org.geoserver.security.web.service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.security.impl.ServiceAccessRule;
 import org.geoserver.security.web.AbstractConfirmRemovalPanel;
 
@@ -27,9 +28,9 @@ public class ConfirmRemovalServicePanel extends AbstractConfirmRemovalPanel<Serv
 
     @Override
     protected String getConfirmationMessage(ServiceAccessRule object) throws Exception{
-        return (String) BeanUtils.getProperty(object, "service") + "."
-                + (String) BeanUtils.getProperty(object, "method") + "="
-                + (String) BeanUtils.getProperty(object, "roles");
+        return  OwsUtils.property(object, "service", String.class) + "."
+                + OwsUtils.property(object, "method", String.class) + "="
+                + OwsUtils.property(object, "roles", Set.class);
     }
 
 }

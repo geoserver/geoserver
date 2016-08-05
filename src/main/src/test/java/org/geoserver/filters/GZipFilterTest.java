@@ -14,31 +14,29 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.junit.Test;
+import org.springframework.mock.web.DelegatingServletOutputStream;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockFilterConfig;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-import com.mockrunner.mock.web.MockServletContext;
-import com.mockrunner.mock.web.MockServletOutputStream;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
 
 public class GZipFilterTest {
 
     
     @Test
     public void testRetrieveSameOutputStream() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRequestURL("http://www.geoserver.org");
-        request.setHeader("accept-encoding", "gzip");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "http://www.geoserver.org");
+        request.addHeader("accept-encoding", "gzip");
         MockHttpServletResponse response = new MockHttpServletResponse();
         response.setContentType("text/plain");
 
         // run the filter
         GZIPFilter filter = new GZIPFilter();
-        MockFilterConfig config = new MockFilterConfig();
         MockServletContext context = new MockServletContext();
-        context.setInitParameter("compressed-types", "text/plain");
-        config.setupServletContext(context);
+        MockFilterConfig config = new MockFilterConfig(context);
+        config.addInitParameter("compressed-types", "text/plain");
         filter.init(config);
 
         MockFilterChain chain = new MockFilterChain() {
@@ -56,7 +54,7 @@ public class GZipFilterTest {
                     OutputStream wrapped = (OutputStream) f.get(os);
                     // System.out.println(wrapped);
                     // we are not memory bound
-                    assertTrue(wrapped instanceof MockServletOutputStream);
+                    assertTrue(wrapped instanceof DelegatingServletOutputStream);
                 } catch (Exception e) {
                     // it can happen
                     System.out
@@ -70,18 +68,17 @@ public class GZipFilterTest {
     
     @Test
     public void testGZipRemovesContentLength() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRequestURL("http://www.geoserver.org");
-        request.setHeader("accept-encoding", "gzip");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "http://www.geoserver.org");
+        request.addHeader("accept-encoding", "gzip");
         MockHttpServletResponse response = new MockHttpServletResponse();
         response.setContentType("text/plain");
 
         // run the filter
         GZIPFilter filter = new GZIPFilter();
-        MockFilterConfig config = new MockFilterConfig();
+        
         MockServletContext context = new MockServletContext();
-        context.setInitParameter("compressed-types", "text/plain");
-        config.setupServletContext(context);
+        MockFilterConfig config = new MockFilterConfig(context);
+        config.addInitParameter("compressed-types", "text/plain");
         filter.init(config);
 
         MockFilterChain chain = new MockFilterChain() {
@@ -102,18 +99,16 @@ public class GZipFilterTest {
     
     @Test
     public void testNotGZippedMantainsContentLength() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRequestURL("http://www.geoserver.org");
-        request.setHeader("accept-encoding", "gzip");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "http://www.geoserver.org");
+        request.addHeader("accept-encoding", "gzip");
         MockHttpServletResponse response = new MockHttpServletResponse();
         response.setContentType("text/css");
 
         // run the filter
         GZIPFilter filter = new GZIPFilter();
-        MockFilterConfig config = new MockFilterConfig();
         MockServletContext context = new MockServletContext();
         context.setInitParameter("compressed-types", "text/plain");
-        config.setupServletContext(context);
+        MockFilterConfig config = new MockFilterConfig(context);
         filter.init(config);
 
         MockFilterChain chain = new MockFilterChain() {

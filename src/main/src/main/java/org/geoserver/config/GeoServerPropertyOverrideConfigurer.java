@@ -1,18 +1,17 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.config;
 
+import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
+import org.springframework.core.io.Resource;
+
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
-import org.geoserver.config.GeoServerDataDirectory;
-import org.geotools.util.logging.Logging;
-import org.springframework.beans.factory.config.PropertyOverrideConfigurer;
-import org.springframework.core.io.Resource;
 
 /**
  * 
@@ -37,7 +36,7 @@ public class GeoServerPropertyOverrideConfigurer extends PropertyOverrideConfigu
     @Override
     public void setLocation(Resource location) {
         try {
-            location = SpringResourceAdaptor.relative(location, data);            
+            location = SpringResourceAdaptor.relative(location, data.getResourceStore());
         } catch(IOException e) {
             LOGGER.log(Level.WARNING, "Error reading resource " + location, e);
         }
@@ -50,7 +49,8 @@ public class GeoServerPropertyOverrideConfigurer extends PropertyOverrideConfigu
         Resource[] newLocations = new Resource[locations.length];
         for (int i = 0; i < locations.length; i++) {
             try {
-                newLocations[i] = SpringResourceAdaptor.relative(locations[i], data);
+                newLocations[i] = SpringResourceAdaptor.relative(
+                        locations[i], data.getResourceStore());
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Error reading resource " + locations[i], e);
                 newLocations[i] = locations[i];
@@ -61,7 +61,6 @@ public class GeoServerPropertyOverrideConfigurer extends PropertyOverrideConfigu
     
     @Override
     protected String convertPropertyValue(String property) {
-        return property.replaceAll(Pattern.quote("${GEOSERVER_DATA_DIR}"), data.root().toString());
+        return property.replace("${GEOSERVER_DATA_DIR}", data.root().getPath());
     }
-
 }

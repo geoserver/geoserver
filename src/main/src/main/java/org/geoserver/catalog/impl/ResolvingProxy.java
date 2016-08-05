@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -64,6 +64,7 @@ public class ResolvingProxy extends ProxyBase {
         return proxy;
     }
     
+    @SuppressWarnings("unchecked")
     public static <T> T resolve( Catalog catalog, T object ) {
         if ( object instanceof Proxy ) {
             InvocationHandler h = Proxy.getInvocationHandler( object );
@@ -94,17 +95,38 @@ public class ResolvingProxy extends ProxyBase {
                         return (T) catalog.getCoverageStore( ref );
                     }
                     
-                    return (T) catalog.getStore( ref, StoreInfo.class );
+                    T resolved = (T) catalog.getStore( ref, StoreInfo.class );
+                    if (resolved == null) {
+                        if (ref.indexOf(":") > 0) {
+                            String[] qualifiedName = ref.split(":");
+                            resolved = (T) catalog.getStoreByName( qualifiedName[0], qualifiedName[1], StoreInfo.class );
+                        } else {
+                            resolved = (T) catalog.getStoreByName( ref, StoreInfo.class );
+                        }
+                    }
+                    return resolved;
                 }
                 if ( object instanceof ResourceInfo ) {
                     if ( object instanceof FeatureTypeInfo ) {
-                        return (T) catalog.getFeatureType( ref );
+                        Object r = catalog.getFeatureType( ref ); 
+                        if ( r == null ) {
+                            r = catalog.getFeatureTypeByName( ref );
+                        }
+                        return (T) r;
                     }
                     if ( object instanceof CoverageInfo ) {
-                        return (T) catalog.getCoverage( ref );
+                        Object r = catalog.getCoverage( ref ); 
+                        if ( r == null ) {
+                            r = catalog.getCoverageByName( ref );
+                        }
+                        return (T) r;
                     }
                     
-                    return (T) catalog.getResource( ref, ResourceInfo.class );
+                    Object r = catalog.getResource( ref, ResourceInfo.class );
+                    if ( r == null ) {
+                        r = catalog.getResourceByName( ref, ResourceInfo.class );
+                    }
+                    return (T) r;
                 }
                 if ( object instanceof LayerInfo ) {
                     Object l = catalog.getLayer( ref );
@@ -178,6 +200,16 @@ public class ResolvingProxy extends ProxyBase {
     
     @Override
     protected Object handleOther(Object proxy, Method method, Object[] args) throws Throwable {
+        // if we get here the reference is dangling, have it use the proxy hashcode and equals
+        // to allow comparing the references with no cryptic exceptions that would not
+        // help debugging the broken reference
+        final String methodName = method.getName();
+        if(methodName.equals("hashCode")) {
+            return hashCode();
+        } else if(methodName.equals("equals")) {
+            // allows an object with dangling reference to be compared with itself by equality
+            return args[0] == null || equals(args[0]);
+        }
         return null;
     }
 }

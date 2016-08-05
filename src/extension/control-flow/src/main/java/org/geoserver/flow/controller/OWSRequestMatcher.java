@@ -92,7 +92,7 @@ public class OWSRequestMatcher implements Predicate<Request> {
     /**
      * Returns the matched service (case insensitive)
      * 
-     * @return
+     *
      */
     public String getService() {
         return service;
@@ -101,7 +101,7 @@ public class OWSRequestMatcher implements Predicate<Request> {
     /**
      * Returns the matched method (case insensitive)
      * 
-     * @return
+     *
      */
     public String getMethod() {
         return method;
@@ -110,7 +110,7 @@ public class OWSRequestMatcher implements Predicate<Request> {
     /**
      * Returns the matched output format (case insensitive)
      * 
-     * @return
+     *
      */
     public String getOutputFormat() {
         return outputFormat;

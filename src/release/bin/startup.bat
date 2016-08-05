@@ -53,7 +53,7 @@ goto JavaFail
   echo Please install Java or, if present but not in the path, set this environment variable via the following command:
   echo    set JAVA_HOME=[path to Java]
   echo Example:
-  echo    set JAVA_HOME=C:\Program Files\Java\jdk6
+  echo    set JAVA_HOME=C:\Program Files\Java\jdk8
   echo.
   set error=1
 goto end
@@ -129,7 +129,7 @@ goto run
   cd %GEOSERVER_HOME%
   echo Please wait while loading GeoServer...
   echo.
-  "%RUN_JAVA%" "%JAVA_OPTS%" -DGEOSERVER_DATA_DIR="%GEOSERVER_DATA_DIR%" -Djava.awt.headless=true -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -jar start.jar
+  "%RUN_JAVA%" %JAVA_OPTS% -DGEOSERVER_DATA_DIR="%GEOSERVER_DATA_DIR%" -Djava.awt.headless=true -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -jar start.jar
   cd bin
 goto end
 

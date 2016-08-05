@@ -295,6 +295,55 @@ And eventually succeed::
 	    ]
 	  }
 	}
+
+Uploading a Shapefile to PostGIS
+--------------------------------
+
+This example shows the process for uploading a Shapefile (in a zip file) to an existing PostGIS datastore (cite:postgis).
+
+Create the import definition::
+
+  {
+    "import": {
+      "targetStore": {
+        "dataStore": {
+          "name": "postgis"
+        }
+      },
+      "targetWorkspace": {
+        "workspace": {
+          "name": "cite"
+        }
+      }
+    }
+  }
+
+POST this definition to /geoserver/rest/imports::
+
+    curl -u admin:geoserver -XPOST -H "Content-type: application/json" -d @import.json "http://localhost:8080/geoserver/rest/imports"
+
+The response will contain the import ID.
+
+We now have an empty import with no tasks. To add a task, POST the shapefile to the list of tasks::
+
+  curl -u admin:geoserver -F name=myshapefile.zip -F filedata=@myshapefile.zip "http://localhost:8080/geoserver/rest/imports/14/tasks"
+
+Since we sent a shapefile, importer assumes the target will be a shapefile store. To import to PostGIS, we will need to reset it.
+Create the following JSON file::
+
+  {
+    "dataStore": {
+      "name":"postgis"
+    }
+  }
+
+PUT this file to /geoserver/rest/imports/14/tasks/0/target::
+
+  curl -u admin:geoserver -XPUT -H "Content-type: application/json" -d @target.json "http://localhost:8080/geoserver/rest/imports/14/tasks/0/target"
+
+Finally, we execute the import by sending a POST to /geoserver/rest/imports/14::
+
+  curl -u admin:geoserver -XPOST "http://localhost:8080/geoserver/rest/imports/14"
 	
 Uploading a CSV file to PostGIS while transforming it
 -----------------------------------------------------

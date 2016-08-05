@@ -254,7 +254,6 @@ public class FullyRetypingDataStoreTest {
      * This test is made with mock objects because the property data store does
      * not generate fids in the <type>.<id> form
      * 
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test

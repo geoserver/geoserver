@@ -50,7 +50,7 @@ public class DataAccessLimits extends AccessLimits {
      * This filter will be merged with the request read filters to limit the features/tiles that can
      * be actually read
      * 
-     * @return
+     *
      */
     public Filter getReadFilter() {
         return readFilter;
@@ -59,7 +59,7 @@ public class DataAccessLimits extends AccessLimits {
     /**
      * The catalog mode for this layer
      * 
-     * @return
+     *
      */
     public CatalogMode getMode() {
         return mode;
@@ -99,7 +99,7 @@ public class DataAccessLimits extends AccessLimits {
      * parses it back to a Filter object
      * 
      * @param in
-     * @return
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */

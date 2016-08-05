@@ -133,7 +133,7 @@ public class ReaderUtils {
      *
      * @return The child element found, null if not found.
      *
-     * @see getChildElement(Element,String,boolean)
+     * @see #getChildElement(Element,String,boolean)
      */
     public static Element[] getChildElements(Element root, String name) {
         try {
@@ -240,7 +240,7 @@ public class ReaderUtils {
      *
      * @return The child element found, null if not found.
      *
-     * @see getChildElement(Element,String,boolean)
+     * @see #getChildElement(Element,String,boolean)
      */
     public static Element getChildElement(Element root, String name) {
         try {

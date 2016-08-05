@@ -68,7 +68,7 @@ public class DimensionFilterBuilder {
      * @param value
      * @param attribute
      * @param endAttribute
-     * @return
+     *
      */
     Filter buildDimensionFilter(Object value, PropertyName attribute, PropertyName endAttribute) {
         Filter filter;

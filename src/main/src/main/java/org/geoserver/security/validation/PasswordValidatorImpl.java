@@ -58,7 +58,7 @@ public class PasswordValidatorImpl extends AbstractSecurityValidator implements 
      * return the prefix, if false return <code>null</code>
      * 
      * @param password
-     * @return
+     *
      */
     public static String  passwordStartsWithEncoderPrefix (char[] password) {
         
@@ -128,7 +128,7 @@ public class PasswordValidatorImpl extends AbstractSecurityValidator implements 
      * 
      * @param methodname
      * @param charArray
-     * @return
+     *
      */
     protected boolean checkUsingMethod(String methodname, char[] charArray) {
         try {

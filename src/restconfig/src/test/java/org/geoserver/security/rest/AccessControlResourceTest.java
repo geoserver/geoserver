@@ -97,7 +97,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
      * 
      * @param roleString1
      * @param roleString2
-     * @return
+     *
      */
     boolean checkRolesStringsForEquality(String roleString1, String roleString2) {
         String[] roleArray1=roleString1.split(",");
@@ -186,15 +186,15 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         
         String[][] layerRules=getDefaultLayerRules();
                 
-        assertEquals( 200,deleteAsServletResponse(DATA_URI+"/"+layerRules[0][0]).getStatusCode());
-        assertEquals( 404,deleteAsServletResponse(DATA_URI+"/"+layerRules[0][0]).getStatusCode());
+        assertEquals( 200,deleteAsServletResponse(DATA_URI+"/"+layerRules[0][0]).getStatus());
+        assertEquals( 404,deleteAsServletResponse(DATA_URI+"/"+layerRules[0][0]).getStatus());
                                         
-        assertEquals( 404,deleteAsServletResponse(SERVICE_URI+"/wfs.getFeature").getStatusCode());
+        assertEquals( 404,deleteAsServletResponse(SERVICE_URI+"/wfs.getFeature").getStatus());
         
         String[][] restRules=getDefaultRestRulesForDelete();
                 
-        assertEquals( 200,deleteAsServletResponse(REST_URI+"/"+restRules[0][0]).getStatusCode());
-        assertEquals( 404,deleteAsServletResponse(REST_URI+"/"+restRules[0][0]).getStatusCode());
+        assertEquals( 200,deleteAsServletResponse(REST_URI+"/"+restRules[0][0]).getStatus());
+        assertEquals( 404,deleteAsServletResponse(REST_URI+"/"+restRules[0][0]).getStatus());
                                 
     }
 
@@ -206,7 +206,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         // layer rules
         String[][] rules=getDefaultLayerRules();
         String[][] toBeAdded = { rules[0],{"ws.layer1.r",TEST_ROLELIST}};  //conflict
-        assertEquals( 409, postAsServletResponse(DATA_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatusCode() );
+        assertEquals( 409, postAsServletResponse(DATA_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatus() );
         
         // check if nothing changed
         Document dom = getAsDOM( DATA_URI_XML);               
@@ -215,7 +215,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         // add 
         String[][] toBeAdded2 = { {"ws.layer1.w",TEST_ROLE1}, {"ws.layer1.r",TEST_ROLELIST}};  
         String[][] expected = { rules[0],rules[1],toBeAdded2[0],toBeAdded2[1]};
-        assertEquals( 200, postAsServletResponse(DATA_URI_XML,createXMLBody(toBeAdded2),"text/xml").getStatusCode() );
+        assertEquals( 200, postAsServletResponse(DATA_URI_XML,createXMLBody(toBeAdded2),"text/xml").getStatus() );
 
         dom = getAsDOM( DATA_URI_XML);               
         checkXMLResponse(dom, expected);                        
@@ -224,20 +224,20 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         
         rules=getDefaultServiceRules();
         toBeAdded2 =  new String [][]{ {"ws.*",TEST_ROLE1}, {"ws2.GetFeature",TEST_ROLELIST}};  
-        assertEquals( 200, postAsServletResponse(SERVICE_URI_XML,createXMLBody(toBeAdded2),"text/xml").getStatusCode() );
+        assertEquals( 200, postAsServletResponse(SERVICE_URI_XML,createXMLBody(toBeAdded2),"text/xml").getStatus() );
         expected = new String[][]{ rules[0],toBeAdded2[0],toBeAdded2[1]};
         
         dom = getAsDOM( SERVICE_URI_XML);               
         checkXMLResponse(dom, expected);                        
         
         // check conflict
-        assertEquals( 409, postAsServletResponse(SERVICE_URI_XML,createXMLBody(toBeAdded2),"text/xml").getStatusCode() );
+        assertEquals( 409, postAsServletResponse(SERVICE_URI_XML,createXMLBody(toBeAdded2),"text/xml").getStatus() );
         
         // REST rules
         
         rules=getDefaultRestRules();
         toBeAdded = new String[][] { rules[0],{"/myworkspace/**:GET",TEST_ROLELIST}};  //conflict
-        assertEquals( 409, postAsServletResponse(REST_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatusCode() );
+        assertEquals( 409, postAsServletResponse(REST_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatus() );
         
         // check if nothing changed
         dom = getAsDOM( REST_URI_XML);               
@@ -246,7 +246,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         // add 
         toBeAdded2 = new String[][]{ {"/myworkspace/**:PUT,POST",TEST_ROLE1}, {"/myworkspace/**:GET",TEST_ROLELIST}};  
         expected = new String[][] { rules[0],rules[1],toBeAdded2[0],toBeAdded2[1]};
-        assertEquals( 200, postAsServletResponse(REST_URI_XML,createXMLBody(toBeAdded2),"text/xml").getStatusCode() );
+        assertEquals( 200, postAsServletResponse(REST_URI_XML,createXMLBody(toBeAdded2),"text/xml").getStatus() );
 
         dom = getAsDOM( REST_URI_XML);               
         checkXMLResponse(dom, expected);                        
@@ -259,7 +259,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         // layer rules
         String[][] rules=getDefaultLayerRules();
         String[][] toBeAdded = { rules[0],{"ws.layer1.r",TEST_ROLELIST}};  //conflict
-        assertEquals( 409, postAsServletResponse(DATA_URI_JSON,createJSONBody(toBeAdded),"text/json").getStatusCode() );
+        assertEquals( 409, postAsServletResponse(DATA_URI_JSON,createJSONBody(toBeAdded),"text/json").getStatus() );
         
         // check if nothing changed
         JSONObject json = (JSONObject) getAsJSON( DATA_URI_JSON);               
@@ -268,7 +268,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         // add 
         String[][] toBeAdded2 = { {"ws.layer1.w",TEST_ROLE1}, {"ws.layer1.r",TEST_ROLELIST}};  
         String[][] expected = { rules[0],rules[1],toBeAdded2[0],toBeAdded2[1]};
-        assertEquals( 200, postAsServletResponse(DATA_URI_JSON,createJSONBody(toBeAdded2),"text/json").getStatusCode() );
+        assertEquals( 200, postAsServletResponse(DATA_URI_JSON,createJSONBody(toBeAdded2),"text/json").getStatus() );
 
         json = (JSONObject) getAsJSON( DATA_URI_JSON);               
         checkJSONResponse(json, expected);                        
@@ -277,20 +277,20 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         
         rules=getDefaultServiceRules();
         toBeAdded2 =  new String [][]{ {"ws.*",TEST_ROLE1}, {"ws2.GetFeature",TEST_ROLELIST}};  
-        assertEquals( 200, postAsServletResponse(SERVICE_URI_JSON,createJSONBody(toBeAdded2),"text/json").getStatusCode() );
+        assertEquals( 200, postAsServletResponse(SERVICE_URI_JSON,createJSONBody(toBeAdded2),"text/json").getStatus() );
         expected = new String[][]{ rules[0],toBeAdded2[0],toBeAdded2[1]};
         
         json = (JSONObject) getAsJSON( SERVICE_URI_JSON);               
         checkJSONResponse(json, expected);                        
         
         // check conflict
-        assertEquals( 409, postAsServletResponse(SERVICE_URI_JSON,createJSONBody(toBeAdded2),"text/json").getStatusCode() );
+        assertEquals( 409, postAsServletResponse(SERVICE_URI_JSON,createJSONBody(toBeAdded2),"text/json").getStatus() );
         
         // REST rules
         
         rules=getDefaultRestRules();
         toBeAdded = new String[][] { rules[0],{"/myworkspace/**:GET",TEST_ROLELIST}};  //conflict
-        assertEquals( 409, postAsServletResponse(REST_URI_JSON,createJSONBody(toBeAdded),"text/json").getStatusCode() );
+        assertEquals( 409, postAsServletResponse(REST_URI_JSON,createJSONBody(toBeAdded),"text/json").getStatus() );
         
         // check if nothing changed
         json = (JSONObject) getAsJSON( REST_URI_JSON);               
@@ -299,7 +299,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         // add 
         toBeAdded2 = new String[][]{ {"/myworkspace/**:PUT,POST",TEST_ROLE1}, {"/myworkspace/**:GET",TEST_ROLELIST}};  
         expected = new String[][] { rules[0],rules[1],toBeAdded2[0],toBeAdded2[1]};
-        assertEquals( 200, postAsServletResponse(REST_URI_JSON,createJSONBody(toBeAdded2),"text/json").getStatusCode() );
+        assertEquals( 200, postAsServletResponse(REST_URI_JSON,createJSONBody(toBeAdded2),"text/json").getStatus() );
 
         json = (JSONObject) getAsJSON( REST_URI_JSON);               
         checkJSONResponse(json, expected);                        
@@ -313,7 +313,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         // layer rules
         String[][] rules=getDefaultLayerRules();        
         String[][] toBeModified = { rules[0],{"ws.layer1.r",TEST_ROLELIST}};  //conflict
-        assertEquals( 409, putAsServletResponse(DATA_URI_JSON,createJSONBody(toBeModified),"text/json").getStatusCode() );
+        assertEquals( 409, putAsServletResponse(DATA_URI_JSON,createJSONBody(toBeModified),"text/json").getStatus() );
         
         // check if nothing changed
         JSONObject json = (JSONObject) getAsJSON( DATA_URI_JSON);               
@@ -321,7 +321,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         
         // modify 
         String[][] toBeModified2 = { {rules[0][0],TEST_ROLE1}, {rules[1][0],TEST_ROLELIST}};          
-        assertEquals( 200, putAsServletResponse(DATA_URI_JSON,createJSONBody(toBeModified2),"text/json").getStatusCode() );
+        assertEquals( 200, putAsServletResponse(DATA_URI_JSON,createJSONBody(toBeModified2),"text/json").getStatus() );
 
         json = (JSONObject) getAsJSON( DATA_URI_JSON);               
         checkJSONResponse(json, toBeModified2);                        
@@ -330,18 +330,18 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         
         rules=getDefaultServiceRules();
         toBeModified2 =  new String [][]{ {"ws.*",TEST_ROLE1}, {"ws2.GetFeature",TEST_ROLELIST}};  // conflict
-        assertEquals( 409, putAsServletResponse(SERVICE_URI_JSON,createJSONBody(toBeModified2),"text/json").getStatusCode() );
+        assertEquals( 409, putAsServletResponse(SERVICE_URI_JSON,createJSONBody(toBeModified2),"text/json").getStatus() );
                         
         json = (JSONObject) getAsJSON( SERVICE_URI_JSON);               
         checkJSONResponse(json, rules);                        
         
-        assertEquals( 200, putAsServletResponse(SERVICE_URI_JSON,createJSONBody(new String[][]{}),"text/json").getStatusCode() );
+        assertEquals( 200, putAsServletResponse(SERVICE_URI_JSON,createJSONBody(new String[][]{}),"text/json").getStatus() );
                 
         // REST rules
         
         rules=getDefaultRestRules();
         toBeModified = new String[][] { rules[0],{"/myworkspace/**:GET",TEST_ROLELIST}};  //conflict
-        assertEquals( 409, putAsServletResponse(REST_URI_JSON,createJSONBody(toBeModified),"text/json").getStatusCode() );
+        assertEquals( 409, putAsServletResponse(REST_URI_JSON,createJSONBody(toBeModified),"text/json").getStatus() );
         
         // check if nothing changed
         json = (JSONObject) getAsJSON( REST_URI_JSON);               
@@ -349,7 +349,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         
         // modify 
         toBeModified2 = new String[][] {{rules[0][0],TEST_ROLE1}, {rules[1][0],TEST_ROLELIST}};          
-        assertEquals( 200, putAsServletResponse(REST_URI_JSON,createJSONBody(toBeModified2),"text/json").getStatusCode() );
+        assertEquals( 200, putAsServletResponse(REST_URI_JSON,createJSONBody(toBeModified2),"text/json").getStatus() );
 
         json = (JSONObject) getAsJSON( REST_URI_JSON);               
         checkJSONResponse(json, toBeModified2);                        
@@ -362,7 +362,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         // layer rules
         String[][] rules=getDefaultLayerRules();        
         String[][] toBeModified = { rules[0],{"ws.layer1.r",TEST_ROLELIST}};  //conflict
-        assertEquals( 409, putAsServletResponse(DATA_URI_XML,createXMLBody(toBeModified),"text/xml").getStatusCode() );
+        assertEquals( 409, putAsServletResponse(DATA_URI_XML,createXMLBody(toBeModified),"text/xml").getStatus() );
         
         // check if nothing changed
         Document dom = getAsDOM( DATA_URI_XML);               
@@ -370,7 +370,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         
         // modify 
         String[][] toBeModified2 = { {rules[0][0],TEST_ROLE1}, {rules[1][0],TEST_ROLELIST}};          
-        assertEquals( 200, putAsServletResponse(DATA_URI_XML,createXMLBody(toBeModified2),"text/xml").getStatusCode() );
+        assertEquals( 200, putAsServletResponse(DATA_URI_XML,createXMLBody(toBeModified2),"text/xml").getStatus() );
 
         dom = getAsDOM( DATA_URI_XML);               
         checkXMLResponse(dom, toBeModified2);                        
@@ -379,18 +379,18 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         
         rules=getDefaultServiceRules();
         toBeModified2 =  new String [][]{ {"ws.*",TEST_ROLE1}, {"ws2.GetFeature",TEST_ROLELIST}};  // conflict
-        assertEquals( 409, putAsServletResponse(SERVICE_URI_XML,createXMLBody(toBeModified2),"text/xml").getStatusCode() );
+        assertEquals( 409, putAsServletResponse(SERVICE_URI_XML,createXMLBody(toBeModified2),"text/xml").getStatus() );
                         
         dom = getAsDOM( SERVICE_URI_XML);               
         checkXMLResponse(dom, rules);                        
         
-        assertEquals( 200, putAsServletResponse(SERVICE_URI_XML,createXMLBody(new String[][]{}),"text/xml").getStatusCode() );
+        assertEquals( 200, putAsServletResponse(SERVICE_URI_XML,createXMLBody(new String[][]{}),"text/xml").getStatus() );
                 
         // REST rules
         
         rules=getDefaultRestRules();
         toBeModified = new String[][] { rules[0],{"/myworkspace/**:GET",TEST_ROLELIST}};  //conflict
-        assertEquals( 409, putAsServletResponse(REST_URI_XML,createXMLBody(toBeModified),"text/xml").getStatusCode() );
+        assertEquals( 409, putAsServletResponse(REST_URI_XML,createXMLBody(toBeModified),"text/xml").getStatus() );
         
         // check if nothing changed
         dom = getAsDOM( REST_URI_XML);               
@@ -398,7 +398,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         
         // modify 
         toBeModified2 = new String[][] {{rules[0][0],TEST_ROLE1}, {rules[1][0],TEST_ROLELIST}};          
-        assertEquals( 200, putAsServletResponse(REST_URI_XML,createXMLBody(toBeModified2),"text/xml").getStatusCode() );
+        assertEquals( 200, putAsServletResponse(REST_URI_XML,createXMLBody(toBeModified2),"text/xml").getStatus() );
 
         dom = getAsDOM( REST_URI_XML);               
         checkXMLResponse(dom, toBeModified2);                        
@@ -428,16 +428,16 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         xmlTemplate+="</"+CatalogModeResource.XML_ROOT_ELEM+">"+"\n";
         
                 
-        assertEquals( 404, putAsServletResponse(CATALOG_URI_JSON,"{\"modexxxxx\": \"HIDE\"}","text/json").getStatusCode() );
-        assertEquals( 422, putAsServletResponse(CATALOG_URI_JSON,MessageFormat.format(jsonTemplate,"ABC"),"text/json").getStatusCode() );
-        assertEquals( 422, putAsServletResponse(CATALOG_URI_XML,MessageFormat.format(xmlTemplate,"ABC"),"text/xml").getStatusCode() );
+        assertEquals( 404, putAsServletResponse(CATALOG_URI_JSON,"{\"modexxxxx\": \"HIDE\"}","text/json").getStatus() );
+        assertEquals( 422, putAsServletResponse(CATALOG_URI_JSON,MessageFormat.format(jsonTemplate,"ABC"),"text/json").getStatus() );
+        assertEquals( 422, putAsServletResponse(CATALOG_URI_XML,MessageFormat.format(xmlTemplate,"ABC"),"text/xml").getStatus() );
         
-        assertEquals( 200, putAsServletResponse(CATALOG_URI_JSON,MessageFormat.format(jsonTemplate,CatalogMode.MIXED.toString()),"text/json").getStatusCode() );
+        assertEquals( 200, putAsServletResponse(CATALOG_URI_JSON,MessageFormat.format(jsonTemplate,CatalogMode.MIXED.toString()),"text/json").getStatus() );
         json = (JSONObject) getAsJSON( CATALOG_URI_JSON);        
         mode = (String) json.get(CatalogModeResource.MODE_ELEMENT);
         assertEquals(CatalogMode.MIXED.toString(),mode);
         
-        assertEquals( 200, putAsServletResponse(CATALOG_URI_XML,MessageFormat.format(xmlTemplate,CatalogMode.CHALLENGE.toString()),"text/xml").getStatusCode() );
+        assertEquals( 200, putAsServletResponse(CATALOG_URI_XML,MessageFormat.format(xmlTemplate,CatalogMode.CHALLENGE.toString()),"text/xml").getStatus() );
         dom = getAsDOM( CATALOG_URI_XML);                       
         nl = dom.getElementsByTagName(CatalogModeResource.MODE_ELEMENT);        
         mode = nl.item(0).getTextContent();
@@ -452,26 +452,26 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         
         String[][] rules=getDefaultLayerRules();
         String[][] toBeAdded = { {"ws.layer1.r.c",TEST_ROLELIST}};  
-        assertEquals( 422, postAsServletResponse(DATA_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatusCode() );                        
+        assertEquals( 422, postAsServletResponse(DATA_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatus() );                        
         // check if nothing changed
         Document dom = getAsDOM( DATA_URI_XML);               
         checkXMLResponse(dom, rules);
         
         
         toBeAdded =  new String[][] { {"ws.layer1.x",TEST_ROLELIST}};  //conflict
-        assertEquals( 422, postAsServletResponse(DATA_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatusCode() );                        
+        assertEquals( 422, postAsServletResponse(DATA_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatus() );                        
         // check if nothing changed
         dom = getAsDOM( DATA_URI_XML);               
         checkXMLResponse(dom, rules);
         
         toBeAdded =  new String[][] { {"*.layer1.r",TEST_ROLELIST}};  //conflict
-        assertEquals( 422, postAsServletResponse(DATA_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatusCode() );                        
+        assertEquals( 422, postAsServletResponse(DATA_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatus() );                        
         // check if nothing changed
         dom = getAsDOM( DATA_URI_XML);               
         checkXMLResponse(dom, rules);
         
         toBeAdded =  new String[][] { {"ws.layer1.a",TEST_ROLELIST}};  //conflict
-        assertEquals( 422, postAsServletResponse(DATA_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatusCode() );                        
+        assertEquals( 422, postAsServletResponse(DATA_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatus() );                        
         // check if nothing changed
         dom = getAsDOM( DATA_URI_XML);               
         checkXMLResponse(dom, rules);                        
@@ -480,13 +480,13 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
         // services
         rules = getDefaultServiceRules();
         toBeAdded =  new String[][] { {"ws.getMap.c",TEST_ROLELIST}};  //conflict
-        assertEquals( 422, postAsServletResponse(SERVICE_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatusCode() );                        
+        assertEquals( 422, postAsServletResponse(SERVICE_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatus() );                        
         // check if nothing changed
         dom = getAsDOM( SERVICE_URI_XML);               
         checkXMLResponse(dom, rules);
         
         toBeAdded =  new String[][] { {"*.getMap",TEST_ROLELIST}};  //conflict
-        assertEquals( 422, postAsServletResponse(SERVICE_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatusCode() );                        
+        assertEquals( 422, postAsServletResponse(SERVICE_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatus() );                        
         // check if nothing changed
         dom = getAsDOM( SERVICE_URI_XML);               
         checkXMLResponse(dom, rules);
@@ -494,7 +494,7 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
 
         rules=getDefaultRestRules();
         toBeAdded = new String[][] { rules[0],{"/myworkspace/**!!!GET",TEST_ROLELIST}};  //conflict
-        assertEquals( 422, postAsServletResponse(REST_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatusCode() );
+        assertEquals( 422, postAsServletResponse(REST_URI_XML,createXMLBody(toBeAdded),"text/xml").getStatus() );
         
         // check if nothing changed
         dom = getAsDOM( REST_URI_XML);               
@@ -509,35 +509,35 @@ public class AccessControlResourceTest extends SecurityRESTTestSupport {
     public void testNotAuthorized() throws Exception {  
         logout();
         
-        assertEquals( 403, getAsServletResponse(DATA_URI_XML).getStatusCode() );
-        assertEquals( 403, getAsServletResponse(DATA_URI_JSON).getStatusCode() );
-        assertEquals( 403, getAsServletResponse(SERVICE_URI_XML).getStatusCode() );
-        assertEquals( 403, getAsServletResponse(SERVICE_URI_JSON).getStatusCode() );
-        assertEquals( 403, getAsServletResponse(REST_URI_XML).getStatusCode() );
-        assertEquals( 403, getAsServletResponse(REST_URI_JSON).getStatusCode() );
+        assertEquals( 403, getAsServletResponse(DATA_URI_XML).getStatus() );
+        assertEquals( 403, getAsServletResponse(DATA_URI_JSON).getStatus() );
+        assertEquals( 403, getAsServletResponse(SERVICE_URI_XML).getStatus() );
+        assertEquals( 403, getAsServletResponse(SERVICE_URI_JSON).getStatus() );
+        assertEquals( 403, getAsServletResponse(REST_URI_XML).getStatus() );
+        assertEquals( 403, getAsServletResponse(REST_URI_JSON).getStatus() );
         
-        assertEquals( 403, putAsServletResponse(DATA_URI_XML).getStatusCode() );
-        assertEquals( 403, putAsServletResponse(DATA_URI_JSON).getStatusCode() );
-        assertEquals( 403, putAsServletResponse(SERVICE_URI_XML).getStatusCode() );
-        assertEquals( 403, putAsServletResponse(SERVICE_URI_JSON).getStatusCode() );
-        assertEquals( 403, putAsServletResponse(REST_URI_XML).getStatusCode() );
-        assertEquals( 403, putAsServletResponse(REST_URI_JSON).getStatusCode() );
+        assertEquals( 403, putAsServletResponse(DATA_URI_XML).getStatus() );
+        assertEquals( 403, putAsServletResponse(DATA_URI_JSON).getStatus() );
+        assertEquals( 403, putAsServletResponse(SERVICE_URI_XML).getStatus() );
+        assertEquals( 403, putAsServletResponse(SERVICE_URI_JSON).getStatus() );
+        assertEquals( 403, putAsServletResponse(REST_URI_XML).getStatus() );
+        assertEquals( 403, putAsServletResponse(REST_URI_JSON).getStatus() );
         
-        assertEquals( 403, postAsServletResponse(DATA_URI_XML,"").getStatusCode() );
-        assertEquals( 403, postAsServletResponse(DATA_URI_JSON,"").getStatusCode() );
-        assertEquals( 403, postAsServletResponse(SERVICE_URI_XML,"").getStatusCode() );
-        assertEquals( 403, postAsServletResponse(SERVICE_URI_JSON,"").getStatusCode() );
-        assertEquals( 403, postAsServletResponse(REST_URI_XML,"").getStatusCode() );
-        assertEquals( 403, postAsServletResponse(REST_URI_JSON,"").getStatusCode() );
+        assertEquals( 403, postAsServletResponse(DATA_URI_XML,"").getStatus() );
+        assertEquals( 403, postAsServletResponse(DATA_URI_JSON,"").getStatus() );
+        assertEquals( 403, postAsServletResponse(SERVICE_URI_XML,"").getStatus() );
+        assertEquals( 403, postAsServletResponse(SERVICE_URI_JSON,"").getStatus() );
+        assertEquals( 403, postAsServletResponse(REST_URI_XML,"").getStatus() );
+        assertEquals( 403, postAsServletResponse(REST_URI_JSON,"").getStatus() );
         
-        assertEquals( 403, deleteAsServletResponse(DATA_URI_XML).getStatusCode() );
-        assertEquals( 403, deleteAsServletResponse(SERVICE_URI_XML).getStatusCode() );
-        assertEquals( 403, deleteAsServletResponse(REST_URI_XML).getStatusCode() );
+        assertEquals( 403, deleteAsServletResponse(DATA_URI_XML).getStatus() );
+        assertEquals( 403, deleteAsServletResponse(SERVICE_URI_XML).getStatus() );
+        assertEquals( 403, deleteAsServletResponse(REST_URI_XML).getStatus() );
         
-        assertEquals( 403, getAsServletResponse(CATALOG_URI_XML).getStatusCode() );
-        assertEquals( 403, getAsServletResponse(CATALOG_URI_JSON).getStatusCode() );
-        assertEquals( 403, putAsServletResponse(CATALOG_URI_XML).getStatusCode() );
-        assertEquals( 403, putAsServletResponse(CATALOG_URI_JSON).getStatusCode() );
+        assertEquals( 403, getAsServletResponse(CATALOG_URI_XML).getStatus() );
+        assertEquals( 403, getAsServletResponse(CATALOG_URI_JSON).getStatus() );
+        assertEquals( 403, putAsServletResponse(CATALOG_URI_XML).getStatus() );
+        assertEquals( 403, putAsServletResponse(CATALOG_URI_JSON).getStatus() );
 
 
                         

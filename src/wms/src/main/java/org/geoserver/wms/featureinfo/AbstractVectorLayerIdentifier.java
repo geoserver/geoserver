@@ -27,7 +27,7 @@ abstract class AbstractVectorLayerIdentifier implements LayerIdentifier {
      * 
      * @param style
      * @param scaleDenominator
-     * @return
+     *
      */
     protected List<Rule> getActiveRules(Style style, double scaleDenominator) {
         List<Rule> result = new ArrayList<Rule>();

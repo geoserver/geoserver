@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -23,7 +23,7 @@ import org.geoserver.wcs.test.WCSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
 
     // @Override
@@ -72,7 +72,6 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
      * ArcGrid cannot encode rotate coverages, yet due to a bug the output was a garbled mime multipart instead of a service exception. This makes
      * sure an exception is returned instead.
      * 
-     * @throws Exception
      */
     @Test
     public void testArcgridException() throws Exception {

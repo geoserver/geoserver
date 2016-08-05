@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,17 +11,26 @@ import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -204,12 +213,12 @@ public class AuthenticationPage extends AbstractSecurityPage {
                             }
                         }        
                         chainTestResultField.getModel().setObject(result);
-                        target.addComponent(chainTestResultField);
+                        target.add(chainTestResultField);
                     }
                     catch(Exception e) {
                         error(e);
                         LOGGER.log(Level.WARNING, "Connection error", e);
-                        target.addComponent(feedbackPanel);
+                        target.add(feedbackPanel);
                     }
                 }
                 protected GeoServerSecurityFilterChainProxy getProxy() {
@@ -278,6 +287,42 @@ public class AuthenticationPage extends AbstractSecurityPage {
                         public int getLocalPort() {
                             return 0;
                         }
+
+                        @Override
+                        public ServletContext getServletContext() {
+                            return null;
+                        }
+
+                        @Override
+                        public AsyncContext startAsync() throws IllegalStateException {
+                            return null;
+                        }
+
+                        @Override
+                        public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
+                            return null;
+                        }
+
+                        @Override
+                        public boolean isAsyncStarted() {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean isAsyncSupported() {
+                            return false;
+                        }
+
+                        @Override
+                        public AsyncContext getAsyncContext() {
+                            return null;
+                        }
+
+                        @Override
+                        public DispatcherType getDispatcherType() {
+                            return null;
+                        }
+
                         public String getLocalName() {
                             return null;
                         }
@@ -311,6 +356,32 @@ public class AuthenticationPage extends AbstractSecurityPage {
                         public boolean isRequestedSessionIdFromUrl() {
                             return false;
                         }
+
+                        @Override
+                        public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
+                            return false;
+                        }
+
+                        @Override
+                        public void login(String username, String password) throws ServletException {
+
+                        }
+
+                        @Override
+                        public void logout() throws ServletException {
+
+                        }
+
+                        @Override
+                        public Collection<Part> getParts() throws IOException, ServletException {
+                            return null;
+                        }
+
+                        @Override
+                        public Part getPart(String name) throws IOException, ServletException {
+                            return null;
+                        }
+
                         public boolean isRequestedSessionIdFromURL() {
                             return false;
                         }

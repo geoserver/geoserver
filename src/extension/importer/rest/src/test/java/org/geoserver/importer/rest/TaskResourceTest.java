@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -41,7 +42,6 @@ import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.UpdateMode;
 import org.geoserver.importer.VFSWorker;
-import org.geoserver.platform.resource.Files;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geotools.data.Transaction;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -56,8 +56,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * @author Ian Schneider <ischneider@opengeo.org>
@@ -92,7 +92,7 @@ public class TaskResourceTest extends ImporterTestSupport {
             stream = ImporterTestSupport.class.getResourceAsStream("../test-data/" + path);
         }
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports", "");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
 
         String[] split = resp.getHeader("Location").split("/");
@@ -103,10 +103,10 @@ public class TaskResourceTest extends ImporterTestSupport {
         req.setContentType("application/zip");
         req.addHeader("Content-Type","application/zip");
         req.setMethod("PUT");
-        req.setBodyContent(org.apache.commons.io.IOUtils.toByteArray(stream));
+        req.setContent(org.apache.commons.io.IOUtils.toByteArray(stream));
         resp = dispatch(req);
         
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         
         context = importer.getContext(context.getId());
         assertNull(context.getData());
@@ -120,7 +120,7 @@ public class TaskResourceTest extends ImporterTestSupport {
     
     private Integer putZipAsURL(String zip) throws Exception {
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports", "");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
 
         String[] split = resp.getHeader("Location").split("/");
@@ -130,13 +130,13 @@ public class TaskResourceTest extends ImporterTestSupport {
         MockHttpServletRequest req = createRequest("/rest/imports/" + id + "/tasks/");
         Form form = new Form();
         form.add("url", new File(zip).getAbsoluteFile().toURI().toString());
-        req.setBodyContent(form.encode());
+        req.setContent(form.encode().getBytes("UTF-8"));
         req.setMethod("POST");
         req.setContentType(MediaType.APPLICATION_WWW_FORM.toString());
-        req.setHeader("Content-Type", MediaType.APPLICATION_WWW_FORM.toString());
+        req.addHeader("Content-Type", MediaType.APPLICATION_WWW_FORM.toString());
         resp = dispatch(req);
         
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         
         context = importer.getContext(context.getId());
         assertNull(context.getData());
@@ -195,7 +195,7 @@ public class TaskResourceTest extends ImporterTestSupport {
     @Test
     public void testDeleteTask() throws Exception {
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports", "");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
 
         String[] split = resp.getHeader("Location").split("/");
@@ -223,7 +223,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         req.setContentType(multipart.getContentType());
         req.addHeader("Content-Type", multipart.getContentType());
         req.setMethod("POST");
-        req.setBodyContent(bout.toByteArray());
+        req.setContent(bout.toByteArray());
         resp = dispatch(req);
 
         context = importer.getContext(context.getId());
@@ -232,7 +232,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         req = createRequest("/rest/imports/" + id + "/tasks/1");
         req.setMethod("DELETE");
         resp = dispatch(req);
-        assertEquals(204, resp.getStatusCode());
+        assertEquals(204, resp.getStatus());
 
         context = importer.getContext(context.getId());
         assertEquals(1, context.getTasks().size());
@@ -241,7 +241,7 @@ public class TaskResourceTest extends ImporterTestSupport {
     @Test
     public void testPostMultiPartFormData() throws Exception {
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports", "");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
 
         String[] split = resp.getHeader("Location").split("/");
@@ -267,7 +267,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         req.setContentType(multipart.getContentType());
         req.addHeader("Content-Type", multipart.getContentType());
         req.setMethod("POST");
-        req.setBodyContent(bout.toByteArray());
+        req.setContent(bout.toByteArray());
         resp = dispatch(req);
 
         context = importer.getContext(context.getId());
@@ -283,7 +283,7 @@ public class TaskResourceTest extends ImporterTestSupport {
             InputStream geotiffResourceStream, String contentType) throws Exception {
         // upload  tif or zip file containing a tif and verify the results
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports", "");
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
 
         String[] split = resp.getHeader("Location").split("/");
@@ -294,10 +294,10 @@ public class TaskResourceTest extends ImporterTestSupport {
         req.setContentType(contentType);
         req.addHeader("Content-Type", contentType);
         req.setMethod("PUT");
-        req.setBodyContent(org.apache.commons.io.IOUtils.toByteArray(geotiffResourceStream));
+        req.setContent(org.apache.commons.io.IOUtils.toByteArray(geotiffResourceStream));
         resp = dispatch(req);
 
-        assertEquals(201, resp.getStatusCode());
+        assertEquals(201, resp.getStatus());
 
         context = importer.getContext(context.getId());
         assertNull(context.getData());
@@ -338,7 +338,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         IOUtils.copy(inputStream, destinationArchive);
 
         VFSWorker vfs = new VFSWorker();
-        vfs.extractTo(Files.asResource(destinationArchive), Files.asResource(tempDir));
+        vfs.extractTo(destinationArchive, tempDir);
 
         File tiff = new File(tempDir, tifname);
         if (!tiff.exists()) {
@@ -439,9 +439,9 @@ public class TaskResourceTest extends ImporterTestSupport {
         assertEquals("Invalid context state", State.PENDING, state);
     }
     
-    private void verifyInvalidCRSErrorResponse(MockHttpServletResponse resp) {
-        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), resp.getStatusCode());
-        JSONObject errorResponse = JSONObject.fromObject(resp.getOutputStreamContent());
+    private void verifyInvalidCRSErrorResponse(MockHttpServletResponse resp) throws UnsupportedEncodingException {
+        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), resp.getStatus());
+        JSONObject errorResponse = JSONObject.fromObject(resp.getContentAsString());
         JSONArray errors = errorResponse.getJSONArray("errors");
         assertTrue(errors.get(0).toString().startsWith("Invalid SRS"));
     }
@@ -449,7 +449,6 @@ public class TaskResourceTest extends ImporterTestSupport {
     /**
      * Ideally, many variations of error handling could be tested here.
      * (For performance - otherwise too much tear-down/setup)
-     * @throws Exception
      */
     @Test
     public void testErrorHandling() throws Exception {
@@ -480,7 +479,7 @@ public class TaskResourceTest extends ImporterTestSupport {
     @Test
     public void testDeleteTask2() throws Exception {
         MockHttpServletResponse response = deleteAsServletResponse("/rest/imports/0/tasks/0");
-        assertEquals(204, response.getStatusCode());
+        assertEquals(204, response.getStatus());
 
         JSONObject json = (JSONObject) getAsJSON("/rest/imports/0/tasks");
 

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -24,7 +24,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class StoreCoverageTest extends WPSTestSupport {
 
@@ -68,7 +68,7 @@ public class StoreCoverageTest extends WPSTestSupport {
                 + "    </wps:RawDataOutput>\n" + "  </wps:ResponseForm>\n" + "</wps:Execute>";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
-        String url = response.getOutputStreamContent();
+        String url = response.getContentAsString();
 
         // System.out.println(url);
 
@@ -146,7 +146,7 @@ public class StoreCoverageTest extends WPSTestSupport {
                 + "  </wps:RawDataOutput>" + "</wps:ResponseForm>" + "</wps:Execute>";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
-        String url = response.getOutputStreamContent();
+        String url = response.getContentAsString();
 
         Map<String, Object> query = KvpUtils.parseQueryString(url);
         assertEquals("GetExecutionResult", query.get("request"));

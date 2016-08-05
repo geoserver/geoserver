@@ -176,7 +176,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("Unepected error occurred while trying to "
+            throw new RuntimeException("Unexpected error occurred while trying to "
                     + "store the request data in the logger queue", e);
         }
     }
@@ -305,7 +305,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
          * Performs log-rolling if necessary
          * 
          * @param writer
-         * @return
+         *
          * @throws IOException
          */
         BufferedWriter rollWriter(BufferedWriter writer) throws Exception {

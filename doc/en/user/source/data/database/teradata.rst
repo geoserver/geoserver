@@ -1,4 +1,4 @@
-.. data_teradata:
+.. _data_teradata:
 
 Teradata
 ========
@@ -159,7 +159,7 @@ When all files have been downloaded and extracted, restart GeoServer.  To verify
 Adding a Teradata datastore
 ---------------------------
 
-Once the extension has been added, it will now be possible to load an existing Teradata database as a store in GeoServer.  In the :ref:`web_admin`, click on :ref:`webadmin_stores` then go to :guilabel:`Add a new Store`.  You will see a option, under :guilabel:`Vector Data Stores`, for :guilabel:`Teradata`.  Select this option.
+Once the extension has been added, it will now be possible to load an existing Teradata database as a store in GeoServer.  In the :ref:`web_admin`, click on :ref:`data_webadmin_stores` then go to :guilabel:`Add a new Store`.  You will see a option, under :guilabel:`Vector Data Stores`, for :guilabel:`Teradata`.  Select this option.
 
 .. figure:: images/teradata_addnewstore.png
    :align: center
@@ -235,7 +235,7 @@ Using JNDI
 
 GeoServer can also connect to a Teradata database using `JNDI <http://www.oracle.com/technetwork/java/jndi/index.html>`_ (Java Naming and Directory Interface).
 
-To begin, in the :ref:`web_admin`, click on :ref:`webadmin_stores` then go to :guilabel:`Add a new Store`.  You will see a option, under :guilabel:`Vector Data Stores`, for :guilabel:`Teradata (JNDI)`.  Select this option.
+To begin, in the :ref:`web_admin`, click on :ref:`data_webadmin_stores` then go to :guilabel:`Add a new Store`.  You will see a option, under :guilabel:`Vector Data Stores`, for :guilabel:`Teradata (JNDI)`.  Select this option.
 
 .. figure:: images/teradata_selectionjndi.png
    :align: center
@@ -281,7 +281,7 @@ When finished, click :guilabel:`Save`.
 Adding layers
 -------------
 
-One the store has been loaded into GeoServer, the process for loading data layers from database tables is the same as any other database source.  Please see the :ref:`webadmin_layers` section for more information. 
+One the store has been loaded into GeoServer, the process for loading data layers from database tables is the same as any other database source.  Please see the :ref:`data_webadmin_layers` section for more information. 
 
 .. note:: Only those database tables that have spatial information and an entry in the ``SYSSPATIAL.geometry_columns`` table can be served through GeoServer.
 

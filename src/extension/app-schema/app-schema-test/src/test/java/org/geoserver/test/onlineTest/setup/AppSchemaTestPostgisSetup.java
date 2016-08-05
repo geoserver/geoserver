@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014-16 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -15,8 +15,8 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.property.PropertyFeatureReader;
-import org.geotools.feature.IllegalAttributeException;
 import org.geotools.resources.Classes;
+import org.opengis.feature.IllegalAttributeException;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -33,7 +33,6 @@ import com.vividsolutions.jts.io.WKTWriter;
  * 
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
-@SuppressWarnings("deprecation")
 public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {   
     /**
      * Database schema to be used for postgis test database so they are isolated.
@@ -90,7 +89,6 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
      * 
      * @param propertyFiles
      *            Property file name and its feature type directory map
-     * @throws Exception
      */
     public static AppSchemaTestPostgisSetup getInstance(Map<String, File> propertyFiles) throws Exception {
         return new AppSchemaTestPostgisSetup(propertyFiles);
@@ -101,8 +99,6 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
      * 
      * @param propertyFiles
      *            Property file name and its parent directory map
-     * @return This class instance.
-     * @throws Exception
      */
     public AppSchemaTestPostgisSetup(Map<String, File> propertyFiles) throws Exception {
         configureFixture();
@@ -230,7 +226,6 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
 
     @Override
     protected void runSqlInsertScript() throws Exception {
-        System.out.println(sql);
         this.run(sql, false);
     }
 }

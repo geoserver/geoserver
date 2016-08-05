@@ -55,7 +55,7 @@ public class LockFile  {
     /**
      * return true if a write lock is hold by this file watcher 
      * 
-     * @return
+     *
      * @throws IOException
      */
     public boolean hasWriteLock() throws IOException{        
@@ -65,7 +65,7 @@ public class LockFile  {
     /**
      * return true if a write lock is hold by another file watcher 
      * 
-     * @return
+     *
      * @throws IOException
      */
     public boolean hasForeignWriteLock() throws IOException{        

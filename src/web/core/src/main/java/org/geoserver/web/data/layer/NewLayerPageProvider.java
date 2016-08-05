@@ -1,18 +1,19 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.data.layer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -22,7 +23,8 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.web.GeoServerApplication;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.data.ows.Layer;
 import org.geotools.feature.NameImpl;
@@ -70,13 +72,14 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
             Map<String, Resource> resources = new HashMap<String, Resource>();
             if(store instanceof DataStoreInfo) {
                 DataStoreInfo dstore = (DataStoreInfo) store;
+                DataStoreInfo expandedStore = getCatalog().getResourcePool().clone(dstore, true);
                 
                 // collect all the type names and turn them into resources
                 // for the moment we use local names as datastores are not returning
                 // namespace qualified NameImpl
-                List<Name> names = dstore.getDataStore(null).getNames();
+                List<Name> names = expandedStore.getDataStore(null).getNames();
                 for (Name name : names) {
-                    FeatureTypeInfo fti = getCatalog().getFeatureTypeByDataStore(dstore, name.getLocalPart());
+                    FeatureTypeInfo fti = getCatalog().getFeatureTypeByDataStore(expandedStore, name.getLocalPart());
                     // skip views, we cannot have two layers use the same feature type info, as the
                     // underlying definition is attached to the feature type info itself
                     if(fti == null || fti.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE) == null) {
@@ -86,8 +89,10 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
                 
             } else if(store instanceof CoverageStoreInfo) {
                 CoverageStoreInfo cstore = (CoverageStoreInfo) store;
-                NamespaceInfo ns = getCatalog().getNamespaceByPrefix(cstore.getWorkspace().getName());
-                GridCoverageReader reader = cstore.getGridCoverageReader(null, null);
+                CoverageStoreInfo expandedStore = getCatalog().getResourcePool().clone(cstore, true);
+                
+                NamespaceInfo ns = getCatalog().getNamespaceByPrefix(expandedStore.getWorkspace().getName());
+                GridCoverageReader reader = expandedStore.getGridCoverageReader(null, null);
                 try {
                     String[] names = reader.getGridCoverageNames();
                     for (String name : names) {
@@ -109,10 +114,11 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
                     
             } else if(store instanceof WMSStoreInfo) {
                 WMSStoreInfo wmsInfo = (WMSStoreInfo) store;
+                WMSStoreInfo expandedStore = getCatalog().getResourcePool().clone(wmsInfo, true);
                 
                 CatalogBuilder builder = new CatalogBuilder(getCatalog());
                 builder.setStore(store);
-                List<Layer> layers = wmsInfo.getWebMapServer(null).getCapabilities().getLayerList();
+                List<Layer> layers = expandedStore.getWebMapServer(null).getCapabilities().getLayerList();
                 for(Layer l : layers) {
                     if(l.getName() == null) {
                         continue;

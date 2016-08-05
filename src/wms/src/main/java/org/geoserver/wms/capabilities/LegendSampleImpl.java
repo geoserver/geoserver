@@ -103,7 +103,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
      * 
      * @param styleResource
      * @param sampleFile
-     * @return
+     *
      */
     private boolean isStyleNewerThanSample(Resource styleResource,
             Resource sampleFile) {
@@ -117,7 +117,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
      * it exists, null otherwise.
      *  
      * @param style
-     * @return
+     *
      * @throws IOException
      */
     private Resource getSampleFile(StyleInfo style) throws IOException {
@@ -129,7 +129,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
      * Returns  the cached sample with the given name.
      * 
      * @param fileName
-     * @return
+     *
      */
     private Resource getSampleFile(String fileName) {
         return getSamplesFolder().get(fileName);
@@ -139,7 +139,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
      * Gets a unique fileName for a sample.
      * 
      * @param style
-     * @return
+     *
      */
     private String getSampleFileName(StyleInfo style) {
         String prefix = "";
@@ -154,7 +154,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
      * Gets an SLD resource for the given style.
      * 
      * @param style
-     * @return
+     *
      */
     private Resource getStyleResource(StyleInfo style) {
         String[] prefix = new String[0];
@@ -204,8 +204,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
      * 
      * @param style
      * @param pngOutputFormat
-     * @return
-     * @throws Exception
+     *
      */
     private Dimension createNewSample(StyleInfo style,
             GetLegendGraphicOutputFormat pngOutputFormat) throws Exception {
@@ -248,7 +247,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
     /**
      * 
      * @param sampleLegendFile
-     * @return
+     *
      */
     private Dimension getSizeFromSample(Resource sampleLegendFile) {
         PngReader pngReader = null;
@@ -315,7 +314,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
      * Checks if the given style sample is marked as invalid.
      * 
      * @param style
-     * @return
+     *
      */
     private boolean isStyleSampleInvalid(StyleInfo style) {
         return invalidated.contains(getStyleName(style));
@@ -326,7 +325,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
      * form worspacename:stylename (or stylename if the style is global).
      * 
      * @param styleInfo
-     * @return
+     *
      */
     private String getStyleName(StyleInfo styleInfo) {
         return styleInfo.getWorkspace() != null ? (styleInfo.getWorkspace()

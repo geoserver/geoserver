@@ -66,7 +66,6 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
     /**
      * Same as GEOS-1875, but let's check without bbox and without name prefix
      * 
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -91,7 +90,6 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
     /**
      * See https://osgeo-org.atlassian.net/browse/GEOS-1875
      * 
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -122,7 +120,6 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
     /**
      * See https://osgeo-org.atlassian.net/browse/GEOS-1875
      * 
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test

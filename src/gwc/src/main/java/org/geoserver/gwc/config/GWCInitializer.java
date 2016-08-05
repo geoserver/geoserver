@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -29,6 +29,7 @@ import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
 import org.geoserver.gwc.layer.LegacyTileLayerInfoLoader;
 import org.geoserver.gwc.layer.TileLayerCatalog;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
+import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.WMSInfo;
@@ -91,7 +92,7 @@ public class GWCInitializer implements GeoServerInitializer {
         LOGGER.info("Initializing GeoServer specific GWC configuration from "
                 + GWCConfigPersister.GWC_CONFIG_FILE);
 
-        final Version currentVersion = new Version("1.0.0");
+        final Version currentVersion = new Version("1.1.0");
         final Resource configFile = configPersister.findConfigFile();
         if (configFile == null || configFile.getType() != Type.RESOURCE) {
             LOGGER.fine("GWC's GeoServer specific configuration not found, creating with old defaults");
@@ -104,6 +105,17 @@ public class GWCInitializer implements GeoServerInitializer {
 
         final GWCConfig config = configPersister.getConfig();
         final Version version = new Version(config.getVersion());
+
+        if (version.compareTo(new Version("2.0.0")) < 0 && config.isWMTSEnabled() != null) {
+            // setting WMTS enabling information based on old GWC configuration setting
+            WMTSInfo globalServiceInfo = geoServer.getFacade().getService(WMTSInfo.class);
+            globalServiceInfo.setEnabled(config.isWMTSEnabled());
+            geoServer.save(globalServiceInfo);
+            // overriding configuration
+            config.setWMTSEnabled(null);
+            configPersister.save(config);
+        }
+
         if (currentVersion.compareTo(version) > 0) {
             // got the global config file, so old defaults are already in place if need be. Now
             // check whether we need to migrate the configuration from the Layer/GroupInfo metadata

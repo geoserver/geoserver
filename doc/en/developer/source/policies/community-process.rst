@@ -93,8 +93,6 @@ Here is what that looks like:
 
 For more information, or to volunteer, please check the `release schedule <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`__ in the wiki.
 
-
-
 **Unscheduled Releases**
 
 Additional releases may be requested by downstream projects at any point, or may be produced by a volunteer to quickly disseminate a security fix.

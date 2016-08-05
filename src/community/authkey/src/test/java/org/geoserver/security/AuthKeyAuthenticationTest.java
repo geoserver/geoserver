@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -39,9 +39,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTest {
 
@@ -217,7 +217,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
 
         // test success
         String authKey=null;
@@ -232,10 +232,9 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();        
         request.setQueryString(authKeyUrlParam+"=" + authKey);        
-        request.setupAddParameter(authKeyUrlParam, authKey);
+        request.addParameter(authKeyUrlParam, authKey);
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
-        assertFalse(response.wasRedirectSent());
+        assertFalse(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
 
         SecurityContext ctx = (SecurityContext) request.getSession(false).getAttribute(
@@ -255,9 +254,9 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         chain = new MockFilterChain();
 
         request.setQueryString(authKeyUrlParam+"=abc");        
-        request.setupAddParameter(authKeyUrlParam, "abc");
+        request.addParameter(authKeyUrlParam, "abc");
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
         
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         
@@ -271,10 +270,10 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         chain = new MockFilterChain();
         
         request.setQueryString(authKeyUrlParam+"=" + authKey);        
-        request.setupAddParameter(authKeyUrlParam, authKey);
+        request.addParameter(authKeyUrlParam, authKey);
         getProxy().doFilter(request, response, chain);
         
-        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
         
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         updateUser("ug1", username, true);
@@ -284,7 +283,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         // Anonymous context is not stored in http session, no further testing
         removeAnonymousFilter();
 
@@ -326,7 +325,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
 
         // test success
         GeoServerUser user= (GeoServerUser) getSecurityManager().loadUserGroupService("ug1").loadUserByUsername(testUserName);
@@ -338,10 +337,9 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();        
         request.setQueryString(authKeyUrlParam+"=" + authKey);        
-        request.setupAddParameter(authKeyUrlParam, authKey);
+        request.addParameter(authKeyUrlParam, authKey);
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
-        assertFalse(response.wasRedirectSent());
+        assertFalse(response.getStatus() == MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
         Authentication auth = (Authentication) getCache().get(filterName,authKey);
         assertNotNull(auth);
@@ -358,9 +356,9 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         chain = new MockFilterChain();
 
         request.setQueryString(authKeyUrlParam+"=abc");        
-        request.setupAddParameter(authKeyUrlParam, "abc");
+        request.addParameter(authKeyUrlParam, "abc");
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
         
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         
@@ -376,10 +374,10 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         chain = new MockFilterChain();
         
         request.setQueryString(authKeyUrlParam+"=" + authKey);        
-        request.setupAddParameter(authKeyUrlParam, authKey);
+        request.addParameter(authKeyUrlParam, authKey);
         getProxy().doFilter(request, response, chain);
         
-        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
         assertNull(getCache().get(filterName, authKey));
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         updateUser("ug1", username, true);
@@ -389,7 +387,7 @@ public class AuthKeyAuthenticationTest extends AbstractAuthenticationProviderTes
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         // Anonymous context is not stored in http session, no further testing
         removeAnonymousFilter();
 

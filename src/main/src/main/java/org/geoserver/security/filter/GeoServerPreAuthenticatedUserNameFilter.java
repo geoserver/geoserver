@@ -172,7 +172,7 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter extends GeoServerP
      * 
      * @param request
      * @param principal
-     * @return
+     *
      * @throws IOException
      */
     protected Collection<GeoServerRole> getRolesFromRoleService(HttpServletRequest request, String principal) throws IOException{
@@ -193,7 +193,7 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter extends GeoServerP
      * 
      * @param request
      * @param principal
-     * @return
+     *
      * @throws IOException
      */
     protected Collection<GeoServerRole> getRolesFromUserGroupService(HttpServletRequest request, String principal) throws IOException{
@@ -222,7 +222,7 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter extends GeoServerP
      * 
      * @param request
      * @param principal
-     * @return
+     *
      * @throws IOException
      */
     protected Collection<GeoServerRole> getRolesFromHttpAttribute(HttpServletRequest request, String principal) throws IOException{

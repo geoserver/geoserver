@@ -17,7 +17,7 @@ import org.opengis.coverage.grid.GridCoverage;
  * Web Coverage Services interface.
  * <p>
  * Each of the methods on this class corresponds to an operation as defined by the Web Coverage
- * Specification. See {@link http://www.opengeospatial.org/standards/wcs} for more details.
+ * Specification. See {@link "http://www.opengeospatial.org/standards/wcs"} for more details.
  * </p>
  * 
  * @author Andrea Aime, TOPP

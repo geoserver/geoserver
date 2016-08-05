@@ -167,7 +167,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /** A logger for this class. */
-    private static final Logger LOGGER = Logging.getLogger(RenderedImageMapOutputFormat.class);
+    public static final Logger LOGGER = Logging.getLogger(RenderedImageMapOutputFormat.class);
 
     /** Which format to encode the image in if one is not supplied */
     private static final String DEFAULT_MAP_FORMAT = "image/png";
@@ -517,17 +517,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         
         onBeforeRender(renderer);
         
-        int localMaxRenderingTime = 0;
-        Object timeoutOption = request.getFormatOptions().get("timeout");
-        if (timeoutOption != null) {
-            try {
-                localMaxRenderingTime = Integer.parseInt(timeoutOption.toString());
-            } catch (NumberFormatException e) {
-                LOGGER.log(Level.WARNING,"Could not parse format_option \"timeout\": "+timeoutOption, e);
-            }
-        }
-        int maxRenderingTime = getMaxRenderingTime(localMaxRenderingTime);
-        
+        int maxRenderingTime = wms.getMaxRenderingTime(request);
         ServiceException serviceException = null;
         boolean saveMap = (request.getRawKvp() != null && WMSServiceExceptionHandler
                 .isPartialMapExceptionType(request.getRawKvp().get("EXCEPTIONS")));
@@ -603,7 +593,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * Creates a {@link StreamingRenderer} instance (subclasses can provide
      * their own specialized subclasses of {@link StreamingRenderer}
      * 
-     * @return
+     *
      */
     protected StreamingRenderer buildRenderer() {
         return new StreamingRenderer();
@@ -634,25 +624,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 preparedImage, hintsMap);
     }
     
-    /**
-     * Timeout on the smallest nonzero value of the WMS timeout and the timeout format option
-     * If both are zero then there is no timeout
-     * 
-     * @param localMaxRenderingTime
-     * @return
-     */
-    public int getMaxRenderingTime(int localMaxRenderingTime) {
-        
-        int maxRenderingTime = wms.getMaxRenderingTime() * 1000;
-        
-        if (maxRenderingTime == 0) {
-            maxRenderingTime = localMaxRenderingTime;
-        } else if (localMaxRenderingTime != 0) {
-            maxRenderingTime = Math.min(maxRenderingTime, localMaxRenderingTime);
-        }
-        
-        return maxRenderingTime;
-    }
+    
 
     /**
      * Allows subclasses to customize the renderer before the paint method gets invoked
@@ -774,7 +746,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @param width
      * @param height
      * @param paletteInverter
-     * @return
+     *
      */
     protected RenderedImage prepareImage(int width, int height, IndexColorModel palette,
             boolean transparent) {
@@ -818,7 +790,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @param height
      * @param palette
      * @param transparent
-     * @return
+     *
      */
     protected long getDrawingSurfaceMemoryUse(int width, int height, IndexColorModel palette,
             boolean transparent) {
@@ -832,7 +804,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * if the palette only has 2 colors)
      * 
      * @param source
-     * @return
+     *
      */
     private static RenderedImage optimizeSampleModel(RenderedImage source) {
         int w = source.getWidth();
@@ -1343,7 +1315,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * color returns the appropriate background color to be used in the mosaic operation
      * @param red
      * @param cm
-     * @return
+     *
      */
     double mapToGrayColor(Color gray, ComponentColorModel cm) {
         double[] rescaleFactors = new double[DataBuffer.TYPE_UNDEFINED + 1];
@@ -1360,7 +1332,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     /**
      * Returns true if the color is a level of gray
      * @param color
-     * @return
+     *
      */
     private static boolean isLevelOfGray(Color color) {
         return color.getRed() == color.getBlue() && color.getRed() == color.getGreen();
@@ -1391,7 +1363,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @param params
      * @param requestedRasterArea
      * @param interpolation
-     * @return
+     *
      * @throws IOException
      */
     private static GridCoverage2D readBestCoverage(

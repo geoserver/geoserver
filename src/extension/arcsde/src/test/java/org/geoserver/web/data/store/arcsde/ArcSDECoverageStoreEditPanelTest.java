@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -50,9 +50,10 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
 
     private CoverageStoreInfo storeInfo;
 
-    private Form editForm;
+    private Form<CoverageStoreInfo> editForm;
 
-    private ArcSDECoverageStoreEditPanel startPanelToEditStore() {
+    @SuppressWarnings("unchecked")
+	private ArcSDECoverageStoreEditPanel startPanelToEditStore() {
         final Catalog catalog = getCatalog();
         storeInfo = catalog.getFactory().createCoverageStore();
         storeInfo.setDescription("fake arcsde store");
@@ -70,7 +71,7 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         page = new CoverageStoreEditPage(storeId);
         tester.startPage(page);
 
-        editForm = (Form) tester.getComponentFromLastRenderedPage("rasterStoreForm");
+        editForm = (Form<CoverageStoreInfo>) tester.getComponentFromLastRenderedPage("rasterStoreForm");
 
         ArcSDECoverageStoreEditPanel panel = (ArcSDECoverageStoreEditPanel) tester
                 .getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel");
@@ -78,12 +79,13 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         return panel;
     }
 
-    private ArcSDECoverageStoreEditPanel startPanelForNewStore() {
+    @SuppressWarnings("unchecked")
+	private ArcSDECoverageStoreEditPanel startPanelForNewStore() {
         login();
         page = new CoverageStoreNewPage(ArcSDERasterFormat.getInstance().getName());
         tester.startPage(page);
 
-        editForm = (Form) tester.getComponentFromLastRenderedPage("rasterStoreForm");
+        editForm = (Form<CoverageStoreInfo>) tester.getComponentFromLastRenderedPage("rasterStoreForm");
 
         ArcSDECoverageStoreEditPanel panel = (ArcSDECoverageStoreEditPanel) tester
                 .getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel");
@@ -99,8 +101,8 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         // null... odd.
         storeInfo.setName("test storeInfo Name");
 
-        editForm = new Form("formId");
-        editForm.setModel(new Model(storeInfo));
+        editForm = new Form<CoverageStoreInfo>("formId");
+        editForm.setModel(new Model<CoverageStoreInfo>(storeInfo));
         GeoServerApplication app = getGeoServerApplication();
 
         StoreEditPanel storeEditPanel = StoreExtensionPoints.getStoreEditPanel("id", editForm,
@@ -138,7 +140,7 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         // this is a TextParamPanel instead of a RasterTableSelectionPanel when editing instead of
         // adding
         tester.assertComponent(base + "tableNamePanel", TextParamPanel.class);
-        tester.assertModelValue(base + "tableNamePanel:border:paramValue", "FAKE.TABLE");
+        tester.assertModelValue(base + "tableNamePanel:border:border_body:paramValue", "FAKE.TABLE");
     }
 
     /**
@@ -163,8 +165,8 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         // print(page, true, true);
         // simulate clicking on the refresh button
         String submitLink = base + "tableNamePanel:refresh";
-        tester.executeAjaxEvent(submitLink, "onclick");
-        FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessage();
+        tester.executeAjaxEvent(submitLink, "click");
+        FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessages().first();
         assertNotNull(feedbackMessage);
         Serializable message = feedbackMessage.getMessage();
         assertNotNull(message);
@@ -235,18 +237,15 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
                 };
             }
         });
-
-        //print(page, true, true);
-
-        final String dropDownPath = base + "tableNamePanel:border:rasterTable";
-        final DropDownChoice choice = (DropDownChoice) tester
+        final String dropDownPath = base + "tableNamePanel:border:border_body:rasterTable";
+        final DropDownChoice<?> choice = (DropDownChoice<?>) tester
                 .getComponentFromLastRenderedPage(dropDownPath);
         assertTrue(choice.getChoices().isEmpty());
 
         // simulate clicking on the refresh button
         String submitLink = base + "tableNamePanel:refresh";
-        tester.executeAjaxEvent(submitLink, "onclick");
-        FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessage();
+        tester.executeAjaxEvent(submitLink, "click");
+        FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessages().first();
         assertNull(feedbackMessage);
 
         assertEquals(rasterColumns, choice.getChoices());

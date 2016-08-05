@@ -20,7 +20,7 @@ import java.util.List;
  * Resource creation is handled in a lazy fashion, simply use {@link #file()} or {@link #out()} and the resource will be created as required. In a
  * similar fashion setting up a child resource will create any required parent directories.
  */
-public interface Resource extends Serializable {
+public interface Resource {
     /**
      * Enumeration indicating kind of resource used.
      */
@@ -50,21 +50,19 @@ public interface Resource extends Serializable {
     public interface Lock {
         /**
          * Releases the lock on the specified key
-         * 
-         * @param lockKey
          */
         public void release();
     }
 
     /**
-     * Resource path used by {@link ResourceStore.get}.
+     * Resource path used by {@link ResourceStore#get(String)}.
      * 
      * @return resource path
      */
     String path();
 
     /**
-     * Name of the resource denoted by {@link #getPath()} . This is the last name in the path name sequence corresponding to {@link File#getName()}.
+     * Name of the resource denoted by {@link #path()} . This is the last name in the path name sequence corresponding to {@link File#getName()}.
      * 
      * @return Resource name
      */
@@ -78,27 +76,18 @@ public interface Resource extends Serializable {
     Lock lock();
     
     /**
-     * Listen for changes to ResourceStore content.
-     * <p>
-     * Listeners can be configured to check for changes to individual files or directory contents.
-     * </p>
-     * <ul>
-     * <li>styles: listener receives events for any change to the contents of the styles directory</li>
-     * <li>user_projections/epsg.properties: listener notified for any change to the epsg.properties resource</li>
-     * </ul>
-     * <p>
-     * Notification is course grained, often just based on change of last modified time stamp, as such they are issued after the change has been
-     * performed.
-     * </p>
      * 
-     * @param listener Listener to receive change notification
+     * Registers listener with ResourceNotificationDispatcher.
+     * 
+     * @see ResourceNotificationDispatcher#addListener(String, ResourceListener)
      */
     void addListener( ResourceListener listener);
     
     /**
-     * Remove resource store content listener.
-     * @param path
-     * @param listener
+     * 
+     * Removes listener from ResourceNotificationDispatcher.
+     * 
+     * @see ResourceNotificationDispatcher#removeListener(String, ResourceListener)
      */
     void removeListener( ResourceListener listener);
     
@@ -180,7 +169,7 @@ public interface Resource extends Serializable {
      * @see File#exists()
      * @see File#isDirectory()
      * @see File#isFile()
-     * @return
+     *
      */
     Type getType();
     
@@ -194,7 +183,7 @@ public interface Resource extends Serializable {
     /**
      * Move the resource to the specified location.
      * @see File#renameTo(File)
-     * @return
+     *
      */
     boolean renameTo(Resource dest);
 }

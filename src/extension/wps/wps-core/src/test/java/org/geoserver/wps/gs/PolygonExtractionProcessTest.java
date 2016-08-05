@@ -30,7 +30,6 @@ public class PolygonExtractionProcessTest extends BaseRasterToVectorTest {
     /**
      * Test basic capabilities for the contour process. It works on the DEM tiff and produces a shapefile.
      * Nothing more nothing less.
-     * @throws Exception
      */
     @Test
     public void testProcessStandaloneBasic() throws Exception {

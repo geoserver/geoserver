@@ -1,7 +1,7 @@
 .. _data_database:
 
-Working with Databases
-======================
+Databases
+=========
 
 This section discusses the database data sources that GeoServer can access.
 

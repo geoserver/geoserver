@@ -81,7 +81,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
      * <code>null</code> if no principal was authenticated 
      * 
      * @param request
-     * @return
+     *
      */
     abstract protected String getPreAuthenticatedPrincipal(HttpServletRequest request);
     
@@ -91,7 +91,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
      * 
      * @param request
      * @param principal
-     * @return
+     *
      */
     abstract protected Collection<GeoServerRole> getRoles(HttpServletRequest request, String principal) throws IOException;
     

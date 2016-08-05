@@ -66,7 +66,7 @@ public abstract class AbstractProcessStoreTest {
     /**
      * Builds the status store for this test
      * 
-     * @return
+     *
      * @throws IOException 
      */
     protected abstract ProcessStatusStore buildStore() throws IOException;

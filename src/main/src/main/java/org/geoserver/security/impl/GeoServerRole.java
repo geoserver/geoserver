@@ -101,7 +101,6 @@ public class GeoServerRole  implements GrantedAuthority,  Comparable<GeoServerRo
      * could have a role parameter EMPLOYEE_NUMBER
      * To be filled by the backend store
      * 
-     * @return 
      */
     public Properties getProperties() {
         if (properties==null)

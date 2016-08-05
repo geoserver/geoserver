@@ -113,7 +113,7 @@ class WPSExecuteTransformer extends TransformerBase {
          * Helper to build a set of attributes out of a list of key/value pairs
          * 
          * @param nameValues
-         * @return
+         *
          */
         AttributesImpl attributes(String... nameValues) {
             AttributesImpl atts = new AttributesImpl();

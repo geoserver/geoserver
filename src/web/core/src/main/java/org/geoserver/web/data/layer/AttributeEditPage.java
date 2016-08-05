@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -9,9 +9,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
@@ -38,11 +38,11 @@ public class AttributeEditPage extends GeoServerSecuredPage {
 
     boolean newAttribute;
 
-    private TextField nameField;
+    private TextField<String> nameField;
 
     String size;
 
-    private TextField sizeField;
+    private TextField<String> sizeField;
 
     private CRSPanel crsField;
 
@@ -58,14 +58,14 @@ public class AttributeEditPage extends GeoServerSecuredPage {
         this.attribute = attribute;
         this.size = String.valueOf(attribute.getSize());
 
-        final Form form = new Form("form", new CompoundPropertyModel(attribute));
+        final Form<AttributeDescription> form = new Form<>("form", new CompoundPropertyModel<>(attribute));
         form.setOutputMarkupId(true);
         add(form);
 
-        form.add(nameField = new TextField("name"));
-        DropDownChoice binding = new DropDownChoice("binding", AttributeDescription.BINDINGS,
+        form.add(nameField = new TextField<>("name"));
+        DropDownChoice<Class<?>> binding = new DropDownChoice<>("binding", AttributeDescription.BINDINGS,
                 new BindingChoiceRenderer());
-        binding.add(new AjaxFormSubmitBehavior("onchange") {
+        binding.add(new AjaxFormSubmitBehavior("change") {
 
             @Override
             protected void onError(AjaxRequestTarget target) {
@@ -77,8 +77,8 @@ public class AttributeEditPage extends GeoServerSecuredPage {
                 crsContainer.setVisible(attribute.getBinding() != null
                         && Geometry.class.isAssignableFrom(attribute.getBinding()));
 
-                target.addComponent(getFeedbackPanel());
-                target.addComponent(form);
+                target.add(getFeedbackPanel());
+                target.add(form);
             }
 
             @Override
@@ -92,7 +92,7 @@ public class AttributeEditPage extends GeoServerSecuredPage {
         sizeContainer = new WebMarkupContainer("sizeContainer");
         sizeContainer.setOutputMarkupId(true);
         form.add(sizeContainer);
-        sizeContainer.add(sizeField = new TextField("size", new PropertyModel(this, "size")));
+        sizeContainer.add(sizeField = new TextField<>("size", new PropertyModel<>(this, "size")));
         sizeContainer.setVisible(String.class.equals(attribute.getBinding()));
 
         crsContainer = new WebMarkupContainer("crsContainer");
@@ -116,7 +116,7 @@ public class AttributeEditPage extends GeoServerSecuredPage {
         };
         form.setDefaultButton(submit);
         form.add(submit);
-        form.add(new Link("cancel") {
+        form.add(new Link<Void>("cancel") {
 
             @Override
             public void onClick() {
@@ -133,7 +133,7 @@ public class AttributeEditPage extends GeoServerSecuredPage {
     protected boolean validate() {
         boolean valid = true;
         if (attribute.getName() == null || attribute.getName().trim().equals("")) {
-            nameField.error((IValidationError) new ValidationError().addMessageKey("Required"));
+            nameField.error((IValidationError) new ValidationError().addKey("Required"));
             valid = false;
         }
         if (String.class.equals(attribute.getBinding())) {
@@ -150,21 +150,21 @@ public class AttributeEditPage extends GeoServerSecuredPage {
 
         }
         if (Geometry.class.isAssignableFrom(attribute.getBinding()) && attribute.getCrs() == null) {
-            crsField.error((IValidationError) new ValidationError().addMessageKey("Required"));
+            crsField.error((IValidationError) new ValidationError().addKey("Required"));
             valid = false;
         }
 
         return valid;
     }
 
-    static class BindingChoiceRenderer implements IChoiceRenderer {
+    static class BindingChoiceRenderer extends ChoiceRenderer<Class<?>> {
 
-        public Object getDisplayValue(Object object) {
-            return AttributeDescription.getLocalizedName((Class) object);
+        public Object getDisplayValue(Class<?> object) {
+            return AttributeDescription.getLocalizedName((Class<?>) object);
         }
 
-        public String getIdValue(Object object, int index) {
-            return ((Class) object).getName();
+        public String getIdValue(Class<?> object, int index) {
+            return object.getName();
         }
 
     }

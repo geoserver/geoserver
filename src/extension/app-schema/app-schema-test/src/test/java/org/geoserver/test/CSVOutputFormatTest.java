@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -20,7 +20,7 @@ import org.w3c.dom.Document;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Test for SF0 CSV outputFormat in App-schema {@link BoreholeViewMockData}
@@ -50,7 +50,7 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
         assertEquals("attachment; filename=BoreholeView.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines and what not
-        List<String[]> lines = readLines(resp.getOutputStreamContent());
+        List<String[]> lines = readLines(resp.getContentAsString());
 
         // we should have one header line and then all the features in that feature type
         assertEquals(3, lines.size());        
@@ -99,7 +99,7 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
         assertEquals("attachment; filename=BoreholeView.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines and what not
-        List<String[]> lines = readLines(resp.getOutputStreamContent());
+        List<String[]> lines = readLines(resp.getContentAsString());
 
         // we should have one header line and then all the features in that feature type
         assertEquals(2, lines.size());
@@ -156,7 +156,7 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
      * Convenience to read the csv content . Copied from {@link org.geoserver.wfs.response.CSVOutputFormatTest}
      * 
      * @param csvContent
-     * @return
+     *
      * @throws IOException
      */
     static List<String[]> readLines(String csvContent) throws IOException {

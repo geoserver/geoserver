@@ -11,7 +11,7 @@ public interface ParamPanel {
     /**
      * Returns the wrapped form component, if there is a single one, or null otherwise
      * 
-     * @return
+     *
      */
     abstract public FormComponent getFormComponent();
 }

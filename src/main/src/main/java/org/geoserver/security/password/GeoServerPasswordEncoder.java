@@ -75,7 +75,7 @@ public interface GeoServerPasswordEncoder extends PasswordEncoder,BeanNameAware 
     /**
      * Validates a specified "raw" password (as char array) against an encoded password.
      * 
-     * @see {@link #isPasswordValid(String, String, Object)
+     * @see {@link #isPasswordValid(String, String, Object)}
      */
     boolean isPasswordValid(String encPass, char[] rawPass, Object salt);
 
@@ -101,7 +101,7 @@ public interface GeoServerPasswordEncoder extends PasswordEncoder,BeanNameAware 
      * the unrestricted policy files of the java
      * cryptographic extension 
      * 
-     * @return
+     *
      */
     boolean isAvailableWithoutStrongCryptogaphy();
 

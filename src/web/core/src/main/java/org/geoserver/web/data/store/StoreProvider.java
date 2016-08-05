@@ -1,11 +1,11 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.data.store;
 
-import static org.geoserver.catalog.Predicates.*;
+import static org.geoserver.catalog.Predicates.sortBy;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -131,8 +131,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
         return super.getComparator(sort);
     }
     
-
-    public IModel newModel(Object object) {
+    public IModel newModel(StoreInfo object) {
         return new StoreInfoDetachableModel((StoreInfo) object);
     }
 
@@ -161,7 +160,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     }
     
     @Override
-    public int size() {
+    public long size() {
         Filter filter = getFilter();
         filter = getWorkspaceFilter(filter);
         int count = getCatalog().count(StoreInfo.class, filter);
@@ -177,7 +176,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
     }
     
     @Override
-    public Iterator<StoreInfo> iterator(final int first, final int count) {
+    public Iterator<StoreInfo> iterator(final long first, final long count) {
         Iterator<StoreInfo> iterator = filteredItems(first, count);
         if (iterator instanceof CloseableIterator) {
             // don't know how to force wicket to close the iterator, lets return
@@ -196,7 +195,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
      * Returns the requested page of layer objects after applying any keyword
      * filtering set on the page
      */
-    private Iterator<StoreInfo> filteredItems(Integer first, Integer count) {
+    private Iterator<StoreInfo> filteredItems(long first, long count) {
         final Catalog catalog = getCatalog();
 
         // global sorting
@@ -219,7 +218,7 @@ public class StoreProvider extends GeoServerDataProvider<StoreInfo> {
 
         final Filter filter = getWorkspaceFilter(getFilter());
         //our already filtered and closeable iterator
-        Iterator<StoreInfo> items = catalog.list(StoreInfo.class, filter, first, count, sortOrder);
+        Iterator<StoreInfo> items = catalog.list(StoreInfo.class, filter, (int)first, (int)count, sortOrder);
 
         return items;
     }

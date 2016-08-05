@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -24,8 +24,8 @@ import org.geoserver.web.publish.PublishedEditTabPanel;
  */
 public class LayerCacheOptionsTabPanel extends PublishedEditTabPanel<PublishedInfo> {
 
-    private static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = -2995387155768727100L;
+	
     private GeoServerTileLayerEditor editor;
 
     public LayerCacheOptionsTabPanel(String id, IModel<? extends PublishedInfo> layerModel,

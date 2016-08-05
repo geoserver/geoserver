@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -37,6 +37,8 @@ import org.geotools.resources.i18n.ErrorKeys;
 import org.geotools.resources.i18n.Errors;
 import org.geotools.util.logging.Logging;
 
+import it.geosolutions.jaiext.BufferedImageAdapter;
+
 /**
  * Wrapping map producer that performs on the fly meta tiling wrapping another map producer. It will
  * first peek inside a tile cache to see if the requested tile has already been computed, if so,
@@ -66,14 +68,13 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
             final File tempDir = new File(GeoServerExtensions.getProperty("user.home"),".geoserver");
             if (!tempDir.exists() ) {
                 if(!tempDir.mkdir())
-                System.out
-                        .println("Unable to create debug dir, exiting application!!!");
+                LOGGER.severe("Unable to create debug dir, exiting application!!!");
                 DEBUG=false;
                 DEBUG_DIR = null;
             } else
                {
                         DEBUG_DIR = tempDir.getAbsolutePath();
-                         System.out.println("MetatileMapOutputFormat debug dir "+DEBUG_DIR);
+                         LOGGER.fine("MetatileMapOutputFormat debug dir "+DEBUG_DIR);
                }
         }
 
@@ -196,7 +197,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
      * 
      * @param request
      * @param delegate
-     * @return
+     *
      */
     public static boolean isRequestTiled(GetMapRequest request, GetMapOutputFormat delegate) {
         boolean tiled = request.isTiled();
@@ -224,7 +225,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
      * 
      * @param key
      * @param metaTile
-     * @return
+     *
      */
     static RenderedImage[] split(MetaTileKey key, RenderedImage metaTile) {
         final int metaFactor = key.getMetaFactor();
@@ -290,7 +291,8 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                             LOGGER.finer("Metatile split on BufferedImage");
                         }
                         final BufferedImage image = (BufferedImage) metaTile;
-                        tile = image.getSubimage(x, y, tileSize, tileSize);
+                        final BufferedImage subimage = image.getSubimage(x, y, tileSize, tileSize);
+                        tile = new BufferedImageAdapter(subimage);
                         break;
                     default:
                         throw new IllegalStateException(Errors.format(ErrorKeys.ILLEGAL_ARGUMENT_$2,

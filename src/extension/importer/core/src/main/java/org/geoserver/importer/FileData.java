@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,15 +6,14 @@
 package org.geoserver.importer;
 
 import java.io.File;
+
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
 public class FileData extends ImportData {
@@ -25,9 +24,9 @@ public class FileData extends ImportData {
     private static final long serialVersionUID = 1L;
 
     /** the file handle*/
-    protected Resource file;
+    protected File file;
 
-    public FileData(Resource file) {
+    public FileData(File file) {
         this.file = file;
     }
 
@@ -36,8 +35,8 @@ public class FileData extends ImportData {
         this.file = file.getFile();
     }
 
-    public static FileData createFromFile(Resource file) throws IOException {
-        if (file.getType() == Type.DIRECTORY) {
+    public static FileData createFromFile(File file) throws IOException {
+        if (file.isDirectory()) {
             return new Directory(file);
         }
 
@@ -47,35 +46,35 @@ public class FileData extends ImportData {
 
         return new SpatialFile(file);
     }
-    public Resource getFile() {
+    public File getFile() {
         return file;
     }
 
     @Override
     public String getName() {
-        return FilenameUtils.getBaseName(file.name());
+        return FilenameUtils.getBaseName(file.getName());
     }
 
     @Override
     public void cleanup() throws IOException {
-        if (Resources.exists(file)) {
+        if (file.exists()) {
             if (LOGGER.isLoggable(Level.FINE)){
-                LOGGER.fine("Deleting file "  + file.path());
+                LOGGER.fine("Deleting file "  + file.getAbsolutePath());
             }
 
             if (!file.delete()) {
-                throw new IOException("Unable to delete " + file.path());
+                throw new IOException("Unable to delete " + file.getAbsolutePath());
             }
         }
     }
 
     public String relativePath(Directory dir) throws IOException {
-        String dp = dir.getFile().path();
-        String fp = getFile().path();
+        String dp = dir.getFile().getCanonicalPath();
+        String fp = getFile().getCanonicalPath();
 
         if (fp.startsWith(dp)) {
             String left = fp.substring(dp.length());
-            return new File(dir.getFile().name(), left).toString();
+            return new File(dir.getFile().getName(), left).toString();
         }
         return null;
     }
@@ -108,6 +107,6 @@ public class FileData extends ImportData {
 
     @Override
     public String toString() {
-        return file.path();
+        return file.getPath();
     }
 }

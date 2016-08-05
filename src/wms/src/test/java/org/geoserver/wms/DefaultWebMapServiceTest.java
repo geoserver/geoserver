@@ -25,7 +25,6 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
     /**
      * This is just a very basic test, mostly testing defaults
      * 
-     * @throws Exception
      */
     @Test 
     public void testBasic() throws Exception {
@@ -63,7 +62,6 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
     /**
      * Tests basic reprojection
      * 
-     * @throws Exception
      */
     @Test 
     public void testReprojection() throws Exception {
@@ -106,7 +104,6 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
      * This test is incomplete because I (arneke) had trouble finding mock data with proper bounding
      * boxes
      * 
-     * @throws Exception
      */
     @Test
     public void testAutoSetWidthHeight() throws Exception {
@@ -153,7 +150,6 @@ public class DefaultWebMapServiceTest extends WMSTestSupport {
      * This test is incomplete because I (arneke) had trouble finding mock data with proper bounding
      * boxes
      * 
-     * @throws Exception
      */
     @Test
     public void testAutoSetWidthHeightOL() throws Exception {

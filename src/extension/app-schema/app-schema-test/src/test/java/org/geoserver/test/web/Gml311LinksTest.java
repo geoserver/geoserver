@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,11 +14,11 @@ import org.junit.Test;
 public class Gml311LinksTest extends AbstractMapPreviewPageTest {
 
     public Gml311LinksTest() {
-        super(Arrays.asList("../ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml:MappedFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
-                "../ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml:GeologicUnit&amp;outputFormat=gml3&amp;maxFeatures=50",
-                "../ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex:FirstParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
-                "../ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex:SecondParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
-                "../ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=om:Observation&amp;outputFormat=gml3&amp;maxFeatures=50"));
+        super(Arrays.asList("http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml:MappedFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
+                "http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml:GeologicUnit&amp;outputFormat=gml3&amp;maxFeatures=50",
+                "http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex:FirstParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
+                "http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex:SecondParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
+                "http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=om:Observation&amp;outputFormat=gml3&amp;maxFeatures=50"));
     }
 
     @Override

@@ -1,0 +1,59 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<wicket:head>
+  <wicket:link>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+  </wicket:link>
+ </wicket:head>
+</head>
+<body>
+<wicket:extend>
+   <h1><wicket:message key="execution"></wicket:message>: <span wicket:id="clazz"></span> (<span wicket:id="id"></span>)</h1>
+
+   <div wicket:id="header">
+   </div>
+
+   <ul class="plain" style="padding-top: 3em;">
+    <li>
+      <fieldset>
+       <legend>
+           <span class="no-border" wicket:id="icon"></span>
+           <span class="no-border" wicket:id="title" style="margin-left: 20px; white-space:nowrap; font-weight:normal;"></span>
+       </legend>
+     </fieldset>
+
+    </li>
+    <li>
+       <div class="button-group selfclear" style="padding-top: 1em;">
+         <a href="" wicket:id="pause">
+           <span><wicket:message key="pause"></wicket:message></span>
+         </a>
+         <a href="" wicket:id="resume">
+           <span><wicket:message key="resume"></wicket:message></span>
+         </a>
+         <a href="" wicket:id="cancel">
+           <span><wicket:message key="cancel"></wicket:message></span>
+         </a>
+       </div>
+     </li>
+   </ul>
+   
+   <div style="width:95%">
+       <form wicket:id="form">
+         <div style="float:right"><a href="#" wicket:id="refresh"><wicket:message key="refresh">refresh</wicket:message></a></div>
+         <div style="float:left"><wicket:message key="maxLines">details level</wicket:message>&nbsp;<input type="number" wicket:id="expand"/></div>
+       </form>
+       <div><textarea readonly="readonly" style="width:100%;height:50em;font-size:small" wicket:id="details"></textarea></div>
+       <a href="#" wicket:id="download"><wicket:message key="download">download backup archive</wicket:message></a>
+    </div>
+    
+    <div class="button-group selfclear" style="padding-top: 1em;">
+      <a href="" wicket:id="done">
+        <span><wicket:message key="done"></wicket:message></span>
+      </a>
+    </div>
+
+   <div wicket:id="dialog"></div>
+</wicket:extend>
+</body>
+</html>

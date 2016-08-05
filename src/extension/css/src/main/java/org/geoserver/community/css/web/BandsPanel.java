@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
@@ -31,14 +30,14 @@ public class BandsPanel extends Panel {
     private GeoServerTablePanel<CoverageDimensionInfo> bands;
 
     public BandsPanel(String id, final CoverageInfo coverage) {
-        super(id, new Model(coverage));
+        super(id, new Model<CoverageInfo>(coverage));
 
         // the parameters table
         bands = new GeoServerTablePanel<CoverageDimensionInfo>("bands",
                 new CoverageDimensionsProvider(), true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected GeoServerTablePanel<CoverageDimensionInfo> getComponentForProperty(String id, IModel<CoverageDimensionInfo> itemModel,
                     Property<CoverageDimensionInfo> property) {
                 return null;
             }

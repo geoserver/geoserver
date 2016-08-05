@@ -127,7 +127,7 @@ public class EOGetMapCallback extends GetMapCallbackAdapter implements GetMapCal
 
     /**
      * @param layer
-     * @return
+     *
      */
     private CoverageInfo catalogChecks(Layer layer) {
         return catalog.getCoverageByName(layer.getTitle());

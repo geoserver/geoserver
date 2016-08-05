@@ -53,7 +53,7 @@ public class ExecuteRequest {
     /**
      * The wrapped WPS 1.0 request
      * 
-     * @return
+     *
      */
     public ExecuteType getRequest() {
         return request;
@@ -62,7 +62,7 @@ public class ExecuteRequest {
     /**
      * True if the request is asynchronous
      * 
-     * @return
+     *
      */
     public boolean isAsynchronous() {
         return request.getResponseForm() != null
@@ -73,7 +73,7 @@ public class ExecuteRequest {
     /**
      * Returns true if status update is requested
      * 
-     * @return
+     *
      */
     public boolean isStatusEnabled() {
         return isAsynchronous() && request.getResponseForm().getResponseDocument().isStatus();
@@ -82,7 +82,7 @@ public class ExecuteRequest {
     /**
      * Returns the process name according to the GeoTools API
      * 
-     * @return
+     *
      */
     public Name getProcessName() {
         return Ows11Util.name(request.getIdentifier());
@@ -92,8 +92,7 @@ public class ExecuteRequest {
      * Returns the process inputs according to the GeoTools API expectations
      * 
      * @param request
-     * @return
-     * @throws Exception
+     *
      */
     public LazyInputMap getProcessInputs(WPSExecutionManager manager) {
         if (inputs == null) {
@@ -232,7 +231,7 @@ public class ExecuteRequest {
 
     /**
      * Returns null if nothing specific was requested, the list otherwise
-     * @return
+     *
      */
     public List<DocumentOutputDefinitionType> getRequestedOutputs() {
         // in case nothing specific was requested

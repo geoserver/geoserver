@@ -48,7 +48,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     /**
      * Remote GeoFence services url.
-     * @return
+     *
      */
     public String getServicesUrl() {
         return servicesUrl;
@@ -100,7 +100,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
     
     /**
      * Flag to allow usage of remote and inline layers in SLDs.
-     * @return
+     *
      */
     public boolean isAllowRemoteAndInlineLayers() {
         return allowRemoteAndInlineLayers;
@@ -109,7 +109,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
     /**
      * Flag to allow usage of SLD and/or SLD_BODY params in GetMap requests.
      * 
-     * @return
+     *
      */
     public boolean isAllowDynamicStyles() {
         return allowDynamicStyles;

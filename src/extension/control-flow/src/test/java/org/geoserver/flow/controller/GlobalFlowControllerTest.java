@@ -5,7 +5,7 @@
  */
 package org.geoserver.flow.controller;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;

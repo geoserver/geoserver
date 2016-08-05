@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,8 +6,11 @@
 package org.geoserver.wfs.response;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -21,15 +24,20 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-
-import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class Ogr2OgrWfsTest extends GeoServerSystemTestSupport {
     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
+        
+        // copy the test custom configuration
+        try(InputStream is = Ogr2OgrWfsTest.class.getResourceAsStream("/ogr2ogr.xml")) {
+            testData.copyTo(is, "ogr2ogr.xml");
+        }
+        
         
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("wfs", "http://www.opengis.net/wfs");
@@ -79,6 +87,7 @@ public class Ogr2OgrWfsTest extends GeoServerSystemTestSupport {
         
         // check content type
         assertEquals("application/vnd.google-earth.kml", resp.getContentType());
+        assertEquals("inline; filename=Buildings.kml", resp.getHeader("Content-Disposition"));
         
         // read back
         Document dom = dom(getBinaryInputStream(resp));
@@ -89,6 +98,17 @@ public class Ogr2OgrWfsTest extends GeoServerSystemTestSupport {
         // it's kml with the proper number of features
         assertEquals("kml", dom.getDocumentElement().getTagName());
         assertEquals(2, dom.getElementsByTagName("Placemark").getLength());
+    }
+    
+    @Test
+    public void testSimpleRequestGeopackage() throws Exception {
+        Assume.assumeTrue(Ogr2OgrOutputFormat.formats.containsKey("OGR-GPKG"));
+        String request = "wfs?request=GetFeature&typename=" + getLayerId(MockData.BUILDINGS) + "&version=1.0.0&service=wfs&outputFormat=OGR-GPKG";
+        MockHttpServletResponse resp = getAsServletResponse(request);
+        
+        // check content type
+        assertEquals("application/octet-stream", resp.getContentType());
+        assertEquals("attachment; filename=Buildings.db", resp.getHeader("Content-Disposition"));
     }
     
     @Test

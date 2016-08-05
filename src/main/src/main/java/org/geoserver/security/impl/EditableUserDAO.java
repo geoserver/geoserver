@@ -17,7 +17,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -102,7 +102,7 @@ public class EditableUserDAO implements UserDetailsService {
     String passwd = (geoServer == null ? "geoserver" : geoServer.getGlobal().getAdminPassword());
 
     Collection<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-    auths.add(new GrantedAuthorityImpl("ROLE_ADMINISTRATOR"));
+    auths.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR"));
     myDetailStorage.put(name, new User(name,
 	  passwd,
 	  true,

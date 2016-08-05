@@ -19,7 +19,7 @@ public interface GeoServerAuthenticationFilter {
      * can be put into a chain doing authentication for
      * a web interface.  
      * 
-     * @return
+     *
      */
     public boolean applicableForHtml ();
     /**
@@ -27,7 +27,7 @@ public interface GeoServerAuthenticationFilter {
      * for services (NO GUI). Such a filter can be put into
      * a chain doing authentication for  services.
      * 
-     * @return
+     *
      */
     public boolean applicableForServices ();
     

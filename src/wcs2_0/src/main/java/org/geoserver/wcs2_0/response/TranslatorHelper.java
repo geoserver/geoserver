@@ -42,7 +42,7 @@ class TranslatorHelper {
      * Adds together two sets of schema locations
      * @param locations1
      * @param locations2
-     * @return
+     *
      */
     String[] append(String[] locations1, String[] locations2) {
         String[] result = new String[locations1.length + locations2.length];
@@ -55,7 +55,7 @@ class TranslatorHelper {
     /**
      * Builds the schema locations from the provided namespace/location list
      * @param schemaLocations
-     * @return
+     *
      */
     String buildSchemaLocation(String... schemaLocations) {
         StringBuilder schemaLocation = new StringBuilder();

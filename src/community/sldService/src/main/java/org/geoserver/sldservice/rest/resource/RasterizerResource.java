@@ -169,7 +169,7 @@ public class RasterizerResource extends AbstractCatalogResource {
 	 * @param midColor 
 	 * @param endColor 
 	 * @param startColor 
-	 * @return
+	 *
 	 * @throws Exception 
 	 */
 	private Style remapStyle(StyleInfo defaultStyle, RasterSymbolizer rasterSymbolizer, double min, double max, 
@@ -268,7 +268,7 @@ public class RasterizerResource extends AbstractCatalogResource {
 	/**
 	 * 
 	 * @param defaultStyle
-	 * @return
+	 *
 	 */
 	private RasterSymbolizer getRasterSymbolizer(StyleInfo sInfo) {
 		RasterSymbolizer rasterSymbolizer = null;

@@ -1,0 +1,18 @@
+<assembly>
+  <id>jdbcstore-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-jdbcstore-*.jar</include>
+        <include>gs-jdbcconfig-*.jar</include>
+        <include>compress-lzf-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

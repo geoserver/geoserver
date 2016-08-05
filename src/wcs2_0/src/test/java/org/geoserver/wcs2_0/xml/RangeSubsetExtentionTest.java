@@ -13,7 +13,7 @@ import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 /**
  * Testing range subsetting capabilities
  * 

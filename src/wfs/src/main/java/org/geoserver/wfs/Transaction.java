@@ -465,7 +465,7 @@ public class Transaction {
      * Looks up the element handlers to be used for each element
      *
      * @param group
-     * @return
+     *
      */
     private Map gatherElementHandlers(TransactionRequest request)
         throws WFSTransactionException {
@@ -486,7 +486,7 @@ public class Transaction {
      * (the one matching the most specialized superclass of type)
      *
      * @param type
-     * @return
+     *
      */
     protected final TransactionElementHandler findElementHandler(Class type)
         throws WFSTransactionException {

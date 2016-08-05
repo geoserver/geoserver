@@ -51,7 +51,7 @@ public class PaletteManager {
     public static final String SAFE = "SAFE";
     public static final IndexColorModel safePalette = buildDefaultPalette();
     static SoftValueHashMap<String, PaletteCacheEntry> paletteCache = new SoftValueHashMap<String, PaletteCacheEntry>();
-    static SoftValueHashMap<IndexColorModel, InverseColorMapOp> opCache = new SoftValueHashMap<IndexColorModel, InverseColorMapOp>();
+    static SoftValueHashMap<IndexColorModelKey, InverseColorMapOp> opCache = new SoftValueHashMap<IndexColorModelKey, InverseColorMapOp>();
 
     /**
      * TODO: we should probably provide the data directory as a constructor
@@ -64,8 +64,7 @@ public class PaletteManager {
      * Loads a PaletteManager
      * 
      * @param name
-     * @return
-     * @throws Exception
+     *
      */
     public static IndexColorModel getPalette(String name) throws Exception {
         // check for safe paletteInverter
@@ -142,12 +141,13 @@ public class PaletteManager {
 
     public static InverseColorMapOp getInverseColorMapOp(IndexColorModel icm) {
         // check for cached one, making sure it's not stale
-        InverseColorMapOp op = (InverseColorMapOp) opCache.get(icm);
+        IndexColorModelKey key = new IndexColorModelKey(icm);
+        InverseColorMapOp op = (InverseColorMapOp) opCache.get(key);
         if (op != null) {
             return op;
         } else {
             op = new InverseColorMapOp(icm);
-            opCache.put(icm,  op);
+            opCache.put(key,  op);
             return op;
         }
 	}
@@ -213,10 +213,42 @@ public class PaletteManager {
 		 * Returns true if the backing file does not exist any more, or has been
 		 * modified
 		 * 
-		 * @return
+		 *
 		 */
 		public boolean isStale() {
 			return !Resources.exists(file) || (file.lastmodified() != lastModified);
 		}
+	}
+	
+	/**
+	 * IndexColorModel has a broken hashcode implementation (inherited from ColorModel
+	 * and not overridden), use a custom key that leverages identity hash code instead
+	 * (a full equals would be expensive, palettes can have 65k entries)
+	 */
+	private static class IndexColorModelKey {
+	    IndexColorModel icm;
+	    
+        public IndexColorModelKey(IndexColorModel icm) {
+            this.icm = icm;
+        }
+
+        @Override
+        public int hashCode() {
+            return System.identityHashCode(icm);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            IndexColorModelKey other = (IndexColorModelKey) obj;
+            return icm == other.icm;
+        }
+	    
+	    
 	}
 }

@@ -34,7 +34,7 @@ public class MenuPageInfo extends ComponentInfo<GeoServerBasePage> implements Co
          * This method is invoked only if the page happens to be a {@link GeoServerSecuredPage}. 
          * <p>If you do override this method, make sure to override the authorizer grabbing
          * method in the page as well</p>
-         * @return
+         *
          */
         setAuthorizer(GeoServerSecuredPage.DEFAULT_AUTHORIZER);
     }

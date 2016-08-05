@@ -1,4 +1,4 @@
-/* (c) 2014 -2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 -2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,11 +12,15 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.net.URLEncoder;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.validator.MaxSizeValidator;
@@ -50,6 +54,10 @@ public class InputLimitsTest extends WPSTestSupport {
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
         wps.setMaxSynchronousExecutionTime(0);
         wps.setMaxAsynchronousExecutionTime(0);
+        wps.setMaxSynchronousTotalTime(0);
+        wps.setMaxAsynchronousTotalTime(0);
+        wps.setMaxAsynchronousProcesses(0);
+        wps.setMaxSynchronousProcesses(0);
         getGeoServer().save(wps);
     }
 
@@ -541,67 +549,140 @@ public class InputLimitsTest extends WPSTestSupport {
     }
 
     @Test
-    public void testAsyncExecutionLimits() throws Exception {
+    public void testAsyncExecutionLimit() throws Exception {
+        // set synchronous process limits
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+
         wps.setMaxAsynchronousExecutionTime(2);
+        wps.setMaxAsynchronousTotalTime(3);
+
         getGeoServer().save(wps);
 
-        // submit asynch request with no updates
-        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&DataInputs="
-                + urlEncode("id=x2");
-        Document dom = getAsDOM(request);
-        assertXpathExists("//wps:ProcessAccepted", dom);
-        XpathEngine xpath = XMLUnit.newXpathEngine();
-        String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
-        String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
+        // submit an asynchronous request which will take longer than the execution time limit to run
 
-        // wait for end, pinging the process to make it fail
-        dom = waitForProcessEnd(statusLocation, 60, new Callable<Void>() {
+        String statusLocation = submitAsynchronousRequest(
+            "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
+                + urlEncode("id=x1"));
 
-            @Override
-            public Void call() throws Exception {
-                // schedule an update that will make it fail. Same progress every time,
-                // happily for the moment we don't have optimizations that would
-                // make this repeated pings be ignored
-                MonkeyProcess.progress("x2", 50f, true);
-                Thread.sleep(100);
-                return null;
-            }
+        MonkeyProcess.wait("x1", 2200);
+        MonkeyProcess.progress("x1", 54f, false);
 
-        });
-        // print(dom);
-        XMLAssert.assertXpathExists("//wps:Status/wps:ProcessFailed", dom);
-        String message = xpath.evaluate(
-                        "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
-                        dom);
-        assertTrue(message.contains("went beyond the configured limits of 2 seconds"));
+        // request should fail exceeding asynchronous execution time limit
+        Document response3 = waitForProcessEnd(statusLocation, 10);
+        assertXpathExists(
+            "//ows:ExceptionText[contains(., 'maxExecutionTime 2 seconds, maxTotalTime 3 seconds')]",
+            response3);
+    }
+
+    @Test
+    public void testAsyncTotalLimit() throws Exception {
+        // set synchronous process limits
+        WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+
+        wps.setMaxAsynchronousExecutionTime(2);
+        wps.setMaxAsynchronousTotalTime(3);
+        wps.setMaxAsynchronousProcesses(1); // queue requests
+
+        getGeoServer().save(wps);
+
+        // submit 3 asynchronous requests each running within the execution time limit but the last one
+        // exceeding the total time limit when run one after another
+
+        String statusLocationX1 = submitAsynchronousRequest(
+            "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
+                + urlEncode("id=x1"));
+
+        String statusLocationX2 = submitAsynchronousRequest(
+            "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
+                + urlEncode("id=x2"));
+
+        String statusLocationX3 = submitAsynchronousRequest(
+            "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
+                + urlEncode("id=x3"));
+
+        MonkeyProcess.wait("x1", 1100);
+        MonkeyProcess.wait("x2", 1100);
+        MonkeyProcess.wait("x3", 1100);
+        MonkeyProcess.exit("x1", null, false);
+        MonkeyProcess.exit("x2", null, false);
+        MonkeyProcess.progress("x3", 54f, false);
+
+        // First request should succeed
+        Document response1 = waitForProcessEnd(statusLocationX1, 10);
+        assertXpathExists("//wps:ProcessSucceeded", response1);
+
+        // Second request should succeed
+        Document response2 = waitForProcessEnd(statusLocationX2, 10);
+        assertXpathExists("//wps:ProcessSucceeded", response2);
+
+        // Third request should fail as it exceeds the asynchronous total time limit
+        Document response3 = waitForProcessEnd(statusLocationX3, 10);
+        assertXpathExists(
+            "//ows:ExceptionText[contains(., 'maxExecutionTime 2 seconds, maxTotalTime 3 seconds')]",
+            response3);
     }
 
     @Test
     public void testSyncExecutionLimits() throws Exception {
+        // set synchronous process limits
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+
         wps.setMaxSynchronousExecutionTime(1);
+        wps.setMaxSynchronousTotalTime(2);
+
         getGeoServer().save(wps);
 
-        // setup the set of commands for the monkey process
-        MonkeyProcess.wait("x2", 2000);
-        MonkeyProcess.progress("x2", 50f, false);
+        // set process called to wait for longer than maximum execution timeout and then update progress
+        MonkeyProcess.wait("x1", 1100);
+        MonkeyProcess.progress("x1", 54f, false);
 
-        // submit synch request
-        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&DataInputs="
-                + urlEncode("id=x2");
-        Document dom = getAsDOM(request);
-        // print(dom);
-        XMLAssert.assertXpathExists("//wps:Status/wps:ProcessFailed", dom);
-        XpathEngine xpath = XMLUnit.newXpathEngine();
-        String message = xpath.evaluate(
-                        "//wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
-                        dom);
-        assertTrue(message.contains("went beyond the configured limits of 1 seconds"));
+        // run the process and get the result
+        Document result = getAsDOM("wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&DataInputs="
+            + urlEncode("id=x1"));
+
+        // request should have failed as it exceeds the synchronous execution time limit
+        assertXpathExists(
+            "//ows:ExceptionText[contains(., 'maxExecutionTime 1 seconds, maxTotalTime 2 seconds')]",
+            result);
+    }
+
+    @Test
+    public void testSyncTotalLimit() throws Exception {
+        // set synchronous process limits
+        WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+
+        wps.setMaxSynchronousTotalTime(1);
+
+        getGeoServer().save(wps);
+
+        // set process called to wait for longer than maximum queue and execution timeout and then update progress
+        MonkeyProcess.wait("x1", 1100);
+        MonkeyProcess.progress("x1", 54f, false);
+
+        // run the process and get the result
+        Document result = getAsDOM("wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&DataInputs="
+            + urlEncode("id=x1"));
+
+        // request should have failed as it exceeds the synchronous total time limit
+        assertXpathExists(
+            "//ows:ExceptionText[contains(., 'maxTotalTime 1 seconds')]",
+            result);
     }
 
     String urlEncode(String string) throws Exception {
         return URLEncoder.encode(string, "ASCII");
+    }
+
+    private String submitAsynchronousRequest(String request)
+            throws Exception {
+        Document response = getAsDOM(request);
+        return getStatusLocation(response);
+    }
+
+    private String getStatusLocation(Document dom) throws XpathException {
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
+        return fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
     }
 
 }

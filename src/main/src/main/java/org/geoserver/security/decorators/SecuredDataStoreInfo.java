@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,7 +12,6 @@ import org.geoserver.security.AccessLevel;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.data.DataAccess;
-import org.geotools.data.DataStore;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.util.ProgressListener;
@@ -37,7 +36,7 @@ public class SecuredDataStoreInfo extends DecoratingDataStoreInfo {
     }
 
     @Override
-    public DataStore getDataStore(ProgressListener listener) throws IOException {
+    public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(ProgressListener listener) throws IOException {
         final DataAccess<? extends FeatureType, ? extends Feature> ds = super
                 .getDataStore(listener);
         if (ds == null)
@@ -45,7 +44,7 @@ public class SecuredDataStoreInfo extends DecoratingDataStoreInfo {
         else if(policy.level == AccessLevel.METADATA)
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
         else
-            return (DataStore) SecuredObjects.secure(ds, policy);
+            return (DataAccess<? extends FeatureType, ? extends Feature>) SecuredObjects.secure(ds, policy);
     }
 
 }

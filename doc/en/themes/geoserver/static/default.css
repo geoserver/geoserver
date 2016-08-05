@@ -52,7 +52,7 @@ font-style: normal;
 }
 
 li p {
-margin-bottom: 0;
+margin-bottom: 0.5em;
 }
 
 li blockquote {
@@ -363,11 +363,15 @@ max-width:99%;
 }
 
 #content .figure img {
+display: block;
+margin-left: auto;
+margin-right: auto;
 border: 1px solid #888;
+border-radius: 2px;
 -webkit-box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3);
 -o-box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3);
 -moz-box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3);
-box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3); 
+box-shadow: 0.33em 0.33em 0.17em #888, 0.33em 0.33em 1em rgba(0,0,0,0.3);
 }
 
 /* taken from the default Sphinx theme */
@@ -398,7 +402,9 @@ ul.keywordmatches li.goodmatch a {
 font-weight: bold;
 }
 
-
+ol {
+padding-left: 1em;
+}
 
 
 .docwarning {
@@ -414,7 +420,10 @@ margin-top: 20px;
 }
 
 p.caption {
-text-align: inherit;
+text-align: center;
+font-style: italic;
+font-size: small;
+margin-bottom: 1em;
 }
 
 #content td {
@@ -434,6 +443,17 @@ padding-left: 1em;
 .first {
 margin-top: 0 !important;
 }
+
+.guilabel, .menuselection {
+  font-weight: bold;
+  text-shadow: 1px 1px 0 #dddddd;
+}
+
+.literal {
+background: rgba(240,240,240,0.8);
+padding: 3px;
+}
+
 
 /* "Footnotes" heading */
 p.rubric {
@@ -462,16 +482,19 @@ display: inline;
 div.seealso {
 background-color: #ffc;
 border: 1px solid #ff6;
+border-radius: 5px;
 }
 
 div.warning {
 background-color: #ffe4e4;
 border: 1px solid #f66;
+border-radius: 5px;
 }
 
 div.note {
 background-color: #9be4ff;
 border: 1px solid #068abb;
+border-radius: 5px;
 }
 
 p.admonition-title {
@@ -553,12 +576,11 @@ padding-right: 5px;
 }
 
 pre {
-padding: 5px;
-background-color: #efc;
+padding: 8px;
+background-color: rgba(240,240,240,0.8);
 color: #333;
-border: 1px solid #ac9;
-border-left: none;
-border-right: none;
+border: 1px solid #cccccc;
+border-radius: 2px;
 white-space: pre-wrap;       /* css-3 */
 white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
 white-space: -o-pre-wrap;    /* Opera 7 */

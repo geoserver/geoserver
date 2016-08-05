@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.io.WKTReader;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -645,7 +645,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
     
         // read the response back with a parser that can handle escaping, newlines
         // and what not
-        List<String[]> lines = readLines(resp.getOutputStreamContent());
+        List<String[]> lines = readLines(resp.getContentAsString());
     
         FeatureSource fs1 = getFeatureSource(MockData.FORESTS);
         FeatureSource fs2 = getFeatureSource(MockData.LAKES);
@@ -687,7 +687,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
     
         // read the response back with a parser that can handle escaping, newlines
         // and what not
-        List<String[]> lines = readLines(resp.getOutputStreamContent());
+        List<String[]> lines = readLines(resp.getContentAsString());
     
         FeatureSource fs1 = getFeatureSource(MockData.FORESTS);
         FeatureSource fs2 = getFeatureSource(MockData.LAKES);
@@ -729,7 +729,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
     
         // read the response back with a parser that can handle escaping, newlines
         // and what not
-        List<String[]> lines = readLines(resp.getOutputStreamContent());
+        List<String[]> lines = readLines(resp.getContentAsString());
     
         FeatureSource fs1 = getFeatureSource(MockData.FORESTS);
         FeatureSource fs2 = getFeatureSource(MockData.LAKES);
@@ -768,7 +768,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
     
         // read the response back with a parser that can handle escaping, newlines
         // and what not
-        List<String[]> lines = readLines(resp.getOutputStreamContent());
+        List<String[]> lines = readLines(resp.getContentAsString());
     
         FeatureSource fs = getFeatureSource(MockData.FORESTS);
     
@@ -804,7 +804,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
     
         // read the response back with a parser that can handle escaping, newlines
         // and what not
-        List<String[]> lines = readLines(resp.getOutputStreamContent());
+        List<String[]> lines = readLines(resp.getContentAsString());
     
         FeatureSource fs1 = getFeatureSource(MockData.FORESTS);
         FeatureSource fs2 = getFeatureSource(MockData.LAKES);
@@ -852,7 +852,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
     
         // read the response back with a parser that can handle escaping, newlines
         // and what not
-        List<String[]> lines = readLines(resp.getOutputStreamContent());
+        List<String[]> lines = readLines(resp.getContentAsString());
     
         FeatureSource fs1 = getFeatureSource(new QName("t1"));
         FeatureSource fs2 = getFeatureSource(new QName("t2"));
@@ -871,7 +871,7 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
      * Convenience to read the csv content and
      * 
      * @param csvContent
-     * @return
+     *
      * @throws IOException
      */
     private List<String[]> readLines(String csvContent) throws IOException {

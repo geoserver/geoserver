@@ -38,7 +38,7 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
 
     
     /**
-     * Adds a user, the {@link GeoServerUser#getPassword()
+     * Adds a user, the {@link GeoServerUser#getPassword()}
      * returns the raw password
      * 
      * The method must use #getPasswordValidatorName() to
@@ -55,7 +55,7 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
      * Updates a user
      * 
      * The method must be able to determine if
-     * {@link GeoServerUser#getPassword() has changed
+     * {@link GeoServerUser#getPassword()} has changed
      * (reread from backend, check for a prefix, ...)
      * 
      * if the password has changed, it is a raw password
@@ -72,7 +72,7 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
     /**
      * Removes the specified user 
      * @param user
-     * @return
+     *
      */
     boolean removeUser(GeoServerUser user)  throws IOException;
     
@@ -92,7 +92,7 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
      * Removes the specified group. 
      * 
      * @param group
-     * @return
+     *
      */
     boolean removeGroup(GeoServerUserGroup group)  throws IOException;
 

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -44,7 +44,7 @@ import org.opengis.filter.expression.Expression;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Unit test for evaluating the ECQL REST PathMapper.
@@ -121,7 +121,6 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
      * @param coverageStore
      * @param fileName
      * @throws IOException
-     * @throws Exception
      * @throws ParserConfigurationException
      * @throws SAXException
      */
@@ -151,9 +150,9 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/" + workspace
                 + "/coveragestores/" + coverageStore + "/file.imagemosaic", bytes,
                 "application/zip");
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         // Check if the coverage is present
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         Document d = dom(new ByteArrayInputStream(content.getBytes()));
         assertEquals("coverageStore", d.getDocumentElement().getNodeName());
 
@@ -177,7 +176,7 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
      * @param expression
      * @param cs
      * @param filename
-     * @return
+     *
      * @throws CQLException
      */
     private File extractFile(String expression, CoverageStoreInfo cs, String itemPath, String filename)
@@ -198,7 +197,6 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
      * Creation of a new workspace defined by the input "workspace" name
      * 
      * @param workspace
-     * @throws Exception
      */
     private void createWorkSpace(String workspace) throws Exception {
         // Check if the workspace is already present
@@ -211,7 +209,7 @@ public class RESTECQLTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse responseBefore = postAsServletResponse("/rest/workspaces", xml,
                 "text/xml");
-        assertEquals(201, responseBefore.getStatusCode());
+        assertEquals(201, responseBefore.getStatus());
         assertNotNull(responseBefore.getHeader("Location"));
         assertTrue(responseBefore.getHeader("Location").endsWith("/workspaces/" + workspace));
 

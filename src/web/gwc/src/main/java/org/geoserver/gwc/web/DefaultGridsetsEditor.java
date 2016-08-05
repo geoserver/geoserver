@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -21,11 +21,13 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.string.Strings;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.web.gridset.GridSetListTablePanel;
 import org.geoserver.gwc.web.gridset.GridSetTableProvider;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geowebcache.grid.GridSet;
@@ -61,7 +63,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         @Override
         protected Component nameLink(final String id, final GridSet gridSet) {
             Label label = new Label(id, gridSet.getName());
-            label.add(new AttributeModifier("title", true, new Model<String>(gridSet
+            label.add(new AttributeModifier("title", new Model<String>(gridSet
                     .getDescription())));
             return label;
         }
@@ -69,6 +71,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         @Override
         protected Component actionLink(final String id, String gridSetName) {
 
+            @SuppressWarnings("rawtypes")
             Component removeLink = new ImageAjaxLink(id, GWCIconFactory.DELETE_ICON) {
                 private static final long serialVersionUID = 1L;
 
@@ -84,13 +87,27 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                     choices.add(gridsetName);
                     Collections.sort(choices);
                     availableGridSets.setChoices(choices);
-                    target.addComponent(defaultGridsetsTable);
-                    target.addComponent(availableGridSets);
+                    target.add(defaultGridsetsTable);
+                    target.add(availableGridSets);
                 }
             };
             removeLink.setDefaultModel(new Model<String>(gridSetName));
 
             return removeLink;
+        }
+
+        @Override
+        protected Component getComponentForProperty(String id, IModel<GridSet> itemModel,
+                Property<GridSet> property) {
+            // Property objects are package access, so we can't statically reference them here
+            // see org.geoserver.gwc.web.gridset.ACTION_LINK
+            final String propertyName = property.getName();
+            // the Remove link property name is the empty string. If that is the property name,
+            // return the actionLink here.
+            if (Strings.isEmpty(propertyName)) {
+                return actionLink(id, itemModel.getObject().getName());
+            }
+            return null;
         }
 
     }
@@ -144,7 +161,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
             private static final long serialVersionUID = 1L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
                 availableGridSets.processInput();
 
                 final String selectedGridset = availableGridSets.getModelObject();
@@ -161,8 +178,8 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                 selectedIds.add(selectedGridset);
                 // Execute setPageable() in order to re-create the inner record list updated.
                 defaultGridsetsTable.setPageable(false);
-                target.addComponent(defaultGridsetsTable);
-                target.addComponent(availableGridSets);
+                target.add(defaultGridsetsTable);
+                target.add(availableGridSets);
             }
         };
         addGridsubsetLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));
@@ -171,7 +188,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
     }
 
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         List<String> defaultGridsetIds = selection.getObject();
         Set<String> convertedInput = new HashSet<String>();
         convertedInput.addAll(defaultGridsetIds);

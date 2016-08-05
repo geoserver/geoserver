@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,10 +12,11 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxPreprocessingCallDecorator;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -26,27 +27,33 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.wicket.CodeMirrorEditor;
+import org.geoserver.web.wicket.ResourcePathModel;
 
 public class StylePanel extends Panel {
+    private static final long serialVersionUID = -8437128284428556984L;
+    
     private String styleBody;
-
+    
+    ResourcePathModel resourcePath;
+    
     public StylePanel(String id, IModel<CssDemoPage> model, final CssDemoPage page,
-            final Resource cssFile) {
+            Resource cssFile) {
         super(id, model);
+        resourcePath = new ResourcePathModel(cssFile);
         if (cssFile != null && Resources.exists(cssFile)) {
             try (InputStream is = cssFile.in()) {
-                styleBody = IOUtils.toString(is);
+                setStyleBody(IOUtils.toString(is));
             } catch (IOException ioe) {
                 throw new WicketRuntimeException("Error loading CSS: ", ioe);
             }
         } else {
-            styleBody = "No CSS file was found for this style. Please make sure "
+            setStyleBody("No CSS file was found for this style. Please make sure "
                     + "this is the style you intended to edit, since saving "
-                    + "the CSS will destroy the existing SLD.";
+                    + "the CSS will destroy the existing SLD.");
         }
 
-        Form styleEditorForm = new Form("style-editor");
-        final PropertyModel<String> styleBodyModel = new PropertyModel(this, "styleBody");
+        Form<?> styleEditorForm = new Form<Object>("style-editor");
+        final PropertyModel<String> styleBodyModel = new PropertyModel<String>(this, "styleBody");
 
         final CodeMirrorEditor editor = new CodeMirrorEditor("editor", styleBodyModel);
         editor.setMode("css");
@@ -62,6 +69,8 @@ public class StylePanel extends Panel {
         styleEditorForm.add(feedback2);
 
         styleEditorForm.add(new AjaxSubmitLink("submit") {
+            private static final long serialVersionUID = -584632920520391772L;
+
             @Override
             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 try {
@@ -75,7 +84,7 @@ public class StylePanel extends Panel {
                     } else {
                         // create the sld side car file
                         String sld = page.cssText2sldText(body, info);
-                        Writer writer = new OutputStreamWriter(cssFile.out());
+                        Writer writer = new OutputStreamWriter(resourcePath.getObject().out());
                         writer.write(body);
                         writer.close();
                         page.catalog()
@@ -85,11 +94,11 @@ public class StylePanel extends Panel {
                     }
 
                     page.catalog().save(info);
-                    target.addComponent(feedback2);
+                    target.add(feedback2);
                     if (page.sldPreview != null)
-                        target.addComponent(page.sldPreview);
+                        target.add(page.sldPreview);
                     if (page.map != null)
-                        target.appendJavascript(page.map.getUpdateCommand());
+                        target.appendJavaScript(page.map.getUpdateCommand());
                 } catch (Exception e) {
                     throw new WicketRuntimeException(e);
                 }
@@ -98,24 +107,32 @@ public class StylePanel extends Panel {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(feedback2);
+                target.add(feedback2);
             }
 
             @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return new AjaxPreprocessingCallDecorator(super.getAjaxCallDecorator()) {
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                
+                attributes.getAjaxCallListeners().add(new AjaxCallListener() {
+                    private static final long serialVersionUID = -523975844113684799L;
 
                     @Override
-                    public CharSequence preDecorateScript(CharSequence script) {
-                        return "if(event.view.document.gsEditors) { "
-                                + "event.view.document.gsEditors." + editor.getTextAreaMarkupId()
-                                + ".save(); } \n" + script;
+                    public CharSequence getBeforeHandler(Component component) {
+                        return "if(attrs.event.view.document.gsEditors) { "
+                                + "attrs.event.view.document.gsEditors." + editor.getTextAreaMarkupId()
+                                + ".save(); } \n";
                     }
-                };
+                });
             }
         });
         add(styleEditorForm);
+    }
 
+    public String getStyleBody() {
+        return styleBody;
+    }
 
+    public void setStyleBody(String styleBody) {
+        this.styleBody = styleBody;
     }
 }

@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -28,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * 
  * @author Davide Savazzi - geo-solutions.it
  */
+@SuppressWarnings("serial")
 public class LayerGroupTablePanel extends GeoServerTablePanel<LayerGroupInfo> {
 
     protected AbstractLink[] editSelectionLinks;
@@ -51,7 +52,7 @@ public class LayerGroupTablePanel extends GeoServerTablePanel<LayerGroupInfo> {
     }
     
     @Override
-    protected Component getComponentForProperty(String id, IModel itemModel, Property<LayerGroupInfo> property) {
+    protected Component getComponentForProperty(String id, IModel<LayerGroupInfo> itemModel, Property<LayerGroupInfo> property) {
         if (property == LayerGroupProvider.NAME) {
             return createLayerGroupLink(id, itemModel); 
         }
@@ -82,7 +83,7 @@ public class LayerGroupTablePanel extends GeoServerTablePanel<LayerGroupInfo> {
         if (editSelectionLinks != null) {
             for (AbstractLink link : editSelectionLinks) {
                 link.setEnabled(canEdit);
-                target.addComponent(link);
+                target.add(link);
             }
         }
     }

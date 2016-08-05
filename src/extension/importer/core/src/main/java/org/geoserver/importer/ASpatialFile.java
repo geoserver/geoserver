@@ -5,11 +5,11 @@
  */
 package org.geoserver.importer;
 
-import org.geoserver.platform.resource.Resource;
+import java.io.File;
 
 public class ASpatialFile extends FileData {
 
-    public ASpatialFile(Resource file) {
+    public ASpatialFile(File file) {
         super(file);
     }
 

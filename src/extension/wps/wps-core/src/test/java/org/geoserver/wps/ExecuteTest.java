@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -63,7 +63,7 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -323,7 +323,7 @@ public class ExecuteTest extends WPSTestSupport {
         assertEquals("application/wkt", response.getContentType());
         String cd = response.getHeader("Content-Disposition");
         assertTrue(cd.endsWith("filename=result.wkt"));
-        Geometry g = new WKTReader().read(response.getOutputStreamContent());
+        Geometry g = new WKTReader().read(response.getContentAsString());
         Assert.assertTrue(g instanceof Polygon);
     }
     
@@ -335,7 +335,7 @@ public class ExecuteTest extends WPSTestSupport {
         MockHttpServletResponse response = getAsServletResponse(request);
         // System.out.println(response.getOutputStreamContent());
         assertEquals("application/wkt", response.getContentType());
-        Geometry g = new WKTReader().read(response.getOutputStreamContent());
+        Geometry g = new WKTReader().read(response.getContentAsString());
         Assert.assertTrue(g instanceof Polygon);
     }
 
@@ -509,7 +509,7 @@ public class ExecuteTest extends WPSTestSupport {
         String resourceLocation = fullLocation.substring(fullLocation.indexOf('?') - 3);
         MockHttpServletResponse response = getAsServletResponse(resourceLocation);
         assertEquals("text/xml; subtype=wfs-collection/1.0", response.getContentType());
-        d = dom(new ByteArrayInputStream( response.getOutputStreamContent().getBytes()));
+        d = dom(new ByteArrayInputStream( response.getContentAsString().getBytes()));
         assertXpathExists("wfs:FeatureCollection", d);
     }
     
@@ -603,7 +603,7 @@ public class ExecuteTest extends WPSTestSupport {
         MockHttpServletResponse r = postAsServletResponse("wps", xml);
         assertEquals("application/json", r.getContentType());
         // System.out.println(r.getOutputStreamContent());
-        FeatureCollection fc = new FeatureJSON().readFeatureCollection(r.getOutputStreamContent());
+        FeatureCollection fc = new FeatureJSON().readFeatureCollection(r.getContentAsString());
         assertEquals(2, fc.size());
         
     }
@@ -640,7 +640,7 @@ public class ExecuteTest extends WPSTestSupport {
         // System.out.println(r.getOutputStreamContent());
         assertEquals("application/json", r.getContentType());
         // System.out.println(r.getOutputStreamContent());
-        FeatureCollection fc = new FeatureJSON().readFeatureCollection(r.getOutputStreamContent());
+        FeatureCollection fc = new FeatureJSON().readFeatureCollection(r.getContentAsString());
         assertEquals(2, fc.size());
         
     }
@@ -950,7 +950,7 @@ public class ExecuteTest extends WPSTestSupport {
         MockHttpServletResponse resp = postAsServletResponse(root(), xml);
         assertEquals("text/plain", resp.getContentType());
         // the result is inaccurate since the buffer is just a poor approximation of a circle
-        Assert.assertTrue(resp.getOutputStreamContent().matches("312\\..*"));
+        Assert.assertTrue(resp.getContentAsString().matches("312\\..*"));
     }
     
     @Test
@@ -998,7 +998,7 @@ public class ExecuteTest extends WPSTestSupport {
         MockHttpServletResponse resp = getAsServletResponse(request);
         assertEquals("text/plain", resp.getContentType());
         // the result is inaccurate since the buffer is just a poor approximation of a circle
-        Assert.assertTrue(resp.getOutputStreamContent().matches("312\\..*"));
+        Assert.assertTrue(resp.getContentAsString().matches("312\\..*"));
     }
     
     @Test
@@ -1069,7 +1069,6 @@ public class ExecuteTest extends WPSTestSupport {
     
     /**
      * https://osgeo-org.atlassian.net/browse/GEOS-5208
-     * @throws Exception
      */
     @Test
     public void testChainedProgress() throws Exception {
@@ -1136,7 +1135,6 @@ public class ExecuteTest extends WPSTestSupport {
     
     /**
      * https://osgeo-org.atlassian.net/browse/GEOS-5208
-     * @throws Exception
      */
     @Test
     public void testTripleChainedProgress() throws Exception {
@@ -1806,7 +1804,6 @@ public class ExecuteTest extends WPSTestSupport {
      * Checks the bounds process returned the expected envelope
      * @param request
      * @param id
-     * @throws Exception
      */
     void executeState1BoundsTest(String request, String id) throws Exception {
         if (!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
@@ -1815,7 +1812,7 @@ public class ExecuteTest extends WPSTestSupport {
         }
         
         MockHttpServletResponse resp = postAsServletResponse(root(), request);
-        ReferencedEnvelope re = toEnvelope(resp.getOutputStreamContent());
+        ReferencedEnvelope re = toEnvelope(resp.getContentAsString());
         Assert.assertEquals(-91.516129, re.getMinX(), 0.001);
         Assert.assertEquals(36.986771, re.getMinY(), 0.001);
         Assert.assertEquals(-87.507889, re.getMaxX(), 0.001);

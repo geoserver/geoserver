@@ -39,7 +39,6 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * @throws Exception
      */
     @Test
     public void testCoverageView() throws Exception {
@@ -72,7 +71,6 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * @throws Exception
      */
     @Test
     public void testBands() throws Exception {

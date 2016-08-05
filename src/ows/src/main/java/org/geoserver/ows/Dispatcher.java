@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -73,24 +73,23 @@ import org.xmlpull.v1.XmlPullParserFactory;
  * Dispatches an http request to an open web service (OWS).
  * <p>
  * An OWS request contains three bits of information:
- *         <ol>
- *                 <li>The service being called
- *                 <li>The operation of the service to execute
- *                 <li>The version of the service ( optional )
- *  </ol>
- *  Additional, an OWS request can contain an arbitray number of additional
- *  parameters.
+ * </p>
+ * <ol>
+ * <li>The service being called
+ * <li>The operation of the service to execute
+ * <li>The version of the service ( optional )
+ * </ol>
+ * <p>
+ * Additional, an OWS request can contain an arbitray number of additional parameters.
  * </p>
  * <p>
- * An OWS request can be specified in two forms. The first form is known as "KVP"
- * in which all the parameters come in the form of a set of key-value pairs.
- * Commonly this type of request is made in an http "GET" request, the parameters
- * being specified in the query string:
+ * An OWS request can be specified in two forms. The first form is known as "KVP" in which all the parameters come in the form of a set of key-value
+ * pairs. Commonly this type of request is made in an http "GET" request, the parameters being specified in the query string:
  *
- *  <pre>
- *          <code>http://www.xyz.com/geoserver?service=someService&request=someRequest&version=X.Y.Z&param1=...&param2=...
- *  </pre>
- *
+ * <pre>
+ * <code>http://www.xyz.com/geoserver?service=someService&amp;request=someRequest&amp;version=X.Y.Z&amp;param1=...&amp;param2=...</code>
+ * </pre>
+ * <p>
  *  This type of request can also be made in a "POST" request in with a
  *  mime-type of "application/x-www-form-urlencoded".
  * </p>
@@ -98,27 +97,21 @@ import org.xmlpull.v1.XmlPullParserFactory;
  * The second form is known as "XML" in which all the parameters come in the
  * form of an xml document. This type of request is made in an http "POST"
  * request.
- *
- *         <pre>
- *                 <code>
+ * </p>
+ * <pre><code>
  *  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
  *  &lt;SomeRequest service="someService" version="X.Y.Z"&gt;
  *    &lt;Param1&gt;...&lt;/Param1&gt;
  *    &lt;Param2&gt;...&lt;/Param2&gt;
  *    ...
  *  &lt;/SomeRequest&gt;
- *                 </code>
- *         </pre>
- * </p>
+ * </code></pre>
  * <p>
- * When a request is received, the <b>service</b> the <b>version</b> parameters
- * are used to locate a service desciptor, an instance of {@link Service}. With
- * the service descriptor, the <b>request</b> parameter is used to locate the
- * operation of the service to call.
+ * When a request is received, the <b>service</b> the <b>version</b> parameters are used to locate a service desciptor, an instance of {@link Service}
+ * . With the service descriptor, the <b>request</b> parameter is used to locate the operation of the service to call.
  * </p>
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public class Dispatcher extends AbstractController {
     /**
@@ -175,7 +168,7 @@ public class Dispatcher extends AbstractController {
      * If set to <code>true</code>, the dispatcher with throw exceptions when
      * it encounters something that is not 100% compliant with CITE standards.
      * An example would be a request which specifies the servce in the context
-     * path: '.../geoserver/wfs?request=...' and not with the kvp '&service=wfs'.
+     * path: '.../geoserver/wfs?request=...' and not with the kvp '&amp;service=wfs'.
      * </p>
      *
      * @param citeCompliant <code>true</code> to set compliance,
@@ -309,8 +302,8 @@ public class Dispatcher extends AbstractController {
         for ( DispatcherCallback cb : callbacks ) {
             try {
                 cb.finished( req );
-            } catch (Exception e) {
-                logger.log(Level.WARNING, "Error firing finished callback for "+cb.getClass(), e);
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "Error firing finished callback for "+cb.getClass(), t);
             }
         }
     }

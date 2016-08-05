@@ -107,7 +107,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Map of strings that make up the SLD enviroment for variable substitution
      * 
-     * @return
+     *
      */
     public Map getEnv() {
         return env;
@@ -116,7 +116,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Map of strings that contain the parameter values for SQL views
      * 
-     * @return
+     *
      */
     public List<Map<String, String>> getViewParams() {
         return viewParams;
@@ -316,7 +316,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Returns the chosen elevations. The list may contain {@link Date} or {@link NumberRange} objects,
      * or null to indicate the default value
-     * @return
+     *
      */
     public List<Object> getElevation() {
         return this.optionalParams.elevation;
@@ -325,7 +325,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Returs the feature version optional parameter
      * 
-     * @return
+     *
      */
     public String getFeatureVersion() {
         return this.optionalParams.featureVersion;
@@ -334,7 +334,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Returns the remote OWS type
      * 
-     * @return
+     *
      */
     public String getRemoteOwsType() {
         return optionalParams.remoteOwsType;
@@ -343,7 +343,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
     /**
      * Returs the remote OWS URL
      * 
-     * @return
+     *
      */
     public URL getRemoteOwsURL() {
         return optionalParams.remoteOwsURL;

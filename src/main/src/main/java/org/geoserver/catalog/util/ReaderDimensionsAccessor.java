@@ -27,11 +27,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.DimensionDescriptor;
+import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.data.Query;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
+import org.geotools.util.Range;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
+import org.opengis.filter.FilterFactory;
+import org.opengis.filter.PropertyIsBetween;
+import org.opengis.filter.expression.PropertyName;
 
 /**
  * Centralizes the metadata extraction and parsing used to read dimension informations out of a
@@ -48,6 +59,8 @@ public class ReaderDimensionsAccessor {
 
     private static final String UTC_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     
+    private static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
+    
     /**
      * Comparator for the TreeSet made either by Date objects, or by DateRange objects
      */
@@ -55,15 +68,21 @@ public class ReaderDimensionsAccessor {
 
         @Override
         public int compare(Object o1, Object o2) {
-            if(o1 instanceof Date && o2 instanceof Date) {
-                return ((Date) o1).compareTo((Date) o2);
-            } else if(o1 instanceof DateRange && o2 instanceof DateRange) {
-                return ((DateRange) o1).getMinValue().compareTo(((DateRange) o2).getMinValue());
-            } else {
-                throw new IllegalArgumentException("Unexpected, values to be ordered have to " +
-                        "be either all Date objects, or all DateRange objects, instead they are: " 
-                        + o1 + ", " + o2);
-            }
+            // the domain can be a mix of dates and ranges
+            if(o1 instanceof Date) {
+                if(o1 instanceof DateRange) {
+                    return ((Date) o1).compareTo(((DateRange) o2).getMinValue());
+                } else {
+                    return ((Date) o1).compareTo((Date) o2);
+                }
+            } else if(o1 instanceof DateRange) {
+                if(o2 instanceof Date) {
+                    return ((DateRange) o1).getMinValue().compareTo((Date) o2);
+                } else {
+                    return ((DateRange) o1).getMinValue().compareTo(((DateRange) o2).getMinValue());
+                }
+            } 
+            throw new IllegalArgumentException("Unxpected object type found, was expecting date or date range but found " + o1 + " and " + o2);
         }
         
     };
@@ -75,14 +94,20 @@ public class ReaderDimensionsAccessor {
 
         @Override
         public int compare(Object o1, Object o2) {
-            if(o1 instanceof Double && o2 instanceof Double) {
-                return ((Double) o1).compareTo((Double) o2);
-            } else if(o1 instanceof NumberRange && o2 instanceof NumberRange) {
-                return ((NumberRange<Double>) o1).getMinValue().compareTo(((NumberRange<Double>) o2).getMinValue());
-            } else {
-                throw new IllegalArgumentException("Unexpected, values to be ordered have to " +
-                        "be either all Double objects, or all NumberRange objects");
-            }
+            if(o1 instanceof Double) {
+                if(o2 instanceof Double) {
+                    return ((Double) o1).compareTo((Double) o2);
+                } else if(o2 instanceof NumberRange) {
+                    return ((Double) o1).compareTo(((NumberRange<Double>) o2).getMinValue());
+                }
+            } else if(o1 instanceof NumberRange) {
+                if(o2 instanceof NumberRange) {
+                    return ((NumberRange<Double>) o1).getMinValue().compareTo(((NumberRange<Double>) o2).getMinValue());
+                } else {
+                    return ((NumberRange<Double>) o1).getMinValue().compareTo((Double) o2);
+                }
+            } 
+            throw new IllegalArgumentException("Unxpected object type found, was expecting double or range of doubles but found " + o1 + " and " + o2);
         }
         
     };
@@ -103,7 +128,7 @@ public class ReaderDimensionsAccessor {
     /**
      * True if the reader has a time dimension
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public boolean hasTime() throws IOException {
@@ -115,7 +140,7 @@ public class ReaderDimensionsAccessor {
      * They are either {@link Date} objects, or {@link DateRange} objects, according to what
      * the underlying reader provides.
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public TreeSet<Object> getTimeDomain() throws IOException {
@@ -138,18 +163,65 @@ public class ReaderDimensionsAccessor {
     }
     
     /**
+     * Returns the set of time values supported by the raster, sorted by time, in the
+     * specified range.
+     * They are either {@link Date} objects, or {@link DateRange} objects, according to what
+     * the underlying reader provides.
+     * 
+     *
+     * @throws IOException 
+     */
+    public TreeSet<Object> getTimeDomain(DateRange range, int maxEntries) throws IOException {
+        if (!hasTime()) {
+            Collections.emptySet();
+        }
+        
+        TreeSet<Object> result = null;
+        if(reader instanceof StructuredGridCoverage2DReader) {
+            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+            result = getDimensionValuesInRange("time", range, maxEntries, sr);
+        }
+        
+        // if we got here, the optimization did not work, do the normal path
+        if(result == null) {
+            result = new TreeSet<Object>();
+            TreeSet<Object> fullDomain = getElevationDomain();
+
+            for (Object o : fullDomain) {
+                if(o instanceof Date) {
+                    if(range.contains((Date) o)) {
+                        result.add(o);
+                    }
+                } else if(o instanceof DateRange) {
+                    if(range.intersects((DateRange) o)) {
+                        result.add(o);
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
      * Parses either a time expression in ISO format, or a time period in start/end format
      * @param df
      * @param timeOrRange
-     * @return
+     *
      * @throws ParseException
      */
     private Object parseTimeOrRange(SimpleDateFormat df, String timeOrRange) throws ParseException {
         if(timeOrRange.contains("/")) {
             String[] splitted = timeOrRange.split("/");
-            Date start = df.parse(splitted[0]);
-            Date end = df.parse(splitted[1]);
-            return new DateRange(start, end);
+            final String strStart = splitted[0];
+            final String strEnd = splitted[1];
+            if(strStart != null && strStart.equals(strEnd)) {
+                return df.parse(strStart);
+            } else {
+                Date start = df.parse(strStart);
+                Date end = df.parse(strEnd);
+                return new DateRange(start, end);
+            }
         } else {
             return df.parse(timeOrRange);
         }
@@ -158,13 +230,18 @@ public class ReaderDimensionsAccessor {
     /**
      * Parses the specified value as a NumberRange if it's in the min/max form, as a Double otherwise
      * @param val
-     * @return
+     *
      */
     private Object parseNumberOrRange(String val) {
         if(val.contains("/")) {
             String[] splitted = val.split("/");
-            double start = Double.parseDouble(splitted[0]);
-            double end = Double.parseDouble(splitted[1]);
+            final String strStart = splitted[0];
+            final String strEnd = splitted[1];
+            if(strStart.equals(strEnd)) {
+                return Double.parseDouble(strStart);
+            }
+            double start = Double.parseDouble(strStart);
+            double end = Double.parseDouble(strEnd);
             return new NumberRange<Double>(Double.class, start, end);
         } else {
             return Double.parseDouble(val);
@@ -175,7 +252,7 @@ public class ReaderDimensionsAccessor {
      * Returns the max value for the time, either as a single {@link Date} or {@link DateRange} 
      * according to what the underlying reader provides
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public Date getMaxTime() throws IOException {
@@ -197,7 +274,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Returns the min value for the time
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public Date getMinTime() throws IOException {
@@ -219,7 +296,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Returns a {@link SimpleDateFormat} using the UTC_PATTERN and the UTC time zone
      * 
-     * @return
+     *
      */
     public SimpleDateFormat getTimeFormat() {
         final SimpleDateFormat df = new SimpleDateFormat(UTC_PATTERN);
@@ -230,7 +307,7 @@ public class ReaderDimensionsAccessor {
     /**
      * True if the reader has a elevation dimension
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public boolean hasElevation() throws IOException {
@@ -240,7 +317,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Returns the full set of elevation values (either as Double or NumberRange), sorted from smaller to higher
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public TreeSet<Object> getElevationDomain() throws IOException {
@@ -260,13 +337,86 @@ public class ReaderDimensionsAccessor {
 
         return elevations;
     }
+    
+    
+    /**
+     * Returns the set of elevation values supported by the raster, sorted from smaller to bigger, in the
+     * specified range.
+     * They are either {@link Double} objects, or {@link NumberRange} objects, according to what
+     * the underlying reader provides.
+     *
+     * @throws IOException 
+     */
+    public TreeSet<Object> getElevationDomain(NumberRange range, int maxEntries) throws IOException {
+        if (!hasElevation()) {
+            Collections.emptySet();
+        }
+        
+        // special optimization for structured coverage readers
+        TreeSet<Object> result = null;
+        if(reader instanceof StructuredGridCoverage2DReader) {
+            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+            result = getDimensionValuesInRange("elevation", range, maxEntries, sr);
+        }
+        
+        // if we got here, the optimization did not work, do the normal path
+        if(result == null) {
+            result = new TreeSet<Object>();
+            TreeSet<Object> fullDomain = getElevationDomain();
+
+            for (Object o : fullDomain) {
+                if(o instanceof Double) {
+                    if(range.contains((Number) o)) {
+                        result.add(o);
+                    }
+                } else if(o instanceof NumberRange) {
+                    if(range.intersects((NumberRange) o)) {
+                        result.add(o);
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+
+    private TreeSet<Object> getDimensionValuesInRange(String dimensionName, Range range,
+            int maxEntries, StructuredGridCoverage2DReader sr) throws IOException {
+        final String name = sr.getGridCoverageNames()[0];
+        List<DimensionDescriptor> descriptors = sr.getDimensionDescriptors(name);
+        for (DimensionDescriptor descriptor : descriptors) {
+            // do we find the time, and can we optimize?
+            if (dimensionName.equalsIgnoreCase(descriptor.getName())
+                    && descriptor.getEndAttribute() == null) {
+                GranuleSource gs = sr.getGranules(name, true);
+                final Query query = new Query(gs.getSchema().getName().getLocalPart());
+                // The NetCDF plug-in gets a corrupted cache if we provide a property list
+                // query.setPropertyNames(Arrays.asList(descriptor.getStartAttribute()));
+                final PropertyName attribute = FF.property(descriptor.getStartAttribute());
+                final PropertyIsBetween rangeFilter = FF.between(attribute,
+                        FF.literal(range.getMinValue()), FF.literal(range.getMaxValue()));
+                query.setFilter(rangeFilter);
+                query.setMaxFeatures(maxEntries);
+
+                FeatureCollection collection = gs.getGranules(query);
+
+                // collect all unique values (can't do ranges now, we don't have a multi-attribute unique visitor)
+                UniqueVisitor visitor = new UniqueVisitor(attribute);
+                collection.accepts(visitor, null);
+                TreeSet<Object> result = new TreeSet<>(visitor.getUnique());
+                return result;
+            }
+        }
+
+        return null;
+    }
 
     
     
     /**
      * Returns the max value for the elevation (as a Double, or as a NumberRange)
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public Double getMaxElevation() throws IOException {
@@ -288,7 +438,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Returns the min value for the elevation (as a Double, or as a NumbeRange)
      * 
-     * @return
+     *
      * @throws IOException 
      */
     public Double getMinElevation() throws IOException {
@@ -309,7 +459,7 @@ public class ReaderDimensionsAccessor {
     
     /**
      * Lists the custom domains of a raster data set
-     * @return
+     *
      */
     public List<String> getCustomDomains() {
         if (metadataNames.isEmpty()) {
@@ -333,7 +483,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Return the domain datatype (if available)
      * @param domainName
-     * @return
+     *
      * @throws IOException 
      */
     public String getDomainDatatype(final String domainName) throws IOException {
@@ -364,7 +514,7 @@ public class ReaderDimensionsAccessor {
 
     /**
      * Extracts the custom domain lowest value (using String sorting)
-     * @return
+     *
      * @throws IOException 
      */
     public String getCustomDomainDefaultValue(String name) throws IOException {
@@ -388,7 +538,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Checks if this dimension has a range (min/max) or just a domain
      * @param domain
-     * @return
+     *
      */
     public boolean hasRange(String domain) {
         return metadataNames.contains(domain + "_DOMAIN_MAXIMUM") && metadataNames.contains(domain + "_DOMAIN_MINIMUM");
@@ -397,7 +547,7 @@ public class ReaderDimensionsAccessor {
     /**
      * Checks if this dimension has a resolution
      * @param domain
-     * @return
+     *
      */
     public boolean hasResolution(String domain) {
         Utilities.ensureNonNull("name", domain);

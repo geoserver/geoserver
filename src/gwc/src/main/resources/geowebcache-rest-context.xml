@@ -26,6 +26,7 @@
     <property name="tileLayerDispatcher" ref="gwcTLDispatcher"/>
     <property name="urlMangler" ref="gwcURLMangler"/>
     <property name="controller" ref="geowebcacheDispatcher"/>
+    <property name="storageBroker" ref="gwcStorageBroker"/>
   </bean>
   <bean id="gwcBoundsRestlet" class="org.geowebcache.rest.bounds.BoundsRestlet">
     <property name="tileLayerDispatcher" ref="gwcTLDispatcher"/>

@@ -1258,7 +1258,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
      * @param mapLayer
      *            The map layer.
      * 
-     * @throws Exception
      */
 
     // JD: the reason this method is static is to share logic among the xml

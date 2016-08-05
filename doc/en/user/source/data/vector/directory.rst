@@ -40,4 +40,4 @@ When finished, click :guilabel:`Save`.
 Configuring shapefiles
 ----------------------
 
-All of the shapefiles contained in the directory store will be loaded as part of the directory store, but they will need to be individually configured as new layers they can be served by GeoServer.  See the section on :ref:`webadmin_layers` for how to add and edit new layers.
+All of the shapefiles contained in the directory store will be loaded as part of the directory store, but they will need to be individually configured as new layers they can be served by GeoServer.  See the section on :ref:`data_webadmin_layers` for how to add and edit new layers.

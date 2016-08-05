@@ -1,4 +1,4 @@
-/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -42,8 +42,19 @@ import com.vividsolutions.jts.geom.MultiPolygon;
  */
 public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader {
 
-    private static final CoverageProcessor processor = CoverageProcessor.getInstance(new Hints(
-            Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
+    /** Parameters used to control the {@link Crop} operation. */
+    private static final ParameterValueGroup cropParams;
+    
+    /**
+     * Cached crop factory
+     */
+    private final static Crop coverageCropFactory = new Crop();
+
+    static {
+        final CoverageProcessor processor = new CoverageProcessor(
+                new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
+        cropParams = processor.getOperation("CoverageCrop").getParameters();
+    }
 
     WrapperPolicy policy;
 
@@ -61,8 +72,13 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
         }
     }
 
-    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException,
-            IOException {
+    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
+        return SecuredGridCoverage2DReader.read(delegate, policy, parameters);
+    }
+
+    static GridCoverage2D read(GridCoverage2DReader delegate, WrapperPolicy policy, 
+            GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
+        //Package private static method to share reading code with Structured reader 
         MultiPolygon rasterFilter = null;
         if (policy.getLimits() instanceof CoverageAccessLimits) {
             CoverageAccessLimits limits = (CoverageAccessLimits) policy.getLimits();
@@ -136,10 +152,10 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
             
             Geometry coverageBounds = JTS.toGeometry((Envelope) new ReferencedEnvelope(grid.getEnvelope2D()));
             if(coverageBounds.intersects(rasterFilter)) {
-                final ParameterValueGroup param = processor.getOperation("CoverageCrop").getParameters();
+                final ParameterValueGroup param = cropParams.clone();
                 param.parameter("source").setValue(grid);
                 param.parameter("ROI").setValue(rasterFilter);
-                grid = (GridCoverage2D) ((Crop)processor.getOperation("CoverageCrop")).doOperation(param, null);
+                grid = (GridCoverage2D) coverageCropFactory.doOperation(param, null);
             } else {
                 return null;
             }

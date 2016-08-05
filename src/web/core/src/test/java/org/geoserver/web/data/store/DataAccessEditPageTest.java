@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -46,10 +46,10 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         tester.assertLabel("dataStoreForm:storeType", "Properties");
-        tester.assertModelValue("dataStoreForm:dataStoreNamePanel:border:paramValue", "cite");
+        tester.assertModelValue("dataStoreForm:dataStoreNamePanel:border:border_body:paramValue", "cite");
         String expectedPath = new File(getTestData().getDataDirectoryRoot(), "cite").getPath();
         tester.assertModelValue(
-                "dataStoreForm:parametersPanel:parameters:0:parameterPanel:border:paramValue",
+                "dataStoreForm:parametersPanel:parameters:0:parameterPanel:border:border_body:paramValue",
                 expectedPath);
     }
 
@@ -59,7 +59,7 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
     //        
     // FormTester form = tester.newFormTester("dataStoreForm");
     // prefillForm(form);
-    // form.setValue("dataStoreNamePanel:border:paramValue", "citeModified");
+    // form.setValue("dataStoreNamePanel:border:border_body:paramValue", "citeModified");
     // form.submit();
     // tester.assertNoErrorMessage();
     // tester.clickLink("dataStoreForm:save");
@@ -72,8 +72,8 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
     public void testNameRequired() {
         
         FormTester form = tester.newFormTester("dataStoreForm");
-        form.setValue("dataStoreNamePanel:border:paramValue", null);
-        form.setValue("workspacePanel:border:paramValue", "cite");
+        form.setValue("dataStoreNamePanel:border:border_body:paramValue", null);
+        form.setValue("workspacePanel:border:border_body:paramValue", "cite");
         form.submit();
         // missing click link , the validation triggers before it
 
@@ -100,9 +100,9 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
     public void _testWorkspaceSyncsUpWithNamespace() {
         final FormTester formTester = tester.newFormTester("dataStoreForm");
         print(tester.getLastRenderedPage(), true, true);
-        final String wsDropdownPath = "dataStoreForm:workspacePanel:border:paramValue";
+        final String wsDropdownPath = "dataStoreForm:workspacePanel:border:border_body:paramValue";
         final String namespaceParamPath = "dataStoreForm:parametersPanel:parameters:1:parameterPanel:paramValue";
-        final String directoryParamPath = "dataStoreForm:parametersPanel:parameters:0:parameterPanel:border:paramValue";
+        final String directoryParamPath = "dataStoreForm:parametersPanel:parameters:0:parameterPanel:border:border_body:paramValue";
 
         final Catalog catalog = getCatalog();
         tester.assertModelValue(wsDropdownPath, catalog.getWorkspaceByName(MockData.CITE_PREFIX));
@@ -118,12 +118,12 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
         NamespaceInfo expectedNamespace = catalog.getNamespaceByPrefix(MockData.CDF_PREFIX);
 
         // select the fifth item in the drop down, which is the cdf workspace
-        formTester.select("workspacePanel:border:paramValue", 4);
+        formTester.select("workspacePanel:border:border_body:paramValue", 4);
         Component wsDropDown = tester.getComponentFromLastRenderedPage(wsDropdownPath);
-        tester.executeAjaxEvent(wsDropDown, "onchange");
+        tester.executeAjaxEvent(wsDropDown, "change");
 
         // final String namespaceParamPath =
-        // "dataStoreForm:parameters:1:parameterPanel:border:paramValue";
+        // "dataStoreForm:parameters:1:parameterPanel:border:border_body:paramValue";
 
         // did the workspace change?
         tester.assertModelValue(wsDropdownPath, expectedWorkspace);

@@ -48,8 +48,6 @@ import org.opengis.filter.Filter;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {

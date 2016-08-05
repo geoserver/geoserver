@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -6,6 +6,8 @@
 package org.geoserver.web.security.ldap;
 
 import static org.junit.Assert.assertNull;
+
+import java.io.Serializable;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -21,7 +23,6 @@ import org.geoserver.web.FormTestPage;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Test;
-import org.springframework.ldap.test.LdapTestUtils;
 
 /**
  * 
@@ -54,9 +55,7 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
     
     @After
     public void tearDown() throws Exception {
-        LdapTestUtils
-                .destroyApacheDirectoryServer(LdapTestUtils.DEFAULT_PRINCIPAL,
-                        LdapTestUtils.DEFAULT_PASSWORD);
+        LDAPTestUtils.shutdownEmbeddedServer();
     }
     
     
@@ -90,16 +89,18 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
     
             public Component buildComponent(String id) {
                 
-                return current = new LDAPRoleServicePanel(id, new Model(config));
+                return current = new LDAPRoleServicePanel(id, new Model<LDAPRoleServiceConfig>(config));
             };
-        }, new CompoundPropertyModel(config)){
+        }, new CompoundPropertyModel<Object>(config)){
+
+            private static final long serialVersionUID = -4090244876841730821L;
 
             @Override
-            protected void onBeforeRender() {
+            protected void onInitialize() {
                 feedbackPanel = new FeedbackPanel("feedback");
                 feedbackPanel.setOutputMarkupId(true);
                 add(feedbackPanel);
-                super.onBeforeRender();
+                super.onInitialize();
             }
             
         });
@@ -122,10 +123,9 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
         
         tester.newFormTester("form").submit();
         
-        tester.assertErrorMessages(new String[] {"Field 'Server URL' is required.", "Field 'Group search base' is required."});
+        tester.assertErrorMessages((Serializable [])new String[] {"Field 'Server URL' is required.", "Field 'Group search base' is required."});
     }
 
-    
     @Test
     public void testDataLoadedFromConfigurationWithAuthentication() throws Exception {
         Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
@@ -142,7 +142,7 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
         setupPanel(false, true);
         tester.assertInvisible("form:panel:authenticationPanelContainer:authenticationPanel");
         tester.newFormTester("form").setValue("panel:bindBeforeGroupSearch", "on");
-        tester.executeAjaxEvent("form:panel:bindBeforeGroupSearch","onclick");
+        tester.executeAjaxEvent("form:panel:bindBeforeGroupSearch","click");
         tester.assertVisible("form:panel:authenticationPanelContainer:authenticationPanel");
     }
     
@@ -151,7 +151,7 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
         setupPanel(true, true);
         tester.assertVisible("form:panel:authenticationPanelContainer:authenticationPanel");
         tester.newFormTester("form").setValue("panel:bindBeforeGroupSearch", "");
-        tester.executeAjaxEvent("form:panel:bindBeforeGroupSearch","onclick");
+        tester.executeAjaxEvent("form:panel:bindBeforeGroupSearch","click");
         tester.assertInvisible("form:panel:authenticationPanelContainer:authenticationPanel");
     }
     

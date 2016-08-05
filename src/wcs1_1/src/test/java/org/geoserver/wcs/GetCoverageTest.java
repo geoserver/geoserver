@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -45,7 +45,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.wcs.WcsException;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetCoverageTest extends AbstractGetCoverageTest {
 
@@ -515,7 +515,6 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
      * This tests just ended up throwing an exception as the coverage being encoded
      * was too large due to a bug in the scales estimation
      * 
-     * @throws Exception
      */
     @Test
     public void testRotatedPost() throws Exception {
@@ -561,7 +560,6 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
      * This tests just ended up throwing an exception as the coverage being encoded
      * was too large due to a bug in the scales estimation
      * 
-     * @throws Exception
      */
     @Test
     public void testRotatedGet() throws Exception {
@@ -634,7 +632,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         MockHttpServletResponse response = getAsServletResponse(queryString);
         try {
             this.getMultipart(response);
-            assertEquals(response.getStatusCode(), 200);
+            assertEquals(response.getStatus(), 200);
         } catch (ClassCastException e) {
             assertEquals("application/xml", response.getContentType());
         }

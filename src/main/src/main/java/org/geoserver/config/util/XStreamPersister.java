@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -29,6 +29,7 @@ import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -167,6 +168,7 @@ public class XStreamPersister {
      * Callback interface or xstream persister.
      */
     public static class Callback {
+        protected CatalogInfo getCatalogObject() { return null; }
         protected void postEncodeWorkspace( WorkspaceInfo ws, HierarchicalStreamWriter writer, MarshallingContext context ) {
         }
         
@@ -611,7 +613,7 @@ public class XStreamPersister {
      * Builds a converter that will marshal/unmarshal the target class by reference, that is, by
      * storing the object id as opposed to fully serializing it
      * @param clazz
-     * @return
+     *
      */
     public ReferenceConverter buildReferenceConverter(Class clazz) {
         return new ReferenceConverter(clazz);
@@ -620,7 +622,7 @@ public class XStreamPersister {
     /**
      * Same as {@link #buildReferenceConverter(Class)}, but works against a collection of objects
      * @param clazz
-     * @return
+     *
      */
     public ReferenceCollectionConverter buildReferenceCollectionConverter(Class clazz) {
         return new ReferenceCollectionConverter(clazz);
@@ -1327,74 +1329,61 @@ public class XStreamPersister {
         @Override
         public Object unmarshal(HierarchicalStreamReader reader,
                 UnmarshallingContext context) {
-             int[] high,low;
-            
-            //reader.moveDown(); //grid
-            
-            reader.moveDown(); //range
-            
-            reader.moveDown(); //low
-            low = toIntArray( reader.getValue() );
-            reader.moveUp();
-            reader.moveDown(); //high
-            high = toIntArray( reader.getValue() );
-            reader.moveUp();
-            
-            reader.moveUp(); //range
-            
-            if ( reader.hasMoreChildren() ) {
-                reader.moveDown(); //transform or crs
-            }
-            
-            AffineTransform2D gridToCRS = null;
-            if ( "transform".equals( reader.getNodeName() ) ) {
-                double sx,sy,shx,shy,tx,ty;
-                
-                reader.moveDown(); //scaleX
-                sx = Double.parseDouble( reader.getValue() );
-                reader.moveUp();
-                
-                reader.moveDown(); //scaleY
-                sy = Double.parseDouble( reader.getValue() );
-                reader.moveUp();
-                
-                
-                reader.moveDown(); //shearX
-                shx = Double.parseDouble( reader.getValue() );
-                reader.moveUp();
-                
-                reader.moveDown(); //shearY
-                shy = Double.parseDouble( reader.getValue() );
-                reader.moveUp();
-                
-                reader.moveDown(); //translateX
-                tx = Double.parseDouble( reader.getValue() );
-                reader.moveUp();
-                
-                reader.moveDown(); //translateY
-                ty = Double.parseDouble( reader.getValue() );
-                reader.moveUp();
-                
-                
-
-                // set tranform
-                gridToCRS = new AffineTransform2D(sx, shx, shy, sy, tx, ty);
-                reader.moveUp();
-                if ( reader.hasMoreChildren() ) {
-                    reader.moveDown(); //crs
-                }
-            }
-            
+            int[] high = null, low = null;
             CoordinateReferenceSystem crs = null;
-            if ( "crs".equals( reader.getNodeName() ) ) {
-                crs = (CoordinateReferenceSystem) context.convertAnother( null, CoordinateReferenceSystem.class, 
-                    new SingleValueConverterWrapper( new SRSConverter() ));
+            AffineTransform2D gridToCRS = null;
+            GeneralGridEnvelope gridRange = null;
+            
+            while (reader.hasMoreChildren()) {
+                reader.moveDown();
+                if("range".equals(reader.getNodeName())) {
+                    while (reader.hasMoreChildren()) {
+                        reader.moveDown();
+                        if("low".equals(reader.getNodeName())) {
+                            low = toIntArray( reader.getValue() );
+                        }
+                        else if ("high".equals(reader.getNodeName())) {
+                            high = toIntArray( reader.getValue() );
+                        }
+                        reader.moveUp();
+                    }
+                    // new grid range
+                    gridRange = new GeneralGridEnvelope(low, high);
+                }
+                if ( "crs".equals( reader.getNodeName() ) ) {
+                    crs = (CoordinateReferenceSystem) context.convertAnother( null, CoordinateReferenceSystem.class, 
+                            new SingleValueConverterWrapper( new SRSConverter() ));
+                }
+                else if ("transform".equals(reader.getNodeName())) {
+                    double sx = 1.0, sy = 1.0, shx = 0.0, shy = 0.0, tx = 0.0, ty = 0.0;
+                    while (reader.hasMoreChildren()) {
+                        reader.moveDown();
+                        if("scaleX".equals(reader.getNodeName())) {
+                            sx = Double.parseDouble( reader.getValue() );
+                        }
+                        else if ("scaleY".equals(reader.getNodeName())) {
+                            sy = Double.parseDouble( reader.getValue() );
+                        }
+                        else if ("shearX".equals(reader.getNodeName())) {
+                            shx = Double.parseDouble( reader.getValue() );
+                        }
+                        else if ("shearY".equals(reader.getNodeName())) {
+                            shy = Double.parseDouble( reader.getValue() );
+                        }
+                        else if ("translateX".equals(reader.getNodeName())) {
+                            tx = Double.parseDouble( reader.getValue() );
+                        }
+                        else if ("translateY".equals(reader.getNodeName())) {
+                            ty = Double.parseDouble( reader.getValue() );
+                        }
+                        reader.moveUp();
+                    }
+                    // set tranform
+                    gridToCRS = new AffineTransform2D(sx, shx, shy, sy, tx, ty);
+                }
                 reader.moveUp();
             }
-            
-            // new grid range
-            GeneralGridEnvelope gridRange = new GeneralGridEnvelope(low, high);
-            
+
             GridGeometry2D gg = new GridGeometry2D( gridRange, gridToCRS, crs );
             return serializationMethodInvoker.callReadResolve(gg);
         }
@@ -1520,9 +1509,58 @@ public class XStreamPersister {
         }
     }
     /**
+     * Converter for all {@link CatalogInfo} resources. Obtains the appropriate catalog object in 
+     * {@link #instantiateNewInstance(HierarchicalStreamReader, UnmarshallingContext)} prior to 
+     * reading in the XStream request, so that primitive objects are appropriately initialized.
+     * 
+     * Supported implementations of {@link AbstractCatalogResource} must implement 
+     * {@link XStreamPersister.Callback.getCatalogObject()} when providing an instance of 
+     * {@link XStreamPersister.Callback} to {@link XStreamPersister} in 
+     * {@link AbstractCatalogResource.configurePersister(XStreamPersister, DataFormat)}
+     */
+    protected class AbstractCatalogInfoConverter extends AbstractReflectionConverter {
+        public AbstractCatalogInfoConverter(Class clazz) {
+            super(clazz);
+        }
+        private <T> void unsafeCopy(Object source, Object target, Class<T> clazz) {
+            OwsUtils.copy((T)source, (T)target, clazz);
+        }
+        @Override
+        protected Object instantiateNewInstance(HierarchicalStreamReader reader,
+                UnmarshallingContext context) {
+            Object emptyObject = super.instantiateNewInstance(reader, context);
+            Object catalogObject = callback.getCatalogObject();
+            
+            if (catalogObject != null) {
+                Class i = null;
+                if (emptyObject instanceof CoverageInfo) {
+                    i = CoverageInfo.class;
+                } else if (emptyObject instanceof CoverageStoreInfo) {
+                    i = CoverageStoreInfo.class;
+                } else if (emptyObject instanceof DataStoreInfo) {
+                    i = DataStoreInfo.class;
+                } else if (emptyObject instanceof FeatureTypeInfo) {
+                    i = FeatureTypeInfo.class;
+                } else if (emptyObject instanceof LayerGroupInfo) {
+                    i = LayerGroupInfo.class;
+                } else if (emptyObject instanceof LayerInfo) {
+                    i = LayerInfo.class;
+                } else if (emptyObject instanceof WMSLayerInfo) {
+                    i = WMSLayerInfo.class;
+                } else if (emptyObject instanceof WMSStoreInfo) {
+                    i = WMSStoreInfo.class;
+                }
+                if (i != null) {
+                    unsafeCopy(catalogObject, emptyObject, i);
+                }
+            }
+            return emptyObject;
+        }
+    }
+    /**
      * Converter for {@link DataStoreInfo}, {@link CoverageStoreInfo}, and {@link WMSStoreInfo}
      */
-    class StoreInfoConverter extends AbstractReflectionConverter {
+    class StoreInfoConverter extends AbstractCatalogInfoConverter {
 
         public StoreInfoConverter() {
             super(StoreInfo.class);
@@ -1558,7 +1596,6 @@ public class XStreamPersister {
                         + (store == null ? "null" : store.getClass().getName()));
             }
         }
-        
         @Override
         public Object doUnmarshal(Object result,
                 HierarchicalStreamReader reader, UnmarshallingContext context) {
@@ -1727,7 +1764,7 @@ public class XStreamPersister {
     /**
      * Base converter for handling resources.
      */
-    class ResourceInfoConverter extends AbstractReflectionConverter {
+    class ResourceInfoConverter extends AbstractCatalogInfoConverter {
         
         public ResourceInfoConverter() {
             this(ResourceInfo.class);
@@ -1758,7 +1795,6 @@ public class XStreamPersister {
         public FeatureTypeInfoConverter() {
             super(FeatureTypeInfo.class);
         }
-        
         @Override
         protected void postDoMarshal(Object result,
                 HierarchicalStreamWriter writer, MarshallingContext context) {
@@ -1797,7 +1833,7 @@ public class XStreamPersister {
     /**
      * Converter for layers.
      */
-    class LayerInfoConverter extends AbstractReflectionConverter {
+    class LayerInfoConverter extends AbstractCatalogInfoConverter {
 
         public LayerInfoConverter() {
             super( LayerInfo.class );
@@ -1879,7 +1915,7 @@ public class XStreamPersister {
     /**
      * Converter for layer groups.
      */
-    class LayerGroupInfoConverter extends AbstractReflectionConverter {
+    class LayerGroupInfoConverter extends AbstractCatalogInfoConverter {
 
         public LayerGroupInfoConverter() {
             super( LayerGroupInfo.class );
@@ -2046,17 +2082,21 @@ public class XStreamPersister {
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             String name = null;
             String sql = null;
-            String geomName = null;
-            Class type = null;
-            int srid = -1;
             List<String> primaryKeys = new ArrayList<String>();
             List<VirtualTableParameter> params = new ArrayList<VirtualTableParameter>();
+            List<String> geomNames=new ArrayList<String>();
+            List<Class> types=new ArrayList<Class>();
+            List<Integer> srids= new ArrayList<Integer>();
+            
             Boolean escapeSql = false;
             while (reader.hasMoreChildren()) {
                 reader.moveDown();
                 if (reader.getNodeName().equals("keyColumn")) {
                     primaryKeys.add(reader.getValue());
                 } else if (reader.getNodeName().equals("geometry")) {
+                    String geomName = null;
+                    Class type = null;
+                    int srid = -1;                    
                     while (reader.hasMoreChildren()) {
                         reader.moveDown();
                         if (reader.getNodeName().equals("name"))
@@ -2068,7 +2108,10 @@ public class XStreamPersister {
                             srid = Converters.convert(reader.getValue(), Integer.class);
                         }
                         reader.moveUp();
-                    }
+                    }                    
+                    geomNames.add(geomName);
+                    types.add(type);
+                    srids.add(srid);                    
                 } else if (reader.getNodeName().equals("parameter")) {
                     String pname = null;
                     String defaultValue = null;
@@ -2107,8 +2150,8 @@ public class XStreamPersister {
 
             VirtualTable vt = new VirtualTable(name, sql, false);
 
-            if (geomName != null && type != null) {
-                vt.addGeometryMetadatata(geomName, type, srid);
+            for(int i=0; i<geomNames.size();i++){
+                vt.addGeometryMetadatata(geomNames.get(i), types.get(i), srids.get(i));
             }
             for (VirtualTableParameter p : params) {
                 vt.addParameter(p);

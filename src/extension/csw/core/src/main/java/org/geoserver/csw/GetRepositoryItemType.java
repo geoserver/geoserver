@@ -22,7 +22,7 @@ public class GetRepositoryItemType {
     /**
      * The OGC service (should be "CSW")
      * 
-     * @return
+     *
      */
     public String getService() {
         return service;
@@ -35,7 +35,7 @@ public class GetRepositoryItemType {
     /**
      * The service version (for example "2.0.2")
      * 
-     * @return
+     *
      */
     public String getVersion() {
         return version;
@@ -48,7 +48,7 @@ public class GetRepositoryItemType {
     /**
      * The repository item id
      * 
-     * @return
+     *
      */
     public String getId() {
         return id;

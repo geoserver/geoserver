@@ -15,7 +15,7 @@ public interface LiteralTransmuter extends Transmuter {
     /**
      * Returns string identifier for encoded value type
      *
-     * @return
+     *
      */
     String getEncodedType();
 
@@ -23,7 +23,7 @@ public interface LiteralTransmuter extends Transmuter {
      * Decode string value into Java type
      *
      * @param str
-     * @return
+     *
      */
     Object decode(String str);
 
@@ -31,7 +31,7 @@ public interface LiteralTransmuter extends Transmuter {
      * Encode from Java type to String
      *
      * @param obj
-     * @return
+     *
      */
     String encode(Object obj);
 }

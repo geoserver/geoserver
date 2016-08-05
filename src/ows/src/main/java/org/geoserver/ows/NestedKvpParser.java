@@ -18,14 +18,13 @@ import org.geoserver.ows.util.KvpUtils;
  * delimeter. The tokens in each list are serarated by an inner delimiter
  * The default outer delimiter is are parentheses ( '()' ) , the default inner
  * delimter is a comma ( ',' ). Example:
- *         <pre>
- *         <code>
+ * </p>
+ * <pre><code>
  *         key=(token11,token12,...,token1N)(token21,token22,...,token2N)(...)(tokenM1,tokenM2,...,tokenMN)
  *
  * where N = number of tokens in each set, and M = number of sets.
  *         </code>
  *  </pre>
- * </p>
  * <p>
  * Upon processing of each token, the token is parsed into an instance of
  * {@link #getBinding()}. Subclasses should override the method
@@ -94,7 +93,7 @@ public class NestedKvpParser extends KvpParser {
      * Subclasses may choose to override this method. The default implementation
      * just return the list passed in.
      * </p>
-     * @param values The parsed tokens, each value is an instance of {@link #getBinding()}.
+     * @param tokenSet The parsed tokens, each value is an instance of {@link #getBinding()}.
      *
      * @return The final object.
      */

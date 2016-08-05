@@ -143,7 +143,7 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
      * @param mapContent
      * @param palettedFormatName
      * @param supportsTranslucency If false the code will always apply the bitmask transformer
-     * @return
+     *
      */
     protected RenderedImage applyPalette(RenderedImage image, WMSMapContent mapContent,
             String palettedFormatName, boolean supportsTranslucency) {
@@ -195,7 +195,7 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
     
     /**
      * @param originalImage
-     * @return
+     *
      */
     protected RenderedImage forceIndexed8Bitmask(RenderedImage originalImage,
             InverseColorMapOp paletteInverter) {
@@ -205,7 +205,7 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
     /**
      * Returns the capabilities for this output format 
      * @param outputFormat
-     * @return
+     *
      */
     public abstract MapProducerCapabilities getCapabilities(String outputFormat);
 }

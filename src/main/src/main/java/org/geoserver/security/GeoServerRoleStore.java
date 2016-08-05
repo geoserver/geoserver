@@ -50,7 +50,7 @@ public interface GeoServerRoleStore extends GeoServerRoleService {
     /**
      * Removes the specified {@link GeoServerRole} role 
      * @param role
-     * @return
+     *
      */
     boolean removeRole(GeoServerRole role)  throws IOException;
 
@@ -116,7 +116,7 @@ public interface GeoServerRoleStore extends GeoServerRoleService {
      * </code>
      * 
      * @param role
-     * @param parentRole, may be null to remove a parent
+     * @param parentRole may be null to remove a parent
      */
     void setParentRole(GeoServerRole role, GeoServerRole parentRole)  throws IOException;
     

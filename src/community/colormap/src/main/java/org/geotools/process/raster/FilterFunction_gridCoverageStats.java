@@ -1,3 +1,7 @@
+/* (c) 2013 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geotools.process.raster;
 
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
@@ -52,9 +56,6 @@ public class FilterFunction_gridCoverageStats extends FunctionExpressionImpl {
 
     /**
      * Evaluating the filter function based on the provided coverage and the requested statName (minimum, maximum, ...)
-     * @param coverage
-     * @param statName
-     * @return
      */
     public Object evaluate (final GridCoverage2D coverage, final String statName) {
         Utilities.ensureNonNull("coverage", coverage);

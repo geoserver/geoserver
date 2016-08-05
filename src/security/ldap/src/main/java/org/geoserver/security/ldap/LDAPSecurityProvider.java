@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -50,6 +50,11 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
     @Override
     public Class<LDAPAuthenticationProvider> getAuthenticationProviderClass() {
         return LDAPAuthenticationProvider.class;
+    }
+    
+    @Override
+    public Class<? extends GeoServerUserGroupService> getUserGroupServiceClass() {
+        return LDAPUserGroupService.class;
     }
     
     @Override
@@ -118,6 +123,7 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
                     }
                 };
             } else {
+                ldapContext.setAnonymousReadOnly(true);
                 authPopulator = new DefaultLdapAuthoritiesPopulator(
                         ldapContext, ldapConfig.getGroupSearchBase());
 
@@ -147,5 +153,11 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
     public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config)
             throws IOException {
         return new LDAPRoleService();
+    }
+    
+    @Override
+    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config)
+            throws IOException {
+            return new LDAPUserGroupService(config);
     }
 }

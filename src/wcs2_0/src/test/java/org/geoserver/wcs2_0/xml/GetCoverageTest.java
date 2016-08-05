@@ -46,7 +46,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import net.opengis.wcs20.GetCoverageType;
@@ -114,7 +114,6 @@ public class GetCoverageTest extends WCSTestSupport {
     /**
      * Trimming only on Longitude
      * 
-     * @throws Exception
      */
     @Test
     public void testCoverageTrimmingLatitudeNativeCRSXML() throws Exception {
@@ -130,7 +129,6 @@ public class GetCoverageTest extends WCSTestSupport {
     /**
      * Trimming only on Longitude, plus multipart encoding
      * 
-     * @throws Exception
      */
     @Test
     public void testCoverageTrimmingLatitudeNativeCRSXMLMultipart() throws Exception {
@@ -349,7 +347,6 @@ public class GetCoverageTest extends WCSTestSupport {
     /**
      * Trimming only on Longitude
      * 
-     * @throws Exception
      */
     @Test
     public void testCoverageTrimmingLongitudeNativeCRSXML() throws Exception {

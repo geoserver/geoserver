@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -65,7 +65,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetMapIntegrationTest extends WMSTestSupport {
 
@@ -1117,5 +1117,32 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             wms.getMetadata().put(WMS.ADVANCED_PROJECTION_KEY, original);
             gs.save(wms);
         }
+    }
+    
+    @Test
+    public void testJpegPngTransparent() throws Exception {
+        String request = "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fvnd.jpeg-png&TRANSPARENT=true&STYLES"
+                + "&LAYERS=cite%3ABasicPolygons&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-2.4%2C1.4%2C0.4%2C4.2";
+        // checks it's a PNG
+        BufferedImage image = getAsImage(request, "image/png");
+        assertNotBlank("testJpegPngTransparent", image);
+    }
+    
+    @Test
+    public void testJpegPngOpaque() throws Exception {
+        String request = "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fvnd.jpeg-png&TRANSPARENT=true&STYLES"
+                + "&LAYERS=cite%3ABasicPolygons&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-0.4%2C3.6%2C1%2C5";
+        // checks it's a JPEG, since it's opaque
+        BufferedImage image = getAsImage(request, "image/jpeg");
+        assertNotBlank("testJpegPngOpaque", image);
+    }
+    
+    @Test
+    public void testJpegPngEmpty() throws Exception {
+        String request = "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fvnd.jpeg-png&TRANSPARENT=true&STYLES"
+                + "&LAYERS=cite%3ABasicPolygons&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-1.9%2C1.8%2C-1.3%2C2.5";
+        // checks it's a PNG
+        BufferedImage image = getAsImage(request, "image/png");
+        assertBlank("testJpegPngEmpty", image, new Color(255,255,255,0));
     }
 }

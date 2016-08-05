@@ -40,7 +40,7 @@ public abstract class AbstractFeatureAttributeVisitorSelectionStrategy extends A
      * @param typeInfo
      * @param dimension
      * @param calculator
-     * @return
+     *
      */
     protected CalcResult getCalculatedResult(FeatureTypeInfo typeInfo, DimensionInfo dimension,
             FeatureCalc calculator) {

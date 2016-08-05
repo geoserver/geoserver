@@ -563,8 +563,10 @@ public class InputLimitsTest extends WPSTestSupport {
         String statusLocation = submitAsynchronousRequest(
             "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&status=true&DataInputs="
                 + urlEncode("id=x1"));
+        
+        waitForProcessStart(statusLocation, 10);
 
-        MonkeyProcess.wait("x1", 2200);
+        MonkeyProcess.wait("x1", 2500);
         MonkeyProcess.progress("x1", 54f, false);
 
         // request should fail exceeding asynchronous execution time limit

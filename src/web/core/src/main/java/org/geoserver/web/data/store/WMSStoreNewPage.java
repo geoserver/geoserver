@@ -78,7 +78,8 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
         // coverage while the getotools coverage api does not allow for more than one
         NewLayerPage layerChooserPage;
         try {
-            layerChooserPage = new NewLayerPage(expandedStore.getId());
+            // The ID is assigned by the catalog and therefore cannot be cloned
+            layerChooserPage = new NewLayerPage(savedStore.getId());
         } catch (RuntimeException e) {
             LOGGER.log(Level.INFO, "Getting list of layers for the WMS store " + info.getCapabilitiesURL(), e);
             // doh, can't present the list of coverages, means saving the StoreInfo is meaningless.

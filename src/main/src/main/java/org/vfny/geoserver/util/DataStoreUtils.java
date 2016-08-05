@@ -93,10 +93,16 @@ public abstract class DataStoreUtils {
         }
 
         if (store instanceof DataStore) {
-            String[] names = ((DataStore) store).getTypeNames();
-            for (int i = 0; i < names.length; i++) {
-                if (names[i].indexOf(":") >= 0)
-                    return new RetypingDataStore((DataStore) store);
+            try {
+                String[] names = ((DataStore) store).getTypeNames();
+                for (int i = 0; i < names.length; i++) {
+                    if (names[i].indexOf(":") >= 0)
+                        return new RetypingDataStore((DataStore) store);
+                }
+            } catch(IOException | RuntimeException e) {
+                // in case of exception computing the feature types make sure we clean up the store
+                store.dispose();
+                throw e;
             }
         }
         return store;

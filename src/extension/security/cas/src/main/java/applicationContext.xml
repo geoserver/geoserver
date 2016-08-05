@@ -27,7 +27,6 @@
 
     <!--  CAS single sign out session listener -->
   <bean id="casSingleSignOutHttpSessionListener" class="org.geoserver.security.cas.SingleSignOutHttpSessionListener">
-    <property name="eagerlyCreateSessions" value="false"/> 
   </bean>
 
     <!--  CAS single sign out handler -->

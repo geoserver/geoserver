@@ -42,6 +42,7 @@ import javax.measure.unit.SI;
 import javax.measure.unit.Unit;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.SerializationUtils;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDParticle;
 import org.eclipse.xsd.XSDSchema;
@@ -2343,13 +2344,7 @@ public class ResourcePool {
     }
     
     public DataStoreInfo clone(final DataStoreInfo source, boolean allowEnvParametrization) {
-        DataStoreInfo target = catalog.getFactory().createDataStore();
-        target.setEnabled(source.isEnabled());
-        target.setName(source.getName());
-        target.setDescription(source.getDescription());
-        target.setWorkspace(source.getWorkspace());
-        target.setType(source.getType());
-
+        DataStoreInfo target = (DataStoreInfo) SerializationUtils.clone(source);
         target.getConnectionParameters().clear();
         
         if (!allowEnvParametrization) {
@@ -2380,12 +2375,7 @@ public class ResourcePool {
     }
 
     public CoverageStoreInfo clone(final CoverageStoreInfo source, boolean allowEnvParametrization) {
-        CoverageStoreInfo target = catalog.getFactory().createCoverageStore();
-        target.setDescription(source.getDescription());
-        target.setEnabled(source.isEnabled());
-        target.setName(source.getName());
-        target.setType(source.getType());
-        target.setWorkspace(source.getWorkspace());
+        CoverageStoreInfo target = (CoverageStoreInfo) SerializationUtils.clone(source);
         
         target.getConnectionParameters().clear();
         
@@ -2418,12 +2408,7 @@ public class ResourcePool {
     }
     
     public WMSStoreInfo clone(final WMSStoreInfo source, boolean allowEnvParametrization) {
-        WMSStoreInfo target = catalog.getFactory().createWebMapServer();
-        target.setDescription(source.getDescription());
-        target.setEnabled(source.isEnabled());
-        target.setName(source.getName());
-        target.setType(source.getType());
-        target.setWorkspace(source.getWorkspace());
+        WMSStoreInfo target = (WMSStoreInfo) SerializationUtils.clone(source);
 
         setConnectionParameters(source, target);            
 

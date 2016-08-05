@@ -82,7 +82,8 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
         CoverageStoreInfo expandedStore = getCatalog().getFactory().createCoverageStore();
         try {
             clone(savedStore, expandedStore);
-            layerChooserPage = new NewLayerPage(expandedStore.getId());
+            // The ID is assigned by the catalog and therefore cannot be cloned
+            layerChooserPage = new NewLayerPage(savedStore.getId());
         } catch (RuntimeException e) {
             LOGGER.log(Level.INFO, "Getting list of coverages for saved store " + info.getURL(), e);
             // doh, can't present the list of coverages, means saving the StoreInfo is meaningless.

@@ -131,8 +131,7 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
 
         final NewLayerPage newLayerPage;
         try {
-            // The ID is not cloned, must use the original one
-            newLayerPage = new NewLayerPage(savedStore.getId());
+            newLayerPage = new NewLayerPage(expandedStore.getId());
         } catch (RuntimeException e) {
             try {
                 catalog.remove(expandedStore);

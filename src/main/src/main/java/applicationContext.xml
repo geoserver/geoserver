@@ -131,11 +131,16 @@
     <bean id="dispatcher" class="org.geoserver.ows.Dispatcher"/>
 
     <!-- file publisher, allows parts of the data dir to be published as static files (used
-         to publish styles, www and by wcs 1.1.1 -->
+         to publish www and by wcs 1.1.1 ) -->
     <bean id="filePublisher" class="org.geoserver.ows.FilePublisher">
       <constructor-arg ref="resourceLoader" />
     </bean>
     
+    <!-- style publisher, used to publish the global styles folder currently in workspaced, www and by wcs 1.1.1 -->
+    <bean id="stylePublisher" class="org.geoserver.ows.StylePublisher">
+      <constructor-arg ref="catalog" />
+    </bean>
+        
     <!-- classpath publisher, allows resources in the classpath to be published as static files -->
     <bean id="classpathPublisher" class="org.geoserver.ows.ClasspathPublisher"/>
     
@@ -178,8 +183,17 @@
      <property name="alwaysUseFullPath" value="true"/>
      <property name="mappings">
        <props>
-        <prop key="/styles/**">filePublisher</prop>
         <prop key="/www/**">filePublisher</prop>
+       </props>
+     </property>
+  </bean>
+  
+  <bean id="stylePublisherMapping"
+    class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     <property name="alwaysUseFullPath" value="true"/>
+     <property name="mappings">
+       <props>
+        <prop key="/styles/**">stylePublisher</prop>
        </props>
      </property>
   </bean>

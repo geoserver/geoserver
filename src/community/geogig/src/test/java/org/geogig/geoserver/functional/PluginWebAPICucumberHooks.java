@@ -27,6 +27,7 @@ import org.restlet.data.Method;
 
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cucumber.runtime.java.StepDefAnnotation;
@@ -39,8 +40,6 @@ import cucumber.runtime.java.guice.ScenarioScoped;
 @ScenarioScoped
 @StepDefAnnotation
 public class PluginWebAPICucumberHooks {
-
-    static final String SYSTEM_TEMP_PATH = System.getProperty("java.io.tmpdir");
 
     public GeoServerFunctionalTestContext context;
 
@@ -62,6 +61,7 @@ public class PluginWebAPICucumberHooks {
     /**
      * Extracts the String representation of a JSON object response. The supplied <b>jsonPath</b>
      * should use a period(.) as the object delimeter. For example:<br>
+     * 
      * <pre>
      * {@code
      *     {
@@ -74,7 +74,9 @@ public class PluginWebAPICucumberHooks {
      *         }
      *     }
      * }
-     * </pre> To access the <b>success</b> value, the String "response.success" should be passed in.
+     * </pre>
+     * 
+     * To access the <b>success</b> value, the String "response.success" should be passed in.
      * <p>
      * To access the <b>name</b> value, the String "response.repo.name" should be passed in.
      *
@@ -132,7 +134,8 @@ public class PluginWebAPICucumberHooks {
     }
 
     @Then("^the json response \"([^\"]*)\" should contain \"([^\"]*)\"$")
-    public void checkJSONResponseContins(final String jsonArray, final String attribute) throws JSONException {
+    public void checkJSONResponseContins(final String jsonArray, final String attribute)
+            throws JSONException {
         JSONObject response = getObjectFromJSONResponse(jsonArray);
         assertTrue("JSON Response missing \"" + attribute + "\"", response.has(attribute));
     }
@@ -141,7 +144,7 @@ public class PluginWebAPICucumberHooks {
     public void checkJSONArrayContains(final String jsonArray, final String attribute,
             final String expected) throws JSONException {
         JSONArray array = getArrayFromJSONResponse(jsonArray);
-        for (int i = 0; i < array.length(); ++i ) {
+        for (int i = 0; i < array.length(); ++i) {
             JSONObject obj = array.getJSONObject(i);
             String actual = obj.getString(attribute);
             assertTrue("JSON response doesn't contain expected value, has: " + actual,
@@ -150,7 +153,8 @@ public class PluginWebAPICucumberHooks {
     }
 
     @Then("^I save the first href link from \"([^\"]*)\" as \"([^\"]*)\"$")
-    public void saveHrefLinkFromJSONResponse(final String jsonArray, final String href) throws JSONException {
+    public void saveHrefLinkFromJSONResponse(final String jsonArray, final String href)
+            throws JSONException {
         // get the first href link from the response
         JSONArray array = getArrayFromJSONResponse(jsonArray);
         JSONObject obj = array.getJSONObject(0);
@@ -162,7 +166,8 @@ public class PluginWebAPICucumberHooks {
     }
 
     @Then("^the json object \"([^\"]*)\" equals \"([^\"]*)\"$")
-    public void checkJSONResponse(final String jsonPath, final String expected) throws JSONException {
+    public void checkJSONResponse(final String jsonPath, final String expected)
+            throws JSONException {
         String pathValue = getStringFromJSONResponse(jsonPath);
         assertEquals("JSON Response doesn't match", expected, pathValue);
     }
@@ -171,14 +176,15 @@ public class PluginWebAPICucumberHooks {
     public void checkJSONResponseEndsWith(final String jsonPath, final String expected)
             throws JSONException {
         String pathValue = getStringFromJSONResponse(jsonPath);
-        assertTrue("JSON Response doesn't end with '" + expected + "'", pathValue.endsWith(expected));
+        assertTrue("JSON Response doesn't end with '" + expected + "'",
+                pathValue.endsWith(expected));
     }
 
     @When("^I call \"([^\"]*)\" with the System Temp Directory as the parentDirectory$")
     public void callURLWithJSONPaylod(final String methodAndURL) throws JSONException {
         // build JSON payload
         JSONObject payload = new JSONObject();
-        payload.put("parentDirectory", SYSTEM_TEMP_PATH);
+        payload.put("parentDirectory", systemTempPath());
         callURLWithJSONPayload(methodAndURL, payload);
     }
 
@@ -191,7 +197,7 @@ public class PluginWebAPICucumberHooks {
         Method method = Method.valueOf(httpMethod);
         // build URL encoded Form
         Form form = new Form();
-        form.add("parentDirectory", SYSTEM_TEMP_PATH);
+        form.add("parentDirectory", systemTempPath());
         context.call(method, resourceUri, form);
     }
 
@@ -206,7 +212,7 @@ public class PluginWebAPICucumberHooks {
         // the parent of the parent of the repo is the directory that the user specifies in the Init
         // request.
         String parentDir = new File(repoURI).getParentFile().getParentFile().getAbsolutePath();
-        assertEquals("Unexpected parent directory", SYSTEM_TEMP_PATH, parentDir);
+        assertEquals("Unexpected parent directory", systemTempPath(), parentDir);
     }
 
     @Then("^the Author config of repository \"([^\"]*)\" is set$")
@@ -215,8 +221,8 @@ public class PluginWebAPICucumberHooks {
         final Optional<URI> repoLocation = geogig.command(ResolveGeogigURI.class).call();
         assertTrue("Expected Repository location to be present", repoLocation.isPresent());
         // get the config
-        Optional<Map<String, String>> optConfig = geogig.command(ConfigOp.class).setAction(CONFIG_LIST)
-                .setScope(LOCAL).call();
+        Optional<Map<String, String>> optConfig = geogig.command(ConfigOp.class)
+                .setAction(CONFIG_LIST).setScope(LOCAL).call();
         // asseert the user.name and user.email config
         assertTrue("GeoGig repo config missing", optConfig.isPresent());
         Map<String, String> config = optConfig.get();
@@ -231,7 +237,7 @@ public class PluginWebAPICucumberHooks {
     public void callURLWithJSONPayloadAndAuthor(final String methodAndURL) throws JSONException {
         // build the JSON payload
         JSONObject payload = new JSONObject();
-        payload.put("parentDirectory", SYSTEM_TEMP_PATH);
+        payload.put("parentDirectory", systemTempPath());
         // add in author details
         payload.put("authorName", "GeoGig User");
         payload.put("authorEmail", "geogig@geogig.org");
@@ -257,7 +263,7 @@ public class PluginWebAPICucumberHooks {
         Method method = Method.valueOf(httpMethod);
         // build URL encoded Form
         Form form = new Form();
-        form.add("parentDirectory", SYSTEM_TEMP_PATH);
+        form.add("parentDirectory", systemTempPath());
         form.add("authorName", "GeoGig User");
         form.add("authorEmail", "geogig@geogig.org");
         context.call(method, resourceUri, form);
@@ -274,7 +280,7 @@ public class PluginWebAPICucumberHooks {
         // the parent of the parent of the repo is the directory that the user specifies in the Init
         // request.
         String parentDir = new File(repoURI).getParentFile().getParentFile().getAbsolutePath();
-        assertNotEquals("Unexpected parent directory", SYSTEM_TEMP_PATH, parentDir);
+        assertNotEquals("Unexpected parent directory", systemTempPath(), parentDir);
     }
 
     @When("^I call \"([^\"]*)\" with an unsupported media type$")
@@ -286,7 +292,7 @@ public class PluginWebAPICucumberHooks {
         Method method = Method.valueOf(httpMethod);
         // build the JSON payload
         JSONObject payload = new JSONObject();
-        payload.put("parentDirectory", SYSTEM_TEMP_PATH);
+        payload.put("parentDirectory", systemTempPath());
         // add in author details
         payload.put("authorName", "GeoGig User");
         payload.put("authorEmail", "geogig@geogig.org");
@@ -297,5 +303,12 @@ public class PluginWebAPICucumberHooks {
     public void checkRepoNotInitialized(final String repo) throws Exception {
         Repository geogig = context.getRepo(repo);
         assertTrue("Expected repository to NOT EXIST", null == geogig);
+    }
+
+    String systemTempPath() {
+        File tempFolder = context.getTempFolder();
+        File tmpDir = new File(tempFolder, "tmp");
+        tmpDir.mkdir();
+        return tmpDir.getAbsolutePath();
     }
 }

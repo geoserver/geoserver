@@ -4,13 +4,14 @@
  */
 package org.geogig.geoserver.rest;
 
-import static org.junit.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.locationtech.geogig.model.RevObjectTestSupport.hashString;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -45,9 +46,7 @@ import org.locationtech.geogig.plumbing.RefParse;
 import org.locationtech.geogig.plumbing.ResolveTreeish;
 import org.locationtech.geogig.plumbing.RevObjectParse;
 import org.locationtech.geogig.repository.GeoGIG;
-import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryResolver;
-import org.locationtech.geogig.storage.ConfigDatabase;
 import org.locationtech.geogig.storage.ObjectSerializingFactory;
 import org.locationtech.geogig.storage.datastream.DataStreamSerializationFactoryV1;
 import org.opengis.feature.Feature;
@@ -184,7 +183,7 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
         url = resource + treeId.toString();
         assertResponse(url, "1");
 
-        url = resource + ObjectId.forString("fake");
+        url = resource + hashString("fake");
         assertResponse(url, "0");
     }
 

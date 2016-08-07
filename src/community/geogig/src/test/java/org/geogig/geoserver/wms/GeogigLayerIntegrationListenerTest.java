@@ -7,6 +7,7 @@ package org.geogig.geoserver.wms;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.REPOSITORY;
+import static org.locationtech.geogig.model.RevObjectTestSupport.hashString;
 
 import java.io.Serializable;
 import java.util.List;
@@ -31,7 +32,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
-import org.locationtech.geogig.model.ObjectId;
 
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class GeogigLayerIntegrationListenerTest extends GeoServerSystemTestSupport {
@@ -128,7 +128,7 @@ public class GeogigLayerIntegrationListenerTest extends GeoServerSystemTestSuppo
         CatalogBuilder catalogBuilder = geogigData.newCatalogBuilder(catalog);
         DataStoreInfo store = catalog.getDataStoreByName(catalogBuilder.storeName());
 
-        final String fakeHead = ObjectId.forString("something").toString();
+        final String fakeHead = hashString("something").toString();
 
         store.getConnectionParameters().put(GeoGigDataStoreFactory.HEAD.key, fakeHead);
         catalog.save(store);

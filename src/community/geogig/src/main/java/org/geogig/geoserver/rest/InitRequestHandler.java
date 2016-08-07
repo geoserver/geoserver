@@ -17,7 +17,6 @@ import org.geogig.geoserver.config.PostgresConfigBean;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.rest.RestletException;

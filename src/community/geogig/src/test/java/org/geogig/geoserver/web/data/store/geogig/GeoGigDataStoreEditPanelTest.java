@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.locationtech.geogig.model.RevObjectTestSupport.hashString;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -167,9 +168,9 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
         BranchSelectionPanel branchPanel = (BranchSelectionPanel) tester
                 .getComponentFromLastRenderedPage(base + "branch");
         assertNotNull(branchPanel);
-        ObjectId dummyId = ObjectId.forString("dummy");
-        final List<Ref> branches = Arrays.asList(new Ref("master", dummyId), new Ref("alpha",
-                dummyId), new Ref("sandbox", dummyId));
+        ObjectId dummyId = hashString("dummy");
+        final List<Ref> branches = Arrays.asList(new Ref("master", dummyId),
+                new Ref("alpha", dummyId), new Ref("sandbox", dummyId));
         RepositoryInfo repoInfo = mock(RepositoryInfo.class);
         when(repoInfo.getId()).thenReturn(UUID.randomUUID().toString());
 

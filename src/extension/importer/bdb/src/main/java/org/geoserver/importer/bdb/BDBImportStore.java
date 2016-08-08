@@ -150,7 +150,7 @@ public class BDBImportStore implements ImportStore {
         // check for potential class incompatibilities and attempt recovery
         try {
             ImportContext context = iterator().next();
-            System.out.println(context);
+            LOGGER.fine(context.toString());
         } catch (RuntimeException re) {
             if (re.getCause() instanceof java.io.ObjectStreamException) {
                 LOGGER.warning("Unable to read import database, attempting recovery");

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<wfs:Transaction service="WFS" version="1.1.0" xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:cite="http://www.opengis.net/cite"
+>
+  <wfs:Insert inputFormat="text/xml; subtype=gml/3.1.1" srsName="EPSG:7415">
+    <cite:full3d fid="full3d.newpoly">
+      <name>New polygon</name>
+      <cite:geom>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>94000 471000 10 94001 471000 11 94001 471001 12 94000 471001 13 94000 471000 10</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </cite:geom>
+    </cite:full3d>
+  </wfs:Insert>
+</wfs:Transaction>

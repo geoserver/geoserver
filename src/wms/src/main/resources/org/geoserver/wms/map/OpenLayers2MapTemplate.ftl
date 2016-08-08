@@ -149,7 +149,9 @@
                         <#list parameters as param>
                         "${param.name?js_string}": '${param.value?js_string}',
                         </#list>
-                        format: format
+                        format: format,
+                        tilesOrigin: map.maxExtent.left + ',' + map.maxExtent.bottom,
+                        tiled: true
                     },
                     {
                         buffer: 0,
@@ -158,7 +160,7 @@
                         yx : {'${request.SRS?js_string}' : ${yx}}
                     } 
                 );
-            
+                  
                 // setup single tiled layer
                 untiled = new OpenLayers.Layer.WMS(
                     "${layerName} - Untiled", "${baseUrl}/${servicePath}",

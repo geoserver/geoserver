@@ -8,7 +8,7 @@
 
 <beans>
     <bean class="org.geoserver.platform.ModuleStatusImpl">
-      <constructor-arg index="0" value="gs-web-wcs,"/>
+      <constructor-arg index="0" value="gs-web-wcs"/>
       <constructor-arg index="1" value="GeoServer Web UI Web Coverage Service"/>
     </bean>
    <bean id="wcsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">

@@ -93,10 +93,10 @@ The properties file serves as a lookup table to the function. It has no header, 
 
 **Syntax**::
 
-  Vocab(COLUMN_NAME, properties file URI)
+  Vocab(COLUMN_NAME, properties file)
 
 * **COLUMN_NAME**: column name to get values from
-* **properties file URI**: absolute path of the properties file or relative to the mapping file location
+* **properties file**: absolute path of the properties file
 
 **Example:**
 
@@ -111,11 +111,13 @@ Mapping file::
   <AttributeMapping>
     <targetAttribute>gml:name</targetAttribute>
     <sourceExpression>
-        <OCQL>Vocab(ABBREVIATION, '/test-data/mapping.properties')</OCQL>
+        <OCQL>Vocab(ABBREVIATION, strconcat('${config.parent}', '/mapping.properties'))</OCQL>
     </sourceExpression>
   </AttributeMapping>
 
 The above example will map **gml:name** to *urn:cgi:classifier:CGI:SimpleLithology:2008:gravel* if ABBREVIATION value is *1GRAV*.
+
+This example uses the ``config.parent`` predefined interpolation property to specify a vocabulary properties file in the same directory as the mapping file. See :ref:`app-schema.property-interpolation` for details.
 
 
 Geometry creation

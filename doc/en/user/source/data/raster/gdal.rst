@@ -3,7 +3,7 @@
 GDAL Image Formats
 ==================
 
-GeoServer can leverage the `ImageI/O-Ext <http://java.net/projects/imageio-ext/>`_ GDAL libraries to read selected coverage formats. `GDAL <http://www.gdal.org>`_ is able to read many formats, but for the moment GeoServer supports only a few general interest formats and those that can be legally redistributed and operated in an open source server.
+GeoServer can leverage the `ImageI/O-Ext <https://github.com/geosolutions-it/imageio-ext/wiki>`_ GDAL libraries to read selected coverage formats. `GDAL <http://www.gdal.org>`_ is able to read many formats, but for the moment GeoServer supports only a few general interest formats and those that can be legally redistributed and operated in an open source server.
 
 The following image formats can be read by GeoServer using GDAL:
 
@@ -45,9 +45,9 @@ Moreover, in order for GeoServer to leverage these libraries, the GDAL (binary) 
 Installing GDAL native libraries
 ++++++++++++++++++++++++++++++++
 
-The ImageIO-Ext GDAL plugin for geoserver master uses ImageIO-Ext 1.1.13 whose artifacts can be downloaded from `here <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.13/>`_.
+The ImageIO-Ext GDAL plugin for geoserver master uses ImageIO-Ext 1.1.15 whose artifacts can be downloaded from `here <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.15/>`_.
 
-Browse to the native and then gdal directory for the `Image IO-Ext download link <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.13/native/gdal/>`_. Now you should see a list of artifacts that can be downloaded. We need to download two things now:
+Browse to the native and then gdal directory for the `Image IO-Ext download link <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.15/native/gdal/>`_. Now you should see a list of artifacts that can be downloaded. We need to download two things now:
 
   #. The CRS definitions
   #. The native libraries matching the target operating system
@@ -117,7 +117,7 @@ Adding support for ECW and MrSID on Windows
 +++++++++++++++++++++++++++++++++++++++++++
 If you are on Windows and you want to add support for ECW and MrSID there is an extra step to perform.
 
-Download and install ECW and MrSID from `GeoSolutions site <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.13/native/gdal/windows/>`_
+Download and install ECW and MrSID from `GeoSolutions site <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.15/native/gdal/windows/>`_
 
 In the Windows packaging ECW and MrSID are built as plugins hence they are not loaded by default but we need to place their DLLs in a location that is pointed to by the *GDAL_DRIVER_PATH* environment variable. By default the installer place the plugins in C:\\Program Files\\GDAL\\gdalplugins.
 

@@ -168,7 +168,7 @@ public class ColorMapLegendCreator {
          * @param cEntry a {@link ColorMapEntry} element for this builder so that it can take it into account for building the legend. It must be not
          *        <code>null</code>.
          */
-        public void addColorMapEntry(final ColorMapEntry cEntry) {
+        public ColorMapEntryLegendBuilder addColorMapEntry(final ColorMapEntry cEntry) {
             PackagedUtils.ensureNotNull(cEntry, "cEntry");
 
             // build a ColorMapEntryLegendBuilder for the specified colorMapEntry
@@ -207,7 +207,8 @@ public class ColorMapLegendCreator {
 
             // set last used element
             previousCMapEntry = cEntry;
-
+            
+            return element;
         }
 
         /**
@@ -405,6 +406,10 @@ public class ColorMapLegendCreator {
         
         public void setAlternativeColorMapEntryBuilder(boolean alternativeColorMapEntryBuilder){
             this.alternativeColorMapEntryBuilder  = alternativeColorMapEntryBuilder;
+        }
+        
+        public Queue<ColorMapEntryLegendBuilder> getBodyRows() {
+            return bodyRows;
         }
     }
 
@@ -859,5 +864,8 @@ public class ColorMapLegendCreator {
         finalGraphics.dispose();
         return finalLegend;
     }
-
+    
+    protected Queue<ColorMapEntryLegendBuilder> getBodyRows() {
+        return bodyRows;
+    }
 }

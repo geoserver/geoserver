@@ -209,22 +209,39 @@ Custom NTv2 file::
 
 Geocentric transformation, preceded by an ellipsoid to geocentric conversion, and back geocentric to ellipsoid. The results is a concatenation of three math transforms::
 
-  4230,4258=CONCAT_MT[PARAM_MT["Ellipsoid_To_Geocentric", \
-    PARAMETER["dim", 2], \
-    PARAMETER["semi_major", 6378388.0], \
-    PARAMETER["semi_minor", 6356911.9461279465]], \
-  PARAM_MT["Position Vector transformation (geog2D domain)", \
-    PARAMETER["dx", -116.641], \
-    PARAMETER["dy", -56.931], \
-    PARAMETER["dz", -110.559], \
-    PARAMETER["ex", 0.8925078166311858], \
-    PARAMETER["ey", 0.9207660950870382], \
-    PARAMETER["ez", -0.9166407989620964], \
-    PARAMETER["ppm", -3.5200000000346066]], \
-  PARAM_MT["Geocentric_To_Ellipsoid", \
-    PARAMETER["dim", 2], \
-    PARAMETER["semi_major", 6378137.0], \
-    PARAMETER["semi_minor", 6356752.314140356]]]
+  4230,4258=CONCAT_MT[ \
+    PARAM_MT["Ellipsoid_To_Geocentric", \
+      PARAMETER["dim", 2], \
+      PARAMETER["semi_major", 6378388.0], \
+      PARAMETER["semi_minor", 6356911.9461279465]], \
+    PARAM_MT["Position Vector transformation (geog2D domain)", \
+      PARAMETER["dx", -116.641], \
+      PARAMETER["dy", -56.931], \
+      PARAMETER["dz", -110.559], \
+      PARAMETER["ex", 0.8925078166311858], \
+      PARAMETER["ey", 0.9207660950870382], \
+      PARAMETER["ez", -0.9166407989620964], \
+      PARAMETER["ppm", -3.5200000000346066]], \
+    PARAM_MT["Geocentric_To_Ellipsoid", \
+      PARAMETER["dim", 2], \
+      PARAMETER["semi_major", 6378137.0], \
+      PARAMETER["semi_minor", 6356752.314140356]]]
+
+You can make use of existing grid shift files such as this explicit transformation from NAD27 to WGS84 made up of a NADCON transform from NAD27 to NAD83 followed by a Molodenski transform converting from the GRS80 Ellipsoid (used by NAD83) to the WGS84 Ellipsoid::
+
+    4267,4326=CONCAT_MT[ \
+      PARAM_MT["NADCON", \
+        PARAMETER["Latitude difference file", "conus.las"], \
+        PARAMETER["Longitude difference file", "conus.los"]], \
+      PARAM_MT["Molodenski", \
+        PARAMETER["dim", 2], \
+        PARAMETER["dx", 0.0], \
+        PARAMETER["dy", 0.0], \
+        PARAMETER["dz", 0.0], \
+        PARAMETER["src_semi_major", 6378137.0], \
+        PARAMETER["src_semi_minor", 6356752.314140356], \
+        PARAMETER["tgt_semi_major", 6378137.0], \
+        PARAMETER["tgt_semi_minor", 6356752.314245179]]]
 
 Affine 2D transform operating directly in projected coordinates::
 
@@ -237,5 +254,5 @@ Affine 2D transform operating directly in projected coordinates::
     PARAMETER["elt_1_0", -0.00000758753979846734], \
     PARAMETER["elt_1_1", 1.0000015503712145], \
     PARAMETER["elt_1_2", -208.185]]
-
+    
 Each operation can be described in a single line, or can be split in several lines for readability, adding a backslash "\\" at the end of each line, as in the former examples.

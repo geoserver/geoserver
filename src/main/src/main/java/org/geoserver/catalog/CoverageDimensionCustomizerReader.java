@@ -577,7 +577,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             // (but an infinite range is not valid, the Category creation will throw an exception)
             if(configuredRange != null && !Double.isInfinite(configuredRange.getMinimum()) && !Double.isInfinite(configuredRange.getMaximum())) {
                 Class targetType = categories != null && !categories.isEmpty() ? categories.get(0).getRange().getElementClass() : Double.class;
-                final NumberRange<Double> dataRange = new NumberRange<>(targetType, configuredRange.getMinimum(), configuredRange.getMaximum());
+                final NumberRange<?> dataRange = configuredRange.castTo(targetType);
                 List<NumberRange<?>> dataRanges = new ArrayList<>();
                 dataRanges.add(dataRange);
                 for (Category category : customCategories) {

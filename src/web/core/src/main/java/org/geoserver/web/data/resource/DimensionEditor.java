@@ -360,7 +360,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             if (defValueSetting.getStrategyType() == Strategy.FIXED || defValueSetting.getStrategyType() == Strategy.NEAREST){
                 referenceValue.processInput();
                 if (referenceValue.hasErrorMessage()){
-                    System.out.println("About to accept erroneous value "+referenceValue.getModelObject());
+                    LOGGER.log(Level.SEVERE, "About to accept erroneous value "+referenceValue.getModelObject());
                 }
                 defValueSetting.setReferenceValue(referenceValue.getModelObject());
             }

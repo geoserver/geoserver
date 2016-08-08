@@ -16,6 +16,14 @@ Defining properties
 * System properties override properties defined in a configuration file, so if you define ``-Dsome.property`` at the java command line, it will override a value specified in the ``app-schema.properties`` file. This is intended for debugging, so you can set a property file in an Eclipse launch configuration, but override some of the properties contained in the file by setting them explicitly as system properties.
 * All system properties are available for interpolation in mapping files.
 
+Predefined properties
+---------------------
+
+If not set elsewhere, the following properties are set for each mapping file:
+
+* ``config.file`` is set to the name of the mapping file
+* ``config.parent`` is set to the name of the directory containing the mapping file
+
 Using properties
 ----------------
 

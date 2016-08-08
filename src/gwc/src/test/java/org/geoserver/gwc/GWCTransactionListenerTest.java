@@ -33,8 +33,11 @@ import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionEventType;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope3D;
+import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -161,8 +164,28 @@ public class GWCTransactionListenerTest {
     }
 
     @Test
-    public void testAfterTransaction() throws Exception {
+    public void testAfterTransactionCompoundCRS() throws Exception {
+        Map<Object, Object> extendedProperties = new HashMap<Object, Object>();
+        final CoordinateReferenceSystem compoundCrs = CRS.decode("EPSG:7415");
+        ReferencedEnvelope3D transactionBounds = new ReferencedEnvelope3D(142892, 470783, 142900, 470790, 16, 20, compoundCrs);
 
+        issueInsert(extendedProperties, transactionBounds);
+
+        TransactionType request = mock(TransactionType.class);
+        TransactionResponseType result = mock(TransactionResponseType.class);
+        when(request.getExtendedProperties()).thenReturn(extendedProperties);
+
+        when(mediator.getDeclaredCrs(anyString())).thenReturn(compoundCrs);
+        listener.afterTransaction(request, result, true);
+        
+        ReferencedEnvelope expectedBounds = new ReferencedEnvelope(transactionBounds, CRS.getHorizontalCRS(compoundCrs));
+
+        verify(mediator, times(1)).truncate(eq("theLayer"), eq(expectedBounds));
+        verify(mediator, times(1)).truncate(eq("theGroup"), eq(expectedBounds));
+    }
+    
+    @Test
+    public void testAfterTransaction() throws Exception {
         Map<Object, Object> extendedProperties = new HashMap<Object, Object>();
         ReferencedEnvelope affectedBounds1 = new ReferencedEnvelope(-180, 0, 0, 90, WGS84);
         ReferencedEnvelope affectedBounds2 = new ReferencedEnvelope(0, 180, 0, 90, WGS84);

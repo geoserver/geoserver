@@ -25,6 +25,21 @@ public class FeatureDataConverterTest {
 
     @Test
     public void testXMLUnsafeAttributeRenaming() {
+        SimpleFeatureType badatts = buildFeatureTypeWithXMLUnsafeAtts();
+        badatts = FeatureDataConverter.DEFAULT.convertType(badatts, null, null, null);
+
+        assertEquals("_123_number_first", badatts.getAttributeDescriptors().get(0).getLocalName());
+        assertEquals("i_has_spaces", badatts.getAttributeDescriptors().get(1).getLocalName());
+    }
+    
+    @Test
+    public void testPostgisConversion() {
+        SimpleFeatureType t = FeatureDataConverter.TO_POSTGIS.convertType(buildFeatureTypeWithXMLUnsafeAtts(), null, null, null);
+        assertEquals("_123_number_first", t.getAttributeDescriptors().get(0).getLocalName());
+        assertEquals("i_has_spaces", t.getAttributeDescriptors().get(1).getLocalName());
+    }
+
+    SimpleFeatureType buildFeatureTypeWithXMLUnsafeAtts() {
         SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
         typeBuilder.setName("badatts");
 
@@ -34,11 +49,7 @@ public class FeatureDataConverterTest {
         attBuilder.setBinding(String.class);
         typeBuilder.add(attBuilder.buildDescriptor("i has spaces"));
 
-        SimpleFeatureType badatts = typeBuilder.buildFeatureType();
-        badatts = FeatureDataConverter.DEFAULT.convertType(badatts, null, null, null);
-
-        assertEquals("_123_number_first", badatts.getAttributeDescriptors().get(0).getLocalName());
-        assertEquals("i_has_spaces", badatts.getAttributeDescriptors().get(1).getLocalName());
+        return typeBuilder.buildFeatureType();
     }
     
     @Test

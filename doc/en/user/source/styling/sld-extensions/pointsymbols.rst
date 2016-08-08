@@ -187,22 +187,6 @@ Producing an "emi circle" line:
 
 .. image:: images/emicircle-line.png
 
-Bulk WKT Shapes
-~~~~~~~~~~~~~~~
-
-It is possible to create a symbol set of your own custom marks using a property file.
-
-Here is an :file:`example.properties`:
-
-.. code-block:: text
-   
-   zig=LINESTRING(0.0 0.25, 0.25 0.25, 0.5 0.75, 0.75 0.25, 1.00 0.25)
-   block=POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))
-
-To reference the above property file in your SLD, prefixed like this (note the protocol changed to "wktlib://")::
-  
-  <WellKnownName>wktlib://example.properties#zig</WellKnownName>
-
 Bulk TTF marks
 ~~~~~~~~~~~~~~
 
@@ -303,6 +287,35 @@ For example:
     </PointSymbolizer>
 
 In this example an SVG graphic is being used, so the size is specified explicitly. 
+
+Bulk WKT Shapes
+~~~~~~~~~~~~~~~
+
+It is possible to create a symbol set of your own custom marks using a property file.
+
+Here is an :file:`example.properties`:
+
+.. code-block:: text
+   
+   zig=LINESTRING(0.0 0.25, 0.25 0.25, 0.5 0.75, 0.75 0.25, 1.00 0.25)
+   block=POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))
+
+The SLD to use the symbols defined in :file:`example.properties` is:
+
+.. code-block:: xml
+   :linenos: 
+
+    <PointSymbolizer>
+      <Graphic>
+        <ExternalGraphic>
+          <OnlineResource 
+            xlink:type="simple"
+            xlink:href="example.properties#zig" />
+          <Format>wkt</Format>
+        </ExternalGraphic>
+        <Size>20</Size>
+      </Graphic>
+    </PointSymbolizer>
 
 Symbol Positioning
 ~~~~~~~~~~~~~~~~~~

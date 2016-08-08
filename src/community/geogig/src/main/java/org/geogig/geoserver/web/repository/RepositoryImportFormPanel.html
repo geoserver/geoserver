@@ -1,0 +1,17 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head>
+    <title><wicket:message key="title">Repositories</wicket:message></title>
+  </head>
+  <body>
+  <wicket:panel>
+    <form wicket:id="repoForm">
+      <div wicket:id="repo"></div>
+      <div class="button-group selfclear">
+        <a href="#" wicket:id="import"><wicket:message key="import">Import</wicket:message></a>
+        <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+      </div>			
+      <div wicket:id="feedback"/>
+    </form>
+  </wicket:panel>
+</body>
+</html>

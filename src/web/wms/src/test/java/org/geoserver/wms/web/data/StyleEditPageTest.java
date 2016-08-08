@@ -8,9 +8,16 @@ package org.geoserver.wms.web.data;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
+import java.util.Locale;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.wicket.Component;
+import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
@@ -123,10 +130,59 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
                 "  </NamedLayer>" +
             "</StyledLayerDescriptor>";
 
-        tester.debugComponentTrees();
+        // tester.debugComponentTrees();
         tester.newFormTester("form").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
         tester.executeAjaxEvent("validate", "click");
         tester.assertNoErrorMessage();
     }
+    
+    @Test
+    public void testGenerateTemplateFrenchLocale() throws Exception {
+        final Session session = tester.getSession();
+        try {
+            session.clear();
+            session.setLocale(Locale.FRENCH);
+            
+            StyleEditPage edit = new StyleEditPage(buildingsStyle);
+            tester.startPage(edit);
+            // print(tester.getLastRenderedPage(), true, true);
+            
+            // test the copy style link
+            tester.newFormTester("form").select("templates", 1);
+            tester.executeAjaxEvent("form:templates", "onchange");
+            Component generateLink = tester.getComponentFromLastRenderedPage("form:generate");
+            tester.executeAjaxEvent(generateLink, "onClick");
+            // check single quote in the message has been escaped
+            assertTrue(tester.getLastResponseAsString().contains("l\\'éditeur"));
+        } finally {
+            session.clear();
+            session.setLocale(Locale.getDefault());
+        }
+    }
+    
+    @Test
+    public void testCopyStyleFrenchLocale() throws Exception {
+        final Session session = tester.getSession();
+        try {
+            session.clear();
+            session.setLocale(Locale.FRENCH);
+            
+            StyleEditPage edit = new StyleEditPage(buildingsStyle);
+            tester.startPage(edit);
+            // print(tester.getLastRenderedPage(), true, true);
+            
+            // test the copy style link
+            tester.newFormTester("form").select("existingStyles", 1);
+            tester.executeAjaxEvent("form:existingStyles", "onchange");
+            Component copyLink = tester.getComponentFromLastRenderedPage("form:copy");
+            tester.executeAjaxEvent(copyLink, "onClick");
+            // check single quote in the message has been escaped
+            assertTrue(tester.getLastResponseAsString().contains("l\\'éditeur"));
+        } finally {
+            session.clear();
+            session.setLocale(Locale.getDefault());
+        }
+    }
+
 }

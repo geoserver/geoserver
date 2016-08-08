@@ -112,4 +112,25 @@ public class FeatureGML32Test extends AbstractAppSchemaTestSupport {
         assertXpathCount(1, "//gsml:MappedFeature", doc);
         assertXpathEvaluatesTo("mf4", "//gsml:MappedFeature/@gml:id", doc);
     }
+
+    /**
+     * Test encoding of a multivalued mapping with an xlink:href ClientProperty.
+     */
+    @Test
+    public void testMultivaluedXlinkHref() {
+        Document doc = getAsDOM(
+                "wfs?service=WFS&version=2.0.0&request=GetFeature&typenames=gsml:GeologicUnit");
+        LOGGER.info("WFS GetFeature, typename=gsml:GeologicUnit response:\n" + prettyString(doc));
+        // expect gsml:occurrence to appear twice for this feature with only @xlink:href
+        assertXpathCount(2, "//gsml:GeologicUnit[@gml:id='gu.25678']/gsml:occurrence/@xlink:href",
+                doc);
+        assertXpathEvaluatesTo("urn:cgi:feature:MappedFeature:mf2",
+                "//gsml:GeologicUnit[@gml:id='gu.25678']/gsml:occurrence[1]/@xlink:href", doc);
+        assertXpathEvaluatesTo("urn:cgi:feature:MappedFeature:mf3",
+                "//gsml:GeologicUnit[@gml:id='gu.25678']/gsml:occurrence[2]/@xlink:href", doc);
+        // expect no nested features
+        assertXpathCount(0,
+                "//gsml:GeologicUnit[@gml:id='gu.25678']/gsml:occurrence/gsml:MappedFeature", doc);
+    }
+
 }

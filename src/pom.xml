@@ -176,12 +176,6 @@
     <groupId>org.geoserver</groupId>
     <artifactId>gs-gwc</artifactId>
     <version>${gs.version}</version>
-    <exclusions>
-    	<exclusion>
-    		<groupId>net.sf.json-lib</groupId>
-      		<artifactId>json-lib</artifactId>
-    	</exclusion>
-    </exclusions>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
@@ -690,7 +684,14 @@
    <dependency>
     <groupId>commons-beanutils</groupId>
     <artifactId>commons-beanutils</artifactId>
-    <version>1.7.0</version>
+    <version>1.9.2</version>
+    <classifier>noclassprop</classifier>
+   </dependency>
+   <dependency>
+    <groupId>commons-beanutils</groupId>
+    <artifactId>commons-beanutils</artifactId>
+    <version>1.9.2</version>
+    <scope>provided</scope>
    </dependency>
    <dependency>
     <groupId>commons-digester</groupId>
@@ -735,7 +736,7 @@
    <dependency>
     <groupId>commons-pool</groupId>
     <artifactId>commons-pool</artifactId>
-    <version>1.5.3</version>
+    <version>1.5.4</version>
    </dependency>
    <dependency>
     <groupId>commons-collections</groupId>
@@ -1028,7 +1029,18 @@
       <groupId>org.restlet</groupId>
       <artifactId>org.restlet</artifactId>
       <version>1.0.8</version>
+
+      <!-- Classifier selects a hacked JAR where we've removed a class we don't need and which has a security vulnerability.  This should be removed when we update to A current version of Restlet (2.2 or later)-->
+      <classifier>noobjrep</classifier> 
+
     </dependency>
+    <dependency>
+      <groupId>org.restlet</groupId>
+      <artifactId>org.restlet</artifactId>
+      <version>1.0.8</version>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.restlet</groupId>
       <artifactId>org.restlet.ext.fileupload</artifactId>
@@ -1266,6 +1278,8 @@
      <include>**/*.tiff</include>
      <include>**/*.zip</include>
      <include>**/*.json</include>
+     <include>**/*.nc</include>
+     <include>**/*.grib2</include>
     </includes>
     <excludes>
      <exclude>**/doc-files/**</exclude>
@@ -1449,8 +1463,8 @@
      <execution>
       <id>attach-sources</id>
       <goals>
-       <goal>jar</goal>
-       <goal>test-jar</goal>
+       <goal>jar-no-fork</goal>
+       <goal>test-jar-no-fork</goal>
       </goals>
      </execution>
     </executions>
@@ -1474,7 +1488,7 @@
        <skipPoms>false</skipPoms>
        <verbose>false</verbose>
        <injectAllReactorProjects>true</injectAllReactorProjects>
-       <runOnlyOnce>true</runOnlyOnce>
+       <runOnlyOnce>${git.commit.runOnlyOnce}</runOnlyOnce>
        <!--
        In order to use native git (3+ times faster) add the following in ~/.m2/settings.xml
        <profiles>
@@ -1768,6 +1782,7 @@
   <slf4j.version>1.6.4</slf4j.version>
   <joda-time.version>2.8.1</joda-time.version>
   <git.commit.useNative>false</git.commit.useNative>
+  <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
  </properties>
 
  <profiles>

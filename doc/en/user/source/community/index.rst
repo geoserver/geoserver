@@ -35,6 +35,8 @@ officially part of the GeoServer releases. They are however built along with the
    geofence-server/index
    gdal/index
    gwc-s3/index
+   gwc-sqlite/index
    params-extractor/index
    remote-wps/index
    ysld/index
+   jdbcstore/index

@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -62,6 +63,8 @@ public class WMSMapContent extends MapContent {
     private double angle;
     
     private List<GetMapCallback> callbacks;
+    
+    private Map<String, Object> metadata = new HashMap<>();
 
     public int getTileSize() {
         return tileSize;
@@ -403,4 +406,14 @@ public class WMSMapContent extends MapContent {
             return StreamingRenderer.SCALE_OGC;
         }
     }
+    
+    /**
+     * Generic map attached to the map content, can be used to persist information around the life cycle
+     * when the {@link WebMap} is not appropriate, or to persist state across the various response callbacks
+     * @return
+     */
+    public Map<String, Object> getMetadata() {
+        return metadata;
+    }
+
 }

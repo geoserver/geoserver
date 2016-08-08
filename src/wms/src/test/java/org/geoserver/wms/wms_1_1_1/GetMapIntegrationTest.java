@@ -1118,4 +1118,31 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             gs.save(wms);
         }
     }
+    
+    @Test
+    public void testJpegPngTransparent() throws Exception {
+        String request = "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fvnd.jpeg-png&TRANSPARENT=true&STYLES"
+                + "&LAYERS=cite%3ABasicPolygons&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-2.4%2C1.4%2C0.4%2C4.2";
+        // checks it's a PNG
+        BufferedImage image = getAsImage(request, "image/png");
+        assertNotBlank("testJpegPngTransparent", image);
+    }
+    
+    @Test
+    public void testJpegPngOpaque() throws Exception {
+        String request = "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fvnd.jpeg-png&TRANSPARENT=true&STYLES"
+                + "&LAYERS=cite%3ABasicPolygons&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-0.4%2C3.6%2C1%2C5";
+        // checks it's a JPEG, since it's opaque
+        BufferedImage image = getAsImage(request, "image/jpeg");
+        assertNotBlank("testJpegPngOpaque", image);
+    }
+    
+    @Test
+    public void testJpegPngEmpty() throws Exception {
+        String request = "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image%2Fvnd.jpeg-png&TRANSPARENT=true&STYLES"
+                + "&LAYERS=cite%3ABasicPolygons&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-1.9%2C1.8%2C-1.3%2C2.5";
+        // checks it's a PNG
+        BufferedImage image = getAsImage(request, "image/png");
+        assertBlank("testJpegPngEmpty", image, new Color(255,255,255,0));
+    }
 }

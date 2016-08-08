@@ -303,7 +303,12 @@ public class ExternalGraphicPanel extends Panel {
                     }
                 }
                 else {
-                    url = new URL( baseUrl + "styles/"+external );
+                    WorkspaceInfo wsInfo = ((StyleInfo)getDefaultModelObject()).getWorkspace();
+                    if (wsInfo != null) {
+                        url = new URL( baseUrl + "styles/"+wsInfo.getName()+"/"+external );
+                    } else {
+                        url = new URL( baseUrl + "styles/"+external );
+                    }
                 }
                 
                 URLConnection conn = url.openConnection();

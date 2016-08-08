@@ -269,7 +269,6 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         formatChoice.getFeedbackMessages().clear();
         stylePage.editor.getFeedbackMessages().clear();
     }
-    //TODO: Note - this does not reload the form...
     protected Component previewLink() {
         return new GeoServerAjaxFormLink("preview", stylePage.styleForm) {
 
@@ -349,9 +348,6 @@ public class StyleAdminPanel extends StyleEditTabPanel {
             }
         };
     }
-    //TODO: Change to some sort of form updating behavior that doesn't actually reload the form...
-    //Perhaps AjaxFormUpdateingBehavior(click).
-    
     protected AjaxSubmitLink generateLink() {
         return new ConfirmOverwriteSubmitLink("generate") {
 
@@ -389,7 +385,6 @@ public class StyleAdminPanel extends StyleEditTabPanel {
             }
         };
     }
-    //TODO: Change to some sort of form updating behavior that doesn't actually reload the form...
     protected AjaxSubmitLink copyLink() {
         return new ConfirmOverwriteSubmitLink("copy") {
 
@@ -420,7 +415,6 @@ public class StyleAdminPanel extends StyleEditTabPanel {
             }
         };
     }
-    //TODO: Change to some sort of form updating behavior that doesn't actually reload the form...
     AjaxSubmitLink uploadLink() {
         return new ConfirmOverwriteSubmitLink("upload", stylePage.styleForm) {
 

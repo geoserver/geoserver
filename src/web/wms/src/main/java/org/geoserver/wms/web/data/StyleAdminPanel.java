@@ -66,6 +66,11 @@ import org.geoserver.wms.web.publish.StylesModel;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 
+/**
+ * Style page tab for displaying editing the style metadata.
+ * Includes style upload and generation functionality.
+ * Delegates to {@link ExternalGraphicPanel} for editing the legend.
+ */
 public class StyleAdminPanel extends StyleEditTabPanel {
     private static final long serialVersionUID = -2443344473474977026L;
     private static final Logger LOGGER = Logging.getLogger(StyleAdminPanel.class);

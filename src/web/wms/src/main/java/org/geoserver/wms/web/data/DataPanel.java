@@ -34,6 +34,9 @@ import org.opengis.feature.type.PropertyDescriptor;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+/**
+ * Panel for listing sample attributes of a FeatureTypeInfo resource.
+ */
 public class DataPanel extends Panel {
     private static final long serialVersionUID = -2635691554700860434L;
 

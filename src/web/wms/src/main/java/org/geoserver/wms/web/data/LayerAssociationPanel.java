@@ -21,6 +21,11 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import static org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 
+/**
+ * Style page tab for configuring style-layer associations.
+ * Lists all layers, and allows setting the current style as the default style for each layer, or
+ * as an associated style.
+ */
 public class LayerAssociationPanel extends StyleEditTabPanel {
     private static final long serialVersionUID = -59522993086560769L;
 

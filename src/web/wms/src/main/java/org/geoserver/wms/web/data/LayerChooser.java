@@ -22,6 +22,10 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 
+/**
+ * Panel for selecting a layer from the list of layers. Used by {@link LayerAttributePanel} and 
+ * {@link OpenLayersPreviewPanel} to change the preview layer.
+ */
 public class LayerChooser extends Panel {
 
     private static final long serialVersionUID = -127345071729297975L;
@@ -92,7 +96,6 @@ public class LayerChooser extends Panel {
                             private static final long serialVersionUID = -7619814477490657757L;
 
                             {
-                                //TODO: Change to some sort of form updating behavior that doesn't actually reload the form...
                                 add(new GeoServerAjaxFormLink("link", parent.styleForm) {
                                     {
                                         add(new Label("layer.name", new Model<String>(text)));

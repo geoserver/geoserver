@@ -23,6 +23,9 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.SampleDimensionType;
 
+/**
+ * Panel for listing band data of a CoverageInfo resource.
+ */
 @SuppressWarnings("serial")
 public class BandsPanel extends Panel {
     static final Logger LOGGER = Logging.getLogger(BandsPanel.class);

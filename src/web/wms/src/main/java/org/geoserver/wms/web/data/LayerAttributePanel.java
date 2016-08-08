@@ -1,3 +1,7 @@
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.web.data;
 
 import java.io.IOException;
@@ -14,6 +18,12 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.util.logging.Logging;
 
+/**
+ * Style page tab for displaying layer attributes.
+ * Includes a link for changing the current preview layer.
+ * Delegates to {@link BandsPanel} or {@link LayerAttributePanel} to display the attributes, 
+ * depending on the type of the layer resource.
+ */
 public class LayerAttributePanel extends StyleEditTabPanel {
 
     static final Logger LOGGER = Logging.getLogger(LayerAttributePanel.class);

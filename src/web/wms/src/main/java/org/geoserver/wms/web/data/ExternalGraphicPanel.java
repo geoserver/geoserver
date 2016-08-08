@@ -149,14 +149,14 @@ public class ExternalGraphicPanel extends Panel {
                         WorkspaceInfo wsInfo = styleModel.getObject().getWorkspace();
                         File test = null;
                         if (wsInfo != null){
-                        	String wsName = wsInfo.getName();
-                        	List<String> list = new ArrayList();
-                        	list.addAll(Arrays.asList("workspaces", wsName, "styles"));
-                        	list.addAll(Arrays.asList(path));
-                        	test = resources.find(list.toArray(new String[list.size()]));
+                            String wsName = wsInfo.getName();
+                            List<String> list = new ArrayList();
+                            list.addAll(Arrays.asList("workspaces", wsName, "styles"));
+                            list.addAll(Arrays.asList(path));
+                            test = resources.find(list.toArray(new String[list.size()]));
                         }
                         if ( test == null){
-                        	test = resources.find(styles, path);
+                            test = resources.find(styles, path);
                         }
                         if (test == null) {
                             ValidationError error = new ValidationError();

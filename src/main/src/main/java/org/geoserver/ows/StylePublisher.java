@@ -47,11 +47,6 @@ public class StylePublisher extends AbstractURLPublisher {
         this.catalog = catalog;
     }
 
-    // @Override
-    // protected void initServletContext(ServletContext servletContext) {
-    // this.scloader = new ServletContextResourceLoader(servletContext);
-    // }
-
     @Override
     protected URL getUrl(HttpServletRequest request) throws IOException {
         String ctxPath = request.getContextPath();
@@ -63,22 +58,10 @@ public class StylePublisher extends AbstractURLPublisher {
             reqPath = reqPath.substring(1);
         }
 
-        // sigh, in order to serve the file we have to open it 2 times
-        // 1) to determine its mime type
-        // 2) to determine its encoding and really serve it
-        // we can't coalish 1) because we don't have a way to give jmimemagic the bytes at the
-        // beginning of the file without disabling extension quick matching
-
-        // load the file
         Resource resource;
 
-        // if the file is like "styles/*.png" then look in the global styles folder
         if (reqPath.startsWith("styles/")) {
-            // tokenize string
-            // check # of tokens
-            // if 2 => global style
-            // if 3 => worksResource resource;paced style
-
+           
             String[] tokens = reqPath.split("/");
             int count = tokens.length;
             GeoServerResourceLoader resources = catalog.getResourceLoader();
@@ -89,7 +72,6 @@ public class StylePublisher extends AbstractURLPublisher {
                 resource = data.getStyles(stylePath);
             } else if (count == 3) {
                 // workspaced style
-                // same thing as above but using new path we just constructed
                 String temp = "workspaces/" + tokens[1] + "/styles/" + tokens[2];
                 String wsName = tokens[1];
                 String stylePath = tokens[2];
@@ -104,11 +86,9 @@ public class StylePublisher extends AbstractURLPublisher {
                     resource = data.getStyles(stylePath);
                 }
             } else {
-                // something went wrong :(
                 throw new IllegalStateException("Unexpected number of tokens in reqest path.");
             }
-
-            // Resource resource = loader.get(reqPath); [moved this up]
+            
             switch (resource.getType()) {
             case RESOURCE:
                 return DataUtilities.fileToURL(resource.file());

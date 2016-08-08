@@ -1,5 +1,15 @@
 <style>
   <id>StyleInfoImpl--570ae188:124761b8d78:-7fdf</id>
   <name>point</name>
+  <format>sld</format>
+  <languageVersion>
+    <version>1.0.0</version>
+  </languageVersion>
   <filename>default_point.sld</filename>
+  <legend>
+    <width>32</width>
+    <height>32</height>
+    <format>image/png; charset=UTF-8</format>
+    <onlineResource>grass_fill.png</onlineResource>
+  </legend>
 </style>

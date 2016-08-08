@@ -57,8 +57,6 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
         paths.add(new String[] { "styles", "cite", "smileyface.png" });
 
         // testing over-riding global image with workspaced image
-        // global --> happyface
-        // ws'ed --> grass
         resourceLoader.copyFromClassPath("org/geoserver/ows/smileyface.png", "styles/override.png");
         resourceLoader.copyFromClassPath("org/geoserver/ows/grass_fill.png",
                 "workspaces/cite/styles/override.png");

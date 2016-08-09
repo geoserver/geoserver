@@ -11,7 +11,7 @@ This step-by-step tutorial describes how to associate Footprint to a raster data
 
 Footprint is a Shape used as a Mask for the mosaic. Masking can be useful for hiding pixels which are meaningless, or for enhancing only few regions of the image in respect to others.
 
-This tutorial assumes knowledge of the concepts explained in :ref:`tutorial_imagemosaic_extension`.
+This tutorial assumes knowledge of the concepts explained in :ref:`data_imagemosaic` section.
 
 This tutorial contains two sections:
 
@@ -83,7 +83,7 @@ Step 1: Create a new ImageMosaic Layer
 
 As seen before an ImageMosaic data store can be created by going to :menuselection:`Stores --> Add New Store --> ImageMosaic`.
 
-.. figure:: ../image_mosaic_plugin/img/imagemosaicconfigure.png
+.. figure:: ../../data/raster/imagemosaic/images/imagemosaicconfigure.png
 
 An associated Layer can be created by going to :menuselection:`Layers --> Add New Resource`, choosing the name of the data store created above and then clicking on the :guilabel:`publish` button.
 

@@ -1,0 +1,275 @@
+.. _data_imagemosaic_tutorial:
+
+Using the imagemosaic plugin
+============================
+
+This tutorial will show you how to configure and publish an imagemosaic store and coverage, followed by some configuration examples.
+
+Configuring a coverage in GeoServer
+-----------------------------------
+
+This is a process very similar to creating a featuretype. More specifically, one has to perform the steps highlighted in the sections below:
+
+Create a new store
+~~~~~~~~~~~~~~~~~~
+
+#. Go to :menuselection:`Data Panel --> Stores` and click :guilabel:`Add new Store`.
+
+#. Select :guilabel:`ImageMosaic` under :guilabel:`Raster Data Source`:
+
+   .. figure:: images/imagemosaiccreate.png
+
+      Imagemosaic in the list of raster data stores
+
+#. In order to create a new mosaic it is necessary to choose a workspace and store name in the :guilabel:`Basic Store Info` section, as well as a URL in the :guilabel:`Connection Parameters` section. Valid URLs include:
+
+     * The absolute path to the shapefile index, or a directory containing the shapefile index.
+
+     * The absolute path to the configuration file (`*.properties``) or a directory containing the configuration file. If ``datastore.properties`` and ``indexer.properties`` exist, they should be in the same directory as this configuration file.
+
+     * The absolute path of a directory where the files you want to mosaic to reside. In this case GeoServer automatically creates the needed mosaic files (.dbf, .prj, .properties, .shp and .shx) by inspecting the data that is present in the given directory (GeoServer will also find the data in any subdirectories).
+
+#. Click :guilabel:`Save`:
+
+   .. figure:: images/imagemosaicconfigure.png
+
+      Configuring an imagemosaic data store
+
+Create a new coverage
+~~~~~~~~~~~~~~~~~~~~~
+
+#. Navigate to :menuselection:`Data Panel --> Layers` and click :guilabel:`Add a new resource`.
+
+#. Choose the name of the store you just created:
+
+   .. figure:: images/vito_newlayerchoser.png
+
+      Layer Chooser
+
+#. Click the layer you wish to configure and you will be presented with the Coverage Editor:
+
+   .. figure:: images/vito_coverageeditor.png
+
+      Coverage Editor
+
+#. Make sure there is a value for :guilabel:`Native SRS`, then click the :guilabel:`Submit` button. If the :guilabel:`Native CRS` is ``UNKNOWN``, you must declare the SRS in the :guilabel:`Declared SRS` field.
+
+#. Click :guilabel:`Save`.
+
+#. Use the :guilabel:`Layer Preview` to view the mosaic.
+
+.. warning:: If the created layer appears to be all black, it may be that GeoServer has not found any acceptable granules in the provided index. It is also possible that the shapefile index is empty (no granules were found in in the provided directory) or it might be that the granules' paths in the shapefile index are not correct, which could happen if an existing index (using absolute paths) is moved to another place. If the shapefile index paths are not correct, then the DBF file can be opened and fixed with an editor. Alternately, you can delete the index and let GeoServer recreate it from the root directory.
+
+
+Configuration examples
+----------------------
+
+Below are a few examples of mosaic configurations to demonstrate how we can make use of the imagemosaic parameters.
+
+
+DEM/Bathymetry
+~~~~~~~~~~~~~~
+
+Such a mosaic can be use to serve large amount of data which represents altitude or depth and therefore does not specify colors directly while it rather needs an SLD to generate pictures. In our case we have a DEM dataset which consists of a set of raw GeoTIFF files.
+
+The first operation is to create the CoverageStore specifying, for example, the path of the shapefile in the :guilabel:`URL` field.
+
+Inside the Coverage Editor Publishing tab, you can specify the :guilabel:`dem` default style in order to represent the visualization style of the mosaic. The following is an example style:
+
+.. code-block:: xml
+
+  <?xml version="1.0" encoding="ISO-8859-1"?>
+  <StyledLayerDescriptor version="1.0.0"
+    xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/sld 	http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+    <NamedLayer>
+      <Name>gtopo</Name>
+      <UserStyle>
+        <Name>dem</Name>
+        <Title>Simple DEM style</Title>
+        <Abstract>Classic elevation color progression</Abstract>
+        <FeatureTypeStyle>
+          <Rule>
+            <RasterSymbolizer>
+              <Opacity>1.0</Opacity>
+              <ColorMap>
+                <ColorMapEntry color="#000000" quantity="-9999" label="nodata" opacity="1.0" />
+                <ColorMapEntry color="#AAFFAA" quantity="0" label="values" />
+                <ColorMapEntry color="#00FF00" quantity="1000" label="values" />
+                <ColorMapEntry color="#FFFF00" quantity="1200" label="values" />
+                <ColorMapEntry color="#FF7F00" quantity="1400" label="values" />
+                <ColorMapEntry color="#BF7F3F" quantity="1600" label="values" />
+                <ColorMapEntry color="#000000" quantity="2000" label="values" />
+              </ColorMap>
+            </RasterSymbolizer>
+          </Rule>
+        </FeatureTypeStyle>
+      </UserStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+
+In this way you have a clear distinction between the different intervals of the dataset that compose the mosaic, like the background and the "nodata" area.
+
+.. figure:: images/vito_config_1.png
+
+.. note:: The "nodata" on the sample mosaic is -9999. The default background value is for mosaics is 0.0.
+
+The result is the following:
+
+.. figure:: images/vito_1.png
+
+   Basic configuration
+
+By setting the other configuration parameters appropriately, it is possible to improve at the same time both the appearance of the mosaic as well as the its performances. As an instance we could:
+
+* Make the "nodata" areas transparent and coherent with the real data. To achieve this we need to change the opacity of the "nodata" ColorMapEntry in the ``dem`` style to ``0.0`` and set ``BackgroundValues`` parameter to ``-9999`` so that empty areas will be filled with this value. The result is as follows:
+
+  .. figure:: images/vito_2.png
+
+     Advanced configuration
+
+* Allow multithreaded granules loading. By setting the ``AllowMultiThreading`` parameter to ``true``, GeoServer will load the granules in parallel using multiple threads with a increase in performance on some architectures.
+
+
+The configuration parameters are the followings:
+
+.. list-table::
+   :widths: 25 75
+   :header-rows: 1
+   :stub-columns: 1
+
+   * - Parameter
+     - Value
+   * - MaxAllowedTiles
+     - 2147483647
+   * - BackgroundValues
+     - -9999
+   * - OutputTransparentColor
+     - "no color"
+   * - InputTransparentColor
+     - "no color"
+   * - AllowMultiThreading
+     - True
+   * - USE_JAI_IMAGEREAD
+     - True
+   * - SUGGESTED_TILE_SIZE
+     - 512,512
+
+
+Aerial imagery
+~~~~~~~~~~~~~~
+
+In this example we are going to create a mosaic that will serve aerial imagery, specifically RGB GeoTIFFs. Because this is visual data, in the Coverage Editor you can use the basic ``raster`` style, which is just a stub SLD to instruct the GeoServer raster renderer to not do anything particular in terms of color management:
+
+.. code-block:: xml
+
+  <?xml version="1.0" encoding="ISO-8859-1"?>
+  <StyledLayerDescriptor version="1.0.0"
+    xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/sld 	http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+    <NamedLayer>
+      <Name>raster</Name>
+      <UserStyle>
+        <Name>raster</Name>
+        <Title>Raster</Title>
+        <Abstract>A sample style for rasters, good for displaying imagery	</Abstract>
+        <FeatureTypeStyle>
+          <FeatureTypeName>Feature</FeatureTypeName>
+          <Rule>
+            <RasterSymbolizer>
+              <Opacity>1.0</Opacity>
+            </RasterSymbolizer>
+          </Rule>
+        </FeatureTypeStyle>
+      </UserStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+
+The result is the following:
+
+.. figure:: images/prato_1.png
+   
+   Basic configuration
+
+.. note:: Those ugly black areas are the result of applying the default mosaic parameters to a mosaic that does not entirely cover its bounding box. The areas within the BBOX that are not covered with data will default to a value of 0 on each band. Since this mosaic is RGB we can simply set the ``OutputTransparentColor`` to ``0,0,0`` in order to get transparent fills for the BBOX.
+
+The various parameters can be set as follows:
+
+.. list-table::
+   :widths: 25 75
+   :header-rows: 1
+   :stub-columns: 1
+
+   * - Parameter
+     - Value
+   * - MaxAllowedTiles
+     - 2147483647
+   * - BackgroundValues
+     - (default)
+   * - OutputTransparentColor
+     - #000000
+   * - InputTransparentColor
+     - "no color"
+   * - AllowMultiThreading
+     - True
+   * - USE_JAI_IMAGEREAD
+     - True
+   * - SUGGESTED_TILE_SIZE
+     - 512,512
+
+The result is the following:
+
+.. figure:: images/prato_2.png
+
+   Advanced configuration
+
+
+Scanned maps
+~~~~~~~~~~~~
+
+In this case we want to show how to serve scanned maps (mostly B&W images) via a GeoServer mosaic.
+
+In the Coverage Editor you can use the basic ``raster`` since there is no need to use any of the advanced RasterSymbolizer capabilities.
+
+The result is the following.
+
+.. figure:: images/iacovella_1.png
+
+   Basic configuration
+
+This mosaic, formed by two single granules, shows a typical case where the "nodata" collar areas of the granules overlap, as hown in the picture above.
+In this case we can use the ``InputTransparentColor`` parameter to make the collar areas disappear during the superimposition process, as instance, in this case, by using an ``InputTransparentColor`` of ``#FFFFFF``  
+
+
+The final configuration parameters are the following:
+
+.. list-table::
+   :widths: 25 75
+   :header-rows: 1
+   :stub-columns: 1
+
+   * - Parameter
+     - Value
+   * - MaxAllowedTiles
+     - 2147483647
+   * - BackgroundValues
+     - (default)
+   * - OutputTransparentColor
+     - "no color"
+   * - InputTransparentColor
+     - #FFFFFF
+   * - AllowMultiThreading
+     - True
+   * - USE_JAI_IMAGEREAD
+     - True
+   * - SUGGESTED_TILE_SIZE
+     - 512,512
+
+This is the result:
+
+.. figure:: images/iacovella_2.png
+
+   Advanced configuration
+

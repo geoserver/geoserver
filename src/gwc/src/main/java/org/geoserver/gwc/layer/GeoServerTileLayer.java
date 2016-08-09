@@ -9,8 +9,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Throwables.propagate;
 import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.geoserver.ows.util.ResponseUtils.params;
 
+import java.awt.*;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,20 +31,30 @@ import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.collect.Iterables;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
+import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
+import org.geoserver.wms.capabilities.LegendSample;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -78,6 +93,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.google.common.base.Throwables;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import org.vfny.geoserver.util.ResponseUtils;
 
 public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
@@ -103,8 +119,19 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     volatile private PublishedInfo publishedInfo;
 
+    private LegendSample legendSample;
+
+    private WMS wms;
+
     public GeoServerTileLayer(final PublishedInfo publishedInfo, final GWCConfig configDefaults,
-            final GridSetBroker gridsets) {
+                              final GridSetBroker gridsets) {
+        this(publishedInfo, configDefaults, gridsets,
+                GeoServerExtensions.bean(LegendSample.class),
+                GeoServerExtensions.bean(WMS.class));
+    }
+
+    public GeoServerTileLayer(final PublishedInfo publishedInfo, final GWCConfig configDefaults,
+            final GridSetBroker gridsets, LegendSample legendSample, WMS wms) {
         checkNotNull(publishedInfo, "publishedInfo");
         checkNotNull(gridsets, "gridsets");
         checkNotNull(configDefaults, "configDefaults");
@@ -112,6 +139,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         this.gridSetBroker = gridsets;
         this.publishedInfo = publishedInfo;
         this.info = TileLayerInfoUtil.loadOrCreate(getPublishedInfo(), configDefaults);
+
+        this.legendSample = legendSample;
+        this.wms = wms;
     }
 
     public GeoServerTileLayer(final PublishedInfo publishedInfo, final GridSetBroker gridsets,
@@ -124,6 +154,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         this.publishedInfo = publishedInfo;
         this.info = state;
         TileLayerInfoUtil.checkAutomaticStyles(publishedInfo, state);
+
+        this.legendSample = GeoServerExtensions.bean(LegendSample.class);
+        this.wms = GeoServerExtensions.bean(WMS.class);
     }
 
     public GeoServerTileLayer(final Catalog catalog, final String publishedId,
@@ -137,6 +170,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         this.catalog = catalog;
         this.publishedId = publishedId;
         this.info = TileLayerInfoUtil.loadOrCreate(getPublishedInfo(), configDefaults);
+
+        this.legendSample = GeoServerExtensions.bean(LegendSample.class);
+        this.wms = GeoServerExtensions.bean(WMS.class);
     }
 
     public GeoServerTileLayer(final Catalog catalog, final String publishedId,
@@ -150,6 +186,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         this.catalog = catalog;
         this.publishedId = publishedId;
         this.info = state;
+
+        this.legendSample = GeoServerExtensions.bean(LegendSample.class);
+        this.wms = GeoServerExtensions.bean(WMS.class);
     }
 
     @Override
@@ -164,6 +203,24 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     
     @Override
     public String getName() {
+        // getting the current gwc operation
+        String gwcOperation = GwcServiceDispatcherCallback.GWC_OPERATION.get();
+        // checking if we are in the context of a get capabilities request
+        if (gwcOperation != null && gwcOperation.equalsIgnoreCase("GetCapabilities")) {
+            // this is a get capabilities request, we need to check if we are in the context of virtual service
+            return getNoPrefixedNameIfVirtualService();
+        }
+        return info.getName();
+    }
+
+    private String getNoPrefixedNameIfVirtualService() {
+        // let's see if this a virtual service request
+        WorkspaceInfo localWorkspace = LocalWorkspace.get();
+        if (localWorkspace != null) {
+            // yes this is a virtual service request so removing the workspace prefix
+            return CatalogConfiguration.removeWorkspacePrefix(info.getName(), catalog);
+        }
+        // this a normal request so just returning the prefixed layer name
         return info.getName();
     }
 
@@ -363,7 +420,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         if (resourceInfo != null) {
             title = resourceInfo.getTitle();
             description = resourceInfo.getAbstract();
-            keywords = new ArrayList<String>();
+            keywords = new ArrayList<>();
             for (KeywordInfo kw : resourceInfo.getKeywords()) {
                 keywords.add(kw.getValue());
             }
@@ -1177,8 +1234,35 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     @Override
     public List<MetadataURL> getMetadataURLs() {
-        // TODO Auto-generated method stub
-        return null;
+        List<MetadataLinkInfo> gsMetadataLinks;
+        List<MetadataURL> gwcMetadataLinks = new ArrayList<>();
+        LayerInfo layerInfo = getLayerInfo();
+        if (layerInfo != null) {
+            // this is a normal layer
+            gsMetadataLinks = layerInfo.getResource().getMetadataLinks();
+        } else {
+            // this is a layer group
+            gsMetadataLinks = new ArrayList<>();
+            for (LayerInfo layer : Iterables.filter(getLayerGroupInfo().getLayers(), LayerInfo.class)) {
+                // getting metadata of all layers of the layer group
+                List<MetadataLinkInfo> metadataLinksLayer = layer.getResource().getMetadataLinks();
+                if (metadataLinksLayer != null) {
+                    gsMetadataLinks.addAll(metadataLinksLayer);
+                }
+            }
+        }
+        String baseUrl = RequestUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
+        for(MetadataLinkInfo gsMetadata : gsMetadataLinks) {
+            String url = ResponseUtils.proxifyMetadataLink(gsMetadata, baseUrl);
+            try {
+                gwcMetadataLinks.add(new MetadataURL(gsMetadata.getMetadataType(), gsMetadata.getType(), new URL(url)));
+            } catch (MalformedURLException exception) {
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning("Error adding layer metadata URL.");
+                }
+            }
+        }
+        return gwcMetadataLinks;
     }
 
     @Override
@@ -1204,5 +1288,61 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     @Override
     public void setBlobStoreId(String blobStoreId) {
         info.setBlobStoreId(blobStoreId);
+    }
+
+    @Override
+    public Map<String, LegendInfo> getLegendsInfo() {
+        LayerInfo layerInfo = getLayerInfo();
+        if (layerInfo == null) {
+            return null;
+        }
+        Map<String, LegendInfo> legends = new HashMap<>();
+        Set<StyleInfo> styles = new HashSet<>(layerInfo.getStyles());
+        styles.add(layerInfo.getDefaultStyle());
+        for (StyleInfo styleInfo : styles) {
+            org.geoserver.catalog.LegendInfo legendInfo = styleInfo.getLegend();
+            LegendInfo gwcLegendInfo = new LegendInfo();
+            if (legendInfo != null) {
+                gwcLegendInfo.id = legendInfo.getId();
+                gwcLegendInfo.width = legendInfo.getWidth();
+                gwcLegendInfo.height = legendInfo.getHeight();
+                gwcLegendInfo.format = legendInfo.getFormat();
+                gwcLegendInfo.legendUrl = buildURL(RequestUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest()),
+                        legendInfo.getOnlineResource(), null, URLMangler.URLType.RESOURCE);
+                legends.put(styleInfo.prefixedName(), gwcLegendInfo);
+            } else {
+                try {
+                    gwcLegendInfo.width = GetLegendGraphicRequest.DEFAULT_WIDTH;
+                    gwcLegendInfo.height = GetLegendGraphicRequest.DEFAULT_HEIGHT;
+                    Dimension dimension = legendSample.getLegendURLSize(styleInfo);
+                    if (dimension != null) {
+                        gwcLegendInfo.width = (int) dimension.getWidth();
+                        gwcLegendInfo.height = (int) dimension.getHeight();
+                    }
+                    gwcLegendInfo.format = GetLegendGraphicRequest.DEFAULT_FORMAT;
+                    if (null == wms.getLegendGraphicOutputFormat(gwcLegendInfo.format)) {
+                        if (LOGGER.isLoggable(Level.WARNING)) {
+                            LOGGER.warning("Default legend format (" + gwcLegendInfo.format +
+                                    ")is not supported (jai not available?), can't add LegendURL element");
+                        }
+                        continue;
+                    }
+                } catch (Exception exception) {
+                    LOGGER.log(Level.WARNING, "Error getting LegendURL dimensions from sample", exception);
+                }
+                String layerName = layerInfo.prefixedName();
+                Map<String, String> params = params("service", "WMS", "request",
+                        "GetLegendGraphic", "format", gwcLegendInfo.format, "width",
+                        String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH), "height",
+                        String.valueOf(GetLegendGraphicRequest.DEFAULT_HEIGHT), "layer", layerName);
+                if (!styleInfo.getName().equals(layerInfo.getDefaultStyle().getName())) {
+                    params.put("style", styleInfo.getName());
+                }
+                gwcLegendInfo.legendUrl = buildURL(RequestUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest()),
+                        "ows", params, URLMangler.URLType.SERVICE);
+                legends.put(styleInfo.prefixedName(), gwcLegendInfo);
+            }
+        }
+        return legends;
     }
 }

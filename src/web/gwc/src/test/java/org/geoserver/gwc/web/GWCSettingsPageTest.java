@@ -70,23 +70,6 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertEquals(!enabled, gwc.getConfig().isWMSCEnabled());
     }
 
-    @Test public void testEditEnableWMTS() {
-        GWC gwc = GWC.get();
-        boolean enabled = gwc.getConfig().isWMTSEnabled();
-        testEditCheckboxOption("form:gwcServicesPanel:enableWMTS", "gwcServicesPanel:enableWMTS",
-                enabled);
-        assertEquals(!enabled, gwc.getConfig().isWMTSEnabled());
-    }
-
-    @Test
-    public void testEditEnableTMS() {
-        GWC gwc = GWC.get();
-        boolean enabled = gwc.getConfig().isTMSEnabled();
-        testEditCheckboxOption("form:gwcServicesPanel:enableTMS", "gwcServicesPanel:enableTMS",
-                enabled);
-        assertEquals(!enabled, gwc.getConfig().isTMSEnabled());
-    }
-
     @Test
     public void testEnableCacheLayersByDefault() throws Exception {
         GWC gwc = GWC.get();

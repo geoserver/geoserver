@@ -84,6 +84,7 @@
       Catches up GeoServer Dispatcher request processing callbacks and
       adapts them to be resolved to the GWC proxy service
     </description>
+    <constructor-arg ref="catalog"/>
   </bean>
 
   <bean id="GWCDispatcherProxyService" class="org.geoserver.gwc.dispatch.GwcServiceProxy">

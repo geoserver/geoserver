@@ -52,6 +52,11 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
+   <artifactId>gs-gwc</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
    <artifactId>gs-main</artifactId>
    <classifier>tests</classifier>
    <scope>test</scope>

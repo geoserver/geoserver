@@ -24,6 +24,8 @@ public class DynamicDefaultXStreamInitializer implements XStreamPersisterInitial
                 DefaultValueConfigurations.class);
         XStream xs = persister.getXStream();
         xs.alias("configuration", DefaultValueConfiguration.class);
+        xs.allowTypeHierarchy(org.geoserver.wms.dimension.DefaultValueConfiguration.class);
+        xs.allowTypeHierarchy(org.geoserver.wms.dimension.DefaultValueConfigurations.class);
     }
 
 }

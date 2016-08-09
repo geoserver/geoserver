@@ -2212,14 +2212,6 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
         }
         
         LOGGER.info("Start security migration");
-        
-        //create required directories
-        get("security/role").dir();
-        get("security/usergroup").dir();
-        get("security/auth").dir();
-        get("security/pwpolicy").dir();
-        get("security/filter").dir();
-        get("security/masterpw").dir();
 
         //master password configuration
         MasterPasswordProviderConfig mpProviderConfig = loadMasterPassswordProviderConfig("default"); 

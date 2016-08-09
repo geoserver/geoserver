@@ -23,7 +23,8 @@ import org.geoserver.security.CatalogMode;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GWCDataSecurityChallengeIntegrationTest extends WMSTestSupport {
     @Override
@@ -61,29 +62,32 @@ public class GWCDataSecurityChallengeIntegrationTest extends WMSTestSupport {
         // Try first as anonymous user, which should be disallowed.
         setRequestAuth(null, null);
         response = getAsServletResponse(path);
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
+        //assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatusCode());
+        assertEquals(0, response.getOutputStreamContent().length());
 
         // Make initial authorized request to cache the item.
         setRequestAuth("cite", "cite");
         response = getAsServletResponse(path);
-        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatusCode());
         assertEquals("image/png", response.getContentType());
         assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
 
         // Make second authorized request to ensure the item was cached.
         response = getAsServletResponse(path);
-        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatusCode());
         assertEquals("image/png", response.getContentType());
         assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
 
         // Ensure other unauthorized users can't access the cached tile.
         setRequestAuth("other", "other");
         response = getAsServletResponse(path);
-        assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
+        //assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatusCode());
+        assertEquals(0, response.getOutputStreamContent().length());
 
         // Ensure anonymous users can't access the cached tile.
         setRequestAuth(null, null);
         response = getAsServletResponse(path);
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
+        //assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatusCode());
+        assertEquals(0, response.getOutputStreamContent().length());
     }
 }

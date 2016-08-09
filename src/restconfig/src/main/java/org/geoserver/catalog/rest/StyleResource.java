@@ -15,6 +15,7 @@ import com.google.common.io.Files;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
@@ -374,26 +375,29 @@ public class StyleResource extends AbstractCatalogResource {
     @Override
     protected void handleObjectDelete() throws Exception {
         String workspace = getAttribute("workspace");
-        String style = getAttribute("style");
-        StyleInfo s = workspace != null ? catalog.getStyleByName(workspace, style) :
-            catalog.getStyleByName(style);
-        
-        //ensure that no layers reference the style
-        List<LayerInfo> layers = catalog.getLayers(s);
-        if ( !layers.isEmpty() ) {
-            throw new RestletException( "Can't delete style referenced by existing layers.", Status.CLIENT_ERROR_FORBIDDEN );
+        String styleName = getAttribute("style");
+        boolean recurse = getQueryStringValue("recurse", Boolean.class, false);
+
+        StyleInfo style = workspace != null ? catalog.getStyleByName(workspace, styleName) :
+            catalog.getStyleByName(styleName);
+
+        if (recurse) {
+            new CascadeDeleteVisitor(catalog).visit(style);
+        } else {
+            // ensure that no layers reference the style
+            List<LayerInfo> layers = catalog.getLayers(style);
+            if (!layers.isEmpty()) {
+                throw new RestletException("Can't delete style referenced by existing layers.", Status.CLIENT_ERROR_FORBIDDEN);
+            }
+            catalog.remove(style);
         }
-        
-        catalog.remove( s );
-        
-        //check purge parameter to determine if the underlying file 
+
+        // check purge parameter to determine if the underlying file
         // should be deleted
-        String p = getRequest().getResourceRef().getQueryAsForm().getFirstValue("purge"); 
-        boolean purge = (p != null) ? Boolean.parseBoolean(p) : false;
-        catalog.getResourcePool().deleteStyle(s, purge);
-        
-        LOGGER.info( "DELETE style " + style);
-       
+        boolean purge = getQueryStringValue("purge", Boolean.class, false);
+        catalog.getResourcePool().deleteStyle(style, purge);
+
+        LOGGER.info("DELETE style " + styleName);
     }
 
 

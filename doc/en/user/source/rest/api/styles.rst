@@ -116,6 +116,7 @@ Controls a given style.
      -
      -
      - :ref:`purge <rest_api_styles_purge>` 
+     - :ref:`recurse <rest_api_styles_recurse>`
 
 Exceptions
 ~~~~~~~~~~
@@ -141,6 +142,13 @@ Parameters
 ^^^^^^^^^
 
 The ``purge`` parameter specifies whether the underlying SLD file for the style should be deleted on disk. Allowable values for this parameter are "true" or "false". When set to "true" the underlying file will be deleted. 
+
+.. _rest_api_styles_recurse:
+
+``recurse``
+^^^^^^^^^
+
+The ``recurse`` parameter removes references to the specified style in existing layers. Allowed values for this parameter are "true" or "false". The default value is "false".
 
 .. _rest_api_styles_quietOnNotFound:
 

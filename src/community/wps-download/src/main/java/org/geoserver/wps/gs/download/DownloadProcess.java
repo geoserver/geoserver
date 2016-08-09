@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -115,6 +115,7 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
             @DescribeParameter(name = "interpolation", description = "Interpolation function to use when reprojecting / scaling raster data.  Values are NEAREST (default), BILINEAR, BICUBIC2, BICUBIC", min = 0) Interpolation interpolation,
             @DescribeParameter(name = "targetSizeX", min = 0, minValue = 1, description = "X Size of the Target Image (applies to raster data only)") Integer targetSizeX,
             @DescribeParameter(name = "targetSizeY", min = 0, minValue = 1, description = "Y Size of the Target Image (applies to raster data only)") Integer targetSizeY,
+            @DescribeParameter(name = "selectedBands", description = "Band Selection Indices", min = 0) int[] bandIndices,
             final ProgressListener progressListener) throws ProcessException {
 
         try {
@@ -223,7 +224,7 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
                 // convert/reproject/crop if needed the coverage
                 internalOutput = new RasterDownload(limits, resourceManager, context).execute(
                         mimeType, progressListener, cInfo, roi, targetCRS, clip, filter,
-                        interpolation, targetSizeX, targetSizeY);
+                        interpolation, targetSizeX, targetSizeY, bandIndices);
             } else {
 
                 // wrong type

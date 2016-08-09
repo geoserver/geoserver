@@ -164,7 +164,7 @@ public class DownloadEstimatorProcess implements GSProcess {
             LOGGER.log(Level.FINE, "Working with a wrong Resource");
         }
 
-        // the requeste layer is neither a featuretype nor a coverage --> error
+        // the requested layer is neither a featuretype nor a coverage --> error
         final ProcessException ex = new ProcessException(
                 "Could not complete the Download Process: target resource is of Illegal type --> "
                         + resourceInfo != null ? resourceInfo.getClass().getCanonicalName()

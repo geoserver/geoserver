@@ -147,8 +147,6 @@ The configuration parameters are the followings:
      - -9999
    * - OutputTransparentColor
      - "no color"
-   * - InputImageThresholdValue
-     - NaN
    * - InputTransparentColor
      - "no color"
    * - AllowMultiThreading
@@ -212,8 +210,6 @@ The various parameters can be set as follows:
      - (default)
    * - OutputTransparentColor
      - #000000
-   * - InputImageThresholdValue
-     - NaN
    * - InputTransparentColor
      - "no color"
    * - AllowMultiThreading
@@ -262,8 +258,6 @@ The final configuration parameters are the following:
      - (default)
    * - OutputTransparentColor
      - "no color"
-   * - InputImageThresholdValue
-     - NaN
    * - InputTransparentColor
      - #FFFFFF
    * - AllowMultiThreading

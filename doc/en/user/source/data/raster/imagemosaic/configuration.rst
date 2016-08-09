@@ -6,13 +6,13 @@ Imagemosaic configuration
 Granules
 --------
 
-Each individual image is commonly referred to as a **granule**. Individual granules do not need to share the same CRS or resolution, assuming appropriate configuration.
+Each individual image is commonly referred to as a **granule**. Individual granules must have some similarities which are captured here below:
 
-There are some limitations:
+* All the granules must share the same coordinate reference system.
 
-* All the granules must share the same ColorModel and SampleModel. This means that the granules must share the same pixel layout and photometric interpretation.
+* All the granules must share the same ColorModel and SampleModel. This means that the granules must share the same pixel layout and photometric interpretation. ** NOT TRUE **
 
-* If overviews are used, the set of overviews must be the same for all the granules, otherwise the overviews will be ignored).
+In addition it is worth to remark on the fact that currently the ImageMosaic is able to handle raster data whose grid-to-world transformation is a scale and translate transformation, hence no rotation or skew.
 
 Index and configuration file creation
 -------------------------------------
@@ -21,7 +21,7 @@ When a new store is created, an index shapefile will be generated to associate e
 
 The index will contain the enclosing polygon for each raster file (in an appropriate coordinate reference system) and the path to each of these files. The location attribute can be relative to the configuration folder or absolute. By default, the name of this attribute is ``location``, but this can be changed in the main configuration file.
 
-If you already have these files generated, GeoServer will respect them and not generate a new index. By default, a shapefile is used for the index, but PostGIS, H2, and Oracle are also supported.
+If you already have these files generated, GeoServer will respect them and not generate a new index. By default, a shapefile is used for the index, but PostGIS, H2, and Oracle are also supported, with additional configuration steps.
 
 Configuration files
 -------------------
@@ -74,8 +74,8 @@ The table below describes the various elements in this configuration file.
      - Y
      - Envelope for the mosaic formatted as ```LLX,LLY URX,URY`` (notice the space between the lower left and upper right coordinate pairs).
    * - CheckAuxiliaryMetadata
-     - ???
-     - ???
+     - N
+     - This parameter allows to specify whether the ImageMosaic plugin should check for the presence of a GDAL aux.xml file beside each granule file. For most common use cases, you don't need to set or specify this parameter. Being disabled by Default, ImageMosaic won't look for an ancillary file for each granule being initialized in the GranuleCatalog. This avoid useless checks, especially when dealing with thousand of granules. You should set that parameter to true when you want to instruct the ImageMosaic to look for a GDAL generated aux.xml file containing PAM (Persistent Auxiliary Metadata) for each granule, to be attached to the Granule info (GranuleDescriptor). This is specially useful when you have setup a `Dynamic ColorMap rendering transformation <http://docs.geoserver.org/stable/en/user/community/colormap/index.html>`_ which dynamically set a color map based on the statistics collected into the granule's GDAL PAM being previously generated with a gdalinfo -stats parameter.
    * - LevelsNum
      - Y
      - Represents the number of reduced resolution layers that we currently have for the granules of this mosaic.
@@ -100,13 +100,13 @@ A sample configuration file follows::
 :file:`datastore.properties`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If the index is specified by a shapefile, it must be included in the root of the imagemosaic directory, just like the primary configuration file.
+By default the ImageMosaic index is specified by a shapefile, which is located at the root of the ImageMosaic directory, just like the primary configuration file.
 
-Otherwise, the index connection parameters should be specified by a :file:`datastore.properties` file.
+If needed different storage can be used for the index like a spatial DBMS which is the preferred solution when willing to share the ImageMosaic itself in a cluster of GeoServer intances. In this case the user must supply GeoSerer with the proper onnection parameters which can be specified by using a :file:`datastore.properties` file placed at the root of the ImageMosaic directory.
 
-.. note: A shapefile is created automatically if it does not exist or if there is no :file:`datastore.properties` file.
+.. note:: A shapefile is created automagically if it does not exist or if there is no :file:`datastore.properties` file.
 
-.. Make sure a shapefile isn't created no matter what
+.. warning:: At the time of speaking the following spatisl DBMS have been tested successfully: Oracle, PostgreSQL, H2. SQl Server is not yet supported.
 
 
 .. list-table::
@@ -152,11 +152,33 @@ Here is a sample :file:`datastore.properties` file for a PostGIS index::
   validate\ connections=true
   Connection\ timeout=10
   preparedStatements=true
+  
+Here is a sample :file:`datastore.properties` file for a PostGIS index via JNDI::
+
+
+
+  SPI=org.geotools.data.postgis.PostgisNGJNDIDataStoreFactory
+  #String
+  # JNDI data source
+  # Default "java:comp/env/"+"jdbc/mydatabase"
+  jndiReferenceName=
+  
+  #Boolean
+  # perform only primary filter on bbox
+  # Default Boolean.TRUE
+  Loose\ bbox=true
+  
+  #Boolean
+  # use prepared statements
+  #Default Boolean.FALSE
+  preparedStatements=false
+  
+  
 
 :file:`indexer.properties`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In addition to the required envelope and location attributes, the schema for the index store may expose other custom attributes. This is configured by the :file:`indexer.properties` file:
+In addition to the required envelope and location attributes, the schema for the index store may expose other custom attributes which can be later on used for filterin on the fly the ImageMosaic granules during a WMS or WCS request or to diver WMS and WCS dimensions like TIME, ELEVATION and so on. This is configured by the :file:`indexer.properties` file:
 
 .. list-table::
    :widths: 15 5 80
@@ -211,25 +233,8 @@ In addition to the required envelope and location attributes, the schema for the
    * - Wildcard
      - N
      - Wildcard used to specify which files should be scanned by the indexer. (For instance: ".")
-   * - GranuleAcceptors
-     - N
-     - Responsible for accepting/rejecting granules. Used with ``GranuleHandler``. Possible values:
 
-       * ``org.geotools.gce.imagemosaic.acceptors.DefaultGranuleAcceptorFactory`` (default) will discard granules with differing CRS
-       * ``org.geotools.gce.imagemosaic.acceptors.HeterogeneousCRSAcceptorFactory`` will accept granules with differing CRS.
-   * - GranuleHandler
-     - N
-     - Responsible for handling the footprint of an incoming granule. This option is needed to reproject the footprint of incoming granules if needed, for example if the granule CRS is different from the mosaic CRS). Used with ``GranuleAcceptors``. Possible values are:
-
-       * ``org.geotools.gce.imagemosaic.granulehandler.DefaultGranuleHandlerFactory`` (default) which will not reproject granules
-       * ``org.geotools.gce.imagemosaic.granulehandler.ReprojectingGranuleHandlerFactory`` which will reproject granules.
-
-Here is a sample :file:`indexer.properties` file. This is used to allow for granules with differing CRS. The mosaic will be configured by default with the CRS of the first granule found by the indexer. All other granules will be reprojected to this CRS if necessary::
-
-  GranuleAcceptors=org.geotools.gce.imagemosaic.acceptors.HeterogeneousCRSAcceptorFactory
-  GranuleHandler=org.geotools.gce.imagemosaic.granulehandler.ReprojectingGranuleHandlerFactory
-
-Here is another sample :file:`indexer.properties` file::
+Here is a sample :file:`indexer.properties` file. 
 
     Schema=*the_geom:Polygon,location:String,ingestion:java.util.Date,elevation:Double
     PropertyCollectors=TimestampFileNameExtractorSPI[timeregex](ingestion),DoubleFileNameExtractorSPI[elevationregex](elevation)
@@ -306,7 +311,7 @@ The parameters are as follows:
    * - Accurate resolution computation
      - Boolean value. If true, computes the resolution of the granules in 9 points: the corners of the requested area and the middle points, taking the better one. This will provide better results for cases where there is a lot more deformation on a subregion (top/bottom/sides) of the requested bounding box with respect to others. If false, computes the resolution using a basic affine scale transform.
    * - AllowMultithreading
-     - If true, enables tiles multithreading loading. This allows to perform parallelized loading of the granules that compose the mosaic.
+     - If true, enables tiles multithreading loading. This allows to perform parallelized loading of the granules that compose the mosaic. Setting this to true makes sense only if you set USE_JAI_IMAGEREAD to false at the same time to force immediate loading in memory of data.
    * - BackgroundValues
      - Sets the value of the mosaic background. Depending on the nature of the mosaic it is wise to set a value for the "nodata" area (usually -9999). This value is repeated on all the mosaic bands.
    * - Filter
@@ -332,7 +337,7 @@ The parameters are as follows:
    * - MergeBehavior
      - The method used to handle overlapping granules during the mosaic operation. Can be ``FLAT`` (only the topmost granule is visible in the case of an overlap) or ``STACK`` (a band-stacking merge is applied to the overlapping granules). Default is ``FLAT``.
    * - OutputTransparentColor
-     - Set the transparent color for the created mosaic. See below for an example:
+     - Set the transparent color for the created mosaic. This parameter make sense for mosaic which are RGB or paletted, it does not if you have a DEM or MetOc data. See below for an example:
 
        .. figure:: images/output_color.png
 
@@ -345,7 +350,7 @@ The parameters are as follows:
    * - SORTING
      - Controls the order the granules are passed to the mosaic operation. Only useful for if MergeBehavior is set to ``FLAT``. Should be the name of an attribute in the index file, followed by a space, followed by `A` for ascending, or `D` for descending. For example: ``sortattr D```.
    * - SUGGESTED_TILE_SIZE
-     - Controls the tile size of the input granules as well as the tile size of the output mosaic. It consists of two positive integers separated by a comma. Default is ``512,512``.
+     - Controls the tile size of the input granules as well as the tile size of the output mosaic. It consists of two positive integers separated by a comma. Default is ``512,512`` if your data is properly tiled you might want to set this parameter to blank so to avoide reformatting on reading (unnecessarily).
    * - USE_JAI_IMAGEREAD
      - Controls the low level mechanism to read the granules. If ``true`` GeoServer will make use of JAI ImageRead operation and its deferred loading mechanism. If ``false`` GeoServer will perform direct ImageIO read calls which will result in immediate loading.
    

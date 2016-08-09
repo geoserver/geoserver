@@ -11,7 +11,7 @@ This tutorial is the following of :ref:`tutorial_imagemosaic_timeseries` and exp
 
 The dataset used is a set of raster images used in weather forecast, representing the temperature in a certain zone at different times and elevations.
 
-All the steps explained in chapter *Configurations* of :ref:`data_imagemosaic` section are still the same.
+All the steps explained in chapter *Configurations* of :ref:`tutorial_imagemosaic_timeseries` are still the same.
 
 This tutorial explains just how to configure the **elevationregex.properties** that is an additional configuration file needed, and how to modify the **indexer.properties**.
 

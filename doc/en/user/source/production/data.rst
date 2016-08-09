@@ -61,7 +61,7 @@ If you have really huge data sets (several gigabytes), odds are that simply addi
 
 So, what you need is a way to have tiling on intermediate levels as well. This is supported by the ImagePyramid plugin.
 
-This plugin assumes you have create various seamless image mosaics, each for a different resolution level of the original image. In the mosaic, tiles are actual files (for more info about mosaics, see the :ref:`data_imagemosaic`). The whole pyramid structures looks like the following:
+This plugin assumes you have create various seamless image mosaics, each for a different resolution level of the original image. In the mosaic, tiles are actual files (for more info about mosaics, see the :ref:`tutorial_imagemosaic_extension`). The whole pyramid structures looks like the following:
 
 
 .. code-block:: xml

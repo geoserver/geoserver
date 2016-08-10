@@ -10,7 +10,9 @@ Each individual image is commonly referred to as a **granule**. Individual granu
 
 * All the granules must share the same coordinate reference system.
 
-* All the granules must share the same ColorModel and SampleModel. This means that the granules must share the same pixel layout and photometric interpretation. ** NOT TRUE **
+* All the granules must share the same ColorModel and SampleModel. This means that the granules must share the same pixel layout and photometric interpretation. 
+
+.. warning:: The last limtation has been relaxed when JAI-Ext is enabled to allow users to mix data of the following colormodels RGB, Gray, Paletted. Of course it does not make sense to mosaic data coming from a DEM (usually single band Float or Short) with data coming from Aerial imagery (usually RGB or Gray) but it does make sense to create global mosaics with data coming from different sources and having different colormodels.
 
 In addition it is worth to remark on the fact that currently the ImageMosaic is able to handle raster data whose grid-to-world transformation is a scale and translate transformation, hence no rotation or skew.
 

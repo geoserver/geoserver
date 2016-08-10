@@ -9,7 +9,7 @@ Introduction
 
 This step-by-step tutorial describes how to build a time-series coverage using the ImageMosaic plugin. The ImageMosaic plugin allows the creation of a time-series layer of a raster dataset. The single images are held in a queryable structure to allow access to a specific dataset with a temporal filter.
 
-This tutorial assumes knowledge of the concepts explained in :ref:`tutorial_imagemosaic_extension`.
+This tutorial assumes knowledge of the concepts explained in :ref:`data_imagemosaic` section.
 
 This tutorial contains four sections:
 

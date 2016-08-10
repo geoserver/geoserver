@@ -13,7 +13,7 @@ The standard GeoServer installation supports the loading and serving of the foll
    geotiff
    gtopo30
    worldimage
-   imagemosaic
+   imagemosaic/index
 
 Other data sources are supplied as GeoServer extensions.  
 Extensions are downloadable modules that add functionality to GeoServer.  

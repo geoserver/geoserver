@@ -1,5 +1,11 @@
+/* (c) 2013 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.importer.rest;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -23,6 +29,7 @@ import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.TransformChain;
+import org.geoserver.security.AbstractResourceAccessManager;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
@@ -46,6 +53,9 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 
 import net.sf.json.JSONObject;
+import org.springframework.security.core.Authentication;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class ImporterIntegrationTest extends ImporterTestSupport {
 
@@ -54,6 +64,9 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         // create the store for the indirect imports
         String wsName = getCatalog().getDefaultWorkspace().getName();
         createH2DataStore(wsName, "h2");
+        // remove any callback set to check the request spring context
+        RequestContextListener listener = applicationContext.getBean(RequestContextListener.class);
+        listener.setCallBack(null);
     }
 
     @Test
@@ -204,6 +217,16 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
     }
 
     void testDirectExecuteInternal(boolean async) throws Exception {
+
+        // set a callback to check that the request spring context is passed to the job thread
+        RequestContextListener listener = applicationContext.getBean(RequestContextListener.class);
+        final boolean[] invoked = {false};
+        listener.setCallBack((request, user, resource) -> {
+            assertThat(request, notNullValue());
+            assertThat(resource, notNullValue());
+            invoked[0] = true;
+        });
+
         File gmlFile = file("gml/poi.gml2.gml");
         String wsName = getCatalog().getDefaultWorkspace().getName();
 
@@ -247,6 +270,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
             state = json.getJSONObject("import").getString("state");
         }
         assertEquals("COMPLETE", state);
+        assertThat(invoked[0], is(true));
         checkPoiImport();
     }
 
@@ -352,5 +376,4 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         }
         mosaicRoot.mkdirs();
     }
-
 }

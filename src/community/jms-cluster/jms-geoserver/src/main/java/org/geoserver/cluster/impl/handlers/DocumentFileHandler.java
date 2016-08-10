@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.cluster.JMSEventHandler;
 
 import com.thoughtworks.xstream.XStream;
+import org.geoserver.platform.resource.Resources;
 
 /**
  * XML file handler:<br>
@@ -27,7 +28,7 @@ public class DocumentFileHandler extends
 
 	@Override
 	public boolean synchronize(DocumentFile event) throws Exception {
-		try (OutputStream fout = event.getPath().out()) {			
+		try (OutputStream fout = Resources.fromPath(event.getResourcePath()).out()) {
 			xstream.toXML(event.getBody(), fout);
 			return true;
 		} catch (IllegalStateException e) {

@@ -1,0 +1,5 @@
+<org.geoserver.cluster.impl.handlers.DocumentFile>
+    <resourceName>style.sld</resourceName>
+    <resourcePath>styles/style.sld</resourcePath>
+    <body>some style definition</body>
+</org.geoserver.cluster.impl.handlers.DocumentFile>

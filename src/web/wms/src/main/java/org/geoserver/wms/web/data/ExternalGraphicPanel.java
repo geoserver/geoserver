@@ -144,8 +144,6 @@ public class ExternalGraphicPanel extends Panel {
                     try {
                         File styles = resources.find("styles");
                         String[] path = value.split(Pattern.quote(File.separator));
-                        // if statement: are we in ws?
-                        // if yes we need to prepend a bunch of shit
                         WorkspaceInfo wsInfo = styleModel.getObject().getWorkspace();
                         File test = null;
                         if (wsInfo != null){
@@ -181,6 +179,8 @@ public class ExternalGraphicPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target, Form form) {
                 onlineResource.processInput();
+                WorkspaceInfo info = styleModel.getObject().getWorkspace();
+                String workspaceName = info != null ? info.getName() + "/" : "";
                 if (onlineResource.getModelObject() != null) {
                     URL url = null;
                     try {
@@ -195,7 +195,7 @@ public class ExternalGraphicPanel extends Panel {
                             }
                         }
                         else {
-                            url = new URL( baseUrl + "styles/"+external );
+                            url = new URL( baseUrl + "styles/" + workspaceName + external );
                         }
                         
                         URLConnection conn = url.openConnection();                        

@@ -25,6 +25,14 @@ public class StyleEditTabPanelInfo
      * order of the panel with respect to other panels.
      */
     int order = -1;
+    boolean enabledOnNew = true;
+    
+    /**
+     * Should this tab be enabled when creating a new style
+     */
+    public boolean isEnabledOnNew() {
+        return enabledOnNew;
+    }
 
     /**
      * Returns the order of the panel.

@@ -26,6 +26,7 @@ public class StyleNewPage extends AbstractStylePage {
 
     public StyleNewPage() {
         initUI(null);
+        initPreviewLayer(null);
     }
 
     @Override
@@ -78,12 +79,12 @@ public class StyleNewPage extends AbstractStylePage {
             Version version = styleHandler.version(rawStyle);
             s.setFormatVersion(version);
             catalog.add(s);
+            styleForm.info("Style saved");
             
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);
             error(e.getMessage());
             return;
         }
-        doReturn(StylePage.class);
     }
 }

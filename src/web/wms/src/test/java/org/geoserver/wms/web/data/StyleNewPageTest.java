@@ -75,7 +75,10 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("context:panel:name", "nolegendtest");
         form.submit();
         
+        tester.assertRenderedPage(StyleNewPage.class);
+        tester.executeAjaxEvent("submit", "click");
         tester.assertRenderedPage(StylePage.class);
+        
         StyleInfo style = getCatalog().getStyleByName("nolegendtest");
         assertNotNull(style);
         assertNull(style.getLegend());
@@ -106,7 +109,10 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("context:panel:format", "sld");
         form.submit();
         tester.assertNoErrorMessage();
+        tester.assertRenderedPage(StyleNewPage.class);
+        tester.executeAjaxEvent("submit", "click");
         tester.assertRenderedPage(StylePage.class);
+        
         StyleInfo style = getCatalog().getStyleByName("legendtest");
         assertNotNull(style);
         assertNotNull(style.getLegend());
@@ -169,6 +175,9 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "repeatedname");
         form.submit();               
+        tester.assertRenderedPage(StyleNewPage.class);
+        
+        tester.executeAjaxEvent("submit", "click");
         tester.assertRenderedPage(StylePage.class);
         
         tester.startPage(StyleNewPage.class);
@@ -190,7 +199,36 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("context:panel:name", "test");
         form.submit(); 
         
+        tester.assertRenderedPage(StyleNewPage.class);
+        assertNotNull(getCatalog().getStyleByName("test"));
+        
+        tester.executeAjaxEvent("submit", "click");
         tester.assertRenderedPage(StylePage.class);
+    }
+    
+    @Test
+    public void testNewStyleApply() throws Exception {        
+        FormTester form = tester.newFormTester("styleForm");
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("context:panel:name", "test");
+        tester.executeAjaxEvent("apply", "click");
+        tester.assertRenderedPage(StyleEditPage.class);
+        
+        assertNotNull(getCatalog().getStyleByName("test"));
+    }
+    
+    @Test
+    public void testNewStyleSubmit() throws Exception {        
+        FormTester form = tester.newFormTester("styleForm");
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("context:panel:name", "test");
+        tester.executeAjaxEvent("submit", "click");
+        tester.assertRenderedPage(StylePage.class);
+        
         assertNotNull(getCatalog().getStyleByName("test"));
     }
     

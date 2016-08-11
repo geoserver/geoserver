@@ -18,6 +18,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
@@ -31,6 +32,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -39,6 +41,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
+import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -106,6 +109,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             layerModel = new Model<LayerInfo>(layers.get(0));
             return;
         }
+        
+        //If none of these succeeded, return an empty model
+        layerModel = new Model<LayerInfo>(new LayerInfoImpl());
     }
     
     protected void initUI(StyleInfo style) {
@@ -140,29 +146,29 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         List<ITab> tabs = new ArrayList<ITab>();
         
         //Well known tabs
-        tabs.add(new PanelCachingTab(new AbstractTab(new Model<String>("Data")) {
+        PanelCachingTab dataTab = new PanelCachingTab(new AbstractTab(new Model<String>("Data")) {
 
             public Panel getPanel(String id) {
                 return new StyleAdminPanel(id, AbstractStylePage.this);
             }
-        }));
+        });
         
-        tabs.add(new PanelCachingTab(new AbstractTab(new Model<String>("Publishing")) {
+        PanelCachingTab publishingTab = new PanelCachingTab(new AbstractTab(new Model<String>("Publishing")) {
             private static final long serialVersionUID = 4184410057835108176L;
 
             public Panel getPanel(String id) {
                 return new LayerAssociationPanel(id, AbstractStylePage.this);
             };
-        }));
+        });
         
-        tabs.add(new PanelCachingTab(new AbstractTab(new Model<String>("Layer Preview")) {
+        PanelCachingTab previewTab = new PanelCachingTab(new AbstractTab(new Model<String>("Layer Preview")) {
 
             public Panel getPanel(String id) {
                 return new OpenLayersPreviewPanel(id, AbstractStylePage.this);
             }
-        }));
+        });
 
-        tabs.add(new PanelCachingTab(new AbstractTab(new Model<String>("Layer Attributes")) {
+        PanelCachingTab attributeTab = new PanelCachingTab(new AbstractTab(new Model<String>("Layer Attributes")) {
             private static final long serialVersionUID = 4184410057835108176L;
 
             public Panel getPanel(String id) {
@@ -172,7 +178,15 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     throw new WicketRuntimeException(e);
                 }
             };
-        }));
+        });
+        //If style is null, this is a new style.
+        //If so, we want to disable certain tabs
+        tabs.add(dataTab);
+        if (style != null) {
+            tabs.add(publishingTab);
+            tabs.add(previewTab);
+            tabs.add(attributeTab);
+        }
 
         //Dynamic tabs
         List<StyleEditTabPanelInfo> tabPanels = getGeoServerApplication().getBeansOfType(StyleEditTabPanelInfo.class);
@@ -190,28 +204,30 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         for (StyleEditTabPanelInfo tabPanelInfo : tabPanels) {
             String titleKey = tabPanelInfo.getTitleKey();
             IModel<String> titleModel = null;
-            if (titleKey != null) {
-                titleModel = new org.apache.wicket.model.ResourceModel(titleKey);
-            } else {
-                titleModel = new Model<String>(tabPanelInfo.getComponentClass().getSimpleName());
-            }
-            
-            final Class<StyleEditTabPanel> panelClass = tabPanelInfo.getComponentClass();
-            
-            tabs.add(new AbstractTab(titleModel) {
-                private static final long serialVersionUID = -6637277497986497791L;
-                @Override
-                public Panel getPanel(String panelId) {
-                    StyleEditTabPanel tabPanel;
-                    try {
-                        tabPanel = panelClass.getConstructor(String.class, IModel.class)
-                                .newInstance(panelId, styleModel);
-                    } catch (Exception e) {
-                        throw new WicketRuntimeException(e);
-                    }
-                    return tabPanel;
+            if (tabPanelInfo.isEnabledOnNew() || style != null) {
+                if (titleKey != null) {
+                    titleModel = new org.apache.wicket.model.ResourceModel(titleKey);
+                } else {
+                    titleModel = new Model<String>(tabPanelInfo.getComponentClass().getSimpleName());
                 }
-            });
+                
+                final Class<StyleEditTabPanel> panelClass = tabPanelInfo.getComponentClass();
+                
+                tabs.add(new AbstractTab(titleModel) {
+                    private static final long serialVersionUID = -6637277497986497791L;
+                    @Override
+                    public Panel getPanel(String panelId) {
+                        StyleEditTabPanel tabPanel;
+                        try {
+                            tabPanel = panelClass.getConstructor(String.class, IModel.class)
+                                    .newInstance(panelId, styleModel);
+                        } catch (Exception e) {
+                            throw new WicketRuntimeException(e);
+                        }
+                        return tabPanel;
+                    }
+                });
+            }
         }
         
         tabbedPanel = new AjaxTabbedPanel<ITab>("context", tabs);
@@ -228,6 +244,28 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         styleForm.add(editor);
         
         add(validateLink());
+        add(new AjaxSubmitLink("apply", styleForm) {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                //If we have a new style, go to the edit page
+                if (style == null) {
+                    StyleInfo s = getStyleInfo();
+                    PageParameters parameters = new PageParameters();
+                    parameters.add(StyleEditPage.NAME, s.getName());
+                    if (s.getWorkspace() != null) {
+                        parameters.add(StyleEditPage.WORKSPACE, s.getWorkspace().getName());
+                    }
+                    getRequestCycle().setResponsePage(StyleEditPage.class, parameters);
+                }
+                target.add(AbstractStylePage.this);
+            }
+        });
+        add(new AjaxSubmitLink("submit", styleForm) {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                doReturn(StylePage.class);
+            }
+        });
         Link<StylePage> cancelLink = new Link<StylePage>("cancel") {
             @Override
             public void onClick() {

@@ -102,7 +102,7 @@ public class StyleEditPage extends AbstractStylePage {
                 throw new WicketRuntimeException(e);
             }
             getCatalog().save(style);
-            doReturn( StylePage.class );
+            styleForm.info("Style saved");
         } catch( Exception e ) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);
             styleForm.error( e );

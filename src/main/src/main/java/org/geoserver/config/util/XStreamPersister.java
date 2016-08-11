@@ -2031,9 +2031,6 @@ public class XStreamPersister {
                 }
                 lgi.setIdentifiers(identifiers);
             }
-            
-            log(Level.INFO, "Cip.doUnmarshal: " +lgi);
-            
             return lgi;
         }
         

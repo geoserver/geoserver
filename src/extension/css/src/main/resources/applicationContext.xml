@@ -7,13 +7,6 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd.spring-beans.dtd">
 
 <beans>
-  <bean id="cssDemo" class="org.geoserver.web.MenuPageInfo">
-    <property name="id" value="cssDemo"/>
-    <property name="titleKey" value="CssDemoPage.title"/>
-    <property name="descriptionKey" value="CssDemoPage.description"/>
-    <property name="componentClass" value="org.geoserver.community.css.web.CssDemoPage"/>
-  </bean>
-
   <bean id="cssStyleHandler" class="org.geoserver.community.css.web.CssHandler">
     <constructor-arg ref="sldHandler"/>
   </bean>

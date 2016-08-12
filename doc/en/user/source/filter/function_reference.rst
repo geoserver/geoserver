@@ -505,13 +505,13 @@ Parsing and formatting functions
      - **Arguments**
      - **Description**
    * - dateFormat
-     - ``date``:Timestamp, ``format``:String
+     - ``format``:String, date``:Timestamp
      - Formats the specified date according to the provided format. The format syntax can be found in the `Java SimpleDateFormat javadocs <http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html>`_
    * - dateParse
-     - ``dateString``:String, ``format``:String
+     - ``format``:String, dateString``:String
      - Parses a date from a ``dateString`` formatted according to the ``format`` specification. The format syntax can be found in the `Java SimpleDateFormat javadocs <http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html>`_
    * - numberFormat
-     - ``number``:Double, ``format``:String
+     - ``format``:String, number``:Double
      - Formats the number according to the specified ``format``. The format syntax can be found in the `Java DecimalFormat javadocs <http://java.sun.com/javase/6/docs/api/java/text/DecimalFormat.html>`_
    * - parseBoolean
      - ``boolean``:String

@@ -51,6 +51,7 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -1323,14 +1324,18 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 attrs.clear();
                 attrs.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
                 attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
-                
-                String legendUrl = buildURL(request.getBaseUrl(), 
-                		appendPath("styles", legend.getOnlineResource()), null, URLType.RESOURCE);
-                attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendUrl);               
-                //attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legend.getOnlineResource());
-
+                WorkspaceInfo styleWs = sampleStyle.getWorkspace();
+                String legendUrl;
+                if ( styleWs != null){
+                    legendUrl = buildURL(request.getBaseUrl(),
+                            appendPath("styles", styleWs.getName() ,legend.getOnlineResource()), null, URLType.RESOURCE);
+                } else {
+                    legendUrl = buildURL(request.getBaseUrl(),
+                            appendPath("styles", legend.getOnlineResource()), null, URLType.RESOURCE);
+                }
+                attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendUrl);
                 element("OnlineResource", null, attrs);
-
+                
                 end("LegendURL");
             } else {
                 int legendWidth = GetLegendGraphicRequest.DEFAULT_WIDTH;

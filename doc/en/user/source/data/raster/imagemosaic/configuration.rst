@@ -226,6 +226,9 @@ In addition to the required envelope and location attributes, the schema for the
    * - Name
      - N
      - The name to be assigned to the index. If unspecified, the index name will usually match the name of the folder containing the mosaic.
+   * - CoverageNameCollector
+     - N
+     - As described in the previous row, the Name parameter allows to specify the name of the coverage to be exposed by the ImageMosaic. ImageMosaic of NetCDFs exposes instead a coverage for each supported variable found in the NetCDF, using the variable's name as coverage name (as an instance, air_temperature, wind_speed,...). The optional CoverageNameCollectorSPI property allows to specify a CoverageNameCollector plugin to be used to instruct the ImageMosaic on how to setup different coverageNames for granules. It should contains the full name of the implementing class plus an optional set of semicolon-separated set of keyValue pairs prefixed by ":".  See below for an example
    * - Recursive
      - N
      - Boolean flag used at indexing time. When set the true, the indexer will look for granules by scanning any subdirectory contained in the indexing directory. If false, only the main folder will be analyzed. Default is "true".
@@ -245,6 +248,12 @@ Here is a sample :file:`indexer.properties` file.
     Caching=false
     AbsolutePath=false
 
+An example of optional CoverageNameCollectorSPI could be
+
+    org.geotools.gce.imagemosaic.namecollector.FileNameRegexNameCollectorSPI:regex=^([a-zA-Z0-9]+)
+    
+A filename regex based name collector which extracts the coverage name from the prefix of the file name. So that an ImageMosaic with temperature_2015.tif, temperature_2016.tif, pressure_2015.tif, pressure_2016.tif will put temperature* granules on a ``temperature`` coverage and pressure* granules on a ``pressure`` coverage.
+    
 Other properties files
 ~~~~~~~~~~~~~~~~~~~~~~
 

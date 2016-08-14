@@ -120,11 +120,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             styleModel = new CompoundPropertyModel<StyleInfo>(getCatalog().getFactory().createStyle());
             styleModel.getObject().setName("");
             styleModel.getObject().setLegend(getCatalog().getFactory().createLegend());
-            add(new Label("stylename",""));
         } else {
-            add(new Label("stylename", 
-                    (style.getWorkspace() == null ? "" : style.getWorkspace().getName() + ":")
-                    + style.getName()));
             styleModel = new CompoundPropertyModel<StyleInfo>(new StyleDetachableModel(style));
         }
         
@@ -230,7 +226,12 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             }
         }
         
-        tabbedPanel = new AjaxTabbedPanel<ITab>("context", tabs);
+        tabbedPanel = new AjaxTabbedPanel<ITab>("context", tabs) {
+            protected String getTabContainerCssClass()
+            {
+                return "tab-row tab-row-compact";
+            }
+        };
         
         styleForm.add(tabbedPanel);
         
@@ -275,7 +276,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         add(cancelLink);
         
     }
-
+    
     StyleHandler styleHandler() {
         String format = styleModel.getObject().getFormat();
         return Styles.handler(format);

@@ -76,6 +76,18 @@ public class StyleEditPage extends AbstractStylePage {
     public StyleEditPage(StyleInfo style) {
         super(style);
     }
+    
+    @Override
+    protected String getTitle() {
+        StyleInfo style = styleModel.getObject();
+        String styleName = "";
+        if(style != null) {
+            styleName = (style.getWorkspace() == null ? "" : style.getWorkspace().getName() + ":")
+            + style.getName();
+        }
+
+        return new ParamResourceModel("title", this, styleName).getString();
+    }
 
     @Override
     protected void onStyleFormSubmit() {

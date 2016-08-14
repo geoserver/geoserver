@@ -1,14 +1,17 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.gs.download;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
+import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.jts.JTS;
@@ -59,22 +62,15 @@ class RasterEstimator {
      * @param filter the {@link Filter} to load the data
      * @param targetSizeX the size of the target image along the X axis
      * @param targetSizeY the size of the target image along the Y axis
+     * @param selectedBands the band indices selected for output, in case of raster input
      *
      */
     public boolean execute(final ProgressListener progressListener, CoverageInfo coverageInfo,
             Geometry roi, CoordinateReferenceSystem targetCRS, boolean clip, Filter filter,
-            Integer targetSizeX, Integer targetSizeY) throws Exception {
+            Integer targetSizeX, Integer targetSizeY, int[] bandIndices) throws Exception {
 
-        //
-        // Do we need to do anything?
-        //
         final long rasterSizeLimits = downloadServiceConfiguration.getRasterSizeLimits();
-        if (rasterSizeLimits <= 0) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("No raster size limits, moving on....");
-            }
-            return true;
-        }
+
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Raster size limits: " + rasterSizeLimits);
         }
@@ -161,21 +157,62 @@ class RasterEstimator {
         }
         if (areaRead >= Integer.MAX_VALUE || targetArea >= Integer.MAX_VALUE) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.log(Level.FINE, "Area to read or target image size exceed maximum integer value: " + Integer.MAX_VALUE);
+                LOGGER.log(Level.FINE, "Area to read or target image size exceeds maximum integer value: " + Integer.MAX_VALUE);
             }
             return false;
         }
 
         // If the area exceeds the limits, false is returned
-        if (areaRead > rasterSizeLimits) {
+        if (rasterSizeLimits > DownloadServiceConfiguration.NO_LIMIT 
+                && (areaRead > rasterSizeLimits || targetArea > rasterSizeLimits)) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Area exceeds the limits");
             }
             return false;
         }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.log(Level.FINE, "Area does not exceeds the limits");
+            LOGGER.log(Level.FINE, "Area does not exceed the limits");
         }
+        // Try to check write limits, using input's coverageinfo 
+        int bandsCount =  coverageInfo.getDimensions().size();
+        
+        // Use sample info type for each output band to estimate size
+        List<CoverageDimensionInfo> coverageDimensionInfoList = coverageInfo.getDimensions();
+        int accumulatedPixelSizeInBits = 0;
+        
+        // Use only selected bands for output, if specified
+        if (bandIndices!=null && bandIndices.length>0){
+            for (int i=0;i<bandIndices.length;i++){
+                //Use valid indices
+                if (bandIndices[i]>=0 && bandIndices[i]<bandsCount)
+                    accumulatedPixelSizeInBits +=
+                        TypeMap.getSize(coverageDimensionInfoList.get(bandIndices[i]).getDimensionType());
+            }
+        }else{
+            for (int i=0;i<bandsCount;i++){
+                accumulatedPixelSizeInBits +=
+                        TypeMap.getSize(coverageDimensionInfoList.get(i).getDimensionType());
+            
+            }
+        }
+        
+        /// Total size in bytes
+        long rasterSizeInBytes = (long) targetArea*accumulatedPixelSizeInBits/8;
+        
+        final long writeLimits = downloadServiceConfiguration.getWriteLimits();
+        
+        // If size exceeds the write limits, false is returned
+        if (writeLimits > DownloadServiceConfiguration.NO_LIMIT && rasterSizeInBytes > writeLimits) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Output raw raster size ("+rasterSizeInBytes+") exceeds"
+                        + " the specified write limits ("+writeLimits+")");
+            }
+            return false;
+        }
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "Output raw raster size ("+rasterSizeInBytes+") does not exceed"
+                    + " the specified write limits ("+writeLimits+")");
+        }    
         return true;
 
     }

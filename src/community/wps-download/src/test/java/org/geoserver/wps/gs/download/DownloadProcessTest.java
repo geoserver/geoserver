@@ -1076,7 +1076,8 @@ public class DownloadProcessTest extends WPSTestSupport {
         DownloadEstimatorProcess limits = new DownloadEstimatorProcess(
                 new StaticDownloadServiceConfiguration(new DownloadServiceConfiguration(
                         DownloadServiceConfiguration.NO_LIMIT,
-                        DownloadServiceConfiguration.NO_LIMIT, 921600, 921600, // 900KB
+                        DownloadServiceConfiguration.NO_LIMIT, 
+                        DownloadServiceConfiguration.NO_LIMIT, 921600, // 900KB
                         DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
 
         final WPSResourceManager resourceManager = getResourceManager();
@@ -1144,6 +1145,46 @@ public class DownloadProcessTest extends WPSTestSupport {
 
             // clean up process
             resourceManager.finished(resourceManager.getExecutionId(true));
+        }
+        
+        // Test same process for checking write output limits, using selected band indices
+        limits = new DownloadEstimatorProcess(
+                new StaticDownloadServiceConfiguration(new DownloadServiceConfiguration(
+                        DownloadServiceConfiguration.NO_LIMIT,
+                        DownloadServiceConfiguration.NO_LIMIT, 
+                        30000,  //= 100x100 pixels x 3 bands x 1 byte (8 bits) per band
+                        DownloadServiceConfiguration.NO_LIMIT, 
+                        DownloadServiceConfiguration.DEFAULT_COMPRESSION_LEVEL)), getGeoServer());
+
+        downloadProcess = new DownloadProcess(getGeoServer(), limits,
+                resourceManager);
+
+        try {
+            // create a scaled 100x100 raster, with 4 bands
+            int targetSizeX = 100;
+            int targetSizeY = 100;
+            int[] bandIndices = new int[]{0,2,2,2};
+            File scaled = downloadProcess.execute(getLayerId(MockData.USA_WORLDIMG), // layerName
+                    null, // filter
+                    "image/tiff", // outputFormat
+                    null, // targetCRS
+                    CRS.decode("EPSG:4326", true), // roiCRS
+                    null, // roi
+                    false, // cropToGeometry
+                    null, // interpolation
+                    targetSizeX, // targetSizeX
+                    targetSizeY, // targetSizeY
+                    bandIndices, // bandSelectIndices
+                    new NullProgressListener() // progressListener
+                    );
+
+            // exception should have been thrown at this stage
+            Assert.assertFalse(true);
+        } catch (ProcessException e) {
+            Assert.assertEquals(
+                    "java.lang.IllegalArgumentException: Download Limits Exceeded. "
+                    + "Unable to proceed!: Download Limits Exceeded. Unable to proceed!",
+                    e.getMessage() + (e.getCause() != null ? ": " + e.getCause().getMessage() : ""));
         }
     }
 

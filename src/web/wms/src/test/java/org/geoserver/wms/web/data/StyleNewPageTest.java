@@ -112,6 +112,37 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         assertNotNull(style.getLegend());
     }
     
+    public void testWorkSpacedLegend() throws Exception {
+        tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "click");
+        //Make sure the fields we are editing actually exist
+        tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:format", TextField.class);
+        
+        //Publish the legend.png so we can see it
+        java.io.File file = getResourceLoader().createFile("workspaces", "wsName", "styles","icon.png");
+        getResourceLoader().copyFromClassPath( "icon.png", file,  getClass());
+        
+        FormTester form = tester.newFormTester("form", false);
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("name", "legendtest");
+        form.setValue("legendPanel:container:list:onlineResource", "legend.png");
+        form.setValue("legendPanel:container:list:width", "100");
+        form.setValue("legendPanel:container:list:height", "100");
+        form.setValue("legendPanel:container:list:format", "image/png");
+        form.setValue("format", "sld");
+        form.submit();
+        tester.assertNoErrorMessage();
+        tester.assertRenderedPage(StylePage.class);
+        StyleInfo style = getCatalog().getStyleByName("legendtest");
+        assertNotNull(style);
+        assertNotNull(style.getLegend());
+    }
+    
+
     @Test
     public void testLegendWrongValues() throws Exception{
         tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "click");

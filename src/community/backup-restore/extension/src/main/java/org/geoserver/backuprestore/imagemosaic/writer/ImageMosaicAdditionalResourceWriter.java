@@ -42,7 +42,8 @@ public class ImageMosaicAdditionalResourceWriter extends ImageMosaicAdditionalRe
         final Resource targetBackupFolder = BackupUtils.dir(base.parent(),
                 IMAGEMOSAIC_INDEXES_FOLDER);
 
-        final CoverageStoreInfo mosaicCoverageStore = (CoverageStoreInfo) item;
+        final CoverageStoreInfo mosaicCoverageStore = 
+                backupFacade.getCatalog().getResourcePool().clone((CoverageStoreInfo) item, true);
         final String mosaicName = mosaicCoverageStore.getName();
         final String mosaicUrlBase = mosaicCoverageStore.getURL();
 

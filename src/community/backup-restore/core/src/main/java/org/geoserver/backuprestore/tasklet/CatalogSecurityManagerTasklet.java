@@ -110,8 +110,10 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
             /**
              * Create a new GeoServerSecurityManager instance using the INPUT DATA DIR.
              * 
-             * Try to load the configuration from there and if everything is ok: 1. Replace the security folders 2. Destroy and reload the appContext
-             * GeoServerSecurityManager 3. Issue SecurityManagerListener extensions handlePostChanged(...)
+             * Try to load the configuration from there and if everything is ok: 
+             * 1. Replace the security folders 
+             * 2. Destroy and reload the appContext GeoServerSecurityManager 
+             * 3. Issue SecurityManagerListener extensions handlePostChanged(...)
              */
             final String inputFolderURL = jobExecution.getJobParameters()
                     .getString(Backup.PARAM_INPUT_FILE_PATH);

@@ -12,6 +12,11 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.xml.namespace.QName;
 
@@ -37,10 +42,10 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class DescribeFeatureTypeTest extends WFS20TestSupport {
 	
-    @Override
-    protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
-    }
+//    @Override
+//    protected String getLogConfiguration() {
+//        return "/DEFAULT_LOGGING.properties";
+//    }
     
 	@Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
@@ -61,6 +66,31 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         Document doc = getAsDOM(
             "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=" + typeName);
         assertSchema(doc, CiteTestData.PRIMITIVEGEOFEATURE);
+    }
+    
+    @Test
+    public void testConcurrentGet() throws Exception {
+        final String typeName = getLayerId(CiteTestData.PRIMITIVEGEOFEATURE);
+        ExecutorCompletionService<Void> es = new ExecutorCompletionService<>(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        final int REQUESTS =  200;
+        for (int i = 0; i < REQUESTS; i++) {
+            es.submit(new Callable<Void>() {
+
+                @Override
+                public Void call() throws Exception {
+                    Document doc = getAsDOM(
+                            "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName="
+                                    + typeName);
+                    assertSchema(doc, CiteTestData.PRIMITIVEGEOFEATURE);
+                    return null;
+                }
+            });
+        }
+        // just check there are no exceptions
+        for (int i = 0; i < REQUESTS; i++) {
+            es.take().get();
+        }
+        
     }
 
     @Test

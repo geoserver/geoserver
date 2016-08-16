@@ -390,8 +390,9 @@ public abstract class FeatureTypeSchemaBuilder {
      *            set of schemaLocations used to prevent duplicate includes
      */
     private void addReference(XSDSchema schema, XSDFactory factory, String namespace,
-            String schemaLocation, Map<String, String> imports, Set<String> includes) {
+        String schemaLocation, Map<String, String> imports, Set<String> includes) {
         if (getWfsSchema() != null && imports.get(getWfsSchema().getTargetNamespace()) == null) {
+            synchronized(Schemas.class) {
             /*
              * Add an import for the WFS schema. Needed for GML32OutputFormat only. See
              * GML32.importGMLSchema where a similar import is used for simple features (generated
@@ -399,14 +400,15 @@ public abstract class FeatureTypeSchemaBuilder {
              * 
              * Not that this does not break DescribeFeatureType because it uses WFS 1.1.
              */
-            schema.getQNamePrefixToNamespaceMap().put("wfs", getWfsSchema().getTargetNamespace());
-            XSDImport wfsImport = factory.createXSDImport();
-            wfsImport.setNamespace(getWfsSchema().getTargetNamespace());
-            wfsImport.setSchemaLocation(getWfsSchema().getSchemaLocation());
-            wfsImport.setResolvedSchema(getWfsSchema());
-            schema.getContents().add(wfsImport);
-            ((XSDSchemaImpl)getWfsSchema()).imported(wfsImport);
-            imports.put(getWfsSchema().getTargetNamespace(), getWfsSchema().getSchemaLocation());
+                schema.getQNamePrefixToNamespaceMap().put("wfs", getWfsSchema().getTargetNamespace());
+                XSDImport wfsImport = factory.createXSDImport();
+                wfsImport.setNamespace(getWfsSchema().getTargetNamespace());
+                wfsImport.setSchemaLocation(getWfsSchema().getSchemaLocation());
+                wfsImport.setResolvedSchema(getWfsSchema());
+                schema.getContents().add(wfsImport);
+                ((XSDSchemaImpl)getWfsSchema()).imported(wfsImport);
+                imports.put(getWfsSchema().getTargetNamespace(), getWfsSchema().getSchemaLocation());
+            }
         }
         if (namespace.equals(schema.getTargetNamespace())) {
             if (includes.contains(schemaLocation)) {
@@ -469,10 +471,12 @@ public abstract class FeatureTypeSchemaBuilder {
      */
     private void addImport(XSDSchema schema, XSDFactory factory, String namespace,
             String schemaLocation) {
-        XSDImport xsdImport = factory.createXSDImport();
-        xsdImport.setNamespace(namespace);
-        xsdImport.setSchemaLocation(schemaLocation);
-        schema.getContents().add(xsdImport);
+        synchronized(Schemas.class) {
+            XSDImport xsdImport = factory.createXSDImport();
+            xsdImport.setNamespace(namespace);
+            xsdImport.setSchemaLocation(schemaLocation);
+            schema.getContents().add(xsdImport);
+        }
     }
 
     /**
@@ -1005,25 +1009,27 @@ public abstract class FeatureTypeSchemaBuilder {
         
         @Override
         protected void importGMLSchema(XSDSchema schema, XSDFactory factory, String baseUrl) {
-            XSDImport imprt;
-            try {
-                imprt = factory.createXSDImport();
-                imprt.setNamespace(gmlNamespace);
-                //imprt.setNamespace( WFS.getInstance().getSchema().getTargetNamespace() );
-                imprt.setSchemaLocation(ResponseUtils.buildSchemaURL(baseUrl, gmlSchemaLocation));
-                //imprt.setResolvedSchema(WFS.getInstance().getSchema());
-                imprt.setResolvedSchema( GML.getInstance().getSchema() );
-                schema.getContents().add( imprt );
-                
-                schema.getQNamePrefixToNamespaceMap().put("wfs", WFS.NAMESPACE);
-                //imprt = Schemas.importSchema(schema, WFS.getInstance().getSchema());
-                ((XSDSchemaImpl)WFS.getInstance().getSchema()).imported(imprt);
-                //((XSDSchemaImpl)schema).resolveSchema(WFS.NAMESPACE);
-                
-                
-                //schema.getContents().add(imprt);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            synchronized(Schemas.class) {
+                XSDImport imprt;
+                try {
+                    imprt = factory.createXSDImport();
+                    imprt.setNamespace(gmlNamespace);
+                    //imprt.setNamespace( WFS.getInstance().getSchema().getTargetNamespace() );
+                    imprt.setSchemaLocation(ResponseUtils.buildSchemaURL(baseUrl, gmlSchemaLocation));
+                    //imprt.setResolvedSchema(WFS.getInstance().getSchema());
+                    imprt.setResolvedSchema( GML.getInstance().getSchema() );
+                    schema.getContents().add( imprt );
+                    
+                    schema.getQNamePrefixToNamespaceMap().put("wfs", WFS.NAMESPACE);
+                    //imprt = Schemas.importSchema(schema, WFS.getInstance().getSchema());
+                    ((XSDSchemaImpl)WFS.getInstance().getSchema()).imported(imprt);
+                    //((XSDSchemaImpl)schema).resolveSchema(WFS.NAMESPACE);
+                    
+                    
+                    //schema.getContents().add(imprt);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
             
         }

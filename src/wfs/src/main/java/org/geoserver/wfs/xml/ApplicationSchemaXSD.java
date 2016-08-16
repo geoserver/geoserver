@@ -204,7 +204,9 @@ public class ApplicationSchemaXSD extends XSD {
             schema.getQNamePrefixToNamespaceMap().put("gml", GML.NAMESPACE);
             
             //import wfs schema
-            Schemas.importSchema( schema ,wfs.getSchema() );
+            synchronized(Schemas.class) {
+                Schemas.importSchema( schema ,wfs.getSchema() );
+            }
             schema.resolveElementDeclaration( WFS.NAMESPACE, "FeatureCollection" );
             /*
             XSDImport imprt = factory.createXSDImport();
@@ -249,7 +251,9 @@ public class ApplicationSchemaXSD extends XSD {
             params.put("namespace", namespace.getPrefix());
             imprt.setSchemaLocation(buildURL(baseURL, "wfs", params, URLType.SERVICE));
 
-            schema.getContents().add(imprt);
+            synchronized (Schemas.class) {
+                schema.getContents().add(imprt);                
+            }
         }
     }
     

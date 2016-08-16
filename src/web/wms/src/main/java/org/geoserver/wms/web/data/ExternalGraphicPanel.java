@@ -141,8 +141,6 @@ public class ExternalGraphicPanel extends Panel {
                     try {
                         File styles = resources.find("styles");
                         String[] path = value.split(Pattern.quote(File.separator));
-                        // if statement: are we in ws?
-                        // if yes we need to prepend a bunch of shit
                         WorkspaceInfo wsInfo = styleModel.getObject().getWorkspace();
                         File test = null;
                         if (wsInfo != null){

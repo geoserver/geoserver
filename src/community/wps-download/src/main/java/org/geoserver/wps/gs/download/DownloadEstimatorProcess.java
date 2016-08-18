@@ -1,4 +1,4 @@
-/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -68,6 +68,7 @@ public class DownloadEstimatorProcess implements GSProcess {
      * @param clip the crop to geometry
      * @param targetSizeX the size of the target image along the X axis
      * @param targetSizeY the size of the target image along the Y axis
+     * @param bandIndices the band indices selected for output, in case of raster input
      * @param progressListener the progress listener
      * @return the boolean
      */
@@ -81,6 +82,7 @@ public class DownloadEstimatorProcess implements GSProcess {
             @DescribeParameter(name = "cropToROI", min = 0, description = "Crop to ROI") Boolean clip,
             @DescribeParameter(name = "targetSizeX", min = 0, minValue = 1, description = "X Size of the Target Image (applies to raster data only)") Integer targetSizeX,
             @DescribeParameter(name = "targetSizeY", min = 0, minValue = 1, description = "Y Size of the Target Image (applies to raster data only)") Integer targetSizeY,
+            @DescribeParameter(name = "selectedBands", description = "Band Selection Indices", min = 0) int[] bandIndices,
             ProgressListener progressListener) throws Exception {
 
         //
@@ -156,7 +158,7 @@ public class DownloadEstimatorProcess implements GSProcess {
             }
             final CoverageInfo coverage = (CoverageInfo) resourceInfo;
             return new RasterEstimator(limits).execute(progressListener, coverage, roi, targetCRS,
-                    clip, filter, targetSizeX, targetSizeY);
+                    clip, filter, targetSizeX, targetSizeY, bandIndices);
         }
 
         if (LOGGER.isLoggable(Level.FINE)) {

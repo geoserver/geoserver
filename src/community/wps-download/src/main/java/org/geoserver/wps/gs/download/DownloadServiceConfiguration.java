@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -42,11 +42,11 @@ public class DownloadServiceConfiguration {
     /** 8000 px X 8000 px */
     private long rasterSizeLimits = DEFAULT_RASTER_SIZE_LIMITS;
 
-    /** 8000 px X 8000 px (USELESS RIGHT NOW) */
-    private long writeLimits = DEFAULT_RASTER_SIZE_LIMITS;
+    /** Max size in bytes of raw raster output */
+    private long writeLimits = DEFAULT_WRITE_LIMITS;
 
     /** 50 MB */
-    private long hardOutputLimit = DEFAULT_WRITE_LIMITS;
+    private long hardOutputLimit = DEFAULT_HARD_OUTPUT_LIMITS;
 
     /** STORE =0, BEST =8 */
     private int compressionLevel = DEFAULT_COMPRESSION_LEVEL;

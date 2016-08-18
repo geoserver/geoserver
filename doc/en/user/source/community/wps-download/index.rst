@@ -35,8 +35,8 @@ GeoServer will automatically create a new one with the default properties:
   maxFeatures=100000
   #8000 px X 8000 px
   rasterSizeLimits=64000000
-  #8000 px X 8000 px (USELESS RIGHT NOW)
-  writeLimits=64000000
+  #8000 px X 8000 px X 3 bands X 1 byte per band = 192MB
+  writeLimits=192000000
   # 50 MB
   hardOutputLimit=52428800
   # STORE =0, BEST =8
@@ -46,7 +46,7 @@ Where the available limits are:
 
  * ``maxFeatures`` : maximum number of features to download
  * ``rasterSizeLimits`` : maximum pixel size of the Raster to read
- * ``writeLimits`` : maximum pixel size of the Raster to write (currently not used)
+ * ``writeLimits`` : maximum raw raster size in bytes (a limit of how much space can a raster take in memory). For a given raster, its raw size in bytes is calculated by multiplying pixel number (raster_width x raster_height) with the accumated sum of each band's pixel sample_type size in bytes, for all bands
  * ``hardOutputLimit`` : maximum file size to download
  * ``compressionLevel`` : compression level for the output zip file
 

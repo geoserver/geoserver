@@ -100,6 +100,7 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
      * @param interpolation interpolation method to use when reprojecting / scaling
      * @param targetSizeX the size of the target image along the X axis
      * @param targetSizeY the size of the target image along the Y axis
+     * @param bandIndices the band indices selected for output, in case of raster input
      * @param progressListener the progress listener
      * @return the file
      * @throws ProcessException the process exception
@@ -167,7 +168,7 @@ public class DownloadProcess implements GSProcess, ApplicationContextAware {
                 LOGGER.log(Level.FINE, "Running the estimator");
             }
             if (!estimator.execute(layerName, filter, targetCRS, roiCRS, roi, clip, targetSizeX,
-                    targetSizeY, progressListener)) {
+                    targetSizeY, bandIndices, progressListener)) {
                 throw new IllegalArgumentException("Download Limits Exceeded. Unable to proceed!");
             }
 

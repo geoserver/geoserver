@@ -9,7 +9,7 @@ Compatibility
 -------------
 
 * Java JDK (>=1.7)
-* GeoServer: 2.7.x, 2.8.x
+* GeoServer: 2.9.x
 * Elasticsearch: 1.4.x, 1.5.x, 1.7.x, 2.1.x, 2.2.x
 
 Downloads

@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geotools.renderer.style.FontCache;
@@ -105,24 +106,36 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
     List<Font> loadFontsFromDataDirectory() {
         List<Font> result = new ArrayList<Font>();
         try {
-            Collection<File> files = FileUtils.listFiles(data.findStyleDir(), new String[] { "ttf",
-                    "TTF" }, true);
-            for (File file : files) {
-                try {
-                    final Font font = Font.createFont(Font.TRUETYPE_FONT, file);
-                    result.add(font);
-                    LOGGER.log(Level.INFO,
-                            "Loaded font file " + file + ", loaded font '" + font.getName()
-                                    + "' in family '" + font.getFamily() + "'");
-                } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Failed to load font file " + file, e);
-                }
+            //load from global
+            findFonts(data.findStyleDir(), result);
+
+            //load from workspaces directory
+            for (WorkspaceInfo ws : wmsConfig.getGeoServer().getCatalog().getWorkspaces()) {
+                findFonts(data.findStyleDir(ws), result);
             }
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Failed to scan style directory for fonts", e);
         }
-
         return result;
+    }
+
+    void findFonts(File dir, List<Font> result) {
+        if (dir == null) {
+            return;
+        }
+
+        Collection<File> files = FileUtils.listFiles(dir, new String[] { "ttf", "TTF" }, true);
+        for (File file : files) {
+            try {
+                final Font font = Font.createFont(Font.TRUETYPE_FONT, file);
+                result.add(font);
+                LOGGER.log(Level.INFO,
+                        "Loaded font file " + file + ", loaded font '" + font.getName()
+                                + "' in family '" + font.getFamily() + "'");
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Failed to load font file " + file, e);
+            }
+        }
     }
 
     public void onApplicationEvent(ApplicationEvent event) {

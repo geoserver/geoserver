@@ -83,6 +83,13 @@ public class GeoServerDataDirectory {
     }
 
     /**
+     * The root workspaces directory.
+     */
+    public File workspaceRoot() throws IOException {
+        return workspacesDir(true);
+    }
+
+    /**
      * Returns a directory under the {@link #root()} directory, if the directory does not exist
      * null will be returned.
      */
@@ -601,6 +608,14 @@ public class GeoServerDataDirectory {
      */
     public File findStyleDir() throws IOException {
         return styleDir(false, (WorkspaceInfo)null);
+    }
+
+    /**
+     * Returns the workspace directory styles are persisted, if the directory does not exist 
+     * null is returned.
+     */
+    public File findStyleDir(WorkspaceInfo ws) throws IOException {
+        return styleDir(false, ws);
     }
 
     /**

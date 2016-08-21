@@ -68,22 +68,25 @@ public class KVPUtils {
 					"Invalid parameter BOUNDINGBOX (MIN_Y [" + miny + "] is "
 							+ "greater than MAX_Y [" + maxy + "]): " + bboxstr);
 		}
-		ReferencedEnvelope crs_e = new ReferencedEnvelope(CRS.getEnvelope(crs));
 		ReferencedEnvelope bbox_e = new ReferencedEnvelope(minx, maxx, miny,
 				maxy, crs);
-		if (!crs_e.covers(bbox_e)) {
-			// The specification says: If the Bounding Box values are
-			// not defined for the given CRS (e.g., latitudes greater than 90
-			// degrees in CRS:84), the
-			// server should return empty content for areas outside the valid
-			// range of the CRS.
-			LOGGER.warning("CRS [" + crs.getName().getCodeSpace() + ":"
-					+ crs.getName().getCode()
-					+ "] envelope don't covers the boundingbox [" + bboxstr
-					+ "] envelope");
-			// throw new
-			// IllegalArgumentException("Invalid mandatory parameter BOUNDINGBOX (crs envelope don't covers the boundingbox envelope): "
-			// + bboxstr);
+		Envelope crsEnvelope = CRS.getEnvelope(crs);
+		if (crsEnvelope != null) {
+			ReferencedEnvelope crs_e = new ReferencedEnvelope(CRS.getEnvelope(crs));
+			if (!crs_e.covers(bbox_e)) {
+				// The specification says: If the Bounding Box values are
+				// not defined for the given CRS (e.g., latitudes greater than 90
+				// degrees in CRS:84), the
+				// server should return empty content for areas outside the valid
+				// range of the CRS.
+				LOGGER.warning("CRS [" + crs.getName().getCodeSpace() + ":"
+						+ crs.getName().getCode()
+						+ "] envelope don't covers the boundingbox [" + bboxstr
+						+ "] envelope");
+				// throw new
+				// IllegalArgumentException("Invalid mandatory parameter BOUNDINGBOX (crs envelope don't covers the boundingbox envelope): "
+				// + bboxstr);
+			}
 		}
 		// Isto só tá assim porque tinha um erro tem que se corrigir
 		// return new ReferencedEnvelope(crs_e.intersection(bbox_e), crs);

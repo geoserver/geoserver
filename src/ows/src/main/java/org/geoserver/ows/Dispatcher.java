@@ -898,6 +898,7 @@ public class Dispatcher extends AbstractController {
                 req.getHttpResponse().setContentType(SOAP_MIME);
             }
             else {
+                mimeType = mimeType.replaceAll("(subtype=)(gml/[0-9.]*)", "$1\"$2\"");          // fix for [GEOS-4011]
                 req.getHttpResponse().setContentType(mimeType);
             }
 

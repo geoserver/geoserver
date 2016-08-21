@@ -47,10 +47,6 @@
    <artifactId>commons-el</artifactId>
   </dependency>
   <dependency>
-   <groupId>commons-logging</groupId>
-   <artifactId>commons-logging</artifactId>
-  </dependency>
-  <dependency>
    <groupId>log4j</groupId>
    <artifactId>log4j</artifactId>
   </dependency>
@@ -61,16 +57,16 @@
   <dependency>
    <groupId>org.apache.ant</groupId>
    <artifactId>ant</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>org.slf4j</groupId>
-   <artifactId>slf4j-simple</artifactId>
+   <exclusions>
+    <exclusion>
+     <groupId>commons-logging</groupId>
+     <artifactId>commons-logging</artifactId>
+    </exclusion>
+   </exclusions>
   </dependency>
   <dependency>
    <groupId>commons-logging</groupId>
    <artifactId>commons-logging</artifactId>
-   <version>1.0</version>
-   <scope>provided</scope>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>

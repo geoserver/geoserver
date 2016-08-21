@@ -128,6 +128,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 "&info_format=application/vnd.ogc.gml&request=GetFeatureInfo&layers="
                 + layer + "&query_layers=" + layer + "&width=20&height=20&x=20&y=20";
         Document dom = getAsDOM(request);
+        print(dom);
         assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", dom);
         assertXpathEvaluatesTo("0", "count(//gml:featureMember)", dom);
     }

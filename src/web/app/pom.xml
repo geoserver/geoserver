@@ -514,6 +514,16 @@
         </dependency>
       </dependencies>
     </profile>
+     <profile>
+      <id>dds</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-dds</artifactId>
+          <version>2.5-SNAPSHOT</version>
+        </dependency>
+      </dependencies>
+    </profile>
     <profile>
       <id>dxf</id>
       <dependencies>

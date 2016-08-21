@@ -207,12 +207,6 @@
         <module>spatialite</module>
       </modules>
     </profile>
-    <profile>
-      <id>sextante</id>
-      <modules>
-        <module>wps-sextante</module>
-      </modules>
-    </profile>
     <profile>      
       <id>sfs</id>
       <modules>

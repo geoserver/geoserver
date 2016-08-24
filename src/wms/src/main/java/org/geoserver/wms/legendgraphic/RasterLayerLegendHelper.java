@@ -182,6 +182,9 @@ public class RasterLayerLegendHelper {
             cmapLegendBuilder.setBand(channelSelection != null ? channelSelection.getGrayChannel()
                     : null);
 
+            // check the additional options before proceeding
+            cmapLegendBuilder.checkAdditionalOptions();
+
             // adding the colormap entries
             final ColorMapEntry[] colorMapEntries = cmap.getColorMapEntries();
             ColorMapEntryLegendBuilder lastEntry = null;
@@ -200,9 +203,6 @@ public class RasterLayerLegendHelper {
             if(lastEntry != null) {
                 lastEntry.setLastRow();
             }
-
-            // check the additional options before proceeding
-            cmapLegendBuilder.checkAdditionalOptions();
 
             // instantiate the creator
             cMapLegendCreator = cmapLegendBuilder.create();

@@ -39,6 +39,11 @@ public class SpringDelegatingFilter implements Filter {
     
     public void init(FilterConfig filterConfig) throws ServletException {
         filters = GeoServerExtensions.extensions(GeoServerFilter.class);
+
+        // run init() on each filter (with an empty FilterConfig)
+        for (GeoServerFilter filter : filters) {
+            filter.init(null);
+        }
     }
     
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

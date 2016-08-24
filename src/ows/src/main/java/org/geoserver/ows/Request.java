@@ -259,6 +259,15 @@ public class Request {
     public Operation getOperation() {
         return operation;
     }
+    
+    /**
+     * The request identifier used for logging and tracing. Defaults to a GeoServer-generated
+     * UUID if not provided/set via HTTP request header.
+     */
+    public String getTraceID() {
+        return (String)httpRequest.getAttribute("org.geoserver.requestTraceID");
+    }
+    
 
     /**
      * The eventual error thrown during request parsing, execution or output writing

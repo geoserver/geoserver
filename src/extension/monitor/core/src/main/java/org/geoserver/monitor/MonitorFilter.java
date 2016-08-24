@@ -95,6 +95,7 @@ public class MonitorFilter implements GeoServerFilter {
         data.setStartTime(new Date());
         
         //fill in the initial data
+        data.setTraceID((String)req.getAttribute("org.geoserver.requestTraceID"));
         data.setPath(req.getServletPath() + req.getPathInfo());
         
         if (req.getQueryString() != null) {

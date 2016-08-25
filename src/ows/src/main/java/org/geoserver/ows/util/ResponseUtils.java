@@ -424,9 +424,8 @@ public class ResponseUtils {
      * @return A String of the form "&lt;scheme&gt;://&lt;server&gt;:&lt;port&gt;/&lt;context&gt;/"
      */
     public static String baseURL(HttpServletRequest req) {
-        StringBuffer sb = new StringBuffer(req.getScheme());
-        sb.append("://").append(req.getServerName()).append(":").append(req.getServerPort())
-                .append(req.getContextPath()).append("/");
+        StringBuffer sb = new StringBuffer();
+        sb.append(req.getContextPath()).append("/");
         return sb.toString();
     }
     

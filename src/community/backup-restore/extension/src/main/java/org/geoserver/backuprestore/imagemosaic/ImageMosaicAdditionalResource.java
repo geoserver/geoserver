@@ -53,5 +53,17 @@ public abstract class ImageMosaicAdditionalResource {
 
         });
 
+        resources.put("info", new Filter<Resource>() {
+
+            @Override
+            public boolean accept(Resource res) {
+                if (res.name().endsWith(".xml")) {
+                    return true;
+                }
+                return false;
+            }
+
+        });
+        
     }
 }

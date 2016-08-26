@@ -128,6 +128,8 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
                     if (!dryRun) {
                         backupFacade.getGeoServer().reload();
                     }
+                    
+                    backupFacade.getGeoServer().reset();
                 }
             }
             // Collect errors

@@ -56,20 +56,23 @@ public class ImageMosaicAdditionalResourceReader extends ImageMosaicAdditionalRe
         final String mosaicUrlBase = mosaicCoverageStore.getURL();
 
         final Resource mosaicIndexBase = Resources.fromURL(mosaicUrlBase);
-
-        // TODO: handle dry run
-
+        
         List<Resource> mosaicIndexerResources = Resources.list(sourceBackupFolder,
                 resources.get("properties"), true);
 
-        boolean datastorePresent = true;
+        mosaicIndexerResources.addAll(Resources.list(sourceBackupFolder,
+                resources.get("info"), true));
+        
+        boolean datastoreAlreadyPresent = true;
         for (Resource res : mosaicIndexerResources) {
             if (!FilenameUtils.getBaseName(res.name()).equals(mosaicName) && Resources.exists(res)
                     && Resources.canRead(res)) {
                 boolean result = copyFile(sourceBackupFolder, mosaicIndexBase, res, false);
                 
                 if (result && FilenameUtils.getBaseName(res.name()).equals("datastore")) {
-                    datastorePresent = false;
+                    // The copy of the new "datastore.properties" was successful, meaning that
+                    // there wasn't an other copy of that file on the target folder.
+                    datastoreAlreadyPresent = false;
                 }
             }
         }
@@ -87,8 +90,11 @@ public class ImageMosaicAdditionalResourceReader extends ImageMosaicAdditionalRe
             }
         }
         
-        if (!datastorePresent) {
-            // A new mosaic, put "CanBeEmpty=true" property into the indexer
+        if (!datastoreAlreadyPresent) {
+            // Sine there wasn't already a "datasotre.properties" on the target folder
+            // we assume this is a new mosaic.
+            // We need to be sure the property "CanBeEmpty=true" is present on the
+            // "indexer.properties"
             final File indexerFile = new File(mosaicIndexBase.dir(), "indexer.properties");
             
             Properties indexerProperties = new Properties();

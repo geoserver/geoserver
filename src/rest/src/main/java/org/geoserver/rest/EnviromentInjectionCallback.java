@@ -8,6 +8,7 @@ package org.geoserver.rest;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.rest.util.RESTUtils;
 import org.geotools.filter.function.EnvFunction;
 import org.restlet.Restlet;
@@ -40,6 +41,7 @@ public class EnviromentInjectionCallback implements DispatcherCallback {
         // inject the current request TraceID
         String traceID = (String)request.getAttributes().get("org.geoserver.requestTraceID");
         if (traceID != null) {
+            traceID = StringUtils.left(traceID, 64);  // PostgreSQL & Oracle both limit to 64 chars
             envVars.put("TRACEID", traceID);
         }
 

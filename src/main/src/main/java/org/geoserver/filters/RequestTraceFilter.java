@@ -49,7 +49,13 @@ public class RequestTraceFilter implements GeoServerFilter {
             
             // set the logging context information
             MDC.put("requestTraceID", reqID);
-    
+
+            if (reqID.length() > 64) {
+                // do this check later so that it gets logged with the value
+                // Oracle & PostgreSQL limit to 64 chars, see EnvironmentInjectionCallback
+                LOGGER.warning("Request Trace IDs >64 chars will be truncated for EnvInject/datastores");
+            }
+
             httpRequest.setAttribute("org.geoserver.requestTraceID", reqID);
 
             // add the trace ID as a response header

@@ -39,6 +39,15 @@ public class EnviromentInjectionCallback extends AbstractDispatcherCallback {
             envVars.put("GSUSER", name);
         }
         
+        // inject the current request TraceID
+        String traceID = request.getTraceID();
+        if (traceID != null) {
+            if(envVars == null) {
+                envVars = new HashMap<String, Object>();
+            }
+            envVars.put("TRACEID", traceID);
+        }
+        
         // set it into the EnvFunction
         if(envVars != null) {
             EnvFunction.setLocalValues(envVars);

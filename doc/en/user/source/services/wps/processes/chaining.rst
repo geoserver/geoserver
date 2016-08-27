@@ -16,7 +16,7 @@ The data that will be used for this example is included with a standard installa
 
 The restricted areas partially overlap the roads. We would like to know the total length of roads inside the restricted areas, as shown in the next screenshot. The road network is represented in white against a false color DEM (Digital Elevation Model). The restricted areas are represented with a dashed line in dark brown. The portion of the road network that is inside the restricted areas is drawn in red.
 
-.. figure:: images/spearfish.png
+.. figure:: ../images/spearfish.png
    
    Length of total roads inside restricted area
 

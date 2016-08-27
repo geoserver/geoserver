@@ -23,7 +23,7 @@ Hostname and other useful packages
 
 Update the file ``/etc/hosts`` making sure that the ip addreses matches the name of the machine.
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
 
@@ -32,7 +32,7 @@ Update the file ``/etc/hosts`` making sure that the ip addreses matches the name
 Configure the Java Virtual Environment
 ++++++++++++++++++++++++++++++++++++++
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -68,7 +68,7 @@ Configure the Java Virtual Environment
 Installing Apache Tomcat
 ++++++++++++++++++++++++
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -82,7 +82,7 @@ Installing Apache Tomcat
 
 Creating base template directory
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
 
@@ -114,7 +114,7 @@ Remember that you may change these ports in the file ``/var/lib/tomcat/geoserver
 
 Set the ownership of the ``geoserver/`` related directories to user tomcat
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   
@@ -174,7 +174,7 @@ Deploy And Configure GeoServer
 
 **First deployment**
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as root
   

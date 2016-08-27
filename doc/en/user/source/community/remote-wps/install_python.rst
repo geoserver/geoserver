@@ -35,13 +35,13 @@ The paths of the command line and GeoTIFF to process (provided with the source c
 
 The assumptions are that during the execution, the algorithms send logging and progress info to the standard output in a form similar to the following one:
 
-.. code-block:: shell
+.. code-block:: bash
 
   2016-02-15 15:18:03,594 - main.create_logger - [INFO] ProgressInfo:100%
 
 The log format has been configured through the ``logger_test.properties`` file:
 
-.. code-block:: shell
+.. code-block:: bash
 
   [loggers]
   keys=root
@@ -140,7 +140,7 @@ The following commands will prepare a MS Windows 7+, Windows 2008+ Server ISO ma
 
 The system requires Python 2.7.9+ with few packages in order to work correctly. The installation of Python on a Windows system is quite fast
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as administrator
 
@@ -155,7 +155,7 @@ The system requires Python 2.7.9+ with few packages in order to work correctly. 
 
 *Other Mandatory Python Packages*
 
-.. code-block:: shell
+.. code-block:: bash
 
   # as administrator
 
@@ -202,7 +202,7 @@ Link the shared folder to the ``C:/share`` through the NFS protocol. This is pos
 
 .. note:: It is important that the shared folder structure is fully replicated on the Windows machine and the folder writable by the Windows processes.
 
-    .. code-block:: shell
+    .. code-block:: bash
 
           | /share
           |
@@ -225,7 +225,7 @@ The files can also be downloaded from the GitHub source repository.
     
 To clone the RemoteWPS Python Framework into a working folder, e.g.:
 
-    .. code-block:: shell
+    .. code-block:: bash
 
         $> cd C:\work
 
@@ -233,7 +233,7 @@ To clone the RemoteWPS Python Framework into a working folder, e.g.:
 
 **Setting Up The** ``remote.config``
 
-.. code-block:: shell
+.. code-block:: bash
 
   # Edit the file xmpp_data/configs/remote.config
 
@@ -266,7 +266,7 @@ The requisites for this configuration to work properly are:
 
 **Setting Up The** ``logger.properties``
 
-.. code-block:: shell
+.. code-block:: bash
 
   # Edit the file xmpp_data/configs/logger.properties
 
@@ -312,7 +312,7 @@ The requisites for this configuration to work properly are:
 
 **Setting Up The** ``service.config``
 
-.. code-block:: shell
+.. code-block:: bash
 
   # Edit the file xmpp_data/configs/myservice/service.config
 
@@ -410,7 +410,7 @@ The requisites for this configuration to work properly are:
        The timeouts and the number of parallel executions (both async and sync) must be tuned accordingly to the execution needs.
     6. Make sure the inputs have been configured correctly for the command line execution
 
-       .. code-block:: shell
+       .. code-block:: bash
 
           [Input1]
           class = param
@@ -478,7 +478,7 @@ The requisites for this configuration to work properly are:
 
     7. Make sure the outputs have been configured correctly for the command line execution
 
-       .. code-block:: shell
+       .. code-block:: bash
 
           [Output1]
           name = result1
@@ -502,7 +502,7 @@ The requisites for this configuration to work properly are:
 
     8. Make sure the regular expressions of the “stdout_parser” are correct and valid accordingly to the output of the executable
 
-       .. code-block:: shell
+       .. code-block:: bash
 
          [Logging]
          stdout_parser = [.*\[DEBUG\](.*), .*\[INFO\] ProgressInfo\:([-+]?[0-9]*\.?[0-9]*)\%, .*\[(INFO)\](.*), .*\[(WARN)\](.*), .*\[(ERROR)\](.*), .*\[(CRITICAL)\](.*)]
@@ -530,7 +530,7 @@ This section is meant to be a summary of the current possible options for the Re
 Default Section
 +++++++++++++++
 
-.. code-block:: shell
+.. code-block:: bash
 
   # ########################################### #
   # Default Service Params                      #
@@ -576,7 +576,7 @@ Default Section
 Inputs Section
 ++++++++++++++
 
-.. code-block:: shell
+.. code-block:: bash
 
   # ########################################### #
   # Inputs and Actions Declaration              #
@@ -705,7 +705,7 @@ The *Inputs Section* can contain three type of objects:
 Outputs Section
 +++++++++++++++
 
-.. code-block:: shell
+.. code-block:: bash
 
   # ########################################### #
   # Output Parameters Declaration               #
@@ -854,7 +854,7 @@ The examples above represents all the possible types of Outputs currently suppor
         
         In order to activate this funcionality, update the GeoServer ``remoteProcess.properties`` on the ``GEOSERVER_DATA_DIR`` with a new option:
 
-        .. code-block:: shell
+        .. code-block:: bash
         
             # full path to the template used to generate the OWS WMC Json output
             
@@ -1038,7 +1038,7 @@ The examples above represents all the possible types of Outputs currently suppor
 Logging Section
 +++++++++++++++
 
-.. code-block:: shell
+.. code-block:: bash
 
   # ########################################### #
   # Logging RegEx and Levels                    #

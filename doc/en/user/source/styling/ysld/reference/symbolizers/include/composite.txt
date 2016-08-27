@@ -1,0 +1,18 @@
+.. list-table::
+   :class: non-responsive
+   :header-rows: 1
+   :stub-columns: 1
+   :widths: 20 10 50 20
+
+   * - Property
+     - Required?
+     - Description
+     - Default value
+   * - ``x-composite``
+     - No
+     - Allows for both alpha compositing and color blending options between symbolizers.
+     - N/A
+   * - ``x-composite-base``
+     - No
+     - Allows the rendering engine to use the symbolizer mapping to define a "base" buffer for subsequent compositing and blending using ``x-composite``. See the section on :ref:`Feature Styles <ysld_reference_featurestyles_composite>` for more details.
+     - ``false``

@@ -69,7 +69,7 @@ To remove a style, click the check box next to the style. Multiple styles can be
   
    Confirmation prompt for removing styles
 
- Click :guilabel:`OK` to remove the selected style(s).
+Click :guilabel:`OK` to remove the selected style(s).
 
 
 .. _data_webadmin_styles_edit:
@@ -86,7 +86,9 @@ The Style Editor page presents the :ref:`style definition <data_webadmin_styles_
 * :ref:`Layer Preview <data_webadmin_styles_edit_preview>`: Previews the style with an associated layer while editing
 * :ref:`Layer Attributes <data_webadmin_styles_edit_attributes>`: Displays a list of attributes for the associated layer
 
-.. warning:: ADD IMAGE
+.. figure:: img/data_style_editor_tabs.png
+
+   Style Editor tabs
 
 At the bottom of the Style Editor page is a number of options:
 
@@ -104,6 +106,10 @@ At the bottom of the Style Editor page is a number of options:
      - Makes the changes to the style and returns to the Styles page
    * - :guilabel:`Cancel`
      - Cancels all changes to the style and returns to the Styles page
+
+.. figure:: img/data_style_editor_validate_buttons.png
+
+   Style Editor options
 
 .. _data_webadmin_styles_edit_definition:
 
@@ -172,7 +178,9 @@ The :guilabel:`Style Data` area has mandatory basic style information:
    * - :guilabel:`Format`
      - Format of the style. Options are :guilabel:`SLD`, :guilabel:`CSS`, and :guilabel:`YSLD`, depending on availability.
 
-.. warning:: ADD IMAGE
+.. figure:: img/data_style_editor_data_styledata.png
+
+   Style Data area
 
 The :guilabel:`Style Content` area allows you to generate a style, copy an existing style, or upload an existing style:
 
@@ -189,9 +197,11 @@ The :guilabel:`Style Content` area allows you to generate a style, copy an exist
    * - :guilabel:`Upload a style file`
      - Selects a plain text file on your local system to add as the style. Click :guilabel:`Upload` when selected.
 
-.. warning:: ADD IMAGE
+.. figure:: img/data_style_editor_data_stylecontent.png
 
-By default GeoServer will generate a legend based on your style file. The :guilabel:`Legend` area allows you to add, modify, or delete a custom style, and preview the legend for the style:
+   Style Content area
+
+The :guilabel:`Legend` area allows you to add, modify, or delete a custom style, and preview the legend for the style. By default GeoServer will generate a legend based on your style file, but this can be customized here:
 
 .. list-table::
    :widths: 25 75 
@@ -216,9 +226,10 @@ By default GeoServer will generate a legend based on your style file. The :guila
    * - :guilabel:`Preview legend`
      - Previews the legend based on the current settings
 
-.. figure:: img/data_style_add_legend.png
-   
-   Legend
+.. figure:: img/data_style_editor_data_legend.png
+
+   Legend area
+
 
 .. _data_webadmin_styles_edit_publishing:
 
@@ -242,7 +253,9 @@ The Publishing tab displays a list of all layers on the server, with the purpose
    * - :guilabel:`Associated`
      - Shows whether the style being edited is an additional style for a given layer 
 
-.. warning:: ADD IMAGE
+.. figure:: img/data_style_editor_data_publishing.png
+
+   Publishing tab
 
 
 .. _data_webadmin_styles_edit_preview:
@@ -254,7 +267,9 @@ It is very common to have to iterate your styles and test how the visualization 
 
 The Layer Preview tab shows a single image. GeoServer tries to identify which layer should be shown (for example, a layer for which this style is the default), but if the layer being previewed is not the desired one, click the layer name above the preview box and select a layer.
 
-.. warning:: ADD IMAGE
+.. figure:: img/data_style_editor_data_layerpreview.png
+
+   Layer Preview tab
 
 
 .. _data_webadmin_styles_edit_attributes:
@@ -265,8 +280,6 @@ Style Editor: Layer Attributes tab
 Most styles utilize the specific values of certain attributes of the associated layer in order to create more detailed and useful styles. (For example: styling all large cities different from small cities based on a particular attribute.)
 
 The Layer Attributes tab will display a list of attributes for the given associated layer. GeoServer tries to identify which layer should be shown (for example, a layer for which this style is the default), but if the layer being previewed is not the desired one, click the layer name above the table and select a layer.
-
-.. warning:: ADD IMAGE
 
 .. list-table::
    :widths: 25 75 
@@ -279,10 +292,14 @@ The Layer Attributes tab will display a list of attributes for the given associa
    * - :guilabel:`type`
      - Type of the attribute. Can be a numeric (such as "Long"), a string ("String"), or a geometry (such as "Point").
    * - :guilabel:`sample`
-     - Sample value of the attribute taken from the data.
+     - Sample value of the attribute taken from the data
    * - :guilabel:`min`
-     - Minimum value of the attribute in the data set, if applicable. 
+     - Minimum value of the attribute in the data set, if applicable 
    * - :guilabel:`max`
-     - Minimum value of the attribute in the data set, if applicable. 
+     - Minimum value of the attribute in the data set, if applicable
    * - :guilabel:`computeStats`
-     - Click :guilabel:`Compute` to calculate the :guilabel:`min` and :guilabel:`max` values for that attribute. 
+     - Click :guilabel:`Compute` to calculate the :guilabel:`min` and :guilabel:`max` values for that attribute, if applicable 
+
+.. figure:: img/data_style_editor_data_layerattributes.png
+
+   Layer Attributes tab

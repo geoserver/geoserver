@@ -54,7 +54,7 @@ supported out of the box include:
 * SLD 1.1 / SE 1.1 with a mime type of ``application/vnd.ogc.se+xml``
 * SLD package (zip file containing sld and image files used in the style) with a mime type of application/zip
 
-Other extensions (such as :ref:`css <extensions_css>`) add support for 
+Other extensions (such as :ref:`css <css>`) add support for 
 additional formats. 
 
 Parameters
@@ -146,7 +146,7 @@ The ``purge`` parameter specifies whether the underlying SLD file for the style 
 .. _rest_api_styles_recurse:
 
 ``recurse``
-^^^^^^^^^
+^^^^^^^^^^^
 
 The ``recurse`` parameter removes references to the specified style in existing layers. Allowed values for this parameter are "true" or "false". The default value is "false".
 

@@ -11,7 +11,6 @@ This section describes most of the extensions available for GeoServer. Other dat
    :maxdepth: 1
 
    controlflow/index
-   css/index
    dxf/index   
    excel
    grib/grib

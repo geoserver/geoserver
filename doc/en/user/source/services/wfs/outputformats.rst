@@ -65,7 +65,7 @@ Shapefile output ``format_options``:
 * ``format_option=filename:<zipfile>``: if a file name is provided, the name is used as the output file name. For example, ``format_options=filename:roads.zip``.
 
 Shapefile filename customization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If a file name is not specified, the output file name is inferred from the requested feature type name. The shapefile output format output can be customized by preparing a :ref:`Freemarker template <tutorial_freemarkertemplate>` which will configure the file name of the archive (ZIP file) and the files it contains. The default template is:
 

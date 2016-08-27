@@ -15,8 +15,8 @@ It describes the core configuration data types that GeoServer uses to access and
    stores
    layers
    layergroups
-   styles
-   
+
+.. note:: Information on the Styles pages can be found on the :ref:`styling_webadmin` page.    
 
 
 

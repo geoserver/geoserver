@@ -100,7 +100,7 @@ Query all users or add a new user in a particular or the default user/group serv
      - 201 Inserted. Created ``ID`` header.
 
 
-``/rest/usergroup/[service/<serviceName>/]<user>``
+``/rest/usergroup/[service/<serviceName>/]user/<user>``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Query, modify or delete a specific user in a particular or the default user/group service.

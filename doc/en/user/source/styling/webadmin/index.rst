@@ -11,6 +11,8 @@ Styles are used to control the appearance of geospatial data. Styles for GeoServ
 * **Cascading Style Sheets (CSS)**: A CSS-like syntax. Available via an :ref:`extension <css>`.
 * **YSLD**: An SLD-equivalent based on `YAML <http://yaml.org>`_ for improved authoring. Available via a :ref:`community module <ysld>`.
 
+.. _styling_webadmin_styles:
+
 Styles page
 -----------
 

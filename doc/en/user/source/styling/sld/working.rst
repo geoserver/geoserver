@@ -17,7 +17,7 @@ or to extend the server style catalog using **library mode**.
 Catalog Styles
 ^^^^^^^^^^^^^^
 
-Styles in the catalog can be viewed, edited and validated via the :ref:`data_webadmin_styles` menu of the :ref:`web_admin`. 
+Styles in the catalog can be viewed, edited and validated via the :ref:`styling_webadmin_styles` menu of the :ref:`web_admin`. 
 They may also be created and accessed via the REST :ref:`rest_api_styles` API.
 
 Catalog styles consist of a :ref:`sld_reference_sld` document 

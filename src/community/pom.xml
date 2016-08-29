@@ -461,5 +461,11 @@
         <module>geogig</module>
       </modules>
     </profile>
+    <profile>
+      <id>security</id>
+      <modules>
+        <module>security</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

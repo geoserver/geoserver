@@ -114,7 +114,6 @@ Controls a given style.
      - Delete style ``s``
      - 200
      -
-     -
      - :ref:`purge <rest_api_styles_purge>` 
      - :ref:`recurse <rest_api_styles_recurse>`
 

@@ -1,4 +1,4 @@
-.. _css_workshop_polygon:
+.. _styling_workshop_polygon:
 
 Polygons
 ========

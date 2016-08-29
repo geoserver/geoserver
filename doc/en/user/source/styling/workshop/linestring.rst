@@ -1,4 +1,4 @@
-.. _css_workshop_linestring:
+.. _styling_workshop_linestring:
 
 Lines
 =====

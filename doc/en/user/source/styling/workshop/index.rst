@@ -1,8 +1,8 @@
-.. _css_workshop:
+.. _styling_workshop:
 
-********************
-CSS Styling Workshop
-********************
+****************
+Styling Workshop
+****************
 
 GeoServer styling can be used for a range of creative effects. This section expands upon the `CSS Extension` which can be used to quickly generate SLD files. This workshop will provide an in-depth look at how CSS can be used for styling linestrings, polygons, points and rasters.
 

@@ -1,7 +1,7 @@
 .. _data_imagemosaic_tutorial:
 
-Using the imagemosaic plugin
-============================
+Using the imagemosaic extension
+===============================
 
 This tutorial will show you how to configure and publish an imagemosaic store and coverage, followed by some configuration examples.
 
@@ -273,3 +273,77 @@ This is the result:
 
    Advanced configuration
 
+
+Dynamic imagery
+~~~~~~~~~~~~~~~
+
+A mosaic need not be static. It can contain granules which change, are added or deleted. In this example, we will create a mosaic that changes over time.
+
+#. Create a mosaic in the standard way. (The specific configuration isn't important.)
+
+.. figure:: images/tutorial_dynamic1.png
+
+   This mosaic contains 5 granules. Note that ``InputTransparentColor`` is set to ``#FFFFFF`` here.
+
+To add new granules, the index that was created when the mosaic was originally created needs to be regenerated. There are two ways to do this:
+
+* Manually through the file system
+* Through the :ref:`rest` interface
+
+To update an imagemosaic through the file system:
+
+#. Update the contents of the mosaic by copying the new files into place. (Sub-directories are acceptable.)
+
+#. Delete the index files. These files are contained in the top level directory containing the mosaic files. These files consist of (but are not limited to) the following:
+
+   * :file:`<mosaic_name>.dbf`
+   * :file:`<mosaic_name>.fix`
+   * :file:`<mosaic_name>.prj`
+   * :file:`<mosaic_name>.properties`
+   * :file:`<mosaic_name>.shp`
+   * :file:`<mosaic_name>.shx`
+
+#. *(Optional but recommended)* Edit the layer definition in GeoServer, making to sure to update the bounding box information (if changed).
+
+#. Save the layer. The index will be recreated.
+
+.. figure:: images/tutorial_dynamic2.png
+
+   This mosaic contains 9 granules
+
+.. note:: Please see the REST section for information on :ref:`rest_examples_curl_imagemosaic`.
+
+Multi-resolution imagery with reprojection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As a general rule, we want to have the highest resolution granules shown "on top", with the lower-resolution granules filling in the gaps as necessary.
+
+In this example, we will serve up overlapping granules that have varying resolutions. In addition, we will mix resolutions, such that the higher resolution granule is reprojected to match the resolution of the 
+
+#. In the Coverage Editor, use the basic ``raster`` style.
+
+#. Create the mosaic in GeoServer.
+
+#. One important configuration setting is the :guilabel:`SORTING` parameter of the layer. In order to see the highest resolution imagery on top (as is the typical case), it must be set to :kbd:`res D`. (For the case of lowest resolution on top, use :kbd:`res A`.)
+
+#. Make any other configuration changes.
+
+#. Also, in order to allow for multiple CRSs in a single mosaic, an :file:`indexer.properties` file will need to be created. Use the following::
+
+      GranuleAcceptors=org.geotools.gce.imagemosaic.acceptors.HeterogeneousCRSAcceptorFactory
+      GranuleHandler=org.geotools.gce.imagemosaic.granulehandler.ReprojectingGranuleHandlerFactory
+      HeterogeneousCRS=true
+      PropertyCollectors=CRSExtractorSPI(crs),ResolutionExtractorSPI(resolution)
+      Schema=*the_geom:Polygon,location:String,crs:String,resolution:String
+
+#. Save this file in the root of the mosaic directory (along with the index files). The result is the following:
+
+   .. figure:: images/tutorial_reproj_artifact.png
+
+      Closeup of granule overlap (high resolution granule on right)
+
+#. To remove the reprojection artifact (shown in the above as a black area) edit the layer configuration to set ``InputTransparentColor`` to ``#000000``.
+
+   .. figure:: images/tutorial_reproj_noartifact.png
+
+      Closeup of granule overlap (high resolution granule on right)

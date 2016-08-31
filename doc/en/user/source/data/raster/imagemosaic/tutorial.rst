@@ -324,7 +324,7 @@ In this example, we will serve up overlapping granules that have varying resolut
 
 #. Create the mosaic in GeoServer.
 
-#. One important configuration setting is the :guilabel:`SORTING` parameter of the layer. In order to see the highest resolution imagery on top (as is the typical case), it must be set to :kbd:`res D`. (For the case of lowest resolution on top, use :kbd:`res A`.)
+#. One important configuration setting is the :guilabel:`SORTING` parameter of the layer. In order to see the highest resolution imagery on top (as is the typical case), it must be set to :kbd:`resolution A`. (For the case of lowest resolution on top, use :kbd:`resolution D` .)
 
 #. Make any other configuration changes.
 

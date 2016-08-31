@@ -11,14 +11,22 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geoserver.inspire.ViewServicesUtils;
+import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.meta.ServiceContact;
 import org.geowebcache.config.meta.ServiceInformation;
 import org.geowebcache.config.meta.ServiceProvider;
+import org.geowebcache.conveyor.Conveyor;
 import org.geowebcache.io.XMLBuilder;
+import org.geowebcache.layer.TileLayer;
+import org.geowebcache.service.OWSException;
 import org.geowebcache.service.wmts.WMTSExtension;
+import org.geowebcache.storage.StorageBroker;
 import org.xml.sax.Attributes;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
@@ -140,4 +148,26 @@ public class WMTSExtendedCapabilitiesProvider implements WMTSExtension {
         gwcInfo.setServiceProvider(serviceProvider);
         return gwcInfo;
     }
+
+    @Override
+    public List<OperationMetadata> getExtraOperationsMetadata() throws IOException {
+        return null;
+    }
+
+    @Override
+    public Conveyor getConveyor(HttpServletRequest request, HttpServletResponse response, StorageBroker storageBroker) throws GeoWebCacheException, OWSException {
+        return null;
+    }
+
+    @Override
+    public boolean handleRequest(Conveyor conveyor) throws OWSException {
+        return false;
+    }
+
+    @Override
+    public void encodeLayer(XMLBuilder xmlBuilder, TileLayer tileLayer) throws IOException {
+
+    }
+
+
 }

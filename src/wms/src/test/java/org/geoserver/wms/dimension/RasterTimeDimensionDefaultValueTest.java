@@ -28,6 +28,7 @@ import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
@@ -62,7 +63,7 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        prepareFutureCoverageData(WATTEMP_FUTURE);        
+        prepareFutureCoverageData(WATTEMP_FUTURE, this.getDataDirectory(), this.getCatalog());
     }
 
     @Before
@@ -210,10 +211,9 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         java.util.Date d = (java.util.Date) wms.getDefaultTime(coverage);
         assertTrue("Returns a valid Default time", d != null);
         assertTrue("Default time should be the closest one", d.getTime() == expected.getTime());
-    }    
- 
-    
-    private void prepareFutureCoverageData(QName coverageName) throws IOException {
+    }
+
+    public static void prepareFutureCoverageData(QName coverageName, GeoServerDataDirectory dataDirectory, Catalog catalog) throws IOException {
         SimpleDateFormat tsFormatter = new SimpleDateFormat("yyyyMMdd");
 
         // Prepare the target dates for the dummy coverages to be created
@@ -237,8 +237,8 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         long oneYearInFuture = cal.getTimeInMillis();
 
         // Copy watertemp.zip test coverage resource in the data dir under a different name:
-        GeoServerResourceLoader loader = getCatalog().getResourceLoader();
-        File targetDir = loader.createDirectory(getDataDirectory().root(), coverageName.getPrefix()
+        GeoServerResourceLoader loader = catalog.getResourceLoader();
+        File targetDir = loader.createDirectory(dataDirectory.root(), coverageName.getPrefix()
                 + File.separator + coverageName.getLocalPart());
         File target = new File(targetDir, coverageName.getLocalPart() + ".zip");
         loader.copyFromClassPath("org/geoserver/wms/dimension/watertemp.zip", target);
@@ -271,7 +271,7 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
                 FileUtils.copyFile(input, output);
             }
         }
-        addRasterLayerFromDataDir(WATTEMP_FUTURE, getCatalog());
+        addRasterLayerFromDataDir(WATTEMP_FUTURE, dataDirectory, catalog);
 
     }
    
@@ -281,12 +281,12 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
      * be copied to the data directory before registering the new layer. This method skips the copy and extract and assumes that the coverage data is
      * already in contained in the data directory.
      */
-    private void addRasterLayerFromDataDir(QName qName, Catalog catalog) throws IOException {
+    private static void addRasterLayerFromDataDir(QName qName, GeoServerDataDirectory dataDirectory, Catalog catalog) throws IOException {
         String prefix = qName.getPrefix();
         String name = qName.getLocalPart();
 
         // setup the data
-        File file = new File(this.getDataDirectory().root() + File.separator + prefix, name);
+        File file = new File(dataDirectory.root() + File.separator + prefix, name);
 
         if (!file.exists()) {
             throw new IllegalArgumentException("There is no file with name '" + prefix
@@ -308,7 +308,7 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
             // configure workspace if it doesn't already exist
             if (catalog.getWorkspaceByName(prefix) == null) {
-                ((SystemTestData) this.testData).addWorkspace(prefix, qName.getNamespaceURI(),
+                ((SystemTestData) testData).addWorkspace(prefix, qName.getNamespaceURI(),
                         catalog);
             }
             // create the store

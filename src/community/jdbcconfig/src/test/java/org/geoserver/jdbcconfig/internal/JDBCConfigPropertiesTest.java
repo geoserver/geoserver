@@ -1,8 +1,12 @@
 package org.geoserver.jdbcconfig.internal;
 
-import static org.junit.Assert.*;
-import static org.geoserver.jdbcconfig.JDBCConfigTestSupport.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.geoserver.jdbcconfig.JDBCConfigTestSupport.createTempDir;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,6 +16,8 @@ import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.jdbcloader.JDBCLoaderPropertiesFactoryBean;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataUtilities;
 import org.junit.After;
 import org.junit.Before;
@@ -53,6 +59,19 @@ public class JDBCConfigPropertiesTest {
         //assert files copied over
         assertNotNull(loader.find("jdbcconfig", "jdbcconfig.properties"));
         assertNotNull(loader.find("jdbcconfig", "scripts", "initdb.postgres.sql"));
+        
+        //assert file location are accessible
+        assertNotNull(factory.getFileLocations());
+        
+        //assert configuration can be stored successfully on another resource loader
+        File tmpDir = org.geoserver.jdbcconfig.JDBCConfigTestSupport.createTempDir();
+        Resources.directory(Files.asResource(tmpDir).get("jdbcconfig"), true);
+        
+        GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(tmpDir);
+        factory.saveConfiguration(resourceLoader);
+        
+        assertEquals(factory.getFileLocations().size(), 
+                (resourceLoader.find("jdbcconfig").list().length-1)+(resourceLoader.find("jdbcconfig/scripts").list().length) );
     }
 
     private File createDummyConfigFile() throws IOException {

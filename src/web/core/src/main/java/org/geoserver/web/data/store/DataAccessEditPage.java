@@ -213,7 +213,13 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
 
             ResourcePool resourcePool = catalog.getResourcePool();
             resourcePool.clear(info);
-            catalog.validate(info, false).throwIfInvalid();
+            
+            DataStoreInfo expandedStore = catalog.getFactory().createDataStore();
+            
+            // Cloning into "expandedStore" through the super class "clone" method
+            clone(info, expandedStore);
+            catalog.validate(expandedStore, false).throwIfInvalid();
+            
             catalog.save(info);
             // save the resources after saving the store
             for (FeatureTypeInfo alreadyConfigured : configuredResources) {

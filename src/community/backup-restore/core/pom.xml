@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.geoserver.community</groupId>
+		<artifactId>gs-backup-restore</artifactId>
+		<version>2.9-SNAPSHOT</version>
+	</parent>
+
+	<groupId>org.geoserver.community.backuprestore</groupId>
+	<artifactId>gs-backup-restore-core</artifactId>
+	<packaging>jar</packaging>
+	<name>GeoServer Config Backup And Restore Core Module</name>
+
+	<properties>
+		<spring.batch.version>3.0.7.RELEASE</spring.batch.version>
+	</properties>
+
+	<dependencies>
+
+		<!-- Spring dependencies -->
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<!-- Spring Batch dependencies -->
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-core</artifactId>
+			<version>${spring.batch.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-infrastructure</artifactId>
+			<version>${spring.batch.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-integration</artifactId>
+			<version>${spring.batch.version}</version>
+		</dependency>
+
+		<!-- GeoServer Dependencies -->
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>gs-gwc</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<!-- REST Resources -->
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>gs-restconfig</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.fileupload</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+		</dependency>
+
+		<!-- Spring Batch unit test -->	
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-test</artifactId>
+			<version>${spring.batch.version}</version>
+		</dependency>
+		
+		<!-- Other Dependencies -->
+	    <dependency>
+	      	<groupId>org.apache.commons</groupId>
+	      	<artifactId>commons-exec</artifactId>
+	    </dependency>
+	    <dependency>
+			<groupId>org.apache.commons</groupId>
+	    	<artifactId>commons-vfs2</artifactId>
+	    </dependency>
+	    
+	</dependencies>
+
+</project>

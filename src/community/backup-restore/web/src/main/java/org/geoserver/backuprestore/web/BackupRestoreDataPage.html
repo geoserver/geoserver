@@ -1,0 +1,120 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<wicket:head>
+  <wicket:link>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+  </wicket:link>
+  
+ <style type="text/css">
+   fieldset {
+     margin-top: 3em;
+   }
+   
+   #sources li {
+     margin: 0;
+     padding: 0;
+   }
+   
+   #sources li:first-child {
+     margin: 0.3em 0 0;
+   }
+ </style>
+ </wicket:head>
+</head>
+<body>
+<wicket:extend>
+
+   <div>
+    <fieldset>
+      <legend><span><wicket:message key="newBackupResource">Archive File</wicket:message></span></legend>
+	  <div wicket:id="newBackupRestorePanel">
+	    <div wicket:id="backupResource"></div>
+	  </div>
+	  <label for="workspace"><wicket:message key="workspace">Workspace</wicket:message></label>
+      <select id="workspace" wicket:id="workspace"></select>
+      <span wicket:id="workspaceNameContainer"><input type="text" class="text" wicket:id="workspaceName" style="width:10em;"></input></span>
+	</fieldset>
+  </div>
+  
+  <form wicket:id="backupForm">
+    <h3><span><wicket:message key="issueNewBackup">issueNewBackup</wicket:message></span></h3>
+	<fieldset>
+	    <legend><span><wicket:message key="newBackupOptions">Backup Options</wicket:message></span></legend>
+	    <ul>
+	      <li class="choiceItem">
+	        <input id="backupOptOverwirte" type="checkbox" wicket:id="backupOptOverwirte" />
+	        <label for="backupOptOverwirteLabel"><wicket:message key="backupOptOverwirteLabel">Overwrite Existing Archive</wicket:message></label>
+	      </li>
+	      <li class="choiceItem">
+	        <input id="backupOptBestEffort" type="checkbox" wicket:id="backupOptBestEffort" />
+	        <label for="backupOptBestEffortLabel"><wicket:message key="backupOptBestEffortLabel">Skip Failing Resources</wicket:message></label>
+	      </li>
+	    </ul>
+	</fieldset>
+	<div class="button-group selfclear">
+      <a href="#" wicket:id="newBackupStart">
+        <span>Start Backup</span>
+      </a>
+      <a href="#" wicket:id="cancel">
+        <span><wicket:message key="cancel"></wicket:message></span>
+      </a>
+      <span wicket:id="status">Working</span>
+    </div>
+    <wicket:message key="mandatory">mandatory</wicket:message> *
+    
+    <fieldset>
+      <legend>
+        <span class="no-border"><wicket:message key="recentBackups">recentBackups</wicket:message></span>
+      </legend>
+
+      <ul>
+        <li>
+          <div wicket:id="backups"></div>
+        </li>
+      </ul>
+    </fieldset>
+  </form>
+
+  <form wicket:id="restoreForm">
+    <h3><span><wicket:message key="issueNewRestore">issueNewRestore</wicket:message></span></h3>
+	<fieldset>
+	    <legend><span><wicket:message key="newRestoreOptions">Restore Options</wicket:message></span></legend>
+	    <ul>
+	      <li class="choiceItem">
+	        <input id="restoreOptDryRun" type="checkbox" wicket:id="restoreOptDryRun" />
+	        <label for="restoreOptDryRunLabel"><wicket:message key="restoreOptDryRunLabel">Restore Dry-Run</wicket:message></label>
+	      </li>
+	      <li class="choiceItem">
+	        <input id="restoreOptBestEffort" type="checkbox" wicket:id="restoreOptBestEffort" />
+	        <label for="restoreOptBestEffortLabel"><wicket:message key="restoreOptBestEffortLabel">Skip Failing Resources</wicket:message></label>
+	      </li>
+	    </ul>
+	</fieldset>
+	<div class="button-group selfclear">
+      <a href="#" wicket:id="newRestoreStart">
+        <span>Start Restore</span>
+      </a>
+      <a href="#" wicket:id="cancel">
+        <span><wicket:message key="cancel"></wicket:message></span>
+      </a>
+      <span wicket:id="status">Working</span>
+    </div>
+    <wicket:message key="mandatory">mandatory</wicket:message> *
+    
+    <fieldset>
+      <legend>
+        <span class="no-border"><wicket:message key="recentRestores">recentRestores</wicket:message></span>
+      </legend>
+
+      <ul>
+        <li>
+          <div wicket:id="restores"></div>
+        </li>
+      </ul>
+    </fieldset>
+  </form>
+    
+  <div wicket:id="dialog"></div>
+</wicket:extend>
+</body>
+</html>

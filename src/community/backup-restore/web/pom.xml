@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.geoserver.community</groupId>
+		<artifactId>gs-backup-restore</artifactId>
+		<version>2.9-SNAPSHOT</version>
+	</parent>
+
+	<groupId>org.geoserver.community.backuprestore</groupId>
+	<artifactId>gs-backup-restore-web</artifactId>
+	<packaging>jar</packaging>
+	<name>GeoServer Config Backup And Restore Web UI Module</name>
+
+	<properties>
+	</properties>
+
+	<dependencies>
+
+		<!-- GeoServer Resources -->
+		<dependency>
+		  <groupId>org.geoserver.community.backuprestore</groupId>
+		  <artifactId>gs-backup-restore-core</artifactId>
+		  <version>${project.version}</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.geoserver.community.backuprestore</groupId>
+		  <artifactId>gs-backup-restore-core</artifactId>
+		  <version>${project.version}</version>
+		  <classifier>tests</classifier>
+		  <scope>test</scope>
+		</dependency>
+		<dependency>
+		  <groupId>org.geoserver.web</groupId>
+		  <artifactId>gs-web-demo</artifactId>
+		  <version>${project.version}</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.geoserver.web</groupId>
+		  <artifactId>gs-web-core</artifactId>
+		  <version>${project.version}</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.ocpsoft.prettytime</groupId>
+		  <artifactId>prettytime</artifactId>
+		  <version>1.0.8.Final</version>
+		</dependency>
+
+		<!-- TEST Resources -->
+		<dependency>
+		  <groupId>org.hamcrest</groupId>
+		  <artifactId>hamcrest-library</artifactId>
+		  <scope>test</scope>
+		</dependency>
+		<dependency>
+		  <groupId>org.geoserver.web</groupId>
+		  <artifactId>gs-web-core</artifactId>
+		  <scope>test</scope>
+		  <classifier>tests</classifier>
+		  <version>${project.version}</version>
+		</dependency>
+
+	</dependencies>
+  
+</project>

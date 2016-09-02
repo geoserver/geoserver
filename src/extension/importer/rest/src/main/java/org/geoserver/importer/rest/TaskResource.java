@@ -187,7 +187,7 @@ public class TaskResource extends BaseResource {
     }
 
     public void handlePut() {
-        if (getRequest().getEntity().getMediaType().equals(MediaType.APPLICATION_JSON)) {
+        if (getRequest().getEntity().getMediaType().equals(MediaType.APPLICATION_JSON, true)) {
             handleTaskPut();
         } else {
             acceptData(handleFileUpload(context()));

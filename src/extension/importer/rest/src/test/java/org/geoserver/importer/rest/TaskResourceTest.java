@@ -5,11 +5,7 @@
  */
 package org.geoserver.importer.rest;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -44,7 +40,6 @@ import org.geoserver.importer.UpdateMode;
 import org.geoserver.importer.VFSWorker;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geotools.data.Transaction;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Before;
 import org.junit.Test;
@@ -279,10 +274,15 @@ public class TaskResourceTest extends ImporterTestSupport {
         assertEquals(ImportTask.State.READY, task.getState());
     }
     
-    private void uploadGeotiffAndVerify(String taskName,
+    private ImportContext uploadGeotiffAndVerify(String taskName,
             InputStream geotiffResourceStream, String contentType) throws Exception {
+        return uploadGeotiffAndVerify(taskName, geotiffResourceStream, contentType, "", "application/xml");
+    }
+    
+    private ImportContext uploadGeotiffAndVerify(String taskName,
+            InputStream geotiffResourceStream, String contentType, String createImportBody, String creationContentType) throws Exception {
         // upload  tif or zip file containing a tif and verify the results
-        MockHttpServletResponse resp = postAsServletResponse("/rest/imports", "");
+        MockHttpServletResponse resp = postAsServletResponse("/rest/imports", createImportBody, creationContentType);
         assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
 
@@ -311,6 +311,8 @@ public class TaskResourceTest extends ImporterTestSupport {
 
         DataFormat format = importData.getFormat();
         assertTrue(format instanceof GridFormat);
+        
+        return context;
     }
 
     @Test
@@ -319,6 +321,25 @@ public class TaskResourceTest extends ImporterTestSupport {
         InputStream stream = ImporterTestSupport.class.getResourceAsStream("test-data/" + path);
 
         uploadGeotiffAndVerify(new File(path).getName(), stream, "application/x-bzip2");
+    }
+    
+    @Test
+    public void testPostGeotiffBz2TargetWorkspaceJsonUTF8() throws Exception {
+        String path = "geotiff/EmissiveCampania.tif.bz2";
+        InputStream stream = ImporterTestSupport.class.getResourceAsStream("test-data/" + path);
+
+        String creationRequest = "{\n" + 
+                "   \"import\": {\n" + 
+                "      \"targetWorkspace\": {\n" + 
+                "         \"workspace\": {\n" + 
+                "            \"name\": \"sf\"\n" + 
+                "         }\n" + 
+                "      }\n" + 
+                "   }\n" + 
+                "}";
+        ImportContext context = uploadGeotiffAndVerify(new File(path).getName(), stream, "application/x-bzip2", creationRequest, "application/json;charset=UTF-8");
+        final ImportTask task = context.getTasks().get(0);
+        assertEquals("sf", task.getStore().getWorkspace().getName());
     }
 
 

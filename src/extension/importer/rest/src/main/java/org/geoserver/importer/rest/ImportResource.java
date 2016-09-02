@@ -147,7 +147,7 @@ public class ImportResource extends BaseResource {
             }
 
             ImportData data = null;
-            if (MediaType.APPLICATION_JSON.equals(getRequest().getEntity().getMediaType())) {
+            if (MediaType.APPLICATION_JSON.equals(getRequest().getEntity().getMediaType(), true)) {
                 //read representation specified by user, use it to read 
                 ImportContext newContext = 
                     (ImportContext) getFormatPostOrPut().toObject(getRequest().getEntity());

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!-- 
+ (c) 2016 Open Source Geospatial Foundation - all rights reserved
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory. 
+-->
+
+<beans>
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-backup-restore-rest,"/>
+    <constructor-arg index="1" value="Backup Rstore REST"/>
+  </bean>
+  <!--
+   rest bindings
+    -->
+  <bean id="backupResource" class="org.geoserver.backuprestore.rest.BackupResource" scope="prototype">
+    <constructor-arg ref="backupFacade"/>
+  </bean>
+  <bean id="backupContextFinder" class="org.geoserver.backuprestore.rest.BackupResourceFinder">
+      <constructor-arg value="backupResource"/>
+  </bean>
+
+  <bean id="restoreResource" class="org.geoserver.backuprestore.rest.RestoreResource" scope="prototype">
+    <constructor-arg ref="backupFacade"/>
+  </bean>
+  <bean id="restoreContextFinder" class="org.geoserver.backuprestore.rest.RestoreResourceFinder">
+      <constructor-arg value="restoreResource"/>
+  </bean>
+  
+  <bean id="backupRestoreRestMapping" class="org.geoserver.rest.RESTMapping">
+    <property name="routes">
+      <map>
+        <entry>
+          <key>
+            <value>/br/backup</value>
+          </key>
+          <value>backupContextFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/br/backup/{backupId}.{format}</value>
+          </key>
+          <value>backupContextFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/br/restore</value>
+          </key>
+          <value>restoreContextFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/br/restore/{restoreId}.{format}</value>
+          </key>
+          <value>restoreContextFinder</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+</beans>

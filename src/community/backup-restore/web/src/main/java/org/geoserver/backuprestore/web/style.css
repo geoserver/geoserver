@@ -1,0 +1,55 @@
+.apply-link {
+  padding: 2px 0px 2px 20px;
+  background: transparent no-repeat left center;
+  background-image: url(bullet_go.png);
+}
+
+.working-link {
+  padding: 2px 0px 2px 20px;
+  background: transparent no-repeat left center;
+  background-image: url(indicator.gif);
+}
+
+.accept-link {
+  padding: 2px 0px 2px 20px;
+  background: transparent no-repeat left center;
+  background-image: url(accept.png);
+}
+
+.cancel-link {
+  padding: 2px 0px 2px 20px;
+  background: transparent no-repeat left center;
+  background-image: url(cancel.png);
+}
+
+.button-group .button-working span {
+  background: url(indicator.gif) no-repeat;
+  display: block;
+  margin: 5px;
+  padding-left: 25px;
+}
+
+ul.horizontal li {
+  display: inline;
+  padding-left:0.4em;
+  border-left:1px solid #ccc;
+}
+ 
+ul.horizontal li:first-child {
+  border-left:none;
+}
+
+div.button-group a.disabled {
+  border-color: #aaa; 
+  color: #aaa;
+  background: none; 
+  font-weight: normal; 
+  font-style: italic;
+  cursor: default;
+}
+
+legend span.no-border {
+  border-bottom-style: none;
+}
+
+  

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
+<!-- 
+ (c) 2016 Open Source Geospatial Foundation - all rights reserved
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory. 
+ -->
+ 
+ <beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<!-- stored job-meta in memory --> 
+	<bean id="jobRegistry" class="org.springframework.batch.core.configuration.support.MapJobRegistry" />
+	
+	<bean id="jobRepository"
+		class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+ 	
+	<bean class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor"> 
+        <property name="jobRegistry" ref="jobRegistry"/> 
+    </bean>
+     	
+	<bean id="transactionManager"
+		class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
+	 
+	<!-- bean id="jobLauncher"
+		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository" />	
+	</bean -->
+
+	<bean id="jobLauncherAsync"
+		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository" />
+		<property name="taskExecutor">
+			<bean class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+				<property name="concurrencyLimit" value="10"/>
+			</bean>
+		</property>		
+	</bean>
+
+	<bean id="jobOperator" class="org.springframework.batch.core.launch.support.SimpleJobOperator">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobRepository" ref="jobRepository" />
+        <property name="jobRegistry" ref="jobRegistry" />
+        <property name="jobLauncher" ref="jobLauncherAsync" />
+	</bean>
+	
+	<bean id="jobExplorer" class="org.springframework.batch.core.explore.support.MapJobExplorerFactoryBean">
+		<property name="repositoryFactory" ref="&amp;jobRepository" />
+	</bean>
+
+</beans>

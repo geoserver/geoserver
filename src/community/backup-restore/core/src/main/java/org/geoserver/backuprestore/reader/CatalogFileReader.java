@@ -46,10 +46,12 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geoserver.backuprestore.Backup;
+import org.geoserver.catalog.ValidationResult;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.item.NonTransientResourceException;
+import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.batch.item.xml.StaxUtils;
 import org.springframework.batch.item.xml.stax.DefaultFragmentEventReader;
@@ -257,6 +259,13 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
                     @SuppressWarnings("unchecked")
                     T mappedFragment = (T) unmarshal(StaxUtils.getSource(fragmentReader));
                     item = mappedFragment;
+                    
+                    try {
+                        firePostRead(item, resource);
+                    } catch (IOException e) {
+                        logValidationExceptions((ValidationResult) null, new UnexpectedInputException(
+                                "Could not write data.  The file may be corrupt.", e));
+                    }
                 } finally {
                     fragmentReader.markFragmentProcessed();
                 }

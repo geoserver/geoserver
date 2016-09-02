@@ -28,7 +28,9 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.util.Assert;
 
 /**
- * TODO
+ * Concrete implementation of the {@link AbstractCatalogBackupRestoreTasklet}.
+ * <br>
+ * Actually takes care of dumping/restoring GeoServer Security subsystem.
  * 
  * @author Alessio Fabiani, GeoSolutions
  *
@@ -108,8 +110,10 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
             /**
              * Create a new GeoServerSecurityManager instance using the INPUT DATA DIR.
              * 
-             * Try to load the configuration from there and if everything is ok: 1. Replace the security folders 2. Destroy and reload the appContext
-             * GeoServerSecurityManager 3. Issue SecurityManagerListener extensions handlePostChanged(...)
+             * Try to load the configuration from there and if everything is ok: 
+             * 1. Replace the security folders 
+             * 2. Destroy and reload the appContext GeoServerSecurityManager 
+             * 3. Issue SecurityManagerListener extensions handlePostChanged(...)
              */
             final String inputFolderURL = jobExecution.getJobParameters()
                     .getString(Backup.PARAM_INPUT_FILE_PATH);
@@ -143,29 +147,84 @@ public class CatalogSecurityManagerTasklet extends AbstractCatalogBackupRestoreT
                 }
             }
 
+            // Copy the Security files into the destination folder
+            
+            // First of all do a backup of the original security folder
+            Resource tmpDir = BackupUtils.tmpDir();
+            try {
+                Resources.copy(security, tmpDir);
+            } catch (IOException e) {
+                logValidationExceptions((ValidationResult) null,
+                        new UnexpectedJobExecutionException(
+                                "Exception occurred while storing GeoServer security and services settings!",
+                                new IOException("It was not possible to backup the original Security folder!", e)));
+            }
+            
+            if (Resources.exists(security) && !security.delete()) {
+                // Try to restore the original one
+                try {
+                    Resources.copy(tmpDir, security);
+                } catch (IOException e) {
+                    logValidationExceptions((ValidationResult) null,
+                            new UnexpectedJobExecutionException(
+                                    "Exception occurred while storing GeoServer security and services settings!",
+                                    new IOException("It was not possible to fully restore the original Security folder!", e)));
+                }
+                
+                logValidationExceptions((ValidationResult) null,
+                        new UnexpectedJobExecutionException(
+                                "Exception occurred while storing GeoServer security and services settings!",
+                                new IOException("It was not possible to cleanup the target security folder!")));
+            }
+            
+            
             // Do this *ONLY* when DRY-RUN-MODE == OFF
             if (!isDryRun()) {
-                // Copy the Security files into the destination folder
-                // TODO: Purge datadir option
-                security.delete();
                 try {
                     Resources.copy(sourceSecurityResource, security);
                 } catch (IOException e) {
+                    // Try to restore the original one
+                    try {
+                        Resources.copy(tmpDir, security);
+                    } catch (IOException e1) {
+                        logValidationExceptions((ValidationResult) null,
+                                new UnexpectedJobExecutionException(
+                                        "Exception occurred while storing GeoServer security and services settings!",
+                                        new IOException("It was not possible to fully restore the original Security folder!", e1)));
+                    }
+                    
                     logValidationExceptions((ValidationResult) null,
                             new UnexpectedJobExecutionException(
                                     "Exception occurred while storing GeoServer security and services settings!",
                                     e));
                 }
-
+    
                 // Reload Security Context
                 GeoServerSecurityManager securityContext = GeoServerExtensions
                         .bean(GeoServerSecurityManager.class);
                 securityContext.reload();
-
+    
                 for (SecurityManagerListener listener : GeoServerExtensions
                         .extensions(SecurityManagerListener.class)) {
                     listener.handlePostChanged(securityContext);
                 }
+            } else {
+                // Try to restore the original one
+                if (Resources.exists(security) && !security.delete()) {
+                    logValidationExceptions((ValidationResult) null,
+                            new UnexpectedJobExecutionException(
+                                    "Exception occurred while storing GeoServer security and services settings!",
+                                    new IOException("It was not possible to cleanup the target security folder!")));
+                }
+                
+                try {
+                    Resources.copy(tmpDir, security);
+                } catch (IOException e) {
+                    logValidationExceptions((ValidationResult) null,
+                            new UnexpectedJobExecutionException(
+                                    "Exception occurred while storing GeoServer security and services settings!",
+                                    new IOException("It was not possible to fully restore the original Security folder!", e)));
+                }                
             }
         }
 

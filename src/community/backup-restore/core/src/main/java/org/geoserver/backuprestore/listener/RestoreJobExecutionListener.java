@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import org.geoserver.GeoServerConfigurationLock;
-import org.geoserver.GeoServerConfigurationLock.LockType;
 import org.geoserver.backuprestore.Backup;
 import org.geoserver.backuprestore.RestoreExecutionAdapter;
 import org.geoserver.catalog.Catalog;
@@ -36,24 +34,16 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
 
     static Logger LOGGER = Logging.getLogger(RestoreJobExecutionListener.class);
 
-    public static final LockType lockType = LockType.WRITE;
-
     private Backup backupFacade;
 
     private RestoreExecutionAdapter restoreExecution;
 
-    GeoServerConfigurationLock locker;
-
-    public RestoreJobExecutionListener(Backup backupFacade, GeoServerConfigurationLock locker) {
+    public RestoreJobExecutionListener(Backup backupFacade) {
         this.backupFacade = backupFacade;
-        this.locker = locker;
     }
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        // Acquire GeoServer Configuration Lock in WRITE mode
-        locker.lock(lockType);
-
         // Prior starting the JobExecution, lets store a new empty GeoServer Catalog into the context.
         // It will be used to load the resources on a temporary in-memory configuration, which will be
         // swapped at the end of the Restore if everything goes well.
@@ -138,6 +128,8 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
                     if (!dryRun) {
                         backupFacade.getGeoServer().reload();
                     }
+                    
+                    backupFacade.getGeoServer().reset();
                 }
             }
             // Collect errors
@@ -148,9 +140,6 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
             } else {
                 this.restoreExecution.addWarningExceptions(Arrays.asList(e));
             }
-        } finally {
-            // Release locks on GeoServer Configuration
-            locker.unlock(lockType);
         }
     }
 }

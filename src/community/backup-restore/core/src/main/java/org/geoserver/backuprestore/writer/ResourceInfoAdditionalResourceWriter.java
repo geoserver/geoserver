@@ -18,7 +18,9 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.template.GeoServerTemplateLoader;
 
 /**
- * TODO
+ * On a {@link CatalogFireWriter} firePostWrite event call, dumps additional
+ * resources related to the {@link ResourceInfo}, like for instance the "ftl"
+ * Freemarker Templates definitions. 
  * 
  * @author Alessio Fabiani, GeoSolutions
  *

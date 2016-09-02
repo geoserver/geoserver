@@ -24,7 +24,7 @@ import org.springframework.core.io.Resource;
 public class CatalogItemReader<T> extends CatalogReader<T> {
 
     CloseableIterator<T> catalogIterator;
-
+    
     public CatalogItemReader(Class<T> clazz, Backup backupFacade,
             XStreamPersisterFactory xStreamPersisterFactory) {
         super(clazz, backupFacade, xStreamPersisterFactory);
@@ -35,17 +35,20 @@ public class CatalogItemReader<T> extends CatalogReader<T> {
 
     @Override
     public void setResource(Resource resource) {
+        // Nothing to do
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        // Nothing to do
     }
 
     @Override
     protected T doRead() throws Exception {
         try {
             if (catalogIterator.hasNext()) {
-                return (T) catalogIterator.next();
+                T item = (T) catalogIterator.next();
+                return item;
             }
         } catch (Exception e) {
             logValidationExceptions((T) null, e);

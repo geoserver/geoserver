@@ -80,6 +80,7 @@
   <modules>
     <module>core</module>
     <module>rest</module>
+    <module>extension</module>
     <module>web</module>
   </modules>
 

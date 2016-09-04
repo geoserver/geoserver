@@ -18,7 +18,8 @@ CSS is not a part of GeoServer by default, but is available as an extension.
    properties
    valuetypes
    directives
-   styledmarks
    cascading
+   nested
+   styledmarks
    cookbook/index
    examples/index

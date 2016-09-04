@@ -13,8 +13,14 @@ Here is an example distributing up to 50 small "slash" symbols in a 100x100 pixe
 
 .. code-block:: css
 
-    * { 
+    * {
       fill: symbol("shape://slash");
+      :fill {
+        size: 8;
+        stroke: blue;
+        stroke-width: 4;
+        stroke-linecap: round;
+      };
       stroke: black;
       -gt-fill-random: grid;
       -gt-fill-random-seed: 5;
@@ -22,15 +28,7 @@ Here is an example distributing up to 50 small "slash" symbols in a 100x100 pixe
       -gt-fill-random-symbol-count: 50;
       -gt-fill-random-tile-size: 100;
     }
-
-
-    :fill {
-      size: 8;
-      stroke: blue;
-      stroke-width: 4;
-      stroke-linecap: round;
-    }
-
+    
 .. figure:: ../../sld/extensions/images/random-slash.png
    :align: center
    
@@ -48,24 +46,26 @@ Randomized distributions can also be used for thematic mapping, for example, her
       stroke: black;
       -gt-fill-random: grid; 
       -gt-fill-random-tile-size: 100;
+    
+      :fill {
+        size: 2;
+        fill: darkgray;
+      };
+      /* @title low */
+      [PERSONS < 2000000] {
+        -gt-fill-random-symbol-count: 50;
+      };
+      /* @title mid */
+      [PERSONS >= 2000000] [PERSONS < 4000000] {
+        -gt-fill-random-symbol-count: 150;
+      };
+      /* @title high */
+      [PERSONS >= 4000000] {
+        -gt-fill-random-symbol-count: 500;
+      }
     }
 
-    :fill {
-      size: 2;
-      fill: darkgray;
-    }
-
-    [PERSONS < 2000000] {
-       -gt-fill-random-symbol-count: 50;
-    }
-
-    [PERSONS >= 2000000] [PERSONS < 4000000] {
-       -gt-fill-random-symbol-count: 150;
-    }
-
-    [PERSONS >= 4000000] {
-       -gt-fill-random-symbol-count: 500;
-    }
+    
 
 .. figure:: ../../sld/extensions/images/states-random.png
    :align: center

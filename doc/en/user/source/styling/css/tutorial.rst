@@ -477,6 +477,40 @@ The final CSS should looks like this::
 
    Final style with rule names
 
+Applying rule nesting
+^^^^^^^^^^^^^^^^^^^^^
+
+As a final variation, the style can be made more compact by leveraging rule nesting::
+
+  * {
+    stroke: black;
+    stroke-width: 0.2;
+    fill-opacity: 0.7;
+  
+    /* @title Population < 2M */
+    [PERSONS < 2000000] {
+      fill: #4DFF4D;
+    };
+    /* @title 2M < Population < 4M */
+    [PERSONS >= 2000000] [PERSONS < 4000000] {
+      fill: #FF4D4D;
+    };
+    /* @title Population > 4M */
+    [PERSONS >= 4000000] {
+      fill: #4D4DFF;
+    };
+    
+    /* Labelling */
+    [@scale < 20000000] {
+      label: [STATE_ABBR];
+      label-anchor: 0.5 0.5;
+      font-family: "Times New Roman";
+      font-fill: black;
+      font-style: normal;
+      font-size: 14;
+    }   
+  }
+
 CSS Workshop
 ^^^^^^^^^^^^
 

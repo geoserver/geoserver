@@ -9,8 +9,7 @@ import junit.framework.TestCase;
 /**
  * Unit test suite for {@link GeoServerExtensions}
  * 
- * @author Gabriel Roldan (TOPP)
- * @version $Id$
+ * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class GeoServerEnvironmentTest extends TestCase {
 

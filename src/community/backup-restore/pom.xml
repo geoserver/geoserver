@@ -17,7 +17,7 @@
 
   <dependencies>
 
-	<dependency>
+    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
     </dependency>

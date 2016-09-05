@@ -80,7 +80,7 @@ public class OAuth2RestTemplateTest extends GeoServerMockTestSupport {
         token.setTokenType("access_token");
         authenticator.authenticate(resource, restTemplate.getOAuth2ClientContext(), request);
     }
-    
+
     @Test
     public void testNonBearerToken() throws Exception {
         DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken("12345");

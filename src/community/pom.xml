@@ -75,6 +75,7 @@
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
           <descriptor>release/ext-geogig.xml</descriptor>
+          <descriptor>release/ext-oauth2-google.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -205,6 +206,7 @@
 	<module>ncwms</module>
         <module>web-resource</module>
         <module>gwc-sqlite</module>
+        <module>security</module>
       </modules>
     </profile>
     <profile>
@@ -462,7 +464,13 @@
       </modules>
     </profile>
     <profile>
-      <id>security</id>
+      <id>oauth2</id>
+      <modules>
+        <module>security</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>oauth2-google</id>
       <modules>
         <module>security</module>
       </modules>

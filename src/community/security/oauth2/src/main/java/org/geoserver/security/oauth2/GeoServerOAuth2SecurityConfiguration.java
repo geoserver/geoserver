@@ -17,33 +17,46 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.common.AuthenticationScheme;
 
 /**
- * Base OAuth2 Configuration Class. Each OAuth2 specific Extension must
- * implement its own {@link OAuth2RestTemplate}
+ * Base OAuth2 Configuration Class. Each OAuth2 specific Extension must implement its own {@link OAuth2RestTemplate}
  * 
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2SecurityConfiguration {
 
-	@Autowired
-	protected Environment env;
+    @Autowired
+    protected Environment env;
 
-	@Resource
-	@Qualifier("accessTokenRequest")
-	protected AccessTokenRequest accessTokenRequest;
+    @Resource
+    @Qualifier("accessTokenRequest")
+    private AccessTokenRequest accessTokenRequest;
 
-	@Bean
-	public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
-		AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
-		details.setId("google-oauth-client");
+    /**
+     * @return the accessTokenRequest
+     */
+    public AccessTokenRequest getAccessTokenRequest() {
+        return accessTokenRequest;
+    }
 
-		details.setGrantType("authorization_code");
-		details.setTokenName("authorization_code");
-		details.setUseCurrentUri(false);
-		details.setAuthenticationScheme(AuthenticationScheme.query);
-		details.setClientAuthenticationScheme(AuthenticationScheme.form);
+    /**
+     * @param accessTokenRequest the accessTokenRequest to set
+     */
+    public void setAccessTokenRequest(AccessTokenRequest accessTokenRequest) {
+        this.accessTokenRequest = accessTokenRequest;
+    }
 
-		return details;
-	}
+    @Bean
+    public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
+        AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
+        details.setId("google-oauth-client");
 
-	public abstract OAuth2RestTemplate geoServerOauth2RestTemplate();
+        details.setGrantType("authorization_code");
+        details.setTokenName("authorization_code");
+        details.setUseCurrentUri(false);
+        details.setAuthenticationScheme(AuthenticationScheme.query);
+        details.setClientAuthenticationScheme(AuthenticationScheme.form);
+
+        return details;
+    }
+
+    public abstract OAuth2RestTemplate geoServerOauth2RestTemplate();
 }

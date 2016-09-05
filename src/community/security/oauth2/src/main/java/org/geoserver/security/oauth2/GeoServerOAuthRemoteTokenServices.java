@@ -11,43 +11,43 @@ import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
 import org.springframework.web.client.RestOperations;
 
 /**
- * Base Class for GeoServer specific {@link RemoteTokenServices}. Each specific
- * GeoServer OAuth2 Extension must implement its own.
+ * Base Class for GeoServer specific {@link RemoteTokenServices}. Each specific GeoServer OAuth2 Extension must implement its own.
  * 
  * @author Alessio Fabiani, GeoSoltuions S.A.S.
  */
 public abstract class GeoServerOAuthRemoteTokenServices extends RemoteTokenServices {
 
-	protected static Logger LOGGER = LoggerFactory.getLogger(GeoServerOAuthRemoteTokenServices.class);
+    protected static Logger LOGGER = LoggerFactory
+            .getLogger(GeoServerOAuthRemoteTokenServices.class);
 
-	protected RestOperations restTemplate;
+    protected RestOperations restTemplate;
 
-	protected String checkTokenEndpointUrl;
+    protected String checkTokenEndpointUrl;
 
-	protected String clientId;
+    protected String clientId;
 
-	protected String clientSecret;
+    protected String clientSecret;
 
-	protected AccessTokenConverter tokenConverter;
+    protected AccessTokenConverter tokenConverter;
 
-	public void setRestTemplate(RestOperations restTemplate) {
-		this.restTemplate = restTemplate;
-	}
+    public void setRestTemplate(RestOperations restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
-	public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl) {
-		this.checkTokenEndpointUrl = checkTokenEndpointUrl;
-	}
+    public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl) {
+        this.checkTokenEndpointUrl = checkTokenEndpointUrl;
+    }
 
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
 
-	public void setClientSecret(String clientSecret) {
-		this.clientSecret = clientSecret;
-	}
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
 
-	public void setAccessTokenConverter(AccessTokenConverter accessTokenConverter) {
-		this.tokenConverter = accessTokenConverter;
-	}
+    public void setAccessTokenConverter(AccessTokenConverter accessTokenConverter) {
+        this.tokenConverter = accessTokenConverter;
+    }
 
 }

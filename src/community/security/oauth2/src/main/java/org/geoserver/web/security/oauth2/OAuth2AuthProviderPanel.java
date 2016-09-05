@@ -20,38 +20,40 @@ import org.geotools.util.logging.Logging;
  * 
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-public class OAuth2AuthProviderPanel extends PreAuthenticatedUserNameFilterPanel<OAuth2FilterConfig> {
+public class OAuth2AuthProviderPanel
+        extends PreAuthenticatedUserNameFilterPanel<OAuth2FilterConfig> {
 
-	private static final long serialVersionUID = 689778998902987791L;
+    private static final long serialVersionUID = 689778998902987791L;
 
-	static Logger LOGGER = Logging.getLogger("org.geoserver.security");
-	GeoServerDialog dialog;
+    static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
-	IModel<OAuth2FilterConfig> model;
+    GeoServerDialog dialog;
 
-	public OAuth2AuthProviderPanel(String id, IModel<OAuth2FilterConfig> model) {
-		super(id, model);
+    IModel<OAuth2FilterConfig> model;
 
-		this.dialog = (GeoServerDialog) get("dialog");
-		this.model = model;
+    public OAuth2AuthProviderPanel(String id, IModel<OAuth2FilterConfig> model) {
+        super(id, model);
 
-		add(new HelpLink("connectionParametersHelp", this).setDialog(dialog));
-		add(new HelpLink("accessTokenUriHelp", this).setDialog(dialog));
-		add(new HelpLink("userAuthorizationUriHelp", this).setDialog(dialog));
-		add(new HelpLink("redirectUriHelp", this).setDialog(dialog));
-		add(new HelpLink("checkTokenEndpointUrlHelp", this).setDialog(dialog));
-		add(new HelpLink("logoutUriHelp", this).setDialog(dialog));
-		add(new HelpLink("scopesHelp", this).setDialog(dialog));
-		add(new HelpLink("cliendIdHelp", this).setDialog(dialog));
-		add(new HelpLink("clientSecretHelp", this).setDialog(dialog));
+        this.dialog = (GeoServerDialog) get("dialog");
+        this.model = model;
 
-		add(new TextField<String>("accessTokenUri"));
-		add(new TextField<String>("userAuthorizationUri"));
-		add(new TextField<String>("redirectUri"));
-		add(new TextField<String>("checkTokenEndpointUrl"));
-		add(new TextField<String>("logoutUri"));
-		add(new TextField<String>("scopes"));
-		add(new TextField<String>("cliendId"));
-		add(new TextField<String>("clientSecret"));
-	}
+        add(new HelpLink("connectionParametersHelp", this).setDialog(dialog));
+        add(new HelpLink("accessTokenUriHelp", this).setDialog(dialog));
+        add(new HelpLink("userAuthorizationUriHelp", this).setDialog(dialog));
+        add(new HelpLink("redirectUriHelp", this).setDialog(dialog));
+        add(new HelpLink("checkTokenEndpointUrlHelp", this).setDialog(dialog));
+        add(new HelpLink("logoutUriHelp", this).setDialog(dialog));
+        add(new HelpLink("scopesHelp", this).setDialog(dialog));
+        add(new HelpLink("cliendIdHelp", this).setDialog(dialog));
+        add(new HelpLink("clientSecretHelp", this).setDialog(dialog));
+
+        add(new TextField<String>("accessTokenUri"));
+        add(new TextField<String>("userAuthorizationUri"));
+        add(new TextField<String>("redirectUri"));
+        add(new TextField<String>("checkTokenEndpointUrl"));
+        add(new TextField<String>("logoutUri"));
+        add(new TextField<String>("scopes"));
+        add(new TextField<String>("cliendId"));
+        add(new TextField<String>("clientSecret"));
+    }
 }

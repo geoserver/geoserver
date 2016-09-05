@@ -33,7 +33,7 @@ import org.springframework.web.client.RestTemplate;
 public class GoogleTokenServices extends GeoServerOAuthRemoteTokenServices {
 
     public GoogleTokenServices() {
-    	tokenConverter = new GoogleAccessTokenConverter();
+        tokenConverter = new GoogleAccessTokenConverter();
         restTemplate = new RestTemplate();
         ((RestTemplate) restTemplate).setErrorHandler(new DefaultResponseErrorHandler() {
             @Override
@@ -47,7 +47,8 @@ public class GoogleTokenServices extends GeoServerOAuthRemoteTokenServices {
     }
 
     @Override
-    public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException, InvalidTokenException {
+    public OAuth2Authentication loadAuthentication(String accessToken)
+            throws AuthenticationException, InvalidTokenException {
         Map<String, Object> checkTokenResponse = checkToken(accessToken);
 
         if (checkTokenResponse.containsKey("error")) {
@@ -57,7 +58,8 @@ public class GoogleTokenServices extends GeoServerOAuthRemoteTokenServices {
 
         transformNonStandardValuesToStandardValues(checkTokenResponse);
 
-        Assert.state(checkTokenResponse.containsKey("client_id"), "Client id must be present in response from auth server");
+        Assert.state(checkTokenResponse.containsKey("client_id"),
+                "Client id must be present in response from auth server");
         return tokenConverter.extractAuthentication(checkTokenResponse);
     }
 
@@ -66,7 +68,8 @@ public class GoogleTokenServices extends GeoServerOAuthRemoteTokenServices {
         formData.add("token", accessToken);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", getAuthorizationHeader(clientId, clientSecret));
-        String accessTokenUrl = new StringBuilder(checkTokenEndpointUrl).append("?access_token=").append(accessToken).toString();
+        String accessTokenUrl = new StringBuilder(checkTokenEndpointUrl).append("?access_token=")
+                .append(accessToken).toString();
         return postForMap(accessTokenUrl, formData, headers);
     }
 
@@ -86,11 +89,15 @@ public class GoogleTokenServices extends GeoServerOAuthRemoteTokenServices {
         }
     }
 
-    private Map<String, Object> postForMap(String path, MultiValueMap<String, String> formData, HttpHeaders headers) {
+    private Map<String, Object> postForMap(String path, MultiValueMap<String, String> formData,
+            HttpHeaders headers) {
         if (headers.getContentType() == null) {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         }
-        ParameterizedTypeReference<Map<String, Object>> map = new ParameterizedTypeReference<Map<String, Object>>() {};
-        return restTemplate.exchange(path, HttpMethod.POST, new HttpEntity<>(formData, headers), map).getBody();
+        ParameterizedTypeReference<Map<String, Object>> map = new ParameterizedTypeReference<Map<String, Object>>() {
+        };
+        return restTemplate
+                .exchange(path, HttpMethod.POST, new HttpEntity<>(formData, headers), map)
+                .getBody();
     }
 }

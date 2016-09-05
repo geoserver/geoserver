@@ -14,7 +14,7 @@ import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResour
  */
 public interface OAuth2SecurityConfiguration {
 
-	public OAuth2ProtectedResourceDetails geoServerOAuth2Resource();
+    public OAuth2ProtectedResourceDetails geoServerOAuth2Resource();
 
-	public OAuth2RestTemplate geoServerOauth2RestTemplate();
+    public OAuth2RestTemplate geoServerOauth2RestTemplate();
 }

@@ -23,18 +23,14 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 /**
  * Google specific REST remplates for OAuth2 protocol.
  * <p>
- * First of all the user must create an API key through the Google API
- * Credentials <br/>
- * See:
- * <string>https://console.developers.google.com/apis/credentials/oauthclient
- * </strong>
+ * First of all the user must create an API key through the Google API Credentials <br/>
+ * See: <string>https://console.developers.google.com/apis/credentials/oauthclient </strong>
  * </p>
  * <p>
  * The procedure will provide a new <b>Client ID</b> and <b>Client Secret</b>
  * </p>
  * <p>
- * Also the user must specify the <b>Authorized redirect URIs</b> pointing to
- * the GeoServer instances <br/>
+ * Also the user must specify the <b>Authorized redirect URIs</b> pointing to the GeoServer instances <br/>
  * Example:
  * <ul>
  * <li>http://localhost:8080/geoserver</li>
@@ -42,16 +38,14 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  * </ul>
  * </p>
  * <p>
- * The Google OAuth2 Filter Endpoint will automatically redirect the users to an
- * URL like the following one at first login <br/>
+ * The Google OAuth2 Filter Endpoint will automatically redirect the users to an URL like the following one at first login <br/>
  * <br/>
  * <code>
  * https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=my_client_id&redirect_uri=http://localhost:8080/geoserver&scope=https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile
  * </code>
  * </p>
  * <p>
- * Tipically a correct configuration for the Google OAuth2 Provider is like the
- * following:
+ * Tipically a correct configuration for the Google OAuth2 Provider is like the following:
  * </p>
  * <ul>
  * <li>Cliend Id: <b>my_client_id</b></li>
@@ -70,26 +64,28 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableOAuth2Client
 class GoogleOAuth2SecurityConfiguration extends GeoServerOAuth2SecurityConfiguration {
 
-	/**
-	 * Must have "session" scope
-	 */
-	@Bean
-	@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public OAuth2RestTemplate geoServerOauth2RestTemplate() {
+    /**
+     * Must have "session" scope
+     */
+    @Bean
+    @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+    public OAuth2RestTemplate geoServerOauth2RestTemplate() {
 
-		OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(geoServerOAuth2Resource(),
-				new DefaultOAuth2ClientContext(accessTokenRequest));
+        OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(geoServerOAuth2Resource(),
+                new DefaultOAuth2ClientContext(getAccessTokenRequest()));
 
-		AuthorizationCodeAccessTokenProvider authorizationCodeAccessTokenProvider = new AuthorizationCodeAccessTokenProvider();
-		authorizationCodeAccessTokenProvider.setStateMandatory(false);
+        AuthorizationCodeAccessTokenProvider authorizationCodeAccessTokenProvider = new AuthorizationCodeAccessTokenProvider();
+        authorizationCodeAccessTokenProvider.setStateMandatory(false);
 
-		AccessTokenProvider accessTokenProviderChain = new AccessTokenProviderChain(Arrays.<AccessTokenProvider> asList(
-				authorizationCodeAccessTokenProvider, new ImplicitAccessTokenProvider(),
-				new ResourceOwnerPasswordAccessTokenProvider(), new ClientCredentialsAccessTokenProvider()));
+        AccessTokenProvider accessTokenProviderChain = new AccessTokenProviderChain(
+                Arrays.<AccessTokenProvider> asList(authorizationCodeAccessTokenProvider,
+                        new ImplicitAccessTokenProvider(),
+                        new ResourceOwnerPasswordAccessTokenProvider(),
+                        new ClientCredentialsAccessTokenProvider()));
 
-		oAuth2RestTemplate.setAccessTokenProvider(accessTokenProviderChain);
+        oAuth2RestTemplate.setAccessTokenProvider(accessTokenProviderChain);
 
-		return oAuth2RestTemplate;
-	}
+        return oAuth2RestTemplate;
+    }
 
 }

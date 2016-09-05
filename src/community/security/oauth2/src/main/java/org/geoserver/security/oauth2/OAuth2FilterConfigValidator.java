@@ -22,84 +22,94 @@ import org.springframework.util.StringUtils;
  */
 public class OAuth2FilterConfigValidator extends FilterConfigValidator {
 
-	public OAuth2FilterConfigValidator(GeoServerSecurityManager securityManager) {
-		super(securityManager);
-	}
+    public OAuth2FilterConfigValidator(GeoServerSecurityManager securityManager) {
+        super(securityManager);
+    }
 
-	@Override
-	public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
+    @Override
+    public void validateFilterConfig(SecurityNamedServiceConfig config)
+            throws FilterConfigException {
 
-		if (config instanceof OAuth2FilterConfig) {
-			validateCASFilterConfig((OAuth2FilterConfig) config);
-		} else {
-			super.validateFilterConfig(config);
-		}
-	}
+        if (config instanceof OAuth2FilterConfig) {
+            validateOAuth2FilterConfig((OAuth2FilterConfig) config);
+        } else {
+            super.validateFilterConfig(config);
+        }
+    }
 
-	public void validateCASFilterConfig(OAuth2FilterConfig filterConfig) throws FilterConfigException {
-		if (StringUtils.hasLength(filterConfig.getLogoutUri())) {
-			try {
-				new URL(filterConfig.getLogoutUri());
-			} catch (MalformedURLException ex) {
-				throw createFilterException(OAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED);
-			}
-		}
-		super.validateFilterConfig((PreAuthenticatedUserNameFilterConfig) filterConfig);
+    public void validateOAuth2FilterConfig(OAuth2FilterConfig filterConfig)
+            throws FilterConfigException {
+        if (StringUtils.hasLength(filterConfig.getLogoutUri())) {
+            try {
+                new URL(filterConfig.getLogoutUri());
+            } catch (MalformedURLException ex) {
+                throw createFilterException(
+                        OAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED);
+            }
+        }
+        super.validateFilterConfig((PreAuthenticatedUserNameFilterConfig) filterConfig);
 
-		if (StringUtils.hasLength(filterConfig.getCheckTokenEndpointUrl()) == false)
-			throw createFilterException(OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_REQUIRED);
+        if (StringUtils.hasLength(filterConfig.getCheckTokenEndpointUrl()) == false)
+            throw createFilterException(
+                    OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_REQUIRED);
 
-		try {
-			new URL(filterConfig.getCheckTokenEndpointUrl());
-		} catch (MalformedURLException ex) {
-			throw createFilterException(OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED);
-		}
+        try {
+            new URL(filterConfig.getCheckTokenEndpointUrl());
+        } catch (MalformedURLException ex) {
+            throw createFilterException(
+                    OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED);
+        }
 
-		if (StringUtils.hasLength(filterConfig.getAccessTokenUri())) {
-			URL accessTokenUri = null;
-			try {
-				accessTokenUri = new URL(filterConfig.getAccessTokenUri());
-			} catch (MalformedURLException ex) {
-				throw createFilterException(OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED);
-			}
-			if ("https".equalsIgnoreCase(accessTokenUri.getProtocol()) == false)
-				throw createFilterException(OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_NOT_HTTPS);
-		}
+        if (StringUtils.hasLength(filterConfig.getAccessTokenUri())) {
+            URL accessTokenUri = null;
+            try {
+                accessTokenUri = new URL(filterConfig.getAccessTokenUri());
+            } catch (MalformedURLException ex) {
+                throw createFilterException(
+                        OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED);
+            }
+            if ("https".equalsIgnoreCase(accessTokenUri.getProtocol()) == false)
+                throw createFilterException(
+                        OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_NOT_HTTPS);
+        }
 
-		if (StringUtils.hasLength(filterConfig.getUserAuthorizationUri())) {
-			URL userAuthorizationUri = null;
-			try {
-				userAuthorizationUri = new URL(filterConfig.getUserAuthorizationUri());
-			} catch (MalformedURLException ex) {
-				throw createFilterException(OAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED);
-			}
-			if ("https".equalsIgnoreCase(userAuthorizationUri.getProtocol()) == false)
-				throw createFilterException(OAuth2FilterConfigException.OAUTH2_USERAUTHURI_NOT_HTTPS);
-		}
+        if (StringUtils.hasLength(filterConfig.getUserAuthorizationUri())) {
+            URL userAuthorizationUri = null;
+            try {
+                userAuthorizationUri = new URL(filterConfig.getUserAuthorizationUri());
+            } catch (MalformedURLException ex) {
+                throw createFilterException(
+                        OAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED);
+            }
+            if ("https".equalsIgnoreCase(userAuthorizationUri.getProtocol()) == false)
+                throw createFilterException(
+                        OAuth2FilterConfigException.OAUTH2_USERAUTHURI_NOT_HTTPS);
+        }
 
-		if (StringUtils.hasLength(filterConfig.getRedirectUri())) {
-			try {
-				new URL(filterConfig.getRedirectUri());
-			} catch (MalformedURLException ex) {
-				throw createFilterException(OAuth2FilterConfigException.OAUTH2_REDIRECT_URI_MALFORMED);
-			}
-		}
+        if (StringUtils.hasLength(filterConfig.getRedirectUri())) {
+            try {
+                new URL(filterConfig.getRedirectUri());
+            } catch (MalformedURLException ex) {
+                throw createFilterException(
+                        OAuth2FilterConfigException.OAUTH2_REDIRECT_URI_MALFORMED);
+            }
+        }
 
-		if (!StringUtils.hasLength(filterConfig.getCliendId())) {
-			throw createFilterException(OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED);
-		}
+        if (!StringUtils.hasLength(filterConfig.getCliendId())) {
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED);
+        }
 
-		if (!StringUtils.hasLength(filterConfig.getClientSecret())) {
-			throw createFilterException(OAuth2FilterConfigException.OAUTH2_CLIENT_SECRET_REQUIRED);
-		}
+        if (!StringUtils.hasLength(filterConfig.getClientSecret())) {
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_CLIENT_SECRET_REQUIRED);
+        }
 
-		if (!StringUtils.hasLength(filterConfig.getScopes())) {
-			throw createFilterException(OAuth2FilterConfigException.OAUTH2_SCOPE_REQUIRED);
-		}
+        if (!StringUtils.hasLength(filterConfig.getScopes())) {
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_SCOPE_REQUIRED);
+        }
 
-	}
+    }
 
-	protected OAuth2FilterConfigException createFilterException(String errorid, Object... args) {
-		return new OAuth2FilterConfigException(errorid, args);
-	}
+    protected OAuth2FilterConfigException createFilterException(String errorid, Object... args) {
+        return new OAuth2FilterConfigException(errorid, args);
+    }
 }

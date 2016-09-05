@@ -24,51 +24,53 @@ import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
  * 
  * @author Alessio Fabiani, GeoSolutions
  */
-public class GeoServerOAuthAuthenticationProvider extends AbstractFilterProvider implements SecurityManagerListener {
+public class GeoServerOAuthAuthenticationProvider extends AbstractFilterProvider
+        implements SecurityManagerListener {
 
-	static Logger LOGGER = Logging.getLogger("org.geoserver.security.outh2");
+    static Logger LOGGER = Logging.getLogger("org.geoserver.security.outh2");
 
-	RemoteTokenServices tokenServices;
+    RemoteTokenServices tokenServices;
 
-	@Autowired
-	GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration;
+    @Autowired
+    GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration;
 
-	@Autowired
-	OAuth2RestTemplate geoServerOauth2RestTemplate;
+    @Autowired
+    OAuth2RestTemplate geoServerOauth2RestTemplate;
 
-	private ApplicationContext context;
+    private ApplicationContext context;
 
-	public GeoServerOAuthAuthenticationProvider(GeoServerSecurityManager securityManager) {
-		context = securityManager.getApplicationContext();
-		tokenServices = context.getBean(GeoServerOAuthRemoteTokenServices.class);
-		securityManager.addListener(this);
-	}
+    public GeoServerOAuthAuthenticationProvider(GeoServerSecurityManager securityManager) {
+        context = securityManager.getApplicationContext();
+        tokenServices = context.getBean(GeoServerOAuthRemoteTokenServices.class);
+        securityManager.addListener(this);
+    }
 
-	@Override
-	public void configure(XStreamPersister xp) {
-		super.configure(xp);
-		xp.getXStream().alias("oauth2Authentication", OAuth2FilterConfig.class);
-	}
+    @Override
+    public void configure(XStreamPersister xp) {
+        super.configure(xp);
+        xp.getXStream().alias("oauth2Authentication", OAuth2FilterConfig.class);
+    }
 
-	@Override
-	public Class<? extends GeoServerSecurityFilter> getFilterClass() {
-		return GeoServerOAuthAuthenticationFilter.class;
-	}
+    @Override
+    public Class<? extends GeoServerSecurityFilter> getFilterClass() {
+        return GeoServerOAuthAuthenticationFilter.class;
+    }
 
-	@Override
-	public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
-		return new GeoServerOAuthAuthenticationFilter(config, tokenServices, oauth2SecurityConfiguration,
-				geoServerOauth2RestTemplate);
-	}
+    @Override
+    public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
+        return new GeoServerOAuthAuthenticationFilter(config, tokenServices,
+                oauth2SecurityConfiguration, geoServerOauth2RestTemplate);
+    }
 
-	@Override
-	public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
-		return new OAuth2FilterConfigValidator(securityManager);
-	}
+    @Override
+    public SecurityConfigValidator createConfigurationValidator(
+            GeoServerSecurityManager securityManager) {
+        return new OAuth2FilterConfigValidator(securityManager);
+    }
 
-	@Override
-	public void handlePostChanged(GeoServerSecurityManager securityManager) {
-		// Nothing to do
-	}
+    @Override
+    public void handlePostChanged(GeoServerSecurityManager securityManager) {
+        // Nothing to do
+    }
 
 }

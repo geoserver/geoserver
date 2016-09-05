@@ -14,13 +14,13 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class OAuth2AuthProviderPanelInfo
-		extends AuthenticationFilterPanelInfo<OAuth2FilterConfig, OAuth2AuthProviderPanel> {
+        extends AuthenticationFilterPanelInfo<OAuth2FilterConfig, OAuth2AuthProviderPanel> {
 
-	private static final long serialVersionUID = 9128733240285123850L;
+    private static final long serialVersionUID = 9128733240285123850L;
 
-	public OAuth2AuthProviderPanelInfo() {
-		setComponentClass(OAuth2AuthProviderPanel.class);
-		setServiceClass(GeoServerOAuthAuthenticationFilter.class);
-		setServiceConfigClass(OAuth2FilterConfig.class);
-	}
+    public OAuth2AuthProviderPanelInfo() {
+        setComponentClass(OAuth2AuthProviderPanel.class);
+        setServiceClass(GeoServerOAuthAuthenticationFilter.class);
+        setServiceConfigClass(OAuth2FilterConfig.class);
+    }
 }

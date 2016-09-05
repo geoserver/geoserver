@@ -17,24 +17,24 @@ import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticat
  */
 public class GoogleUserAuthenticationConverter extends DefaultUserAuthenticationConverter {
 
-	private static Object USERNAME_KEY = USERNAME;
-	
-	/**
-	 * Default Constructor.
-	 * 
-	 * @param username_key
-	 */
-	public GoogleUserAuthenticationConverter(String username_key) {
-		super();
-		
-		USERNAME_KEY = username_key;
-	}
-	
-	@Override
-	public Authentication extractAuthentication(Map<String, ?> map) {
-		if (map.containsKey(USERNAME_KEY)) {
-			return new UsernamePasswordAuthenticationToken(map.get(USERNAME_KEY), "N/A", null);
-		}
-		return null;
-	}
+    private static Object USERNAME_KEY = USERNAME;
+
+    /**
+     * Default Constructor.
+     * 
+     * @param username_key
+     */
+    public GoogleUserAuthenticationConverter(String username_key) {
+        super();
+
+        USERNAME_KEY = username_key;
+    }
+
+    @Override
+    public Authentication extractAuthentication(Map<String, ?> map) {
+        if (map.containsKey(USERNAME_KEY)) {
+            return new UsernamePasswordAuthenticationToken(map.get(USERNAME_KEY), "N/A", null);
+        }
+        return null;
+    }
 }

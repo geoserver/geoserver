@@ -1,4 +1,4 @@
-.. _ysld.reference:
+.. _ysld_reference:
 
 YSLD reference
 ==============

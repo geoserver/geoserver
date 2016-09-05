@@ -4,6 +4,7 @@
  */
 package org.geoserver.params.extractor;
 
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.resource.Resource;
@@ -22,7 +23,7 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
 
     private List<Rule> rules;
 
-    public Filter(ResourceStore dataDirectory) {
+    public Filter(GeoServerDataDirectory dataDirectory) {
         Resource resource = dataDirectory.get(RulesDao.getRulesPath());
         rules = RulesDao.getRules(resource.in());
         resource.addListener(notify -> rules = RulesDao.getRules(resource.in()));

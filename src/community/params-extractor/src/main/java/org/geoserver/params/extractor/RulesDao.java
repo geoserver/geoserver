@@ -4,6 +4,7 @@
  */
 package org.geoserver.params.extractor;
 
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
@@ -33,7 +34,7 @@ public final class RulesDao {
     private static final Logger LOGGER = Logging.getLogger(RulesDao.class);
     private static final String NEW_LINE = System.getProperty("line.separator");
 
-    private static final ResourceStore DATA_DIRECTORY = (ResourceStore) GeoServerExtensions.bean("dataDirectory");
+    private static final GeoServerDataDirectory DATA_DIRECTORY = (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
 
     public static String getRulesPath() {
         return "params-extractor/extraction-rules.xml";

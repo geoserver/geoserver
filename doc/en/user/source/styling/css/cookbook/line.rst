@@ -224,12 +224,11 @@ Code
     * { 
       stroke: #333333, symbol("shape://vertline");
       stroke-width: 3px;
-    }
-
-    :nth-stroke(2) {
-      size: 12;
-      stroke: #333333;
-      stroke-width: 1px;
+      :nth-stroke(2) {
+        size: 12;
+        stroke: #333333;
+        stroke-width: 1px;
+      }
     }
 
 Details
@@ -238,7 +237,7 @@ Details
 In this example a multi-valued stroke is used: the fist value makes the renderer paint a dark gray line (3 pixels wide, according to the "stroke-width" attribute),
 whilst the second value makes the line be painted by repeating the "shape://vertline" symbol over and over, creating the hatching effect.
 
-In order to specify how the symbol itself should be painted, the ":nth-stroke(2)" pseudo-selector is used at **Line 6** to specify the options for the repeated symbol: 
+In order to specify how the symbol itself should be painted, the ":nth-stroke(2)" pseudo-selector is used at **Line 4** to specify the options for the repeated symbol: 
 in particular with are instructing the renderer to create a 12px wide symbol, with a dark gray stroke 1 pixel wide.
 
 Spaced graphic symbols
@@ -262,21 +261,21 @@ Code
     * { 
       stroke: symbol(circle);
       stroke-dasharray: 4 6;
+      :stroke {
+        size: 4;
+        fill: #666666;
+        stroke: #333333;
+        stroke-width: 1px;
+      }
     }
 
-    :stroke {
-      size: 4;
-      fill: #666666;
-      stroke: #333333;
-      stroke-width: 1px;
-    }
 
 Details
 ~~~~~~~
 
 This example, like others before, uses ``symbol(circle)`` to place a graphic symbol along a line. 
 
-The symbol details are specified in the rule at **Line 6** using
+The symbol details are specified in the nested rule at **Line 4** using
 the ":stroke" pseudo-selector, creating a gray fill circle, 4 pixels wide, with a dark gray outline.
 
 The spacing between symbols is controlled with the ``stroke-dasharray`` at **line 3**, which specifies 4 pixels of pen-down (just enough to draw the circle) and 6 pixels of pen-up, 
@@ -320,12 +319,11 @@ Code
       stroke-width: 1px;
       stroke-dasharray: 10 10, 5 15;
       stroke-dashoffset: 0, 7.5;
-    }
-
-    :nth-stroke(2) {
-      stroke: #000033;
-      stroke-width: 1px;
-      size: 5px;
+      :nth-stroke(2) {
+        stroke: #000033;
+        stroke-width: 1px;
+        size: 5px;
+      }
     }
 
 Details
@@ -335,7 +333,7 @@ Details
 | The first stroke is a solid blue line, 1 pixel wide, with a dash array of "10 10".
 | The second one instead is a repeated circle, using a dash array of "5 15" and with a dash offset of 7.5. This makes the sequence start with 12.5 pixels of white space, then a circle (which is then centered between the two line segments of the other pattern), then 15 pixels of white space, and so on.
 
-The circle portrayal details are specified using the pseudo selector "nth-stroke(2)" at **line 8**, asking for circles that
+The circle portrayal details are specified using the pseudo selector "nth-stroke(2)" at **line 6**, asking for circles that
 are 5 pixels wide, not filled, and with a dark blue outline.
 
 .. _css_cookbook_lines_defaultlabel:

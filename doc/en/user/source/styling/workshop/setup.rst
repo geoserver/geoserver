@@ -1,4 +1,4 @@
-.. _css_workshop_setup:
+.. _styling_workshop_setup:
 
 Course Data
 ===========

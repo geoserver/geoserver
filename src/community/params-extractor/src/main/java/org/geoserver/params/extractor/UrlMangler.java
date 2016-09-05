@@ -4,6 +4,7 @@
  */
 package org.geoserver.params.extractor;
 
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
@@ -23,7 +24,7 @@ public class UrlMangler implements URLMangler {
 
     private List<EchoParameter> echoParameters;
 
-    public UrlMangler(ResourceStore dataDirectory) {
+    public UrlMangler(GeoServerDataDirectory dataDirectory) {
         Resource resource = dataDirectory.get(EchoParametersDao.getEchoParametersPath());
         echoParameters = EchoParametersDao.getEchoParameters(resource.in());
         resource.addListener(notify -> echoParameters = EchoParametersDao.getEchoParameters(resource.in()));

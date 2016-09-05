@@ -67,6 +67,10 @@ used to style selectors:
     * ``:nth-symbol(n)`` specifies that a rule applies to the symbol used for
       the nth stacked symbol on a feature, regardless of which context it is
       used in.
+      
+These pseudoclass selectors can be used in a top level rule, but starting with GeoServer 2.10,
+they are more commonly used in sub-rules close to the mark property, to get better readability
+(see example below).
 
 Symbol styling properties
 -------------------------
@@ -95,26 +99,24 @@ As an example, consider a situation where you are styling a layer that includes 
 
     [usage='hospital'] {
       mark: symbol('circle'), symbol('cross');
-    }
-
-    [usage='hospital'] :nth-mark(1) {
-      size: 16px;
-      fill: white;
-      stroke: red;
-    }
-
-    [usage='hospital'] :nth-mark(2) {
-      size: 12px;
-      fill: red;
+      :nth-mark(1) {
+        size: 16px;
+        fill: white;
+        stroke: red;
+      };
+      :nth-mark(2) {
+        size: 12px;
+        fill: red;
+      }
     }
 
 Also an windbarb example where you get wind speed and direction from your data fields horSpeed and horDir (direction)::
 
     * {
-    /* select windbard based on speed( here in meters per second, and south hemisphere) */
-     mark: symbol('windbarbs://default(${horSpeed})[m/s]?hemisphere=s');
+      /* select windbard based on speed( here in meters per second, and south hemisphere) */
+      mark: symbol('windbarbs://default(${horSpeed})[m/s]?hemisphere=s');
     
-    /* rotate windbarb based on horDir property (in degrees) */
+      /* rotate windbarb based on horDir property (in degrees) */
       mark-rotation: [horDir];
     
       mark-size: 20;

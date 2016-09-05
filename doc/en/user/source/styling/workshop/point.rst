@@ -1,4 +1,4 @@
-.. _css_workshop_point:
+.. _styling_workshop_point:
 
 Points
 ======

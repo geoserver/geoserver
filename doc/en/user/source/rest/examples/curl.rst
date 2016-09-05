@@ -896,6 +896,8 @@ It is also possible to filter against both property and value. To retrieve only 
    curl -u admin:geoserver -XGET -H "Accept: text/xml"
      http://localhost:8080/geoserver/rest/about/manifest.xml?key=GeoServerModule&value=extension
 
+.. _rest_examples_curl_imagemosaic:
+
 Uploading and modifying a image mosaic
 --------------------------------------
 

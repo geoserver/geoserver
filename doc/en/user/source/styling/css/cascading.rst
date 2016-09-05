@@ -1,7 +1,7 @@
 .. _css_cascading:
 
-Understanding CSS "Cascading"
-=============================
+Understanding Cascading in CSS 
+==============================
 
 Cascading Style Sheets are the styling language of the web, use a simple syntax, but sometimes their
 simplicity can be deceitful if the writer is not aware of how the "Cascading" part of it works.

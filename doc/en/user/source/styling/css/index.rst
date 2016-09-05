@@ -12,14 +12,15 @@ CSS is not a part of GeoServer by default, but is available as an extension.
 
    install
    tutorial
-   workshop/index
    filters
    metadata
    multivalueprops
    properties
    valuetypes
    directives
-   styledmarks
    cascading
+   nested
+   transformation
+   styledmarks
    cookbook/index
    examples/index

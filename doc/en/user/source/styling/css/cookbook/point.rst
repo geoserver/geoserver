@@ -63,17 +63,17 @@ Code
     * { 
       mark: symbol(circle); 
       mark-size: 6px;
+      :mark {
+        fill: red;
+      }
     }
 
-    :mark {
-      fill: red;
-    }
 
 
 Details
 ~~~~~~~
 
-There are two rules in this CSS, the first one (**lines 1-4**) matches all features, and asks them to be depicted with a circular mark, 6 pixels wide. The second rule uses a symbol selector, ``:mark``, which selects all marks in the previous rules, and allows to specify how to fill the contents of the circle, in this case, with a solid red fill (a stand alone fill property would have been interpreted as the request to fill all polygons in the input with solid red instead).
+There are two rules in this CSS, the outer one matches all features, and asks them to be depicted with a circular mark, 6 pixels wide. The nested rule uses a symbol selector, ``:mark``, which selects all marks, and allows to specify how to fill the contents of the circle, in this case, with a solid red fill (a stand alone fill property would have been interpreted as the request to fill all polygons in the input with solid red instead).
 
 .. _css_cookbook_points_simplepointwithstroke:
 
@@ -96,12 +96,11 @@ Code
     * { 
       mark: symbol(circle); 
       mark-size: 6px;
-    }
-    
-    :mark {
-      fill: red;
-      stroke: black;
-      stroke-width: 2px;
+      :mark {
+        fill: red;
+        stroke: black;
+        stroke-width: 2px;
+      }
     }
 
 Details
@@ -130,17 +129,15 @@ Code
       mark: symbol(square); 
       mark-size: 12px;
       mark-rotation: 45;
+      :mark {
+        fill: #009900;
+      }
     }
-
-    :mark {
-      fill: #009900;
-    }
-
 
 Details
 ~~~~~~~
 
-In this example, **line 2** sets the shape to be a square, with **line 8** setting the color to a dark green (``#009900``).  **Line 3** sets the size of the square to be 12 pixels, and **line 4** set the rotation is to 45 degrees.
+In this example, **line 2** sets the shape to be a square, with **line 6** setting the color to a dark green (``#009900``).  **Line 3** sets the size of the square to be 12 pixels, and **line 4** set the rotation is to 45 degrees.
 
 
 Transparent triangle
@@ -162,19 +159,18 @@ Code
     * { 
       mark: symbol(triangle); 
       mark-size: 12;
-    }
-
-    :mark {
-      fill: #009900;
-      fill-opacity: 0.2;
-      stroke: black;
-      stroke-width : 2px;
+      :mark {
+        fill: #009900;
+        fill-opacity: 0.2;
+        stroke: black;
+        stroke-width : 2px;
+      }
     }
 
 Details
 ~~~~~~~
 
-In this example, **line 2** once again sets the shape, in this case to a triangle, where **line 3** sets the mark size to 12 pixels.  **Line 6** sets the fill color to a dark green (``#009900``) and **line 7** sets the opacity to 0.2 (20% opaque).  An opacity value of 1 means that the shape is drawn 100% opaque, while an opacity value of 0 means that the shape is drawn 0% opaque, or completely transparent.  The value of 0.2 (20% opaque) means that the fill of the points partially takes on the color and style of whatever is drawn beneath it.  In this example, since the background is white, the dark green looks lighter.  Were the points imposed on a dark background, the resulting color would be darker.  **Line 8** set the stroke color to black and width to 2 pixels.
+In this example, **line 2** once again sets the shape, in this case to a triangle, where **line 3** sets the mark size to 12 pixels.  **Line 5** sets the fill color to a dark green (``#009900``) and **line 6** sets the opacity to 0.2 (20% opaque).  An opacity value of 1 means that the shape is drawn 100% opaque, while an opacity value of 0 means that the shape is drawn 0% opaque, or completely transparent.  The value of 0.2 (20% opaque) means that the fill of the points partially takes on the color and style of whatever is drawn beneath it.  In this example, since the background is white, the dark green looks lighter.  Were the points imposed on a dark background, the resulting color would be darker.  **Line 8** set the stroke color to black and width to 2 pixels.
 
 Point as graphic
 ----------------
@@ -230,12 +226,10 @@ Code
       mark-size: 6px;
       label: [name];
       font-fill: black;
+      :mark {
+        fill: red;
+      }
     }
-
-    :mark {
-      fill: red;
-    }
-
 
 Details
 ~~~~~~~
@@ -272,10 +266,10 @@ Code
       font-weight: bold;
       label-anchor: 0.5 0;
       label-offset: 0 5;
-    }
+      :mark {
+        fill: red;
+      }
 
-    :mark {
-      fill: red;
     }
 
 Details
@@ -313,16 +307,15 @@ Code
       label-anchor: 0.5 0;
       label-offset: 0 25;
       label-rotation: -45;
-    }
-
-    :mark {
-      fill: red;
+      :mark {
+        fill: red;
+      }
     }
 
 Details
 ~~~~~~~
 
-This example is similar to the :ref:`css_cookbook_points_pointwithstyledlabel`, but there are three important differences.  **Line ** specifies 25 pixels of vertical displacement.  **Line 11** specifies a rotation of "-45" or 45 degrees counter-clockwise.  (Rotation values increase clockwise, which is why the value is negative.)  Finally, **line 5** sets the font color to be a shade of purple (``#99099``).
+This example is similar to the :ref:`css_cookbook_points_pointwithstyledlabel`, but there are three important differences.  **Line 10** specifies 25 pixels of vertical displacement.  **Line 11** specifies a rotation of "-45" or 45 degrees counter-clockwise.  (Rotation values increase clockwise, which is why the value is negative.)  Finally, **line 5** sets the font color to be a shade of purple (``#99099``).
 
 Note that the displacement takes effect before the rotation during rendering, so in this example, the 25 pixel vertical displacement is itself rotated 45 degrees.
 
@@ -345,30 +338,29 @@ Code
 
     * {
       mark: symbol(circle);
+      :mark {
+        fill: #0033CC;
+      };
+      [pop < 50000] {
+        mark-size: 8;
+      };
+      [pop >= 50000] [pop < 100000] {
+        mark-size: 12;
+      };
+      [pop >= 100000] {
+        mark-size: 16;
+      }
     }
 
-    :mark {
-      fill: #0033CC;
-    }
+    
 
-    [pop < 50000] {
-      mark-size: 8;
-    }
-
-    [pop >= 50000] [pop < 100000] {
-      mark-size: 12;
-    }
-
-    [pop >= 100000] {
-      mark-size: 16;
-    }
 
 Details
 ~~~~~~~
    
 .. note:: Refer to the :ref:`css_cookbook_points_attributes` to see the attributes for this data.  This example has eschewed labels in order to simplify the style, but you can refer to the example :ref:`css_cookbook_points_pointwithstyledlabel` to see which attributes correspond to which points.
 
-This style shows how the basic mark setup (red circle, default size) can be overridden via cascading, changing the size depending on the pop attribute value, with smaller values yielding a smaller circle, and larger values yielding a larger circle.
+This style shows how the basic mark setup (red circle, default size) can be overridden via cascading/nesting, changing the size depending on the pop attribute value, with smaller values yielding a smaller circle, and larger values yielding a larger circle.
 
 The three rules are designed as follows:
 
@@ -392,7 +384,7 @@ The three rules are designed as follows:
      - Greater than 100,000
      - 16
 
-The result of this style is that cities with larger populations have larger points. In particular, the rule at **Line 9** matches all features whose "pop" attribute is less than 50000, the rule at **Line 13** matches all features whose "pop" attribute is between 50000 and 100000 (mind the space between the two predicates, it is equivalent to and AND, if we had used a comma it would have been an OR instead), while the rule at **Line 17** matches all features with more than 100000 inhabitants.
+The result of this style is that cities with larger populations have larger points. In particular, the rule at **Line 6** matches all features whose "pop" attribute is less than 50000, the rule at **Line 9** matches all features whose "pop" attribute is between 50000 and 100000 (mind the space between the two predicates, it is equivalent to and AND, if we had used a comma it would have been an OR instead), while the rule at **Line 12** matches all features with more than 100000 inhabitants.
 
 
 Zoom-based point
@@ -480,3 +472,23 @@ The rules use the "@scale" pseudo-attribute, which refers to the current scale d
 
 The result of this style is that points are drawn larger as one zooms in and smaller as one zooms out. 
 
+While this example uses on purpose cascading to show a different possible setup, the same style could be written as:
+
+.. code-block:: css 
+   :linenos:
+
+    * {
+      mark: symbol(circle);
+      :mark {
+        fill: #CC3300;
+      };
+      [@scale < 16000000] {
+        mark-size: 12;
+      };
+      [@scale > 16000000] [@scale < 32000000] {
+        mark-size: 8;
+      };
+      [@scale > 32000000] {
+        mark-size: 4;
+      }
+    }

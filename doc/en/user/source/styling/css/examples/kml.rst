@@ -3,8 +3,8 @@
 KML
 ===
 
-Detecting switch from raster to vector representation in KML
-------------------------------------------------------------
+Detecting raster to vector switch in KML
+----------------------------------------
 
 GeoServer 2.4 added a new icon server that KML output uses to make sure the point symbolisers look the same as in 
 a normal WMS call no matter what scale they are looked at.

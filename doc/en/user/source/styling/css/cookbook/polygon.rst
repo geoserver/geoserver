@@ -191,21 +191,19 @@ Code
  
     * { 
       fill: symbol("shape://times");
+      :fill {
+        size: 16;
+        stroke: #990099;
+        stroke-width: 1px;
+      }
     }
-
-    :nth-fill(1) {
-      size: 16;
-      stroke: #990099;
-      stroke-width: 1px;
-    }
-
 
 Details
 ~~~~~~~
 
 In this example the fill is specified to be the "shape://times" symbol, which is going to be tiled creating a cross-hatch effect.
 
-The details of the hatch are specified at **line 5***, where the pseudo-selector ":nth-fill(1)" is used to match the contents of the first fill, and specify that we want a symbol large 16 pixels (the larger the symbol, the coarser the cross hatch will be), and painted with a 1 pixel wide purple stroke.
+The details of the hatch are specified at **line 3***, where the pseudo-selector ":fill" is used to match the contents of the fill, and specify that we want a symbol large 16 pixels (the larger the symbol, the coarser the cross hatch will be), and painted with a 1 pixel wide purple stroke.
 
 .. _css_cookbook_polygons_polygonwithdefaultlabel:
 

@@ -1,0 +1,27 @@
+<assembly>
+  <id>backup-restore-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+	     <include>*backup-restore*</include>
+		 <include>spring-batch*.jar</include>
+		 <include>spring-batch*.jar</include>
+		 <include>spring-integration*.jar</include>
+		 <include>spring-messaging*.jar</include>
+		 <include>commons-exec*.jar</include>
+		 <include>commons-vfs2*.jar</include>
+		 <include>commons-fileupload*.jar</include>
+		 <include>org.restlet*.jar</include>
+		 <include>prettytime*.jar</include>
+      </includes>      
+      <excludes>
+      </excludes>
+    </fileSet>
+  </fileSets>
+</assembly>

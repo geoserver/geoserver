@@ -12,3 +12,4 @@ This section discusses the styling of geospatial data served through GeoServer.
    sld/index
    css/index
    ysld/index
+   workshop/index

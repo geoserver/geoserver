@@ -386,7 +386,6 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         try {
             final String dsName = "GS-ENV-TEST-DS";
             ds.setName(dsName);
-            ds.setDescription("${test.env}");
 
             getCatalog().save(ds);
 
@@ -394,21 +393,37 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
             DataStoreInfo expandedDs = getCatalog().getResourcePool().clone(ds, true);
 
-            assertTrue(ds.getDescription().equals("${test.env}"));
             assertTrue(ds.getConnectionParameters().get("host").equals("${jdbc.host}"));
             assertTrue(ds.getConnectionParameters().get("port").equals("${jdbc.port}"));
             
             if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-                assertTrue(expandedDs.getDescription().equals(gsEnvironment.resolveValue("${test.env}")));
                 assertTrue(expandedDs.getConnectionParameters().get("host").equals(gsEnvironment.resolveValue("${jdbc.host}")));
                 assertTrue(expandedDs.getConnectionParameters().get("port").equals(gsEnvironment.resolveValue("${jdbc.port}")));
             } else {
-                assertTrue(expandedDs.getDescription().equals("${test.env}"));
                 assertTrue(expandedDs.getConnectionParameters().get("host").equals("${jdbc.host}"));
                 assertTrue(expandedDs.getConnectionParameters().get("port").equals("${jdbc.port}"));                
             }
         } finally {
             getCatalog().remove(ds);
         }
+    }
+    
+    @Test
+    public void testCloneStoreInfo() throws Exception {
+        Catalog catalog = getCatalog();
+        
+        DataStoreInfo source1 = catalog.getDataStores().get(0);
+        DataStoreInfo clonedDs = catalog.getResourcePool().clone(source1, false);
+        assertNotNull(source1);
+        assertNotNull(clonedDs);
+        
+        assertEquals(source1, clonedDs);
+        
+        CoverageStoreInfo source2 = catalog.getCoverageStores().get(0);
+        CoverageStoreInfo clonedCs = catalog.getResourcePool().clone(source2, false);
+        assertNotNull(source2);
+        assertNotNull(clonedCs);
+        
+        assertEquals(source2, clonedCs);
     }
 }

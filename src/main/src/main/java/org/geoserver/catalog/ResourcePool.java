@@ -42,6 +42,7 @@ import javax.measure.unit.SI;
 import javax.measure.unit.Unit;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.SerializationUtils;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDParticle;
 import org.eclipse.xsd.XSDSchema;
@@ -56,6 +57,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.feature.retype.RetypingFeatureSource;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -2343,35 +2345,38 @@ public class ResourcePool {
     }
     
     public DataStoreInfo clone(final DataStoreInfo source, boolean allowEnvParametrization) {
-        DataStoreInfo target = catalog.getFactory().createDataStore();
-        target.setEnabled(source.isEnabled());
-        target.setName(source.getName());
-        target.setDescription(source.getDescription());
-        target.setWorkspace(source.getWorkspace());
-        target.setType(source.getType());
-
-        target.getConnectionParameters().clear();
+        DataStoreInfo target;
+        try {
+            target = (DataStoreInfo) SerializationUtils.clone(source);
+        } catch (Exception e) {
+            target = catalog.getFactory().createDataStore();
+            target.setEnabled(source.isEnabled());
+            target.setName(source.getName());
+            target.setDescription(source.getDescription());
+            target.setWorkspace(source.getWorkspace());
+            target.setType(source.getType());
+        }
         
-        if (!allowEnvParametrization) {
-            target.getConnectionParameters().putAll(source.getConnectionParameters());
-        } else {
-            // Resolve GeoServer Environment placeholders
-            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+        // Resolve GeoServer Environment placeholders
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
 
-            if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-                target.setDescription((String) gsEnvironment.resolveValue(source.getDescription()));
-            }
+        if (source.getConnectionParameters() != null && !source.getConnectionParameters().isEmpty()) {
+            target.getConnectionParameters().clear();
+        
+            if (!allowEnvParametrization) {
+                target.getConnectionParameters().putAll(source.getConnectionParameters());
+            } else {
+                if(source != null && source.getConnectionParameters() != null) {
+                    for (Entry<String, Serializable> param : source.getConnectionParameters().entrySet()) {
+                        String key = param.getKey();
+                        Object value = param.getValue();
 
-            if(source != null && source.getConnectionParameters() != null) {
-                for (Entry<String, Serializable> param : source.getConnectionParameters().entrySet()) {
-                    String key = param.getKey();
-                    Object value = param.getValue();
-                    
-                    if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-                        value = gsEnvironment.resolveValue(value);
+                        if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                            value = gsEnvironment.resolveValue(value);
+                        }
+
+                        target.getConnectionParameters().put(key, (Serializable) value);
                     }
-                    
-                    target.getConnectionParameters().put(key, (Serializable) value);
                 }
             }
         }
@@ -2380,37 +2385,43 @@ public class ResourcePool {
     }
 
     public CoverageStoreInfo clone(final CoverageStoreInfo source, boolean allowEnvParametrization) {
-        CoverageStoreInfo target = catalog.getFactory().createCoverageStore();
-        target.setDescription(source.getDescription());
-        target.setEnabled(source.isEnabled());
-        target.setName(source.getName());
-        target.setType(source.getType());
-        target.setWorkspace(source.getWorkspace());
-        
-        target.getConnectionParameters().clear();
-        
-        if (!allowEnvParametrization) {
-            target.setURL(source.getURL());
-            target.getConnectionParameters().putAll(source.getConnectionParameters());
+        CoverageStoreInfo target;
+        try {
+            target = (CoverageStoreInfo) SerializationUtils.clone(source);
+        } catch (Exception e) {
+            target = catalog.getFactory().createCoverageStore();;
+            target.setDescription(source.getDescription());
+            target.setEnabled(source.isEnabled());
+            target.setName(source.getName());
+            target.setType(source.getType());
+            target.setWorkspace(source.getWorkspace());
+        }
+
+        // Resolve GeoServer Environment placeholders
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+
+        if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            target.setURL((String) gsEnvironment.resolveValue(source.getURL()));
         } else {
-            // Resolve GeoServer Environment placeholders
-            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+            target.setURL(source.getURL());
+        }
 
-            if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-                target.setURL((String) gsEnvironment.resolveValue(source.getURL()));
-            } else {
+        if (source.getConnectionParameters() != null && !source.getConnectionParameters().isEmpty()) {
+        
+            if (!allowEnvParametrization) {
                 target.setURL(source.getURL());
-            }
+                target.getConnectionParameters().putAll(source.getConnectionParameters());
+            } else {
+                for (Entry<String, Serializable> param : source.getConnectionParameters().entrySet()) {
+                    String key = param.getKey();
+                    Object value = param.getValue();
 
-            for (Entry<String, Serializable> param : source.getConnectionParameters().entrySet()) {
-                String key = param.getKey();
-                Object value = param.getValue();
-                
-                if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-                    value = gsEnvironment.resolveValue(value);
+                    if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                        value = gsEnvironment.resolveValue(value);
+                    }
+
+                    target.getConnectionParameters().put(key, (Serializable) value);
                 }
-                
-                target.getConnectionParameters().put(key, (Serializable) value);
             }
         }
         
@@ -2418,13 +2429,18 @@ public class ResourcePool {
     }
     
     public WMSStoreInfo clone(final WMSStoreInfo source, boolean allowEnvParametrization) {
-        WMSStoreInfo target = catalog.getFactory().createWebMapServer();
-        target.setDescription(source.getDescription());
-        target.setEnabled(source.isEnabled());
-        target.setName(source.getName());
-        target.setType(source.getType());
-        target.setWorkspace(source.getWorkspace());
-
+        WMSStoreInfo target;
+        try {
+            target = (WMSStoreInfo) SerializationUtils.clone(source);
+        } catch (Exception e) {
+            target = catalog.getFactory().createWebMapServer();
+            target.setDescription(source.getDescription());
+            target.setEnabled(source.isEnabled());
+            target.setName(source.getName());
+            target.setType(source.getType());
+            target.setWorkspace(source.getWorkspace());            
+        }
+        
         setConnectionParameters(source, target);            
 
         if (allowEnvParametrization) {

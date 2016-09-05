@@ -124,7 +124,7 @@ Examples
 Contour extraction
 ^^^^^^^^^^^^^^^^^^
 
-``gs:Contour`` is a **Raster-to-Vector** rendering transformation
+``ras:Contour`` is a **Raster-to-Vector** rendering transformation
 which extracts contour lines at specified levels from a raster DEM.
 The following SLD invokes the transformation
 and styles the contours as black lines.
@@ -146,7 +146,7 @@ and styles the contours as black lines.
            <Abstract>Extracts contours from DEM</Abstract>
            <FeatureTypeStyle>
              <Transformation>
-               <ogc:Function name="gs:Contour">
+               <ogc:Function name="ras:Contour">
                  <ogc:Function name="parameter">
                    <ogc:Literal>data</ogc:Literal>
                  </ogc:Function>
@@ -210,7 +210,7 @@ and styles the contours as black lines.
 
 Key aspects of the SLD are:
       
-* **Lines 14-15** define the rendering transformation, using the process ``gs:Contour``.
+* **Lines 14-15** define the rendering transformation, using the process ``ras:Contour``.
 * **Lines 16-18** supply the input data parameter, named ``data`` in this process.
 * **Lines 19-29** supply values for the process's ``levels`` parameter, 
   which specifies the elevation levels for the contours to extract.
@@ -228,7 +228,7 @@ The result of using this transformation is shown in the following map image
 Heatmap generation
 ^^^^^^^^^^^^^^^^^^
 
-``gs:Heatmap`` is a **Vector-to-Raster** rendering transformation 
+``vec:Heatmap`` is a **Vector-to-Raster** rendering transformation 
 which generates a heatmap surface from weighted point data.
 The following SLD invokes a Heatmap rendering transformation 
 on a featuretype with point geometries
@@ -253,7 +253,7 @@ The output is styled using a color ramp across the output data value range [0 ..
             <Abstract>A heatmap surface showing population density</Abstract>
             <FeatureTypeStyle>
               <Transformation>
-                <ogc:Function name="gs:Heatmap">
+                <ogc:Function name="vec:Heatmap">
                   <ogc:Function name="parameter">
                     <ogc:Literal>data</ogc:Literal>
                   </ogc:Function>
@@ -316,7 +316,7 @@ The output is styled using a color ramp across the output data value range [0 ..
 
 Key aspects of the SLD are:
        
-* **Lines 14-15** define the rendering transformation, using the process ``gs:Heatmap``.
+* **Lines 14-15** define the rendering transformation, using the process ``vec:Heatmap``.
 * **Lines 16-18** supply the input data parameter, named ``data`` in this process.
 * **Lines 19-22** supply a value for the process's ``weightAttr`` parameter, 
   which specifies the input attribute providing a weight for each data point.

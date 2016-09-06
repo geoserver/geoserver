@@ -1403,5 +1403,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>wmts-multi-dimensional</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-wmts-multi-dimensional</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
  </profiles>
 </project>

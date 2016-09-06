@@ -27,6 +27,11 @@
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-gwc</artifactId>
+      <version>2.10-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -75,7 +80,8 @@
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
           <descriptor>release/ext-geogig.xml</descriptor>
-		  <descriptor>release/ext-backup-restore.xml</descriptor>
+		      <descriptor>release/ext-backup-restore.xml</descriptor>
+          <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
         </descriptors>
       </configuration>
      </plugin>
@@ -206,6 +212,7 @@
 		<module>ncwms</module>
         <module>web-resource</module>
         <module>gwc-sqlite</module>
+        <module>wmts-multi-dimensional</module>
       </modules>
     </profile>
     <profile>
@@ -460,6 +467,12 @@
       <id>geogig</id>
       <modules>
         <module>geogig</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wmts-multi-dimensional</id>
+      <modules>
+        <module>wmts-multi-dimensional</module>
       </modules>
     </profile>
   </profiles>

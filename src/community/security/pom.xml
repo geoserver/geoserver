@@ -23,16 +23,10 @@
 
   <profiles>
     <profile>
-      <id>oauth2</id>
-      <modules>
-        <module>oauth2</module>
-      </modules>
-    </profile>
-    <profile>
       <id>oauth2-google</id>
       <modules>
         <module>oauth2</module>
-		<module>oauth2-google</module>
+        <module>oauth2-google</module>
       </modules>
     </profile>
   </profiles>

@@ -163,7 +163,7 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
    Update `polygon_example` with the following built-in symbol as a repeating fill pattern:
 
    .. code-block:: yaml
-      :emphasize-lines: 3-7
+      :emphasize-lines: 3-9
       
       symbolizers:
       - polygon:
@@ -172,6 +172,8 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
             - mark:
                 shape: square
                 fill-color: 'gray'
+                stroke-color: 'black'
+                stroke-width: 1
 
 #. The map preview (and legend) will show the result:
    
@@ -180,10 +182,12 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 #. Add a black stroke:
 
    .. code-block:: yaml
-      :emphasize-lines: 8,9
+      :emphasize-lines: 3,4
 
       symbolizers:
       - polygon:
+          stroke-color: 'black'
+          stroke-width: 1
           fill-graphic:
             symbols:
             - mark:
@@ -205,10 +209,12 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
    Adjust the size and rotation as shown:
 
    .. code-block:: yaml
-      :emphasize-lines: 4,5
+      :emphasize-lines: 6,7
 
       symbolizers:
       - polygon:
+          stroke-color: 'black'
+          stroke-width: 1
           fill-graphic:
             size: 22
             rotation: 45.0
@@ -224,26 +230,6 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
    .. image:: ../style/img/polygon_pattern_2.png
    
    .. note:: Does the above look correct? There is an open request :geot:`4642` to rotate the entire pattern, rather than each individual symbol.
-   
-   .. only:: instructor
-    
-      .. admonition:: Instructor Notes   
-      
-         Prior to GeoServer 2.5 a **toRadians** call was required as described in `GEOT-4641 <https://jira.codehaus.org/browse/GEOT-4641>`_.
-      
-         .. code-block:: yaml
-
-            symbolizers:
-            - polygon:
-                fill-graphic:
-                  size: 22
-                  rotation: ${toRadians(45.0)}
-                  symbols:
-                  - mark:
-                      shape: square
-                      fill-color: 'gray'
-                      stroke-color: 'black'
-                      stroke-width: 1
 
 #. The size and rotation properties just affect the size and placement of the symbol, but do not alter the symbol's design. In order to control the color we set the **fill-color** and **stroke-color** properties of the **mark**.
    
@@ -282,6 +268,8 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 
       symbolizers:
       - polygon:
+          stroke-color: 'black'
+          stroke-width: 1
           fill-graphic:
             symbols:
             - mark:
@@ -295,10 +283,12 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 #. To control the size of the symbol produced use the **size** property of the **fill-graphic**.
   
    .. code-block:: yaml
-      :emphasize-lines: 4
+      :emphasize-lines: 6
 
       symbolizers:
       - polygon:
+          stroke-color: 'black'
+          stroke-width: 1
           fill-graphic:
             size: 8
             symbols:
@@ -316,7 +306,7 @@ The fill pattern is defined by repeating one of the built-in symbols, or making 
 
       symbolizers:
       - polygon:
-          stroke-color: 'black
+          stroke-color: 'black'
           stroke-width: 1
           fill-color: '#DDDDFF'
       - polygon:

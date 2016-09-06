@@ -36,7 +36,7 @@ A line symbolizer is represented by a :kbd:`line` key.  You can make a completel
 
 .. code-block:: yaml
    
-        line: {}
+        line:
 
 .. figure:: ../style/img/LineStringStroke.svg
    

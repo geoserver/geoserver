@@ -93,7 +93,7 @@ public class StyleEditPage extends AbstractStylePage {
     protected void onStyleFormSubmit() {
         // write out the file and save name modifications
         try {
-            StyleInfo style = (StyleInfo) styleForm.getModelObject();
+            StyleInfo style = getStyleInfo();
             String format = style.getFormat();
             style.setFormat(format);
             Version version = Styles.handler(format).version(rawStyle);

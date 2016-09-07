@@ -198,11 +198,11 @@
      <artifactId>gs-jdbcstore</artifactId>
      <version>${project.version}</version>
    </dependency> 
-    <dependency>
+   <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-gwc-sqlite</artifactId>
      <version>${project.version}</version>
-   </dependency> 
+   </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-geogig</artifactId>
@@ -226,6 +226,11 @@
    <dependency>
      <groupId>org.geoserver.community.backuprestore</groupId>
      <artifactId>gs-backup-restore-web</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-wmts-multi-dimensional</artifactId>
      <version>${project.version}</version>
    </dependency>
  </dependencies>

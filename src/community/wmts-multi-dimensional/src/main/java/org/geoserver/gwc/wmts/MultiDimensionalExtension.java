@@ -162,6 +162,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         Domains domains = getDomains(conveyor);
         DescribeDomainsTransformer transformer = new DescribeDomainsTransformer(wms);
         transformer.transform(domains, conveyor.getResponse().getOutputStream());
+        conveyor.getResponse().setContentType("text/xml");
     }
 
     private void executeGetHistogramOperation(SimpleConveyor conveyor) throws Exception {
@@ -170,12 +171,15 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         domains.setResolution((String) conveyor.getParameter("resolution", false));
         HistogramTransformer transformer = new HistogramTransformer(wms);
         transformer.transform(domains, conveyor.getResponse().getOutputStream());
+        conveyor.getResponse().setContentType("text/xml");
     }
 
     private void executeGetFeatureOperation(SimpleConveyor conveyor) throws Exception {
         Domains domains = getDomains(conveyor);
         FeaturesTransformer transformer = new FeaturesTransformer(wms);
         transformer.transform(domains, conveyor.getResponse().getOutputStream());
+        // right now we only support gml in the the future we may need to support other formats
+        conveyor.getResponse().setContentType("text/xml; subtype=gml/3.1.1");
     }
 
     private LayerInfo getLayerInfo(TileLayer tileLayer, String layerName) {

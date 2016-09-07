@@ -60,7 +60,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     public void testGetCapabilitiesOperation() throws Exception {
         // perform the get capabilities request
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?request=GetCapabilities");
-        Document result = getResultAsDocument(response);
+        Document result = getResultAsDocument(response, "application/vnd.ogc.wms_xml");
         // check raster layer dimensions
         checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension", "4");
         checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[ows:Identifier='elevation']", "2");
@@ -227,7 +227,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest = String.format("request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
                 RASTER_ELEVATION_TIME.getPrefix() + ":" + RASTER_ELEVATION_TIME.getLocalPart());
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
-        Document result = getResultAsDocument(response);
+        Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the returned features
         checkXpathCount(result, "/wmts:feature", "4");
         checkXpathCount(result, "/wmts:feature/wmts:footprint/gml:MultiPolygon", "4");
@@ -243,7 +243,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest = String.format("request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
                 RASTER_ELEVATION_TIME.getPrefix() + ":" + RASTER_ELEVATION_TIME.getLocalPart() + "&bbox=-1,-1,0,0");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
-        Document result = getResultAsDocument(response);
+        Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the no features were returned
         checkXpathCount(result, "/wmts:feature", "0");
     }
@@ -254,7 +254,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         String queryRequest = String.format("request=GetFeature&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:4326",
                 RASTER_ELEVATION_TIME.getPrefix() + ":" + VECTOR_ELEVATION_TIME.getLocalPart());
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
-        Document result = getResultAsDocument(response);
+        Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the returned features
         checkXpathCount(result, "/wmts:feature", "3");
         checkXpathCount(result, "/wmts:feature/wmts:footprint/gml:Polygon", "3");
@@ -271,7 +271,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
                 RASTER_ELEVATION_TIME.getPrefix() + ":" + VECTOR_ELEVATION_TIME.getLocalPart()
                         + "&time=2012-02-10T00:00:00.000Z/2012-02-11T00:00:00.000Z");
         MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
-        Document result = getResultAsDocument(response);
+        Document result = getResultAsDocument(response, "text/xml; subtype=gml/3.1.1");
         // check the filtered returned features
         checkXpathCount(result, "/wmts:feature", "2");
         checkXpathCount(result, "/wmts:feature/wmts:footprint/gml:Polygon", "2");
@@ -303,11 +303,21 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
     }
 
     /**
-     * Helper method that simply extracts the result of a request to a string and build a document.
+     * Helper method that simply extracts the result of a request to a string and builds a document.
+     * Also checks that the content type is 'text/xml'.
      */
     private Document getResultAsDocument(MockHttpServletResponse response) throws Exception {
+        return getResultAsDocument(response, "text/xml");
+    }
+
+    /**
+     * Helper method that simply extracts the result of a request to a string and build a document.
+     * Also checks the content type of the response.
+     */
+    private Document getResultAsDocument(MockHttpServletResponse response, String contentType) throws Exception {
         String result = response.getContentAsString();
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentType(), is(contentType));
         return XMLUnit.buildTestDocument(result);
     }
 

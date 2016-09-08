@@ -29,7 +29,7 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.util.IOUtils;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.referencing.CRS;

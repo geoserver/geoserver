@@ -26,13 +26,13 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.io.FileUtils;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.AbstractGeoServerSecurityService;
 import org.geoserver.security.jdbc.config.JDBCSecurityServiceConfig;
+import org.geoserver.util.IOUtils;
 
 
 

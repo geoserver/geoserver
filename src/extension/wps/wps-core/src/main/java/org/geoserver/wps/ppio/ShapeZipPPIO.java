@@ -18,8 +18,8 @@ import java.util.zip.ZipInputStream;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.io.FileUtils;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.response.ShapeZipOutputFormat;
 import org.geoserver.wps.resource.ShapefileResource;
 import org.geoserver.wps.resource.WPSResourceManager;

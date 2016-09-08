@@ -5,7 +5,7 @@
  */
 package org.geoserver.security;
 
-import static org.geoserver.data.util.IOUtils.xStreamPersist;
+import static org.geoserver.config.util.XStreamUtils.xStreamPersist;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -2242,7 +2242,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
         // check for services.properties, create if necessary
         Resource serviceFile = security().get("services.properties");
         if (serviceFile.getType() == Type.UNDEFINED) {
-            org.geoserver.data.util.IOUtils.copy(
+            org.geoserver.util.IOUtils.copy(
                     Util.class.getResourceAsStream("serviceTemplate.properties"),
                     serviceFile.out());
         }
@@ -2631,14 +2631,14 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
             
         // set redirect url after successful logout
         if (!migratedFrom21)
-            org.geoserver.data.util.IOUtils.copy(logoutFilterDir.get("config.xml").in(), 
+            org.geoserver.util.IOUtils.copy(logoutFilterDir.get("config.xml").in(), 
                     oldLogoutFilterConfig.out());
         LogoutFilterConfig loConfig = (LogoutFilterConfig) loadFilterConfig(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
         loConfig.setRedirectURL(GeoServerLogoutFilter.URL_AFTER_LOGOUT);
         saveFilter(loConfig);
         
         if (!migratedFrom21)
-            org.geoserver.data.util.IOUtils.copy(security().get("config.xml").in(), 
+            org.geoserver.util.IOUtils.copy(security().get("config.xml").in(), 
                     oldSecManagerConfig.out());
         SecurityManagerConfig config = loadSecurityConfig();
         for (RequestFilterChain chain : config.getFilterChain().getRequestChains()) {

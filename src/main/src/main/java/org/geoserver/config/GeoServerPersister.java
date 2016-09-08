@@ -5,7 +5,7 @@
  */
 package org.geoserver.config;
 
-import static org.geoserver.data.util.IOUtils.xStreamPersist;
+import static org.geoserver.config.util.XStreamUtils.xStreamPersist;
 
 import java.io.File;
 import java.io.IOException;

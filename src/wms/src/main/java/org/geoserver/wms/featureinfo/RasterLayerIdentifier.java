@@ -42,7 +42,6 @@ import org.geotools.geometry.TransformedDirectPosition;
 import org.geotools.parameter.Parameter;
 import org.geotools.resources.geometry.XRectangle2D;
 import org.geotools.resources.image.ImageUtilities;
-import org.geotools.styling.Style;
 import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.CannotEvaluateException;
@@ -58,6 +57,7 @@ import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
+import com.sun.org.apache.xml.internal.utils.XMLChar;
 import com.vividsolutions.jts.geom.Coordinate;
 
 
@@ -200,12 +200,13 @@ public class RasterLayerIdentifier implements LayerIdentifier {
         builder.setName(coverageName);
         final Set<String> bandNames = new HashSet<String>();
         for (int i = 0; i < sampleDimensions.length; i++) {
-            String name = sampleDimensions[i].getDescription().toString();
+            String name = descriptionToNcName(sampleDimensions[i].getDescription().toString());
             // GEOS-2518
-            if (bandNames.contains(name))
+            if (bandNames.contains(name)) {
                 // it might happen again that the name already exists but it pretty difficult I'd
                 // say
                 name = new StringBuilder(name).append("_Band").append(i).toString();
+            }
             bandNames.add(name);
             builder.add(name, Double.class);
         }
@@ -216,6 +217,31 @@ public class RasterLayerIdentifier implements LayerIdentifier {
             values[i] = new Double(pixelValues[i]);
         }
         return DataUtilities.collection(SimpleFeatureBuilder.build(gridType, values, ""));
+    }
+
+    /**
+     * Convert sample dimension description to a valid XML NCName by replacing invalid characters with underscores (<code>'_'</code>).
+     * 
+     * <p>
+     * 
+     * If the description is null or has zero length, the NCName "Unknown" is returned.
+     * 
+     * @param description sample dimension description
+     * @return valid XML NCName
+     */
+    static String descriptionToNcName(String description) {
+        if (description == null || description.length() == 0) {
+            return "Unknown";
+        } else {
+            char[] result = description.toCharArray();
+            for (int i = 0; i < result.length; i++) {
+                if ((i == 0 && !XMLChar.isNCNameStart(result[i]))
+                        || (i > 0 && !XMLChar.isNCName(result[i]))) {
+                    result[i] = '_';
+                }
+            }
+            return new String(result);
+        }
     }
 
 }

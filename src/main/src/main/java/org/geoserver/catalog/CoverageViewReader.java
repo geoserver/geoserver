@@ -15,6 +15,7 @@ import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import java.util.Set;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.RasterFactory;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
@@ -31,6 +33,7 @@ import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
@@ -41,14 +44,19 @@ import org.geotools.data.ServiceInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.parameter.DefaultParameterDescriptor;
+import org.geotools.parameter.DefaultParameterDescriptorGroup;
+import org.geotools.parameter.ParameterGroup;
 import org.geotools.referencing.CRS;
 import org.jaitools.imageutils.ImageLayout2;
 import org.opengis.coverage.SampleDimension;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
+import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -284,35 +292,117 @@ public class CoverageViewReader implements GridCoverage2DReader {
         List<CoverageBand> bands = coverageView.getCoverageBands();
         List<GridCoverage2D> coverages = new ArrayList<GridCoverage2D>();
         List<SampleDimension> dims = new ArrayList<SampleDimension>();
-
-        // Use composition rule specific implementation
+        
         CoveragesConsistencyChecker checker = null;
-        for (CoverageBand band : bands) {
-            // Refactor this once supporting complex compositions
-            final InputCoverageBand inputBand = band.getInputCoverageBands().get(0); 
-            final String coverageName = inputBand.getCoverageName();
-            final GridCoverage2DReader reader = wrap(delegate, coverageName, coverageInfo);
+        
+        int coverageBandsSize = bands.size();
+        
+        //Check params, populate band indices to read if BANDS param has been defined
+        ArrayList<Integer> selectedBandIndices = new ArrayList<Integer>();
+        for (int m=0;m<coverageBandsSize;m++)
+            selectedBandIndices.add(m);
+        
+        if (parameters != null) {
+            for (int i = 0; i < parameters.length; i++) {
+                final ParameterValue param = (ParameterValue) parameters[i];
+                if (param.getDescriptor().equals(AbstractGridFormat.BANDS)) {
+                    int[] bandIndicesParam = (int[]) param.getValue();
+                    if (bandIndicesParam != null) {
+                        selectedBandIndices = new ArrayList<Integer>();
+                        for (int bIdx = 0; bIdx < bandIndicesParam.length; bIdx++) {
+                            selectedBandIndices.add(bandIndicesParam[bIdx]);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Since composition of a raster band using a formula applied on individual bands has not
+        // been implemented, the normal case is that each CoverageBand is in fact a single band from
+        // an input coverage. When band composition will be implemented, this will be the point where
+        // band composition will occur, before the final BandSelect/BandMerge ops
 
-            // Remove this when removing constraints
-            if (checker == null) {
-                checker = new CoveragesConsistencyChecker(reader);
-            } else {
-                checker.checkConsistency(reader);
+        // This is a good spot to read coverages. Reading a coverage is done only once, it is
+        // cached to be used for its other bands that possibly take part in the CoverageView definition
+        HashMap<String, GridCoverage2D> inputCoverages = new HashMap<String, GridCoverage2D>();
+        for (int bIdx : selectedBandIndices) {
+            CoverageBand band = bands.get(bIdx);
+            List<InputCoverageBand> selectedBands = band.getInputCoverageBands();
+
+            // Peek for coverage name
+            String coverageName = selectedBands.get(0).getCoverageName();
+            if (!inputCoverages.containsKey(coverageName)) {
+                GridCoverage2DReader reader = wrap(delegate, coverageName, coverageInfo);
+                // Remove this when removing constraints
+                if (checker == null) {
+                    checker = new CoveragesConsistencyChecker(reader);
+                } else {
+                    checker.checkConsistency(reader);
+                }
+                inputCoverages.put(coverageName, reader.read(parameters));
+            }
+            for (int i = 0; i < selectedBands.size(); i++) {
+                if (inputCoverages.get(coverageName) != null) {
+                    dims.add(inputCoverages.get(coverageName)
+                            .getSampleDimension(Integer.parseInt(selectedBands.get(i).getBand())));
+                }
+            }
+        }
+        
+        // Group together bands that come from the same coverage
+
+        ArrayList<CoverageBand> mergedBands = new ArrayList<CoverageBand>();
+
+        int idx = 0;
+        CoverageBand mBand = null;
+        while (idx < selectedBandIndices.size()) {
+
+            if (mBand == null) {
+                // Create a temporary CoverageBand, to use later for SelectSampleDimension operations
+                mBand = new CoverageBand();
+                mBand.setInputCoverageBands(
+                        bands.get(selectedBandIndices.get(idx)).getInputCoverageBands());
             }
 
-            GridCoverage2D coverage = (GridCoverage2D) reader.read(parameters);
-            if (coverage != null) {
+            // peek to the next band. Is it from the same coverage?
+            String coverageName = bands.get(selectedBandIndices.get(idx)).getInputCoverageBands()
+                    .get(0).getCoverageName();
 
-                // We may consider revisiting this to use integers instead of String
-                // For the moment, let's continue using String
-                String selectedBand = inputBand.getBand();
+            if (idx + 1 < selectedBandIndices.size() && bands.get(selectedBandIndices.get(idx + 1))
+                    .getInputCoverageBands().get(0).getCoverageName().equals(coverageName)) {
+                // Same coverage, add its bands to the previous
+                ArrayList<InputCoverageBand> groupBands = new ArrayList<InputCoverageBand>();
+                groupBands.addAll(mBand.getInputCoverageBands());
+                groupBands.addAll(
+                        bands.get(selectedBandIndices.get(idx + 1)).getInputCoverageBands());
+                mBand.setInputCoverageBands(groupBands);
+            } else {
+                mergedBands.add(mBand);
+                mBand = null;
+            }
+            idx++;
+        }
+        
+        for (CoverageBand band:mergedBands){ 
+            List<InputCoverageBand> selectedBands = band.getInputCoverageBands();
+            
+            // Peek for coverage name
+            String coverageName = selectedBands.get(0).getCoverageName();
+            
+            // Get band indices for band selection
+            ArrayList<Integer> bandIndices = new ArrayList<Integer>(selectedBands.size());
+            for (InputCoverageBand icb:selectedBands){
+                bandIndices.add(Integer.parseInt(icb.getBand()));
+            }
+
+            GridCoverage2D coverage = inputCoverages.get(coverageName);
+            if (coverage != null) {
                 final ParameterValueGroup param = PROCESSOR.getOperation("SelectSampleDimension").getParameters();
                 param.parameter("Source").setValue(coverage);
-                param.parameter("SampleDimensions").setValue(new int[]{Integer.valueOf(selectedBand)});
+                param.parameter("SampleDimensions").setValue( ArrayUtils.toPrimitive(bandIndices.toArray(new Integer[bandIndices.size()])));
                 coverage = (GridCoverage2D) PROCESSOR.doOperation(param, hints);
-
                 coverages.add(coverage);
-                dims.addAll(Arrays.asList(coverage.getSampleDimensions()));
             }
         }
 
@@ -363,7 +453,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
         if (reader instanceof StructuredGridCoverage2DReader) {
             return new CoverageDimensionCustomizerViewStructuredReader(
-                    (StructuredGridCoverage2DReader) reader, coverageName, info);
+                    reader, coverageName, info);
         } else {
             return new CoverageDimensionCustomizerViewReader(reader, coverageName, info);
         }
@@ -378,14 +468,70 @@ public class CoverageViewReader implements GridCoverage2DReader {
             return new StructuredCoverageViewReader((StructuredGridCoverage2DReader) reader,
                     coverageView, coverageInfo, hints);
         } else {
-            return new CoverageViewReader((GridCoverage2DReader) reader, coverageView,
+            return new CoverageViewReader(reader, coverageView,
                     coverageInfo, hints);
         }
     }
 
     @Override
     public Format getFormat() {
-       return delegate.getFormat();
+        return new Format(){
+
+            private final Format delegateFormat = delegate.getFormat();
+
+            @Override
+            public ParameterValueGroup getWriteParameters() {
+                return delegateFormat.getWriteParameters();
+            }
+            
+            @Override
+            public String getVersion() {
+                return delegateFormat.getVersion();
+            }
+            
+            @Override
+            public String getVendor() {
+                return delegateFormat.getVendor();
+            }
+            
+            @Override
+            public ParameterValueGroup getReadParameters() {
+                HashMap<String, String> info = new HashMap<String, String>();
+
+                info.put("name", getName());
+                info.put("description", getDescription());
+                info.put("vendor", getVendor());
+                info.put("docURL", getDocURL());
+                info.put("version", getVersion());
+                
+                List<GeneralParameterDescriptor> delegateFormatParams 
+                    = new ArrayList<GeneralParameterDescriptor>();
+                delegateFormatParams.addAll(
+                        delegateFormat.getReadParameters().getDescriptor().descriptors());
+                delegateFormatParams.add(AbstractGridFormat.BANDS);
+                
+                return new ParameterGroup(new DefaultParameterDescriptorGroup(
+                        info,
+                        delegateFormatParams.toArray(
+                                new GeneralParameterDescriptor[delegateFormatParams.size()])));
+            }
+            
+            @Override
+            public String getName() {
+                return delegateFormat.getName();
+            }
+            
+            @Override
+            public String getDocURL() {
+                return delegateFormat.getDocURL();
+            }
+            
+            @Override
+            public String getDescription() {
+                return delegateFormat.getDescription();
+            }
+
+        };
     }
 
     @Override

@@ -19,6 +19,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -476,12 +477,55 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public boolean renameTo(Resource dest) {
-            if(dest instanceof FileSystemResource) {
-                return file.renameTo(((FileSystemResource)dest).file);
-            } else if(dest instanceof Files.ResourceAdaptor) {
-                    return file.renameTo(((Files.ResourceAdaptor)dest).file);
-            } else {
-                return Resources.renameByCopy(this, dest);
+            if (dest.parent().path().contains(path())) {
+                LOGGER.log(Level.FINE, "Cannot rename a resource to a descendant of itself");
+                return false;
+            }
+            try {
+                if(dest instanceof FileSystemResource) {
+                    rename(file, ((FileSystemResource)dest).file);
+                } else if(dest instanceof Files.ResourceAdaptor) {
+                    rename(file, ((Files.ResourceAdaptor)dest).file);
+                } else {
+                    return Resources.renameByCopy(this, dest);
+                }
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, "Failed to rename file resource "+path+" to "+dest.path(), e);
+                return false;
+            }
+            return true;
+        }
+
+        /**
+         * COPIED FROM org.geoserver.data.util.IOUtils IN gs-main
+         * Renames a file.
+         *
+         * @param source The file to rename.
+         * @param dest The file to rename to.
+         */
+        private void rename( File source, File dest ) throws IOException {
+            // same path? Do nothing
+            if (source.getCanonicalPath().equalsIgnoreCase(dest.getCanonicalPath()))
+                return;
+
+            // windows needs special treatment, we cannot rename onto an existing file
+            boolean win = System.getProperty("os.name").startsWith("Windows");
+            if ( win && dest.exists() ) {
+                // windows does not do atomic renames, and can not rename a file if the dest file
+                // exists
+                if (!dest.delete()) {
+                    throw new IOException("Could not delete: " + dest.getCanonicalPath());
+                }
+            }
+            // make sure the rename actually succeeds
+            if(!source.renameTo(dest)) {
+                FileUtils.deleteQuietly(dest);
+                if( source.isDirectory() ){
+                    FileUtils.moveDirectory(source, dest );
+                }
+                else {
+                    FileUtils.moveFile(source, dest);
+                }
             }
         }
 

@@ -20,7 +20,7 @@ import java.util.Collections;
 import javax.xml.namespace.QName;
 
 import org.geoserver.data.test.MockData;
-import org.geoserver.data.util.IOUtils;
+import org.geoserver.util.IOUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.data.simple.SimpleFeatureIterator;

@@ -3,34 +3,28 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.data.util;
+package org.geoserver.config.util;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
-import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.config.util.XStreamUtils;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.IOUtils;
 
 /**
- * Utility class for IO related utilities
+ * Utility class for XStream related utilities
  * 
  * @author Andrea Aime - TOPP
- *
- * @deprecated use {@link org.geoserver.util.IOUtils} instead
+ * 
  */
-public final class IOUtils extends org.geoserver.util.IOUtils {
-    private IOUtils() {
-        super();
-    }
-
+public final class XStreamUtils {
     /**
      * Performs serialization with an {@link XStreamPersister} in a safe manner in
      * which a temp file is used for the serialization so that the true destination
      * file is not partially written in the case of an error.
-     * 
-     * @deprecated use {@link org.geoserver.config.util.XStreamPersist(File f, Object obj, XStreamPersister xp)}
-     * instead
      * 
      * @param f The file to write to, only modified if the temp file serialization
      *        was error free.
@@ -39,16 +33,33 @@ public final class IOUtils extends org.geoserver.util.IOUtils {
      */
     public static void xStreamPersist(File f, Object obj, XStreamPersister xp)
             throws IOException {
-        XStreamUtils.xStreamPersist(f, obj, xp);
+        // first save to a temp file
+        final File temp = File.createTempFile(f.getName(), null, f.getParentFile());
+    
+        BufferedOutputStream out = null;
+        try {
+            out = new BufferedOutputStream(new FileOutputStream(temp));
+            xp.save(obj, out);
+            out.flush();
+        } finally {
+            if (out != null)
+                org.apache.commons.io.IOUtils.closeQuietly(out);
+        }
+    
+        // no errors, overwrite the original file
+        try {
+            IOUtils.rename(temp, f);
+        } finally {
+            if (temp.exists()) {
+                temp.delete();
+            }
+        }
     }
     
     /**
      * Performs serialization with an {@link XStreamPersister} in a safe manner in
      * which a temp file is used for the serialization so that the true destination
      * file is not partially written in the case of an error.
-     * 
-     * @deprecated use {@link org.geoserver.config.util.XStreamPersist(Resource r, Object obj, XStreamPersister xp)}
-     * instead
      * 
      * @param r The resource to write to, only modified if the temp file serialization
      *        was error free.
@@ -57,6 +68,10 @@ public final class IOUtils extends org.geoserver.util.IOUtils {
      */
     public static void xStreamPersist(Resource r, Object obj, XStreamPersister xp)
             throws IOException {
-        XStreamUtils.xStreamPersist(r, obj, xp);
+        
+        try(OutputStream out = r.out()) {
+            xp.save(obj, out);
+            out.flush();
+        }
     }
 }

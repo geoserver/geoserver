@@ -3,9 +3,11 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.data.util;
+package org.geoserver.util;
 
 import com.google.common.io.Files;
+
+import org.geoserver.util.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;

@@ -8,7 +8,7 @@ package org.geoserver.data.test;
 import java.io.File;
 import java.io.IOException;
 
-import org.geoserver.data.util.IOUtils;
+import org.geoserver.util.IOUtils;
 
 public class LiveSystemTestData extends SystemTestData {
 

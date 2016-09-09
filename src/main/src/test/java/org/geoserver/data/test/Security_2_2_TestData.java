@@ -8,7 +8,7 @@ package org.geoserver.data.test;
 import java.io.File;
 import java.io.IOException;
 
-import org.geoserver.data.util.IOUtils;
+import org.geoserver.util.IOUtils;
 
 /**
  * Test data for migration from 2.2 -> 2.3 

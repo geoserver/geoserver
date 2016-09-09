@@ -9,8 +9,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wps.RawDataEncoderDelegate;
 import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.ResourceRawData;

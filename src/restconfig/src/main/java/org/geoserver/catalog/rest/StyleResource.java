@@ -408,7 +408,7 @@ public class StyleResource extends AbstractCatalogResource {
     private File unzipSldPackage(InputStream object) throws IOException {
         File tempDir = Files.createTempDir();
 
-        org.geoserver.data.util.IOUtils.decompress(object, tempDir);
+        org.geoserver.util.IOUtils.decompress(object, tempDir);
 
         return tempDir;
     }

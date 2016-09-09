@@ -40,6 +40,7 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.TransformedDirectPosition;
 import org.geotools.parameter.Parameter;
+import org.geotools.referencing.CRS;
 import org.geotools.resources.geometry.XRectangle2D;
 import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.NullProgressListener;
@@ -53,6 +54,7 @@ import org.opengis.filter.Filter;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
@@ -94,19 +96,48 @@ public class RasterLayerIdentifier implements LayerIdentifier {
         
         // set the requested position in model space for this request
         final Coordinate middle = WMS.pixelToWorld(params.getX(), params.getY(), params.getRequestedBounds(), params.getWidth(), params.getHeight());
+        double x = middle.x;
+        double y = middle.y;
         CoordinateReferenceSystem requestedCRS = params.getRequestedCRS();
-        DirectPosition position = new DirectPosition2D(requestedCRS, middle.x, middle.y);
+
+        CoordinateReferenceSystem targetCRS;
+        if (cinfo.getProjectionPolicy() == ProjectionPolicy.NONE) {
+            targetCRS = cinfo.getNativeCRS();
+        } else {
+            targetCRS = cinfo.getCRS();
+        }
+        // coverage median position in the coverage (target) CRS
+        DirectPosition targetCoverageMedianPosition = reader.getOriginalEnvelope().getMedian();
+
+        // support continuous map wrapping by adding integer multiples of 360 degrees to longitude
+        // to move the requested position closer to the centre of the coverage
+        if (requestedCRS != null && requestedCRS instanceof GeographicCRS) {
+            // for consistency, the transformation is exactly the same as below when preparing
+            // the request, but in the inverse direction (coverage (target) CRS to requested CRS)
+            // coverage median position transformed into the requested CRS
+            TransformedDirectPosition coverageMedianPosition = new TransformedDirectPosition(
+                    targetCRS, requestedCRS, new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
+            try {
+                coverageMedianPosition.transform(targetCoverageMedianPosition);
+            } catch (TransformException exception) {
+                throw new CannotEvaluateException(
+                        "Cannot find coverage median position in requested CRS", exception);
+            }
+            if (CRS.getAxisOrder(requestedCRS) == CRS.AxisOrder.NORTH_EAST) {
+                // y and second ordinate are longitude
+                y += 360 * Math.round((coverageMedianPosition.getOrdinate(1) - y) / 360);
+            } else {
+                // x and first ordinate are longitude
+                x += 360 * Math.round((coverageMedianPosition.getOrdinate(0) - x) / 360);
+            }
+        }
+
+        DirectPosition position = new DirectPosition2D(requestedCRS, x, y);
 
         // change from request crs to coverage crs in order to compute a minimal request
         // area,
         // TODO this code need to be made much more robust
         if (requestedCRS != null) {
-            final CoordinateReferenceSystem targetCRS;
-            if(cinfo.getProjectionPolicy() == ProjectionPolicy.NONE) {
-                targetCRS = cinfo.getNativeCRS();
-            } else {
-                targetCRS = cinfo.getCRS();
-            }
             final TransformedDirectPosition arbitraryToInternal = new TransformedDirectPosition(
                     requestedCRS, targetCRS, new Hints(Hints.LENIENT_DATUM_SHIFT,
                             Boolean.TRUE));
@@ -118,6 +149,22 @@ public class RasterLayerIdentifier implements LayerIdentifier {
             }
             position = arbitraryToInternal;
         }
+
+        // now a *second* round of wrapping in the target CRS to support coverages that have
+        // original envelopes with longitudes outside (-180, 180)
+        if (targetCRS != null && targetCRS instanceof GeographicCRS) {
+            x = position.getOrdinate(0);
+            y = position.getOrdinate(1);
+            if (CRS.getAxisOrder(targetCRS) == CRS.AxisOrder.NORTH_EAST) {
+                // y and second ordinate are longitude
+                y += 360 * Math.round((targetCoverageMedianPosition.getOrdinate(1) - y) / 360);
+            } else {
+                // x and first ordinate are longitude
+                x += 360 * Math.round((targetCoverageMedianPosition.getOrdinate(0) - x) / 360);
+            }
+            position = new DirectPosition2D(targetCRS, x, y);
+        }
+
         // check that the provided point is inside the bbox for this coverage
         if (!reader.getOriginalEnvelope().contains(position)) {
             return null;

@@ -2,11 +2,11 @@
 
 Status
 ======
-The Server Status page provides a summary of server configuration parameters and run-time status. It provides a useful diagnostic tool in a testing environment. 
+The Server Status page has two tabs to summarize the current status of GeoServer. The Status tab provides a summary of server configuration parameters and run-time status. The modules tab provides the status of the various modules installed on the server. This page provides a useful diagnostic tool in a testing environment. 
 
 .. figure:: img/server_status.png
    
-   Status Page
+   Status Page (default tab)
 
 Status Field Descriptions
 -------------------------
@@ -60,6 +60,41 @@ The following table describes the current status indicators.
    * - Configuration and catalog
      - GeoServer keeps in memory all of its configuration data. If for any reason that configuration information has become stale (e.g., an external utility has modified the configuration on disk) the "Reload" button will force GeoServer to reload all of its configuration from disk.
   
+
+Module Status
+-------------
+
+The modules tab provides a summary of the status of all installed modules in the running server. 
+
+.. figure:: img/module_status.png
+   
+   Module Status
+   
+Module Status Field Descriptions
+--------------------------------
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+   
+   * - Module Name
+     - The human readable name of the module, this links to a popup containing the full details and messages of the module
+   * - Module ID
+     - The internal package name of the module
+   * - Available?
+     - Whether the module is available to GeoServer
+   * - Enabled?
+     - Whether the module is enabled in the current GeoServer configuration
+   * - Component
+     - (Optional) Optional component identifier within the module
+   * - Version
+     - (Optional) The version of the installed module
+   * - Message (popup)
+     - (Optional) status message such as what Java rendering engine is in use, or the library path if the module/driver is unavailable
+
+.. figure:: img/module_popup.png
+
+   Module Status popup
 
 Timestamps Field Descriptions
 -----------------------------

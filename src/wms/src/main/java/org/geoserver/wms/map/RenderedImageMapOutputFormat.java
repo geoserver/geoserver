@@ -69,12 +69,15 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.map.Layer;
 import org.geotools.map.StyleLayer;
 import org.geotools.parameter.Parameter;
+import org.geotools.process.Processors;
+import org.geotools.process.function.ProcessFunction;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -89,6 +92,7 @@ import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.expression.Expression;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.parameter.GeneralParameterValue;
@@ -859,6 +863,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         RasterSymbolizer symbolizer = symbolizers.get(0);
         Expression transformation = visitor.getRasterRenderingTransformation();
 
+        // direct raster rendering uses Query.ALL for the style query which is
+        // inefficient for vector sources
+        if (isVectorSource(transformation)){
+            return null;
+        }
         //
         // Dimensions
         //
@@ -1277,6 +1286,21 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
         
         return image;
+    }
+
+    private static boolean isVectorSource(Expression tranformation) {
+        // instanceof is sufficient for null check
+        if (tranformation instanceof ProcessFunction){
+            ProcessFunction processFunction = (ProcessFunction) tranformation;
+            Name processName = processFunction.getProcessName();
+            Map<String, org.geotools.data.Parameter<?>> params = Processors.getParameterInfo(processName);
+            for (org.geotools.data.Parameter<?> param : params.values()){
+                if (SimpleFeatureCollection.class.isAssignableFrom(param.getType())){
+                     return true;
+                }
+            }
+        }
+        return false;
     }
 
     private ReferencedEnvelope getEastNorthEnvelope(ReferencedEnvelope envelope)

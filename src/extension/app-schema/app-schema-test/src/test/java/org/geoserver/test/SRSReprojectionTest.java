@@ -6,10 +6,33 @@
 
 package org.geoserver.test;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
+import java.io.IOException;
+
+import org.junit.Test;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.complex.AppSchemaDataAccess;
+import org.geotools.data.complex.FeatureTypeMapping;
+import org.geotools.data.complex.config.AppSchemaDataAccessConfigurator;
+import org.geotools.data.complex.filter.ComplexFilterSplitter;
+import org.geotools.data.jdbc.FilterToSQL;
+import org.geotools.filter.FilterFactoryImplNamespaceAware;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.jdbc.BasicSQLDialect;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.NestedFilterToSQL;
+import org.geotools.jdbc.PreparedStatementSQLDialect;
+import org.geotools.jdbc.SQLDialect;
 import org.geotools.referencing.CRS;
+import org.geotools.util.NullProgressListener;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.Filter;
+import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.spatial.BBOX;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -19,6 +42,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.w3c.dom.Document;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -184,6 +208,54 @@ public class SRSReprojectionTest extends AbstractAppSchemaTestSupport {
         assertXpathEvaluatesTo("http://example.com/UrnResolver/?uri=2",
                 "//ex:geomContainer[@gml:id='2']/ex:nestedFeature[3]/@xlink:href", doc);
 
+    }
+
+    @Test
+    public void testNestedSpatialFilterEncoding() throws IOException {
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName("ex", "geomContainer");
+        FeatureSource fs = ftInfo.getFeatureSource(new NullProgressListener(), null);
+        AppSchemaDataAccess da = (AppSchemaDataAccess) fs.getDataStore();
+        FeatureTypeMapping rootMapping = da.getMappingByNameOrElement(ftInfo.getQualifiedName());
+
+        // make sure nested filters encoding is enabled, otherwise skip test
+        assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
+
+        JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
+
+        FilterFactoryImplNamespaceAware ff = new FilterFactoryImplNamespaceAware();
+        ff.setNamepaceContext(rootMapping.getNamespaces());
+
+        /*
+         * test spatial filter on nested geometry attribute
+         */
+        GeometryFactory factory = new GeometryFactory();
+        Polygon srcPolygon = factory.createPolygon(factory.createLinearRing(factory
+                .getCoordinateSequenceFactory().create(
+                        new Coordinate[] { new Coordinate(-1.2, 52.5), new Coordinate(-1.2, 52.6),
+                                new Coordinate(-1.1, 52.6), new Coordinate(-1.1, 52.5),
+                                new Coordinate(-1.2, 52.5) })), null);
+        Envelope bounds = srcPolygon.getEnvelopeInternal();
+
+        BBOX intersects = ff
+                .bbox("ex:nestedFeature[2]/ex:nestedGeom/ex:nestedFeature/ex:nestedGeom/ex:geom",
+                        bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY(),
+                        "EPSG:4283");
+
+        // Filter involving nested geometry attribute --> CANNOT be encoded
+        ComplexFilterSplitter splitter = new ComplexFilterSplitter(store.getFilterCapabilities(),
+                rootMapping);
+        splitter.visit(intersects, null);
+        Filter preFilter = splitter.getFilterPre();
+        Filter postFilter = splitter.getFilterPost();
+
+        assertEquals(Filter.INCLUDE, preFilter);
+        assertEquals(intersects, postFilter);
+
+        // filter must be "unrolled" (i.e. reverse mapped) first
+        Filter unrolled = AppSchemaDataAccess.unrollFilter(intersects, rootMapping);
+
+        // Filter is nested
+        assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
     }
 
 }

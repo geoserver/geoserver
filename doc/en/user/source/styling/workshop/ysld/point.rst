@@ -19,9 +19,9 @@ As points have no inherent shape of of their own, emphasis is placed on marking 
 
 Reference:
 
-* `YSLD Reference <http://suite.opengeo.org/docs/latest/cartography/ysld/reference/index.html>`__ (YSLD Reference)
-* `Point <http://suite.opengeo.org/docs/latest/cartography/ysld/reference/symbolizers/point.html>`__ (YSLD Reference | Point symbolizer)
-* :ref:`Point <styling/sld-reference/pointsymbolizer.html>` (User Manual | SLD Reference )
+* :ref:`YSLD Reference <ysld_reference>`
+* :ref:`YSLD Reference Point symbolizer <ysld_reference_symbolizers_point>` (User Manual | YSLD Reference)
+* :ref:`Point <sld_reference_pointsymbolizer>` (User Manual | SLD Reference )
 
 This exercise makes use of the ``ne:populated_places`` layer.
 

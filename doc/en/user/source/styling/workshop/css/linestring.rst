@@ -26,7 +26,7 @@ Each exercise makes use of the ``ne:roads`` layer.
 Reference:
 
 * :ref:`Line Symbology <css_properties_line>` (User Manual | CSS Property Listing)
-* :ref:`Lines <css_cookbook_line>` (User Manual | CSS Cookbook)
+* :ref:`Lines <css_cookbook_lines>` (User Manual | CSS Cookbook)
 * :ref:`LineString <sld_reference_linesymbolizer>` (User Manual | SLD Reference )
 
 Stroke
@@ -384,176 +384,148 @@ In a classroom setting please divide the challenges between teams (this allows u
  
       The use of selectors using the roads **type** attribute provides this opportunity.
 
-.. admonition:: Explore Vendor Option Follow Line
+Explore Vendor Option Follow Line
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   Vendor options can be used to enable some quite spectacular effects, while still providing a style that can be used by other applications.
+Vendor options can be used to enable some quite spectacular effects, while still providing a style that can be used by other applications.
 
-   #. Update `line_example` with the following:
+#. Update `line_example` with the following:
 
-      .. code-block:: css
+   .. code-block:: css
 
-         * {
-           stroke: ededff;
-           stroke-width: 10;
-           label: [level] " " [name];
-           font-fill: black;
-           -gt-label-follow-line: true;
-         }
+      * {
+        stroke: ededff;
+        stroke-width: 10;
+        label: [level] " " [name];
+        font-fill: black;
+        -gt-label-follow-line: true;
+      }
 
-   #. The property **stroke-width** has been used to make our line thicker in order to provide a backdrop for our label. 
+#. The property **stroke-width** has been used to make our line thicker in order to provide a backdrop for our label. 
 
-      .. code-block:: css
-         :emphasize-lines: 3
+   .. code-block:: css
+      :emphasize-lines: 3
+   
+      * {
+        stroke: ededff;
+        stroke-width: 10;
+        label: [level] " " [name];
+        font-fill: black;
+        -gt-label-follow-line: true;
+      }
+
+#. The **label** property combines combine several CQL expressions together for a longer label.
+
+   .. code-block:: css
+      :emphasize-lines: 4
+
+      * {
+        stroke: ededff;
+        stroke-width: 10;
+        label: [level] " " [name];
+        font-fill: black;
+        -gt-label-follow-line: true;
+      }
+
+   The combined **label** property::
       
-         * {
-           stroke: ededff;
-           stroke-width: 10;
-           label: [level] " " [name];
-           font-fill: black;
-           -gt-label-follow-line: true;
-         }
-
-   #. The **label** property combines combine several CQL expressions together for a longer label.
-
-      .. code-block:: css
-         :emphasize-lines: 4
-
-         * {
-           stroke: ededff;
-           stroke-width: 10;
-           label: [level] " " [name];
-           font-fill: black;
-           -gt-label-follow-line: true;
-         }
-
-      The combined **label** property::
-         
-         [level] " " [name]
-         
-      Is internally represented with the **Concatenate** function::
-
-         [Concatenate(level,' #', name)] 
-
-   #. The property **-gt-label-follow-line** provides the ability of have a label exactly follow a LineString character by character.
-
-      .. code-block:: css
-         :emphasize-lines: 6
+      [level] " " [name]
       
-         * {
-           stroke: ededff;
-           stroke-width: 10;
-           label: [level] " " [name];
-           font-fill: black;
-           -gt-label-follow-line: true;
-         }
+   Is internally represented with the **Concatenate** function::
 
-   #. The result is a new appearance for our roads.
+      [Concatenate(level,' #', name)] 
 
-      .. image:: ../style/img/line_label_4.png
+#. The property **-gt-label-follow-line** provides the ability of have a label exactly follow a LineString character by character.
+
+   .. code-block:: css
+      :emphasize-lines: 6
    
-.. admonition:: Challenge SLD Generation
+      * {
+        stroke: ededff;
+        stroke-width: 10;
+        label: [level] " " [name];
+        font-fill: black;
+        -gt-label-follow-line: true;
+      }
 
-   #. Generate the SLD for the following CSS.
+#. The result is a new appearance for our roads.
 
-      .. code-block:: css
+   .. image:: ../style/img/line_label_4.png
 
-          * {
-            stroke: black;
-          }
+.. _css.line.q0:
 
-      What is unusual about the SLD code for this example?
+Challenge SLD Generation
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. Generate the SLD for the following CSS.
+
+   .. code-block:: css
+
+       * {
+         stroke: black;
+       }
+
+   What is unusual about the SLD code for this example?
    
-   #. **Challenge:** Can you explain why this SLD still works as expected?
+#. Challenge: What is unusual about the generated SLD? Can you explain why it still works as expected?
 
-   .. only:: instructor
-  
-      .. admonition:: Instructor Notes       
+   .. note:: Answer :ref:`provided <css.line.a0>` at the end of the workbook.
 
-         The generated SLD does not contain any stroke properties, even though black was specified::
-  
-            <sld:LineSymbolizer>
-              <sld:Stroke/>
-            </sld:LineSymbolizer>
-  
-         SLD considers black the default stroke color for a LineSymbolizer, so no further detail was required.
+.. _css.line.q1:
 
-.. admonition:: Challenge Classification
+Challenge Classification
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-   #. The roads **type** attribute provides classification information.
+#. The roads **type** attribute provides classification information.
+
+   You can **Layer Preview** to inspect features to determine available values for type.
+
+#. **Challenge:** Create a new style adjust road appearance based on **type**.
+
+   .. image:: ../style/img/line_type.png
+
+   Hint: The available values are 'Major Highway','Secondary Highway','Road' and 'Unknown'.
+
+   .. note:: Answer :ref:`provided <css.line.a1>` at the end of the workbook.
    
-      You can **Layer Preview** to inspect features to determine available values for type.
+.. _css.line.q2:
+
+Challenge SLD Z-Index Generation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. Review the SLD generated by the **z-index** example.
+
+   .. code-block:: css
+
+      * {
+        stroke: black, #8080E6;
+        stroke-width: 5px, 3px;
+        z-index: 0, 1;
+      }
+
+#. *Challenge:* There is an interesting trick in the generated SLD, can you explain how it works?
+
+   .. note:: Answer :ref:`provided <css.line.a2>` at the end of the workbook.
+
+.. _css.line.q3:
+
+Challenge Label Shields
+^^^^^^^^^^^^^^^^^^^^^^^
+
+#. The traditional presentation of roads in the US is the use of a shield symbol, with the road number marked on top.
+
+.. image:: ../style/img/line_shield.png
+
+#. *Challenge:* Have a look at the documentation and reproduce this technique.
+
+   .. note:: Answer :ref:`provided <css.line.a3>` at the end of the workbook.
+
    
-   #. **Challenge:** Create a new style adjust road appearance based on **type**.
-
-      .. image:: ../style/img/line_type.png
-
-      Hint: The available values are 'Major Highway','Secondary Highway','Road' and 'Unknown'.
-
-   .. only:: instructor
-      
-      .. admonition:: Instructor Notes          
-
-         Here is an example:
-     
-         .. code-block:: css
-     
-              [type = 'Major Highway' ] {
-                  stroke: #000088;
-                  stroke-width: 1.25;
-              }
-              [type = 'Secondary Highway' ]{
-                  stroke: #8888AA;
-                  stroke-width: 0.75;
-              }
-              [type = 'Road']{
-                  stroke: #888888;
-                  stroke-width: .75;
-              }
-              [type = 'Unknown' ]{
-                  stroke: #888888;
-                  stroke-width: 0.5;
-              }
-              * {
-                 stroke: #AAAAAA;
-                 stroke-opacity: 0.25;
-                 stroke-width: 10;
-              }
-
-.. admonition:: Challenge SLD Z-Index Generation
-
-   #. Review the SLD generated by the **z-index** example.
-   
-      .. code-block:: css
-
-         * {
-           stroke: black, #8080E6;
-           stroke-width: 5px, 3px;
-           z-index: 0, 1;
-         }
-
-   #. *Challenge:* There is an interesting trick in the generated SLD, can you explain how it works?
-
-   .. only:: instructor
-     
-      .. admonition:: Instructor Notes    
-
-         The Z-Order example produces multiple FeatureTypeSytle definitions, each acting like an "inner layer".
-  
-         Each FeatureTypeStyle is rendered into its own raster, and the results merged in order. The legend shown in the map preview also provides a hint, as the rule from each FeatureType style is shown.
-
-.. admonition:: Challenge Label Shields
-
-   #. The traditional presentation of roads in the US is the use of a shield symbol, with the road number marked on top.
-   
-      .. image:: ../style/img/line_shield.png
-   
-   #. *Challenge:* Have a look at the documentation and reproduce this technique.
-
    .. only:: instructor
    
       .. admonition:: Instructor Notes      
 
-         The use of a label shield is a vendor specific capability of the GeoServer rendering engine. The tricky part of this exercise is finding the documentation online ( i.e. :ref:`Styled Marks in CSS <community/css/styled-marks.html>`).
+         The use of a label shield is a vendor specific capability of the GeoServer rendering engine. The tricky part of this exercise is finding the documentation online ( i.e. :ref:`Styled Marks in CSS <css_styledmarks>`).
          
          .. code-block:: css
        

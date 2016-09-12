@@ -19,10 +19,10 @@ As points have no inherent shape of of their own, emphasis is placed on marking 
 
 Reference:
 
-* :ref:`Point Symbology <extensions/css/properties.html#point-symbology>` (User Manual | CSS Property Listing)
-* :ref:`Points <extensions/css/cookbook_point.html>` (User Manual | CSS Cookbook)
-* :ref:`Styled Marks <user/extensions/css/styled-marks.html>` (User Manual | CSS Styling )
-* :ref:`Point <styling/sld-reference/pointsymbolizer.html>` (User Manual | SLD Reference )
+* :ref:`Point Symbology <css_properties_point>` (User Manual | CSS Property Listing)
+* :ref:`Points <css_cookbook_points>` (User Manual | CSS Cookbook)
+* :ref:`Styled Marks <css_styledmarks>` (User Manual | CSS Styling )
+* :ref:`Point <sld_reference_pointsymbolizer>` (User Manual | SLD Reference )
 
 This exercise makes use of the ``ne:populated_places`` layer.
 

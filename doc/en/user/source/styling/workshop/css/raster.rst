@@ -32,9 +32,9 @@ These raster examples use a digital elevation model consisting of a single band 
 
 Reference:
 
-* :ref:`Raster Symbology <extensions/css/properties.html#raster-symbology>` (User Manual | CSS Property Listing )
-* :ref:`Rasters <extensions/css/cookbook_raster.html>` (User Manual | CSS Cookbook );
-* :ref:`Point <styling/sld-reference/rastersymbolizer.html>` (User Manual | SLD Reference )
+* :ref:`Raster Symbology <css_properties_raster>` (User Manual | CSS Property Listing )
+* :ref:`Rasters <css_cookbook_rasters>` (User Manual | CSS Cookbook );
+* :ref:`Point <sld_reference_rastersymbolizer>` (User Manual | SLD Reference )
 
 The exercise makes use of the ``usgs:dem`` and ``ne:ne1`` layers.
 

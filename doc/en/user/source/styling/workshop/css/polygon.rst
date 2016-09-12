@@ -27,9 +27,9 @@ For our Polygon exercises we will try and limit our CSS documents to a single ru
 
 Reference:
 
-* :ref:`Polygon Symbology <extensions/css/properties.html#polygon-symbology>` (User Manual | CSS Property Listing)
-* :ref:`Polygons <extensions/css/cookbook/polygon.html>` (User Manual | CSS Cookbook)
-* :ref:`Polygons <styling/sld-reference/polygonsymbolizer.html>` (User Manual | SLD Reference )
+* :ref:`Polygon Symbology <css_properties_polygon>` (User Manual | CSS Property Listing)
+* :ref:`Polygons <css_cookbook_polygons>` (User Manual | CSS Cookbook)
+* :ref:`Polygons <sld_reference_polygonsymbolizer>` (User Manual | SLD Reference )
 
 This exercise makes use of the ``ne:states_provinces_shp`` layer.
 

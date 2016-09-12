@@ -11,7 +11,7 @@ Using the YSLD extension to define styles results in shorter examples that are e
 
 Reference:
 
-* `YSLD Reference <http://suite.opengeo.org/docs/latest/cartography/ysld/reference/index.html>`__ (YSLD Reference)
+* :ref:`YSLD Reference <ysld_reference>`
 
 Syntax
 ------

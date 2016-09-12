@@ -1,13 +1,13 @@
 .. _styling_workshop_ysld_done:
 
-Workshop Conclusion
-===================
+YSLD Workbook Conclusion
+========================
 
 We hope you have enjoyed this styling workshop.
 
 Additional resources:
 
-* :ref:`YSLD Extension <ysld>`
+* :ref:`YSLD Extension <ysld_styling>`
 * :ref:`YSLD Reference <ysld_reference>`
 
 YSLD Tips and Tricks
@@ -28,7 +28,7 @@ The following questions were listed through out the workshop as an opportunity t
 Classification
 ^^^^^^^^^^^^^^
 
-Answer for :ref:`<ysld.line.q1>`:
+Answer for :ref:`Challenge Classification <ysld.line.q1>`:
 
 #. **Challenge:** Create a new style adjust road appearance based on **type**.
 
@@ -80,26 +80,26 @@ Answer for :ref:`<ysld.line.q1>`:
 One Rule Classification
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Answer for :ref:`<ysld.line.q2>`:
+Answer for :ref:`Challenge One Rule Classification <ysld.line.q2>`:
 
 #. **Challenge:** Create a new style and classify the roads based on their scale rank using expressions in a single rule instead of multiple rules with filters.
 
 #. This exercise requires looking up information in the user guide, the search tearm *recode* provides several examples.
    
-   * :ref:`<ysld_reference_functions>` provides a clear example.
+   * The YSLD Reference :ref:`theming functions <ysld_reference_functions_theming>` provides a clear example.
 
 .. _ysld.line.a3:
 
 Label Shields
 ^^^^^^^^^^^^^
 
-Answer for :ref:`<ysld.line.q3>`:
+Answer for :ref:`Challenge Label Shields <ysld.line.q3>`:
 
 #. *Challenge:* Have a look at the documentation for putting a graphic on a text symbolizer in SLD and reproduce this technique in YSLD.
 
    .. image:: ../style/img/line_shield.png
 
-#. The use of a label shield is a vendor specific capability of the GeoServer rendering engine. The tricky part of this exercise is finding the documentation online ( i.e. :ref:`TextSymbolizer - Graphic <sld_reference_textsymbolizer#graphic>`).
+#. The use of a label shield is a vendor specific capability of the GeoServer rendering engine. The tricky part of this exercise is finding the documentation online ( i.e. :ref:`TextSymbolizer - Graphic <sld_reference_textsymbolizer>`).
       
    .. code-block:: yaml
  

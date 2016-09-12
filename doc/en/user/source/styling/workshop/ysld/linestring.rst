@@ -25,9 +25,9 @@ Each exercise makes use of the ``ne:roads`` layer.
 
 Reference:
 
-* :ref:`Line Symbology <extensions/css/properties.html#line-symbology>` (User Manual | CSS Property Listing)
-* :ref:`Lines <extensions/css/cookbook/line.html>` (User Manual | CSS Cookbook)
-* :ref:`LineString <styling/sld-reference/linesymbolizer.html>` (User Manual | SLD Reference )
+* :ref:`YSLD Reference <ysld_reference>`
+* :ref:`YSLD Reference Line symbolizer <ysld_reference_symbolizers_line>` (User Manual | YSLD Reference)
+* :ref:`LineString <sld_reference_linesymbolizer>` (User Manual | SLD Reference )
 
 Line
 ----

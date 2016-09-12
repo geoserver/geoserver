@@ -780,240 +780,121 @@ The following optional explore and challenge activities offer a chance to review
 
 In a classroom setting you are encouraged to team up into groups, with each group taking on a different challenge.
 
-.. admonition:: Explore Antialiasing
+.. _ysld.polygon.q1:
 
-   #. When we rendered our initial preview, without a stroke, thin white gaps (or slivers) are visible between our polygons.
+Explore Antialiasing
+^^^^^^^^^^^^^^^^^^^^
 
-      .. image:: ../style/img/polygon_04_preview.png
+#. When we rendered our initial preview, without a stroke, thin white gaps (or slivers) are visible between our polygons.
 
-      This effect is made more pronounced by the rendering engine making use of the Java 2D sub-pixel accuracy. This technique is primarily used to prevent an aliased (stair-stepped) appearance on diagonal lines.
+   .. image:: ../style/img/polygon_04_preview.png
 
-   #. Clients can turn this feature off using a GetMap format option::
+   This effect is made more pronounced by the rendering engine making use of the Java 2D sub-pixel accuracy. This technique is primarily used to prevent an aliased (stair-stepped) appearance on diagonal lines.
+
+#. Clients can turn this feature off using a GetMap format option::
+
+      format_options=antialiasing=off;
+
+   The **LayerPreview** provides access to this setting from the Open Layers **Options Toolbar**:
+
+   .. image:: ../style/img/polygon_antialias.png
+
+#. **Explore:** Experiment with **fill** and **stroke** settings to eliminate slivers between polygons.
+
+   .. note:: Answer :ref:`provided <ysld.polygon.a1>` at the end of the workbook.
+
+.. _ysld.polygon.q2:
+
+Explore Categorize
+^^^^^^^^^^^^^^^^^^
    
-         format_options=antialiasing=off;
+.. admonition:: Instructor Notes   
+
+   This section reviews use of the Symbology Encoding Categorize function for something else other than color. Goal is to have readers reach for SE Functions as often as selectors when styling.
+
+   Additional exercise ideas:
+
+   * Control size using Interpolate: While Recode offers an alternative for selectors (matching discrete values) Interpolate brings something new to the table - gradual color (or value) progression. The best of example of this is controlling width using the ``ne:rivers`` data layer (which is not yet available).
+
+#. The **Categorize** function can be used to generate property values based on quantitative information. Here is an example using Categorize to color states according to size.
+
+    .. code-block:: yaml
+
+       symbolizers:
+       - polygon:
+           fill-color: ${Categorize(Shape_Area,
+             '#08519c','0.5',
+             '#3182bd','1',
+             '#6baed6','5',
+             '#9ecae1','60',
+             '#c6dbef','80',
+             '#eff3ff')}
    
-      The **LayerPreview** provides access to this setting from the Open Layers **Options Toolbar**:
+   .. image:: ../style/img/polygon_area.png
 
-      .. image:: ../style/img/polygon_antialias.png
+#. An exciting use of the GeoServer **shape** symbols is the theming by changing the **size** used for pattern density.
 
-   #. **Explore:** Experiment with **fill** and **stroke** settings to eliminate slivers between polygons.
+#. **Explore:** Use the **Categorize** function to theme by **datarank**.
 
-   .. only:: instructor
+   .. image:: ../style/img/polygon_categorize.png
 
-      .. admonition:: Instructor Notes      
+   .. note:: Answer :ref:`provided <ysld.polygon.a2>` at the end of the workbook.
 
-         The obvious thing works, setting both values to the same color:
+.. _ysld.polygon.q3:
 
-         .. code-block:: yaml
- 
-            symbolizers:
-            - polygon:
-                stroke-color: 'lightgrey'
-                stroke-width: 1
-                fill-color: 'lightgrey'
+Challenge Goodness of Fit
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-         Yes, the intro "without a stroke" was a clue.
+#. A subject we touched on during labeling was the conflict resolution GeoServer performs to ensure labels do not overlap.
 
-.. admonition:: Explore Categorize
+#. In addition to the vendor parameter for max displacement you can experiment with different values for "goodness of fit". These settings control how far GeoServer is willing to move a label to avoid conflict, and under what terms it simply gives up::
+
+      x-goodnessOfFit: 0.3
+      x-maxDisplacement: 130
+
+#. You can also experiment with turning off this facility completely::
+
+      x-conflictResolution: false
    
-   .. only:: instructor
+#. **Challenge:** Construct your own example using maxDisplacement and goodnessOfFit.
 
-      .. admonition:: Instructor Notes   
+.. _ysld.polygon.q4:
 
-         This section reviews use of the Symbology Encoding Categorize function for something else other than color. Goal is to have readers reach for SE Functions as often as selectors when styling.
+Challenge Halo
+^^^^^^^^^^^^^^
+
+#. The halo example used the fill color and opacity for a muted halo, while this improved readability it did not bring attention to our labels.
+
+   A common design choice for emphasis is to outline the text in a contrasting color.
    
-         Additional exercise ideas:
+#. **Challenge:** Produce a map that uses a white halo around black text.
+
+   .. note:: Answer :ref:`provided <ysld.polygon.a4>` at the end of the workbook.
+
+.. _ysld.polygon.q5:
+
+Challenge Theming using Multiple Attributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. A powerful tool is theming using multiple attributes. This is an important concept allowing map readers to perform "integration by eyeball" (detecting correlations between attribute values information).
+
+#. **Challenge:** Combine the **mapcolor9** and **datarank** examples to reproduce the following map.
+
+   .. image:: ../style/img/polygon_multitheme.png
+
+   .. note:: Answer :ref:`provided <ysld.polygon.a5>` at the end of the workbook.
+
+.. _ysld.polygon.q6:
+
+Challenge Use of Feature styles
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. Earlier we looked at using multiple **feature-styles** to simulate line string casing. The line work was drawn twice, once with thick line, and then a second time with a thinner line. The resulting effect is similar to text halos - providing breathing space around complex line work allowing it to stand out.
    
-         * Control size using Interpolate: While Recode offers an alternative for selectors (matching discrete values) Interpolate brings something new to the table - gradual color (or value) progression. The best of example of this is controlling width using the ``ne:rivers`` data layer (which is not yet available).
+#. **Challenge:** Use what you know of LineString **feature-styles** to reproduce the following map:
 
-   #. The **Categorize** function can be used to generate property values based on quantitative information. Here is an example using Categorize to color states according to size.
+   .. image:: ../style/img/polygon_zorder.png
 
-       .. code-block:: yaml
-
-          symbolizers:
-          - polygon:
-              fill-color: ${Categorize(Shape_Area,
-                '#08519c','0.5',
-                '#3182bd','1',
-                '#6baed6','5',
-                '#9ecae1','60',
-                '#c6dbef','80',
-                '#eff3ff')}
-      
-      .. image:: ../style/img/polygon_area.png
-
-   #. An exciting use of the GeoServer **shape** symbols is the theming by changing the **size** used for pattern density.
-
-   #. **Explore:** Use the **Categorize** function to theme by **datarank**.
-
-      .. image:: ../style/img/polygon_categorize.png
-
-   .. only:: instructor
-
-      .. admonition:: Instructor Notes
-
-         Example:
-
-         .. code-block:: yaml
-
-            symbolizers:
-            - polygon:
-                stroke-color: 'black'
-                stroke-width: 1
-                fill-color: 'gray'
-                fill-graphic:
-                  size: ${Categorize(datarank,'4','4','5','6','8','10','10')}
-                  symbols:
-                  - mark:
-                      shape: shape://slash
-                      stroke-color: 'darkgray'
-                      stroke-width: 1
-
-.. admonition:: Challenge Goodness of Fit
-
-   #. A subject we touched on during labeling was the conflict resolution GeoServer performs to ensure labels do not overlap.
-
-   #. In addition to the vendor parameter for max displacement you can experiment with different values for "goodness of fit". These settings control how far GeoServer is willing to move a label to avoid conflict, and under what terms it simply gives up::
+   .. note:: Answer :ref:`provided <ysld.polygon.a6>` at the end of the workbook.
    
-         x-goodnessOfFit: 0.3
-         x-maxDisplacement: 130
 
-   #. You can also experiment with turning off this facility completely::
-   
-         x-conflictResolution: false
-      
-   #. **Challenge:** Construct your own example using max displacement and fit-goodness.
-
-.. admonition:: Challenge Halo
-
-   #. The halo example used the fill color and opacity for a muted halo, while this improved readability it did not bring attention to our labels.
-
-      A common design choice for emphasis is to outline the text in a contrasting color.
-      
-   #. **Challenge:** Produce a map that uses a white halo around black text.
-
-   .. only:: instructor
- 
-      .. admonition:: Instructor Notes      
-
-         Here is an example:
- 
-         .. code-block:: yaml
-
-            symbolizers:
-            - polygon:
-                stroke-color: 'gray'
-                stroke-width: 1
-                fill-color: '#7EB5D3'
-            - text:
-                label: ${name}
-                fill-color: 'black'
-                halo:
-                  fill-color: 'white'
-                  radius: 1
-                font-family: Arial
-                font-size: 14
-                font-style: normal
-                font-weight: normal
-                anchor: [0.5, 0.5]
-
-
-.. admonition:: Challenge Theming using Multiple Attributes
-
-   #. A powerful tool is theming using multiple attributes. This is an important concept allowing map readers to perform "integration by eyeball" (detecting correlations between attribute values information).
-
-   #. **Challenge:** Combine the **mapcolor9** and **datarank** examples to reproduce the following map.
-
-      .. image:: ../style/img/polygon_multitheme.png
-
-   .. only:: instructor
-
-      .. admonition:: Instructor Notes   
-
-         This should be a cut and paste using the information already provided.
- 
-         .. code-block:: yaml
-
-            symbolizers:
-            - polygon:
-                stroke-color: 'black'
-                stroke-width: 1
-                fill-color: ${Recode(mapcolor9,
-                  '1','#8dd3c7',
-                  '2','#ffffb3',
-                  '3','#bebada',
-                  '4','#fb8072',
-                  '5','#80b1d3',
-                  '6','#fdb462',
-                  '7','#b3de69',
-                  '8','#fccde5',
-                  '9','#d9d9d9')}
-            - polygon:
-                stroke-color: 'black'
-                stroke-width: 1
-                fill-color: 'gray'
-                fill-graphic:
-                  size: ${Categorize(datarank,'6','4','8','6','10','10','12')}
-                  symbols:
-                  - mark:
-                      shape: shape://slash
-                      stroke-color: 'black'
-                      stroke-width: 1
-                      fill-color: 'gray'
-
-
-.. _ysld.polygon.challenge:
-
-Polygon Challenge
------------------
-
-.. admonition:: Challenge Use of Feature styles
-
-   #. Earlier we looked at using multiple **feature-styles** to simulate line string casing. The line work was drawn twice, once with thick line, and then a second time with a thinner line. The resulting effect is similar to text halos - providing breathing space around complex line work allowing it to stand out.
-      
-   #. **Challenge:** Use what you know of LineString **feature-styles** to reproduce the following map:
-   
-      .. image:: ../style/img/polygon_zorder.png
-         
-.. only:: instructor
-
-   .. admonition:: Instructor Notes     
-
-      This is much easier when using YSLD, where z-order is controlled by feature-style order. In this instance, multiple symbolizers within a feature-style will not work, as the order within a feature-style is only consistent per-feature (not per-layer).
-
-      .. code-block:: yaml
-
-        feature-styles:
-        - rules:
-          - scale: [min, max]
-            symbolizers:
-            - polygon:
-                stroke-width: 1.0
-                fill-color: 'lightgrey'
-        - rules:
-          - scale: [min, max]
-            symbolizers:
-            - polygon:
-                stroke-width: 1.0
-                fill-color: 'gray'
-                fill-graphic:
-                  size: 8
-                  symbols:
-                  - mark:
-                      shape: shape://slash
-                      stroke-color: 'black'
-                      stroke-width: 0.75
-        - rules:
-          - scale: [min, max]
-            symbolizers:
-            - line:
-                stroke-color: 'lightgrey'
-                stroke-width: 6
-        - rules:
-          - scale: [min, max]
-            symbolizers:
-            - line:
-                stroke-color: 'black'
-                stroke-width: 1.5
-
-      The included legend should be a large clue about what is going on.

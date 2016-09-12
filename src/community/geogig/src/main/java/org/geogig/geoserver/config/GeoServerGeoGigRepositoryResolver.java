@@ -9,6 +9,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 import org.locationtech.geogig.repository.Context;
 import org.locationtech.geogig.repository.Repository;
@@ -97,6 +98,16 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
 
     @Override
     public boolean delete(URI repositoryLocation) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public URI buildRepoURI(URI rootRepoURI, String repoName) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<String> listRepoNamesUnderRootURI(URI rootRepoURI) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

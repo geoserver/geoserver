@@ -1,7 +1,7 @@
-.. _css:
+.. _styling_workshop_css_intro:
 
-CSS
-===
+CSS Introduction
+================
 
 In the last section, we saw how the OGC defines style using XML documents (called SLD files).
 
@@ -72,8 +72,8 @@ Here is the key property **halo-radius** providing an outline around generated l
 
 Reference:
 
-* :ref:`CSS Cookbook <styling_css_cookbook>`
-* :ref:`CSS Examples <styling_css_examples>`
+* :ref:`CSS Cookbook <css_cookbook>`
+* :ref:`CSS Examples <css_examples>`
 
 Rules
 ^^^^^
@@ -122,7 +122,7 @@ In the above example the label is defined using the CQL Expression :kbd:`NAME`. 
 
 Reference:
 
-* :ref:`Filter Syntax <styling_css_filters>`
+* :ref:`Filter Syntax <css_filters>`
 * :ref:`ECQL Reference <filter_ecql_reference>`
 
 Cascading
@@ -191,7 +191,7 @@ The above pseudo-selectors apply to all symbols, but to be specific the syntax :
 
 Reference:
 
-* :ref:`Styled Marks <styling_css_marks>` (User Guide)
+* :ref:`Styled Marks <css_styledmarks>` (User Guide)
 
 Compare CSS to SLD
 ------------------

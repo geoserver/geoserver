@@ -1,4 +1,4 @@
-.. _css.line:
+.. _styling_workshop_css_line:
 
 Lines
 =====
@@ -25,9 +25,9 @@ Each exercise makes use of the ``ne:roads`` layer.
 
 Reference:
 
-* :ref:`Line Symbology <extensions/css/properties.html#line-symbology>` (User Manual | CSS Property Listing)
-* :ref:`Lines <extensions/css/cookbook/line.html>` (User Manual | CSS Cookbook)
-* :ref:`LineString <styling/sld-reference/linesymbolizer.html>` (User Manual | SLD Reference )
+* :ref:`Line Symbology <css_properties_line>` (User Manual | CSS Property Listing)
+* :ref:`Lines <css_cookbook_line>` (User Manual | CSS Cookbook)
+* :ref:`LineString <sld_reference_linesymbolizer>` (User Manual | SLD Reference )
 
 Stroke
 ------

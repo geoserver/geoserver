@@ -1,7 +1,7 @@
 .. _styling_workshop_ysld:
 
-YSLD Styling
-============
+YSLD Styling Workbook
+=====================
 
 GeoServer styling can be used for a range of creative effects. This section introduces the `YSLD Extension` which can be used as alternative to SLD files.
 
@@ -13,4 +13,5 @@ GeoServer styling can be used for a range of creative effects. This section intr
    polygon
    point
    raster
+   done
 

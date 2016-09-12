@@ -49,6 +49,8 @@ Point symbology
       * If true the point symbol will be consider an obstable for labels, no label will overlap it
       * no
 
+.. _css_properties_line:
+
 Line symbology
 --------------
 
@@ -482,7 +484,7 @@ Shared
         as a single group. Useful to z-order across layers or across different feature groups, like
         roads and rails, especially when using z-index to support casing 
       * false
-      * ``transform``
+    - * ``transform``
       * function
       * Applies a rendering transformationon the current level. The function syntax is ``txName(key1:value1,key1:value2)``. Values can be single ones, or space separated lists. 
       * false

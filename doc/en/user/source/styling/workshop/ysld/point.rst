@@ -1,4 +1,4 @@
-.. _ysld.point:
+.. _styling_workshop_point:
 
 Points
 ======
@@ -839,7 +839,7 @@ Bonus
    
    #. To help start things out here is a style for ``ne:states_provinces_shp``:
    
-       .. code-block:: ysld
+       .. code-block:: yaml
 
           symbolizers:
           - polygon:

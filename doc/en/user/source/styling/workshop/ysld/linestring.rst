@@ -1,4 +1,4 @@
-.. _ysld.line:
+.. _styling_workshop_ysld_line:
 
 Lines
 =====
@@ -492,180 +492,122 @@ In a classroom setting please divide the challenges between teams (this allows u
  
       The use of selectors using the roads **type** attribute provides this opportunity.
 
-.. admonition:: Explore Vendor Option Follow Line
 
-   Vendor options can be used to enable some quite spectacular effects, while still providing a style that can be used by other applications.
+Explore Vendor Option Follow Line
+`````````````````````````````````
 
-   #. Update `line_example` with the following:
+Vendor options can be used to enable some quite spectacular effects, while still providing a style that can be used by other applications.
 
-      .. code-block:: yaml
+#. Update `line_example` with the following:
 
-         symbolizers:
-         - line:
-             stroke-color: '#EDEDFF'
-             stroke-width: 10
-         - text:
-             label: '${level} #${name}'
-             fill-color: '#000000'
-             x-followLine: true
+   .. code-block:: yaml
 
-      The :kbd:`#` character is the comment character in YAML, so we have to quote strings that contain it like colours and in this expression.
+      symbolizers:
+      - line:
+          stroke-color: '#EDEDFF'
+          stroke-width: 10
+      - text:
+          label: '${level} #${name}'
+          fill-color: '#000000'
+          x-followLine: true
 
-   #. The property **stroke-width** has been used to make our line thicker in order to provide a backdrop for our label. 
+   The :kbd:`#` character is the comment character in YAML, so we have to quote strings that contain it like colours and in this expression.
 
-      .. code-block:: yaml
-         :emphasize-lines: 4
+#. The property **stroke-width** has been used to make our line thicker in order to provide a backdrop for our label. 
+
+   .. code-block:: yaml
+      :emphasize-lines: 4
+   
+      symbolizers:
+      - line:
+          stroke-color: '#EDEDFF'
+          stroke-width: 10
+      - text:
+          label: '${level} #${name}'
+          fill-color: '#000000'
+          placement: point
+          x-followLine: true
+
+#. The **label** property combine several CQL expressions together for a longer label.
+
+   .. code-block:: css
+      :emphasize-lines: 4
+
+      symbolizers:
+      - line:
+          stroke-color: '#EDEDFF'
+          stroke-width: 10
+      - text:
+          label: '${level} #${name}'
+          fill-color: '#000000'
+          x-followLine: true
+
+   The expressions in the **label** property::
       
-         symbolizers:
-         - line:
-             stroke-color: '#EDEDFF'
-             stroke-width: 10
-         - text:
-             label: '${level} #${name}'
-             fill-color: '#000000'
-             placement: point
-             x-followLine: true
-
-   #. The **label** property combine several CQL expressions together for a longer label.
-
-      .. code-block:: css
-         :emphasize-lines: 4
-
-         symbolizers:
-         - line:
-             stroke-color: '#EDEDFF'
-             stroke-width: 10
-         - text:
-             label: '${level} #${name}'
-             fill-color: '#000000'
-             x-followLine: true
-
-      The expressions in the **label** property::
-         
-         ${level} #${name}
-         
-      are inserted into the text by combining them with the text between them using **Concatenate** function::
-
-         [Concatenate(level,' #', name)] 
-
-      This happens silently in the background.
-
-   #. The property **x-followLine** provides the ability of have a label exactly follow a LineString character by character.
-
-      .. code-block:: css
-         :emphasize-lines: 8
+      ${level} #${name}
       
-         symbolizers:
-         - line:
-             stroke-color: '#EDEDFF'
-             stroke-width: 10
-         - text:
-             label: ${level}  ${name}
-             fill-color: '#000000'
-             x-followLine: true
+   are inserted into the text by combining them with the text between them using **Concatenate** function::
 
-   #. The result is a new appearance for our roads.
+      [Concatenate(level,' #', name)] 
 
-      .. image:: ../style/img/line_label_4.png
+   This happens silently in the background.
+
+#. The property **x-followLine** provides the ability of have a label exactly follow a LineString character by character.
+
+   .. code-block:: css
+      :emphasize-lines: 8
    
-.. admonition:: Challenge Classification
+      symbolizers:
+      - line:
+          stroke-color: '#EDEDFF'
+          stroke-width: 10
+      - text:
+          label: ${level}  ${name}
+          fill-color: '#000000'
+          x-followLine: true
 
-   #. The roads **type** attribute provides classification information.
+#. The result is a new appearance for our roads.
+
+   .. image:: ../style/img/line_label_4.png
+
+.. _ysld.line.q1:
+
+Challenge Classification
+````````````````````````
+
+#. The roads **type** attribute provides classification information.
+
+   You can **Layer Preview** to inspect features to determine available values for type.
+
+#. **Challenge:** Create a new style adjust road appearance based on **type**.
+
+   .. image:: ../style/img/line_type.png
    
-      You can **Layer Preview** to inspect features to determine available values for type.
    
-   #. **Challenge:** Create a new style adjust road appearance based on **type**.
-
-      .. image:: ../style/img/line_type.png
-
-      Hint: The available values are 'Major Highway','Secondary Highway','Road' and 'Unknown'.
-
-   .. only:: instructor
-      
-      .. admonition:: Instructor Notes          
-
-         Here is an example:
-     
-         .. code-block:: yaml
-     
-             define: &common
-               stroke-opacity: 0.25
-         
-             rules:
-             - filter: ${type = 'Major Highway'}
-               symbolizers:
-               - line:
-                   stroke-color: '#000088'
-                   stroke-width: 1.25
-                   <<: *common
-             - filter: ${type = 'Secondary Highway'}
-               symbolizers:
-               - line:
-                   stroke-color: '#8888AA'
-                   stroke-width: 0.75
-                   <<: *common
-             - filter: ${type = 'Road'}
-               symbolizers:
-               - line:
-                   stroke-color: '#888888'
-                   stroke-width: 0.75
-                   <<: *common
-             - filter: ${type = 'Unknown'}
-               symbolizers:
-               - line:
-                   stroke-color: '#888888'
-                   stroke-width: 0.5
-                   <<: *common
-             - else: true
-               symbolizers:
-               - line:
-                   stroke-color: '#AAAAAA'
-                   stroke-width: 0.5
-                   <<: *common
-
-.. admonition:: Challenge One Rule Classification
-
-   #. You can save a lot of typing by doing your classification in an expression using arithmetic or the :kbd:`Recode` function
+   note:: The available values are 'Major Highway','Secondary Highway','Road' and 'Unknown'.
    
-   #. **Challenge:** Create a new style and classify the roads based on their scale rank using expressions in a single rule instead of multiple rules with filters.
+   note:: Answer :ref:`provided <ysld.line.a1>` at the end of the workbook.
 
+.. _ysld.line.q2:
 
-.. admonition:: Challenge Label Shields
+Challenge One Rule Classification
+`````````````````````````````````
 
-   #. The traditional presentation of roads in the US is the use of a shield symbol, with the road number marked on top.
-   
-      .. image:: ../style/img/line_shield.png
-   
-   #. *Challenge:* Have a look at the documentation for putting a graphic on a text symbolizer in SLD and reproduce this technique in YSLD.
+#. You can save a lot of typing by doing your classification in an expression using arithmetic or the :kbd:`Recode` function
 
-   .. only:: instructor
-   
-      .. admonition:: Instructor Notes      
+#. **Challenge:** Create a new style and classify the roads based on their scale rank using expressions in a single rule instead of multiple rules with filters.
 
-         The use of a label shield is a vendor specific capability of the GeoServer rendering engine. The tricky part of this exercise is finding the documentation online ( i.e. :ref:`TextSymbolizer - Graphic <http://docs.geoserver.org/stable/en/user/styling/sld-reference/textsymbolizer.html#graphic>`).
-         
-         .. code-block:: yaml
-       
-             symbolizers:
-             - line:
-                 stroke-color: '#000000'
-                 stroke-width: 3
-             - line:
-                 stroke-color: '#D3D3D3'
-                 stroke-width: 2
-             - text:
-                 label: ${name}
-                 fill-color: '#000000'
-                 font-family: Ariel
-                 font-size: 10
-                 font-style: normal
-                 font-weight: normal
-                 placement: point
-                 graphic:
-                   size: 18
-                   symbols:
-                   - mark:
-                       shape: square
-                       stroke-color: '#000000'
-                       stroke-width: 1
-                       fill-color: '#FFFFFF'
+   .. note:: Answer :ref:`provided <ysld.line.a2>` at the end of the workbook.
+
+.. _ysld.line.q3:
+
+Challenge Label Shields
+```````````````````````
+
+#. The traditional presentation of roads in the US is the use of a shield symbol, with the road number marked on top.
+
+#. *Challenge:* Have a look at the documentation for putting a graphic on a text symbolizer in SLD and reproduce this technique in YSLD.
+
+   .. image:: ../style/img/line_shield.png
+
+   .. note:: Answer :ref:`provided <ysld.line.a3>` at the end of the workbook.

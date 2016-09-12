@@ -1,4 +1,4 @@
-.. _ysld.raster:
+.. _styling_workshop_raster:
 
 Rasters
 =======
@@ -32,9 +32,9 @@ These raster examples use a digital elevation model consisting of a single band 
 
 Reference:
 
-* `YSLD Reference <http://suite.opengeo.org/docs/latest/cartography/ysld/reference/index.html>`__ (YSLD Reference)
-* `Point <http://suite.opengeo.org/docs/latest/cartography/ysld/reference/symbolizers/raster.html>`__ (YSLD Reference | Raster symbolizer)
-* :ref:`Point <styling/sld-reference/rastersymbolizer.html>` (User Manual | SLD Reference )
+* :ref:`YSLD Reference <ysld_reference>`
+* :ref:`Point <ysld_reference_symbolizers_point>` (YSLD Reference | Raster symbolizer)
+* :ref:`Point <sld_reference_pointsymbolizer>` (User Manual | SLD Reference )
 
 The exercise makes use of the ``usgs:dem`` and ``ne:ne1`` layers.
 

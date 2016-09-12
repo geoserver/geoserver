@@ -1,4 +1,4 @@
-.. _css.raster:
+.. _styling_workshop_css_raster:
 
 Rasters
 =======

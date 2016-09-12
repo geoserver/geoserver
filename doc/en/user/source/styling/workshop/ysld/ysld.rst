@@ -1,7 +1,7 @@
-.. _ysld.ysld:
+.. _styling_workshop_ysld_intro:
 
-YSLD
-====
+YSLD Introduction
+=================
 
 In the last section, we saw how the OGC defines style using XML documents (called SLD files).
 

@@ -1,4 +1,4 @@
-.. _ysld.polygon:
+.. _styling_workshop_polygon:
 
 Polygons
 ========
@@ -961,6 +961,11 @@ In a classroom setting you are encouraged to team up into groups, with each grou
                       stroke-width: 1
                       fill-color: 'gray'
 
+
+.. _ysld.polygon.challenge:
+
+Polygon Challenge
+-----------------
 
 .. admonition:: Challenge Use of Feature styles
 

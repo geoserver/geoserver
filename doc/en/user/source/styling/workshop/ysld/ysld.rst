@@ -1,7 +1,7 @@
 .. _styling_workshop_ysld_intro:
 
-YSLD Introduction
-=================
+YSLD Quickstart
+===============
 
 In the last section, we saw how the OGC defines style using XML documents (called SLD files).
 
@@ -49,7 +49,7 @@ There are three types of objects in a YSLD document:
 
 #. List, any collection of objects. A list can contain mappings, scalars, and even other lists.
 
-Lists require dashes for every entry, while mappings do not.
+   Lists require dashes for every entry, while mappings do not.
 
 For example, a symbolizer block is a list, so every entry requires its own dash:
 
@@ -62,7 +62,7 @@ For example, a symbolizer block is a list, so every entry requires its own dash:
           ...
 
 
-The point: and text: objects (the individual symbolizers themselves) are mappings, and as such, the contents do not require dashes, only indents:
+The :kbd:`polygon:` and :kbd:`text:` objects (the individual symbolizers themselves) are mappings, and as such, the contents do not require dashes, only indents:
 
  .. code-block:: yaml
 
@@ -181,6 +181,8 @@ Rule selectors can also be triggered based on the state of the rendering engine.
             fill-color: 'gray'
 
 In the above example the label is defined using the CQL Expression :kbd:`NAME`. This results in a dynamic style that generates each label on a case-by-case basis, filling in the label with the feature attribute :kbd:`NAME`.
+
+Reference:
 
 * `Filter Syntax <http://suite.opengeo.org/docs/latest/cartography/ysld/reference/filters.html>`__ (YSLD Reference)
 * :ref:`ECQL Reference <filter_ecql_reference>` (User Guide)
@@ -311,29 +313,35 @@ Finished early? For now please help your neighbour so we can proceed with the wo
 
 If you are really stuck please consider the following challenge rather than skipping ahead.
 
-.. admonition:: Explore
+Explore Data
+^^^^^^^^^^^^
 
-   #. Return to the :guilabel:`Data` tab and use the :guilabel:`Compute` link to determine the minimum and maximum for the **scalerank** attribute.
-   
-      .. only:: instructor
-    
-         .. admonition:: Instructor Notes
+#. Return to the :guilabel:`Data` tab and use the :guilabel:`Compute` link to determine the minimum and maximum for the **scalerank** attribute.
 
-            Should be 2 and 9 respectively.
-
-.. admonition:: Challenge Compare SLD Generation
-
-   #. Compare the generated SLD differ from the hand generated :download:`SLD file <../files/airports0.sld>` used as an example?
-
-      You can get the generated SLD by running:
-
-          curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/airports0.sld
-   
-   #. **Challenge:** What differences can you spot?
-      
-      .. only:: instructor
-       
-         .. admonition:: Instructor Notes      
+   .. only:: instructor
  
-            Generated SLD does not include name or title information; this can be added by students using an annotation. Encourage students to look this up in the reference material provided.
+      .. admonition:: Instructor Notes
 
+         Should be 2 and 9 respectively.
+
+Challenge Compare SLD Generation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. Compare the generated SLD differ from the hand generated :download:`SLD file <../files/airports0.sld>` used as an example?
+   
+   Using the browser:
+   
+   * http://localhost:8080/geoserver/rest/styles/airport.sld?pretty=true
+   * http://localhost:8080/geoserver/rest/styles/airport.yaml
+
+#. Or command line::
+
+     curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/airports0.sld
+   
+#. **Challenge:** What differences can you spot?
+   
+   .. only:: instructor
+    
+      .. admonition:: Instructor Notes      
+
+         Generated SLD does not include name or title information; this can be added by students using an annotation. Encourage students to look this up in the reference material provided.

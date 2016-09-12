@@ -18,6 +18,98 @@ Converting to YSLD
 
 The REST API can be used to convert any of your existing CSS or SLD styles to YSLD.
 
+#. Navigate to the rest api endpoint for styles:
+   
+   * `view-source:http://localhost:8080/geoserver/rest/styles <view-source:http://localhost:8080/geoserver/rest/styles>`__
+   
+   .. note:: Using ``view-source:`` in chrome or firefox allows us to focus on page content.
+   
+   
+#. Click on one of the styles (for example ``states.html``)
+#. Click on the link to the style contents
+   
+   * `view-source:http://localhost:8080/geoserver/rest/styles/states.sld <view-source:http://localhost:8080/geoserver/rest/styles/states.sld>`__
+   
+
+#. Change the URL with :kbd:`?pretty=true` for human readable XML.
+
+   * `view-source:http://localhost:8080/geoserver/rest/styles/states.sld?pretty=true <view-source:http://localhost:8080/geoserver/rest/styles/states.sld?pretty=true>`__
+   
+#. Change the URL with :kbd:`yaml` to convert to YSLD.
+
+   * `view-source:http://localhost:8080/geoserver/rest/styles/states.yaml <view-source:http://localhost:8080/geoserver/rest/styles/states.yaml>`__
+   
+   The original SLD file is convert to YSLD:
+   
+   .. code-block:: yaml
+   
+      name: states
+      title: Population in the United States
+      abstract: |-
+        A sample filter that filters the United States into three
+                categories of population, drawn in different colors
+      feature-styles:
+      - name: name
+        rules:
+        - name: Population < 2M
+          title: Population < 2M
+          filter: ${PERSONS < '2000000'}
+          scale: [min, max]
+          symbolizers:
+          - polygon:
+              fill-color: '#A6CEE3'
+              fill-opacity: 0.7
+        - name: Population 2M-4M
+          title: Population 2M-4M
+          filter: ${PERSONS BETWEEN '2000000' AND '4000000'}
+          scale: [min, max]
+          symbolizers:
+          - polygon:
+              fill-color: F78B4
+              fill-opacity: 0.7
+        - name: '> 4M'
+          title: Population > 4M
+          filter: ${PERSONS > '4000000'}
+          scale: [min, max]
+          symbolizers:
+          - polygon:
+              fill-color: '#B2DF8A'
+              fill-opacity: 0.7
+        - name: State Outlines
+          title: State Outlines
+          scale: [min, max]
+          symbolizers:
+          - line:
+              stroke-color: '#8CADBF'
+              stroke-width: 0.1
+        - name: State Abbreviations
+          title: State Abbreviations
+          scale: ['1.75E7', '3.5E7']
+          symbolizers:
+          - text:
+              label: ${STATE_ABBR}
+              font-family: SansSerif
+              font-size: 12
+              font-style: Normal
+              font-weight: normal
+              placement: point
+              anchor: [0.5, 0.5]
+        - name: State Names
+          title: State Names
+          scale: [min, '1.75E7']
+          symbolizers:
+          - text:
+              label: ${STATE_NAME}
+              font-family: SansSerif
+              font-size: 12
+              font-style: Normal
+              font-weight: normal
+              placement: point
+              anchor: [0.5, 0.5]
+              x-maxDisplacement: 100
+              x-goodnessOfFit: 0.9
+
+
 YSLD Workshop Answer Key
 ------------------------
 
@@ -411,4 +503,114 @@ Answer for :ref:`Challenge Layer Group <ysld.point.q3>`:
               x-label-priority: ${`0` - LABELRANK}
 
    Using a lightgray halo, 0.7 opacity and radius 2 fades out the complexity immediately surrounding the label text improving legibility.
+
+.. _ysld.raster.a1:
+
+Contrast Enhancement
+^^^^^^^^^^^^^^^^^^^^
+
+Discussion for :ref:`Explore Contrast Enhancement <ysld.raster.q1>`:
+
+#. A special effect that is effective with grayscale information is automatic contrast adjustment.
+
+#. Make use of a simple contrast enhancement with ``usgs:dem``:
+
+   .. code-block:: yaml
+
+      symbolizers:
+      - raster:
+          opacity: 1.0
+          contrast-enhancement:
+            mode: normalize
+
+#. Can you explain what happens when zoom in to only show a land area (as indicated with the bounding box below)?
+
+   .. image:: ../style/img/raster_contrast_1.png
+
+   What happens is insanity, normalize stretches the palette of the output image to use the full dynamic range. As long as we have ocean on the screen (with value 0) the land area was shown with roughly the same presentation.
+
+   .. image:: ../style/img/raster_contrast_2.png
+
+   Once we zoom in to show only a land area, the lowest point on the screen (say 100) becomes the new black, radically altering what is displayed on the screen.
+
+.. _ysld.raster.a2:
+
+Intervals
+^^^^^^^^^
+
+Answer for :ref:`Challenge Intervals <ysld.raster.q2>`:
+
+#. The color-map **type** property dictates how the values are used to generate a resulting color.
+
+   * :kbd:`ramp` is used for quantitative data, providing a smooth interpolation between the provided color values.
+   * :kbd:`intervals` provides categorization for quantitative data, assigning each range of values a solid color.
+   * :kbd:`values` is used for qualitative data, each value is required to have a **color-map** entry or it will not be displayed.
+
+#. **Chalenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
+
+   By using intervals it becomes very clear how relatively flat most of the continent is. The ramp presentation provided lots of fascinating detail which distracted from this fact.
+
+   .. image:: ../style/img/raster_interval.png
    
+   Here is style for you to cut and paste:
+   
+   .. code-block:: yaml
+
+      symbolizers:
+      - raster:
+          opacity: 1.0
+          color-map:
+            type: intervals
+            entries:
+            - ['#014636', 0, 0, null]
+            - ['#014636', 1.0, 1, null]
+            - ['#016C59', 1.0, 500, null]
+            - ['#02818A', 1.0, 1000, null]
+            - ['#3690C0', 1.0, 1500, null]
+            - ['#67A9CF', 1.0, 2000, null]
+            - ['#A6BDDB', 1.0, 2500, null]
+            - ['#D0D1E6', 1.0, 3000, null]
+            - ['#ECE2F0', 1.0, 3500, null]
+            - ['#FFF7FB', 1.0, 4000, null]
+
+.. _ysld.raster.a3:
+
+Clear Digital Elevation Model Presentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Answer for :ref:`Challenge Clear Digital Elevation Model Presentation <ysld.raster.q3>`:
+
+#. Now that you have seen the data on screen and have a better understanding how would you modify our initial gray-scale example?
+
+#. **Challenge:** Use what you have learned to present the ``usgs:dem`` clearly.
+
+   .. image:: ../style/img/raster_grayscale.png
+
+   The original was a dark mess. Consider making use of mid-tones (or adopting a sequential palette from color brewer) in order to fix this. In the following example the ocean has been left dark, allowing the mountains stand out more.
+    
+   .. code-block:: yaml
+
+      symbolizers:
+      - raster:
+          opacity: 1.0
+          color-map:
+            type: ramp
+            entries:
+            - ['#000000', 1.0, 0, null]
+            - ['#444444', 1.0, 1, null]
+            - ['#FFFFFF', 1.0, 3000, null]
+
+.. _ysld.raster.q5:
+
+Raster Opacity
+^^^^^^^^^^^^^^
+
+Discussion for :ref:`Challenge Clear Digital Elevation Model Presentation <ysld.raster.q3>`:
+
+#. There is a quick way to make raster data transparent, raster **opacity** property works in the same fashion as with vector data. The raster as a whole will be drawn partially transparent allow content from other layers to provide context.
+
+#. **Challenge:** Can you think of an example where this would be useful?
+
+   This is difficult as raster data is usually provided for use as a basemap, with layers being drawn over top.
+   
+   The most obvious example here is the display of weather systems, or model output such as fire danger. By drawing the raster with some transparency, the landmass can be shown for 

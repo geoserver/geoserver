@@ -275,11 +275,7 @@
           }
         })
       });
-      var projection = new ol.proj.Projection({
-          code: '${request.SRS?js_string}',
-          units: '${units?js_string}',
-          axisOrientation: 'neu'
-      });
+      var projection = ol.proj.get('${request.SRS?js_string}');
       var map = new ol.Map({
         controls: ol.control.defaults({
           attribution: false

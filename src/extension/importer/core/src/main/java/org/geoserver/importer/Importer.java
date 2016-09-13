@@ -87,14 +87,16 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.thoughtworks.xstream.XStream;
 import com.vividsolutions.jts.geom.Geometry;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * Primary controller/facade of the import subsystem.
@@ -875,17 +877,20 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     public Long runAsync(final ImportContext context, final ImportFilter filter, final boolean init) {
         // we store the current request spring context
-        RequestAttributes parentRequestAttributes = RequestContextHolder.getRequestAttributes();
+        final RequestAttributes parentRequestAttributes = RequestContextHolder.getRequestAttributes();
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Thread parentThread = Thread.currentThread();
         // creating an asynchronous importer job
         return jobs.submit(new Job<ImportContext>() {
 
             @Override
             protected ImportContext call(ProgressMonitor monitor) throws Exception {
+                final Authentication oldAuth = SecurityContextHolder.getContext().getAuthentication();
                 try {
                     // set the parent request spring context, some interceptors like the security ones
                     // for example may need to have access to the original request attributes
                     RequestContextHolder.setRequestAttributes(parentRequestAttributes);
+                    SecurityContextHolder.getContext().setAuthentication(auth);
                     if (init) {
                         init(context, true);
                     }
@@ -895,6 +900,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                     if (Thread.currentThread() != parentThread) {
                         // cleaning request spring context for the current thread
                         RequestContextHolder.resetRequestAttributes();
+                        SecurityContextHolder.getContext().setAuthentication(oldAuth);
                     }
                 }
             }

@@ -9,7 +9,7 @@ Styles are used to control the appearance of geospatial data. Styles for GeoServ
 
 * **Styled Layer Descriptor (SLD)**: An OGC standard for geospatial styling. Available by default.
 * **Cascading Style Sheets (CSS)**: A CSS-like syntax. Available via an :ref:`extension <css>`.
-* **YSLD**: An SLD-equivalent based on `YAML <http://yaml.org>`_ for improved authoring. Available via a :ref:`community module <ysld>`.
+* **YSLD**: An SLD-equivalent based on `YAML <http://yaml.org>`_ for improved authoring. Available via the :ref:`ysld extension <ysld_styling>` .
 
 .. _styling_webadmin_styles:
 

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="521px" height="121px" viewBox="0 0 521 121" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <title>layer_overlay</title>
+    <description>Created with Sketch (http://www.bohemiancoding.com/sketch)</description>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="layer_overlay" sketch:type="MSArtboardGroup">
+            <path d="M21.8242188,106.941406 L423.90625,105.914062 L486.839844,67.015625 L120.941406,67.53125 L21.8242188,106.941406 Z" id="Path-1-copy-3" stroke="#000000" fill="#69CA14" sketch:type="MSShapeGroup"></path>
+            <path d="M149.089844,107.211914 L181.929688,99.7802734 L228.259766,94.5654297 L265.970703,86.2490234 L268.328125,79.0322266 L286.548828,73.3310547 L299.324219,67.3447266" id="Path-5-copy-2" stroke="#000000" stroke-width="3" sketch:type="MSShapeGroup"></path>
+            <g id="Path-8-copy-+-Path-7-copy" sketch:type="MSLayerGroup" transform="translate(73.000000, 68.000000)" stroke="#7D6CE1" stroke-width="2">
+                <path d="M72.2910156,0.73828125 L80.7148438,3.40332031 L95.2705078,3.40332031 L108.40332,2.22460938 L113.175781,6.00390625 L126.930664,6.31152344 L135.240234,6.12597656 L138.28418,9.59765625" id="Path-8-copy" sketch:type="MSShapeGroup"></path>
+                <path d="M0.595703125,18.1738281 L36.3925781,15.828125 L53.2558594,11.6132812 L79.8925781,9.99804688 L101.943359,12.2285156 L138.242188,9.62695312 L166.851562,14.4570312 L183.599609,13.7148438 L206.779297,18.9296875" id="Path-7-copy" sketch:type="MSShapeGroup"></path>
+            </g>
+            <ellipse id="Oval-1-copy-2" stroke="#000000" fill="#FFFFFF" sketch:type="MSShapeGroup" cx="248" cy="80" rx="6" ry="2"></ellipse>
+            <path d="M424.878906,105.878906 L224.207031,106.621094 L274.023438,94.1914062 L270.308594,85.7304688 L287.683594,83.5039062 L310.035156,75.3007812 L377.914062,72.328125 L408.949219,66.8671875 L490.695312,66.3828125 L424.878906,105.878906 Z" id="Path-3-copy-2" stroke="#979797" fill="#7D6CE1" sketch:type="MSShapeGroup"></path>
+            <path d="M21.8242188,106.941406 L423.90625,105.914062 L486.839844,67.015625 L120.941406,67.53125 L21.8242188,106.941406 Z" id="Path-1-copy-4" stroke="#000000" stroke-width="2" sketch:type="MSShapeGroup"></path>
+            <path d="M21.8242188,56.7832031 L423.90625,55.7558594 L486.839844,16.8574219 L120.941406,17.3730469 L21.8242188,56.7832031 Z" id="Path-1-copy-5" stroke="#000000" stroke-dasharray="5,5" sketch:type="MSShapeGroup"></path>
+            <path d="M94.5585938,19 L103.298752,40.4667969 L112.933594,19 C112.933594,19 110.548829,11.1269554 103.298752,11.1269531 C96.0486749,11.1269514 94.5585938,19 94.5585938,19 Z" id="Path-11-copy" stroke="#000000" fill="#FF5050" sketch:type="MSShapeGroup"></path>
+            <text id="Randwick" stroke="#000000" fill="#FFFFFF" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="24" font-weight="526">
+                <tspan x="224" y="33">Randwick</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

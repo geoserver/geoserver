@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="142px" height="176px" viewBox="0 0 142 176" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>LabelSymbology</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="71" height="17"></rect>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="71" height="17" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="LabelSymbology">
+            <g id="Centriod" transform="translate(15.000000, 8.000000)">
+                <polygon id="Polygon-Line" stroke="#9B9B9B" stroke-width="2" points="46.09375 35.4609375 0.46484375 125.179688 89.0742188 125.179688 89.0742188 65.7382812"></polygon>
+                <g id="Label" transform="translate(54.000000, 73.000000)">
+                    <use id="Rectangle-13" stroke="#000000" mask="url(#mask-2)" stroke-width="2" stroke-dasharray="5,3" xlink:href="#path-1"></use>
+                    <text id="Manchester" font-family="ProximaNova-Light, Proxima Nova" font-size="13" font-weight="300" fill="#000000">
+                        <tspan x="2.5" y="13">Manchester</tspan>
+                    </text>
+                </g>
+                <circle id="Oval-1-copy-4" stroke="#000000" fill="#FFFFFF" cx="54.5" cy="87.5" r="4.5"></circle>
+                <text id="Centroid" font-family="ProximaNova-Semibold, Proxima Nova" font-size="13" font-weight="500" fill="#000000">
+                    <tspan x="38.3645" y="12">Centroid</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,17 +1,31 @@
 .. _styling_workshop:
 
-****************
 Styling Workshop
-****************
+================
 
-GeoServer styling can be used for a range of creative effects. This section expands upon the `CSS Extension` which can be used to quickly generate SLD files. This workshop will provide an in-depth look at how CSS can be used for styling linestrings, polygons, points and rasters.
+This workshop will explore how GeoServer styling can be used for a range of creative effects. This workshop also introduces both the CSS and YSLD extensions, which provide alternate styling languages to SLD.
 
-.. toctree::
-   :maxdepth: 1
+The following material will be covered in this workshop:
+
+:doc:`setup/index`
+   Workshop materials and setup
    
-   setup
-   linestring
-   polygon
-   point
-   raster
+:doc:`design/index`
+   Overview of map design (i.e. cartography) considerations. Select color palette with colorbrewer.
+
+:doc:`css/index`
+   Introduction to GeoServer styling followed by easy styling with the CSS module.
+
+:doc:`ysld/index`
+   Introduction to GeoServer styling followed by easy styling with the YSLD module.
+   
+.. toctree::
+   :maxdepth: 2
+   :numbered:
+   :hidden:
+   
+   setup/index
+   design/index
+   css/index
+   ysld/index
 

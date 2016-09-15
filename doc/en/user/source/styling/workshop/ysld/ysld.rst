@@ -1,4 +1,4 @@
-.. _styling_workshop_ysld_intro:
+.. _styling_workshop_ysld_quickstart:
 
 YSLD Quickstart
 ===============
@@ -279,9 +279,9 @@ To confirm everything works, let's reproduce the airports style above.
       :header-rows: 0
 
       * - Name:
-        - :kbd:`point_example`
+        - :kbd:`airports0`
       * - Workspace:
-        - :kbd:`airport0`
+        - (leave empty)
       * - Format:
         - :kbd:`YSLD`
 
@@ -327,21 +327,34 @@ Explore Data
 Challenge Compare SLD Generation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-#. Compare the generated SLD differ from the hand generated :download:`SLD file <../files/airports0.sld>` used as an example?
+# The rest API can be used to review your YAML file directly.
    
-   Using the browser:
-   
-   * http://localhost:8080/geoserver/rest/styles/airport.sld?pretty=true
-   * http://localhost:8080/geoserver/rest/styles/airport.yaml
+  Browser:
+  
+  * `view-source:http://localhost:8080/geoserver/rest/styles/airport0.yaml <view-source:http://localhost:8080/geoserver/rest/styles/airport0.yaml>`__
 
-#. Or command line::
+  Command line::
 
-     curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/airports0.sld
+     curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/airports0.yaml
+
+#. The REST API can also be used generate an SLD file:
    
-#. **Challenge:** What differences can you spot?
+   Browser:
+   
+   * `view-source:http://localhost:8080/geoserver/rest/styles/airport0.sld?pretty=true <view-source:http://localhost:8080/geoserver/rest/styles/airport0.sld?pretty=true>`__
+
+  Command line::
+
+     curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/airports0.sld?pretty=true
+
+#. Compare the generated SLD differ above with the hand written :download:`SLD file <../files/airports0.sld>` used as an example?
+   
+   **Challenge:** What differences can you spot?
    
    .. only:: instructor
     
       .. admonition:: Instructor Notes      
 
-         Generated SLD does not include name or title information; this can be added by students using an annotation. Encourage students to look this up in the reference material provided.
+         Generated SLD does not include name or title information; this can of course be added. Please check the YSLD reference for details.
+
+         The second difference is with the use of a fallback Mark when defining a PointSymbolizer.

@@ -743,40 +743,33 @@ The following optional explore and challenge activities offer a chance to review
 
 In a classroom setting you are encouraged to team up into groups, with each group taking on a different challenge.
 
-.. admonition:: Explore Antialiasing
+.. _css.polygon.q1:
 
-   #. When we rendered our initial preview, without a stroke, thin white gaps (or slivers) are visible between our polygons.
+Explore Antialiasing
+^^^^^^^^^^^^^^^^^^^^
 
-      .. image:: ../style/img/polygon_04_preview.png
+#. When we rendered our initial preview, without a stroke, thin white gaps (or slivers) are visible between our polygons.
 
-      This effect is made more pronounced by the rendering engine making use of the Java 2D sub-pixel accuracy. This technique is primarily used to prevent an aliased (stair-stepped) appearance on diagonal lines.
+   .. image:: ../style/img/polygon_04_preview.png
 
-   #. Clients can turn this feature off using a GetMap format option::
-   
-         format_options=antialiasing=off;
-   
-      The **LayerPreview** provides access to this setting from the Open Layers **Options Toolbar**:
+   This effect is made more pronounced by the rendering engine making use of the Java 2D sub-pixel accuracy. This technique is primarily used to prevent an aliased (stair-stepped) appearance on diagonal lines.
 
-      .. image:: ../style/img/polygon_antialias.png
+#. Clients can turn this feature off using a GetMap format option::
 
-   #. **Explore:** Experiment with **fill** and **stroke** settings to eliminate slivers between polygons.
+      format_options=antialiasing=off;
 
-   .. only:: instructor
+   The **LayerPreview** provides access to this setting from the Open Layers **Options Toolbar**:
 
-      .. admonition:: Instructor Notes      
+   .. image:: ../style/img/polygon_antialias.png
 
-         The obvious thing works, setting both values to the same color:
+#. **Explore:** Experiment with **fill** and **stroke** settings to eliminate slivers between polygons.
 
-         .. code-block:: css
- 
-            * {
-              fill: lightgrey;
-              stroke: lightgrey;
-            }
+   .. note:: Answer :ref:`provided <css.polygon.a1>` at the end of the workbook.
 
-         Yes, the intro "without a stroke" was a clue.
+.. _css.polygon.q2:
 
-.. admonition:: Explore Categorize
+Explore Categorize
+^^^^^^^^^^^^^^^^^^
    
    .. only:: instructor
 
@@ -788,133 +781,80 @@ In a classroom setting you are encouraged to team up into groups, with each grou
    
          * Control size using Interpolate: While Recode offers an alternative for selectors (matching discrete values) Interpolate brings something new to the table - gradual color (or value) progression. The best of example of this is controlling width using the ``ne:rivers`` data layer (which is not yet available).
 
-   #. The **Categorize** function can be used to generate property values based on quantitative information. Here is an example using Categorize to color states according to size.
+#. The **Categorize** function can be used to generate property values based on quantitative information. Here is an example using Categorize to color states according to size.
 
-      .. code-block:: css
+   .. code-block:: css
 
-         * {
-            fill: [
-               Categorize(Shape_Area,
-                  '#08519c', 0.5,
-                  '#3182bd', 1,
-                  '#6baed6', 5,
-                  '#9ecae1', 60,
-                  '#c6dbef', 80,
-                  '#eff3ff')
-            ];
-         }
-      
-      .. image:: ../style/img/polygon_area.png
-
-   #. An exciting use of the GeoServer **shape** symbols is the theming by changing the **fill-size** used for pattern density.
-
-   #. **Explore:** Use the **Categorize** function to theme by **datarank**.
-
-      .. image:: ../style/img/polygon_categorize.png
-
-   .. only:: instructor
-
-      .. admonition:: Instructor Notes
-
-         Example:
-
-         .. code-block:: css
-
-            * {
-              fill: symbol('shape://slash');
-              fill-size: [
-                 Categorize(datarank,
-                  4, 4,
-                  5, 6,
-                  8, 10,
-                 10)
-              ];
-              stroke: black;
-            }
-            :fill {
-              stroke: darkgray;
-            }
-
-.. admonition:: Challenge Goodness of Fit
-
-   #. A subject we touched on during labeling was the conflict resolution GeoServer performs to ensure labels do not overlap.
-
-   #. In addition to the vendor parameter for max displacement you can experiment with different values for "goodness of fit". These settings control how far GeoServer is willing to move a label to avoid conflict, and under what terms it simply gives up::
+      * {
+         fill: [
+            Categorize(Shape_Area,
+               '#08519c', 0.5,
+               '#3182bd', 1,
+               '#6baed6', 5,
+               '#9ecae1', 60,
+               '#c6dbef', 80,
+               '#eff3ff')
+         ];
+      }
    
-         -gt-label-fit-goodness: 0.3;
-         -gt-label-max-displacement: 130;
+   .. image:: ../style/img/polygon_area.png
 
-   #. You can also experiment with turning off this facility completely::
+#. An exciting use of the GeoServer **shape** symbols is the theming by changing the **fill-size** used for pattern density.
+
+#. **Explore:** Use the **Categorize** function to theme by **datarank**.
+
+   .. image:: ../style/img/polygon_categorize.png
+
+   .. note:: Answer :ref:`provided <css.polygon.a2>` at the end of the workbook.
    
-         -gt-label-conflict-resolution: false;
-      
-   #. **Challenge:** Construct your own example using max displacement and fit-goodness.
+.. _css.polygon.q3:
 
-.. admonition:: Challenge Halo
+Challenge Goodness of Fit
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   #. The halo example used the fill color and opacity for a muted halo, while this improved readability it did not bring attention to our labels.
+#. A subject we touched on during labeling was the conflict resolution GeoServer performs to ensure labels do not overlap.
 
-      A common design choice for emphasis is to outline the text in a contrasting color.
-      
-   #. **Challenge:** Produce a map that uses a white halo around black text.
+#. In addition to the vendor parameter for max displacement you can experiment with different values for "goodness of fit". These settings control how far GeoServer is willing to move a label to avoid conflict, and under what terms it simply gives up::
 
-   .. only:: instructor
- 
-      .. admonition:: Instructor Notes      
+      -gt-label-fit-goodness: 0.3;
+      -gt-label-max-displacement: 130;
 
-         Here is an example:
- 
-         .. code-block:: css
+#. You can also experiment with turning off this facility completely::
 
-            * {  stroke: gray;
-                 fill: #7EB5D3;
-                 label: [name];
-                 label-anchor: 0.5 0.5;
-                 font-fill: black;
-                 font-family: "Arial";
-                 font-size: 14;
-                 halo-radius: 1;
-                 halo-color: white;
-               }
+      -gt-label-conflict-resolution: false;
+   
+#. **Challenge:** Construct your own example using max displacement and fit-goodness.
 
-.. admonition:: Challenge Theming using Multiple Attributes
+.. _css.polygon.q4:
 
-   #. A powerful tool is theming using multiple attributes. This is an important concept allowing map readers to perform "integration by eyeball" (detecting correlations between attribute values information).
+Challenge Halo
+^^^^^^^^^^^^^^
 
-   #. **Challenge:** Combine the **mapcolor9** and **datarank** examples to reproduce the following map.
+#. The halo example used the fill color and opacity for a muted halo, while this improved readability it did not bring attention to our labels.
 
-      .. image:: ../style/img/polygon_multitheme.png
+   A common design choice for emphasis is to outline the text in a contrasting color.
+   
+#. **Challenge:** Produce a map that uses a white halo around black text.
 
-   .. only:: instructor
+   .. note:: Answer :ref:`provided <css.polygon.a4>` at the end of the workbook.
 
-      .. admonition:: Instructor Notes   
+.. _css.polygon.q5:
 
-         This should be a cut and paste using the information already provided.
- 
-         .. code-block:: css
+Challenge Theming using Multiple Attributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-             * {
-                fill: [
-                 recode(mapcolor9,
-                   1,'#8dd3c7', 2,'#ffffb3', 3,'#bebada',
-                   4,'#fb8072', 5,'#80b1d3', 6,'#fdb462',
-                   7,'#b3de69', 8,'#fccde5', 9,'#d9d9d9')
-                ], symbol('shape://slash');
-     
-                fill-size: '',[
-                   Categorize(datarank,
-                    6, 4,
-                    8, 6,
-                   10, 10,
-                   12)
-                ];
-                stroke: black;
-             }
-             :fill {
-                stroke: black;
-             }
+#. A powerful tool is theming using multiple attributes. This is an important concept allowing map readers to perform "integration by eyeball" (detecting correlations between attribute values information).
 
-.. admonition:: Challenge Use of Z-Index
+#. **Challenge:** Combine the **mapcolor9** and **datarank** examples to reproduce the following map.
+
+   .. image:: ../style/img/polygon_multitheme.png
+
+   .. note:: Answer :ref:`provided <css.polygon.a5>` at the end of the workbook.
+
+.. _css.polygon.q6:
+
+Challenge Use of Z-Index
+^^^^^^^^^^^^^^^^^^^^^^^^
 
    #. Earlier we looked at using **z-index** to simulate line string casing. The line work was drawn twice, once with thick line, and then a second time with a thinner line. The resulting effect is similar to text halos - providing breathing space around complex line work allowing it to stand out.
       
@@ -922,24 +862,4 @@ In a classroom setting you are encouraged to team up into groups, with each grou
    
       .. image:: ../style/img/polygon_zorder.png
          
-.. only:: instructor
-
-   .. admonition:: Instructor Notes     
-
-      This is a tricky challenge. While it is easy enough to introduce z-index to control stroke what is not immediately obvious is that z-order also controls fill order. Most students will introduce stroke correctly by cutting and pasting, in order to untangle fill and stroke z-order dummy stroke definitions need to be introduced using empty commas.
-
-      .. code-block:: css
-
-        * {
-          fill: lightgray, symbol('shape://slash');
-          fill-size: 8px;
-          stroke: '','',lightgray, black;
-          stroke-width: '','',6,1.5;
-          z-index: 1,2,3,4;
-        }
-        :fill {
-          stroke: black;
-          stroke-width: 0.75;
-        }
-
-      The included legend should be a large clue about what is going on.
+   .. note:: Answer :ref:`provided <css.polygon.a6>` at the end of the workbook.

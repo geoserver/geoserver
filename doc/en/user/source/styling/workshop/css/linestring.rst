@@ -514,32 +514,8 @@ Challenge Label Shields
 
 #. The traditional presentation of roads in the US is the use of a shield symbol, with the road number marked on top.
 
-.. image:: ../style/img/line_shield.png
+   .. image:: ../style/img/line_shield.png
 
 #. *Challenge:* Have a look at the documentation and reproduce this technique.
 
    .. note:: Answer :ref:`provided <css.line.a3>` at the end of the workbook.
-
-   
-   .. only:: instructor
-   
-      .. admonition:: Instructor Notes      
-
-         The use of a label shield is a vendor specific capability of the GeoServer rendering engine. The tricky part of this exercise is finding the documentation online ( i.e. :ref:`Styled Marks in CSS <css_styledmarks>`).
-         
-         .. code-block:: css
-       
-            * {
-                stroke: black,lightgray;
-                stroke-width: 3,2;
-                label: [name];
-                font-family: 'Ariel';
-                font-size: 10;
-                font-fill: black;
-                shield: symbol(square);
-            }
-            :shield {
-                fill: white;
-                stroke: black;
-                size: 18;
-            }

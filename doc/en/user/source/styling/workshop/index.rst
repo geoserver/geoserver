@@ -5,9 +5,6 @@ Styling Workshop
 
 This workshop will explore how GeoServer styling can be used for a range of creative effects. This workshop also introduces both the CSS and YSLD extensions, which provide alternate styling languages to SLD.
 
-Topics covered
---------------
-
 The following material will be covered in this workshop:
 
 :doc:`setup/index`

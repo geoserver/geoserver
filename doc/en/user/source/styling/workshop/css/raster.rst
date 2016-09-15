@@ -259,139 +259,143 @@ This exploration focuses on accurately communicating differences in value, rathe
 Bonus
 -----
 
+.. _css.raster.q1:
 
-.. admonition:: Explore Contrast Enhancement
+Explore Contrast Enhancement
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    
-   #. A special effect that is effective with grayscale information is automatic contrast adjustment.
-   
-   #. Make use of a simple contrast enhancement with ``usgs:dem``:
-   
-      .. code-block:: css
-   
-         * {
-             raster-channels: auto;
-             raster-contrast-enhancement: normalize;
-         }
-   
-   #. Can you explain what happens when zoom in to only show a land area (as indicated with the bounding box below)?
+#. A special effect that is effective with grayscale information is automatic contrast adjustment.
+
+#. Make use of a simple contrast enhancement with ``usgs:dem``:
+
+   .. code-block:: css
+
+      * {
+          raster-channels: auto;
+          raster-contrast-enhancement: normalize;
+      }
+
+#. Can you explain what happens when zoom in to only show a land area (as indicated with the bounding box below)?
 
    .. image:: ../style/img/raster_contrast_1.png
+
+   .. note:: Discussion :ref:`provided <ysld.raster.a1>` at the end of the workbook.
+
+.. _css.raster.q2:
+
+Challenge Intervals
+^^^^^^^^^^^^^^^^^^^
+
+#.  The **raster-color-map-type** property dictates how the values are used to generate a resulting color.
+
+    * :kbd:`ramp` is used for quantitative data, providing a smooth interpolation between the provided color values.
+    * :kbd:`intervals` provides categorization for quantitative data, assigning each range of values a solid color.
+    * :kbd:`values` is used for qualitative data, each value is required to have a **color-map-entry** or it will not be displayed.
+
+#. **Chalenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
    
-      
+   .. note:: Answer :ref:`provided <ysld.raster.a2>` at the end of the workbook.
+
    .. only:: instructor
-       
+    
       .. admonition:: Instructor Notes      
 
-         What happens is insanity, normalize stretches the palette of the output image to use the full dynamic range. As long as we have ocean on the screen (with value 0) the land area was shown with roughly the same presentation.
+         By using intervals it becomes very clear how relatively flat most of the continent is. The ramp presentation provided lots of fascinating detail which distracted from this fact.
     
-         .. image:: ../style/img/raster_contrast_2.png
-    
-         Once we zoom in to show only a land area, the lowest point on the screen (say 100) becomes the new black, radically altering what is displayed on the screen.
-
-.. admonition:: Challenge Intervals
-
-   #.  The **raster-color-map-type** property dictates how the values are used to generate a resulting color.
-
-       * :kbd:`ramp` is used for quantitative data, providing a smooth interpolation between the provided color values.
-       * :kbd:`intervals` provides categorization for quantitative data, assigning each range of values a solid color.
-       * :kbd:`values` is used for qualitative data, each value is required to have a **color-map-entry** or it will not be displayed.
-
-   #. **Chalenge:** Update your DEM example to use **intervals** for presentation. What are the advantages of using this approach for elevation data?
-      
-      .. only:: instructor
-       
-         .. admonition:: Instructor Notes      
- 
-            By using intervals it becomes very clear how relatively flat most of the continent is. The ramp presentation provided lots of fascinating detail which distracted from this fact.
-       
-            Here is style for you to cut and paste:
-      
-            .. code-block:: css
-       
-               * {
-                 raster-channels: auto;
-                 raster-color-map:
-                    color-map-entry(#014636,   0,0)
-                    color-map-entry(#014636,   1)
-                    color-map-entry(#016c59, 500)
-                    color-map-entry(#02818a,1000)
-                    color-map-entry(#3690c0,1500)
-                    color-map-entry(#67a9cf,2000)
-                    color-map-entry(#a6bddb,2500)
-                    color-map-entry(#d0d1e6,3000)
-                    color-map-entry(#ece2f0,3500)
-                    color-map-entry(#fff7fb,4000);
-                 raster-color-map-type: intervals;
-               }
-      
-            .. image:: ../style/img/raster_interval.png
-
-.. admonition:: Explore Image Processing
-
-   Additional properties are available to provide slight image processing during visualization.
-
-   .. note:: In this section are we going to be working around a preview issue where only the top left corner of the raster remains visible during image processing. This issue has been reported as  :geos:`6213`.
+         Here is style for you to cut and paste:
    
-   Image processing can be used to enhance the output to highlight small details or to balance images from different sensors allowing them to be compared.
+         .. code-block:: css
+    
+            * {
+              raster-channels: auto;
+              raster-color-map:
+                 color-map-entry(#014636,   0,0)
+                 color-map-entry(#014636,   1)
+                 color-map-entry(#016c59, 500)
+                 color-map-entry(#02818a,1000)
+                 color-map-entry(#3690c0,1500)
+                 color-map-entry(#67a9cf,2000)
+                 color-map-entry(#a6bddb,2500)
+                 color-map-entry(#d0d1e6,3000)
+                 color-map-entry(#ece2f0,3500)
+                 color-map-entry(#fff7fb,4000);
+              raster-color-map-type: intervals;
+            }
+   
+         .. image:: ../style/img/raster_interval.png
 
-   #. The **raster-contrast-enhancement** property is used to turn on a range of post processing effects. Settings are provided for :kbd:`normalize` or :kbd:`histogram` or :kbd:`none`;
 
-      .. code-block:: css
+Explore Image Processing
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-         * {
+Additional properties are available to provide slight image processing during visualization.
+
+.. note:: In this section are we going to be working around a preview issue where only the top left corner of the raster remains visible during image processing. This issue has been reported as  :geos:`6213`.
+
+Image processing can be used to enhance the output to highlight small details or to balance images from different sensors allowing them to be compared.
+
+#. The **raster-contrast-enhancement** property is used to turn on a range of post processing effects. Settings are provided for :kbd:`normalize` or :kbd:`histogram` or :kbd:`none`;
+
+   .. code-block:: css
+
+      * {
+          raster-channels: auto;
+          raster-contrast-enhancement: normalize;
+      }
+
+#. Producing the following image:
+
+   .. image:: ../style/img/raster_image_3.png
+
+#. The **raster-gamma** property is used adjust the brightness of **raster-contrast-enhancement** output. Values less than 1 are used to brighten the image while values greater than 1 darken the image.
+
+   .. code-block:: css
+
+      * {
+         raster-channels: auto;
+         raster-contrast-enhancement: none;
+         raster-gamma: 1.5;
+      }
+
+#. Providing the following effect:
+
+   .. image:: ../style/img/raster_image_4.png
+
+.. _css.raster.q3:
+
+Challenge Clear Digital Elevation Model Presentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. Now that you have seen the data on screen and have a better understanding how would you modify our initial gray-scale example?
+
+#. **Challenge:** Use what you have learned to present the ``usgs:dem`` clearly.
+  
+   .. note:: Answer :ref:`provided <ysld.raster.a3>` at the end of the workbook.
+   
+  .. only:: instructor
+    
+     .. admonition:: Instructor Notes      
+
+        The original was a dark mess, students will hopefully make use of the mid-tones (or even check color brewer) in order to fix this. I have left the ocean dark so the mountains can stand out more.
+    
+        .. code-block:: css
+
+           * {
              raster-channels: auto;
-             raster-contrast-enhancement: normalize;
-         }
-   
-   #. Producing the following image:
-   
-      .. image:: ../style/img/raster_image_3.png
+             raster-color-map: color-map-entry(#000000, 0)
+                               color-map-entry(#444444, 1)
+                               color-map-entry(#FFFFFF, 3000);
+           }
+    
+        .. image:: ../style/img/raster_grayscale.png
 
-   #. The **raster-gamma** property is used adjust the brightness of **raster-contrast-enhancement** output. Values less than 1 are used to brighten the image while values greater than 1 darken the image.
+.. _css.raster.q4:
 
-      .. code-block:: css
+Challenge Raster Opacity
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-         * {
-            raster-channels: auto;
-            raster-contrast-enhancement: none;
-            raster-gamma: 1.5;
-         }
+#. There is a quick way to make raster data transparent, **raster-opacity** property works in the same fashion as with vector data. The raster as a whole will be drawn partially transparent allow content from other layers to provide context.
 
-   #. Providing the following effect:
-   
-      .. image:: ../style/img/raster_image_4.png
+#. **Challenge:** Can you think of an example where this would be useful?
 
-.. admonition:: Challenge Clear Digital Elevation Model Presentation
-
-   #. Now that you have seen the data on screen and have a better understanding how would you modify our initial gray-scale example?
-   
-   #. **Challenge:** Use what you have learned to present the ``usgs:dem`` clearly.
-     
-     .. only:: instructor
-       
-        .. admonition:: Instructor Notes      
- 
-           The original was a dark mess, students will hopefully make use of the mid-tones (or even check color brewer) in order to fix this. I have left the ocean dark so the mountains can stand out more.
-       
-           .. code-block:: css
-
-              * {
-                raster-channels: auto;
-                raster-color-map: color-map-entry(#000000, 0)
-                                  color-map-entry(#444444, 1)
-                                  color-map-entry(#FFFFFF, 3000);
-              }
-       
-           .. image:: ../style/img/raster_grayscale.png
-
-.. admonition:: Challenge Raster Opacity
-
-   #. There is a quick way to make raster data transparent, **raster-opacity** property works in the same fashion as with vector data. The raster as a whole will be drawn partially transparent allow content from other layers to provide context.
-  
-   #. **Challenge:** Can you think of an example where this would be useful?
-  
-     .. only:: instructor
-     
-        .. admonition:: Instructor Notes      
- 
-           This is difficult as raster data is usually provided for use as a basemap, with layers being drawn over top. The most obvious example here is the display of weather systems, or model output such as fire danger.
+   .. note:: Discussion :ref:`provided <ysld.raster.a4>` at the end of the workbook.

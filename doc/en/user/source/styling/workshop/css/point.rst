@@ -557,196 +557,174 @@ Bonus
 
       The exercise section does not review the examples above, instead it explores the use of: 
 
-      * @scale and attribute selectors
+      * scale and attribute selectors
       * recode to map from attribute to symbol
       * interpolate to change size by population
 
-.. admonition:: Challenge Geometry Location
+.. _css.point.q1:
+
+Challenge Geometry Location
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
    
-   .. only:: instructor
-     
-      .. admonition:: Instructor Notes 
+.. only:: instructor
+  
+   .. admonition:: Instructor Notes 
+
+      As usual Explore invites readers to reapply the material covered in a slightly different context or dataset.
  
-         As usual Explore invites readers to reapply the material covered in a slightly different context or dataset.
-    
-         The use of selectors using the roads **type** attribute provides this opportunity.
+      The use of selectors using the roads **type** attribute provides this opportunity.
 
-   #. The **mark** property can be used to render any geometry content.
+#. The **mark** property can be used to render any geometry content.
+
+#. **Challenge:** Try this yourself by rendering a polygon layer using a **mark** property. 
+
+   .. note:: Answer :ref:`discussed <ysld.point.a1>` at the end of the workbook.
+
+.. _css.point.q2:
+
+Explore Dynamic Symbolization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. We went to a lot of work to set up selectors to choose between symbol(star) and symbol(circle) for capital cities.
+
+   This approach is straightforward when applied in isolation:
+
+   .. code-block:: css
+
+      [FEATURECLA = 'Admin-0 capital'] {
+         mark: symbol(star);
+      }
+      [FEATURECLA <> 'Admin-0 capital'] {
+         mark: symbol(circle);
+      }
+
+   When combined with checking another attribute, or checking @scale as in our example, this approach can quickly lead to many rules which can be difficult to keep straight.
    
-   #. **Challenge:** Try this yourself by rendering a polygon layer using a **mark** property. 
+#. Taking a closer look both ``symbol()`` and ``url()`` can actually be expressed using a string:
 
-.. admonition:: Explore Dynamic Symbolization
+   .. code-block:: css
 
-   #. We went to a lot of work to set up selectors to choose between symbol(star) and symbol(circle) for capital cities.
+      [FEATURECLA = 'Admin-0 capital'] {
+         mark: symbol("star");
+      }
    
-      This approach is straightforward when applied in isolation:
-
-      .. code-block:: css
-
-         [FEATURECLA = 'Admin-0 capital'] {
-            mark: symbol(star);
-         }
-         [FEATURECLA <> 'Admin-0 capital'] {
-            mark: symbol(circle);
-         }
+   Which is represented in SLD as:
    
-      When combined with checking another attribute, or checking @scale as in our example, this approach can quickly lead to many rules which can be difficult to keep straight.
+   .. code-block:: xml
    
-   #. Taking a closer look both ``symbol()`` and ``url()`` can actually be expressed using a string:
+       <sld:PointSymbolizer>
+         <sld:Graphic>
+            <sld:Mark>
+               <sld:WellKnownName>star</sld:WellKnownName>
+               <sld:Fill/>
+               <sld:Stroke/>
+            </sld:Mark>
+         </sld:Graphic>
+      </sld:PointSymbolizer>
 
-      .. code-block:: css
+#. GeoServer recognizes this limitation of SLD Mark and ExternalGraphic and provides an opportunity for dynamic symbolization.
 
-         [FEATURECLA = 'Admin-0 capital'] {
-            mark: symbol("star");
-         }
-      
-      Which is represented in SLD as:
-      
-      .. code-block:: xml
-      
-          <sld:PointSymbolizer>
-            <sld:Graphic>
-               <sld:Mark>
-                  <sld:WellKnownName>star</sld:WellKnownName>
-                  <sld:Fill/>
-                  <sld:Stroke/>
-               </sld:Mark>
-            </sld:Graphic>
-         </sld:PointSymbolizer>
+   This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with :kbd:`${ }` as shown:
 
-   #. GeoServer recognizes this limitation of SLD Mark and ExternalGraphic and provides an opportunity for dynamic symbolization.
+   .. code-block:: css
+      
+      * {
+         mark: symbol(
+           "${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
+         );
+      }
+      
+   Which is represented in SLD as:
    
-      This is accomplished by embedding a small CQL expression in the string passed to symbol or url. This sub-expression is isolated with :kbd:`${ }` as shown:
+   .. code-block:: xml
    
-      .. code-block:: css
-         
-         * {
-            mark: symbol(
-              "${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}"
-            );
-         }
-         
-      Which is represented in SLD as:
-      
-      .. code-block:: xml
-      
-          <sld:PointSymbolizer>
-            <sld:Graphic>
-               <sld:Mark>
-                  <sld:WellKnownName>${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}</sld:WellKnownName>
-                  <sld:Fill/>
-                  <sld:Stroke/>
-               </sld:Mark>
-            </sld:Graphic>
-         </sld:PointSymbolizer>
-      
-   #. **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
+       <sld:PointSymbolizer>
+         <sld:Graphic>
+            <sld:Mark>
+               <sld:WellKnownName>${if_then_else(equalTo(FEATURECLA,'Admin-0 capital'),'star','circle')}</sld:WellKnownName>
+               <sld:Fill/>
+               <sld:Stroke/>
+            </sld:Mark>
+         </sld:Graphic>
+      </sld:PointSymbolizer>
    
-      .. only:: instructor
-      
-         .. admonition:: Instructor Notes 
-       
-            Example available here :download:`point_example.css <../files/point_example2.css>`
+#. **Challenge:** Use this approach to rewrite the *Dynamic Styling* example.
 
+   .. note:: Answer :ref:`provided <ysld.point.a2>` at the end of the workbook.
 
 .. hide:
 
    #. Challenge: Use the **Interpolate** function to smoothly change **mark-size** based on city population.
 
-.. admonition:: Challenge Layer Group
+.. _css.point.q3:
 
-   #. Use a **Layer Group** to explore how symbology works together to form a map.
+Challenge Layer Group
+^^^^^^^^^^^^^^^^^^^^^
+
+#. Use a **Layer Group** to explore how symbology works together to form a map.
+   
+   * ne:NE1
+   * ne:states_provincces_shp
+   * ne: populated_places
+
+#. To help start things out here is a style for ``ne:states_provinces_shp``:
+
+   .. code-block:: css
+
+      * {     
+         fill: white,[
+          recode(mapcolor9,
+            1,'#8dd3c7', 2,'#ffffb3', 3,'#bebada',
+            4,'#fb8072', 5,'#80b1d3', 6,'#fdb462',
+            7,'#b3de69', 8,'#fccde5', 9,'#d9d9d9')
+         ];
+         fill-opacity: 05%,50%;
       
-      * ne:NE1
-      * ne:states_provincces_shp
-      * ne: populated_places
-   
-   #. To help start things out here is a style for ``ne:states_provinces_shp``:
-   
-      .. code-block:: css
-   
-         * {     
-            fill: white,[
-             recode(mapcolor9,
-               1,'#8dd3c7', 2,'#ffffb3', 3,'#bebada',
-               4,'#fb8072', 5,'#80b1d3', 6,'#fdb462',
-               7,'#b3de69', 8,'#fccde5', 9,'#d9d9d9')
-            ];
-            fill-opacity: 05%,50%;
-         
-            stroke: black;
-            stroke-width: 0.25;
-            stroke-opacity: 50%;
-         }
-   
-   #. This background is relatively busy and care must be taken to ensure both symbols and labels are clearly visible.
-   
-   #. **Challenge:** Do your best to style populated_places over this busy background.
-       
-      Here is an example with labels for inspiration:
-   
-      .. image:: ../style/img/point_challenge_1.png
-   
-      .. only:: instructor
-       
-         .. admonition:: Instructor Notes 
-       
-            This should be an opportunity to revisit label halo settings from :doc:`polygon`. 
-       
-            .. code-block:: css
-       
-               * {
-                  mark-size: [5+((10-SCALERANK)/3)];
+         stroke: black;
+         stroke-width: 0.25;
+         stroke-opacity: 50%;
+      }
 
-                  font-fill: black;
-                  font-family: "Arial";
-                  font-size: 10;
+#. This background is relatively busy and care must be taken to ensure both symbols and labels are clearly visible.
 
-                  label-anchor: 0.5 1;
-                  label-offset: 0 [-12+SCALERANK];
+#. **Challenge:** Do your best to style populated_places over this busy background.
+    
+   Here is an example with labels for inspiration:
 
-                  halo-radius: 2;
-                  halo-color: lightgray;
-                  halo-opacity:0.7;
+   .. image:: ../style/img/point_challenge_1.png
 
-                  -gt-mark-label-obstacle: true;
-                  -gt-label-max-displacement: 90;
-                  -gt-label-priority: [0 - LABELRANK];
-               }
-               :symbol {
-                 fill: black;
-                 stroke: white;
-                 stroke-opacity:0.75;
-               }
+   .. note:: Answer :ref:`provided <ysld.point.a3>` at the end of the workbook.
 
-.. admonition:: Explore True Type Fonts
+Explore True Type Fonts
+^^^^^^^^^^^^^^^^^^^^^^^
 
-   #. In addition to image formats GeoServer can make use other kinds of graphics, such as True Type fonts:
-   
-      .. code-block:: css
-   
-         * {
-            mark: symbol("ttf://Webdings#0x0064");
-         }
-         :mark {
-            stroke: blue;
-         }
-         
-   #. Additional fonts dropped in the :file:`styles` directory are available for use.
-   
-.. admonition:: Explore Custom Graphics
+#. In addition to image formats GeoServer can make use other kinds of graphics, such as True Type fonts:
 
-   #. The GeoServer rendering engine allows Java developers to hook in additional symbol support.
+   .. code-block:: css
+
+      * {
+         mark: symbol("ttf://Webdings#0x0064");
+      }
+      :mark {
+         stroke: blue;
+      }
       
-      This facility is used by GeoServer to offer the shapes used for pattern fills. Community extensions allow the use of simple custom shapes and even charts.
+#. Additional fonts dropped in the :file:`styles` directory are available for use.
+      
+Explore Custom Graphics
+^^^^^^^^^^^^^^^^^^^^^^^
+
+#. The GeoServer rendering engine allows Java developers to hook in additional symbol support.
    
-   #. In GeoServer 2.6 support has been added for custom grpahics using the WKT Geometry representation. If you would like to try this functionality in earlier versions of GeoServer look up for the GeoTools WKT plugin.
-   
-      .. code-block:: css
-   
-         * {
-            mark: symbol("wkt://MULTILINESTRING((-0.25 -0.25, -0.125 -0.25), (0.125 -0.25, 0.25 -0.25), (-0.25 0.25, -0.125 0.25), (0.125 0.25, 0.25 0.25))");
-         }
-         :mark {
-            stroke: blue;
-         } 
+   This facility is used by GeoServer to offer the shapes used for pattern fills. Community extensions allow the use of simple custom shapes and even charts.
+
+#. Support has been added for custom grpahics using the WKT Geometry representation.
+
+   .. code-block:: css
+
+      * {
+         mark: symbol("wkt://MULTILINESTRING((-0.25 -0.25, -0.125 -0.25), (0.125 -0.25, 0.25 -0.25), (-0.25 0.25, -0.125 0.25), (0.125 0.25, 0.25 0.25))");
+      }
+      :mark {
+         stroke: blue;
+      } 

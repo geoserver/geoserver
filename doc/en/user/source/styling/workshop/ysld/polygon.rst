@@ -807,14 +807,16 @@ Explore Antialiasing
 
 Explore Categorize
 ^^^^^^^^^^^^^^^^^^
-   
-.. admonition:: Instructor Notes   
 
-   This section reviews use of the Symbology Encoding Categorize function for something else other than color. Goal is to have readers reach for SE Functions as often as selectors when styling.
+.. only:: instructor
 
-   Additional exercise ideas:
+   .. admonition:: Instructor Notes   
 
-   * Control size using Interpolate: While Recode offers an alternative for selectors (matching discrete values) Interpolate brings something new to the table - gradual color (or value) progression. The best of example of this is controlling width using the ``ne:rivers`` data layer (which is not yet available).
+      This section reviews use of the Symbology Encoding Categorize function for something else other than color. Goal is to have readers reach for SE Functions as often as selectors when styling.
+
+      Additional exercise ideas:
+
+      * Control size using Interpolate: While Recode offers an alternative for selectors (matching discrete values) Interpolate brings something new to the table - gradual color (or value) progression. The best of example of this is controlling width using the ``ne:rivers`` data layer (which is not yet available).
 
 #. The **Categorize** function can be used to generate property values based on quantitative information. Here is an example using Categorize to color states according to size.
 
@@ -886,8 +888,8 @@ Challenge Theming using Multiple Attributes
 
 .. _ysld.polygon.q6:
 
-Challenge Use of Feature styles
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Challenge Use of Z-Index
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 #. Earlier we looked at using multiple **feature-styles** to simulate line string casing. The line work was drawn twice, once with thick line, and then a second time with a thinner line. The resulting effect is similar to text halos - providing breathing space around complex line work allowing it to stand out.
    

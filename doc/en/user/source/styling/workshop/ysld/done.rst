@@ -109,7 +109,6 @@ The REST API can be used to convert any of your existing CSS or SLD styles to YS
               x-maxDisplacement: 100
               x-goodnessOfFit: 0.9
 
-
 YSLD Workshop Answer Key
 ------------------------
 
@@ -600,7 +599,7 @@ Answer for :ref:`Challenge Clear Digital Elevation Model Presentation <ysld.rast
             - ['#444444', 1.0, 1, null]
             - ['#FFFFFF', 1.0, 3000, null]
 
-.. _ysld.raster.q5:
+.. _ysld.raster.a4:
 
 Raster Opacity
 ^^^^^^^^^^^^^^
@@ -613,4 +612,4 @@ Discussion for :ref:`Challenge Clear Digital Elevation Model Presentation <ysld.
 
    This is difficult as raster data is usually provided for use as a basemap, with layers being drawn over top.
    
-   The most obvious example here is the display of weather systems, or model output such as fire danger. By drawing the raster with some transparency, the landmass can be shown for 
+   The most obvious example here is the display of weather systems, or model output such as fire danger. By drawing the raster with some transparency, the landmass can be shown for context.

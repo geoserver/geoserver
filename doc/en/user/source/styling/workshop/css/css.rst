@@ -1,7 +1,7 @@
-.. _styling_workshop_css_intro:
+.. _styling_workshop_css_quickstart:
 
-CSS Introduction
-================
+CSS Quickstart
+==============
 
 In the last section, we saw how the OGC defines style using XML documents (called SLD files).
 
@@ -244,9 +244,9 @@ To confirm everything works, let's reproduce the airports style above.
       :header-rows: 0
 
       * - Name:
-        - :kbd:`point_example`
+        - :kbd:`airport0`
       * - Workspace:
-        - :kbd:`airport2`
+        - (none specified)
       * - Format:
         - :kbd:`CSS`
    
@@ -282,27 +282,42 @@ Finished early? For now please help your neighbour so we can proceed with the wo
 
 If you are really stuck please consider the following challenge rather than skipping ahead.
 
-.. admonition:: Explore
+Explore Data
+^^^^^^^^^^^^
 
-   #. Return to the :guilabel:`Data` tab and use the :guilabel:`Compute` link to determine the minimum and maximum for the **scalerank** attribute.
+#. Return to the :guilabel:`Data` tab and use the :guilabel:`Compute` link to determine the minimum and maximum for the **scalerank** attribute.
+
+Challenge Compare SLD Generation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+# The rest API can be used to review your CSS file directly.
    
-      .. only:: instructor
-    
-         .. admonition:: Instructor Notes
+  Browser:
+  
+  * `view-source:http://localhost:8080/geoserver/rest/styles/airport0.css <view-source:http://localhost:8080/geoserver/rest/styles/airport0.css>`__
 
-            Should be 2 and 9 respectively.
+  Command line::
 
-.. admonition:: Challenge Compare SLD Generation
+     curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/airports0.css
 
-   #. Compare the generated SLD differ from the hand generated :download:`SLD file <../files/airports2.sld>` used as an example?
+#. The REST API can also be used generate an SLD file:
    
-   #. **Challenge:** What differences can you spot?
+   Browser:
+   
+   * `view-source:http://localhost:8080/geoserver/rest/styles/airport0.sld?pretty=true <view-source:http://localhost:8080/geoserver/rest/styles/airport0.sld?pretty=true>`__
+
+  Command line::
+
+     curl -v -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/styles/airports0.sld?pretty=true
+
+#. Compare the generated SLD differ above with the hand written :download:`SLD file <../files/airports0.sld>` used as an example?
+   
+   **Challenge:** What differences can you spot?
+   
+   .. only:: instructor
+
+      .. admonition:: Instructor Notes      
+
+         Generated SLD does not include name or title information; this can be added by students using an annotation. Encourage students to look this up in the reference material provided.
       
-      .. only:: instructor
-       
-         .. admonition:: Instructor Notes      
- 
-            Generated SLD does not include name or title information; this can be added by students using an annotation. Encourage students to look this up in the reference material provided.
-         
-            The second difference is with the use of a fallback Mark when defining a PointSymbolizer. The CSS extension does not bother with a fallback as it knows the capabilities of the GeoServer rendering engine (and is not trying to create a reusable style).
-
+         The second difference is with the use of a fallback Mark when defining a PointSymbolizer. The CSS extension does not bother with a fallback as it knows the capabilities of the GeoServer rendering engine (and is not trying to create a reusable style).

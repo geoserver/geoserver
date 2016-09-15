@@ -248,6 +248,7 @@ public abstract class AbstractJDBCResourceStoreTest {
                 dataDirStore);
                 
         assertEquals(store.get("DirIgnore"), dataDirStore.get("DirIgnore"));
+        assertEquals(store.get("DirIgnore/myfile"), dataDirStore.get("DirIgnore/myfile"));
         assertNotEquals(store.get("DirDontIgnore"), dataDirStore.get("DirDontIgnore"));
     }
     

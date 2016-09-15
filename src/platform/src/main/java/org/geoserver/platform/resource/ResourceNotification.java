@@ -6,6 +6,7 @@
 package org.geoserver.platform.resource;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +29,9 @@ import java.util.List;
  * 
  * @author Jody Garnett (Boundless)
  */
-public class ResourceNotification {
+public class ResourceNotification implements Serializable {
+
+    private static final long serialVersionUID = 1689657047251329584L;
 
     /** Event kind for the purpose of identification */
     public enum Kind {
@@ -42,7 +45,8 @@ public class ResourceNotification {
     /**
      * Event for resource change notification.
      */
-    public static class Event {
+    public static class Event implements Serializable {
+        private static final long serialVersionUID = 2852962095949861322L;
         final String path;
         final Kind kind;
         public Event( String path, Kind kind ){

@@ -5,7 +5,9 @@
  */
 package org.geoserver.wms.wms_1_3;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Collections;
@@ -30,7 +32,11 @@ import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.featureinfo.*;
+import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.GetFeatureInfoKvpReader;
+import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat;
 import org.geoserver.wms.wms_1_1_1.CapabilitiesTest;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
@@ -49,6 +55,8 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     public static QName TASMANIA_BM = new QName(WCS_URI, "BlueMarble", WCS_PREFIX);
 
     public static QName SQUARES = new QName(MockData.CITE_URI, "squares", MockData.CITE_PREFIX);
+
+    public static QName SAMPLEGRIB = new QName(WCS_URI, "sampleGrib", WCS_PREFIX);
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -91,6 +99,8 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         propertyMap.put(LayerProperty.STYLE,"raster");
         testData.addRasterLayer(TASMANIA_BM, "tazbm.tiff","tiff",propertyMap,
                 SystemTestData.class,catalog);
+        testData.addRasterLayer(SAMPLEGRIB, "sampleGrib.tif", null, propertyMap,
+                GetFeatureInfoIntegrationTest.class, catalog);
     }
     
 //    @Override
@@ -506,6 +516,44 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                 "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND", dom);
     }
 
+    /**
+     * Test that a GetFeatureInfo request shifted plus 360 degrees east has the same results.
+     */
+    @Test
+    public void testCoverageGML31Plus360() throws Exception {
+        String layer = getLayerId(TASMANIA_BM);
+        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo" + "&layers=" + layer
+                + "&styles=&bbox=-44.5,506.5,-43,508&width=600&height=600" + "&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT + "&query_layers=" + layer
+                + "&i=300&j=300&srs=EPSG:4326";
+        Document dom = getAsDOM(request);
+        XMLAssert.assertXpathEvaluatesTo("26.0",
+                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND", dom);
+        XMLAssert.assertXpathEvaluatesTo("70.0",
+                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND", dom);
+        XMLAssert.assertXpathEvaluatesTo("126.0",
+                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND", dom);
+    }
+
+    /**
+     * Test that a GetFeatureInfo request shifted minus 360 degrees east has the same results.
+     */
+    @Test
+    public void testCoverageGML31Minus360() throws Exception {
+        String layer = getLayerId(TASMANIA_BM);
+        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo" + "&layers=" + layer
+                + "&styles=&bbox=-44.5,-213.5,-43,-212&width=600&height=600" + "&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT + "&query_layers=" + layer
+                + "&i=300&j=300&srs=EPSG:4326";
+        Document dom = getAsDOM(request);
+        XMLAssert.assertXpathEvaluatesTo("26.0",
+                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND", dom);
+        XMLAssert.assertXpathEvaluatesTo("70.0",
+                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND", dom);
+        XMLAssert.assertXpathEvaluatesTo("126.0",
+                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND", dom);
+    }
+
     @Test
     public void testCoverageScales() throws Exception {
         String layer = getLayerId(TASMANIA_BM);
@@ -693,4 +741,56 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         assertEquals(green, Double.parseDouble(m.group(2)),0.0000001);
         assertEquals(blue, Double.parseDouble(m.group(3)),0.0000001);
     }
+
+    /**
+     * Test GetFeatureInfo for a coverage with longitudes greater than 300 degrees east.
+     */
+    @Test
+    public void testSampleGrib() throws Exception {
+        String layer = getLayerId(SAMPLEGRIB);
+        String request = "wms?service=WMS&version=1.3.0&request=GetFeatureInfo&styles=&layers="
+                + layer + "&query_layers=" + layer + "&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT + "&width=300&height=400&i=150&j=100"
+                + "&crs=EPSG:4326&bbox=2,302,10,308";
+        Document dom = getAsDOM(request);
+        print(dom);
+        XMLAssert.assertXpathEvaluatesTo("-0.095",
+                "substring(//wfs:FeatureCollection/gml:featureMembers/wcs:sampleGrib/wcs:GRAY_INDEX,1,6)",
+                dom);
+    }
+
+    /**
+     * Test GetFeatureInfo for a coverage with longitudes greater than 300 degrees east, with a request shifted 360 degrees west.
+     */
+    @Test
+    public void testSampleGribWest() throws Exception {
+        String layer = getLayerId(SAMPLEGRIB);
+        String request = "wms?service=WMS&version=1.3.0&request=GetFeatureInfo&styles=&layers="
+                + layer + "&query_layers=" + layer + "&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT + "&width=300&height=400&i=150&j=100"
+                + "&crs=EPSG:4326&bbox=2,-58,10,-52";
+        Document dom = getAsDOM(request);
+        XMLAssert.assertXpathEvaluatesTo("-0.095",
+                "substring(//wfs:FeatureCollection/gml:featureMembers/wcs:sampleGrib/wcs:GRAY_INDEX,1,6)",
+                dom);
+    }
+
+    /**
+     * Test GetFeatureInfo for a coverage with longitudes greater than 300 degrees east, with a request shifted 360 degrees west, using the Web
+     * Mercator projection.
+     */
+    @Test
+    public void testSampleGribWebMercator() throws Exception {
+        String layer = getLayerId(SAMPLEGRIB);
+        String request = "wms?service=WMS&version=1.3.0&request=GetFeatureInfo&styles=&layers="
+                + layer + "&query_layers=" + layer + "&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT + "&width=300&height=400&i=150&j=100"
+                + "&crs=EPSG:3857"
+                + "&bbox=-6456530.466009867,222684.20850554455,-5788613.521250226,1118889.9748579597";
+        Document dom = getAsDOM(request);
+        XMLAssert.assertXpathEvaluatesTo("-0.095",
+                "substring(//wfs:FeatureCollection/gml:featureMembers/wcs:sampleGrib/wcs:GRAY_INDEX,1,6)",
+                dom);
+    }
+
 }

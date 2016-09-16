@@ -8,6 +8,7 @@ package org.geoserver.catalog.impl;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -1785,27 +1786,48 @@ public class CatalogImpl implements Catalog {
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
             final Filter filter) {
-        return list(of, filter, null, null, null);
+        return list(of, filter, null, null);
     }
 
     @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
-            final Filter filter, Integer offset, Integer count, SortBy sortOrder) {
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count,
+    		SortBy... sortBy) {
         CatalogFacade facade = getFacade();
-        if (sortOrder != null && !facade.canSort(of, sortOrder.getPropertyName().getPropertyName())) {
-            // TODO: use GeoTools' merge-sort code to provide sorting anyways
-            throw new UnsupportedOperationException("Catalog backend can't sort on property "
-                    + sortOrder.getPropertyName() + " in-process sorting is pending implementation");
+        
+        // check that we support all required sorts
+        sortBy = sanitizeArray(sortBy);
+        if(sortBy != null) {
+        	for (SortBy sb : sortBy) {
+        		if (!facade.canSort(of, sb.getPropertyName().getPropertyName())) {
+                    // TODO: use GeoTools' merge-sort code to provide sorting anyways
+                    throw new UnsupportedOperationException("Catalog backend can't sort on property "
+                            + sb.getPropertyName() + " in-process sorting is pending implementation");
+                }
+			}
         }
-        return facade.list(of, filter, offset, count, sortOrder);
+        
+        return facade.list(of, filter, offset, count, sortBy);
+
     }
 
-    @Override
+    /**
+     * A caller can pass "null" to the varargs and we get an array with a null inside, clean it up
+     * @param sortBy
+     * @return
+     */
+    private SortBy[] sanitizeArray(SortBy[] sortBy) {
+		if(sortBy == null || sortBy.length == 0) {
+			return sortBy;
+		}
+		return Arrays.stream(sortBy).filter(e -> e != null).toArray(size -> new SortBy[size]);
+	}
+
+	@Override
     public <T extends CatalogInfo> T get(Class<T> type, Filter filter)
             throws IllegalArgumentException {
 
         final Integer limit = Integer.valueOf(2);
-        CloseableIterator<T> it = list(type, filter, null, limit, null);
+        CloseableIterator<T> it = list(type, filter, null, limit);
         T result = null;
         try {
             if (it.hasNext()) {

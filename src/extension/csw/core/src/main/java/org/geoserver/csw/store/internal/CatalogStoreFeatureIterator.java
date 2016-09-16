@@ -65,8 +65,6 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     
     protected CatalogStoreMapping mapping;
     
-    protected CatalogFacade catalogFacade;
-    
     protected Map<String, String> interpolationProperties = new HashMap<String, String>();
     
     protected int offset;
@@ -89,14 +87,13 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         this.count = count;
         this.sortOrder = sortOrder;
         this.filter = filter;
-        catalogFacade = catalog.getFacade();        
         this.mapping = mapping;
         
         Filter advertised = ff.equals(ff.property("advertised"), ff.literal(true));
         
-        layerIt = catalogFacade.list(ResourceInfo.class, ff.and(filter, advertised), null, null, sortOrder);
+        layerIt = catalog.list(ResourceInfo.class, ff.and(filter, advertised), null, null, sortOrder);
         nextLayer();
-        layerGroupIt = catalogFacade.list(LayerGroupInfo.class, filter, null, null, sortOrder);
+        layerGroupIt = catalog.list(LayerGroupInfo.class, filter, null, null, sortOrder);
         nextLayerGroup();
                 
         comparator = sortOrder==null || sortOrder.length==0 ? null : CatalogComparatorFactory.buildComparator(sortOrder);

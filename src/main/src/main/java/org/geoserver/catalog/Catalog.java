@@ -1761,7 +1761,7 @@ public interface Catalog extends CatalogInfo {
      */
     public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
             final Filter filter, @Nullable Integer offset, @Nullable Integer count,
-            @Nullable SortBy sortBy);
+            @Nullable SortBy... sortBy);
 
     /**
      * Removes all the listeners which are instances of the specified class

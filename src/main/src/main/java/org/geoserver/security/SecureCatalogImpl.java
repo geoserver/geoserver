@@ -1394,14 +1394,13 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter) {
-        return list(of, filter, null, null, null);
+        return list(of, filter, null, null);
     }
 
     @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter,
-            Integer offset, Integer count, SortBy sortBy) {
-
-        Filter securityFilter = securityFilter(of, filter);
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count,
+    		SortBy... sortBy) {
+    	Filter securityFilter = securityFilter(of, filter);
 
         CloseableIterator<T> filtered;
         filtered = delegate.list(of, securityFilter, offset, count, sortBy);

@@ -683,13 +683,13 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
         return delegate.list(of, filter);
     }
 
-    @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter,
-            Integer offset, Integer count, SortBy sortOrder) {
-        return delegate.list(of, filter, offset, count, sortOrder);
-    }
-
     public void removeListeners(Class listenerClass) {
         delegate.removeListeners(listenerClass);
     }
+
+	@Override
+	public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count,
+			SortBy... sortBy) {
+		return delegate.list(of, filter, offset, count, sortBy);
+	}
 }

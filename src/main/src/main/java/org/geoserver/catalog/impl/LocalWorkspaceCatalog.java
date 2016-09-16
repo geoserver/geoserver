@@ -322,7 +322,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter) {
-        return list(of, filter, (Integer) null, (Integer) null, (SortBy) null);
+        return list(of, filter, (Integer) null, (Integer) null);
     }
 
     /**
@@ -334,10 +334,9 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
      *      java.lang.Integer, java.lang.Integer, org.geoserver.catalog.OrderBy)
      */
     @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
-            final Filter filter, final Integer offset, final Integer count, final SortBy sortBy) {
-
-        CloseableIterator<T> iterator = delegate.list(of, filter, offset, count, sortBy);
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count,
+    		SortBy... sortBy) {
+    	CloseableIterator<T> iterator = delegate.list(of, filter, offset, count, sortBy);
         Function<T, T> wrappingFunction = new Function<T, T>() {
 
             final Class<T> type = of;

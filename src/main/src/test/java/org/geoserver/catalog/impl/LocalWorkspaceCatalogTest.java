@@ -157,8 +157,7 @@ public class LocalWorkspaceCatalogTest {
         layers.add(lc1);
         layers.add(lc2);
         expect(cat.getLayers()).andReturn(layers).anyTimes();
-        expect(cat.list(LayerInfo.class, Filter.INCLUDE, 
-                (Integer) null, (Integer) null, (SortBy) null))
+        expect(cat.list(LayerInfo.class, Filter.INCLUDE, (Integer) null, (Integer) null))
             .andReturn(new CloseableIteratorAdapter<LayerInfo>(layers.iterator())).anyTimes();
         replay(cat);
         

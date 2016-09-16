@@ -471,7 +471,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
             @SuppressWarnings("unchecked")
             @Override
-            public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortBy) {
+            public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count, SortBy... sortBy) {
                 return new CloseableIteratorAdapter<T>((Iterator<T>) layers.iterator());
             }
         };
@@ -515,7 +515,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
             @SuppressWarnings("unchecked")
             @Override
-            public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortBy) {
+            public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count, SortBy... sortBy) {
                 return (CloseableIterator<T>) mockIterator;
             }
         };

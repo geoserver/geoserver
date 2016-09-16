@@ -377,6 +377,12 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                 return makeCIterator(source, cap.getValue());
             }
         });
+        expect(catalog.list(eq(clazz), capture(cap), EasyMock.anyInt(), EasyMock.anyInt())).andStubAnswer(new IAnswer<CloseableIterator<T>>(){
+            @Override
+            public CloseableIterator<T> answer() throws Throwable {
+                return makeCIterator(source, cap.getValue());
+            }
+        });
     }
     
     static <T> CloseableIterator<T> makeCIterator(List<T> source, Filter f) {

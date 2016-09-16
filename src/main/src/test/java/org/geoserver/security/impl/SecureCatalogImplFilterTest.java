@@ -116,8 +116,7 @@ public class SecureCatalogImplFilterTest {
                 eq(FeatureTypeInfo.class), 
                 capture(filterCapture),
                 (Integer)isNull(),
-                (Integer)isNull(),
-                (SortBy)isNull())).andStubAnswer(new IAnswer<CloseableIterator<FeatureTypeInfo>>() {
+                (Integer)isNull())).andStubAnswer(new IAnswer<CloseableIterator<FeatureTypeInfo>>() {
 
             @Override
             public CloseableIterator<FeatureTypeInfo> answer() throws Throwable {

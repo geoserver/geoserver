@@ -2454,15 +2454,15 @@ public class CatalogImplTest {
 
         int offset = 0, limit = 2;
         assertEquals(naturalOrder.subList(0, 2),
-                Lists.newArrayList(catalog.list(LayerInfo.class, filter, offset, limit, null)));
+                Lists.newArrayList(catalog.list(LayerInfo.class, filter, offset, limit)));
 
         offset = 1;
         assertEquals(naturalOrder.subList(1, 3),
-                Lists.newArrayList(catalog.list(LayerInfo.class, filter, offset, limit, null)));
+                Lists.newArrayList(catalog.list(LayerInfo.class, filter, offset, limit)));
 
         limit = 1;
         assertEquals(naturalOrder.subList(1, 2),
-                Lists.newArrayList(catalog.list(LayerInfo.class, filter, offset, limit, null)));
+                Lists.newArrayList(catalog.list(LayerInfo.class, filter, offset, limit)));
     }
         
     /**

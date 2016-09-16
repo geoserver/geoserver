@@ -17,6 +17,14 @@ APP_NAME=GeoServer.app
 APP=target/$APP_NAME
 VER=$( cat ${APP}/Contents/Info.plist | grep -A 1 CFBundleVersion | tail -n 1 | sed 's/.*<string>//g' | sed 's/<\/string>//g' )
 
+# codesign application bundle
+# set CODESIGN_CERT_SHA1 env variable to SHA1 fingerprint of signing certificate
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P)
+if [ -x $SCRIPT_DIR/codesign-geoserver-app.sh ]; then
+  $SCRIPT_DIR/codesign-geoserver-app.sh $SCRIPT_DIR/$APP
+  check_rc $? "codesign app bundle"
+fi
+
 VOL=geoserver-$VER
 
 # unmount existing mounts

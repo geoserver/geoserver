@@ -40,3 +40,4 @@ officially part of the GeoServer releases. They are however built along with the
    remote-wps/index
    jdbcstore/index
    ncwms/index
+   backuprestore/index

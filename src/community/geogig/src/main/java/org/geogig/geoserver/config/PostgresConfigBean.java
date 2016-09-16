@@ -6,7 +6,11 @@ package org.geogig.geoserver.config;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Objects;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
 
 import com.google.common.base.Preconditions;
 
@@ -23,12 +27,10 @@ public class PostgresConfigBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String SCHEME = "postgresql://";
+    private static final String SCHEME = "postgresql";
     private static final String USER = "user";
     private static final String PASSWORD = "password";
     private static final String SLASH = "/";
-    private static final String AMPERSAND = "&";
-    private static final String QUESTION_MARK = "?";
 
     private String host = "localhost", database, schema = "public", username = "postgres", password;
     private Integer port = 5432;
@@ -81,20 +83,29 @@ public class PostgresConfigBean implements Serializable {
         this.port = port;
     }
 
-    public URI buildUriForRepo(String repoId) {
-        StringBuilder sb = new StringBuilder(128);
-        sb.append(SCHEME).append(this.host);
+    public URI buildUriForRepo(String repoId) throws URISyntaxException {
+        URIBuilder builder = new URIBuilder();
+        // set the schema
+        builder.setScheme(SCHEME);
+        // set the host
+        builder.setHost(host);
+        // set the port
         if (port > 0) {
-            sb.append(":").append(port);
+            builder.setPort(port);
         }
+        // build the path in the form of "/databaseName/schema/repoID"
+        StringBuilder sb = new StringBuilder(128);
         sb.append(SLASH).append(database);
         if (null != schema) {
             sb.append(SLASH).append(schema);
         }
         sb.append(SLASH).append(repoId);
-        sb.append(QUESTION_MARK).append(USER).append("=").append(username);
-        sb.append(AMPERSAND).append(PASSWORD).append("=").append(password);
-        return URI.create(sb.toString());
+        builder.setPath(sb.toString());
+        // set the query parameters
+        builder.setParameter(USER, username);
+        builder.setParameter(PASSWORD, password);
+        // return the URI
+        return builder.build();
     }
 
     public static PostgresConfigBean newInstance() {
@@ -108,12 +119,13 @@ public class PostgresConfigBean implements Serializable {
             // don't parse, return new object
             return newInstance();
         }
+        URIBuilder uri = new URIBuilder(location);
         // build a bean from the parts
-        String host = location.getHost();
-        int port = location.getPort();
+        String host = uri.getHost();
+        int port = uri.getPort();
         // get the path and parse database, repo and schema
-        String uriPath = location.getPath();
-        // URI might have a leading '/'. If it does, skip it
+        String uriPath = uri.getPath();
+        // Path might have a leading '/'. If it does, skip it
         int startIndex = uriPath.startsWith(SLASH) ? 1 : 0;
         String[] paths = uriPath.substring(startIndex).split(SLASH);
         // first is always the database
@@ -123,18 +135,15 @@ public class PostgresConfigBean implements Serializable {
         if (paths.length > 2) {
             schema = paths[1];
         }
-        // get the query and parse username and password
-        String query = location.getQuery();
+        // get the query parameters and pull out user and password
         String username = null;
         String password = null;
-        for (String queryParam : query.split(AMPERSAND)) {
-            int keyEnd = queryParam.indexOf("=");
-            String key = queryParam.substring(0, keyEnd);
-            String value = queryParam.substring(keyEnd + 1);
-            if (USER.equals(key)) {
-                username = value;
-            } else if (PASSWORD.equals(key)) {
-                password = value;
+        for (NameValuePair pair : uri.getQueryParams()) {
+            if (USER.equals(pair.getName())) {
+                username = pair.getValue();
+            }
+            if (PASSWORD.equals(pair.getName())) {
+                password = pair.getValue();
             }
         }
         PostgresConfigBean bean = new PostgresConfigBean();
@@ -154,12 +163,12 @@ public class PostgresConfigBean implements Serializable {
         int startIndex = uriPath.startsWith(SLASH) ? 1 : 0;
         String[] paths = uriPath.substring(startIndex).split(SLASH);
         // last part is the repoID
-        return paths[paths.length-1];
+        return paths[paths.length - 1];
     }
 
     @Override
     public int hashCode() {
-        // hs all the fields, if they aren't null, otherwise use some prime numbers as place holders
+        // hash all the fields, if they aren't null, otherwise use some prime numbers as place holders
         return (host != null) ? host.hashCode() : 17 ^
                 ((port != null) ? port.hashCode() : 37) ^
                 ((username != null) ? username.hashCode() : 57) ^

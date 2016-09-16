@@ -9,6 +9,7 @@ import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -176,7 +177,7 @@ class InitRequestHandler {
         return params;
     }
 
-    private void updateHintsWithParams(Hints hints, Map<String, String> params) {
+    private void updateHintsWithParams(Hints hints, Map<String, String> params) throws URISyntaxException {
         // get parameters
         final String parentDir = params.get(DIR_PARENT_DIR);
         final String dbHost = params.get(DB_HOST);
@@ -220,7 +221,7 @@ class InitRequestHandler {
     }
 
     @VisibleForTesting
-    Hints createHintsFromRequest(Request request) {
+    Hints createHintsFromRequest(Request request) throws URISyntaxException {
         // get the repository name from the request
         final Optional<String> nameOptional = Optional.fromNullable(getStringAttribute(request,
                 REPO_ATTR));
@@ -238,7 +239,7 @@ class InitRequestHandler {
         return hints;
     }
 
-    static Optional<Repository> createGeoGIG(Request request) {
+    static Optional<Repository> createGeoGIG(Request request) throws URISyntaxException {
         final Hints hints = INSTANCE.createHintsFromRequest(request);
         // now build the repo with the Hints
         return Optional.fromNullable(RepositoryManager.get().createRepo(hints));

@@ -9,6 +9,7 @@ import static org.geogig.geoserver.config.RepositoryManager.isGeogigDirectory;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -181,9 +182,13 @@ public class RepositoryImportPanel extends FormComponentPanel<RepositoryInfo> {
                     // PG config used
                     PostgresConfigBean bean = pgPanel.getConvertedInput();
                     // build a URI out of the config
-                    URI uri = bean.buildUriForRepo(repoNamePanel.getFormComponent()
-                            .getConvertedInput().toString().trim());
-                    repoInfo.setLocation(uri);
+                    try {
+                        URI uri = bean.buildUriForRepo(repoNamePanel.getFormComponent()
+                                .getConvertedInput().toString().trim());
+                        repoInfo.setLocation(uri);
+                    } catch (URISyntaxException uriError) {
+                        this.error(uriError.getMessage());
+                    }
                     break;
                 case DropDownModel.DIRECTORY_CONFIG:
                     // local directory used

@@ -20,6 +20,8 @@
     <mockito.version>1.8.5</mockito.version>
     <logback.version>1.1.2</logback.version>
     <cucumber-java.version>1.2.4</cucumber-java.version>
+    <httpclient.version>4.5.2</httpclient.version>
+    <httpcore.version>4.4.5</httpcore.version>
   </properties>
 
   <repositories>
@@ -74,7 +76,16 @@
       <artifactId>geogig-postgres</artifactId>
       <version>${geogig.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${httpclient.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+      <version>${httpcore.version}</version>
+    </dependency>
     <!--
       The following are geotools dependencies that geogig uses but we declare explicitly
       here with a provided scope, since we excluded all geotools transitive dependencies

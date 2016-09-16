@@ -49,6 +49,10 @@
             <include>org.restlet.ext.fileupload-*.jar</include>
             <!-- GeoTools Geopackage libs -->
             <include>gt-geopkg-*.jar</include>
+            <!-- Apache httpclient jar for URI building -->
+            <include>httpclient-*.jar</include>
+            <!-- Apache httpclient dependencies -->
+            <include>httpcore-4.4.*.jar</include>
         </includes>
         <excludes>
             <exclude>*test*</exclude>

@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.geogig.geoserver.config.PostgresConfigBean;
 import org.json.JSONException;
@@ -58,7 +59,7 @@ public class InitRequestHandlerTest {
     }
 
     @Test(expected = RestletException.class)
-    public void testMissingRepositoryName() {
+    public void testMissingRepositoryName() throws URISyntaxException {
         Request request = new Request(Method.PUT, "fake uri");
         // build the Hints without a repository name getting in the attributes
         // should throw an Exception
@@ -66,7 +67,7 @@ public class InitRequestHandlerTest {
     }
 
     @Test
-    public void testCreateGeoGIG_RepositoryName() throws JSONException, IOException {
+    public void testCreateGeoGIG_RepositoryName() throws JSONException, IOException, URISyntaxException {
         // build an Init request with only a repository name
         Request request = buildRequest(null);
         // create the Hints from the request
@@ -80,7 +81,7 @@ public class InitRequestHandlerTest {
     }
 
     @Test
-    public void testJSONMediaType() throws JSONException, IOException {
+    public void testJSONMediaType() throws JSONException, IOException, URISyntaxException {
         // temp directory for the repo
         File repoDir = repoFolder.getRoot().getAbsoluteFile();
         // populate a JSON payload for a Directory repo
@@ -104,7 +105,7 @@ public class InitRequestHandlerTest {
     }
 
     @Test
-    public void testPGRepo() throws JSONException {
+    public void testPGRepo() throws JSONException, URISyntaxException {
         // populate a JSON payload for a PG repo
         JSONObject jsonObject = new JSONObject();
         // add the DB attributes with no defaults at a minimum
@@ -134,7 +135,7 @@ public class InitRequestHandlerTest {
     }
 
     @Test
-    public void testAllPGParameters() throws JSONException {
+    public void testAllPGParameters() throws JSONException, URISyntaxException {
         // populate a JSON payload for a PG repo
         JSONObject jsonObject = new JSONObject();
         // add the DB attributes with no defaults at a minimum
@@ -172,7 +173,7 @@ public class InitRequestHandlerTest {
     }
 
     @Test
-    public void testPGRepoBadPort() throws JSONException {
+    public void testPGRepoBadPort() throws JSONException, URISyntaxException {
         // populate a JSON payload for a PG repo
         JSONObject jsonObject = new JSONObject();
         // add the DB attributes with no defaults at a minimum
@@ -204,7 +205,7 @@ public class InitRequestHandlerTest {
     }
 
     @Test
-    public void testURLEncodedForm() {
+    public void testURLEncodedForm() throws URISyntaxException {
         // build an Init request with only a repository name
         Request request = buildRequest(null);
         // set the form encoded data

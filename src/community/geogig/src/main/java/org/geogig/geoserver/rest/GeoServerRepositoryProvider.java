@@ -8,6 +8,7 @@ import static org.locationtech.geogig.rest.repository.RESTUtils.getStringAttribu
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,8 @@ import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -36,6 +39,8 @@ import com.google.common.collect.Iterators;
  * {@link Request} by asking the geoserver's {@link RepositoryManager}
  */
 public class GeoServerRepositoryProvider implements RepositoryProvider {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GeoServerRepositoryProvider.class);
 
     /**
      * Init request command string.
@@ -149,7 +154,11 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         Optional<Repository> geogig = getGeogig(repositoryName.get());
         if (!geogig.isPresent() && isInitRequest(request)) {
             // special handling of INIT requests
-            geogig = InitRequestHandler.createGeoGIG(request);
+            try {
+                geogig = InitRequestHandler.createGeoGIG(request);
+            } catch (URISyntaxException uriError) {
+                LOGGER.error("Error handling GeoGig repository Initialization request", uriError);
+            }
         }
         if (!geogig.isPresent()) {
             // if it's still not present, just generate one.

@@ -6,6 +6,7 @@ package org.geogig.geoserver.web.repository;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -110,8 +111,12 @@ class GeoGigRepositoryInfoFormComponent extends FormComponentPanel<RepositoryInf
                     // PG config used
                     PostgresConfigBean bean = pgPanel.getConvertedInput();
                     // build a URI out of the config
-                    URI uri = bean.buildUriForRepo(repoName);
-                    modelObject.setLocation(uri);
+                    try {
+                        URI uri = bean.buildUriForRepo(repoName);
+                        modelObject.setLocation(uri);
+                    } catch (URISyntaxException uriError) {
+                        this.error(uriError.getMessage());
+                    }
                     break;
                 case DropDownModel.DIRECTORY_CONFIG:
                     if (modelObject.getLocation() == null) {

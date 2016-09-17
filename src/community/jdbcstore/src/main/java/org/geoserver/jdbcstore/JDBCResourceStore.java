@@ -25,6 +25,7 @@ import org.geoserver.jdbcstore.internal.JDBCDirectoryStructure;
 import org.geoserver.jdbcstore.internal.JDBCResourceStoreProperties;
 import org.geoserver.platform.resource.LockProvider;
 import org.geoserver.platform.resource.NullLockProvider;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
@@ -114,7 +115,8 @@ public class JDBCResourceStore implements ResourceStore {
     
     @Override
     public Resource get(String path) {
-        if (oldResourceStore != null && ArrayUtils.contains(dir.getConfig().getIgnoreDirs(), path)) {
+        if (oldResourceStore != null && !path.equals(Paths.BASE) &&
+                ArrayUtils.contains(dir.getConfig().getIgnoreDirs(), Paths.names(path).get(0))) {
             return oldResourceStore.get(path);
         }
         return new JDBCResource(dir.createEntry(path));

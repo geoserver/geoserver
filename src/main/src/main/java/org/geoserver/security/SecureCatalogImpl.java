@@ -1207,7 +1207,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     }
 
     public CatalogFacade getFacade() {
-        return delegate.getFacade();
+        return new SecureCatalogFacade(this, delegate.getFacade());
     }
     
     public CatalogFactory getFactory() {
@@ -1394,17 +1394,39 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter) {
-        return list(of, filter, null, null, null);
+        return list(of, filter, null, null, (SortBy) null);
     }
 
     @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter,
-            Integer offset, Integer count, SortBy sortBy) {
-
-        Filter securityFilter = securityFilter(of, filter);
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count,
+    		SortBy sortBy) {
+    	Filter securityFilter = securityFilter(of, filter);
 
         CloseableIterator<T> filtered;
         filtered = delegate.list(of, securityFilter, offset, count, sortBy);
+
+        // create secured decorators on-demand. Assume this method is used only for listing, not
+        // for accessing a single resource by name/id, thus use hide policy for mixed mode
+        final Function<T, T> securityWrapper = securityWrapper(of, MixedModeBehavior.HIDE);
+        final CloseableIterator<T> filteredWrapped;
+        filteredWrapped = CloseableIteratorAdapter.transform(filtered, securityWrapper);
+
+        // wrap the iterator in a notNull filter to ensure any filtered
+        // layers (result is null) don't get passed on from the securityWrapper
+        // Function. When the AccessLevel is HIDDEN and a layer gets filtered 
+        // out via a CatalogFilter - for example, this can happen with a
+        // LocalWorkspaceCatalogFilter and a virtual service request
+        return CloseableIteratorAdapter.filter(filteredWrapped,
+                com.google.common.base.Predicates.<T> notNull());
+    }
+    
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count,
+    		SortBy... sortBy) {
+    	Filter securityFilter = securityFilter(of, filter);
+
+        CloseableIterator<T> filtered;
+        // HACK here, go straigth to the facade of the delegate to get a method supporting sortby[]
+        filtered = delegate.getFacade().list(of, securityFilter, offset, count, sortBy);
 
         // create secured decorators on-demand. Assume this method is used only for listing, not
         // for accessing a single resource by name/id, thus use hide policy for mixed mode

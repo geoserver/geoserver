@@ -15,7 +15,6 @@ import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
 import org.geotools.factory.CommonFactoryFinder;

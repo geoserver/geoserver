@@ -67,8 +67,8 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[ows:Identifier='time']", "2");
         // check raster elevation dimension
         checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Default='0.0']", "1");
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Value='0.0']", "1");
-        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Value='100.0']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Value='0']", "1");
+        checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Value='100']", "1");
         // check raster time dimension
         checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Default='0.0']", "1");
         checkXpathCount(result, "/wmts:Contents/wmts:Layer/wmts:Dimension[wmts:Value='2008-10-31T00:00:00.000Z--2008-11-01T00:00:00.000Z']", "1");
@@ -94,7 +94,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='2']", "2");
         // check the elevation domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='elevation']", "1");
-        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='0.0,100.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='0,100']", "1");
         // check the time domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2008-10-31T00:00:00.000Z--2008-11-01T00:00:00.000Z']", "1");
@@ -205,7 +205,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // check the returned histogram
         checkXpathCount(result, "/md:Histogram[ows:Identifier='elevation']", "1");
         checkXpathCount(result, "/md:Histogram[md:Domain='0.0/100.0/25.0']", "1");
-        checkXpathCount(result, "/md:Histogram[md:Values='1,0,0,1']", "1");
+        checkXpathCount(result, "/md:Histogram[md:Values='2,0,0,2']", "1");
     }
 
     @Test
@@ -218,7 +218,7 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // check the returned histogram
         checkXpathCount(result, "/md:Histogram[ows:Identifier='time']", "1");
         checkXpathCount(result, "/md:Histogram[md:Domain='2012-02-11T00:00:00.000Z/2012-02-12T00:00:00.000Z/P1M']", "1");
-        checkXpathCount(result, "/md:Histogram[md:Values='2']", "1");
+        checkXpathCount(result, "/md:Histogram[md:Values='3']", "1");
     }
 
     @Test

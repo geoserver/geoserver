@@ -8,8 +8,12 @@ import org.geoserver.catalog.*;
 import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.util.Converters;
 import org.geotools.util.Range;
+import org.opengis.feature.simple.SimpleFeature;
 
 import java.io.Serializable;
 import java.util.*;
@@ -18,6 +22,44 @@ import java.util.*;
  * Some utils methods useful to interact with dimensions.
  */
 public final class DimensionsUtils {
+
+    /**
+     * Comparator for time domain values, ranges are taken in consideration.
+     */
+    static final Comparator<Object> TEMPORAL_COMPARATOR = (objectA, objectB) -> {
+        Date dateA = Converters.convert(objectA instanceof Range ? ((Range) objectA).getMinValue() : objectA, Date.class);
+        Date dateB = Converters.convert(objectB instanceof Range ? ((Range) objectB).getMinValue() : objectB, Date.class);
+        return dateA.compareTo(dateB);
+    };
+
+    /**
+     * Comparator for numerical domain values, ranges are taken in consideration.
+     */
+    static final Comparator<Object> NUMERICAL_COMPARATOR = (objectA, objectB) -> {
+        Double numberA = Converters.convert(objectA instanceof Range ? ((Range) objectA).getMinValue() : objectA, Double.class);
+        Double numberB = Converters.convert(objectB instanceof Range ? ((Range) objectB).getMinValue() : objectB, Double.class);
+        return numberA.compareTo(numberB);
+    };
+
+    /**
+     * Comparator for custom domain values, time values and numerical values are specially handled.
+     */
+    static final Comparator<Object> CUSTOM_COMPARATOR = (objectA, objectB) -> {
+        // make sure we are using single values
+        Object valueA = objectA instanceof Range ? ((Range) objectA).getMinValue() : objectA;
+        Object valueB = objectB instanceof Range ? ((Range) objectB).getMinValue() : objectB;
+        // check if we have times or numerical values
+        if (valueA instanceof Date && valueB instanceof Date) {
+            return TEMPORAL_COMPARATOR.compare(objectA, objectB);
+        }
+        if (valueA instanceof Number && valueB instanceof Number) {
+            return NUMERICAL_COMPARATOR.compare(objectA, objectB);
+        }
+        // well it seems we have custom values so let's use strings
+        String stringA = Converters.convert(valueA, String.class);
+        String stringB = Converters.convert(valueB, String.class);
+        return stringA.compareTo(stringB);
+    };
 
     /**
      * Helper method that will extract a layer dimensions.
@@ -87,7 +129,7 @@ public final class DimensionsUtils {
      * Dates and ranges will have a special handling. This method will take in account the
      * dimension required presentation.
      */
-    static List<String> getDomainValuesAsStrings(DimensionInfo dimension, TreeSet<?> values) {
+    static List<String> getDomainValuesAsStrings(DimensionInfo dimension, List<Object> values) {
         if (values == null || values.isEmpty()) {
             // no domain values so he just return an empty collection
             return Collections.emptyList();
@@ -136,8 +178,8 @@ public final class DimensionsUtils {
      * Helper method that return the minimum value. If the first value of the tree set
      * is a range the minimum value of the range is returned.
      */
-    private static Object getMinValue(TreeSet<?> values) {
-        Object minValue = values.first();
+    private static Object getMinValue(List<Object> values) {
+        Object minValue = values.get(0);
         if (minValue instanceof Range) {
             return ((Range) minValue).getMinValue();
         }
@@ -148,8 +190,8 @@ public final class DimensionsUtils {
      * Helper method that return the maximum value. If the first value of the tree set
      * is a range the maximum value of the range is returned.
      */
-    private static Object getMaxValue(TreeSet<?> values) {
-        Object maxValue = values.last();
+    private static Object getMaxValue(List<Object> values) {
+        Object maxValue = values.get(values.size() - 1);
         if (maxValue instanceof Range) {
             return ((Range) maxValue).getMaxValue();
         }
@@ -159,9 +201,46 @@ public final class DimensionsUtils {
     /**
      * Return the min a max values of a tree set of values converted to the provided type.
      */
-    static <T> Tuple<T, T> getMinMax(TreeSet<?> values, Class<T> type) {
+    static <T> Tuple<T, T> getMinMax(List<Object> values, Class<T> type) {
         Object minValue = getMinValue(values);
         Object maxValue = getMaxValue(values);
         return Tuple.tuple(Converters.convert(minValue, type), Converters.convert(maxValue, type));
+    }
+
+    /**
+     * Helper method that simply extract from a feature collection the values of a
+     * specific attribute removing duplicate values.
+     */
+    static Set<Object> getValuesWithoutDuplicates(String attributeName, FeatureCollection featureCollection,
+                                                  Comparator<Object> comparator) {
+        // using the unique visitor to remove duplicate values
+        UniqueVisitor uniqueVisitor = new UniqueVisitor(attributeName);
+        try {
+            featureCollection.accepts(uniqueVisitor, null);
+        } catch (Exception exception) {
+            throw new RuntimeException("Error visiting collection with unique visitor.");
+        }
+        // make sure the values are sorted using the provided comparator
+        Set<Object> values = new TreeSet<>(comparator);
+        values.addAll(uniqueVisitor.getUnique());
+        return values;
+    }
+
+    /**
+     * Helper method that simply extract from a feature collection the values of a
+     * specific attribute keeping duplicate values.
+     */
+    static List<Object> getValuesWithDuplicates(String attributeName, FeatureCollection featureCollection,
+                                                Comparator<Object> comparator) {
+        // full data values are returned including duplicate values
+        List<Object> values = new ArrayList<>();
+        FeatureIterator featuresIterator = featureCollection.features();
+        while (featuresIterator.hasNext()) {
+            // extracting the feature attribute that contain our dimension value
+            SimpleFeature feature = (SimpleFeature) featuresIterator.next();
+            values.add(feature.getAttribute(attributeName));
+        }
+        Collections.sort(values, comparator);
+        return values;
     }
 }

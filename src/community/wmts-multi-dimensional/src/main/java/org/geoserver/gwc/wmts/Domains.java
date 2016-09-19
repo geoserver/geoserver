@@ -88,7 +88,7 @@ public class Domains {
             // accessing the features of a raster
             return getFeatureCollection((CoverageInfo) resourceInfo);
         } catch (IOException exception) {
-            throw new RuntimeException(String.format("Error get features of layer '%s'.", layerInfo.getName()));
+            throw new RuntimeException(String.format("Error getting features of layer '%s'.", layerInfo.getName()), exception);
         }
     }
 
@@ -98,7 +98,7 @@ public class Domains {
     private FeatureCollection getFeatureCollection(CoverageInfo typeInfo) throws IOException {
         GridCoverage2DReader reader = (GridCoverage2DReader) typeInfo.getGridCoverageReader(null, null);
         if (!(reader instanceof StructuredGridCoverage2DReader)) {
-            throw new RuntimeException("Non structured grid coverages cannot be filtered.");
+            throw new RuntimeException("Is not possible to obtain a feature collection from a non structured reader.");
         }
         StructuredGridCoverage2DReader structuredReader = (StructuredGridCoverage2DReader) reader;
         String coverageName = structuredReader.getGridCoverageNames()[0];

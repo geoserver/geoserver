@@ -55,7 +55,7 @@ public class RasterTimeDimensionTest extends TestsSupport {
             formatDate(DATE_VALUES[4])
     };
 
-    //@Test
+    @Test
     public void testDisabledDimension() throws Exception {
         // enable a time dimension
         DimensionInfo dimensionInfo = new DimensionInfoImpl();
@@ -149,7 +149,7 @@ public class RasterTimeDimensionTest extends TestsSupport {
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "P1Y");
         assertThat(histogram.first, is("2008-10-31T00:00:00.000Z/" + STRING_VALUES[4] + "/P1Y"));
-        assertThat(histogram.second.stream().reduce(0, (total, value) -> total + value), is(4));
+        assertThat(histogram.second.stream().reduce(0, (total, value) -> total + value), is(6));
     }
 
     /**

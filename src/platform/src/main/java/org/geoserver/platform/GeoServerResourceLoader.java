@@ -157,7 +157,9 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      */
     public void setBaseDirectory(File baseDirectory) {
         this.baseDirectory = baseDirectory;
-        this.resources = new FileSystemResourceStore( baseDirectory );
+        if (resources == ResourceStore.EMPTY) {
+            resources = new FileSystemResourceStore(baseDirectory);
+        }
     }
 
     @Override

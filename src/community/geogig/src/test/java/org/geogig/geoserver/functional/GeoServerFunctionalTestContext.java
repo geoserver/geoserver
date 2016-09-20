@@ -230,7 +230,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected TestData createRepo(String name) throws Exception {
-        GeoGigTestData testData = new GeoGigTestData();
+        GeoGigTestData testData = new GeoGigTestData(RunWebAPIFunctionalTest.TEMP_ROOT.getRoot());
         testData.setUp(name);
         testData.init().config("user.name", "John").config("user.email", "John.Doe@example.com");
         GeoGIG geogig = testData.getGeogig();

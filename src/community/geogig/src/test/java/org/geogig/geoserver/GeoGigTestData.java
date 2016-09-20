@@ -95,13 +95,23 @@ public class GeoGigTestData extends ExternalResource {
 
     private File repoDir;
 
+    private final File tempRoot;
+
+    public GeoGigTestData(File tempRoot) {
+        this.tempRoot = tempRoot;
+    }
+
+    public GeoGigTestData() {
+        this(null);
+    }
+
     @Override
     protected void before() throws Throwable {
         setUp("testrepo");
     }
 
     public void setUp(String repoName) throws Exception {
-        tmpFolder = new TemporaryFolder();
+        tmpFolder = new TemporaryFolder(tempRoot);
         tmpFolder.create();
         this.geogig = createRepository(repoName);
     }

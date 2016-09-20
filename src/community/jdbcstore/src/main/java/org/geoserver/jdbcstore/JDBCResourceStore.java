@@ -115,8 +115,9 @@ public class JDBCResourceStore implements ResourceStore {
     
     @Override
     public Resource get(String path) {
-        if (oldResourceStore != null && !path.equals(Paths.BASE) &&
-                ArrayUtils.contains(dir.getConfig().getIgnoreDirs(), Paths.names(path).get(0))) {
+        List<String> pathNames = Paths.names(path);
+        if (oldResourceStore != null && pathNames.size() > 0 &&
+                ArrayUtils.contains(dir.getConfig().getIgnoreDirs(), pathNames.get(0))) {
             return oldResourceStore.get(path);
         }
         return new JDBCResource(dir.createEntry(path));

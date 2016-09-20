@@ -10,11 +10,17 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.classextension.EasyMock.*;
 import static org.geoserver.platform.resource.ResourceMatchers.*;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.ResultSet;
 
+import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerDataDirectoryTest;
+import org.geoserver.jdbcstore.cache.SimpleResourceCache;
 import org.geoserver.jdbcstore.internal.JDBCResourceStoreProperties;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.DataDirectoryResourceStore;
 import org.geoserver.platform.resource.NullLockProvider;
 import org.geoserver.platform.resource.Paths;
@@ -22,10 +28,21 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceStore;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.IOUtils;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
+import org.geotools.styling.ExternalGraphic;
+import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.Style;
+import org.geotools.styling.Symbolizer;
+import org.geotools.util.Version;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.opengis.style.GraphicalSymbol;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * 
@@ -366,6 +383,65 @@ public abstract class AbstractJDBCResourceStoreTest {
 
         
         store.get(Paths.BASE).removeListener(listener);
+    }
+    
+    @Rule
+    public TemporaryFolder cache = new TemporaryFolder();
+    
+    @Test
+    public void testParsedStyle() throws Exception {
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
+                "GeoServerDataDirectoryTest-applicationContext.xml", GeoServerDataDirectoryTest.class);
+        ctx.refresh();
+        
+        support.initialize();
+        cache.create();
+        
+        JDBCResourceStore store = new JDBCResourceStore(support.getDataSource(), getConfig(false, false));
+        store.setCache(new SimpleResourceCache(cache.getRoot()));
+        
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(store);
+        GeoServerDataDirectory dataDir = new GeoServerDataDirectory(loader);
+        
+        Resource styleDir = store.get("styles");
+        
+        //Copy the sld to the temp style dir
+        Resource styleResource = styleDir.get("external.sld");
+        IOUtils.copy(getClass().getResourceAsStream("external.sld"), styleResource.out());
+        
+        Resource noIconResource = styleDir.get("noicon.png");
+        assertFalse(Resources.exists(noIconResource));
+        
+        Resource iconResource = styleDir.get("icon.png");
+        IOUtils.copy(getClass().getResourceAsStream("icon.png"), iconResource.out());
+        assertTrue(Resources.exists(iconResource));
+        
+        StyleInfoImpl si = new StyleInfoImpl(null);
+        si.setName("");
+        si.setId("");
+        si.setFormat("sld");
+        si.setFormatVersion(new Version("1.0.0"));
+        si.setFilename(styleResource.name());
+        
+        Style s = dataDir.parsedStyle(si);
+        //Verify style is actually parsed correctly
+        Symbolizer symbolizer = s.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
+        assertTrue(symbolizer instanceof PointSymbolizer);
+        GraphicalSymbol graphic = ((PointSymbolizer) symbolizer).getGraphic().graphicalSymbols().get(0);
+        assertTrue(graphic instanceof ExternalGraphic);
+        
+        File iconFile = new File(cache.getRoot(), "styles/icon.png");
+        File noiconFile = new File(cache.getRoot(), "styles/noicon.png");
+        
+        
+        //GEOS-7025: verify the icon file is not created if it doesn't exist in store
+        assertFalse(noiconFile.exists());
+        //GEOS-7741: verify the icon file is created if it does exist in store
+        assertTrue(iconFile.exists());
+        
+        ctx.destroy();        
+        ctx.close();
+        
     }
 
 

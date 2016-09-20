@@ -1197,9 +1197,16 @@ public class GeoServerDataDirectory {
             public URL locateResource(String uri) {
                 URL url = super.locateResource(uri);
                 if(url.getProtocol().equalsIgnoreCase("resource")) {
-                    //GEOS-7025: Just get the path; don't try to create the file
-                    URL u = fileToUrlPreservingCqlTemplates(
-                            Paths.toFile(root(), resourceLoader.fromURL(url).path()));
+                    Resource resource = resourceLoader.fromURL(url);
+                    File file;
+                    if (Resources.exists(resource)) {
+                        //GEOS-7741: cache resource as file, otherwise it can't be found
+                        file = resource.file();
+                    } else {
+                        //GEOS-7025: Just get the path; don't try to create the file
+                        file = Paths.toFile(root(), resource.path());
+                    }
+                    URL u = fileToUrlPreservingCqlTemplates(file);
                     if (url.getQuery() != null) {
                         try {
                             return new URL(u.toString() + "?" + url.getQuery());

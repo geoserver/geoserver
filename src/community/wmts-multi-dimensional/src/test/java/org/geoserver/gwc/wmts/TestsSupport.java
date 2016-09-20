@@ -87,7 +87,7 @@ public abstract class TestsSupport extends WMSTestSupport {
     protected void testDomainsValuesRepresentation(DimensionPresentation dimensionPresentation, String... expectedDomainValues) throws IOException {
         DimensionInfo dimensionInfo = createDimension(true, dimensionPresentation, null);
         Dimension dimension = buildDimension(dimensionInfo);
-        List<String> valuesAsStrings = dimension.getDomainValuesAsStrings(Filter.INCLUDE).second;
+        List<String> valuesAsStrings = dimension.getDomainValuesAsStrings(Filter.INCLUDE).second.second;
         assertThat(valuesAsStrings.size(), is(expectedDomainValues.length));
         assertThat(valuesAsStrings, containsInAnyOrder(expectedDomainValues));
     }

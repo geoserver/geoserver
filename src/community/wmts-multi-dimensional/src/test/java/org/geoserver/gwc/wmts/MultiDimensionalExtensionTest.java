@@ -98,6 +98,12 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // check the time domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2008-10-31T00:00:00.000Z--2008-11-01T00:00:00.000Z']", "1");
+        // check the space domain
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.23722068851276978']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='40.562080748421806']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='14.592757149389236']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='44.55808294568743']", "1");
     }
 
     @Test
@@ -117,6 +123,12 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // check the time domain
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z']", "1");
+        // check the space domain
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='-180.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='-90.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='180.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='90.0']", "1");
     }
 
     @Test
@@ -136,6 +148,12 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[ows:Identifier='time']", "1");
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Domain='2008-10-31T00:00:00.000Z--2008-11-01T00:00:00.000Z']", "1");
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='2']", "1");
+        // check the space domain
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.23722068851276978']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='40.562080748421806']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='14.592757149389236']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='44.55808294568743']", "1");
     }
 
     @Test
@@ -149,6 +167,12 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
         // the domain should not contain any values
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='0']", "2");
+        // check the space domain
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='0.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='-1.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='-1.0']", "1");
     }
 
     @Test
@@ -162,10 +186,10 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:DimensionDomain", "2");
         // check the space domain
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@CRS='EPSG:4326']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='5.0']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='5.0']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='6.0']", "1");
-        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='6.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@minx='0.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@miny='0.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxx='-1.0']", "1");
+        checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='-1.0']", "1");
         // the domain should not contain any values
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='0']", "2");
     }

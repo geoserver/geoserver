@@ -226,7 +226,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         xml.simpleElement("ows:Identifier", dimension.getDimensionName(), true);
         // default value is mandatory
         xml.simpleElement("Default", dimension.getDefaultValueAsString(), true);
-        for (String value : dimension.getDomainValuesAsStrings(Filter.INCLUDE).second) {
+        for (String value : dimension.getDomainValuesAsStrings(Filter.INCLUDE).second.second) {
             xml.simpleElement("Value", value, true);
         }
         xml.endElement("Dimension");

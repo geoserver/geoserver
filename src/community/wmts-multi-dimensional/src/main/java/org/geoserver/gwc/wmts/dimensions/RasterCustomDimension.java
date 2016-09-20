@@ -6,8 +6,10 @@ package org.geoserver.gwc.wmts.dimensions;
 
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.gwc.wmts.dimensions.CoverageDimensionsReader.DataType;
 import org.geoserver.wms.WMS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
 
 import java.util.List;
@@ -32,7 +34,7 @@ public class RasterCustomDimension extends Dimension {
     }
 
     @Override
-    public List<Object> getDomainValues(Filter filter, boolean noDuplicates) {
+    public Tuple<ReferencedEnvelope, List<Object>> getDomainValues(Filter filter, boolean noDuplicates) {
         return getRasterDomainValues(filter, noDuplicates, DataType.CUSTOM, DimensionsUtils.CUSTOM_COMPARATOR);
     }
 

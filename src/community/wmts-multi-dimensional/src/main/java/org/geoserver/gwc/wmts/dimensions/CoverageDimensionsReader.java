@@ -15,6 +15,7 @@ import org.geotools.data.memory.MemoryFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.opengis.feature.simple.SimpleFeature;
@@ -42,24 +43,26 @@ abstract class CoverageDimensionsReader {
 
     abstract Tuple<String, FeatureCollection> getValues(String dimensionName, Filter filter, DataType dataType);
 
-    List<Object> readWithDuplicates(String dimensionName, Filter filter, DataType dataType, Comparator<Object> comparator) {
+    Tuple<ReferencedEnvelope, List<Object>> readWithDuplicates(String dimensionName, Filter filter, DataType dataType, Comparator<Object> comparator) {
         // getting the feature collection with the values and the attribute name
         Tuple<String, FeatureCollection> values = getValues(dimensionName, filter, dataType);
         if (values == null) {
-            return Collections.emptyList();
+            return Tuple.tuple(new ReferencedEnvelope(), Collections.emptyList());
         }
         // extracting the values removing the duplicates
-        return DimensionsUtils.getValuesWithDuplicates(values.first, values.second, comparator);
+        return Tuple.tuple(values.second.getBounds(),
+                DimensionsUtils.getValuesWithDuplicates(values.first, values.second, comparator));
     }
 
-    Set<Object> readWithoutDuplicates(String dimensionName, Filter filter, DataType dataType, Comparator<Object> comparator) {
+    Tuple<ReferencedEnvelope, Set<Object>> readWithoutDuplicates(String dimensionName, Filter filter, DataType dataType, Comparator<Object> comparator) {
         // getting the feature collection with the values and the attribute name
         Tuple<String, FeatureCollection> values = getValues(dimensionName, filter, dataType);
         if (values == null) {
-            return new TreeSet<>();
+            return Tuple.tuple(new ReferencedEnvelope(), new TreeSet<>());
         }
         // extracting the values keeping the duplicates
-        return DimensionsUtils.getValuesWithoutDuplicates(values.first, values.second, comparator);
+        return Tuple.tuple(values.second.getBounds(),
+                DimensionsUtils.getValuesWithoutDuplicates(values.first, values.second, comparator));
     }
 
     /**

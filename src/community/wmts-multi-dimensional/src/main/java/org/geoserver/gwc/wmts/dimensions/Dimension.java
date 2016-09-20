@@ -59,7 +59,7 @@ public abstract class Dimension {
      * The provided filter can be NULL. Duplicate values may be included if
      * noDuplicates parameter is set to FALSE.
      */
-    public abstract List<Object> getDomainValues(Filter filter, boolean noDuplicates);
+    public abstract Tuple<ReferencedEnvelope, List<Object>> getDomainValues(Filter filter, boolean noDuplicates);
 
 
     /**
@@ -85,7 +85,7 @@ public abstract class Dimension {
      * </p>
      */
     public Tuple<String, List<Integer>> getHistogram(Filter filter, String resolution) {
-        return HistogramUtils.buildHistogram(getDomainValues(filter, false), resolution);
+        return HistogramUtils.buildHistogram(getDomainValues(filter, false).second, resolution);
     }
 
     protected abstract String getDefaultValueFallbackAsString();
@@ -124,9 +124,10 @@ public abstract class Dimension {
      * provided filter will be used to filter the domain values. The provided filter
      * can be NULL.
      */
-    public Tuple<Integer, List<String>> getDomainValuesAsStrings(Filter filter) {
-        List<Object> domainValues = getDomainValues(filter, true);
-        return Tuple.tuple(domainValues.size(), DimensionsUtils.getDomainValuesAsStrings(dimensionInfo, domainValues));
+    public Tuple<ReferencedEnvelope, Tuple<Integer, List<String>>> getDomainValuesAsStrings(Filter filter) {
+        Tuple<ReferencedEnvelope, List<Object>> domainValues = getDomainValues(filter, true);
+        return Tuple.tuple(domainValues.first,
+                Tuple.tuple(domainValues.second.size(), DimensionsUtils.getDomainValuesAsStrings(dimensionInfo, domainValues.second)));
     }
 
 
@@ -235,15 +236,15 @@ public abstract class Dimension {
     /**
      * Helper method used to get domain values from a raster type.
      */
-    List<Object> getRasterDomainValues(Filter filter, boolean noDuplicates,
+    Tuple<ReferencedEnvelope, List<Object>> getRasterDomainValues(Filter filter, boolean noDuplicates,
                                        CoverageDimensionsReader.DataType dataType, Comparator<Object> comparator) {
         CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
         if (noDuplicates) {
             // no duplicate values should be included
-            Set<Object> values = reader.readWithoutDuplicates(getDimensionName(), filter, dataType, comparator);
-            List<Object> list = new ArrayList<>(values.size());
-            list.addAll(values);
-            return list;
+            Tuple<ReferencedEnvelope, Set<Object>> values = reader.readWithoutDuplicates(getDimensionName(), filter, dataType, comparator);
+            List<Object> list = new ArrayList<>(values.second.size());
+            list.addAll(values.second);
+            return Tuple.tuple(values.first, list);
         }
         // we need the duplicate values (this is useful for some operations like get histogram operation)
         return reader.readWithDuplicates(getDimensionName(), filter, dataType, comparator);
@@ -252,7 +253,7 @@ public abstract class Dimension {
     /**
      * Helper method used to get domain values from a vector type.
      */
-    List<Object> getVectorDomainValues(Filter filter, boolean noDuplicates, Comparator<Object> comparator) {
+    Tuple<ReferencedEnvelope, List<Object>> getVectorDomainValues(Filter filter, boolean noDuplicates, Comparator<Object> comparator) {
         FeatureCollection featureCollection = getVectorDomainValues(filter);
         if (noDuplicates) {
             // no duplicate values should be included
@@ -260,16 +261,17 @@ public abstract class Dimension {
                     getValuesWithoutDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator);
             List<Object> list = new ArrayList<>(values.size());
             list.addAll(values);
-            return list;
+            return Tuple.tuple(featureCollection.getBounds(), list);
         }
         // we need the duplicate values (this is useful for some operations like get histogram operation)
-        return DimensionsUtils.getValuesWithDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator);
+        return Tuple.tuple(featureCollection.getBounds(),
+                DimensionsUtils.getValuesWithDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator));
     }
 
     /**
      * Helper method used to get domain values from a vector type in the form of a feature collection.
      */
-    FeatureCollection getVectorDomainValues(Filter filter) {
+    private FeatureCollection getVectorDomainValues(Filter filter) {
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) getResourceInfo();
         FeatureSource source;
         try {
@@ -279,7 +281,6 @@ public abstract class Dimension {
                     "Error getting feature source of vector '%s'.", resourceInfo.getName()), exception);
         }
         Query query = new Query(source.getSchema().getName().getLocalPart(), filter == null ? Filter.INCLUDE : filter);
-        query.setPropertyNames(new String[]{dimensionInfo.getAttribute()});
         try {
             return source.getFeatures(query);
         } catch (Exception exception) {

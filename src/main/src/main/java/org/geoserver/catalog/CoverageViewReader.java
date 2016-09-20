@@ -26,6 +26,7 @@ import javax.media.jai.RasterFactory;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
+import org.geoserver.catalog.CoverageDimensionCustomizerReader.WrappedSampleDimension;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
@@ -291,7 +292,6 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
         List<CoverageBand> bands = coverageView.getCoverageBands();
         List<GridCoverage2D> coverages = new ArrayList<GridCoverage2D>();
-        List<SampleDimension> dims = new ArrayList<SampleDimension>();
         
         CoveragesConsistencyChecker checker = null;
         
@@ -340,13 +340,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 } else {
                     checker.checkConsistency(reader);
                 }
-                inputCoverages.put(coverageName, reader.read(parameters));
-            }
-            for (int i = 0; i < selectedBands.size(); i++) {
-                if (inputCoverages.get(coverageName) != null) {
-                    dims.add(inputCoverages.get(coverageName)
-                            .getSampleDimension(Integer.parseInt(selectedBands.get(i).getBand())));
-                }
+                inputCoverages.put(coverageName, delegate.read(coverageName, parameters));
             }
         }
         
@@ -416,16 +410,35 @@ public class CoverageViewReader implements GridCoverage2DReader {
         if (coverages.size() > 1) {
                 final ParameterValueGroup param = PROCESSOR.getOperation("BandMerge").getParameters();
                 param.parameter("sources").setValue(coverages);
-                GridCoverage2D merge = (GridCoverage2D) PROCESSOR.doOperation(param, hints);
-                image = merge.getRenderedImage();
-                properties = merge.getProperties();
-        } else {
-            properties = sampleCoverage.getProperties();
-            image = sampleCoverage.getRenderedImage();
+                sampleCoverage = (GridCoverage2D) PROCESSOR.doOperation(param, hints);
         }
-        GridSampleDimension[] sampleDimensions = dims.toArray(new GridSampleDimension[dims.size()]);
-        GridCoverage2D mergedCoverage = coverageFactory.create(coverageInfo.getName(), image, sampleCoverage.getGridGeometry(), sampleDimensions, null, properties);
-        return new GridCoverageWrapper(coverageInfo.getName(), mergedCoverage, sampleDimensions, mergedCoverage.getProperties());
+        properties = sampleCoverage.getProperties();
+        image = sampleCoverage.getRenderedImage();
+
+        GridSampleDimension[] wrappedDims = new GridSampleDimension[sampleCoverage
+                .getNumSampleDimensions()];
+
+        List<CoverageDimensionInfo> storedDimensions = coverageInfo.getDimensions();
+        MetadataMap map = coverageInfo.getMetadata();
+        if (map.containsKey(CoverageView.COVERAGE_VIEW)) {
+            CoverageView coverageView = (CoverageView) map.get(CoverageView.COVERAGE_VIEW);
+            wrappedDims = (selectedBandIndices != null && !selectedBandIndices.isEmpty())
+                    ? new GridSampleDimension[selectedBandIndices.size()] : null;
+            for (int i : selectedBandIndices) {
+                CoverageBand band = coverageView.getBand(i);
+                CoverageDimensionInfo dimensionInfo = new CoverageDimensionImpl();
+                dimensionInfo.setName(band.getDefinition());
+                if (storedDimensions != null && storedDimensions.size() > 0)
+                    dimensionInfo = storedDimensions.get(band.getIndex());
+                wrappedDims[i] = WrappedSampleDimension.build(sampleCoverage.getSampleDimension(i),
+                        dimensionInfo);
+            }
+        }
+
+        GridCoverage2D mergedCoverage = coverageFactory.create(coverageInfo.getName(), image,
+                sampleCoverage.getGridGeometry(), wrappedDims, null, properties);
+
+        return mergedCoverage;
     }
 
 

@@ -767,7 +767,9 @@ public class GeoServerTileLayerTest {
         WMS wms = mock(WMS.class);
         GetLegendGraphicOutputFormat outputFormat = mock(GetLegendGraphicOutputFormat.class);
         when(wms.getLegendGraphicOutputFormat("image/png")).thenReturn(outputFormat);
-        GeoServerTileLayer tileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker, legendSample, wms);
+        GeoServerTileLayer tileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        tileLayer.setLegendSample(legendSample);
+        tileLayer.setWms(wms);
         Map<String, TileLayer.LegendInfo> legendsInfo = tileLayer.getLegendsInfo();
         assertThat(legendsInfo.size(), is(3));
         // default_style

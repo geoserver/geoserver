@@ -23,10 +23,13 @@ public class EntityResolverProvider {
             null);
 
     private GeoServer geoServer;
+    private NoExternalEntityResolver noExternalResolver = new NoExternalEntityResolver();
     
     public EntityResolverProvider(GeoServer geoServer) {
         this.geoServer = geoServer;
     }
+    
+    
     
     public EntityResolver getEntityResolver() {
         if (geoServer != null) {
@@ -38,6 +41,6 @@ public class EntityResolverProvider {
         }
 
         // default behaviour: entities disabled
-        return new NoExternalEntityResolver();
+        return noExternalResolver;
     } 
 }

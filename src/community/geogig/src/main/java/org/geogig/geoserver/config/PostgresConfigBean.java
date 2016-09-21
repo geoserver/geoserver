@@ -5,8 +5,18 @@
 package org.geogig.geoserver.config;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Preconditions;
 
@@ -22,13 +32,13 @@ import com.google.common.base.Preconditions;
 public class PostgresConfigBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostgresConfigBean.class);
 
-    private static final String SCHEME = "postgresql://";
+    private static final String SCHEME = "postgresql";
     private static final String USER = "user";
     private static final String PASSWORD = "password";
     private static final String SLASH = "/";
-    private static final String AMPERSAND = "&";
-    private static final String QUESTION_MARK = "?";
+    private static final String UTF8 = StandardCharsets.UTF_8.name();
 
     private String host = "localhost", database, schema = "public", username = "postgres", password;
     private Integer port = 5432;
@@ -82,19 +92,42 @@ public class PostgresConfigBean implements Serializable {
     }
 
     public URI buildUriForRepo(String repoId) {
-        StringBuilder sb = new StringBuilder(128);
-        sb.append(SCHEME).append(this.host);
+        UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+        // set the schema
+        builder.scheme(SCHEME);
+        // set the host
+        builder.host(host);
+        // set the port
         if (port > 0) {
-            sb.append(":").append(port);
+            builder.port(port);
         }
+        // build the path in the form of "/databaseName/schema/repoID"
+        StringBuilder sb = new StringBuilder(128);
         sb.append(SLASH).append(database);
         if (null != schema) {
             sb.append(SLASH).append(schema);
         }
         sb.append(SLASH).append(repoId);
-        sb.append(QUESTION_MARK).append(USER).append("=").append(username);
-        sb.append(AMPERSAND).append(PASSWORD).append("=").append(password);
-        return URI.create(sb.toString());
+        builder.path(sb.toString());
+        // set the query parameters
+        String encodedUsername = username;
+        String encodedPassword = password;
+        try {
+            // try to URLEncode the username value, using UTF-8 encoding
+            encodedUsername = URLEncoder.encode(username, UTF8);
+        } catch (UnsupportedEncodingException uee) {
+            LOGGER.warn(String.format("Error encoding PostgreSQL username in UTF-8, attempting to use unencoded value: %s",
+                    username), uee);
+        }
+        try {
+            encodedPassword =  URLEncoder.encode(password, UTF8);
+        } catch (UnsupportedEncodingException uee) {
+            LOGGER.warn("Error encoding PostgreSQL password value, attempting to use unencoded value", uee);
+        }
+        builder.queryParam(USER, encodedUsername);
+        builder.queryParam(PASSWORD, encodedPassword);
+        // return the URI
+        return builder.build(true).toUri();
     }
 
     public static PostgresConfigBean newInstance() {
@@ -108,12 +141,13 @@ public class PostgresConfigBean implements Serializable {
             // don't parse, return new object
             return newInstance();
         }
+        UriComponents uri = UriComponentsBuilder.fromUri(location).build();
         // build a bean from the parts
-        String host = location.getHost();
-        int port = location.getPort();
+        String host = uri.getHost();
+        int port = uri.getPort();
         // get the path and parse database, repo and schema
-        String uriPath = location.getPath();
-        // URI might have a leading '/'. If it does, skip it
+        String uriPath = uri.getPath();
+        // Path might have a leading '/'. If it does, skip it
         int startIndex = uriPath.startsWith(SLASH) ? 1 : 0;
         String[] paths = uriPath.substring(startIndex).split(SLASH);
         // first is always the database
@@ -123,19 +157,22 @@ public class PostgresConfigBean implements Serializable {
         if (paths.length > 2) {
             schema = paths[1];
         }
-        // get the query and parse username and password
-        String query = location.getQuery();
-        String username = null;
-        String password = null;
-        for (String queryParam : query.split(AMPERSAND)) {
-            int keyEnd = queryParam.indexOf("=");
-            String key = queryParam.substring(0, keyEnd);
-            String value = queryParam.substring(keyEnd + 1);
-            if (USER.equals(key)) {
-                username = value;
-            } else if (PASSWORD.equals(key)) {
-                password = value;
-            }
+        // get the query parameters and pull out user and password
+        MultiValueMap<String, String> queryParams = uri.getQueryParams();
+        String username = queryParams.getFirst(USER);
+        String password = queryParams.getFirst(PASSWORD);
+        try {
+            // username should be URLEncoded, decode it here
+            username = URLDecoder.decode(username, UTF8);
+        } catch (UnsupportedEncodingException uee) {
+            LOGGER.warn(String.format("Error decoding PostgreSQL username value, attempting to use undecoded value: %s",
+                    username), uee);
+        }
+        try {
+            // password should be URLEncoded, decode it here
+            password = URLDecoder.decode(password, UTF8);
+        } catch (UnsupportedEncodingException uee) {
+            LOGGER.warn("Error decoding PostgreSQL password value, attempting to use undecoded value", uee);
         }
         PostgresConfigBean bean = new PostgresConfigBean();
         bean.setHost(host);
@@ -154,12 +191,12 @@ public class PostgresConfigBean implements Serializable {
         int startIndex = uriPath.startsWith(SLASH) ? 1 : 0;
         String[] paths = uriPath.substring(startIndex).split(SLASH);
         // last part is the repoID
-        return paths[paths.length-1];
+        return paths[paths.length - 1];
     }
 
     @Override
     public int hashCode() {
-        // hs all the fields, if they aren't null, otherwise use some prime numbers as place holders
+        // hash all the fields, if they aren't null, otherwise use some prime numbers as place holders
         return (host != null) ? host.hashCode() : 17 ^
                 ((port != null) ? port.hashCode() : 37) ^
                 ((username != null) ? username.hashCode() : 57) ^

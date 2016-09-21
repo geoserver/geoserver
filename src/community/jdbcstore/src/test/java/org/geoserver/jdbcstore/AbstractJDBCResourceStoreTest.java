@@ -11,9 +11,11 @@ import static org.easymock.classextension.EasyMock.*;
 import static org.geoserver.platform.resource.ResourceMatchers.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -22,6 +24,7 @@ import org.geoserver.jdbcstore.cache.SimpleResourceCache;
 import org.geoserver.jdbcstore.internal.JDBCResourceStoreProperties;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.DataDirectoryResourceStore;
+import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.NullLockProvider;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
@@ -254,6 +257,46 @@ public abstract class AbstractJDBCResourceStoreTest {
             in.close();
         }
         
+    }
+    @Test
+    public void testCache() throws Exception {
+        standardData();
+        cache.create();
+        
+        JDBCResourceStoreProperties config = getConfig(true, false);
+        
+        ResourceStore fileStore = new FileSystemResourceStore(cache.getRoot());
+        ResourceStore jdbcStore = new JDBCResourceStore(support.getDataSource(), config,
+                fileStore);
+        
+        ((JDBCResourceStore)jdbcStore).setCache(new SimpleResourceCache(cache.getRoot()));
+        //Initialize FileA in cache
+        Resource jdbcResource = jdbcStore.get("FileA");
+        jdbcResource.file();
+        //Make sure the timestamp is different
+        Thread.sleep(2);
+        
+        //Update the Resource in the JDBCStore
+        byte[] expected = "FileA Updated Contents".getBytes();
+        OutputStream out = jdbcResource.out();
+        try {
+            out.write(expected);
+        } finally {
+            out.close();
+        }
+        //Force an update to the cache
+        jdbcResource.file();
+        
+        //Verify this update actually occurs
+        Resource fileResource = fileStore.get("FileA");
+        InputStream in = fileResource.in();
+        try {
+            byte[] result = new byte[expected.length];
+            in.read(result);
+            assertThat(result, equalTo(expected));
+        } finally {
+            in.close();
+        }
     }
     
     @Test

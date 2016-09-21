@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -57,7 +58,6 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.feature.retype.RetypingFeatureSource;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -65,6 +65,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -88,6 +89,7 @@ import org.geotools.data.store.ContentDataStore;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.data.store.ContentState;
 import org.geotools.data.wms.WebMapServer;
+import org.geotools.data.wms.xml.WMSSchema;
 import org.geotools.factory.Hints;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.FeatureTypes;
@@ -101,7 +103,10 @@ import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.DocumentFactory;
 import org.geotools.xml.Schemas;
+import org.geotools.xml.XMLHandlerHints;
+import org.geotools.xml.handlers.DocumentHandler;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
@@ -121,6 +126,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.springframework.context.ApplicationContext;
 import org.vfny.geoserver.global.GeoServerFeatureLocking;
 import org.vfny.geoserver.util.DataStoreUtils;
+import org.xml.sax.EntityResolver;
 
 /**
  * Provides access to resources such as datastores, coverage readers, and 
@@ -198,13 +204,7 @@ public class ResourcePool {
     List<Listener> listeners;
     ThreadPoolExecutor coverageExecutor;
     CatalogRepository repository;
-
-    /**
-     * Creates a new instance of the resource pool.
-     */
-    public static ResourcePool create(Catalog catalog) {
-        return create(catalog, null);
-    }
+    EntityResolverProvider entityResolverProvider;
 
     /**
      * Creates a new instance of the resource pool explicitly supplying the application 
@@ -439,6 +439,29 @@ public class ResourcePool {
      */
     public void removeListener(Listener l) {
         listeners.remove(l);
+    }
+    
+    /**
+     * Sets the entity resolver provider injected in the code doing XML parsing
+     * @param entityResolverProvider
+     */
+    public void setEntityResolverProvider(EntityResolverProvider entityResolverProvider) {
+        this.entityResolverProvider = entityResolverProvider;
+    }
+    
+    /**
+     * Returns the entity resolver provider injected in the code doing XML parsing
+     * @return
+     */
+    public EntityResolverProvider getEntityResolverProvider() {
+        return entityResolverProvider;
+    }
+
+    /**
+     * Creates a new instance of the resource pool.
+     */
+    public static ResourcePool create(Catalog catalog) {
+        return create(catalog, null);
     }
     
     /**
@@ -1660,8 +1683,18 @@ public class ResourcePool {
         WMSStoreInfo expandedStore = clone(info, true);
         
         try {
+            EntityResolver entityResolver = null;
+            if(entityResolverProvider != null) {
+                 entityResolver = entityResolverProvider.getEntityResolver();
+            }
+            
             String id = info.getId();
             WebMapServer wms = wmsCache.get(id);
+            // if we have a hit but the resolver has been changed, clean and build again
+            if(wms != null && wms.getHints() != null && !Objects.equals(wms.getHints().get(XMLHandlerHints.ENTITY_RESOLVER), entityResolver)) {
+                wmsCache.remove(id);
+                wms = null;
+            }
             if (wms == null) {
                 synchronized (wmsCache) {
                     wms = wmsCache.get(id);
@@ -1669,8 +1702,15 @@ public class ResourcePool {
                         HTTPClient client = getHTTPClient(expandedStore);
                         String capabilitiesURL = expandedStore.getCapabilitiesURL();
                         URL serverURL = new URL(capabilitiesURL);
-                        wms = new WebMapServer(serverURL, client);
+                        Map<String, Object> hints = new HashMap<>();
+                        hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
+                        hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
+                        if(entityResolver != null) {
+                            hints.put(XMLHandlerHints.ENTITY_RESOLVER, entityResolver);
+                        }
                         
+                        wms = new WebMapServer(serverURL, client, hints);
+
                         wmsCache.put(id, wms);
                     }
                 }

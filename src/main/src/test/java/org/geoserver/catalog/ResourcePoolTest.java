@@ -6,11 +6,14 @@
 
 package org.geoserver.catalog;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.image.RenderedImage;
@@ -20,6 +23,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 
 import javax.media.jai.PlanarImage;
@@ -46,6 +50,7 @@ import org.geotools.data.DataAccess;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
+import org.geotools.ows.ServiceException;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.resources.image.ImageUtilities;
 import org.geotools.styling.PolygonSymbolizer;
@@ -425,5 +430,24 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertNotNull(clonedCs);
         
         assertEquals(source2, clonedCs);
+    }
+    
+    @Test
+    public void testEntityExpansion() throws Exception {
+        final ResourcePool rp = getCatalog().getResourcePool();
+        WMSStoreInfo info = getCatalog().getFactory().createWebMapServer();
+        URL url = getClass().getResource("1.3.0Capabilities-xxe.xml");
+        info.setCapabilitiesURL(url.toExternalForm());
+        info.setEnabled(true);
+        // the connection pooling client does not support file references, disable it
+        info.setUseConnectionPooling(false);
+        try {
+            rp.getWebMapServer(info);
+        } catch(IOException e) {
+            assertThat(e.getCause(), instanceOf(ServiceException.class));
+            ServiceException cause = (ServiceException) e.getCause();
+            assertThat(cause.getMessage(), containsString("Error while parsing XML"));
+        }
+        
     }
 }

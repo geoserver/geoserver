@@ -85,14 +85,13 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
         }
         
         final Catalog catalog = getCatalog();
-        DataStoreInfo expandedStore = catalog.getFactory().createDataStore();
-        
-        // Cloning into "expandedStore" through the super class "clone" method
-        clone(info, expandedStore);
 
+        // Cloning into "expandedStore" through the super class "clone" method
+        DataStoreInfo expandedStore = catalog.getResourcePool().clone(info, true);
+        
         DataAccess<? extends FeatureType, ? extends Feature> dataStore;
         try {
-            // REVISIT: this may need to be done after saveing the DataStoreInfo
+            // REVISIT: this may need to be done after saving the DataStoreInfo
             dataStore = expandedStore.getDataStore(new NullProgressListener());
             dataStore.dispose();
         } catch (IOException e) {
@@ -105,17 +104,16 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
                     "Error creating data store, check the parameters. Error message: " + message);
         }
 
-        DataStoreInfo savedStore = catalog.getFactory().createDataStore();
+        DataStoreInfo savedStore = catalog.getResourcePool().clone(info, true);
         try {
             // GeoServer Env substitution; validate first
-            clone(info, savedStore);
             catalog.validate(savedStore, true).throwIfInvalid();
             
             // save a copy, so if NewLayerPage fails we can keep on editing this one without being
             // proxied
             
-            // GeoServer Env substitution; fore to *AVOID* resolving env placeholders...
-            clone(info, savedStore, false);
+            // GeoServer Env substitution; force to *AVOID* resolving env placeholders...
+            savedStore = catalog.getResourcePool().clone(info, false);
             // ...and save
             catalog.add(savedStore);
         } catch (Exception e) {

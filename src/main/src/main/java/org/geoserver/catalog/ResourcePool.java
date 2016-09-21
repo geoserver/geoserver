@@ -53,11 +53,11 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.impl.ModificationProxy;
+import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.feature.retype.RetypingFeatureSource;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -2348,6 +2348,9 @@ public class ResourcePool {
         DataStoreInfo target;
         try {
             target = (DataStoreInfo) SerializationUtils.clone(source);
+            if (target instanceof StoreInfoImpl && target.getCatalog() == null) {
+                ((StoreInfoImpl)target).setCatalog(catalog);
+            }
         } catch (Exception e) {
             target = catalog.getFactory().createDataStore();
             target.setEnabled(source.isEnabled());
@@ -2388,8 +2391,11 @@ public class ResourcePool {
         CoverageStoreInfo target;
         try {
             target = (CoverageStoreInfo) SerializationUtils.clone(source);
+            if (target instanceof StoreInfoImpl && target.getCatalog() == null) {
+                ((StoreInfoImpl)target).setCatalog(catalog);
+            }
         } catch (Exception e) {
-            target = catalog.getFactory().createCoverageStore();;
+            target = catalog.getFactory().createCoverageStore();
             target.setDescription(source.getDescription());
             target.setEnabled(source.isEnabled());
             target.setName(source.getName());
@@ -2432,6 +2438,9 @@ public class ResourcePool {
         WMSStoreInfo target;
         try {
             target = (WMSStoreInfo) SerializationUtils.clone(source);
+            if (target instanceof StoreInfoImpl && target.getCatalog() == null) {
+                ((StoreInfoImpl)target).setCatalog(catalog);
+            }
         } catch (Exception e) {
             target = catalog.getFactory().createWebMapServer();
             target.setDescription(source.getDescription());

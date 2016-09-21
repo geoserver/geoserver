@@ -53,7 +53,7 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
          * Try saving a copy of it so if the process fails somehow the original "info" does not end
          * up with an id set
          */
-        WMSStoreInfo expandedStore = getCatalog().getFactory().createWebMapServer();
+        WMSStoreInfo expandedStore = getCatalog().getResourcePool().clone(info, true);
         WMSStoreInfo savedStore = getCatalog().getFactory().createWebMapServer();
 
         // GR: this shouldn't fail, the Catalog.save(StoreInfo) API does not declare any action in
@@ -61,11 +61,10 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
         // Still, be cautious and wrap it in a try/catch block so the page does not blow up
         try {
             // GeoServer Env substitution; validate first
-            clone(info, expandedStore);
             getCatalog().validate(expandedStore, false).throwIfInvalid();
             
             // GeoServer Env substitution; fore to *AVOID* resolving env placeholders...
-            clone(info, savedStore, false);
+            expandedStore = getCatalog().getResourcePool().clone(info, false);
             // ... and save
             getCatalog().save(savedStore);
         } catch (RuntimeException e) {

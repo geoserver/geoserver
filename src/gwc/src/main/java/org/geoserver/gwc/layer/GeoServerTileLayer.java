@@ -1313,8 +1313,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                 String layerName = layerInfo.prefixedName();
                 Map<String, String> params = params("service", "WMS", "request",
                         "GetLegendGraphic", "format", gwcLegendInfo.format, "width",
-                        String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH), "height",
-                        String.valueOf(GetLegendGraphicRequest.DEFAULT_HEIGHT), "layer", layerName);
+                        String.valueOf(gwcLegendInfo.width), "height",
+                        String.valueOf(gwcLegendInfo.height), "layer", layerName);
                 if (!styleInfo.getName().equals(layerInfo.getDefaultStyle().getName())) {
                     params.put("style", styleInfo.getName());
                 }

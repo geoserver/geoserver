@@ -87,14 +87,16 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.thoughtworks.xstream.XStream;
 import com.vividsolutions.jts.geom.Geometry;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * Primary controller/facade of the import subsystem.
@@ -875,17 +877,20 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     public Long runAsync(final ImportContext context, final ImportFilter filter, final boolean init) {
         // we store the current request spring context
-        RequestAttributes parentRequestAttributes = RequestContextHolder.getRequestAttributes();
+        final RequestAttributes parentRequestAttributes = RequestContextHolder.getRequestAttributes();
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Thread parentThread = Thread.currentThread();
         // creating an asynchronous importer job
         return jobs.submit(new Job<ImportContext>() {
 
             @Override
             protected ImportContext call(ProgressMonitor monitor) throws Exception {
+                final Authentication oldAuth = SecurityContextHolder.getContext().getAuthentication();
                 try {
                     // set the parent request spring context, some interceptors like the security ones
                     // for example may need to have access to the original request attributes
                     RequestContextHolder.setRequestAttributes(parentRequestAttributes);
+                    SecurityContextHolder.getContext().setAuthentication(auth);
                     if (init) {
                         init(context, true);
                     }
@@ -895,6 +900,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                     if (Thread.currentThread() != parentThread) {
                         // cleaning request spring context for the current thread
                         RequestContextHolder.resetRequestAttributes();
+                        SecurityContextHolder.getContext().setAuthentication(oldAuth);
                     }
                 }
             }
@@ -1175,6 +1181,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         FeatureWriter writer = null;
         // using this exception to throw at the end
         Exception error = null;
+        Transaction transaction = new DefaultTransaction();
         try {
             reader = format.read(data, task);
 
@@ -1236,9 +1243,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                 }
                 uniquifiedFeatureTypeName = featureTypeName;
             }
-                
-            Transaction transaction = new DefaultTransaction();
-            
+
             if (updateMode == UpdateMode.REPLACE) {
                 
                 FeatureStore fs = (FeatureStore) dataStore.getFeatureSource(featureTypeName);
@@ -1272,7 +1277,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                     SimpleFeature next = (SimpleFeature) writer.next();
     
                     //(JD) TODO: some formats will rearrange the geometry type (like shapefile) which
-                    // makes the goemetry the first attribute reagardless, so blindly copying over
+                    // makes the geometry the first attribute regardless, so blindly copying over
                     // attributes won't work unless the source type also  has the geometry as the 
                     // first attribute in the schema
                     featureDataConverter.convert(feature, next);
@@ -1293,7 +1298,6 @@ public class Importer implements DisposableBean, ApplicationListener {
                     }
                     task.setNumberProcessed(++cnt);
                 }
-                transaction.commit();
                 if (skipped > 0) {
                     task.addMessage(Level.WARNING,skipped + " features were skipped.");
                 }
@@ -1301,7 +1305,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             } 
             catch (Exception e) {
                 error = e;
-            } 
+            }
             // no finally block, there is too much to do
             
             if (error != null || monitor.isCanceled()) {
@@ -1322,17 +1326,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                     LOGGER.log(Level.WARNING, "Error dropping schema in rollback",e1);
                 }
             }
-    
-            // try to cleanup, but if an error occurs here and one hasn't already been set, set the error
-            try {
-                transaction.close();
-            } catch (Exception e) {
-                if (error != null) {
-                    error = e;
-                }
-                LOGGER.log(Level.WARNING, "Error closing transaction",e);
-            }
-    
+            
             // @revisit - when this gets disposed, any following uses seem to
             // have a problem where later users of the dataStore get an NPE 
             // since the dataStore gets cached by the ResourcePool but is in a 
@@ -1364,6 +1358,18 @@ public class Importer implements DisposableBean, ApplicationListener {
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error closing reader",e);
+            }
+
+            transaction.commit();
+
+            // try to cleanup, but if an error occurs here and one hasn't already been set, set the error
+            try {
+                transaction.close();
+            } catch (Exception e) {
+                if (error != null) {
+                    error = e;
+                }
+                LOGGER.log(Level.WARNING, "Error closing transaction",e);
             }
         }
         

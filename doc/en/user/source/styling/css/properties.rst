@@ -8,6 +8,8 @@ Property listing
 This page lists the supported rendering properties.  See :ref:`css_valuetypes` for more
 information about the value types for each.
 
+.. _css_properties_point:
+
 Point symbology
 ---------------
 
@@ -48,6 +50,8 @@ Point symbology
       * boolean
       * If true the point symbol will be consider an obstable for labels, no label will overlap it
       * no
+
+.. _css_properties_line:
 
 Line symbology
 --------------
@@ -127,6 +131,8 @@ Line symbology
       * If true the line will be consider an obstable for labels, no label will overlap it
       * no
 
+.. _css_properties_polygon:
+
 Polygon symbology
 -----------------
 
@@ -195,6 +201,7 @@ Polygon symbology
       * Size of the texture paint tile that will be filled with the random symbols. Defaults to 256.
       * no
 
+.. _css_properties_text1:
 
 Text symbology (labeling) - part 1
 ----------------------------------
@@ -294,6 +301,8 @@ Text symbology (labeling) - part 1
         :ref:`maxDisplacement<labeling_max_displacement>` vendor parameter.
       * no
 
+.. _css_properties_text2:
+
 Text symbology (labeling) - part 2
 ----------------------------------
 
@@ -380,6 +389,7 @@ Text symbology (labeling) - part 2
         to the :ref:`Priority<labeling_priority>` SLD extension.
       * yes
  
+.. _css_properties_text3:
 
 Text symbology (labeling) - part 3
 ----------------------------------
@@ -406,6 +416,8 @@ Text symbology (labeling) - part 3
       * list of lengths, one to four elements long.
       * Specifies an extra margin (in pixels) to be applied to the label text when calculating label dimensions for use with the ``-gt-shield-resize`` option.  Similar to the ``margin`` shorthand property in CSS for HTML, its interpretation varies depending on how many margin values are provided: 1 = use that margin length on all sides of the label 2 = use the first for top & bottom margins and the second for left & right margins. 3 = use the first for the top margin, second for left & right margins, third for the bottom margin. 4 = use the first for the top margin, second for the right margin, third for the bottom margin, and fourth for the left margin.
       * none
+
+.. _css_properties_raster:
 
 Raster symbology 
 ----------------
@@ -451,6 +463,7 @@ Raster symbology
       * Controls how the color map entries are interpreted, the possible values are "ramp", "intervals" and "values", with ramp being the default if no "raster-color-map-type" is provided. The default "ramp" behavior is to linearly interpolate color between the provided values, and assign the lowest color to all values below the lowest value, and the highest color to all values above the highest value. The "intervals" behavior instead assigns solid colors between values, whilst "values" only assigns colors to the specified values, every other value in the raster is not painted at all
       * no
  
+.. _css_properties_shared:
 
 Shared
 ------
@@ -482,11 +495,12 @@ Shared
         as a single group. Useful to z-order across layers or across different feature groups, like
         roads and rails, especially when using z-index to support casing 
       * false
-      * ``transform``
+    - * ``transform``
       * function
       * Applies a rendering transformationon the current level. The function syntax is ``txName(key1:value1,key1:value2)``. Values can be single ones, or space separated lists. 
       * false
     
+.. _css_properties_symbol:
 
 Symbol properties
 -----------------

@@ -1,4 +1,4 @@
-.. _ysld:
+.. _ysld_styling:
 
 YSLD Styling
 ============

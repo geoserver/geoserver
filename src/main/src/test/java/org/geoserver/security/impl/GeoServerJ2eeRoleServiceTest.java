@@ -14,10 +14,10 @@ import java.io.File;
 import java.io.IOException;
 
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.config.J2eeRoleServiceConfig;
+import org.geoserver.util.IOUtils;
 import org.junit.Test;
 
 public  class GeoServerJ2eeRoleServiceTest extends AbstractSecurityServiceTest {

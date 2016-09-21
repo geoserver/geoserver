@@ -69,12 +69,15 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.map.Layer;
 import org.geotools.map.StyleLayer;
 import org.geotools.parameter.Parameter;
+import org.geotools.process.Processors;
+import org.geotools.process.function.ProcessFunction;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -82,13 +85,17 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.RenderingTransformationHelper;
 import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.renderer.lite.gridcoverage2d.ChannelSelectionUpdateStyleVisitor;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.resources.image.ColorUtilities;
+import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.RasterSymbolizer;
+import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.expression.Expression;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.parameter.GeneralParameterValue;
@@ -859,6 +866,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         RasterSymbolizer symbolizer = symbolizers.get(0);
         Expression transformation = visitor.getRasterRenderingTransformation();
 
+        // direct raster rendering uses Query.ALL for the style query which is
+        // inefficient for vector sources
+        if (isVectorSource(transformation)){
+            return null;
+        }
         //
         // Dimensions
         //
@@ -919,6 +931,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             tileSizeY = mapContent.getMapHeight();
         }
         
+        // 
+        // Band selection
+        //
+        final int[] bandIndices = 
+                ChannelSelectionUpdateStyleVisitor.getBandIndicesFromSelectionChannels(symbolizer);
+        
         // actual read
         RenderedImage image = null;
         GridCoverage2D coverage=null; 
@@ -938,7 +956,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 // handling
                 final Object params = feature.getProperty("params").getValue();
                 GeneralParameterValue[] readParameters = getReadParameters(params, null, null,
-                        interpolation, readerBgColor);
+                        interpolation, readerBgColor, bandIndices);
                 final GridCoverageRenderer gcr = new GridCoverageRenderer(mapEnvelope.getCoordinateReferenceSystem(), mapEnvelope,
                         mapRasterArea, worldToScreen, interpolationHints);
                 gcr.setAdvancedProjectionHandlingEnabled(true);
@@ -1000,7 +1018,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                                 Object params, GridGeometry2D readGG) throws IOException {
                             return readBestCoverage(reader, params,
                                     ReferencedEnvelope.reference(readGG.getEnvelope()),
-                                    readGG.getGridRange2D(), interpolation, readerBgColor);
+                                    readGG.getGridRange2D(), interpolation, readerBgColor, bandIndices);
                         }
 
                     };
@@ -1029,7 +1047,18 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
                     coverage = readBestCoverage(reader, params,
                             ReferencedEnvelope.reference(readGG.getEnvelope()),
-                            readGG.getGridRange2D(), interpolation, readerBgColor);
+                            readGG.getGridRange2D(), interpolation, readerBgColor, bandIndices);
+
+                    // If reader supports band selection, symbolizer channels should be reordered.
+                    if (reader.getFormat().getReadParameters().getDescriptor().descriptors().
+                    		contains(AbstractGridFormat.BANDS) && params!=null){
+            	        // if bands are selected, alter the symbolizer to use bands in order 0,1,2,...
+                    	// since the channel order defined by it previously is taken care of the reader
+						if (bandIndices != null) {
+							symbolizer = GridCoverageRenderer.setupSymbolizerForBandsSelection(symbolizer);
+						}
+                    }
+
                 }
                 // Nothing found, we return a constant image with background value
                 if (coverage == null) {
@@ -1279,6 +1308,21 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         return image;
     }
 
+    private static boolean isVectorSource(Expression tranformation) {
+        // instanceof is sufficient for null check
+        if (tranformation instanceof ProcessFunction){
+            ProcessFunction processFunction = (ProcessFunction) tranformation;
+            Name processName = processFunction.getProcessName();
+            Map<String, org.geotools.data.Parameter<?>> params = Processors.getParameterInfo(processName);
+            for (org.geotools.data.Parameter<?> param : params.values()){
+                if (SimpleFeatureCollection.class.isAssignableFrom(param.getType())){
+                     return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private ReferencedEnvelope getEastNorthEnvelope(ReferencedEnvelope envelope)
             throws FactoryException {
         CoordinateReferenceSystem crs = envelope.getCoordinateReferenceSystem();
@@ -1372,7 +1416,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             final ReferencedEnvelope envelope,
             final Rectangle requestedRasterArea,
             final Interpolation interpolation,
-            final Color bgColor) throws IOException {
+            final Color bgColor,
+            final int[] bandIndices) throws IOException {
 
         ////
         //
@@ -1403,7 +1448,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         GridCoverage2D coverage;
         GeneralParameterValue[] readParams = getReadParameters(params, envelope,
-                requestedRasterArea, interpolation, bgColor);
+                requestedRasterArea, interpolation, bgColor, bandIndices);
 
         coverage = reader.read(readParams);
 
@@ -1412,7 +1457,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
     private static GeneralParameterValue[] getReadParameters(final Object params,
             final ReferencedEnvelope envelope, final Rectangle requestedRasterArea,
-            final Interpolation interpolation, final Color bgColor) {
+            final Interpolation interpolation, final Color bgColor, int[] bandIndices) {
         Parameter<GridGeometry2D> readGG = null;
         if (envelope != null) {
             // //
@@ -1435,8 +1480,14 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         } else {
             bgColorParam = null;
         }
-        
-        
+
+        //Inject bandIndices read param
+        Parameter<int[]> bandIndicesParam = null;
+        if (bandIndices != null) {
+            bandIndicesParam = (Parameter<int[]>) AbstractGridFormat.BANDS.createValue();
+            bandIndicesParam.setValue(bandIndices);
+        }
+
         // then I try to get read parameters associated with this
         // coverage if there are any.
         GeneralParameterValue[] readParams = (GeneralParameterValue[]) params;
@@ -1457,10 +1508,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             final String readGGName = AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
             final String readInterpolationName = ImageMosaicFormat.INTERPOLATION.getName().toString();
             final String bgColorName = AbstractGridFormat.BACKGROUND_COLOR.getName().toString();
+            final String bandsListName = AbstractGridFormat.BANDS.getName().toString();
             int i = 0;
             boolean foundInterpolation = false;
             boolean foundGG = false;
             boolean foundBgColor = false;
+            boolean foundBandIndices = false;
             for (; i < length; i++) {
                 final String paramName = readParams[i].getDescriptor().getName().toString();
                 if (paramName.equalsIgnoreCase(readGGName) && readGG != null) {
@@ -1473,10 +1526,14 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     ((Parameter) readParams[i]).setValue(bgColor);
                     foundBgColor = true;
                 }
+                else if(paramName.equalsIgnoreCase(bandsListName) && bandIndices != null) {
+                    ((Parameter) readParams[i]).setValue(bandIndices);
+                    foundBandIndices = true;
+                }
             }
             
             // did we find anything?
-            if (!foundGG || !foundInterpolation || !(foundBgColor && bgColor != null)) {
+            if (!foundGG || !foundInterpolation || !(foundBgColor && bgColor != null) || !foundBandIndices) {
                 // add the correct read geometry to the supplied
                 // params since we did not find anything
                 List<GeneralParameterValue> paramList = new ArrayList<GeneralParameterValue>();
@@ -1490,6 +1547,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 if(!foundBgColor && bgColor != null) {
                     paramList.add(bgColorParam);
                 }
+                if(!foundBandIndices && bandIndices != null) {
+                    paramList.add(bandIndicesParam);
+                }
                 readParams = paramList.toArray(new GeneralParameterValue[paramList
                         .size()]);
             }
@@ -1500,6 +1560,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
             if (bgColor != null) {
                 paramList.add(bgColorParam);
+            }
+            if (bandIndices != null) {
+                paramList.add(bandIndicesParam);
             }
             paramList.add(readInterpolation);
             readParams = paramList.toArray(new GeneralParameterValue[paramList.size()]);

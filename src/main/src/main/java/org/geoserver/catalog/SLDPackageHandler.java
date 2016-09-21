@@ -86,7 +86,7 @@ public class SLDPackageHandler extends StyleHandler {
     private File unzipSldPackage(Object input) throws IOException {
         File myTempDir = Files.createTempDir();
 
-        org.geoserver.data.util.IOUtils.decompress((InputStream) input, myTempDir);
+        org.geoserver.util.IOUtils.decompress((InputStream) input, myTempDir);
 
         File[] files = myTempDir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {

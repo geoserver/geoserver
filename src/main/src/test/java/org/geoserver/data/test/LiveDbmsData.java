@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.geoserver.data.util.IOUtils;
+import org.geoserver.util.IOUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.Transaction;

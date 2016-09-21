@@ -15,7 +15,7 @@
   <name>GeoGig GeoServer integration</name>
 
   <properties>
-    <geogig.version>1.0-RC3</geogig.version>
+    <geogig.version>1.0-SNAPSHOT</geogig.version>
     <jline.version>2.12</jline.version>
     <mockito.version>1.8.5</mockito.version>
     <logback.version>1.1.2</logback.version>
@@ -74,7 +74,10 @@
       <artifactId>geogig-postgres</artifactId>
       <version>${geogig.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
     <!--
       The following are geotools dependencies that geogig uses but we declare explicitly
       here with a provided scope, since we excluded all geotools transitive dependencies

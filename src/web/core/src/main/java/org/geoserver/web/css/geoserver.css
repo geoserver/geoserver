@@ -1070,6 +1070,11 @@ height: 2.1em;
 margin: 1.5em 0 2.5em;
 }
 
+.tab-row-compact {
+margin: 1.5em 0 1em;
+}
+
+
 .tab-row ul {
 list-style-type: none;
 margin: 0;

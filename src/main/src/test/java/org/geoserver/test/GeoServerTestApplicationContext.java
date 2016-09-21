@@ -11,7 +11,7 @@ import java.io.IOException;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.io.FileUtils;
-import org.geoserver.data.util.IOUtils;
+import org.geoserver.util.IOUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;

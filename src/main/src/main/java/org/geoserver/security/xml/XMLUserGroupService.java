@@ -20,7 +20,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
@@ -36,6 +35,7 @@ import org.geoserver.security.impl.Util;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.PasswordEncodingType;
 import org.geoserver.security.password.RandomPasswordProvider;
+import org.geoserver.util.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

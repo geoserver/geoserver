@@ -23,6 +23,8 @@ A reference list of functions can be found in the `GeoServer User Manual <../../
 
 The functions can be broken up loosely into categories such as geometric, math, and string functions.
 
+.. _ysld_reference_functions_theming:
+
 Theming functions
 ~~~~~~~~~~~~~~~~~
 

@@ -123,15 +123,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     private WMS wms;
 
-    public GeoServerTileLayer(final PublishedInfo publishedInfo, final GWCConfig configDefaults,
-                              final GridSetBroker gridsets) {
-        this(publishedInfo, configDefaults, gridsets,
-                GeoServerExtensions.bean(LegendSample.class),
-                GeoServerExtensions.bean(WMS.class));
-    }
-
-    public GeoServerTileLayer(final PublishedInfo publishedInfo, final GWCConfig configDefaults,
-            final GridSetBroker gridsets, LegendSample legendSample, WMS wms) {
+    public GeoServerTileLayer(final PublishedInfo publishedInfo, final GWCConfig configDefaults, final GridSetBroker gridsets) {
         checkNotNull(publishedInfo, "publishedInfo");
         checkNotNull(gridsets, "gridsets");
         checkNotNull(configDefaults, "configDefaults");
@@ -139,9 +131,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         this.gridSetBroker = gridsets;
         this.publishedInfo = publishedInfo;
         this.info = TileLayerInfoUtil.loadOrCreate(getPublishedInfo(), configDefaults);
-
-        this.legendSample = legendSample;
-        this.wms = wms;
     }
 
     public GeoServerTileLayer(final PublishedInfo publishedInfo, final GridSetBroker gridsets,
@@ -1305,13 +1294,13 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                 try {
                     gwcLegendInfo.width = GetLegendGraphicRequest.DEFAULT_WIDTH;
                     gwcLegendInfo.height = GetLegendGraphicRequest.DEFAULT_HEIGHT;
-                    Dimension dimension = legendSample.getLegendURLSize(styleInfo);
+                    Dimension dimension = getLegendSample().getLegendURLSize(styleInfo);
                     if (dimension != null) {
                         gwcLegendInfo.width = (int) dimension.getWidth();
                         gwcLegendInfo.height = (int) dimension.getHeight();
                     }
                     gwcLegendInfo.format = GetLegendGraphicRequest.DEFAULT_FORMAT;
-                    if (null == wms.getLegendGraphicOutputFormat(gwcLegendInfo.format)) {
+                    if (null == getWms().getLegendGraphicOutputFormat(gwcLegendInfo.format)) {
                         if (LOGGER.isLoggable(Level.WARNING)) {
                             LOGGER.warning("Default legend format (" + gwcLegendInfo.format +
                                     ")is not supported (jai not available?), can't add LegendURL element");
@@ -1324,8 +1313,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
                 String layerName = layerInfo.prefixedName();
                 Map<String, String> params = params("service", "WMS", "request",
                         "GetLegendGraphic", "format", gwcLegendInfo.format, "width",
-                        String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH), "height",
-                        String.valueOf(GetLegendGraphicRequest.DEFAULT_HEIGHT), "layer", layerName);
+                        String.valueOf(gwcLegendInfo.width), "height",
+                        String.valueOf(gwcLegendInfo.height), "layer", layerName);
                 if (!styleInfo.getName().equals(layerInfo.getDefaultStyle().getName())) {
                     params.put("style", styleInfo.getName());
                 }
@@ -1335,5 +1324,35 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
             }
         }
         return legends;
+    }
+
+    /**
+     * Helper that gets the LegendSample bean from Spring context when needed.
+     */
+    private LegendSample getLegendSample() {
+        if (legendSample == null) {
+            // no need for synchronization the bean is always the same
+            legendSample = GeoServerExtensions.bean(LegendSample.class);
+        }
+        return legendSample;
+    }
+
+    /**
+     * Helper that gets the WMS bean from Spring context when needed.
+     */
+    private WMS getWms() {
+        if (wms == null) {
+            // no need for synchronization the bean is always the same
+            wms = GeoServerExtensions.bean(WMS.class);
+        }
+        return wms;
+    }
+
+    void setLegendSample(LegendSample legendSample) {
+        this.legendSample = legendSample;
+    }
+
+    void setWms(WMS wms) {
+        this.wms = wms;
     }
 }

@@ -7,11 +7,15 @@ package org.geoserver.wms.map;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.geoserver.catalog.*;
+import org.geoserver.catalog.CoverageView.CompositionType;
+import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geoserver.wms.*;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
@@ -25,12 +29,19 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
+import org.geotools.parameter.Parameter;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.resources.coverage.FeatureUtilities;
+import org.geotools.styling.ChannelSelection;
+import org.geotools.styling.ChannelSelectionImpl;
+import org.geotools.styling.RasterSymbolizer;
+import org.geotools.styling.SelectedChannelType;
+import org.geotools.styling.SelectedChannelTypeImpl;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.geotools.util.logging.Logging;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.parameter.GeneralParameterValue;
@@ -47,7 +58,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -439,6 +452,217 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         } catch (ServiceException e) {
             assertTrue(true);
         }
+    }
+
+    /**
+     * Test to check if we can successfully create a direct rendered image by using
+     * a coverage view as a source, and a symbolizer defining which three bands of the
+     * input coverage view can be used for RGB coloring, and with what order.
+     */
+    @Test
+    public void testStyleUsingChannelsFromCoverageView() throws Exception {
+
+        GetMapRequest request = new GetMapRequest();
+        CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
+        ReferencedEnvelope bbox = new ReferencedEnvelope(
+                new Envelope(-116.90673461649858211,
+                        -114.30988665660261461, 32.07093728218402617, 33.89032847348440214), crs);
+        request.setBbox(bbox);
+        request.setSRS("urn:x-ogc:def:crs:EPSG:4326");
+        request.setFormat("image/png");
+
+        final WMSMapContent map = new WMSMapContent(request);
+        map.setMapWidth(300);
+        map.setMapHeight(300);
+        map.setTransparent(false);
+        map.getViewport().setBounds(bbox);
+
+        StyleBuilder styleBuilder = new StyleBuilder();
+
+        Catalog catalog = getCatalog();
+
+        // Source image
+        CoverageInfo ci = catalog.getCoverageByName(
+                SystemTestData.MULTIBAND.getPrefix(), SystemTestData.MULTIBAND.getLocalPart());
+
+        GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+        reader.getCoordinateReferenceSystem();
+
+        Layer sl = new CachedGridReaderLayer(
+                reader,
+                styleBuilder.createStyle(styleBuilder.createRasterSymbolizer()));
+        map.addLayer(sl);
+
+        RenderedImageMap srcImageMap = this.rasterMapProducer.produceMap(map);
+        RenderedImage srcImage = srcImageMap.getImage();
+
+        // CoverageView band creation. We create a coverage view with 6 bands, using
+        // the original bands from the multiband coverage
+
+        //Note that first three bands are int reverse order of the bands of the source coverage
+        final InputCoverageBand ib0 = new InputCoverageBand("multiband", "2");
+        final CoverageBand b0 = new CoverageBand(Collections.singletonList(ib0), "multiband@2",
+                0, CompositionType.BAND_SELECT);
+
+        final InputCoverageBand ib1 = new InputCoverageBand("multiband", "1");
+        final CoverageBand b1 = new CoverageBand(Collections.singletonList(ib1), "multiband@1",
+                1, CompositionType.BAND_SELECT);
+
+        final InputCoverageBand ib2 = new InputCoverageBand("multiband", "0");
+        final CoverageBand b2 = new CoverageBand(Collections.singletonList(ib2), "multiband@0",
+                2, CompositionType.BAND_SELECT);
+
+        final InputCoverageBand ib3 = new InputCoverageBand("multiband", "0");
+        final CoverageBand b3 = new CoverageBand(Collections.singletonList(ib3), "multiband@0",
+                0, CompositionType.BAND_SELECT);
+
+        final InputCoverageBand ib4 = new InputCoverageBand("multiband", "1");
+        final CoverageBand b4 = new CoverageBand(Collections.singletonList(ib4), "multiband@1",
+                1, CompositionType.BAND_SELECT);
+
+        final InputCoverageBand ib5 = new InputCoverageBand("multiband", "2");
+        final CoverageBand b5 = new CoverageBand(Collections.singletonList(ib5), "multiband@2",
+                2, CompositionType.BAND_SELECT);
+
+        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(1);
+        coverageBands.add(b0);
+        coverageBands.add(b1);
+        coverageBands.add(b2);
+
+        coverageBands.add(b3);
+        coverageBands.add(b4);
+        coverageBands.add(b5);
+
+        CoverageView multiBandCoverageView = new CoverageView("multiband_select", coverageBands);
+
+        CoverageStoreInfo storeInfo = catalog.getCoverageStoreByName("multiband");
+        CatalogBuilder builder = new CatalogBuilder(catalog);
+
+        // Reordered bands coverage
+        CoverageInfo coverageInfo = multiBandCoverageView.createCoverageInfo("multiband_select",
+                storeInfo, builder);
+        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        catalog.add(coverageInfo);
+        final LayerInfo layerInfoView = builder.buildLayer(coverageInfo);
+        catalog.add(layerInfoView);
+
+        final Envelope env = ci.boundingBox();
+
+        LOGGER.info("about to create map ctx for BasicPolygons with bounds " + env);
+
+        RasterSymbolizer symbolizer = styleBuilder.createRasterSymbolizer();
+        ChannelSelection cs = new ChannelSelectionImpl();
+        SelectedChannelType red = new SelectedChannelTypeImpl();
+        SelectedChannelType green = new SelectedChannelTypeImpl();
+        SelectedChannelType blue = new SelectedChannelTypeImpl();
+
+        // We want to create an image where the RGB channels are in reverse order
+        // regarding the band order of the input coverage view
+        // Note that channel names start with index "1"
+        red.setChannelName("3");
+        green.setChannelName("2");
+        blue.setChannelName("1");
+
+        cs.setRGBChannels(new SelectedChannelType[]{red, green, blue});
+        symbolizer.setChannelSelection(cs);
+
+        reader = (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
+        reader.getCoordinateReferenceSystem();
+        Layer dl = new CachedGridReaderLayer(
+                reader,
+                styleBuilder.createStyle(symbolizer));
+        map.removeLayer(sl);
+        map.addLayer(dl);
+
+        RenderedImageMap dstImageMap = this.rasterMapProducer.produceMap(map);
+        RenderedImage destImage = dstImageMap.getImage();
+
+        int dWidth = destImage.getWidth();
+        int dHeight = destImage.getHeight();
+
+        int[] destImageRowBand0 = new int[dWidth*dHeight];
+        int[] destImageRowBand1 = new int[destImageRowBand0.length];
+        int[] destImageRowBand2 = new int[destImageRowBand0.length];
+        destImage.getData().getSamples(0, 0, dWidth, dHeight, 0, destImageRowBand0);
+        destImage.getData().getSamples(0, 0, dWidth, dHeight, 1, destImageRowBand1);
+        destImage.getData().getSamples(0, 0, dWidth, dHeight, 2, destImageRowBand2);
+
+        int sWidth = srcImage.getWidth();
+        int sHeight = srcImage.getHeight();
+
+        int[] srcImageRowBand0 = new int[sWidth*sHeight];
+        int[] srcImageRowBand2 = new int[srcImageRowBand0.length];
+
+        srcImage.getData().getSamples(0, 0, sWidth, sHeight, 0, srcImageRowBand0);
+
+        // Source and result image first bands should be the same. We have reversed the order
+        // of the three first bands of the source coverage and then we re-reversed the three
+        // first bands using channel selection on the raster symbolizer used for rendering.
+        Assert.assertTrue(Arrays.equals(destImageRowBand0,srcImageRowBand0));
+        //Result band 0 should not be equal to source image band 2
+        Assert.assertFalse(Arrays.equals(destImageRowBand0,srcImageRowBand2));
+
+        srcImageMap.dispose();
+        dstImageMap.dispose();
+
+        map.dispose();
+    }
+
+    /**
+     * Test to check the case where a {@link org.geotools.coverage.grid.io.AbstractGridFormat#BANDS}
+     * reading parameter is passed to a coverage reader that does not support it. Reader should 
+     * ignore it, resulting coverage should not be affected.
+     */
+    @Test
+    public void testBandSelectionToNormalCoverage() throws Exception {
+
+        GetMapRequest request = new GetMapRequest();
+        CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
+        ReferencedEnvelope bbox = new ReferencedEnvelope(
+                new Envelope(-116.90673461649858211,
+                        -114.30988665660261461, 32.07093728218402617, 33.89032847348440214), crs);
+        request.setBbox(bbox);
+        request.setSRS("urn:x-ogc:def:crs:EPSG:4326");
+        request.setFormat("image/png");
+
+        final WMSMapContent map = new WMSMapContent(request);
+        map.setMapWidth(300);
+        map.setMapHeight(300);
+        map.setBgColor(Color.red);
+        map.setTransparent(false);
+        map.getViewport().setBounds(bbox);
+
+        StyleBuilder styleBuilder = new StyleBuilder();
+        Catalog catalog = getCatalog();
+
+        CoverageInfo ci = catalog.getCoverageByName(
+                SystemTestData.MULTIBAND.getPrefix(), SystemTestData.MULTIBAND.getLocalPart());
+
+        GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+        reader.getCoordinateReferenceSystem();
+
+        final Envelope env = ci.boundingBox();
+
+        final int[] bandIndices = new int[]{1,2,0,2,1};
+        //Inject bandIndices read param
+        Parameter<int[]> bandIndicesParam =
+        		(Parameter<int[]>) AbstractGridFormat.BANDS.createValue();
+        bandIndicesParam.setValue(bandIndices);
+        List<GeneralParameterValue> paramList = new ArrayList<GeneralParameterValue>();
+        paramList.add(bandIndicesParam);
+        GeneralParameterValue[] readParams = paramList.toArray(new GeneralParameterValue[paramList.size()]);
+
+        Layer sl = new CachedGridReaderLayer(
+                reader,
+                styleBuilder.createStyle(styleBuilder.createRasterSymbolizer()),
+                readParams
+                );
+        map.addLayer(sl);
+
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        ImageAssert.assertEquals(new File(
+                "src/test/resources/org/geoserver/wms/map/direct-raster-expected.tif"), imageMap.getImage(), 0);
+        imageMap.dispose();
     }
 
     /**

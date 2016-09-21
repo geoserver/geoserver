@@ -46,4 +46,4 @@ pool.validationQuery=SELECT now()
 deleteDestinationOnRename=true
 
 # leave the following directories on the filesystem -- no spaces!
-ignoreDirs=data,jdbcstore,workspaces,layergroups,temp,tmp
+ignoreDirs=data,jdbcstore,jdbcconfig,temp,tmp,logs

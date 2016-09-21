@@ -24,6 +24,7 @@ import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.PanelCachingTab;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
@@ -45,7 +46,6 @@ import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
-import org.geoserver.web.data.style.StyleDetachableModel;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -53,6 +53,11 @@ import org.xml.sax.SAXParseException;
 
 /**
  * Base page for creating/editing styles
+ * <p>
+ * WARNING: one crucial aspect of this page is its ability to not loose edits when one switches from
+ * one tab to the other. I did not find any effective way to unit test this, so _please_, if you do
+ * modify anything in this class (especially the models), manually retest that the edits are not
+ * lost on tab switch.
  */
 @SuppressWarnings("serial")
 public abstract class AbstractStylePage extends GeoServerSecuredPage {
@@ -120,12 +125,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             styleModel = new CompoundPropertyModel<StyleInfo>(getCatalog().getFactory().createStyle());
             styleModel.getObject().setName("");
             styleModel.getObject().setLegend(getCatalog().getFactory().createLegend());
-            add(new Label("stylename",""));
         } else {
-            add(new Label("stylename", 
-                    (style.getWorkspace() == null ? "" : style.getWorkspace().getName() + ":")
-                    + style.getName()));
-            styleModel = new CompoundPropertyModel<StyleInfo>(new StyleDetachableModel(style));
+            styleModel = new CompoundPropertyModel<StyleInfo>(style);
         }
         
         /* init main form */
@@ -230,7 +231,31 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             }
         }
         
-        tabbedPanel = new AjaxTabbedPanel<ITab>("context", tabs);
+        tabbedPanel = new AjaxTabbedPanel<ITab>("context", tabs) {
+            protected String getTabContainerCssClass()
+            {
+                return "tab-row tab-row-compact";
+            }
+            @Override
+            protected WebMarkupContainer newLink(String linkId, final int index) {
+                /*
+                 * Use a submit link here in order to save the state of the current tab to the model
+                 * setDefaultFormProcessing(false) is used so that we do not do a full submit 
+                 * (with validation + saving to the catalog)
+                 */
+                AjaxSubmitLink link =  new AjaxSubmitLink(linkId) {
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        setSelectedTab(index);
+                        target.add(AbstractStylePage.this);
+                    }
+                };
+                link.setDefaultFormProcessing(false);
+                return link;
+            }
+        };
         
         styleForm.add(tabbedPanel);
         
@@ -259,11 +284,19 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 }
                 target.add(AbstractStylePage.this);
             }
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                target.add(AbstractStylePage.this);
+            }
         });
         add(new AjaxSubmitLink("submit", styleForm) {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 doReturn(StylePage.class);
+            }
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                target.add(AbstractStylePage.this);
             }
         });
         Link<StylePage> cancelLink = new Link<StylePage>("cancel") {
@@ -275,7 +308,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         add(cancelLink);
         
     }
-
+    
     StyleHandler styleHandler() {
         String format = styleModel.getObject().getFormat();
         return Styles.handler(format);

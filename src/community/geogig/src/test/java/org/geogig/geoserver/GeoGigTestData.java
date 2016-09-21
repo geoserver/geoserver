@@ -49,7 +49,6 @@ import org.locationtech.geogig.cli.test.functional.CLITestContextBuilder;
 import org.locationtech.geogig.data.FeatureBuilder;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
-import org.locationtech.geogig.model.NodeRef;
 import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.model.RevFeature;
 import org.locationtech.geogig.model.RevFeatureType;
@@ -68,6 +67,7 @@ import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.repository.Context;
 import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.GlobalContextBuilder;
+import org.locationtech.geogig.repository.NodeRef;
 import org.locationtech.geogig.repository.WorkingTree;
 import org.locationtech.geogig.test.TestPlatform;
 import org.opengis.feature.Feature;
@@ -95,13 +95,23 @@ public class GeoGigTestData extends ExternalResource {
 
     private File repoDir;
 
+    private final File tempRoot;
+
+    public GeoGigTestData(File tempRoot) {
+        this.tempRoot = tempRoot;
+    }
+
+    public GeoGigTestData() {
+        this(null);
+    }
+
     @Override
     protected void before() throws Throwable {
         setUp("testrepo");
     }
 
     public void setUp(String repoName) throws Exception {
-        tmpFolder = new TemporaryFolder();
+        tmpFolder = new TemporaryFolder(tempRoot);
         tmpFolder.create();
         this.geogig = createRepository(repoName);
     }

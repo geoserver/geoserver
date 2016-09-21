@@ -109,7 +109,13 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         add(new ExternalLink("faviconLink", faviconUrl, null));
 	    
 	    // page title
-	    add(new Label("pageTitle", getPageTitle()));
+	    add(new Label("pageTitle", new LoadableDetachableModel<String>() {
+
+            @Override
+            protected String load() {
+                return getPageTitle();
+            }
+        }));
 
         // login form
         WebMarkupContainer loginForm = new WebMarkupContainer("loginform") {
@@ -301,8 +307,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 	 */
 	String getPageTitle() {
 	    try {
-	        ParamResourceModel model = new ParamResourceModel("title", this);
-	        return "GeoServer: " + model.getString();
+	        return "GeoServer: " + getTitle();
 	    } catch(Exception e) {
 	        LOGGER.warning(getClass().getSimpleName() + " does not have a title set");
 	    }

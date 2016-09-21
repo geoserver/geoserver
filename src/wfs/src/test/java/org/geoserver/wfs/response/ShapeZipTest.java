@@ -599,7 +599,7 @@ public class ShapeZipTest extends WFSTestSupport {
         if (file.exists()) {
             file.delete();
         }
-        org.geoserver.data.util.IOUtils.copy(input, file);
+        org.geoserver.util.IOUtils.copy(input, file);
     }
 
     private void setupESRIFormatByDefault(GeoServer geoServer, Boolean value) throws IOException {

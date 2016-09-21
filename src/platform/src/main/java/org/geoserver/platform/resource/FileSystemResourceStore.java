@@ -5,6 +5,8 @@
  */
 package org.geoserver.platform.resource;
 
+import static org.geoserver.util.IOUtils.rename;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -476,15 +478,24 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public boolean renameTo(Resource dest) {
-            if(dest instanceof FileSystemResource) {
-                return file.renameTo(((FileSystemResource)dest).file);
-            } else if(dest instanceof Files.ResourceAdaptor) {
-                    return file.renameTo(((Files.ResourceAdaptor)dest).file);
-            } else {
-                return Resources.renameByCopy(this, dest);
+            if (dest.parent().path().contains(path())) {
+                LOGGER.log(Level.FINE, "Cannot rename a resource to a descendant of itself");
+                return false;
             }
+            try {
+                if(dest instanceof FileSystemResource) {
+                    rename(file, ((FileSystemResource)dest).file);
+                } else if(dest instanceof Files.ResourceAdaptor) {
+                    rename(file, ((Files.ResourceAdaptor)dest).file);
+                } else {
+                    return Resources.renameByCopy(this, dest);
+                }
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, "Failed to rename file resource "+path+" to "+dest.path(), e);
+                return false;
+            }
+            return true;
         }
-
     }
 
     @Override

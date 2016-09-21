@@ -499,7 +499,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         ZipFile zipFile = null;
         try {
             // create the kmz
-            File tempDir = org.geoserver.data.util.IOUtils.createRandomDirectory("./target",
+            File tempDir = org.geoserver.util.IOUtils.createRandomDirectory("./target",
                     "kmplacemark", "test");
             tempDir.deleteOnExit();
 

@@ -50,7 +50,7 @@ public class GeoServerEnvironment {
      * Default to FALSE
      */
     public final static boolean ALLOW_ENV_PARAMETRIZATION = Boolean
-            .valueOf(System.getProperty("ALLOW_ENV_PARAMETRIZATION", "true"));
+            .valueOf(System.getProperty("ALLOW_ENV_PARAMETRIZATION", "false"));
 
     private static final String PROPERTYFILENAME = "geoserver-environment.properties";
 

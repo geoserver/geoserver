@@ -779,14 +779,14 @@ public class GeoServerTileLayerTest {
         assertThat(legendsInfo.get("default_style").height, is(150));
         assertThat(legendsInfo.get("default_style").format, is("image/png"));
         assertThat(legendsInfo.get("default_style").legendUrl, is("http://localhost:8080/geoserver/ows?service=" +
-                "WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=workspace%3AMockLayerInfoName"));
+                "WMS&request=GetLegendGraphic&format=image%2Fpng&width=120&height=150&layer=workspace%3AMockLayerInfoName"));
         // alternateStyle-1
         assertThat(legendsInfo.get("alternateStyle-1"), notNullValue());
         assertThat(legendsInfo.get("alternateStyle-1").width, is(120));
         assertThat(legendsInfo.get("alternateStyle-1").height, is(150));
         assertThat(legendsInfo.get("alternateStyle-1").format, is("image/png"));
         assertThat(legendsInfo.get("alternateStyle-1").legendUrl, is("http://localhost:8080/geoserver/ows?service" +
-                "=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=workspace%3AMockLayerInfoName&style=alternateStyle-1"));
+                "=WMS&request=GetLegendGraphic&format=image%2Fpng&width=120&height=150&layer=workspace%3AMockLayerInfoName&style=alternateStyle-1"));
         // alternateStyle-2
         assertThat(legendsInfo.get("alternateStyle-2"), notNullValue());
         assertThat(legendsInfo.get("alternateStyle-2").width, is(150));

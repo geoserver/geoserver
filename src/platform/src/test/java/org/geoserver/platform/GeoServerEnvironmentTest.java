@@ -6,11 +6,14 @@ package org.geoserver.platform;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
 import org.easymock.EasyMock;
+import org.geotools.util.logging.Logging;
 import org.junit.Assert;
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 import junit.framework.TestCase;
@@ -22,10 +25,16 @@ import junit.framework.TestCase;
  */
 public class GeoServerEnvironmentTest extends TestCase {
 
+    /**
+     * logger
+     */
+    protected static final Logger LOGGER = Logging.getLogger("org.geoserver.platform");
+    
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         System.setProperty("TEST_SYS_PROPERTY", "ABC");
-        System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
+        System.setProperty("ALLOW_ENV_PARAMETRIZATION", "false");
 
         ServletContext context = EasyMock.createMock(ServletContext.class);
         EasyMock.expect(context.getInitParameter("GEOSERVER_REQUIRE_FILE")).andReturn(null);
@@ -63,16 +72,18 @@ public class GeoServerEnvironmentTest extends TestCase {
         gsext.setApplicationContext(appContext);
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         System.clearProperty("TEST_SYS_PROPERTY");
         System.clearProperty("ALLOW_ENV_PARAMETRIZATION");
     }
 
+    @Test
     public void testSystemProperty() {
         // check for a property we did set up in the setUp
         GeoServerEnvironment genv = new GeoServerEnvironment();
-        assertEquals("ABC", genv.resolveValue("${TEST_SYS_PROPERTY}"));
+        LOGGER.info("GeoServerEnvironment = " + GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION);
 
         assertEquals("ABC", genv.resolveValue("${TEST_SYS_PROPERTY}"));
         assertEquals("${TEST_PROPERTY}", genv.resolveValue("${TEST_PROPERTY}"));

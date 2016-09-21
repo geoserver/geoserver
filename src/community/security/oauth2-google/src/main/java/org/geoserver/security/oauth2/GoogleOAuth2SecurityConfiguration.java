@@ -12,12 +12,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.AccessTokenProvider;
 import org.springframework.security.oauth2.client.token.AccessTokenProviderChain;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsAccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
+import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.implicit.ImplicitAccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordAccessTokenProvider;
+import org.springframework.security.oauth2.common.AuthenticationScheme;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 
 /**
@@ -64,6 +67,20 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableOAuth2Client
 class GoogleOAuth2SecurityConfiguration extends GeoServerOAuth2SecurityConfiguration {
 
+    @Bean
+    public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
+        AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
+        details.setId("oauth2-client");
+
+        details.setGrantType("authorization_code");
+        details.setTokenName("authorization_code");
+        details.setUseCurrentUri(false);
+        details.setAuthenticationScheme(AuthenticationScheme.query);
+        details.setClientAuthenticationScheme(AuthenticationScheme.form);
+
+        return details;
+    }
+    
     /**
      * Must have "session" scope
      */

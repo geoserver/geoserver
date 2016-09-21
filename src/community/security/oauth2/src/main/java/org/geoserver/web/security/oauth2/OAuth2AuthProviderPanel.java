@@ -6,6 +6,7 @@ package org.geoserver.web.security.oauth2;
 
 import java.util.logging.Logger;
 
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
@@ -37,6 +38,7 @@ public class OAuth2AuthProviderPanel
         this.dialog = (GeoServerDialog) get("dialog");
         this.model = model;
 
+        add(new HelpLink("enableRedirectAuthenticationEntryPointHelp", this).setDialog(dialog));
         add(new HelpLink("connectionParametersHelp", this).setDialog(dialog));
         add(new HelpLink("accessTokenUriHelp", this).setDialog(dialog));
         add(new HelpLink("userAuthorizationUriHelp", this).setDialog(dialog));
@@ -47,6 +49,7 @@ public class OAuth2AuthProviderPanel
         add(new HelpLink("cliendIdHelp", this).setDialog(dialog));
         add(new HelpLink("clientSecretHelp", this).setDialog(dialog));
 
+        add(new CheckBox("enableRedirectAuthenticationEntryPoint"));
         add(new TextField<String>("accessTokenUri"));
         add(new TextField<String>("userAuthorizationUri"));
         add(new TextField<String>("redirectUri"));

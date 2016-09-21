@@ -53,12 +53,14 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticatedUserNameFilter
         implements GeoServerAuthenticationFilter, LogoutHandler {
 
+    public static final String FILTER_LOGIN_ENDPOINT = "/j_spring_outh2_login";
+
     OAuth2FilterConfig filterConfig;
 
     OAuth2RestOperations restTemplate;
 
     OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
-            "/");
+            FILTER_LOGIN_ENDPOINT);
 
     ResourceServerTokenServices tokenServices;
 
@@ -90,7 +92,10 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
                         .append(filterConfig.getScopes().replace(",", "%20")).append("&")
                         .append("redirect_uri=").append(filterConfig.getRedirectUri());
 
-                response.sendRedirect(loginUri.toString());
+                if (filterConfig.getEnableRedirectAuthenticationEntryPoint()
+                        || request.getRequestURI().endsWith(FILTER_LOGIN_ENDPOINT)) {
+                    response.sendRedirect(loginUri.toString());
+                }
             }
         };
     }
@@ -170,12 +175,10 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
         try {
             principal = getPreAuthenticatedPrincipal(request, response);
         } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            LOGGER.log(Level.FINE, e1.getMessage(), e1);
             principal = null;
         } catch (ServletException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            LOGGER.log(Level.FINE, e1.getMessage(), e1);
             principal = null;
         }
 
@@ -248,8 +251,6 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
             if (e instanceof UserRedirectRequiredException) {
                 // Intercepting a "UserRedirectRequiredException" and redirect to the OAuth2 Provider login URI
                 this.aep.commence(req, resp, null);
-            } else {
-                throw e;
             }
         }
 
@@ -292,7 +293,7 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
         details.setUserAuthorizationUri(filterConfig.getUserAuthorizationUri());
         details.setPreEstablishedRedirectUri(filterConfig.getRedirectUri());
         ((GeoServerOAuthRemoteTokenServices) this.tokenServices)
-                .setCheckTokenEndpointUrl("https://www.googleapis.com/oauth2/v1/tokeninfo");
+                .setCheckTokenEndpointUrl(filterConfig.getCheckTokenEndpointUrl());
 
         details.setScope(parseScopes(filterConfig.getScopes()));
     }

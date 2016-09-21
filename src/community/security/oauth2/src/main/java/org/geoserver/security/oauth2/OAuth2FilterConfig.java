@@ -19,17 +19,19 @@ public class OAuth2FilterConfig extends PreAuthenticatedUserNameFilterConfig {
 
     private String clientSecret;
 
-    private String accessTokenUri;
+    private String accessTokenUri = "https://accounts.google.com/o/oauth2/token";
 
-    private String userAuthorizationUri;
+    private String userAuthorizationUri = "https://accounts.google.com/o/oauth2/auth";
 
     private String redirectUri = "http://localhost:8080/geoserver";
 
-    private String checkTokenEndpointUrl;
+    private String checkTokenEndpointUrl = "https://www.googleapis.com/oauth2/v1/tokeninfo";
 
-    private String logoutUri;
+    private String logoutUri = "https://accounts.google.com/logout";
 
     private String scopes;
+    
+    private Boolean enableRedirectAuthenticationEntryPoint = false;
 
     @Override
     public boolean providesAuthenticationEntryPoint() {
@@ -146,6 +148,21 @@ public class OAuth2FilterConfig extends PreAuthenticatedUserNameFilterConfig {
      */
     public void setScopes(String scopes) {
         this.scopes = scopes;
+    }
+
+    /**
+     * @return the enableRedirectAuthenticationEntryPoint
+     */
+    public Boolean getEnableRedirectAuthenticationEntryPoint() {
+        return enableRedirectAuthenticationEntryPoint;
+    }
+
+    /**
+     * @param enableRedirectAuthenticationEntryPoint the enableRedirectAuthenticationEntryPoint to set
+     */
+    public void setEnableRedirectAuthenticationEntryPoint(
+            Boolean enableRedirectAuthenticationEntryPoint) {
+        this.enableRedirectAuthenticationEntryPoint = enableRedirectAuthenticationEntryPoint;
     }
 
 }

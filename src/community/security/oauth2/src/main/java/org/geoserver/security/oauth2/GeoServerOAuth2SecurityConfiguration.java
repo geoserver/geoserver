@@ -8,13 +8,10 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
-import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
-import org.springframework.security.oauth2.common.AuthenticationScheme;
 
 /**
  * Base OAuth2 Configuration Class. Each OAuth2 specific Extension must implement its own {@link OAuth2RestTemplate}
@@ -31,6 +28,8 @@ public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2Secu
     private AccessTokenRequest accessTokenRequest;
 
     /**
+     * Returns the resource bean containing the Access Token Request info.
+     * 
      * @return the accessTokenRequest
      */
     public AccessTokenRequest getAccessTokenRequest() {
@@ -38,25 +37,21 @@ public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2Secu
     }
 
     /**
+     * Set the accessTokenRequest property.
+     * 
      * @param accessTokenRequest the accessTokenRequest to set
      */
     public void setAccessTokenRequest(AccessTokenRequest accessTokenRequest) {
         this.accessTokenRequest = accessTokenRequest;
     }
 
-    @Bean
-    public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
-        AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
-        details.setId("google-oauth-client");
-
-        details.setGrantType("authorization_code");
-        details.setTokenName("authorization_code");
-        details.setUseCurrentUri(false);
-        details.setAuthenticationScheme(AuthenticationScheme.query);
-        details.setClientAuthenticationScheme(AuthenticationScheme.form);
-
-        return details;
-    }
-
+    /**
+     * Details for an OAuth2-protected resource.
+     */
+    public abstract OAuth2ProtectedResourceDetails geoServerOAuth2Resource();
+    
+    /**
+     * Rest template that is able to make OAuth2-authenticated REST requests with the credentials of the provided resource.
+     */
     public abstract OAuth2RestTemplate geoServerOauth2RestTemplate();
 }

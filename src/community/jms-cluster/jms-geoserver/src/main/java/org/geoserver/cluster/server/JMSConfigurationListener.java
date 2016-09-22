@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -121,44 +121,61 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer imple
     }
 
     @Override
+    public void handlePostServiceChange(ServiceInfo service) {
+        // this handler is invoked when a new service is added
+        ServiceInfo finalService = ModificationProxy.unwrap(service);
+        JMSServiceModifyEvent event = new JMSServiceModifyEvent(finalService, JMSServiceModifyEvent.Type.ADDED);
+        handleServiceEvent(event);
+    }
+
+    @Override
+    public void handleServiceRemove(ServiceInfo service) {
+        // this handler is invoked when a service is removed
+        ServiceInfo finalService = ModificationProxy.unwrap(service);
+        JMSServiceModifyEvent event = new JMSServiceModifyEvent(finalService, JMSServiceModifyEvent.Type.REMOVED);
+        handleServiceEvent(event);
+    }
+
+    @Override
     public void handleServiceChange(ServiceInfo service, List<String> propertyNames,
-            List<Object> oldValues, List<Object> newValues) {
+                                    List<Object> oldValues, List<Object> newValues) {
+        // this handler is invoked when a service configuration is modified
+        ServiceInfo finalService = ModificationProxy.unwrap(service);
+        JMSServiceModifyEvent event = new JMSServiceModifyEvent(finalService, propertyNames, oldValues, newValues);
+        handleServiceEvent(event);
+    }
 
+    /**
+     * Helper method that publish a service modified event.
+     */
+    private void handleServiceEvent(JMSServiceModifyEvent event) {
+        // if possible log about the received event
         if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-            LOGGER.fine("Incoming event of type");
+            LOGGER.fine(String.format("Incoming service '%s' modified event of type '%s'.",
+                    event.getSource().getId(), event.getEventType()));
         }
-
-        // skip incoming events if producer is not Enabled
+        // skip incoming events if producer is not enabled
         if (!isEnabled()) {
             if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-                LOGGER.fine("skipping incoming event: context is not initted");
+                LOGGER.fine(String.format(
+                        "Skipping incoming service '%s' modified event of type '%s' since producer is not enabled.",
+                        event.getSource().getId(), event.getEventType()));
             }
             return;
         }
-
+        // let's publish this event
         try {
-            // update properties
-            final Properties options = getProperties();
-            // propagate the event
-            jmsPublisher.publish(getTopic(), getJmsTemplate(), options,
-                    new JMSServiceModifyEvent(ModificationProxy.unwrap(service), propertyNames,
-                            oldValues, newValues));
-
-        } catch (Exception e) {
-            if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) {
-                LOGGER.severe(e.getLocalizedMessage());
-            }
+            jmsPublisher.publish(getTopic(), getJmsTemplate(), getProperties(), event);
+        } catch (Exception exception) {
+            // failed to publish event
+            LOGGER.severe(String.format("Error publishing service '%s' modified event of type '%s': %s",
+                    event.getSource().getId(), event.getEventType(), exception.getLocalizedMessage()));
         }
     }
 
     @Override
     public void handlePostLoggingChange(LoggingInfo logging) {
         // send(xstream.toXML(logging), JMSConfigEventType.LOGGING_CHANGE);
-    }
-
-    @Override
-    public void handlePostServiceChange(ServiceInfo service) {
-        // send(xstream.toXML(service), JMSConfigEventType.POST_SERVICE_CHANGE);
     }
 
     @Override
@@ -207,12 +224,6 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer imple
 
     @Override
     public void handleSettingsRemoved(SettingsInfo settings) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void handleServiceRemove(ServiceInfo service) {
         // TODO Auto-generated method stub
 
     }

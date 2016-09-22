@@ -135,19 +135,52 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         new CatalogBuilder(catalog).updateCoverageStore(store, coverageStore);
         assertNull(store.getId());
 
-        tester.startPage(new CoverageStoreEditPage(store));
-        tester.assertNoErrorMessage();
+        try {
+            tester.startPage(new CoverageStoreEditPage(store));
+            tester.assertNoErrorMessage();
+            
+            FormTester form = tester.newFormTester("rasterStoreForm");
+            form.setValue("namePanel:border:border_body:paramValue", "foo");
+            form.submit();
+            tester.clickLink("rasterStoreForm:save");
+            tester.assertNoErrorMessage();
+    
+            assertNotNull(store.getId());
+            assertEquals("foo", store.getName());
+            assertNotNull(catalog.getStoreByName(coverageStore.getName(), CoverageStoreInfo.class));
+            assertNotNull(catalog.getStoreByName("foo", CoverageStoreInfo.class));
+        } finally {
+            catalog.remove(store);
+        }
+    }
+    
+    @Test
+    public void testCoverageStoreEdit() throws Exception {
+        final Catalog catalog = getCatalog();
+        CoverageStoreInfo store = catalog.getFactory().createCoverageStore();
+        new CatalogBuilder(catalog).updateCoverageStore(store, coverageStore);
+        assertNull(store.getId());
         
-        FormTester form = tester.newFormTester("rasterStoreForm");
-        form.setValue("namePanel:border:border_body:paramValue", "foo");
-        form.submit();
-        tester.clickLink("rasterStoreForm:save");
-        tester.assertNoErrorMessage();
+        try {
+            tester.startPage(new CoverageStoreEditPage(store));
+            tester.assertNoErrorMessage();
+            
+            FormTester form = tester.newFormTester("rasterStoreForm");
+            form.setValue("namePanel:border:border_body:paramValue", "foo");
+            form.submit();
+            tester.clickLink("rasterStoreForm:save");
+            tester.assertNoErrorMessage();
 
-        assertNotNull(store.getId());
-        assertEquals("foo", store.getName());
-        assertNotNull(catalog.getStoreByName(coverageStore.getName(), CoverageStoreInfo.class));
-        assertNotNull(catalog.getStoreByName("foo", CoverageStoreInfo.class));
+            assertNotNull(store.getId());
 
+            CoverageStoreInfo expandedStore = catalog.getResourcePool().clone(store, true);
+
+            assertNotNull(expandedStore.getId());
+            assertNotNull(expandedStore.getCatalog());
+            
+            catalog.validate(expandedStore, false).throwIfInvalid();
+        } finally {
+            catalog.remove(store);
+        }
     }
 }

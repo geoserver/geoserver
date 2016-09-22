@@ -1487,13 +1487,12 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty(
                 AppSchemaDataAccessConfigurator.PROPERTY_ENCODE_NESTED_FILTERS, "false");
         try {
+            assertFalse(AppSchemaDataAccessConfigurator.shouldEncodeNestedFilters());
+
             FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName("gsml", "MappedFeature");
             FeatureSource fs = ftInfo.getFeatureSource(new NullProgressListener(), null);
             AppSchemaDataAccess da = (AppSchemaDataAccess) fs.getDataStore();
             FeatureTypeMapping rootMapping = da.getMappingByNameOrElement(ftInfo.getQualifiedName());
-
-            // make sure nested filters encoding is enabled, otherwise skip test
-            assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
             JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
             NestedFilterToSQL nestedFilterToSQL = createNestedFilterEncoder(rootMapping);

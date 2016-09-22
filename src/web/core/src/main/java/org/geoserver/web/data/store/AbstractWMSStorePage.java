@@ -177,51 +177,6 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
     protected abstract void onSave(WMSStoreInfo info, AjaxRequestTarget target)
             throws IllegalArgumentException;
 
-    protected void clone(final WMSStoreInfo source, WMSStoreInfo target) {
-        this.clone(source, target, true);
-    }
-    
-    protected void clone(final WMSStoreInfo source, WMSStoreInfo target, boolean allowEnvParametrization) {
-        target.setDescription(source.getDescription());
-        target.setEnabled(source.isEnabled());
-        target.setName(source.getName());
-        target.setType(source.getType());
-        target.setWorkspace(source.getWorkspace());
-        
-        if (!allowEnvParametrization) {
-            setConnectionParameters(source, target);            
-        } else {
-            // Resolve GeoServer Environment placeholders
-            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
-            
-            if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-                target.setCapabilitiesURL((String) gsEnvironment.resolveValue(source.getCapabilitiesURL()));
-                target.setUsername((String) gsEnvironment.resolveValue(source.getUsername()));
-                target.setPassword((String) gsEnvironment.resolveValue(source.getPassword()));
-                target.setUseConnectionPooling(source.isUseConnectionPooling());
-                target.setMaxConnections(source.getMaxConnections());
-                target.setConnectTimeout(source.getConnectTimeout());
-                target.setReadTimeout(source.getReadTimeout());
-            } else {
-                setConnectionParameters(source, target);
-            }
-        }        
-    }
-
-    /**
-     * @param source
-     * @param target
-     */
-    private void setConnectionParameters(final WMSStoreInfo source, WMSStoreInfo target) {
-        target.setCapabilitiesURL(source.getCapabilitiesURL());
-        target.setUsername(source.getUsername());
-        target.setPassword(source.getPassword());
-        target.setUseConnectionPooling(source.isUseConnectionPooling());
-        target.setMaxConnections(source.getMaxConnections());
-        target.setConnectTimeout(source.getConnectTimeout());
-        target.setReadTimeout(source.getReadTimeout());
-    }
-
     @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.WORKSPACE_ADMIN;

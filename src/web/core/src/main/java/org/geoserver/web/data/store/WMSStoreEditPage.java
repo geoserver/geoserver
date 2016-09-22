@@ -66,10 +66,10 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
      */
     protected void doSaveStore(WMSStoreInfo info) {
         Catalog catalog = getCatalog();
-        WMSStoreInfo expandedStore = catalog.getFactory().createWebMapServer();
-        
+
         // Cloning into "expandedStore" through the super class "clone" method
-        clone(info, expandedStore);
+        WMSStoreInfo expandedStore = catalog.getResourcePool().clone(info, true); 
+        
         getCatalog().validate(expandedStore, false).throwIfInvalid();
         
         getCatalog().save(info);

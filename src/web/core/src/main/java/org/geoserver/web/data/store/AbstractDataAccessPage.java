@@ -281,38 +281,6 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
         return null;
     }
 
-    protected void clone(final DataStoreInfo source, DataStoreInfo target) {
-        this.clone(source, target, true);
-    }
-    
-    protected void clone(final DataStoreInfo source, DataStoreInfo target, boolean allowEnvParametrization) {
-        target.setDescription(source.getDescription());
-        target.setEnabled(source.isEnabled());
-        target.setName(source.getName());
-        target.setWorkspace(source.getWorkspace());
-        target.setType(source.getType());
-
-        target.getConnectionParameters().clear();
-        
-        if (!allowEnvParametrization) {
-            target.getConnectionParameters().putAll(source.getConnectionParameters());
-        } else {
-            // Resolve GeoServer Environment placeholders
-            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
-            
-            for (Entry<String, Serializable> param : source.getConnectionParameters().entrySet()) {
-                String key = param.getKey();
-                Object value = param.getValue();
-                
-                if (gsEnvironment != null && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
-                    value = gsEnvironment.resolveValue(value);
-                }
-                
-                target.getConnectionParameters().put(key, (Serializable) value);
-            }
-        }
-    }
-
     @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.WORKSPACE_ADMIN;

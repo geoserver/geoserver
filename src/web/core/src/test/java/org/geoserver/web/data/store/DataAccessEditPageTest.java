@@ -16,6 +16,7 @@ import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -36,6 +37,8 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
 
     @Before
     public void init() {
+        login();
+        
         store = getCatalog().getStoreByName(MockData.CITE_PREFIX, DataStoreInfo.class);
         tester.startPage(new DataAccessEditPage(store.getId()));
     }
@@ -163,7 +166,59 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
 
         assertNull(ds.getId());
         
-        tester.startPage(new DataAccessEditPage(ds));
-        tester.assertNoErrorMessage();
+        try {
+            tester.startPage(new DataAccessEditPage(ds));
+            tester.assertNoErrorMessage();
+            
+            FormTester form = tester.newFormTester("dataStoreForm");
+            form.select("workspacePanel:border:border_body:paramValue", 4);
+            Component wsDropDown = tester.getComponentFromLastRenderedPage("dataStoreForm:workspacePanel:border:border_body:paramValue");
+            tester.executeAjaxEvent(wsDropDown, "change");
+            form.setValue("dataStoreNamePanel:border:border_body:paramValue", "foo");
+            form.setValue("parametersPanel:parameters:0:parameterPanel:border:border_body:paramValue", "/foo");
+            tester.clickLink("dataStoreForm:save", true);
+            tester.assertNoErrorMessage();
+            catalog.save(ds);
+    
+            assertNotNull(ds.getId());
+            assertEquals("foo", ds.getName());
+        } finally {
+            catalog.remove(ds);
+        }
+    }
+    
+    @Test
+    public void testDataStoreEdit() throws Exception {
+        final Catalog catalog = getCatalog();
+        DataStoreInfo ds = catalog.getFactory().createDataStore();
+        new CatalogBuilder(catalog).updateDataStore(ds, store);
+
+        assertNull(ds.getId());
+        
+        try {
+            tester.startPage(new DataAccessEditPage(ds));
+            tester.assertNoErrorMessage();
+            
+            FormTester form = tester.newFormTester("dataStoreForm");
+            form.select("workspacePanel:border:border_body:paramValue", 4);
+            Component wsDropDown = tester.getComponentFromLastRenderedPage("dataStoreForm:workspacePanel:border:border_body:paramValue");
+            tester.executeAjaxEvent(wsDropDown, "change");
+            form.setValue("dataStoreNamePanel:border:border_body:paramValue", "foo");
+            form.setValue("parametersPanel:parameters:0:parameterPanel:border:border_body:paramValue", "/foo");
+            tester.clickLink("dataStoreForm:save", true);
+            tester.assertNoErrorMessage();
+            catalog.save(ds);
+    
+            assertNotNull(ds.getId());
+            
+            DataStoreInfo expandedStore = catalog.getResourcePool().clone(ds, true);
+
+            assertNotNull(expandedStore.getId());
+            assertNotNull(expandedStore.getCatalog());
+            
+            catalog.validate(expandedStore, false).throwIfInvalid();
+        } finally {
+            catalog.remove(ds);
+        }
     }
 }

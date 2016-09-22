@@ -10,22 +10,42 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.classextension.EasyMock.*;
 import static org.geoserver.platform.resource.ResourceMatchers.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
+import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerDataDirectoryTest;
+import org.geoserver.jdbcstore.cache.SimpleResourceCache;
 import org.geoserver.jdbcstore.internal.JDBCResourceStoreProperties;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.DataDirectoryResourceStore;
+import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.NullLockProvider;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceStore;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.IOUtils;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
+import org.geotools.styling.ExternalGraphic;
+import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.Style;
+import org.geotools.styling.Symbolizer;
+import org.geotools.util.Version;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.opengis.style.GraphicalSymbol;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * 
@@ -238,6 +258,46 @@ public abstract class AbstractJDBCResourceStoreTest {
         }
         
     }
+    @Test
+    public void testCache() throws Exception {
+        standardData();
+        cache.create();
+        
+        JDBCResourceStoreProperties config = getConfig(true, false);
+        
+        ResourceStore fileStore = new FileSystemResourceStore(cache.getRoot());
+        ResourceStore jdbcStore = new JDBCResourceStore(support.getDataSource(), config,
+                fileStore);
+        
+        ((JDBCResourceStore)jdbcStore).setCache(new SimpleResourceCache(cache.getRoot()));
+        //Initialize FileA in cache
+        Resource jdbcResource = jdbcStore.get("FileA");
+        jdbcResource.file();
+        //Make sure the timestamp is different
+        Thread.sleep(2);
+        
+        //Update the Resource in the JDBCStore
+        byte[] expected = "FileA Updated Contents".getBytes();
+        OutputStream out = jdbcResource.out();
+        try {
+            out.write(expected);
+        } finally {
+            out.close();
+        }
+        //Force an update to the cache
+        jdbcResource.file();
+        
+        //Verify this update actually occurs
+        Resource fileResource = fileStore.get("FileA");
+        InputStream in = fileResource.in();
+        try {
+            byte[] result = new byte[expected.length];
+            in.read(result);
+            assertThat(result, equalTo(expected));
+        } finally {
+            in.close();
+        }
+    }
     
     @Test
     public void testIgnoreDir() throws Exception {
@@ -366,6 +426,65 @@ public abstract class AbstractJDBCResourceStoreTest {
 
         
         store.get(Paths.BASE).removeListener(listener);
+    }
+    
+    @Rule
+    public TemporaryFolder cache = new TemporaryFolder();
+    
+    @Test
+    public void testParsedStyle() throws Exception {
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
+                "GeoServerDataDirectoryTest-applicationContext.xml", GeoServerDataDirectoryTest.class);
+        ctx.refresh();
+        
+        support.initialize();
+        cache.create();
+        
+        JDBCResourceStore store = new JDBCResourceStore(support.getDataSource(), getConfig(false, false));
+        store.setCache(new SimpleResourceCache(cache.getRoot()));
+        
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(store);
+        GeoServerDataDirectory dataDir = new GeoServerDataDirectory(loader);
+        
+        Resource styleDir = store.get("styles");
+        
+        //Copy the sld to the temp style dir
+        Resource styleResource = styleDir.get("external.sld");
+        IOUtils.copy(getClass().getResourceAsStream("external.sld"), styleResource.out());
+        
+        Resource noIconResource = styleDir.get("noicon.png");
+        assertFalse(Resources.exists(noIconResource));
+        
+        Resource iconResource = styleDir.get("icon.png");
+        IOUtils.copy(getClass().getResourceAsStream("icon.png"), iconResource.out());
+        assertTrue(Resources.exists(iconResource));
+        
+        StyleInfoImpl si = new StyleInfoImpl(null);
+        si.setName("");
+        si.setId("");
+        si.setFormat("sld");
+        si.setFormatVersion(new Version("1.0.0"));
+        si.setFilename(styleResource.name());
+        
+        Style s = dataDir.parsedStyle(si);
+        //Verify style is actually parsed correctly
+        Symbolizer symbolizer = s.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
+        assertTrue(symbolizer instanceof PointSymbolizer);
+        GraphicalSymbol graphic = ((PointSymbolizer) symbolizer).getGraphic().graphicalSymbols().get(0);
+        assertTrue(graphic instanceof ExternalGraphic);
+        
+        File iconFile = new File(cache.getRoot(), "styles/icon.png");
+        File noiconFile = new File(cache.getRoot(), "styles/noicon.png");
+        
+        
+        //GEOS-7025: verify the icon file is not created if it doesn't exist in store
+        assertFalse(noiconFile.exists());
+        //GEOS-7741: verify the icon file is created if it does exist in store
+        assertTrue(iconFile.exists());
+        
+        ctx.destroy();        
+        ctx.close();
+        
     }
 
 

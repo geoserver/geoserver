@@ -70,7 +70,7 @@ public class SimpleResourceCache implements ResourceCache {
         String path = res.path();
         long mtime = res.lastmodified();
         File cached = new File(base, path);
-        if(!cached.exists() || cached.lastModified()>mtime) {
+        if(!cached.exists() || cached.lastModified()<mtime) {
             Resource.Type type = res.getType();
             switch (type) {
             case RESOURCE:

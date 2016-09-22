@@ -347,7 +347,7 @@ Code
       
 Details
 ~~~~~~~
-This example, like others before, uses a ``stroke-graphic-stroke`` to place a graphic symbol along a line. The symbol, defined at **lines 13-17** is a 4 pixel gray circle with a dark gray outline. The spacing between symbols is controlled with the ``stroke-dasharray`` at **line 9**, which specifies 4 pixels of pen-down (just enough to draw the circle) and 6 pixels of pen-up,  to provide the spacing.
+This example, like others before, uses a ``stroke-graphic-stroke`` to place a graphic symbol along a line. The symbol, defined on **lines 14-18** is a 4 pixel gray circle with a dark gray outline. The spacing between symbols is controlled with the ``stroke-dasharray`` at **line 9**, which specifies 4 pixels of pen-down (just enough to draw the circle) and 6 pixels of pen-up,  to provide the spacing.
 
 
 .. _ysld_cookbook_lines_defaultlabel:
@@ -455,7 +455,7 @@ Code
 Details
 ~~~~~~~
 
-In this example, there is one rule with a line symbolizer and a text symbolizer. The line symbolizer (**lines 6-8**) draws red lines (``'#FF0000'``). The text symbolizer (**lines 9-16**) determines the labeling of the lines. **Line 10** specifies that the text of the label will be determined by the value of the "name" attribute for each line. (Refer to the attribute table in the :ref:`ysld_cookbook_lines_attributes` section if necessary.)  **Line 11** sets the text color to black. All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels.
+In this example, there is one rule with a line symbolizer and a text symbolizer. The line symbolizer (**lines 6-8**) draws red lines (``'#FF0000'``). The text symbolizer (**lines 10-17**) determines the labeling of the lines. **Line 10** specifies that the text of the label will be determined by the value of the "name" attribute for each line. (Refer to the attribute table in the :ref:`ysld_cookbook_lines_attributes` section if necessary.)  **Line 11** sets the text color to black. All other details about the label are set to the renderer default, which here is Times New Roman font, font color black, and font size of 10 pixels.
 
 
 .. _ysld_cookbook_lines_labelfollowingline:

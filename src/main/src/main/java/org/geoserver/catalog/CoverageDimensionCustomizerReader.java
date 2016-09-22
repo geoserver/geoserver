@@ -25,9 +25,11 @@ import javax.media.jai.ImageLayout;
 import javax.media.jai.PropertySource;
 import javax.media.jai.PropertySourceImpl;
 
+import org.geoserver.catalog.impl.CoverageDimensionImpl;
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -54,6 +56,7 @@ import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
+import org.opengis.parameter.ParameterValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
@@ -246,7 +249,13 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         }
         final Map<String, Object> properties = coverage.getProperties();
         final SampleDimension[] dims = coverage.getSampleDimensions();
-        GridSampleDimension[] wrappedDims = wrapDimensions(dims);
+        
+        GridSampleDimension[] wrappedDims = null;
+        if (info != null) {
+            List<CoverageDimensionInfo> storedDimensions = info.getDimensions();
+            int[] selectedBandIndexes = getSelectedBandIndexes(parameters);
+            wrappedDims = wrapDimensions(dims, storedDimensions, selectedBandIndexes);
+        } 
         // Wrapping sample dimensions
         NoDataContainer noDataProperty = CoverageUtilities.getNoDataProperty(coverage);
         if (wrappedDims == null) {
@@ -262,25 +271,63 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         // Wrap the coverage into a coverageWrapper to change its name and sampleDimensions
         return new GridCoverageWrapper(coverageName, coverage, wrappedDims, properties);
     }
+    
+    int[] getSelectedBandIndexes(GeneralParameterValue[] parameters) {
+        // if the delegate cannot do band selection, don't bother
+        if(delegate.getFormat() == null || !delegate.getFormat().getReadParameters().getDescriptor().descriptors().contains(AbstractGridFormat.BANDS)) {
+            return null;
+        };
+        
+        // lookup the bands if possible
+          if (parameters != null) {
+          for (int i = 0; i < parameters.length; i++) {
+              final ParameterValue param = (ParameterValue) parameters[i];
+              if (AbstractGridFormat.BANDS.getName().equals(param.getDescriptor().getName())) {
+                  int[] bandIndicesParam = (int[]) param.getValue();
+                  return bandIndicesParam;
+              }
+          }
+      }
 
-    protected GridSampleDimension[] wrapDimensions(SampleDimension[] dims) {
+      return null;
+    }
+
+    protected GridSampleDimension[] wrapDimensions(SampleDimension[] dims, List<CoverageDimensionInfo> storedDimensions, int[] bandIndexes) {
         GridSampleDimension[] wrappedDims = null;
-        if (info != null) {
-            List<CoverageDimensionInfo> storedDimensions = info.getDimensions();
-            MetadataMap map = info.getMetadata();
-            if (storedDimensions != null && storedDimensions.size() > 0) {
-                    int i = 0;
-                    final int inputDims = storedDimensions.size();
-                    final int outputDims = dims.length;
-                    wrappedDims = new GridSampleDimension[outputDims];
-                    for (SampleDimension dim: dims) {
-                        wrappedDims[i] = WrappedSampleDimension.build((GridSampleDimension) dim, 
-                                storedDimensions.get(outputDims != inputDims ? (i > (inputDims - 1 ) ? inputDims - 1 : i) : i));
-                        i++;
+        if (storedDimensions != null && storedDimensions.size() > 0) {
+            int i = 0;
+            wrappedDims = new GridSampleDimension[dims.length];
+            for (SampleDimension dim : dims) {
+                CoverageDimensionInfo cdi;
+                if(bandIndexes != null) {
+                    if(i >= bandIndexes.length) {
+                        // dynamically added alpha band
+                        cdi = buildAlphaChannelDimnsionInfo(storedDimensions.get(0));
+                    } else {
+                        int idx = bandIndexes[i];
+                        cdi = storedDimensions.get(idx);
+                    }
+                } else {
+                    if(i >= storedDimensions.size()) {
+                        // dynamically added alpha band
+                        cdi = buildAlphaChannelDimnsionInfo(storedDimensions.get(0));
+                    } else {
+                        cdi = storedDimensions.get(i);
                     }
                 }
+                wrappedDims[i] = WrappedSampleDimension.build((GridSampleDimension) dim, cdi);
+                i++;
+            }
         }
         return wrappedDims;
+    }
+
+    private CoverageDimensionInfo buildAlphaChannelDimnsionInfo(
+            CoverageDimensionInfo sample) {
+        CoverageDimensionInfo result = new CoverageDimensionImpl(sample);
+        result.setName("ALPHA_BAND");
+        result.setDescription("Alpha");
+        return result;
     }
 
     public Format getFormat() {
@@ -728,7 +775,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         @Override
         public String toString() {
             if (customCategories != null) {
-                StringBuilder builder = new StringBuilder(Classes.getShortClassName(this));
+                StringBuilder builder = new StringBuilder(configuredDescription);
                 builder.append('(');
                 builder = formatRange(builder, null);
                 builder.append(')').append(LINE_SEPARATOR);

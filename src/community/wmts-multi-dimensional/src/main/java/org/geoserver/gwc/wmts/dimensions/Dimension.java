@@ -9,14 +9,11 @@ import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geoserver.wms.dimension.DimensionFilterBuilder;
-import org.geotools.coverage.grid.io.DimensionDescriptor;
-import org.geotools.coverage.grid.io.GranuleSource;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
-import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.opengis.filter.Filter;
@@ -24,10 +21,7 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * <p>
@@ -62,9 +56,11 @@ public abstract class Dimension {
 
     /**
      * Returns this dimension domain values filtered with the provided filter.
-     * The provided filter can be NULL.
+     * The provided filter can be NULL. Duplicate values may be included if
+     * noDuplicates parameter is set to FALSE.
      */
-    public abstract TreeSet<?> getDomainValues(Filter filter);
+    public abstract Tuple<ReferencedEnvelope, List<Object>> getDomainValues(Filter filter, boolean noDuplicates);
+
 
     /**
      * Returns a filter that will contain all the restrictions applied to this dimension.
@@ -89,7 +85,7 @@ public abstract class Dimension {
      * </p>
      */
     public Tuple<String, List<Integer>> getHistogram(Filter filter, String resolution) {
-        return HistogramUtils.buildHistogram(getDomainValues(filter), resolution);
+        return HistogramUtils.buildHistogram(getDomainValues(filter, false).second, resolution);
     }
 
     protected abstract String getDefaultValueFallbackAsString();
@@ -110,18 +106,6 @@ public abstract class Dimension {
         return dimensionInfo;
     }
 
-    ReferencedEnvelope getBoundingBox() {
-        return boundingBox;
-    }
-
-    List<Object> getDomainRestrictions() {
-        return domainRestrictions;
-    }
-
-    FilterFactory getFilterFactory() {
-        return filterFactory;
-    }
-
     public void setBoundingBox(ReferencedEnvelope boundingBox) {
         this.boundingBox = boundingBox;
     }
@@ -134,51 +118,16 @@ public abstract class Dimension {
         }
     }
 
-    public Tuple<String, String> getAttributes() {
-        ResourceInfo resourceInfo = layerInfo.getResource();
-        if (resourceInfo instanceof FeatureTypeInfo) {
-            // for vectors this information easily available
-            return Tuple.tuple(dimensionInfo.getAttribute(), dimensionInfo.getEndAttribute());
-        }
-        if (resourceInfo instanceof CoverageInfo) {
-            // raster dimensions don't provide start and end attributes so we need the ask the dimension descriptor
-            Tuple<String, StructuredGridCoverage2DReader> rasterReader;
-            try {
-                rasterReader = getRasterReader();
-            } catch (IOException exception) {
-                throw new RuntimeException(String.format(
-                        "Error opening structured reader for raster '%s'.", layerInfo.getName(), exception));
-            }
-            List<DimensionDescriptor> descriptors;
-            try {
-                descriptors = rasterReader.second.getDimensionDescriptors(rasterReader.first);
-            } catch (IOException exception) {
-                throw new RuntimeException(String.format(
-                        "Error extracting dimensions descriptors from raster '%s'.", layerInfo.getName(), exception));
-            }
-            // we have this raster dimension descriptors let's find the descriptor for our dimension
-            String startAttributeName = null;
-            String endAttributeName = null;
-            for (DimensionDescriptor descriptor : descriptors) {
-                if (getDimensionName().equalsIgnoreCase(descriptor.getName())) {
-                    startAttributeName = descriptor.getStartAttribute();
-                    endAttributeName = descriptor.getEndAttribute();
-                }
-            }
-            return Tuple.tuple(startAttributeName, endAttributeName);
-        }
-        return Tuple.tuple(null, null);
-    }
-
     /**
      * Returns this dimension values represented as strings taking in account this
      * dimension representation strategy. The returned values will be sorted. The
      * provided filter will be used to filter the domain values. The provided filter
      * can be NULL.
      */
-    public Tuple<Integer, List<String>> getDomainValuesAsStrings(Filter filter) {
-        TreeSet<?> domainValues = getDomainValues(filter);
-        return Tuple.tuple(domainValues.size(), DimensionsUtils.getDomainValuesAsStrings(dimensionInfo, domainValues));
+    public Tuple<ReferencedEnvelope, Tuple<Integer, List<String>>> getDomainValuesAsStrings(Filter filter) {
+        Tuple<ReferencedEnvelope, List<Object>> domainValues = getDomainValues(filter, true);
+        return Tuple.tuple(domainValues.first,
+                Tuple.tuple(domainValues.second.size(), DimensionsUtils.getDomainValuesAsStrings(dimensionInfo, domainValues.second)));
     }
 
 
@@ -197,7 +146,7 @@ public abstract class Dimension {
     Filter buildVectorFilter() {
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) getResourceInfo();
         Filter filter = Filter.INCLUDE;
-        if (getBoundingBox() != null) {
+        if (boundingBox != null) {
             // we have a bounding box so lets build a filter for it
             String geometryAttributeName;
             try {
@@ -210,7 +159,7 @@ public abstract class Dimension {
             // creating the bounding box filter and append it to our filter
             filter = appendBoundingBoxFilter(filter, geometryAttributeName);
         }
-        if (getDomainRestrictions() != null) {
+        if (domainRestrictions != null) {
             // we have a domain filter
             filter = appendDomainRestrictionsFilter(filter, dimensionInfo.getAttribute(), dimensionInfo.getEndAttribute());
         }
@@ -223,7 +172,7 @@ public abstract class Dimension {
     Filter buildRasterFilter() {
         CoverageInfo typeInfo = (CoverageInfo) getResourceInfo();
         Filter filter = Filter.INCLUDE;
-        if (getBoundingBox() != null) {
+        if (boundingBox != null) {
             // we have a bounding box so lets build a filter for it
             try {
                 filter = appendBoundingBoxFilter(filter, typeInfo);
@@ -232,8 +181,9 @@ public abstract class Dimension {
                         typeInfo.getName()), exception);
             }
         }
-        if (getDomainRestrictions() != null) {
-            Tuple<String, String> attributes = getAttributes();
+        if (domainRestrictions != null) {
+            CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom(typeInfo);
+            Tuple<String, String> attributes = reader.getDimensionAttributesNames(getDimensionName());
             if (attributes.first == null) {
                 throw new RuntimeException(String.format(
                         "Could not found start attribute name for dimension '%s' in raster '%s'.", getDimensionName(), typeInfo.getName()));
@@ -245,19 +195,19 @@ public abstract class Dimension {
     }
 
     /**
-     * Helper method
+     * Helper method that extract the geomtry attribute name from the current type info and invoke
+     * the method that will actually build the spatial filter.
      */
     private Filter appendBoundingBoxFilter(Filter filter, CoverageInfo typeInfo) throws IOException {
-        // let's find the geometry attribute name
-        GridCoverage2DReader reader = (GridCoverage2DReader) typeInfo.getGridCoverageReader(null, null);
-        if (!(reader instanceof StructuredGridCoverage2DReader)) {
+        // getting the geometry attribute name
+        CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom(typeInfo);
+        String geometryAttributeName = reader.getGeometryAttributeName();
+        // checking if we have a valid geometry attribute
+        if (geometryAttributeName == null) {
+            // this raster doesn't supports spatial filtering
             return filter;
         }
-        StructuredGridCoverage2DReader structuredReader = (StructuredGridCoverage2DReader) reader;
-        String coverageName = structuredReader.getGridCoverageNames()[0];
-        GranuleSource source = structuredReader.getGranules(coverageName, true);
-        String geometryAttributeName = source.getSchema().getGeometryDescriptor().getLocalName();
-        // creating
+        // creating the filter
         return appendBoundingBoxFilter(filter, geometryAttributeName);
     }
 
@@ -266,11 +216,11 @@ public abstract class Dimension {
      * the current bounding box restriction. The bounding box filter will be merged with the provided filter.
      */
     private Filter appendBoundingBoxFilter(Filter filter, String geometryAttributeName) {
-        CoordinateReferenceSystem coordinateReferenceSystem = getBoundingBox().getCoordinateReferenceSystem();
+        CoordinateReferenceSystem coordinateReferenceSystem = boundingBox.getCoordinateReferenceSystem();
         String epsgCode = coordinateReferenceSystem == null ? null : GML2EncodingUtils.toURI(coordinateReferenceSystem);
-        Filter spatialFilter = getFilterFactory().bbox(geometryAttributeName, getBoundingBox().getMinX(), getBoundingBox().getMinY(),
-                getBoundingBox().getMaxX(), getBoundingBox().getMaxY(), epsgCode);
-        return getFilterFactory().and(filter, spatialFilter);
+        Filter spatialFilter = filterFactory.bbox(geometryAttributeName, boundingBox.getMinX(), boundingBox.getMinY(),
+                boundingBox.getMaxX(), boundingBox.getMaxY(), epsgCode);
+        return filterFactory.and(filter, spatialFilter);
     }
 
     /**
@@ -278,53 +228,81 @@ public abstract class Dimension {
      * attributes. The created filter will be merged with the provided filter.
      */
     private Filter appendDomainRestrictionsFilter(Filter filter, String startAttributeName, String endAttributeName) {
-        DimensionFilterBuilder dimensionFilterBuilder = new DimensionFilterBuilder(getFilterFactory());
-        dimensionFilterBuilder.appendFilters(startAttributeName, endAttributeName, getDomainRestrictions());
-        return getFilterFactory().and(filter, dimensionFilterBuilder.getFilter());
+        DimensionFilterBuilder dimensionFilterBuilder = new DimensionFilterBuilder(filterFactory);
+        dimensionFilterBuilder.appendFilters(startAttributeName, endAttributeName, domainRestrictions);
+        return filterFactory.and(filter, dimensionFilterBuilder.getFilter());
     }
 
     /**
-     * Helper method that can be used to read the domain values of a dimension from a raster.
-     * The provided filter will be used to filter the domain values that should be returned,
-     * if the provided filter is NULL nothing will ve filtered.
+     * Helper method used to get domain values from a raster type.
      */
-    TreeSet<?> getRasterDomainValues(Filter filter) throws IOException {
-        // preparing to read the dimension domain values
-        Tuple<String, StructuredGridCoverage2DReader> rasterReader = getRasterReader();
-        GranuleSource source = rasterReader.second.getGranules(rasterReader.first, true);
-        List<DimensionDescriptor> descriptors = rasterReader.second.getDimensionDescriptors(rasterReader.first);
-        // let's find our dimension
-        for (DimensionDescriptor descriptor : descriptors) {
-            if (getDimensionName().equalsIgnoreCase(descriptor.getName())) {
-                // we found our dimension descriptor, creating a query
-                Query query = new Query(source.getSchema().getName().getLocalPart());
-                if (filter != null) {
-                    query.setFilter(filter);
-                }
-                // reading the features removing duplicates
-                FeatureCollection featureCollection = source.getGranules(query);
-                UniqueVisitor uniqueVisitor = new UniqueVisitor(descriptor.getStartAttribute());
-                featureCollection.accepts(uniqueVisitor, null);
-                return new TreeSet(uniqueVisitor.getUnique());
-            }
+    Tuple<ReferencedEnvelope, List<Object>> getRasterDomainValues(Filter filter, boolean noDuplicates,
+                                       CoverageDimensionsReader.DataType dataType, Comparator<Object> comparator) {
+        CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
+        if (noDuplicates) {
+            // no duplicate values should be included
+            Tuple<ReferencedEnvelope, Set<Object>> values = reader.readWithoutDuplicates(getDimensionName(), filter, dataType, comparator);
+            List<Object> list = new ArrayList<>(values.second.size());
+            list.addAll(values.second);
+            return Tuple.tuple(values.first, list);
         }
-        // well our dimension was not found
-        return new TreeSet();
+        // we need the duplicate values (this is useful for some operations like get histogram operation)
+        return reader.readWithDuplicates(getDimensionName(), filter, dataType, comparator);
     }
 
     /**
-     * Helper method that will open a structured grid coverage for the current dimension resource.
-     * Returns a tuple that will contain the coverage name and the reader.
+     * Helper method used to get domain values from a vector type.
      */
-    private Tuple<String, StructuredGridCoverage2DReader> getRasterReader() throws IOException {
-        CoverageInfo typeInfo = (CoverageInfo) getResourceInfo();
-        GridCoverage2DReader reader = (GridCoverage2DReader) typeInfo.getGridCoverageReader(null, null);
-        if (!(reader instanceof StructuredGridCoverage2DReader)) {
-            throw new RuntimeException("Non structured grid coverages cannot be filtered.");
+    Tuple<ReferencedEnvelope, List<Object>> getVectorDomainValues(Filter filter, boolean noDuplicates, Comparator<Object> comparator) {
+        FeatureCollection featureCollection = getVectorDomainValues(filter);
+        if (noDuplicates) {
+            // no duplicate values should be included
+            Set<Object> values = DimensionsUtils.
+                    getValuesWithoutDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator);
+            List<Object> list = new ArrayList<>(values.size());
+            list.addAll(values);
+            return Tuple.tuple(featureCollection.getBounds(), list);
         }
-        StructuredGridCoverage2DReader structuredReader = (StructuredGridCoverage2DReader) reader;
-        String coverageName = structuredReader.getGridCoverageNames()[0];
-        return Tuple.tuple(coverageName, structuredReader);
+        // we need the duplicate values (this is useful for some operations like get histogram operation)
+        return Tuple.tuple(featureCollection.getBounds(),
+                DimensionsUtils.getValuesWithDuplicates(dimensionInfo.getAttribute(), featureCollection, comparator));
+    }
+
+    /**
+     * Helper method used to get domain values from a vector type in the form of a feature collection.
+     */
+    private FeatureCollection getVectorDomainValues(Filter filter) {
+        FeatureTypeInfo typeInfo = (FeatureTypeInfo) getResourceInfo();
+        FeatureSource source;
+        try {
+            source = typeInfo.getFeatureSource(null, GeoTools.getDefaultHints());
+        } catch (Exception exception) {
+            throw new RuntimeException(String.format(
+                    "Error getting feature source of vector '%s'.", resourceInfo.getName()), exception);
+        }
+        Query query = new Query(source.getSchema().getName().getLocalPart(), filter == null ? Filter.INCLUDE : filter);
+        try {
+            return source.getFeatures(query);
+        } catch (Exception exception) {
+            throw new RuntimeException(String.format(
+                    "Error reading feature from layer '%s' for dimension '%s'.",
+                    resourceInfo.getName(), getDimensionName()), exception);
+        }
+    }
+
+    /**
+     * Return dimension start and end attributes, values may be NULL.
+     */
+    public Tuple<String, String> getAttributes() {
+        ResourceInfo resourceInfo = layerInfo.getResource();
+        if (resourceInfo instanceof FeatureTypeInfo) {
+            // for vectors this information easily available
+            return Tuple.tuple(dimensionInfo.getAttribute(), dimensionInfo.getEndAttribute());
+        }
+        if (resourceInfo instanceof CoverageInfo) {
+            return CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo).getDimensionAttributesNames(getDimensionName());
+        }
+        return Tuple.tuple(null, null);
     }
 
     @Override

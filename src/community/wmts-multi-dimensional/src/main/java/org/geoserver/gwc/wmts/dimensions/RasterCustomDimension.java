@@ -4,16 +4,15 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
-import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+import org.geoserver.gwc.wmts.Tuple;
+import org.geoserver.gwc.wmts.dimensions.CoverageDimensionsReader.DataType;
 import org.geoserver.wms.WMS;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
 
-import java.io.IOException;
-import java.util.TreeSet;
+import java.util.List;
 
 /**
  * Represents a custom dimension of a raster.
@@ -35,19 +34,8 @@ public class RasterCustomDimension extends Dimension {
     }
 
     @Override
-    public TreeSet<?> getDomainValues(Filter filter) {
-        try {
-            CoverageInfo typeInfo = (CoverageInfo) getResourceInfo();
-            GridCoverage2DReader reader = (GridCoverage2DReader) typeInfo.getGridCoverageReader(null, null);
-            ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
-            if (filter == null || filter.equals(Filter.INCLUDE)) {
-                return new TreeSet<>(dimensions.getDomain(getDimensionName()));
-            }
-            return getRasterDomainValues(filter);
-        } catch (IOException exception) {
-            throw new RuntimeException(String.format("Error getting domain values for dimension '%s' of coverage '%s'.",
-                    getDimensionName(), getResourceInfo().getName()), exception);
-        }
+    public Tuple<ReferencedEnvelope, List<Object>> getDomainValues(Filter filter, boolean noDuplicates) {
+        return getRasterDomainValues(filter, noDuplicates, DataType.CUSTOM, DimensionsUtils.CUSTOM_COMPARATOR);
     }
 
     @Override

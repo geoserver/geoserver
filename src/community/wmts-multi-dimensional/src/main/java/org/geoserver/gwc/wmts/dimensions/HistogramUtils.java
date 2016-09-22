@@ -12,7 +12,10 @@ import org.geotools.util.NumberRange;
 import org.geotools.util.Range;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Utilities method to produce histogram from dimension domains values. Two types of
@@ -54,7 +57,7 @@ final class HistogramUtils {
      * representation and the histogram values. The domain values should be numbers, dates or strings.
      * Ranges are also supported, the min value will be used to discover the domain values type.
      */
-    static Tuple<String, List<Integer>> buildHistogram(TreeSet<?> domainValues, String resolution) {
+    static Tuple<String, List<Integer>> buildHistogram(List<Object> domainValues, String resolution) {
         if (domainValues.isEmpty()) {
             // FIXME: How to represent a domain with no values ?
             return Tuple.tuple("", Collections.emptyList());
@@ -77,7 +80,7 @@ final class HistogramUtils {
     /**
      * Compute the buckets for the given domain values and resolution.
      */
-    private static Tuple<String, List<Range>> computeBuckets(TreeSet<?> domainValues, String resolution) {
+    private static Tuple<String, List<Range>> computeBuckets(List<Object> domainValues, String resolution) {
         switch (findHistogramType(domainValues)) {
             case NUMERIC:
                 return getNumericBuckets(domainValues, resolution);
@@ -91,8 +94,8 @@ final class HistogramUtils {
     /**
      * Helper method that just founds the histogram type based on domains values.
      */
-    private static HistogramType findHistogramType(TreeSet<?> domainValues) {
-        Object value = domainValues.first();
+    private static HistogramType findHistogramType(List<Object> domainValues) {
+        Object value = domainValues.get(domainValues.size() - 1);
         if (value instanceof Range) {
             // this is a range so lets use the min value
             value = ((Range) value).getMinValue();
@@ -112,24 +115,26 @@ final class HistogramUtils {
      * Helper method that creates buckets for a numeric domain based on the provided resolution. The returned tuple
      * will contain the domain representation and the domain buckets.
      */
-    private static Tuple<String, List<Range>> getNumericBuckets(TreeSet<?> domainValues, String resolution) {
+    private static Tuple<String, List<Range>> getNumericBuckets(List<Object> domainValues, String resolution) {
         Tuple<Double, Double> minMax = DimensionsUtils.getMinMax(domainValues, Double.class);
         resolution = resolution != null ? resolution : NUMERICAL_DEFAULT_RESOLUTION;
         double finalResolution = Double.parseDouble(resolution);
+        double min = minMax.first;
+        double max = Math.max(minMax.second, finalResolution);
         int i = 0;
-        while ((minMax.second - minMax.first) / finalResolution >= HISTOGRAM_MAX_THRESHOLD && i < MAX_ITERATIONS) {
+        while ((max - min) / finalResolution >= HISTOGRAM_MAX_THRESHOLD && i < MAX_ITERATIONS) {
             finalResolution += 10;
             i++;
         }
-        String domainString = minMax.first.toString() + "/" + minMax.second + "/" + finalResolution;
-        if ((minMax.second - minMax.first) / finalResolution == 1) {
-            return Tuple.tuple(domainString, Collections.singletonList(NumberRange.create(minMax.first, minMax.second)));
+        String domainString = min + "/" + max + "/" + finalResolution;
+        if ((max - min) / finalResolution == 1) {
+            return Tuple.tuple(domainString, Collections.singletonList(NumberRange.create(min, max)));
         }
         List<Range> buckets = new ArrayList<>();
-        for (double step = minMax.first; step < minMax.second; step += finalResolution) {
+        for (double step = min; step < max; step += finalResolution) {
             double limit = step + finalResolution;
-            if (limit > minMax.second) {
-                buckets.add(NumberRange.create(step, minMax.second));
+            if (limit > max) {
+                buckets.add(NumberRange.create(step, max));
                 break;
             }
             buckets.add(NumberRange.create(step, limit));
@@ -141,7 +146,7 @@ final class HistogramUtils {
      * Helper method that creates buckets for a time domain based on the provided resolution. The returned tuple
      * will contain the domain representation and the domain buckets.
      */
-    private static Tuple<String, List<Range>> getTimeBuckets(TreeSet<?> domainValues, String resolution) {
+    private static Tuple<String, List<Range>> getTimeBuckets(List<Object> domainValues, String resolution) {
         Tuple<Date, Date> minMax = DimensionsUtils.getMinMax(domainValues, Date.class);
         resolution = resolution != null ? resolution : TIME_DEFAULT_RESOLUTION;
         Tuple<String, List<Date>> intervals = getDateIntervals(minMax, resolution);
@@ -182,7 +187,7 @@ final class HistogramUtils {
      * Helper method that creates buckets for an enumerated domain. The returned tuple will contain the domain
      * representation and the domain buckets. Note that in this case the resolution will be ignored.
      */
-    private static Tuple<String, List<Range>> getEnumeratedBuckets(TreeSet<?> domainValues) {
+    private static Tuple<String, List<Range>> getEnumeratedBuckets(List<Object> domainValues) {
         StringBuilder domain = new StringBuilder();
         List<Range> buckets = new ArrayList<>();
         for (Object value : domainValues) {

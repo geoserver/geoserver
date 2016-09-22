@@ -4,14 +4,16 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
-import org.geoserver.catalog.*;
-import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+import org.geoserver.catalog.DimensionDefaultValueSetting;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.gwc.wmts.Tuple;
 import org.geoserver.wms.WMS;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.filter.Filter;
 
-import java.io.IOException;
-import java.util.TreeSet;
+import java.util.List;
 
 /**
  * Represents a time dimension of a raster.
@@ -28,19 +30,8 @@ public class RasterTimeDimension extends Dimension {
     }
 
     @Override
-    public TreeSet<?> getDomainValues(Filter filter) {
-        try {
-            CoverageInfo typeInfo = (CoverageInfo) getResourceInfo();
-            GridCoverage2DReader reader = (GridCoverage2DReader) typeInfo.getGridCoverageReader(null, null);
-            ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
-            if (filter == null || filter.equals(Filter.INCLUDE)) {
-                return dimensions.getTimeDomain();
-            }
-            return getRasterDomainValues(filter);
-        } catch (IOException exception) {
-            throw new RuntimeException(String.format("Error getting domain values for dimension '%s' of coverage '%s'.",
-                    getDimensionName(), getResourceInfo().getName()), exception);
-        }
+    public Tuple<ReferencedEnvelope, List<Object>> getDomainValues(Filter filter, boolean noDuplicates) {
+        return getRasterDomainValues(filter, noDuplicates, CoverageDimensionsReader.DataType.TEMPORAL, DimensionsUtils.TEMPORAL_COMPARATOR);
     }
 
     @Override

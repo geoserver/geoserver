@@ -15,7 +15,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -50,8 +53,15 @@ class DescribeDomainsTransformer extends TransformerBase {
                     "xmlns:ows", "http://www.opengis.net/ows/1.1"
             });
             start("Domains", nameSpaces);
-            handleBoundingBox(domains.getBoundingBox());
-            domains.getDimensions().forEach(dimension -> handleDimension(dimension, domains.getFilter()));
+            Map<String, Tuple<Integer, List<String>>> domainsValues = new HashMap<>();
+            ReferencedEnvelope referencedEnvelope = new ReferencedEnvelope();
+            domains.getDimensions().forEach(dimension -> {
+                Tuple<ReferencedEnvelope, Tuple<Integer, List<String>>> dimensionValues = dimension.getDomainValuesAsStrings(domains.getFilter());
+                referencedEnvelope.expandToInclude(dimensionValues.first);
+                domainsValues.put(dimension.getDimensionName(), dimensionValues.second);
+            });
+            handleBoundingBox(referencedEnvelope);
+            domainsValues.entrySet().forEach(dimensionValues -> handleDimension(dimensionValues.getKey(), dimensionValues.getValue()));
             end("Domains");
         }
 
@@ -72,10 +82,9 @@ class DescribeDomainsTransformer extends TransformerBase {
             end("SpaceDomain");
         }
 
-        private void handleDimension(Dimension dimension, Filter filter) {
-            Tuple<Integer, List<String>> domainsValuesAsStrings = dimension.getDomainValuesAsStrings(filter);
+        private void handleDimension(String dimensionName, Tuple<Integer, List<String>> domainsValuesAsStrings) {
             start("DimensionDomain");
-            element("ows:Identifier", dimension.getDimensionName());
+            element("ows:Identifier", dimensionName);
             element("Domain", domainsValuesAsStrings.second.stream().collect(Collectors.joining(",")));
             element("Size", String.valueOf(domainsValuesAsStrings.first));
             end("DimensionDomain");

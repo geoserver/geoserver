@@ -70,7 +70,7 @@ public class VectorElevationDimensionTest extends TestsSupport {
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "0.1");
         assertThat(histogram.first, is("1.0/2.0/0.1"));
-        assertThat(histogram.second, containsInAnyOrder(1, 0, 0, 0, 0, 0, 0, 0, 0, 1));
+        assertThat(histogram.second, containsInAnyOrder(2, 0, 0, 0, 0, 0, 0, 0, 0, 1));
     }
 
     /**

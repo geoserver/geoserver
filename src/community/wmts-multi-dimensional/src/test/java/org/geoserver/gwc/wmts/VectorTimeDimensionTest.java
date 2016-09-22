@@ -70,7 +70,7 @@ public class VectorTimeDimensionTest extends TestsSupport {
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "P1D");
         assertThat(histogram.first, is("2012-02-11T00:00:00.000Z/2012-02-12T00:00:00.000Z/P1D"));
-        assertThat(histogram.second, containsInAnyOrder(2));
+        assertThat(histogram.second, containsInAnyOrder(3));
     }
 
     /**

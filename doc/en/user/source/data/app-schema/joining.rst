@@ -71,12 +71,12 @@ When App-Schema Joining is active, filters operating on nested attributes (i.e. 
 There are, however, a few limitations in the current implementation:
 
 1. Joining support must not have been explicitly disabled and all its pre-conditions must be met (see above)
-2. only binary comparison operators (e.g. ``PropertyIsEqualTo``, ``PropertyIsGreaterThan``, etc...), ``PropertyIsLike`` and ``PropertyIsNull`` filters are translated to SQL
-3. filters involving conditional polymorphic mappings are evaluated in memory
-4. filters comparing two or more different nested attributes are evaluated in memory
-5. filters matching multiple nested attribute mappings are evaluated in memory
+2. Only binary comparison operators (e.g. ``PropertyIsEqualTo``, ``PropertyIsGreaterThan``, etc...), ``PropertyIsLike`` and ``PropertyIsNull`` filters are translated to SQL
+3. Filters involving conditional polymorphic mappings are evaluated in memory
+4. Filters comparing two or more different nested attributes are evaluated in memory
+5. Filters matching multiple nested attribute mappings are evaluated in memory
 
-Much like Joining support, native encoding of nested filters is turned on by default, and it is disabled by adding to your app-schema.properties file the line ::
+Much like joining support, native encoding of nested filters is turned on by default, and it is disabled by adding to your app-schema.properties file the line ::
 
      app-schema.encodeNestedFilters = false
 

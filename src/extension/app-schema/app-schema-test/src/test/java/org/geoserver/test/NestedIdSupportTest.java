@@ -148,11 +148,11 @@ public class NestedIdSupportTest extends AbstractAppSchemaTestSupport {
 
         // this is the generated query in PostGIS, but the test limits to check the presence of the
         // a few keywords, as the actual SQL is dependent on the underlying database
-//        EXISTS (SELECT "chain_link_3"."PKEY" 
-//            FROM "appschematest"."CONTROLLEDCONCEPT" "chain_link_3" 
-//                INNER JOIN "appschematest"."COMPOSITIONPART" "chain_link_2" ON "chain_link_2"."ROW_ID" = "chain_link_3"."COMPOSITION_ID" 
-//                INNER JOIN "appschematest"."GEOLOGICUNIT" "chain_link_1" ON "chain_link_1"."COMPONENTPART_ID" = "chain_link_2"."ROW_ID" 
-//            WHERE "chain_link_3"."GML_ID" = 'cc.1' AND "appschematest"."MAPPEDFEATUREPROPERTYFILE"."GEOLOGIC_UNIT_ID" = "chain_link_1"."GML_ID")
+        // EXISTS (SELECT "chain_link_3"."PKEY" 
+        //      FROM "appschematest"."CONTROLLEDCONCEPT" "chain_link_3" 
+        //           INNER JOIN "appschematest"."COMPOSITIONPART" "chain_link_2" ON "chain_link_2"."ROW_ID" = "chain_link_3"."COMPOSITION_ID" 
+        //           INNER JOIN "appschematest"."GEOLOGICUNIT" "chain_link_1" ON "chain_link_1"."COMPONENTPART_ID" = "chain_link_2"."ROW_ID" 
+        //      WHERE "chain_link_3"."GML_ID" = 'cc.1' AND "appschematest"."MAPPEDFEATUREPROPERTYFILE"."GEOLOGIC_UNIT_ID" = "chain_link_1"."GML_ID")
         assertTrue(encodedFilter.matches("^EXISTS.*SELECT.*FROM.*INNER JOIN.*INNER JOIN.*WHERE.*$"));
         assertContainsFeatures(fs.getFeatures(nestedIdFilter), "mf4");
     }

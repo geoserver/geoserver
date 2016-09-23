@@ -813,10 +813,10 @@ public class PolymorphismWfsTest extends AbstractAppSchemaTestSupport {
 
         // this is the generated query in PostGIS, but the test limits to check the presence of the
         // EXISTS keyword, as the actual SQL is dependent on the underlying database
-//        (EXISTS (SELECT "chain_link_1"."PKEY" 
-//            FROM "appschematest"."POLYMORPHICFEATURE" "chain_link_1" 
-//            WHERE "chain_link_1"."NUMERIC_VALUE" = 1.0 AND "appschematest"."POLYMORPHICFEATURE"."VALUE_ID" = "chain_link_1"."ID")
-//        assertEquals(expected, encodedFilter);
+        // EXISTS (SELECT "chain_link_1"."PKEY" 
+        //      FROM "appschematest"."POLYMORPHICFEATURE" "chain_link_1" 
+        //      WHERE "chain_link_1"."NUMERIC_VALUE" = 1.0 AND 
+        //            "appschematest"."POLYMORPHICFEATURE"."VALUE_ID" = "chain_link_1"."ID"
         assertTrue(encodedFilter.contains("EXISTS"));
 
         assertContainsFeatures(fs.getFeatures(equalsThirdValue), "f1", "f4");

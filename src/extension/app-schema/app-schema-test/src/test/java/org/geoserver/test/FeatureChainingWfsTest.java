@@ -6,25 +6,18 @@
 
 package org.geoserver.test;
 
-import static org.junit.Assert.*;
-import static org.junit.Assume.assumeFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.Assume;
-import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.filter.And;
-import org.opengis.filter.Filter;
-import org.opengis.filter.PropertyIsEqualTo;
-import org.opengis.filter.PropertyIsLike;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
@@ -35,17 +28,15 @@ import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.FeatureTypeMapping;
 import org.geotools.data.complex.config.AppSchemaDataAccessConfigurator;
 import org.geotools.data.complex.filter.ComplexFilterSplitter;
-import org.geotools.data.jdbc.FilterToSQL;
 import org.geotools.data.jdbc.FilterToSQLException;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.FilterFactoryImplNamespaceAware;
-import org.geotools.jdbc.BasicSQLDialect;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.NestedFilterToSQL;
-import org.geotools.jdbc.PreparedStatementSQLDialect;
-import org.geotools.jdbc.SQLDialect;
 import org.geotools.util.NullProgressListener;
+import org.junit.Test;
+import org.opengis.filter.And;
+import org.opengis.filter.Filter;
+import org.opengis.filter.PropertyIsLike;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -1472,11 +1463,10 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
 
         // this is the generated query in PostGIS, but the test limits to check the presence of the
         // EXISTS keyword, as the actual SQL is dependent on the underlying database
-//        String expected = "EXISTS (SELECT \"chain_link_1\".\"PKEY\" "
-//                + "FROM \"appschematest\".\"GEOLOGICUNIT\" \"chain_link_1\" "
-//                + "WHERE  UPPER(\"chain_link_1\".\"TEXTDESCRIPTION\") LIKE '%SEDIMENTARY%' "
-//                + "AND \"appschematest\".\"MAPPEDFEATUREPROPERTYFILE\".\"GEOLOGIC_UNIT_ID\" = \"chain_link_1\".\"GML_ID\")";
-//        assertEquals(expected, encodedFilter);
+        // EXISTS (SELECT "chain_link_1"."PKEY" 
+        //      FROM "appschematest"."GEOLOGICUNIT" "chain_link_1" 
+        //      WHERE UPPER("chain_link_1"."TEXTDESCRIPTION") LIKE '%SEDIMENTARY%' AND 
+        //            "appschematest"."MAPPEDFEATUREPROPERTYFILE"."GEOLOGIC_UNIT_ID" = "chain_link_1"."GML_ID")
         assertTrue(encodedFilter.contains("EXISTS"));
         assertContainsFeatures(fs.getFeatures(like), "mf1", "mf2", "mf3");
     }

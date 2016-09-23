@@ -9,7 +9,6 @@ package org.geoserver.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -50,6 +49,7 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.jdbc.BasicSQLDialect;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.NestedFilterToSQL;
+import org.geotools.jdbc.PreparedFilterToSQL;
 import org.geotools.jdbc.PreparedStatementSQLDialect;
 import org.geotools.jdbc.SQLDialect;
 import org.geotools.xml.AppSchemaValidator;
@@ -703,6 +703,8 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
             original = ((BasicSQLDialect) dialect).createFilterToSQL();
         } else if (dialect instanceof PreparedStatementSQLDialect) {
             original = ((PreparedStatementSQLDialect) dialect).createPreparedFilterToSQL();
+            // disable prepared statements to have literals actually encoded in the SQL
+            ((PreparedFilterToSQL)original).setPrepareEnabled(false);
         }
         original.setFeatureType((SimpleFeatureType) mapping.getSource().getSchema());
 

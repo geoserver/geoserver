@@ -12,37 +12,18 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.complex.AppSchemaDataAccess;
-import org.geotools.data.complex.AttributeMapping;
 import org.geotools.data.complex.FeatureTypeMapping;
-import org.geotools.data.complex.NestedAttributeMapping;
-import org.geotools.data.complex.config.AppSchemaDataAccessConfigurator;
 import org.geotools.data.complex.filter.ComplexFilterSplitter;
-import org.geotools.data.jdbc.FilterToSQL;
 import org.geotools.data.jdbc.FilterToSQLException;
-import org.geotools.data.joining.JoiningNestedAttributeMapping;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.FilterFactoryImplNamespaceAware;
-import org.geotools.jdbc.BasicSQLDialect;
 import org.geotools.jdbc.JDBCDataStore;
-import org.geotools.jdbc.JoiningJDBCFeatureSource;
 import org.geotools.jdbc.NestedFilterToSQL;
-import org.geotools.jdbc.PreparedStatementSQLDialect;
-import org.geotools.jdbc.SQLDialect;
 import org.geotools.util.NullProgressListener;
-import org.hsqldb.jdbc.JDBCDataSource;
-import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.Or;
 import org.opengis.filter.PropertyIsEqualTo;
@@ -466,11 +447,10 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
 
         // this is the generated query in PostGIS, but the test limits to check the presence of the
         // EXISTS keyword, as the actual SQL is dependent on the underlying database
-//        String expectedEncoded = "EXISTS (SELECT \"chain_link_1\".\"PKEY\" "
-//                + "FROM \"appschematest\".\"MAPPEDFEATURENAMEONE\" \"chain_link_1\" "
-//                + "WHERE \"chain_link_1\".\"NAME\" = 'nameone 4' "
-//                + "AND \"appschematest\".\"MAPPEDFEATUREWITHNESTEDNAME\".\"ID\" = \"chain_link_1\".\"MF_ID\")";
-//        assertEquals(expectedEncoded, encodedFilter);
+        // EXISTS (SELECT "chain_link_1"."PKEY" 
+        //      FROM "appschematest"."MAPPEDFEATURENAMEONE" "chain_link_1" 
+        //      WHERE "chain_link_1"."NAME" = 'nameone 4' AND
+        //            "appschematest"."MAPPEDFEATUREWITHNESTEDNAME"."ID" = "chain_link_1"."MF_ID")
         assertTrue(encodedFilter.contains("EXISTS"));
         assertContainsFeatures(fs.getFeatures(propertyIsEqualTo), "mf3");
 
@@ -554,12 +534,12 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
 
         // this is the generated query in PostGIS, but the test limits to check the presence of the
         // EXISTS keyword, as the actual SQL is dependent on the underlying database
-//        String expected = "(LEX_D = 'GUNTHORPE FORMATION' OR EXISTS (SELECT \"chain_link_1\".\"PKEY\" "
-//                + "FROM \"appschematest\".\"MAPPEDFEATURENAMEONE\" \"chain_link_1\" "
-//                + "WHERE \"chain_link_1\".\"NAME\" = 'nameone 4' "
-//                + "AND \"appschematest\".\"MAPPEDFEATUREWITHNESTEDNAME\".\"ID\" = \"chain_link_1\".\"MF_ID\"))";
-//        assertEquals(expected, encodedCombined);
-        assertTrue(encodedCombined.contains("EXISTS"));
+        // (LEX_D = 'GUNTHORPE FORMATION' OR EXISTS 
+        //      (SELECT "chain_link_1"."PKEY" 
+        //      FROM "appschematest"."MAPPEDFEATURENAMEONE" "chain_link_1" 
+        //      WHERE "chain_link_1"."NAME" = 'nameone 4' AND 
+        //            "appschematest"."MAPPEDFEATUREWITHNESTEDNAME"."ID" = "chain_link_1"."MF_ID"))
+        assertTrue(encodedCombined.matches("^\\(.*GUNTHORPE FORMATION.*OR.*EXISTS.*\\)$"));
         assertContainsFeatures(fs.getFeatures(combined), "mf1", "mf3");
 
         /*

@@ -13,8 +13,10 @@ import javax.jms.JMSException;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.cluster.JMSApplicationListener;
 import org.geoserver.cluster.JMSPublisher;
+import org.geoserver.cluster.impl.events.configuration.JMSEventType;
 import org.geoserver.cluster.impl.events.configuration.JMSGlobalModifyEvent;
 import org.geoserver.cluster.impl.events.configuration.JMSServiceModifyEvent;
+import org.geoserver.cluster.impl.events.configuration.JMSSettingsModifyEvent;
 import org.geoserver.cluster.impl.utils.BeanUtils;
 import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.GeoServer;
@@ -174,6 +176,64 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer imple
     }
 
     @Override
+    public void handleSettingsAdded(SettingsInfo settings) {
+        // this handler is invoked when new settings for a certain workspace are added
+        SettingsInfo finalSettings = ModificationProxy.unwrap(settings);
+        JMSSettingsModifyEvent event = new JMSSettingsModifyEvent(finalSettings, JMSEventType.ADDED);
+        handleSettingsEvent(event);
+    }
+
+    @Override
+    public void handleSettingsModified(SettingsInfo settings, List<String> propertyNames,
+                                       List<Object> oldValues, List<Object> newValues) {
+        // this handler is invoked when new settings for a certain workspace are added
+        SettingsInfo finalSettings = ModificationProxy.unwrap(settings);
+        JMSSettingsModifyEvent event = new JMSSettingsModifyEvent(finalSettings, propertyNames, oldValues, newValues);
+        handleSettingsEvent(event);
+    }
+
+    @Override
+    public void handleSettingsRemoved(SettingsInfo settings) {
+        // this handler is invoked when new settings for a certain workspace are added
+        SettingsInfo finalSettings = ModificationProxy.unwrap(settings);
+        JMSSettingsModifyEvent event = new JMSSettingsModifyEvent(finalSettings, JMSEventType.REMOVED);
+        handleSettingsEvent(event);
+    }
+
+    @Override
+    public void handleSettingsPostModified(SettingsInfo settings) {
+        // we rely on settings modified event instead
+    }
+
+    /**
+     * Helper method that publish a settings modified event.
+     */
+    private void handleSettingsEvent(JMSSettingsModifyEvent event) {
+        // if possible log about the received event
+        if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
+            LOGGER.fine(String.format("Incoming settings '%s' modified event of type '%s'.",
+                    event.getSource().getId(), event.getEventType()));
+        }
+        // skip incoming events if producer is not enabled
+        if (!isEnabled()) {
+            if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
+                LOGGER.fine(String.format(
+                        "Skipping incoming settings '%s' modified event of type '%s' since producer is not enabled.",
+                        event.getSource().getId(), event.getEventType()));
+            }
+            return;
+        }
+        // let's publish this event
+        try {
+            jmsPublisher.publish(getTopic(), getJmsTemplate(), getProperties(), event);
+        } catch (Exception exception) {
+            // failed to publish event
+            LOGGER.severe(String.format("Error publishing settings '%s' modified event of type '%s': %s",
+                    event.getSource().getId(), event.getEventType(), exception.getLocalizedMessage()));
+        }
+    }
+
+    @Override
     public void handlePostLoggingChange(LoggingInfo logging) {
         // send(xstream.toXML(logging), JMSConfigEventType.LOGGING_CHANGE);
     }
@@ -200,31 +260,6 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer imple
         // TODO disable and re-enable the producer!!!!!
         // this is potentially a problem since this listener should be the first
         // called by the GeoServer.
-
-    }
-
-    @Override
-    public void handleSettingsAdded(SettingsInfo settings) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void handleSettingsModified(SettingsInfo settings, List<String> propertyNames,
-            List<Object> oldValues, List<Object> newValues) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void handleSettingsPostModified(SettingsInfo settings) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void handleSettingsRemoved(SettingsInfo settings) {
-        // TODO Auto-generated method stub
 
     }
 }

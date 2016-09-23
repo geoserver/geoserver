@@ -9,7 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.apache.commons.lang.NullArgumentException;
-import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.cluster.events.ToggleSwitch;
 import org.geoserver.cluster.impl.events.configuration.JMSServiceModifyEvent;
 import org.geoserver.cluster.impl.utils.BeanUtils;
@@ -17,10 +16,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 
 import com.thoughtworks.xstream.XStream;
-
-import static org.geoserver.cluster.impl.events.configuration.JMSServiceModifyEvent.Type.ADDED;
-import static org.geoserver.cluster.impl.events.configuration.JMSServiceModifyEvent.Type.MODIFIED;
-import static org.geoserver.cluster.impl.events.configuration.JMSServiceModifyEvent.Type.REMOVED;
 
 /**
  * 

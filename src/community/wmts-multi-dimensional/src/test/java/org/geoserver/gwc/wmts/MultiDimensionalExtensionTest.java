@@ -18,6 +18,7 @@ import org.w3c.dom.Document;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -192,6 +193,17 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         checkXpathCount(result, "/md:Domains/md:SpaceDomain/md:BoundingBox[@maxy='-1.0']", "1");
         // the domain should not contain any values
         checkXpathCount(result, "/md:Domains/md:DimensionDomain[md:Size='0']", "2");
+    }
+
+    @Test
+    public void testRasterDescribeDomainsOperationWithBoundingAndWrongTileMatrixSet() throws Exception {
+        // perform the get describe domains operation with a spatial restriction and in invalid tile matrix set
+        String queryRequest = String.format("request=DescribeDomains&Version=1.0.0&Layer=%s&TileMatrixSet=EPSG:XXXX",
+                RASTER_ELEVATION_TIME.getPrefix() + ":" + RASTER_ELEVATION_TIME.getLocalPart() + "&bbox=5,5,6,6");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts?" + queryRequest);
+        // this request should fail because of the invalid tile matrix set
+        assertThat(response.getContentAsString(), containsString("Unknown grid set"));
+        assertThat(response.getStatus(), is(500));
     }
 
     @Test

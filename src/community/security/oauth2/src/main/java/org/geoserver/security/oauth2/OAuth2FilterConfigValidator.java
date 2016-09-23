@@ -8,7 +8,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.security.validation.FilterConfigValidator;
@@ -47,7 +46,7 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
                         OAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED);
             }
         }
-        super.validateFilterConfig((PreAuthenticatedUserNameFilterConfig) filterConfig);
+        super.validateFilterConfig((SecurityNamedServiceConfig) filterConfig);
 
         if (StringUtils.hasLength(filterConfig.getCheckTokenEndpointUrl()) == false)
             throw createFilterException(
@@ -68,7 +67,8 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
                 throw createFilterException(
                         OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED);
             }
-            if ("https".equalsIgnoreCase(accessTokenUri.getProtocol()) == false)
+            if (filterConfig.getForceAccessTokenUriHttps() && 
+                    "https".equalsIgnoreCase(accessTokenUri.getProtocol()) == false)
                 throw createFilterException(
                         OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_NOT_HTTPS);
         }
@@ -81,7 +81,8 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
                 throw createFilterException(
                         OAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED);
             }
-            if ("https".equalsIgnoreCase(userAuthorizationUri.getProtocol()) == false)
+            if (filterConfig.getForceUserAuthorizationUriHttps() && 
+                    "https".equalsIgnoreCase(userAuthorizationUri.getProtocol()) == false)
                 throw createFilterException(
                         OAuth2FilterConfigException.OAUTH2_USERAUTHURI_NOT_HTTPS);
         }

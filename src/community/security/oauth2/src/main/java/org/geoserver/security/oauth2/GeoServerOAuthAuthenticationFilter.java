@@ -23,13 +23,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.filter.AuthenticationCachingFilter;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
@@ -53,14 +53,11 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticatedUserNameFilter
         implements GeoServerAuthenticationFilter, LogoutHandler {
 
-    public static final String FILTER_LOGIN_ENDPOINT = "/j_spring_outh2_login";
-
     OAuth2FilterConfig filterConfig;
 
     OAuth2RestOperations restTemplate;
 
-    OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
-            FILTER_LOGIN_ENDPOINT);
+    OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter("/");
 
     ResourceServerTokenServices tokenServices;
 
@@ -80,24 +77,7 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
 
-        aep = new AuthenticationEntryPoint() {
-
-            @Override
-            public void commence(HttpServletRequest request, HttpServletResponse response,
-                    AuthenticationException authException) throws IOException, ServletException {
-                final StringBuilder loginUri = new StringBuilder(
-                        filterConfig.getUserAuthorizationUri());
-                loginUri.append("?").append("response_type=code").append("&").append("client_id=")
-                        .append(filterConfig.getCliendId()).append("&").append("scope=")
-                        .append(filterConfig.getScopes().replace(",", "%20")).append("&")
-                        .append("redirect_uri=").append(filterConfig.getRedirectUri());
-
-                if (filterConfig.getEnableRedirectAuthenticationEntryPoint()
-                        || request.getRequestURI().endsWith(FILTER_LOGIN_ENDPOINT)) {
-                    response.sendRedirect(loginUri.toString());
-                }
-            }
-        };
+        aep = filterConfig.getAuthenticationEntryPoint();
     }
 
     @Override
@@ -112,7 +92,7 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        String cacheKey = authenticateFromCache(this, (HttpServletRequest) request);
+        String cacheKey = authenticateFromCache(this, (HttpServletRequest) request, (HttpServletResponse) response);
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
 
@@ -131,12 +111,44 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
         chain.doFilter(request, response);
     }
 
+    protected String authenticateFromCache(AuthenticationCachingFilter filter, HttpServletRequest request, HttpServletResponse response) {
+        
+        Authentication authFromCache=null;
+        String cacheKey=null;
+        if (SecurityContextHolder.getContext().getAuthentication()==null) {
+            cacheKey = getCacheKey(request, response);
+            if (cacheKey!=null) { 
+                authFromCache = getSecurityManager().getAuthenticationCache().get(getName(), cacheKey);
+                if (authFromCache!=null)
+                    SecurityContextHolder.getContext().setAuthentication(authFromCache);
+                else
+                    return cacheKey;
+            }
+                
+        }
+        return null;     
+    }
+    
+    protected String getCacheKey(HttpServletRequest request, HttpServletResponse response) {
+        
+        if (request.getSession(false)!=null) // no caching if there is an HTTP session
+            return null;
+        
+        String retval;
+        try {
+            retval = getPreAuthenticatedPrincipal(request, response);
+        } catch (Exception e) {
+            return null;
+        }
+        
+        if (GeoServerUser.ROOT_USERNAME.equals(retval))
+            return null;
+        return retval;
+    }
+    
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) {
-
-        request.setAttribute(GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR,
-                filterConfig.getLogoutUri());
 
         OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
         if (token != null && token.getTokenType().equals(OAuth2AccessToken.BEARER_TYPE)) {
@@ -149,23 +161,26 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
                 restTemplate.getOAuth2ClientContext()
                         .removePreservedState(accessTokenRequest.getStateKey());
             }
-        }
 
-        request.getSession().invalidate();
-        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        Cookie[] allCookies = request.getCookies();
+            request.getSession().invalidate();
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            Cookie[] allCookies = request.getCookies();
 
-        for (int i = 0; i < allCookies.length; i++) {
-            String name = allCookies[i].getName();
-            if (name.equalsIgnoreCase("JSESSIONID")) {
-                Cookie cookieToDelete = allCookies[i];
-                cookieToDelete.setMaxAge(-1);
-                cookieToDelete.setPath("/");
-                cookieToDelete.setComment("EXPIRING COOKIE at " + System.currentTimeMillis());
-                response.addCookie(cookieToDelete);
+            for (int i = 0; i < allCookies.length; i++) {
+                String name = allCookies[i].getName();
+                if (name.equalsIgnoreCase("JSESSIONID")) {
+                    Cookie cookieToDelete = allCookies[i];
+                    cookieToDelete.setMaxAge(-1);
+                    cookieToDelete.setPath("/");
+                    cookieToDelete.setComment("EXPIRING COOKIE at " + System.currentTimeMillis());
+                    response.addCookie(cookieToDelete);
+                }
             }
+            SecurityContextHolder.getContext().setAuthentication(null);
+
+            request.setAttribute(GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR,
+                    filterConfig.getLogoutUri());
         }
-        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     @Override

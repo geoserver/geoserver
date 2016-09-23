@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (C) 2016 Open Source Geospatial Foundation. All rights 
-	reserved. This code is licensed under the GPL 2.0 license, available at the 
-	root application directory. -->
+<!-- Copyright (C) 2016 Open Source Geospatial Foundation. All rights reserved. 
+	This code is licensed under the GPL 2.0 license, available at the root application 
+	directory. -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:sec="http://www.springframework.org/schema/security"
-	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:sec="http://www.springframework.org/schema/security" xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
@@ -20,24 +19,6 @@
 	<context:annotation-config />
 
 	<!-- Scan for auto-wiring classes in spring saml packages -->
-    <context:component-scan base-package="org.geoserver.security.oauth2" />
-    
-    <bean class="org.geoserver.platform.ModuleStatusImpl">
-    	<constructor-arg index="0" value="gs-sec-oauth2"/>
-    	<constructor-arg index="1" value="GeoServer Security OAuth2"/>
-    </bean>
+	<context:component-scan base-package="org.geoserver.security.oauth2" />
 
-	<bean id="oAuth2AuthenticationProvider" 
-		class="org.geoserver.security.oauth2.GeoServerOAuthAuthenticationProvider">
-		<constructor-arg ref="authenticationManager" />
-	</bean>
-
-  <!-- ui auth provider panel info-->
-  <bean id="oauth2AuthPanelInfo" class="org.geoserver.web.security.oauth2.OAuth2AuthProviderPanelInfo">
-        <property name="id" value="security.OAuth2AuthProvider" />
-        <property name="shortTitleKey" value="OAuth2AuthProviderPanel.short"/>
-        <property name="titleKey" value="OAuth2AuthProviderPanel.title"/>
-        <property name="descriptionKey" value="OAuth2AuthProviderPanel.description"/>
-  </bean>
-  
 </beans>

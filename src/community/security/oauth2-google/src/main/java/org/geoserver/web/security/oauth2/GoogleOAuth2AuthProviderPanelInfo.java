@@ -5,7 +5,7 @@
 package org.geoserver.web.security.oauth2;
 
 import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
-import org.geoserver.security.oauth2.OAuth2FilterConfig;
+import org.geoserver.security.oauth2.GoogleOAuth2FilterConfig;
 import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 
 /**
@@ -13,14 +13,14 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
  * 
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-public class OAuth2AuthProviderPanelInfo
-        extends AuthenticationFilterPanelInfo<OAuth2FilterConfig, OAuth2AuthProviderPanel> {
+public class GoogleOAuth2AuthProviderPanelInfo
+        extends AuthenticationFilterPanelInfo<GoogleOAuth2FilterConfig, GoogleOAuth2AuthProviderPanel> {
 
     private static final long serialVersionUID = 9128733240285123850L;
 
-    public OAuth2AuthProviderPanelInfo() {
-        setComponentClass(OAuth2AuthProviderPanel.class);
+    public GoogleOAuth2AuthProviderPanelInfo() {
+        setComponentClass(GoogleOAuth2AuthProviderPanel.class);
         setServiceClass(GeoServerOAuthAuthenticationFilter.class);
-        setServiceConfigClass(OAuth2FilterConfig.class);
+        setServiceConfigClass(GoogleOAuth2FilterConfig.class);
     }
 }

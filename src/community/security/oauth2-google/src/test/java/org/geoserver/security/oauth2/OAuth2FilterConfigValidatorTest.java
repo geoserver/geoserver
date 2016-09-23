@@ -11,8 +11,6 @@ import java.util.logging.Logger;
 
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.validation.FilterConfigException;
-import org.geoserver.security.xml.XMLRoleService;
-import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.geotools.util.logging.Logging;
 import org.junit.Before;
@@ -37,8 +35,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
 
     @Test
     public void testOAuth2FilterConfigValidation() throws Exception {
-        OAuth2FilterConfig config = new OAuth2FilterConfig();
-
+        GoogleOAuth2FilterConfig config = new GoogleOAuth2FilterConfig();
         config.setClassName(GeoServerOAuthAuthenticationFilter.class.getName());
         config.setName("testOAuth2");
 
@@ -46,13 +43,14 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         validator.validateOAuth2FilterConfig(config);
     }
 
-    public void check(OAuth2FilterConfig config) throws Exception {
+    public void check(GoogleOAuth2FilterConfig config) throws Exception {
 
         boolean failed = false;
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (FilterConfigException ex) {
-            assertEquals(FilterConfigException.ROLE_SOURCE_NEEDED, ex.getId());
+            assertEquals(OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED, ex.getId());
+            // assertEquals(FilterConfigException.ROLE_SOURCE_NEEDED, ex.getId());
             assertEquals(0, ex.getArgs().length);
             LOGGER.info(ex.getMessage());
 
@@ -65,7 +63,8 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (FilterConfigException ex) {
-            assertEquals(FilterConfigException.USER_GROUP_SERVICE_NEEDED, ex.getId());
+            assertEquals(OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED, ex.getId());
+            // assertEquals(FilterConfigException.USER_GROUP_SERVICE_NEEDED, ex.getId());
             assertEquals(0, ex.getArgs().length);
             LOGGER.info(ex.getMessage());
 
@@ -78,55 +77,11 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (FilterConfigException ex) {
-            assertEquals(FilterConfigException.UNKNOWN_USER_GROUP_SERVICE, ex.getId());
-            assertEquals(1, ex.getArgs().length);
-            assertEquals("blabla", ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());
-            failed = true;
-        }
-        assertTrue(failed);
-
-        config.setUserGroupServiceName(XMLUserGroupService.DEFAULT_NAME);
-
-        config.setRoleSource(PreAuthenticatedUserNameRoleSource.RoleService);
-        config.setRoleServiceName("blabla");
-        failed = false;
-        try {
-            validator.validateOAuth2FilterConfig(config);
-        } catch (FilterConfigException ex) {
-            assertEquals(FilterConfigException.UNKNOWN_ROLE_SERVICE, ex.getId());
-            assertEquals(1, ex.getArgs().length);
-            assertEquals("blabla", ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());
-            failed = true;
-        }
-        assertTrue(failed);
-
-        config.setRoleServiceName(XMLRoleService.DEFAULT_NAME);
-
-        config.setRoleSource(PreAuthenticatedUserNameRoleSource.Header);
-        failed = false;
-        try {
-            validator.validateOAuth2FilterConfig(config);
-        } catch (FilterConfigException ex) {
-            assertEquals(FilterConfigException.ROLES_HEADER_ATTRIBUTE_NEEDED, ex.getId());
+            // assertEquals(FilterConfigException.UNKNOWN_USER_GROUP_SERVICE, ex.getId());
+            assertEquals(OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED, ex.getId());
             assertEquals(0, ex.getArgs().length);
             LOGGER.info(ex.getMessage());
 
-            failed = true;
-        }
-        assertTrue(failed);
-        config.setRolesHeaderAttribute("roles");
-
-        config.setRoleConverterName("unknown");
-        failed = false;
-        try {
-            validator.validateOAuth2FilterConfig(config);
-        } catch (FilterConfigException ex) {
-            assertEquals(FilterConfigException.UNKNOWN_ROLE_CONVERTER, ex.getId());
-            assertEquals(1, ex.getArgs().length);
-            assertEquals("unknown", ex.getArgs()[0]);
-            LOGGER.info(ex.getMessage());
             failed = true;
         }
         assertTrue(failed);

@@ -10,7 +10,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
-import org.geoserver.security.oauth2.OAuth2FilterConfig;
+import org.geoserver.security.oauth2.GoogleOAuth2FilterConfig;
 import org.geoserver.security.web.auth.PreAuthenticatedUserNameFilterPanel;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.HelpLink;
@@ -21,8 +21,8 @@ import org.geotools.util.logging.Logging;
  * 
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-public class OAuth2AuthProviderPanel
-        extends PreAuthenticatedUserNameFilterPanel<OAuth2FilterConfig> {
+public class GoogleOAuth2AuthProviderPanel
+        extends PreAuthenticatedUserNameFilterPanel<GoogleOAuth2FilterConfig> {
 
     private static final long serialVersionUID = 689778998902987791L;
 
@@ -30,9 +30,9 @@ public class OAuth2AuthProviderPanel
 
     GeoServerDialog dialog;
 
-    IModel<OAuth2FilterConfig> model;
+    IModel<GoogleOAuth2FilterConfig> model;
 
-    public OAuth2AuthProviderPanel(String id, IModel<OAuth2FilterConfig> model) {
+    public GoogleOAuth2AuthProviderPanel(String id, IModel<GoogleOAuth2FilterConfig> model) {
         super(id, model);
 
         this.dialog = (GeoServerDialog) get("dialog");
@@ -50,6 +50,8 @@ public class OAuth2AuthProviderPanel
         add(new HelpLink("clientSecretHelp", this).setDialog(dialog));
 
         add(new CheckBox("enableRedirectAuthenticationEntryPoint"));
+        add(new CheckBox("forceAccessTokenUriHttps"));
+        add(new CheckBox("forceUserAuthorizationUriHttps"));
         add(new TextField<String>("accessTokenUri"));
         add(new TextField<String>("userAuthorizationUri"));
         add(new TextField<String>("redirectUri"));

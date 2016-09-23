@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (C) 2016 Open Source Geospatial Foundation. All rights 
-	reserved. This code is licensed under the GPL 2.0 license, available at the 
-	root application directory. -->
+<!-- Copyright (C) 2016 Open Source Geospatial Foundation. All rights reserved. 
+	This code is licensed under the GPL 2.0 license, available at the root application 
+	directory. -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:sec="http://www.springframework.org/schema/security" xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
@@ -17,20 +17,36 @@
 
 	<bean class="org.geoserver.platform.ModuleStatusImpl">
 		<constructor-arg index="0" value="gs-sec-oauth2-google" />
-		<constructor-arg index="1"
-			value="GeoServer Security OAuth2 Google" />
+		<constructor-arg index="1" value="GeoServer Security OAuth2 Google" />
 	</bean>
 
-	<bean id="geoServerOAuth2TokenServices" class="org.geoserver.security.oauth2.services.GoogleTokenServices">
+	<bean id="googleOAuth2AuthenticationProvider"
+		class="org.geoserver.security.oauth2.GoogleOAuth2AuthenticationProvider">
+		<constructor-arg ref="authenticationManager" />
+	</bean>
+	
+	<bean id="geoServerOAuth2TokenServices"
+		class="org.geoserver.security.oauth2.services.GoogleTokenServices">
 		<property name="accessTokenConverter">
-			<bean class="org.geoserver.security.oauth2.services.GoogleAccessTokenConverter">
+			<bean
+				class="org.geoserver.security.oauth2.services.GoogleAccessTokenConverter">
 				<property name="userTokenConverter">
-					<bean class="org.geoserver.security.oauth2.services.GoogleUserAuthenticationConverter">
+					<bean
+						class="org.geoserver.security.oauth2.services.GoogleUserAuthenticationConverter">
 						<constructor-arg value="email" />
 					</bean>
 				</property>
 			</bean>
 		</property>
+	</bean>
+
+	<!-- ui auth provider panel info -->
+	<bean id="googleOAuth2AuthPanelInfo"
+		class="org.geoserver.web.security.oauth2.GoogleOAuth2AuthProviderPanelInfo">
+		<property name="id" value="security.GoogleOAuth2AuthProvider" />
+		<property name="shortTitleKey" value="GoogleOAuth2AuthProviderPanel.short" />
+		<property name="titleKey" value="GoogleOAuth2AuthProviderPanel.title" />
+		<property name="descriptionKey" value="GoogleOAuth2AuthProviderPanel.description" />
 	</bean>
 
 </beans>

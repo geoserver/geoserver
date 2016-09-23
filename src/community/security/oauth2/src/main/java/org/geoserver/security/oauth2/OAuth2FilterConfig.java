@@ -4,165 +4,130 @@
  */
 package org.geoserver.security.oauth2;
 
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
+import org.springframework.security.web.AuthenticationEntryPoint;
 
 /**
  * The GeoServer OAuth2 Filter Configuration. This POJO contains the properties needed to correctly configure the Spring Auth Filter.
  * 
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-public class OAuth2FilterConfig extends PreAuthenticatedUserNameFilterConfig {
-
-    private static final long serialVersionUID = 3448775031434700860L;
-
-    private String cliendId;
-
-    private String clientSecret;
-
-    private String accessTokenUri = "https://accounts.google.com/o/oauth2/token";
-
-    private String userAuthorizationUri = "https://accounts.google.com/o/oauth2/auth";
-
-    private String redirectUri = "http://localhost:8080/geoserver";
-
-    private String checkTokenEndpointUrl = "https://www.googleapis.com/oauth2/v1/tokeninfo";
-
-    private String logoutUri = "https://accounts.google.com/logout";
-
-    private String scopes;
-    
-    private Boolean enableRedirectAuthenticationEntryPoint = false;
-
-    @Override
-    public boolean providesAuthenticationEntryPoint() {
-        return true;
-    }
+public interface OAuth2FilterConfig {
 
     /**
      * @return the cliendId
      */
-    public String getCliendId() {
-        return cliendId;
-    }
+    public String getCliendId();
 
     /**
      * @param cliendId the cliendId to set
      */
-    public void setCliendId(String cliendId) {
-        this.cliendId = cliendId;
-    }
+    public void setCliendId(String cliendId);
 
     /**
      * @return the clientSecret
      */
-    public String getClientSecret() {
-        return clientSecret;
-    }
+    public String getClientSecret();
 
     /**
      * @param clientSecret the clientSecret to set
      */
-    public void setClientSecret(String clientSecret) {
-        this.clientSecret = clientSecret;
-    }
+    public void setClientSecret(String clientSecret);
+
+    /**
+     * @return
+     */
+    public Boolean getForceAccessTokenUriHttps();
+
+    /**
+     * @param forceAccessTokenUriHttps
+     */
+    public void setForceAccessTokenUriHttps(Boolean forceAccessTokenUriHttps);
 
     /**
      * @return the accessTokenUri
      */
-    public String getAccessTokenUri() {
-        return accessTokenUri;
-    }
+    public String getAccessTokenUri();
 
     /**
      * @param accessTokenUri the accessTokenUri to set
      */
-    public void setAccessTokenUri(String accessTokenUri) {
-        this.accessTokenUri = accessTokenUri;
-    }
+    public void setAccessTokenUri(String accessTokenUri);
+
+    /**
+     * @return
+     */
+    public Boolean getForceUserAuthorizationUriHttps();
+
+    /**
+     * @param forceAccessTokenUriHttps
+     */
+    public void setForceUserAuthorizationUriHttps(Boolean forceUserAuthorizationUriHttps);
 
     /**
      * @return the userAuthorizationUri
      */
-    public String getUserAuthorizationUri() {
-        return userAuthorizationUri;
-    }
+    public String getUserAuthorizationUri();
 
     /**
      * @param userAuthorizationUri the userAuthorizationUri to set
      */
-    public void setUserAuthorizationUri(String userAuthorizationUri) {
-        this.userAuthorizationUri = userAuthorizationUri;
-    }
+    public void setUserAuthorizationUri(String userAuthorizationUri);
 
     /**
      * @return the redirectUri
      */
-    public String getRedirectUri() {
-        return redirectUri;
-    }
+    public String getRedirectUri();
 
     /**
      * @param redirectUri the redirectUri to set
      */
-    public void setRedirectUri(String redirectUri) {
-        this.redirectUri = redirectUri;
-    }
+    public void setRedirectUri(String redirectUri);
 
     /**
      * @return the checkTokenEndpointUrl
      */
-    public String getCheckTokenEndpointUrl() {
-        return checkTokenEndpointUrl;
-    }
+    public String getCheckTokenEndpointUrl();
 
     /**
      * @param checkTokenEndpointUrl the checkTokenEndpointUrl to set
      */
-    public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl) {
-        this.checkTokenEndpointUrl = checkTokenEndpointUrl;
-    }
+    public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl);
 
     /**
      * @return the logoutUri
      */
-    public String getLogoutUri() {
-        return logoutUri;
-    }
+    public String getLogoutUri();
 
     /**
      * @param logoutUri the logoutUri to set
      */
-    public void setLogoutUri(String logoutUri) {
-        this.logoutUri = logoutUri;
-    }
+    public void setLogoutUri(String logoutUri);
 
     /**
      * @return the scopes
      */
-    public String getScopes() {
-        return scopes;
-    }
+    public String getScopes();
 
     /**
      * @param scopes the scopes to set
      */
-    public void setScopes(String scopes) {
-        this.scopes = scopes;
-    }
+    public void setScopes(String scopes);
 
     /**
      * @return the enableRedirectAuthenticationEntryPoint
      */
-    public Boolean getEnableRedirectAuthenticationEntryPoint() {
-        return enableRedirectAuthenticationEntryPoint;
-    }
+    public Boolean getEnableRedirectAuthenticationEntryPoint();
 
     /**
      * @param enableRedirectAuthenticationEntryPoint the enableRedirectAuthenticationEntryPoint to set
      */
     public void setEnableRedirectAuthenticationEntryPoint(
-            Boolean enableRedirectAuthenticationEntryPoint) {
-        this.enableRedirectAuthenticationEntryPoint = enableRedirectAuthenticationEntryPoint;
-    }
+            Boolean enableRedirectAuthenticationEntryPoint);
 
+    /**
+     * Returns filter {@link AuthenticationEntryPoint} actual implementation
+     * 
+     * @return {@link AuthenticationEntryPoint}
+     */
+    public AuthenticationEntryPoint getAuthenticationEntryPoint();
 }

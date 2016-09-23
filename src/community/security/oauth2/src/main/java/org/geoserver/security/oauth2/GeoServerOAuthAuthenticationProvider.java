@@ -24,7 +24,7 @@ import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
  * 
  * @author Alessio Fabiani, GeoSolutions
  */
-public class GeoServerOAuthAuthenticationProvider extends AbstractFilterProvider
+public abstract class GeoServerOAuthAuthenticationProvider extends AbstractFilterProvider
         implements SecurityManagerListener {
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security.outh2");
@@ -46,10 +46,7 @@ public class GeoServerOAuthAuthenticationProvider extends AbstractFilterProvider
     }
 
     @Override
-    public void configure(XStreamPersister xp) {
-        super.configure(xp);
-        xp.getXStream().alias("oauth2Authentication", OAuth2FilterConfig.class);
-    }
+    public abstract void configure(XStreamPersister xp);
 
     @Override
     public Class<? extends GeoServerSecurityFilter> getFilterClass() {
@@ -66,11 +63,6 @@ public class GeoServerOAuthAuthenticationProvider extends AbstractFilterProvider
     public SecurityConfigValidator createConfigurationValidator(
             GeoServerSecurityManager securityManager) {
         return new OAuth2FilterConfigValidator(securityManager);
-    }
-
-    @Override
-    public void handlePostChanged(GeoServerSecurityManager securityManager) {
-        // Nothing to do
     }
 
 }

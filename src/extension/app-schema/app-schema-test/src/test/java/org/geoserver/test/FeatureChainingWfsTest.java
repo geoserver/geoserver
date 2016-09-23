@@ -1494,6 +1494,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
             AppSchemaDataAccess da = (AppSchemaDataAccess) fs.getDataStore();
             FeatureTypeMapping rootMapping = da.getMappingByNameOrElement(ftInfo.getQualifiedName());
 
+            // skip test if it's not running against a database
+            assumeTrue(rootMapping.getSource().getDataStore() instanceof JDBCDataStore);
+
             JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
             NestedFilterToSQL nestedFilterToSQL = createNestedFilterEncoder(rootMapping);
 

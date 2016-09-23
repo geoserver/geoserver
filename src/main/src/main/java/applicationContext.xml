@@ -161,6 +161,7 @@
   
   <!-- resource pool initializer -->
   <bean id="resourcePoolInitializer" class="org.geoserver.catalog.ResourcePoolInitializer">
+      <constructor-arg ref="entityResolverProvider"/>
   </bean>
   
   <!-- security wrapper factories  -->

@@ -66,11 +66,6 @@
     </dependency>
     <dependency>
       <groupId>org.locationtech.geogig</groupId>
-      <artifactId>geogig-osm</artifactId>
-      <version>${geogig.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.locationtech.geogig</groupId>
       <artifactId>geogig-postgres</artifactId>
       <version>${geogig.version}</version>
     </dependency>

@@ -22,6 +22,7 @@ import org.geoserver.test.ows.KvpRequestReaderTestSupport;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geotools.styling.Style;
+import org.opengis.filter.PropertyIsEqualTo;
 
 public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
     GetMapXmlReader reader;
@@ -82,6 +83,22 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
         Style expected = getCatalog().getStyleByName("polygon").getStyle();
         Style style = request.getStyles().get(0);
         assertEquals(expected, style);
+    }
+    
+    public void testLayerFeatureConstraintFilterParsing() throws Exception {
+    	GetMapRequest request = (GetMapRequest) reader.createRequest();
+        BufferedReader input = getResourceInputStream("WMSPostLayerFeatureConstraintFilter.xml");
+
+        request = (GetMapRequest) reader.read(request, input, new HashMap());
+        
+        // Named layer
+        String linesLayer = MockData.LINES.getLocalPart();
+        assertEquals(1, request.getLayers().size());
+        assertTrue(request.getLayers().get(0).getName().endsWith(linesLayer));
+
+        assertEquals(1, request.getFilter().size());
+        PropertyIsEqualTo parsed = (PropertyIsEqualTo) request.getFilter().get(0);
+        assertEquals("[ NAME = VALUE ]", parsed.toString());
     }
 
     private BufferedReader getResourceInputStream(String classRelativePath) throws IOException {

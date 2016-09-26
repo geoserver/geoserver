@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ows:GetMap xmlns:sld="http://www.opengis.net/sld" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" xmlns:se="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" service="WMS" version="1.1.1" format="image/png" crs="EPSG:4326">
+	<sld:StyledLayerDescriptor version="1.0.0">
+		<sld:NamedLayer>
+			<sld:Name>cgf:Lines</sld:Name>
+			<sld:LayerFeatureConstraints>
+				<sld:FeatureTypeConstraint>
+					<sld:FeatureTypeName>Lines</sld:FeatureTypeName>
+					<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>NAME</ogc:PropertyName>
+							<ogc:Literal>VALUE</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:Filter>
+				</sld:FeatureTypeConstraint>
+			</sld:LayerFeatureConstraints>
+			<sld:NamedStyle>
+				<sld:Name>line</sld:Name>
+			</sld:NamedStyle>
+		</sld:NamedLayer>
+	</sld:StyledLayerDescriptor>
+	<sld:BoundingBox srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+		<gml:coord>
+			<gml:X>-74.02722</gml:X>
+			<gml:Y>40.684221</gml:Y>
+		</gml:coord>
+		<gml:coord>
+			<gml:X>-73.907005</gml:X>
+			<gml:Y>40.878178</gml:Y>
+		</gml:coord>
+	</sld:BoundingBox>
+	<sld:Output>
+		<sld:Format>image/png</sld:Format>
+		<sld:Transparent>false</sld:Transparent>
+		<sld:Size>
+			<sld:Width>476</sld:Width>
+			<sld:Height>768</sld:Height>
+		</sld:Size>
+	</sld:Output>
+	<sld:Exceptions>XML</sld:Exceptions>
+</ows:GetMap>

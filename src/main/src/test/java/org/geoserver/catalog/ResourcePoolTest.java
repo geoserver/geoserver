@@ -8,13 +8,7 @@ package org.geoserver.catalog;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -48,6 +42,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
 import org.geotools.ows.ServiceException;
@@ -433,7 +428,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     }
     
     @Test
-    public void testEntityExpansion() throws Exception {
+    public void testWmsCascadeEntityExpansion() throws Exception {
         final ResourcePool rp = getCatalog().getResourcePool();
         WMSStoreInfo info = getCatalog().getFactory().createWebMapServer();
         URL url = getClass().getResource("1.3.0Capabilities-xxe.xml");
@@ -449,5 +444,24 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             assertThat(cause.getMessage(), containsString("Error while parsing XML"));
         }
         
+    }
+    
+    @Test
+    public void testWfsCascadeEntityExpansion() throws Exception {
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        DataStoreInfo ds = cb.buildDataStore("wfs-xxe");
+        URL url = getClass().getResource("wfs1.1.0Capabilities-xxe.xml");
+        ds.getConnectionParameters().put(WFSDataStoreFactory.URL.key, url);
+        // required or the store won't fetch caps from a file
+        ds.getConnectionParameters().put("TESTING", Boolean.TRUE);
+        final ResourcePool rp = getCatalog().getResourcePool();
+        try {
+            rp.getDataStore(ds);
+            fail("Store creation should have failed to to XXE attack");
+        } catch(Exception e) {
+            String message = e.getMessage();
+            assertThat(message, containsString("Entity resolution disallowed"));
+            assertThat(message, containsString("file:///file/not/there"));
+        }
     }
 }

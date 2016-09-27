@@ -30,22 +30,21 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.util.NoExternalEntityResolver;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.xml.NoExternalEntityResolver;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.vfny.geoserver.wcs.WcsException;
 import org.w3c.dom.Document;
-
-import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetCoverageTest extends AbstractGetCoverageTest {
 

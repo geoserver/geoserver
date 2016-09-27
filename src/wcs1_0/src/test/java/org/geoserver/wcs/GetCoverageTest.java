@@ -24,8 +24,6 @@ import javax.imageio.ImageReader;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
-import net.opengis.wcs10.GetCoverageType;
-
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
@@ -36,7 +34,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.util.EntityResolverProvider;
-import org.geoserver.util.NoExternalEntityResolver;
 import org.geoserver.wcs.kvp.Wcs10GetCoverageRequestReader;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
@@ -52,6 +49,7 @@ import org.geotools.metadata.iso.spatial.PixelTranslation;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.wcs.WCSConfiguration;
+import org.geotools.xml.NoExternalEntityResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
@@ -59,9 +57,10 @@ import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
+import net.opengis.wcs10.GetCoverageType;
 
 /**
  * Tests for GetCoverage operation on WCS.

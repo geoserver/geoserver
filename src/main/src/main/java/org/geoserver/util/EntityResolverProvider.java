@@ -6,6 +6,7 @@
 package org.geoserver.util;
 
 import org.geoserver.config.GeoServer;
+import org.geotools.xml.NoExternalEntityResolver;
 import org.xml.sax.EntityResolver;
 
 
@@ -23,7 +24,6 @@ public class EntityResolverProvider {
             null);
 
     private GeoServer geoServer;
-    private NoExternalEntityResolver noExternalResolver = new NoExternalEntityResolver();
     
     public EntityResolverProvider(GeoServer geoServer) {
         this.geoServer = geoServer;
@@ -41,6 +41,6 @@ public class EntityResolverProvider {
         }
 
         // default behaviour: entities disabled
-        return noExternalResolver;
+        return NoExternalEntityResolver.INSTANCE;
     } 
 }

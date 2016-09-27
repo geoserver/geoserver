@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.geoserver.util.NoExternalEntityResolver;
 import org.geoserver.wcs2_0.WCSTestSupport;
+import org.geotools.xml.NoExternalEntityResolver;
 import org.junit.Test;
 import org.w3c.dom.Document;
 

@@ -43,6 +43,7 @@ import org.geoserver.web.wicket.FileExistsValidator;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.Repository;
+import org.xml.sax.EntityResolver;
 
 /**
  * A default {@link StoreEditPanel} contribution for the {@link DataStorePanelInfo} extension point
@@ -102,8 +103,8 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             final Param[] dsParams = dsFactory.getParametersInfo();
             for (Param p : dsParams) {
                 ParamInfo paramInfo = new ParamInfo(p);
-                // hide the repository params, the resource pool will inject it transparently
-                if (!Repository.class.equals(paramInfo.getBinding())) {
+                // hide the repository and entity resolver params, the resource pool will inject it transparently
+                if (!Repository.class.equals(paramInfo.getBinding()) && !EntityResolver.class.equals(paramInfo.getBinding())) {
                     paramsMetadata.put(p.key, paramInfo);
                     if (isNew && !p.isDeprecated()) {
                         applyParamDefault(paramInfo, info);

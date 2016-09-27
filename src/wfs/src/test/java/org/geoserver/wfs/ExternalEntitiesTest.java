@@ -9,14 +9,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import org.junit.Assert;
-
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.util.NoExternalEntityResolver;
+import org.geotools.xml.NoExternalEntityResolver;
+import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 

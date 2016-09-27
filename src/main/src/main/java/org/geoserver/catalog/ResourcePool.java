@@ -1510,7 +1510,7 @@ public class ResourcePool {
             MetadataMap metadata = coverageInfo.getMetadata();
             if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
                 CoverageView coverageView = (CoverageView) metadata.get(CoverageView.COVERAGE_VIEW);
-                return CoverageViewReader.wrap((GridCoverage2DReader) reader, coverageView, coverageInfo, hints);
+                reader = CoverageViewReader.wrap((GridCoverage2DReader) reader, coverageView, coverageInfo, hints);
             }
         }
 

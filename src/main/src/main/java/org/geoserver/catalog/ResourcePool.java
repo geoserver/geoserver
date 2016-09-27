@@ -1735,7 +1735,11 @@ public class ResourcePool {
         }
     }
 
-    private EntityResolver getEntityResolver() {
+    /**
+     * Returns the entity resolver from the {@link EntityResolverProvider}, or null if none is configured
+     * @return
+     */
+    public EntityResolver getEntityResolver() {
         EntityResolver entityResolver = null;
         if(entityResolverProvider != null) {
              entityResolver = entityResolverProvider.getEntityResolver();

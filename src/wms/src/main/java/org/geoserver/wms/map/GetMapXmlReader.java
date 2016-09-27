@@ -35,6 +35,7 @@ import org.geotools.data.Transaction;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureReader;
 import org.geotools.data.memory.MemoryDataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.filter.ExpressionDOMParser;
 import org.geotools.referencing.CRS;
@@ -45,7 +46,6 @@ import org.geotools.styling.NamedStyle;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
-import org.geotools.styling.StyleFactoryFinder;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.styling.UserLayer;
@@ -60,6 +60,7 @@ import org.vfny.geoserver.util.SLDValidator;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 
@@ -76,7 +77,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
     private static final Logger LOGGER = Logging.getLogger(GetMapXmlReader.class);
 
-    private static final StyleFactory styleFactory = StyleFactoryFinder.createStyleFactory();
+    private static final StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory();
 
     private WMS wms;
 
@@ -180,6 +181,10 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
             dbf.setNamespaceAware(true);
 
             javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
+            EntityResolver entityResolver = wms.getCatalog().getResourcePool().getEntityResolver();
+            if(entityResolver != null) {
+                db.setEntityResolver(entityResolver);
+            }
 
             InputSource input = new InputSource(xml);
             org.w3c.dom.Document dom = db.parse(input);

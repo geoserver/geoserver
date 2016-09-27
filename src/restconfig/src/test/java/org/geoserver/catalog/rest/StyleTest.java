@@ -7,6 +7,7 @@ package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
 import java.io.*;
@@ -724,6 +725,20 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
         assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/gear.png"));
         assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/foo.sld"));
+    }
+    
+    @Test
+    public void testPostWithExternalEntities() throws Exception {
+        URL zip = getClass().getResource( "test-data/externalEntities.zip" );
+        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+
+        MockHttpServletResponse response =
+                postAsServletResponse( "/rest/workspaces/gs/styles", bytes, "application/zip");
+        // expecting a failure with explanation
+        assertEquals(400, response.getStatus() );
+        final String content = response.getContentAsString();
+        assertThat(content, containsString("Entity resolution disallowed"));
+        assertThat(content, containsString("/this/file/does/not/exist"));
     }
 
 

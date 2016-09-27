@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
 import java.awt.image.BufferedImage;
@@ -13,6 +14,7 @@ import java.io.InputStreamReader;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
@@ -41,6 +43,17 @@ public class SLDWithInlineFeatureTest extends GeoServerSystemTestSupport {
                 );
 
         assertNotNull(image);
+    }
+    
+    @Test
+    public void testGetMapPostEntityExpansion() throws Exception {
+        String body = IOUtils.toString(getClass().getResourceAsStream("GetMapExternalEntity.xml"), "UTF-8");
+        MockHttpServletResponse response = postAsServletResponse("wms", body);
+        // should fail with an error message pointing at entity resolution
+        assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+        final String content = response.getContentAsString();
+        assertThat(content, containsString("Entity resolution disallowed"));
+        assertThat(content, containsString("/this/file/does/not/exist"));
     }
     
     @Test

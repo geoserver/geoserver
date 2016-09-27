@@ -5,13 +5,16 @@
  */
 package org.geoserver.catalog.rest;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import com.google.common.io.Files;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -33,11 +36,14 @@ import org.geotools.styling.Style;
 import org.geotools.util.Converters;
 import org.geotools.util.Version;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.xml.sax.EntityResolver;
+
+import com.google.common.io.Files;
 
 public class StyleResource extends AbstractCatalogResource {
 
@@ -480,6 +486,10 @@ public class StyleResource extends AbstractCatalogResource {
 
             SLDParser parser
                     = new SLDParser(CommonFactoryFinder.getStyleFactory(null), is);
+            EntityResolver resolver = catalog.getResourcePool().getEntityResolver();
+            if(resolver != null) {
+                parser.setEntityResolver(resolver);
+            }
 
             Style[] styles = parser.readXML();
             if (styles.length > 0) {
@@ -494,7 +504,7 @@ public class StyleResource extends AbstractCatalogResource {
 
         } catch (Exception ex) {
             LOGGER.severe(ex.getMessage());
-            throw new RestletException("Style error.", Status.CLIENT_ERROR_BAD_REQUEST);
+            throw new RestletException("Style error. " + ex.getMessage(), Status.CLIENT_ERROR_BAD_REQUEST);
 
         } finally {
             IOUtils.closeQuietly(is);

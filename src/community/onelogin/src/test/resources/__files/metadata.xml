@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+    entityID="https://localhost:8443/saml/metadata">
+    <IDPSSODescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <SingleLogoutService
+            Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+            Location="https://localhost:8443/trust/saml2/http-redirect/slo" />
+        <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+        </NameIDFormat>
+        <SingleSignOnService
+            Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+            Location="https://localhost:8443/trust/saml2/http-redirect/sso" />
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+            Location="https://localhost:8443/trust/saml2/http-post/sso" />
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
+            Location="https://localhost:8443/trust/saml2/soap/sso" />
+    </IDPSSODescriptor>
+</EntityDescriptor>

@@ -82,6 +82,7 @@
           <descriptor>release/ext-geogig.xml</descriptor>
 		      <descriptor>release/ext-backup-restore.xml</descriptor>
           <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
+          <descriptor>release/ext-onelogin.xml</descriptor> 
         </descriptors>
       </configuration>
      </plugin>
@@ -172,6 +173,12 @@
       </modules>
     </profile>
     <profile>
+      <id>onelogin</id>
+      <modules>
+        <module>onelogin</module>
+      </modules>
+    </profile>
+    <profile>
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>
@@ -213,6 +220,7 @@
         <module>web-resource</module>
         <module>gwc-sqlite</module>
         <module>wmts-multi-dimensional</module>
+        <module>onelogin</module>
       </modules>
     </profile>
     <profile>

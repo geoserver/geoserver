@@ -51,7 +51,9 @@ import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.model.RevFeature;
+import org.locationtech.geogig.model.RevFeatureBuilder;
 import org.locationtech.geogig.model.RevFeatureType;
+import org.locationtech.geogig.model.RevFeatureTypeBuilder;
 import org.locationtech.geogig.model.RevTree;
 import org.locationtech.geogig.plumbing.FindTreeChild;
 import org.locationtech.geogig.plumbing.ResolveGeogigDir;
@@ -65,6 +67,7 @@ import org.locationtech.geogig.porcelain.ConfigOp.ConfigAction;
 import org.locationtech.geogig.porcelain.InitOp;
 import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.repository.Context;
+import org.locationtech.geogig.repository.FeatureInfo;
 import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.GlobalContextBuilder;
 import org.locationtech.geogig.repository.NodeRef;
@@ -272,7 +275,11 @@ public class GeoGigTestData extends ExternalResource {
     public GeoGigTestData insert(String parentTreePath, Feature... features) {
         WorkingTree workingTree = geogig.getContext().workingTree();
         for (Feature feature : features) {
-            workingTree.insert(parentTreePath, feature);
+            RevFeatureType type = RevFeatureTypeBuilder.build(feature.getType());
+            geogig.getRepository().objectDatabase().put(type);
+            String path = NodeRef.appendChild(parentTreePath, feature.getIdentifier().getID());
+            FeatureInfo info = FeatureInfo.insert(RevFeatureBuilder.build(feature), type.getId(), path);
+            workingTree.insert(info);
         }
         return this;
     }
@@ -350,10 +357,11 @@ public class GeoGigTestData extends ExternalResource {
                 value, binding.getName());
 
         feature.setAttribute(attributeName, actualValue);
-        String parentPath = NodeRef.parentPath(featurePath);
         Context context = geogig.getContext();
         WorkingTree workingTree = context.workingTree();
-        workingTree.insert(parentPath, feature);
+        RevFeatureType type = RevFeatureTypeBuilder.build(featureType);
+        FeatureInfo info = FeatureInfo.insert(RevFeatureBuilder.build(feature), type.getId(), featurePath);
+        workingTree.insert(info);
         return this;
     }
 

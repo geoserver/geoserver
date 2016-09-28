@@ -70,7 +70,7 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
     }
 
     @Override
-    public ConfigDatabase getConfigDatabase(URI repoURI, Context repoContext) {
+    public ConfigDatabase getConfigDatabase(URI repoURI, Context repoContext, boolean rootUri) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

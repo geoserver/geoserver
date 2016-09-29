@@ -146,7 +146,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         String xml = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), "UTF-8");
 
         // tester.debugComponentTrees();
-        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
+        tester.newFormTester("form").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
         tester.executeAjaxEvent("validate", "click");
         List<Serializable> messages = tester.getMessages(FeedbackMessage.ERROR);

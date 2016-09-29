@@ -63,9 +63,10 @@ public class StyleResource extends AbstractCatalogResource {
     protected List<DataFormat> createSupportedFormats(Request request,Response response) {
         List<DataFormat> formats =  super.createSupportedFormats(request,response);
         boolean prettyPrint = isPrettyPrint(request);
+        EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
         for (StyleHandler sh : Styles.handlers()) {
             for (Version ver : sh.getVersions()) {
-                formats.add(new StyleFormat(sh.mimeType(ver), ver, prettyPrint, sh, request));
+                formats.add(new StyleFormat(sh.mimeType(ver), ver, prettyPrint, sh, request, entityResolver));
             }
         }
 

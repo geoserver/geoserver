@@ -25,6 +25,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.*;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.DataUtilities;
 import org.geotools.styling.Style;
@@ -225,6 +226,18 @@ public class StyleTest extends CatalogRESTTestSupport {
     }
     
     @Test
+    public void testPostExternalEntityAsSLD() throws Exception {
+        String xml = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), "UTF-8");
+
+        MockHttpServletResponse response = 
+            postAsServletResponse( "/rest/styles", xml, SLDHandler.MIMETYPE_10);
+        assertEquals( 500, response.getStatus() );
+        String message = response.getContentAsString();
+        assertThat(message, containsString("Entity resolution disallowed"));
+        assertThat(message, containsString("/this/file/does/not/exist"));
+    }
+    
+    @Test
     public void testPostAsSLDToWorkspace() throws Exception {
         assertNull( catalog.getStyleByName( "gs", "foo" ) );
         
@@ -301,7 +314,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         Style s = catalog.getStyleByName( "Ponds" ).getStyle();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        new StyleFormat(SLDHandler.MIMETYPE_10, SLDHandler.VERSION_10, false, new SLDHandler(), null).write(s, out);
+        new StyleFormat(SLDHandler.MIMETYPE_10, SLDHandler.VERSION_10, false, new SLDHandler(), null, getCatalog().getResourcePool().getEntityResolver()).write(s, out);
         
         xml = new String(out.toByteArray());
         assertTrue(xml.contains("<sld:Name>foo</sld:Name>"));

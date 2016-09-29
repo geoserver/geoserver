@@ -279,7 +279,9 @@ public class SLDHandler extends StyleHandler {
 
     List<Exception> validate10(Object input, EntityResolver entityResolver) throws IOException {
         try(Reader reader = toReader(input)) {
-            return new SLDValidator().validateSLD(new InputSource(reader));
+            final SLDValidator validator = new SLDValidator();
+            validator.setEntityResolver(entityResolver);
+            return validator.validateSLD(new InputSource(reader));
         }
     }
 

@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import org.geoserver.platform.resource.Resource;
@@ -183,6 +184,10 @@ public abstract class StyleHandler {
 
         if (input instanceof String) {
             return new StringReader((String)input);
+        }
+        
+        if (input instanceof URL) {
+            return new InputStreamReader(((URL) input).openStream());
         }
 
         if (input instanceof File) {

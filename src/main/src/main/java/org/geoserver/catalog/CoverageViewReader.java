@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
@@ -44,6 +45,7 @@ import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.parameter.ParameterGroup;
+import org.geotools.parameter.Parameters;
 import org.geotools.referencing.CRS;
 import org.jaitools.imageutils.ImageLayout2;
 import org.opengis.coverage.grid.Format;
@@ -287,7 +289,15 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 } else {
                     checker.checkConsistency(reader);
                 }
-                final GridCoverage2D coverage = reader.read(parameters);
+                // bands selection parameter inside on final bands so they should not be propagated to the delegate reader
+                GeneralParameterValue[] filteredParameters = parameters;
+                if (parameters != null) {
+                    // creating a copy of parameters excluding the bands parameter
+                    filteredParameters = Arrays.stream(parameters).filter(
+                            parameter -> !parameter.getDescriptor().getName().equals(AbstractGridFormat.BANDS.getName()))
+                            .toArray(GeneralParameterValue[]::new);
+                }
+                final GridCoverage2D coverage = reader.read(filteredParameters);
                 if(coverage == null) {
                     continue;
                 }
@@ -553,7 +563,10 @@ public class CoverageViewReader implements GridCoverage2DReader {
                     = new ArrayList<GeneralParameterDescriptor>();
                 delegateFormatParams.addAll(
                         delegateFormat.getReadParameters().getDescriptor().descriptors());
-                delegateFormatParams.add(AbstractGridFormat.BANDS);
+                // add bands parameter descriptor only if the delegate reader doesn't have it already
+                if (!checkIfDelegateReaderSupportsBands()) {
+                    delegateFormatParams.add(AbstractGridFormat.BANDS);
+                }
                 
                 return new ParameterGroup(new DefaultParameterDescriptorGroup(
                         info,
@@ -577,6 +590,19 @@ public class CoverageViewReader implements GridCoverage2DReader {
             }
 
         };
+    }
+
+    /**
+     * Helper method that checks if the delegate reader support bands selection.
+     */
+    private boolean checkIfDelegateReaderSupportsBands() {
+        List<GeneralParameterDescriptor> parameters = delegate.getFormat().getReadParameters().getDescriptor().descriptors();
+        for (GeneralParameterDescriptor parameterDescriptor : parameters) {
+            if (parameterDescriptor.getName().equals(AbstractGridFormat.BANDS.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

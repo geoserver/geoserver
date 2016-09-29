@@ -25,13 +25,11 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.Converters;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.w3c.dom.Document;
-
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetLegendGraphicTest extends WMSTestSupport {
@@ -231,7 +229,7 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     @Test
     public void testEntityExpansionSldBody() throws Exception {
         String base = "wms?LEGEND_OPTIONS=forceLabels:on&REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=200&HEIGHT=20&LAYER=" + getLayerId(MockData.POLYGONS) + "&SLD_BODY=";
-        String sld = IOUtils.toString(getClass().getResource("../externalEntities.sld"));
+        String sld = IOUtils.toString(TestData.class.getResource("externalEntities.sld"));
         MockHttpServletResponse response = getAsServletResponse(base + URLEncoder.encode(sld, "UTF-8"));
         // should fail with an error message poiting at entity resolution
         assertEquals("application/vnd.ogc.se_xml", response.getContentType());

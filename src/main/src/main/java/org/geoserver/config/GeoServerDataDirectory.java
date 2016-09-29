@@ -7,14 +7,17 @@ package org.geoserver.config;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.*;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataUtilities;
 import org.geotools.styling.*;
+import org.xml.sax.EntityResolver;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -60,6 +63,8 @@ public class GeoServerDataDirectory {
      * resource loader
      */
     GeoServerResourceLoader resourceLoader;
+    
+    EntityResolverProvider entityResolverProvider;
 
     /**
      * Creates the data directory specifying the resource loader.
@@ -1232,14 +1237,27 @@ public class GeoServerDataDirectory {
 
         };
         locator.setSourceUrl(Resources.toURL(styleResource));
+        EntityResolver entityResolver = getEntityResolver();
         final StyledLayerDescriptor sld =
-            Styles.handler(s.getFormat()).parse(input, s.getFormatVersion(), locator, null);
+            Styles.handler(s.getFormat()).parse(input, s.getFormatVersion(), locator, getEntityResolver());
         final Style style = Styles.style(sld);
         
         assert style!=null;
         return style;
     }
     
+    private EntityResolver getEntityResolver() {
+        // would be best injected, but apparently most of the code is
+        // actually creating a GeoServerDataDirectory object programmatically and/or on the fly, so
+        // we have to resort to a dynamic spring context lookup instead
+        EntityResolver resolver = null;
+        EntityResolverProvider provider = GeoServerExtensions.bean(EntityResolverProvider.class);
+        if(provider != null) {
+            resolver = provider.getEntityResolver();
+        }
+        return resolver;
+    }
+
     /**
      * Retrieve the settings configuration XML as a Resource
      * @param s The settings

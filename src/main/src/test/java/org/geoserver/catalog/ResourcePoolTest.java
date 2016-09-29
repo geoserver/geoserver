@@ -6,7 +6,7 @@
 
 package org.geoserver.catalog;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.*;
 
@@ -33,6 +33,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -76,6 +77,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
     protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
     
+    private static final String EXTERNAL_ENTITIES = "externalEntities";
+    
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -83,6 +86,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         testData.addStyle("relative", "se_relativepath.sld", ResourcePoolTest.class, getCatalog());
         testData.addStyle("relative_protocol", "se_relativepath_protocol.sld",
                 ResourcePoolTest.class, getCatalog());
+        testData.addStyle(EXTERNAL_ENTITIES, "externalEntities.sld", TestData.class, getCatalog());
         StyleInfo style = getCatalog().getStyleByName("relative");
         style.setSLDVersion(new Version("1.1.0"));
         getCatalog().save(style);
@@ -462,6 +466,19 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             String message = e.getMessage();
             assertThat(message, containsString("Entity resolution disallowed"));
             assertThat(message, containsString("file:///file/not/there"));
+        }
+    }
+    
+    @Test
+    public void testStyleWithExternalEntities() throws Exception {
+        StyleInfo si = getCatalog().getStyleByName(EXTERNAL_ENTITIES);
+        try {
+            si.getStyle();
+            fail("Should have failed with a parse error");
+        } catch(Exception e) {
+            String message = e.getMessage();
+            assertThat(message, containsString("Entity resolution disallowed"));
+            assertThat(message, containsString("/this/file/does/not/exist"));
         }
     }
 }

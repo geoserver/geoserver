@@ -1238,10 +1238,10 @@ public class XStreamPersisterTest {
      */
     @Test
     public void testLayerGroupStyleformat() throws Exception {
-    	int sublayers_size=4;
-    	
-    	Catalog catalog = new CatalogImpl();
-    	CatalogFactory cFactory = catalog.getFactory();
+        int sublayers_size=4;
+        
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
 
         WorkspaceInfo ws = cFactory.createWorkspace();
         ws.setName( "foo" );
@@ -1251,57 +1251,57 @@ public class XStreamPersisterTest {
         ns.setPrefix("acme");
         ns.setURI("http://acme.org");
         catalog.add(ns);
-    	
+        
         DataStoreInfo ds = cFactory.createDataStore();
         ds.setName("datastore");
         ds.setWorkspace(ws);
         
         catalog.add(ds);
-    	
+        
         StyleInfo s = cFactory.createStyle();
         s.setName( "style" );
         s.setFilename( "style.sld" );
         catalog.add( s );
-    	
-    	LayerGroupInfo group1 = cFactory.createLayerGroup();
+        
+        LayerGroupInfo group1 = cFactory.createLayerGroup();
         group1.setName("foo");
         group1.setTitle("foo title");
         group1.setAbstract("foo abstract");
         group1.setMode(LayerGroupInfo.Mode.SINGLE);
                
         for(int i=0;i<sublayers_size;i++){
-        	FeatureTypeInfo ft=cFactory.createFeatureType();
-        	ft.setName("layer_"+i);
-        	ft.setStore(ds);        
-        	catalog.add(ft);
-        	
+            FeatureTypeInfo ft=cFactory.createFeatureType();
+            ft.setName("layer_"+i);
+            ft.setStore(ds);        
+            catalog.add(ft);
+            
             LayerInfo l = cFactory.createLayer();  
             l.setResource( ft );
             l.setDefaultStyle(s);
-        	
-        	group1.getLayers().add(i,l);
-    		group1.getStyles().add(i,i%2==0?s:null);
+            
+            group1.getLayers().add(i,l);
+            group1.getStyles().add(i,i%2==0?s:null);
         }
         
         ByteArrayOutputStream out = out();
         persister.save(group1, out);
         
-        ByteArrayInputStream in = in(out);        
+        ByteArrayInputStream in = in(out);
         Document dom = dom( in );
         NodeList layers = dom.getElementsByTagName("published");
-        assertEquals(sublayers_size,layers.getLength());        
+        assertEquals(sublayers_size,layers.getLength());
         
         NodeList styles = dom.getElementsByTagName( "style" );
         assertEquals(sublayers_size,styles.getLength());
-    
-        for(int i=0;i<styles.getLength();i++){
-        	Node style = styles.item(i);
-        	assertEquals(1,style.getAttributes().getLength());
 
-        	if (i%2==0)
-        		assertNotNull(style.getFirstChild());        		        
-        	else      		        		
-        		assertNull(style.getFirstChild());        
+        for(int i=0;i<styles.getLength();i++){
+            Node style = styles.item(i);
+            assertEquals(1,style.getAttributes().getLength());
+
+            if (i%2==0)
+                assertNotNull(style.getFirstChild());
+            else
+                assertNull(style.getFirstChild());
         }
     }
     

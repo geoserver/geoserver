@@ -1117,26 +1117,25 @@ public class XStreamPersister {
     
     class LayerGroupStylesReferenceCollectionConverter extends ReferenceCollectionConverter{
 
-		public LayerGroupStylesReferenceCollectionConverter(Class clazz) {
-			super(clazz);
-		}
+        public LayerGroupStylesReferenceCollectionConverter(Class clazz) {
+            super(clazz);
+        }
 
-		public LayerGroupStylesReferenceCollectionConverter(Class clazz, Class... subclasses) {
-			super(clazz, subclasses);
-		}
-		
-		 @Override
-		 protected void writeItem(Object item, MarshallingContext context,HierarchicalStreamWriter writer) {
+        public LayerGroupStylesReferenceCollectionConverter(Class clazz, Class... subclasses) {
+            super(clazz, subclasses);
+        }
+
+        @Override
+        protected void writeItem(Object item, MarshallingContext context,HierarchicalStreamWriter writer) {
             ClassAliasingMapper cam = (ClassAliasingMapper) mapper().lookupMapperOfType( ClassAliasingMapper.class );
-	            
             String elementName = cam.serializedClass( clazz );
             if ( elementName == null ) {
                 elementName = cam.serializedClass( item.getClass() );
             }
             writer.startNode(elementName);
             if(item != null) {
-            	writer.addAttribute("default", "false");
-            	if(subclasses != null) {
+                writer.addAttribute("default", "false");
+                if(subclasses != null) {
                     Class theClass = null;
                     for (Class clazz : subclasses) {
                         if(clazz.isInstance(item)) {
@@ -1150,15 +1149,15 @@ public class XStreamPersister {
                     }
                     String typeName = cam.serializedClass( theClass );
                     writer.addAttribute("type", typeName);
-                }                
+                }
                 context.convertAnother( item, new ReferenceConverter( clazz ) );
-            }             	
+            }
             else
-            	writer.addAttribute("default", "true");
+                writer.addAttribute("default", "true");
             writer.endNode();
-        }    	
+        }
     }
-    
+
     class ReferenceCollectionConverter extends LaxCollectionConverter {
         Class clazz;
         Class[] subclasses;

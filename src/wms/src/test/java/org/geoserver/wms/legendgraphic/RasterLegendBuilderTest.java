@@ -175,6 +175,7 @@ public class RasterLegendBuilderTest {
         // Change legend border colour to blue        
         colourToTest = Color.blue;
         
+        legendOptions.clear();
         legendOptions.put("borderColor", SLD.toHTMLColor(colourToTest));
 
         request.setLegendOptions(legendOptions);

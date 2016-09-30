@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.geoserver.wms.legendgraphic.Cell.ClassesEntryLegendBuilder;
 import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
 import org.geoserver.wms.legendgraphic.Cell.RampColorMapEntryLegendBuilder;
@@ -114,7 +115,7 @@ public class ColorMapLegendCreator {
 
         private ColorMapEntry previousCMapEntry;
 
-        private final Map<String, Object> additionalOptions = new HashMap<String, Object>();
+        private final CaseInsensitiveMap additionalOptions = new CaseInsensitiveMap();
 
         private Color backgroundColor;
 

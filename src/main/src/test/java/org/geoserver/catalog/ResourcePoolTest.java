@@ -49,6 +49,8 @@ import org.geotools.feature.NameImpl;
 import org.geotools.ows.ServiceException;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.resources.image.ImageUtilities;
+import org.geotools.styling.AbstractStyleVisitor;
+import org.geotools.styling.Mark;
 import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Style;
 import org.geotools.util.SoftValueHashMap;
@@ -69,6 +71,8 @@ import org.w3c.dom.Element;
 @Category(SystemTest.class)
 public class ResourcePoolTest extends GeoServerSystemTestSupport {
     
+    private static final String HUMANS = "humans";
+
     static {
         System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
     }
@@ -86,9 +90,13 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         testData.addStyle("relative", "se_relativepath.sld", ResourcePoolTest.class, getCatalog());
         testData.addStyle("relative_protocol", "se_relativepath_protocol.sld",
                 ResourcePoolTest.class, getCatalog());
+        testData.addStyle(HUMANS, "humans.sld", ResourcePoolTest.class, getCatalog());
         testData.addStyle(EXTERNAL_ENTITIES, "externalEntities.sld", TestData.class, getCatalog());
         StyleInfo style = getCatalog().getStyleByName("relative");
-        style.setSLDVersion(new Version("1.1.0"));
+        style.setFormatVersion(new Version("1.1.0"));
+        getCatalog().save(style);
+        style = getCatalog().getStyleByName(HUMANS);
+        style.setFormatVersion(new Version("1.1.0"));
         getCatalog().save(style);
         File images = new File(testData.getDataDirectoryRoot(), "styles/images");
         assertTrue(images.mkdir());
@@ -480,5 +488,18 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             assertThat(message, containsString("Entity resolution disallowed"));
             assertThat(message, containsString("/this/file/does/not/exist"));
         }
+    }
+    
+    @Test
+    public void testParseExternalMark() throws Exception {
+        StyleInfo si = getCatalog().getStyleByName(HUMANS);
+        // used to blow here with an NPE
+        Style s = si.getStyle();
+        s.accept(new AbstractStyleVisitor() {
+            @Override
+            public void visit(Mark mark) {
+                assertEquals("ttf://Webdings", mark.getExternalMark().getOnlineResource().getLinkage().toASCIIString());
+            }
+        });
     }
 }

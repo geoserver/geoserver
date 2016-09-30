@@ -1201,7 +1201,7 @@ public class GeoServerDataDirectory {
             @Override
             public URL locateResource(String uri) {
                 URL url = super.locateResource(uri);
-                if(url.getProtocol().equalsIgnoreCase("resource")) {
+                if(url != null && url.getProtocol().equalsIgnoreCase("resource")) {
                     Resource resource = resourceLoader.fromURL(url);
                     File file;
                     if (Resources.exists(resource)) {

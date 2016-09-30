@@ -159,7 +159,7 @@ public class RasterLegendBuilderTest {
         
         colourToTest = Color.red;
         
-        legendOptions.put("borderColor", SLD.toHTMLColor(colourToTest));
+        legendOptions.put("BORDERCOLOR", SLD.toHTMLColor(colourToTest));
 
         request.setLegendOptions(legendOptions);
         helper = new RasterLayerLegendHelper(request, style, null);

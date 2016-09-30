@@ -9,6 +9,8 @@ GeoServer allows access to be determined on a per-layer basis.
 
 Providing access to layers is linked to :ref:`roles <security_rolesystem_roles>`. Layers and roles are linked in a file called ``layers.properties``, which is located in the ``security`` directory in your GeoServer data directory. The file contains the rules that control access to workspaces and layers.
 
+.. note:: The default layers security configuration in GeoServer allows any anonymous user to read data from any layer but only allows admin users to edit data.
+
 Rules
 -----
 

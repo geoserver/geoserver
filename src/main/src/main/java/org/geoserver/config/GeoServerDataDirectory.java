@@ -1201,7 +1201,7 @@ public class GeoServerDataDirectory {
             @Override
             public URL locateResource(String uri) {
                 URL url = super.locateResource(uri);
-                if(url.getProtocol().equalsIgnoreCase("resource")) {
+                if(url != null && url.getProtocol().equalsIgnoreCase("resource")) {
                     //GEOS-7025: Just get the path; don't try to create the file
                     URL u = fileToUrlPreservingCqlTemplates(
                             Paths.toFile(root(), resourceLoader.fromURL(url).path()));

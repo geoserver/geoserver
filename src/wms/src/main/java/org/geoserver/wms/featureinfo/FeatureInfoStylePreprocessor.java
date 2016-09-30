@@ -28,6 +28,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -81,7 +82,6 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         if (copy.getGraphicFill() != null) {
             copy.setGraphicFill(null);
             copy.setColor(sb.colorExpression(Color.BLACK));
-            copy.setOpacity(ff.literal(1));
         }
     }
 
@@ -94,12 +94,24 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         super.visit(poly);
         PolygonSymbolizer copy = (PolygonSymbolizer) pages.peek();
         Fill fill = copy.getFill();
-        if (fill == null) {
+        if (fill == null || isStaticTransparentFill(fill)) {
             copy.setFill(sb.createFill());
         }
         Stroke stroke = copy.getStroke();
         addStrokeSymbolizerIfNecessary(stroke);
         addGeometryExpression(poly.getGeometry(), geometriesOnPolygonSymbolizer);
+    }
+
+    private boolean isStaticTransparentFill(Fill fill) {
+        if (fill.getOpacity() instanceof Literal) {
+            // weird case of people setting opacity to 0. In case the opacity is really attribute driven,
+            // we'll leave it be
+            Double staticOpacity = fill.getOpacity().evaluate(null, Double.class);
+            if (staticOpacity == null || staticOpacity == 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

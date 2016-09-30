@@ -71,8 +71,8 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
             // GeoServer Env substitution; validate first
             getCatalog().validate(expandedStore, false).throwIfInvalid();
             
-            // GeoServer Env substitution; fore to *AVOID* resolving env placeholders...
-            expandedStore = getCatalog().getResourcePool().clone(info, false);
+            // GeoServer Env substitution; force to *AVOID* resolving env placeholders...
+            savedStore = getCatalog().getResourcePool().clone(info, false);
             // ... and save
             getCatalog().save(savedStore);
         } catch (RuntimeException e) {

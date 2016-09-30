@@ -50,7 +50,8 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
          * Try saving a copy of it so if the process fails somehow the original "info" does not end
          * up with an id set
          */
-        CoverageStoreInfo savedStore = catalog.getResourcePool().clone(info, true);
+        CoverageStoreInfo expandedStore = getCatalog().getResourcePool().clone(info, true);
+        CoverageStoreInfo savedStore = catalog.getFactory().createCoverageStore();
         
         // GR: this shouldn't fail, the Catalog.save(StoreInfo) API does not declare any action in
         // case
@@ -58,7 +59,7 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
         // Still, be cautious and wrap it in a try/catch block so the page does not blow up
         try {
             // GeoServer Env substitution; validate first
-            catalog.validate(savedStore, false).throwIfInvalid();
+            catalog.validate(expandedStore, false).throwIfInvalid();
             
             // GeoServer Env substitution; force to *AVOID* resolving env placeholders...
             savedStore = catalog.getResourcePool().clone(info, false);

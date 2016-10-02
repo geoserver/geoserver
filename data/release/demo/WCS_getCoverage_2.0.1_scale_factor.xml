@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Demonstrates use of WCS scale factor -->
+<wcs:GetCoverage service="WCS" version="2.0.1"
+    xmlns:wcs="http://www.opengis.net/wcs/2.0" xmlns:scal="http://www.opengis.net/WCS_service-extension_scaling/1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsAll.xsd">
+    <!--
+        The full schemaLocation permits schema-validation but causes the
+        request to fail [GEOS-7779]:
+        xsi:schemaLocation="http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsAll.xsd
+        http://www.opengis.net/WCS_service-extension_scaling/1.0 http://schemas.opengis.net/wcs/scaling/1.0/wcsScal.xsd">
+    -->
+    <wcs:Extension>
+        <scal:Scaling>
+            <scal:ScaleByFactor>
+                <scal:scaleFactor>0.5</scal:scaleFactor>
+            </scal:ScaleByFactor>
+        </scal:Scaling>
+    </wcs:Extension>
+    <wcs:CoverageId>nurc__mosaic</wcs:CoverageId>
+</wcs:GetCoverage>

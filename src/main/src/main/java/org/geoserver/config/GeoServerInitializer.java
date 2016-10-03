@@ -14,5 +14,11 @@ package org.geoserver.config;
  */
 public interface GeoServerInitializer {
 
+    /**
+     * Performs initialization of GeoServer configuration.
+     * 
+     * @param geoServer
+     * @throws Exception
+     */
     void initialize( GeoServer geoServer ) throws Exception;
 }

@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -62,6 +63,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.style.ExternalGraphic;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Tests for {@link ResourcePool}.
@@ -441,7 +443,11 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     
     @Test
     public void testWmsCascadeEntityExpansion() throws Exception {
-        final ResourcePool rp = getCatalog().getResourcePool();
+        //Other tests mess with or reset the resourcePool, so lets make it is initialized properly
+        GeoServerExtensions.extensions(ResourcePoolInitializer.class).get(0).initialize(getGeoServer());
+        
+        ResourcePool rp = getCatalog().getResourcePool();
+        
         WMSStoreInfo info = getCatalog().getFactory().createWebMapServer();
         URL url = getClass().getResource("1.3.0Capabilities-xxe.xml");
         info.setCapabilitiesURL(url.toExternalForm());
@@ -450,10 +456,31 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         info.setUseConnectionPooling(false);
         try {
             rp.getWebMapServer(info);
+            fail("WebMapServer instantiation should fail");
         } catch(IOException e) {
             assertThat(e.getCause(), instanceOf(ServiceException.class));
-            ServiceException cause = (ServiceException) e.getCause();
-            assertThat(cause.getMessage(), containsString("Error while parsing XML"));
+            ServiceException serviceException = (ServiceException) e.getCause();
+            assertThat(serviceException.getMessage(), containsString("Error while parsing XML"));
+            
+            SAXException saxException = (SAXException) serviceException.getCause();
+            Exception cause = saxException.getException();
+            assertFalse("Expect external entity cause", cause != null && cause instanceof FileNotFoundException);
+        }
+        //make sure clearing the catalog does not clear the EntityResolver
+        getGeoServer().reload();
+        rp = getCatalog().getResourcePool();
+        
+        try {
+            rp.getWebMapServer(info);
+            fail("WebMapServer instantiation should fail");
+        } catch(IOException e) {
+            assertThat(e.getCause(), instanceOf(ServiceException.class));
+            ServiceException serviceException = (ServiceException) e.getCause();
+            assertThat(serviceException.getMessage(), containsString("Error while parsing XML"));
+            
+            SAXException saxException = (SAXException) serviceException.getCause();
+            Exception cause = saxException.getException();
+            assertFalse("Expect external entity cause", cause != null && cause instanceof FileNotFoundException);
         }
         
     }

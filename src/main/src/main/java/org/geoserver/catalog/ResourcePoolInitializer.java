@@ -11,6 +11,7 @@ import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerInitializer;
+import org.geoserver.config.GeoServerReinitializer;
 import org.geoserver.util.EntityResolverProvider;
 
 /**
@@ -19,7 +20,7 @@ import org.geoserver.util.EntityResolverProvider;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class ResourcePoolInitializer implements GeoServerInitializer {
+public class ResourcePoolInitializer implements GeoServerReinitializer {
 
     GeoServer gs;
     EntityResolverProvider resolverProvider;

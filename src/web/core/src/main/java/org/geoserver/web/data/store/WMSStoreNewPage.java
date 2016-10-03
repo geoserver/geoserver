@@ -129,7 +129,7 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                     }
                 }
                 
-                WebMapServer server = new WebMapServer(new URL(url), client);
+                WebMapServer server = new WebMapServer(new URL(url), client, hints);
                 server.getCapabilities();
             } catch(IOException | ServiceException e) {
                 IValidationError err = new ValidationError("WMSCapabilitiesValidator.connectionFailure")

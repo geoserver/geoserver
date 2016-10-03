@@ -7,9 +7,12 @@ package org.geoserver.web.data.store;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.net.URL;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.data.store.panel.WorkspacePanel;
@@ -88,6 +91,48 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
 
         tester.clickLink("form:save", true);
         tester.assertErrorMessages("Connection test failed: foo");
+        catalog.save(info);
+
+        assertNotNull(info.getId());
+
+        WMSStoreInfo expandedStore = catalog.getResourcePool().clone(info, true);
+
+        assertNotNull(expandedStore.getId());
+        assertNotNull(expandedStore.getCatalog());
+
+        catalog.validate(expandedStore, false).throwIfInvalid();
+    }
+    
+    @Test
+    public void testSaveNewStoreEntityExpansion() throws Exception {
+
+        WMSStoreNewPage page = startPage();
+
+        assertNull(page.getDefaultModelObject());
+
+        final Catalog catalog = getCatalog();
+        WMSStoreInfo info = getCatalog().getFactory().createWebMapServer();
+        URL url = getClass().getResource("1.3.0Capabilities-xxe.xml");
+        info.setName("bar");
+
+        tester.assertNoErrorMessage();
+
+        FormTester form = tester.newFormTester("form");
+        form.select("workspacePanel:border:border_body:paramValue", 4);
+        Component wsDropDown = tester.getComponentFromLastRenderedPage(
+                "form:workspacePanel:border:border_body:paramValue");
+        tester.executeAjaxEvent(wsDropDown, "change");
+        form.setValue("namePanel:border:border_body:paramValue", "bar");
+        form.setValue("capabilitiesURL:border:border_body:paramValue", url.toExternalForm());
+
+        tester.clickLink("form:save", true);
+        tester.assertErrorMessages("Connection test failed: Error while parsing XML.");
+        
+        //make sure clearing the catalog does not clear the EntityResolver
+        getGeoServer().reload();
+        tester.clickLink("form:save", true);
+        tester.assertErrorMessages("Connection test failed: Error while parsing XML.");
+        
         catalog.save(info);
 
         assertNotNull(info.getId());

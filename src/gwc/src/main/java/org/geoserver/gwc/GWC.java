@@ -225,7 +225,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
 
     // list of GeoServer contributed grid sets that should not be editable by the user
-    private final List<String> geoserverEmbeddedGridSets = new ArrayList<>();
+    private final Set<String> geoserverEmbeddedGridSets = new HashSet<>();
     
     public GWC(final GWCConfigPersister gwcConfigPersister, final StorageBroker sb,
             final TileLayerDispatcher tld, final GridSetBroker gridSetBroker,

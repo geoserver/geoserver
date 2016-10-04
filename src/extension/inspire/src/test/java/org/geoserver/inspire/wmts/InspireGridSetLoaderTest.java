@@ -20,14 +20,7 @@ public class InspireGridSetLoaderTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testGridSetLoading() throws Exception {
-        // let's wait a max of 30 seconds for the grid set registration
         GWC gwc = GWC.get();
-        int waited = 0;
-        while(waited <= 30000 && GWC.get().getGridSetBroker().get(INSPIRE_GRID_SET_NAME) == null) {
-            // let' wait 100 milliseconds
-            Thread.sleep(100);
-            waited += 100;
-        }
         // let's see if the inspire grid set has been correctly registered
         assertThat(gwc.getGridSetBroker().get(INSPIRE_GRID_SET_NAME), notNullValue());
         assertThat(gwc.isInternalGridSet(INSPIRE_GRID_SET_NAME), is(true));

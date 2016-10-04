@@ -298,6 +298,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
         final List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
         final List<Style> styles = new ArrayList<Style>();
+        final List<Filter> filters = new ArrayList<Filter>();
         MapLayerInfo currLayer;
 
         StyledLayer sl = null;
@@ -321,7 +322,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                 CoordinateReferenceSystem crs = (getMapRequest.getCrs() == null) ? DefaultGeographicCRS.WGS84
                         : getMapRequest.getCrs();
                 currLayer = initializeInlineFeatureLayer(ul, crs);
-                addStyles(wms, getMapRequest, currLayer, styledLayers[i], layers, styles);
+                addStyles(wms, getMapRequest, currLayer, styledLayers[i], layers, styles, filters);
             } else {
 
                 LayerGroupInfo layerGroup = getWMS().getLayerGroupByName(layerName);
@@ -336,7 +337,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                         if (si != null){
                             currLayer.setStyle(si.getStyle());
                         }
-                        addStyles(wms, getMapRequest, currLayer, styledLayers[i], layers, styles);
+                        addStyles(wms, getMapRequest, currLayer, styledLayers[i], layers, styles, filters);
                     }                    
                 } else {
                     LayerInfo layerInfo = getWMS().getLayerByName(layerName);
@@ -344,7 +345,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                         throw new ServiceException("Layer not found: " + layerName);
                     }
                     currLayer = new MapLayerInfo(layerInfo);
-                    addStyles(wms, getMapRequest, currLayer, styledLayers[i], layers, styles);
+                    addStyles(wms, getMapRequest, currLayer, styledLayers[i], layers, styles, filters);
                 }
             }
 
@@ -352,6 +353,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
         getMapRequest.setLayers(layers);
         getMapRequest.setStyles(styles);
+        getMapRequest.setFilter(filters);
     }
 
     /**
@@ -370,10 +372,11 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
      * @param layer
      * @param layers
      * @param styles
+     * @param filters
      * @throws IOException
      */
     public static void addStyles(WMS wms, GetMapRequest request, MapLayerInfo currLayer,
-            StyledLayer layer, List<MapLayerInfo> layers, List<Style> styles) throws ServiceException,
+            StyledLayer layer, List<MapLayerInfo> layers, List<Style> styles, List<Filter> filters) throws ServiceException,
             IOException {
         if (currLayer == null) {
             return; // protection
@@ -416,7 +419,12 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                     }
 
                     if (!matches) {
-                        continue; // this layer is fitered out
+                        continue; // this layer is filtered out
+                    }
+                    
+                    // add filter
+                    if (ftc.getFilter() != null) {
+                    	filters.add(ftc.getFilter());
                     }
                 }
             }

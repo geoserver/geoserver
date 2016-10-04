@@ -6,4 +6,4 @@
 # The operation will be allowed if the current user has at least one of the
 # roles in the rule
 *.*.r=*
-*.*.w=ADMIN,GROUP_ADMI
+*.*.w=ADMIN,GROUP_ADMIN

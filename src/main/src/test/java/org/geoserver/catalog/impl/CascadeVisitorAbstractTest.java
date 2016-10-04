@@ -23,8 +23,9 @@ public class CascadeVisitorAbstractTest extends GeoServerSystemTestSupport {
     protected static final String WS_STYLE = "wsStyle";
 
     protected void setUpTestData(org.geoserver.data.test.SystemTestData testData) throws Exception {
-        // add nothing here
-    };
+        // use the default tests security
+        testData.setUpSecurity();
+    }
 
     protected void onSetUp(org.geoserver.data.test.SystemTestData testData) throws Exception {
         Catalog catalog = getCatalog();
@@ -34,7 +35,6 @@ public class CascadeVisitorAbstractTest extends GeoServerSystemTestSupport {
         testData.addVectorLayer(BRIDGES, catalog);
         testData.addVectorLayer(FORESTS, catalog);
         testData.addVectorLayer(BUILDINGS, catalog);
-
         setupExtras(testData, catalog);
     }
 

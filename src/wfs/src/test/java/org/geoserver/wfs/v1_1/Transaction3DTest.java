@@ -46,7 +46,8 @@ public class Transaction3DTest extends WFSTestSupport {
     
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
-        // only need the 3d test data, not the rest 
+        // only need the 3d test data, not the rest
+        testData.setUpSecurity();
     }
     
     @Before

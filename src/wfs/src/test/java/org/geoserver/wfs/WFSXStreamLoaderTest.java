@@ -21,6 +21,7 @@ public class WFSXStreamLoaderTest extends WFSTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // no test data needed
+        testData.setUpSecurity();
     }
 
     @Test

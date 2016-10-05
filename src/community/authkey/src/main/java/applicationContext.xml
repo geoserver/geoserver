@@ -36,5 +36,12 @@
         <property name="descriptionKey" value="AuthenticationKeyFilterPanel.description"/>
    </bean>
   
-
+  <!-- REST based role service panel infos -->
+  <bean id="authKeyRESTRoleServicePanelInfo" class="org.geoserver.security.web.GeoServerRestRoleServicePanelInfo">
+      <property name="id" value="security.authKeyRESTRoleService" />
+      <property name="shortTitleKey" value="GeoServerRestRoleServicePanel.short"/>
+      <property name="titleKey" value="GeoServerRestRoleServicePanel.title"/>
+      <property name="descriptionKey" value="GeoServerRestRoleServicePanel.description"/>
+  </bean>
+    
 </beans>

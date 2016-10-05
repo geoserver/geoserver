@@ -77,15 +77,7 @@ public class RepositoryEditPanel extends FormComponentPanel<RepositoryInfo> {
                             }
                         } else {
                             // try to connect
-                            Repository repository = null;
-                            try {
-                                repository = resolver.open(location);
-                            } finally {
-                                if (repository != null) {
-                                    repository.close();
-                                }
-                            }
-
+                            resolver.open(location);
                         }
                     } catch (Exception ex) {
                         // likely failed to connect

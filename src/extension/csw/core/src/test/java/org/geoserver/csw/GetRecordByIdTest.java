@@ -19,7 +19,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
-import org.geotools.xml.NoExternalEntityResolver;
+import org.geotools.xml.PreventLocalEntityResolver;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -79,7 +79,7 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
             fail("Should have failed with an entity expansion disallowed exception");
         } catch (ServiceException e) {
             Throwable cause = e.getCause();
-            assertTrue(cause.getMessage().contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+            assertTrue(cause.getMessage().contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
         }
 
     }

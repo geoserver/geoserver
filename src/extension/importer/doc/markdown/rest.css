@@ -1,0 +1,25 @@
+#entry-container {
+        float:left;
+        width:39%;
+        height:100%;
+      }
+      #entry-container textarea {
+        width: 100%;
+        height: 100%;
+      }
+
+      body #content.site {
+        width:auto;
+        margin:10px;
+      }
+
+      body #preview-container  {
+        float:right;
+        width: 60%;
+      }
+
+      body {
+        padding: 2em;
+        height:100%;
+      }
+

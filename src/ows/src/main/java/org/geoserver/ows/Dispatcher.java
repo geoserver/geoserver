@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,7 +14,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,14 +36,15 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.OwsUtils;
@@ -71,24 +73,23 @@ import org.xmlpull.v1.XmlPullParserFactory;
  * Dispatches an http request to an open web service (OWS).
  * <p>
  * An OWS request contains three bits of information:
- *         <ol>
- *                 <li>The service being called
- *                 <li>The operation of the service to execute
- *                 <li>The version of the service ( optional )
- *  </ol>
- *  Additional, an OWS request can contain an arbitray number of additional
- *  parameters.
+ * </p>
+ * <ol>
+ * <li>The service being called
+ * <li>The operation of the service to execute
+ * <li>The version of the service ( optional )
+ * </ol>
+ * <p>
+ * Additional, an OWS request can contain an arbitray number of additional parameters.
  * </p>
  * <p>
- * An OWS request can be specified in two forms. The first form is known as "KVP"
- * in which all the parameters come in the form of a set of key-value pairs.
- * Commonly this type of request is made in an http "GET" request, the parameters
- * being specified in the query string:
+ * An OWS request can be specified in two forms. The first form is known as "KVP" in which all the parameters come in the form of a set of key-value
+ * pairs. Commonly this type of request is made in an http "GET" request, the parameters being specified in the query string:
  *
- *  <pre>
- *          <code>http://www.xyz.com/geoserver?service=someService&request=someRequest&version=X.Y.Z&param1=...&param2=...
- *  </pre>
- *
+ * <pre>
+ * <code>http://www.xyz.com/geoserver?service=someService&amp;request=someRequest&amp;version=X.Y.Z&amp;param1=...&amp;param2=...</code>
+ * </pre>
+ * <p>
  *  This type of request can also be made in a "POST" request in with a
  *  mime-type of "application/x-www-form-urlencoded".
  * </p>
@@ -96,27 +97,21 @@ import org.xmlpull.v1.XmlPullParserFactory;
  * The second form is known as "XML" in which all the parameters come in the
  * form of an xml document. This type of request is made in an http "POST"
  * request.
- *
- *         <pre>
- *                 <code>
+ * </p>
+ * <pre><code>
  *  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
  *  &lt;SomeRequest service="someService" version="X.Y.Z"&gt;
  *    &lt;Param1&gt;...&lt;/Param1&gt;
  *    &lt;Param2&gt;...&lt;/Param2&gt;
  *    ...
  *  &lt;/SomeRequest&gt;
- *                 </code>
- *         </pre>
- * </p>
+ * </code></pre>
  * <p>
- * When a request is received, the <b>service</b> the <b>version</b> parameters
- * are used to locate a service desciptor, an instance of {@link Service}. With
- * the service descriptor, the <b>request</b> parameter is used to locate the
- * operation of the service to call.
+ * When a request is received, the <b>service</b> the <b>version</b> parameters are used to locate a service desciptor, an instance of {@link Service}
+ * . With the service descriptor, the <b>request</b> parameter is used to locate the operation of the service to call.
  * </p>
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public class Dispatcher extends AbstractController {
     /**
@@ -173,7 +168,7 @@ public class Dispatcher extends AbstractController {
      * If set to <code>true</code>, the dispatcher with throw exceptions when
      * it encounters something that is not 100% compliant with CITE standards.
      * An example would be a request which specifies the servce in the context
-     * path: '.../geoserver/wfs?request=...' and not with the kvp '&service=wfs'.
+     * path: '.../geoserver/wfs?request=...' and not with the kvp '&amp;service=wfs'.
      * </p>
      *
      * @param citeCompliant <code>true</code> to set compliance,
@@ -261,6 +256,7 @@ public class Dispatcher extends AbstractController {
 
             //dispatch the operation
             Operation operation = dispatch(request, service);
+            request.setOperation(operation);
 
             if (request.isSOAP()) {
                 //let the request object know that this is a SOAP request, since it effects
@@ -304,16 +300,20 @@ public class Dispatcher extends AbstractController {
 
     void fireFinishedCallback(Request req) {
         for ( DispatcherCallback cb : callbacks ) {
-            cb.finished( req );
+            try {
+                cb.finished( req );
+            } catch (Throwable t) {
+                logger.log(Level.WARNING, "Error firing finished callback for "+cb.getClass(), t);
+            }
         }
     }
     
     Request init(Request request) throws ServiceException, IOException {
         HttpServletRequest httpRequest = request.getHttpRequest();
 
+        String reqContentType = httpRequest.getContentType();
         //figure out method
-        request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod())
-            || "application/x-www-form-urlencoded".equals(httpRequest.getContentType()));
+        request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()) || isForm(reqContentType));
 
         //create the kvp map
         parseKVP(request);
@@ -324,6 +324,42 @@ public class Dispatcher extends AbstractController {
                 httpRequest.getContentType().startsWith(SOAP_MIME)) {
                 request.setSOAP(true);
                 request.setInput(soapReader(httpRequest));
+            }
+            else if (reqContentType != null && ServletFileUpload.isMultipartContent(httpRequest)) {
+                // multipart form upload
+                ServletFileUpload up = new ServletFileUpload();
+                up.setFileItemFactory(new DiskFileItemFactory());
+
+                // treat regular form fields as additional kvp parameters
+                Map<String,FileItem> kvpFileItems = new CaseInsensitiveMap(new LinkedHashMap());
+                try {
+                    for (FileItem item : (List<FileItem>) up.parseRequest(httpRequest)) {
+                        if (item.isFormField()) {
+                            kvpFileItems.put(item.getFieldName(), item);
+                        }
+                        else {
+                            request.setInput(fileItemReader(item));
+                        }
+                    }
+                } catch (Exception e) {
+                    throw new ServiceException("Error handling multipart/form-data content", e);
+                }
+
+                // if no file fields were found, look for one named "body"
+                if (request.getInput() == null) {
+                    FileItem body = kvpFileItems.get("body");
+                    if (body != null) {
+                        request.setInput(fileItemReader(body));
+                        kvpFileItems.remove("body");
+                    }
+                }
+
+                Map<String,String> kvpItems = new LinkedHashMap();
+                for (Map.Entry<String,FileItem> e : kvpFileItems.entrySet()) {
+                    kvpItems.put(e.getKey(), e.getValue().toString());
+                }
+
+                request.setOrAppendKvp(parseKVP(request, kvpFileItems));
             }
             else {
                 //regular XML POST
@@ -384,6 +420,14 @@ public class Dispatcher extends AbstractController {
         return fireInitCallback(request);
     }
 
+    private boolean isForm(String contentType) {
+        if (contentType == null) {
+            return false;
+        } else {
+            return contentType.startsWith("application/x-www-form-urlencoded");
+        }
+    }
+
     Request fireInitCallback(Request req) {
         for ( DispatcherCallback cb : callbacks ) {
             Request r = cb.init( req );
@@ -438,6 +482,10 @@ public class Dispatcher extends AbstractController {
 
     BufferedReader reader(HttpServletRequest httpRequest) throws IOException {
        return RequestUtils.getBufferedXMLReader(httpRequest.getInputStream(), XML_LOOKAHEAD);
+    }
+
+    BufferedReader fileItemReader(FileItem fileItem) throws IOException {
+        return RequestUtils.getBufferedXMLReader(fileItem.getInputStream(), XML_LOOKAHEAD);
     }
 
     Service service(Request req) throws Exception {
@@ -616,10 +664,15 @@ public class Dispatcher extends AbstractController {
                 //track an exception 
                 Throwable t = null;
 
+                // Boolean used for evaluating if the request bean has been parsed in KVP or in XML
+                boolean kvpParsed = false;
+                boolean xmlParsed = false;
+
                 if (req.getKvp() != null && req.getKvp().size() > 0) {
                     //use the kvp reader mechanism
                     try {
                         requestBean = parseRequestKVP(parameterType, req);
+                        kvpParsed = true;
                     } 
                     catch (Exception e) {
                         //dont die now, there might be a body to parse
@@ -629,6 +682,7 @@ public class Dispatcher extends AbstractController {
                 if (req.getInput() != null) {
                     //use the xml reader mechanism
                     requestBean = parseRequestXML(requestBean,req.getInput(), req);
+                    xmlParsed = true;
                 }
                 
                 //if no reader found for the request, throw exception
@@ -640,7 +694,19 @@ public class Dispatcher extends AbstractController {
                     if ( t != null ) {
                         throw t;
                     }
-                    throw new ServiceException( "Could not find request reader (either kvp or xml) for: " + parameterType.getName() );
+                    if (kvpParsed && xmlParsed || (!kvpParsed && !xmlParsed)) {
+                        throw new ServiceException(
+                                "Could not find request reader (either kvp or xml) for: "
+                                        + parameterType.getName() 
+                                        + ", it might be that some request parameters are missing, "
+                                        + "please check the documentation");
+                    } else if (kvpParsed) {
+                        throw new ServiceException("Could not parse the KVP for: "
+                                + parameterType.getName());
+                    } else {
+                        throw new ServiceException("Could not parse the XML for: "
+                                + parameterType.getName());
+                    }
                 }
                 
                 // GEOS-934  and GEOS-1288
@@ -901,6 +967,12 @@ public class Dispatcher extends AbstractController {
                 req.getHttpResponse().setContentType(mimeType);
             }
 
+            //set the charset
+            String charset = response.getCharset(opDescriptor);
+            if(charset != null){
+                req.getHttpResponse().setCharacterEncoding(charset);
+            }
+            
             setHeaders(req,opDescriptor,result,response);
             
             OutputStream output = outputStrategy.getDestination(req.getHttpResponse());
@@ -1374,7 +1446,7 @@ public class Dispatcher extends AbstractController {
         Map kvp = request.getParameterMap();
 
         if (kvp == null || kvp.isEmpty()) {
-            req.setKvp(Collections.EMPTY_MAP);
+            req.setKvp(new HashMap());
             //req.kvp = null;
             return;
         }
@@ -1382,18 +1454,22 @@ public class Dispatcher extends AbstractController {
         //track parsed kvp and unparsd
         Map parsedKvp = KvpUtils.normalize(kvp);
         Map rawKvp = new KvpMap( parsedKvp );
-        
+
         req.setKvp(parsedKvp);
         req.setRawKvp(rawKvp);
     }
-    
+
     void parseKVP(Request req) throws ServiceException {
-        
-        preParseKVP( req );
-        List<Throwable> errors = KvpUtils.parse( req.getKvp() );
+        preParseKVP(req);
+        parseKVP(req, req.getKvp());
+    }
+
+    Map parseKVP(Request req, Map kvp) {
+        List<Throwable> errors = KvpUtils.parse(kvp);
         if ( !errors.isEmpty() ) {
             req.setError(errors.get(0));
         }
+        return kvp;
     }
 
     Object parseRequestKVP(Class type, Request request)
@@ -1524,7 +1600,9 @@ public class Dispatcher extends AbstractController {
 
     void exception(Throwable t, Service service, Request request) {
         Throwable current = t;
-        while (current != null && !(current instanceof ClientStreamAbortedException) && !(isSecurityException(current))) {
+        while (current != null && !(current instanceof ClientStreamAbortedException) 
+                && !isSecurityException(current)
+                && !(current instanceof HttpErrorCodeException)) {
             if(current instanceof SAXException)
                 current = ((SAXException) current).getException();
             else
@@ -1534,46 +1612,53 @@ public class Dispatcher extends AbstractController {
             logger.log(Level.FINER, "Client has closed stream", t);
             return;
         }
-        if ( isSecurityException(current))
+        if ( isSecurityException(current)) {
             throw (RuntimeException) current;
-        
-        
-        //unwind the exception stack until we find one we know about 
-        Throwable cause = t;
-        while( cause != null ) {
-            if ( cause instanceof ServiceException ) {
-                break;
-            }
-            if ( cause instanceof HttpErrorCodeException ) {
-                break;
-            }
-            if ( isSecurityException(cause) ) {
-                break;
-            }
-            
-            cause = cause.getCause();
         }
         
-        if ( cause == null ) {
-            //did not fine a "special" exception, create a service exception
-            // by default
-            cause = new ServiceException(t);
-        }
-        
-        if (!(cause instanceof HttpErrorCodeException)) {
-            logger.log(Level.SEVERE, "", t);
-        } else {
-            int errorCode = ((HttpErrorCodeException)cause).getErrorCode();
+        if (current instanceof HttpErrorCodeException) {
+            HttpErrorCodeException ece = (HttpErrorCodeException) current;
+            int errorCode = ece.getErrorCode();
             if (errorCode < 199 || errorCode > 299) {
                 logger.log(Level.FINE, "", t);
-            }
-            else{
+            } else {
                 logger.log(Level.FINER, "", t);
             }
-        }
-
+            
+            try {
+                if(ece.getMessage() != null) {
+                    request.getHttpResponse().sendError(ece.getErrorCode(),ece.getMessage());
+                } else {
+                    request.getHttpResponse().sendError(ece.getErrorCode());
+                }
+                if (ece.getErrorCode() < 400) {
+                    // gwc returns an HttpErrorCodeException for 304s
+                    // we don't want to flag these as errors for upstream filters, ie the monitoring extension
+                    t = null;
+                } 
+            } catch (IOException e) {
+                // means the resposne was already commited something
+                logger.log(Level.FINER, "", t);
+            }
+        } else {
+            logger.log(Level.SEVERE, "", t);
         
-        if ( cause instanceof ServiceException ) {
+            //unwind the exception stack until we find one we know about 
+            Throwable cause = t;
+            while( cause != null ) {
+                if ( cause instanceof ServiceException ) {
+                    break;
+                }
+                
+                cause = cause.getCause();
+            }
+            
+            if ( cause == null ) {
+                // did not fine a "special" exception, create a service exception by default
+                cause = new ServiceException(t);
+            }
+            
+            // at this point we're sure it'a service exception
             ServiceException se = (ServiceException) cause;
             if ( cause != t ) {
                 //copy the message, code + locator, but set cause equal to root
@@ -1581,23 +1666,6 @@ public class Dispatcher extends AbstractController {
             }
             
             handleServiceException(se,service,request);
-        }
-        else if ( cause instanceof HttpErrorCodeException ) {
-            //TODO: log the exception stack trace
-            
-            //set the error code
-            HttpErrorCodeException ece = (HttpErrorCodeException) cause;
-            try {
-            	if(ece.getMessage() != null) {
-                	request.getHttpResponse().sendError(ece.getErrorCode(),ece.getMessage());
-            	} else {
-            		request.getHttpResponse().sendError(ece.getErrorCode());
-            	}
-            } 
-            catch (IOException e) {
-                //means the resposne was already commited
-                //TODO: something
-            }
         }
         
         request.error = t;

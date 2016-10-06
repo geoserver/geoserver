@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<gss:GetDiff xmlns:gss="http://geoserver.org/gss" xmlns:sf="http://www.openplans.org/spearfish"
-   fromVersion="15" typeName="sf:restricted" service="GSS" version="1.0.0">
-</gss:GetDiff>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,17 +9,28 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
+
+import org.geoserver.config.GeoServerInfo;
 
 @SuppressWarnings("rawtypes")
 class FakeHttpServletRequest implements HttpServletRequest {
@@ -36,14 +48,21 @@ class FakeHttpServletRequest implements HttpServletRequest {
             return null;
         }
     };
+    
+    private String workspace;
 
     private Map<String, String> parameterMap = new HashMap<String, String>(10);
 
     private Cookie[] cookies;
 
     public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies) {
+        this(parameterMap, cookies, null);
+    }
+    
+    public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
         this.parameterMap = parameterMap;
         this.cookies = cookies;
+        this.workspace = workspace;
     }
 
     /**
@@ -103,7 +122,11 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     public String getRequestURI() {
-        return "geoserver/gwc";
+        if(workspace != null && !workspace.isEmpty()) {
+            return "/geoserver/"+workspace+"/wms";
+        } else {
+            return "/geoserver/wms";
+        }
     }
 
     public StringBuffer getRequestURL() {
@@ -142,6 +165,31 @@ class FakeHttpServletRequest implements HttpServletRequest {
         throw new ServletDebugException();
     }
 
+    @Override
+    public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
+        return false;
+    }
+
+    @Override
+    public void login(String username, String password) throws ServletException {
+
+    }
+
+    @Override
+    public void logout() throws ServletException {
+
+    }
+
+    @Override
+    public Collection<Part> getParts() throws IOException, ServletException {
+        return null;
+    }
+
+    @Override
+    public Part getPart(String name) throws IOException, ServletException {
+        return null;
+    }
+
     public boolean isRequestedSessionIdValid() {
         throw new ServletDebugException();
     }
@@ -167,7 +215,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     public String getContentType() {
-        throw new ServletDebugException();
+        return null;
     }
 
     public ServletInputStream getInputStream() throws IOException {
@@ -185,6 +233,41 @@ class FakeHttpServletRequest implements HttpServletRequest {
     public int getLocalPort() {
         // TODO Auto-generated method stub
         return 0;
+    }
+
+    @Override
+    public ServletContext getServletContext() {
+        return null;
+    }
+
+    @Override
+    public AsyncContext startAsync() throws IllegalStateException {
+        return null;
+    }
+
+    @Override
+    public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
+        return null;
+    }
+
+    @Override
+    public boolean isAsyncStarted() {
+        return false;
+    }
+
+    @Override
+    public boolean isAsyncSupported() {
+        return false;
+    }
+
+    @Override
+    public AsyncContext getAsyncContext() {
+        return null;
+    }
+
+    @Override
+    public DispatcherType getDispatcherType() {
+        return null;
     }
 
     public Locale getLocale() {

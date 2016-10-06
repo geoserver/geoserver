@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2007 OpenPlans
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
@@ -8,7 +9,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Unit test suite for {@link GetCapabilitiesResponse}
@@ -21,7 +22,6 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
     /**
      * Tests ContentDisposition
      * 
-     * @throws Exception
      */
     @Test
     public void testSimple() throws Exception {

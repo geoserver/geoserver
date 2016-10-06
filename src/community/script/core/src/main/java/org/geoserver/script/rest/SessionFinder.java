@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,7 +7,6 @@ package org.geoserver.script.rest;
 
 import org.geoserver.rest.RestletException;
 import org.geoserver.script.ScriptManager;
-import org.restlet.Finder;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -18,16 +18,14 @@ import org.restlet.resource.Resource;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class SessionFinder extends Finder {
-
-    ScriptManager scriptMgr;
+public class SessionFinder extends FinderSupport {
 
     public SessionFinder(ScriptManager scriptMgr) {
-        this.scriptMgr = scriptMgr;
+        super(scriptMgr);
     }
 
     @Override
-    public Resource findTarget(Request request, Response response) {
+    protected Resource doFindTarget(Request request, Response response) {
         if (request.getAttributes().containsKey("ext")) {
             String ext = (String) request.getAttributes().get("ext");
             if (!scriptMgr.hasEngineForExtension(ext)) {

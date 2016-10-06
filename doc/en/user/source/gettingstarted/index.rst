@@ -1,14 +1,13 @@
 .. _getting_started:
 
-Getting Started
+Getting started
 ===============
 
-This section contains short tutorials for common tasks in GeoServer, to get new users using the system quickly and easily.
+This section contains short tutorials for common tasks in GeoServer to get new users using the system quickly.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    web-admin-quickstart/index.rst	
    shapefile-quickstart/index.rst
    postgis-quickstart/index.rst
-   styling-quickstart/index.rst

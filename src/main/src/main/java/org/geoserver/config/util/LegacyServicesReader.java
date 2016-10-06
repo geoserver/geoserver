@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -184,6 +185,7 @@ public class LegacyServicesReader {
         value( "srsXmlStyle", wfsElement, wfs, Boolean.class, false, Boolean.TRUE );
         value( "featureBounding", wfsElement, wfs, Boolean.class, false, Boolean.FALSE );
         value( "hitsIgnoreMaxFeatures", wfsElement, wfs, Boolean.class, false, Boolean.FALSE);
+        value( "maxNumberOfFeaturesForPreview", wfsElement, wfs, Integer.class, false, 50);
         
         return wfs;
     }

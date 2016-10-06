@@ -1,0 +1,1 @@
+wfs?service=WFS&version=2.0.0&request=GetFeature&typenames=sf:bugsites&filter=%3Cfes:Filter%20xmlns:fes=%22http://www.opengis.net/fes/2.0%22%3E%3Cfes:ResourceId%20rid=%22bugsites.3%22/%3E%3C/fes:Filter%3E

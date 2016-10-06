@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,13 +12,14 @@ import java.util.Stack;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.opengis.geometry.Envelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
 
 
 /**
- * 
+ * Utility class to work with nested layer groups and extract selected sub-parts of it
  */
 public class LayerGroupHelper {
 
@@ -35,7 +37,7 @@ public class LayerGroupHelper {
     
     /**
      * 
-     * @return
+     *
      */
     public List<LayerInfo> allLayers() {
         List<LayerInfo> layers = new ArrayList<LayerInfo>();
@@ -56,11 +58,31 @@ public class LayerGroupHelper {
                 allLayers((LayerGroupInfo) p, layers);
             }
         }        
-    }     
+    }
+    
+    /**
+     * Returns all the groups contained in this group (including the group itself)
+     * @return
+     */
+    public List<LayerGroupInfo> allGroups() {
+        List<LayerGroupInfo> groups = new ArrayList<LayerGroupInfo>();
+        allGroups(group, groups);
+        return groups;
+    }    
+  
+    private static void allGroups(LayerGroupInfo group, List<LayerGroupInfo> groups) {
+        groups.add(group);
+        for (PublishedInfo p : group.getLayers()) {
+            if (p instanceof LayerGroupInfo) {
+                LayerGroupInfo g = (LayerGroupInfo) p;
+                allGroups(g, groups);
+            } 
+        }
+    }
     
     /**
      * 
-     * @return
+     *
      */
     public List<StyleInfo> allStyles() {
         List<StyleInfo> styles = new ArrayList<StyleInfo>();
@@ -146,7 +168,6 @@ public class LayerGroupHelper {
     /**
      * 
      * @param crs
-     * @throws Exception
      */
     public void calculateBounds(CoordinateReferenceSystem crs) throws Exception {
         List<LayerInfo> layers = allLayers();        
@@ -155,9 +176,9 @@ public class LayerGroupHelper {
         }        
         
         LayerInfo l = layers.get(0);
-        ReferencedEnvelope bounds = transform(l.getResource().getLatLonBoundingBox(), crs);
-
-        for (int i = 1; i < layers.size(); i++) {
+        ReferencedEnvelope bounds = new ReferencedEnvelope(crs);
+        
+        for (int i = 0; i < layers.size(); i++) {
             l = layers.get(i);
             bounds.expandToInclude(transform(l.getResource().getLatLonBoundingBox(), crs));
         }
@@ -166,8 +187,24 @@ public class LayerGroupHelper {
     }
     
     /**
+     * Use the CRS's defined bounds to populate the LayerGroup bounds.
      * 
-     * @throws Exception
+     * If the CRS has no bounds then the layer group bounds are set to null instead
+     * 
+     * @param crs
+     */
+    public void calculateBoundsFromCRS(CoordinateReferenceSystem crs) {
+        Envelope crsEnvelope = CRS.getEnvelope(crs);
+        if (crsEnvelope != null) {
+            ReferencedEnvelope refEnvelope = new ReferencedEnvelope(crsEnvelope);
+            this.group.setBounds(refEnvelope);
+        } else {
+            this.group.setBounds(null);
+        }
+    }
+    
+    /**
+     * 
      */
     public void calculateBounds() throws Exception {
         List<LayerInfo> layers = allLayers();       
@@ -192,10 +229,14 @@ public class LayerGroupHelper {
             l = layers.get(i);
 
             ReferencedEnvelope re;
+            ResourceInfo resource = l.getResource(); 
             if (latlon) {
-                re = l.getResource().getLatLonBoundingBox();
+                re = resource.getLatLonBoundingBox();
             } else {
-                re = l.getResource().boundingBox();
+                re = resource.boundingBox();
+                if(re == null) {
+                    re = resource.getLatLonBoundingBox();
+                }
             }
 
             re = transform(re, bounds.getCoordinateReferenceSystem());
@@ -242,15 +283,16 @@ public class LayerGroupHelper {
     
     private static boolean checkLoops(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         path.push(group);
-        
-        for (PublishedInfo child : group.getLayers()) {
-            if (child instanceof LayerGroupInfo) {
-                if (isGroupInStack((LayerGroupInfo) child, path)) {
-                    path.push((LayerGroupInfo) child);
-                    return true;
-                } else if (checkLoops((LayerGroupInfo) child, path)) {
-                    return true;
-                }                
+        if (group.getLayers() != null) {
+            for (PublishedInfo child : group.getLayers()) {
+                if (child instanceof LayerGroupInfo) {
+                    if (isGroupInStack((LayerGroupInfo) child, path)) {
+                        path.push((LayerGroupInfo) child);
+                        return true;
+                    } else if (checkLoops((LayerGroupInfo) child, path)) {
+                        return true;
+                    }                
+                }
             }
         }
         

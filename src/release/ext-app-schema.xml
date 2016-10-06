@@ -19,6 +19,7 @@
                 <!-- matches both gt-app-schema and gt-app-schema-resolver jars -->
                 <include>gt-app-schema-*.jar</include>
                 <include>gt-complex-*.jar</include>
+                <include>commons-digester-*.jar</include>
             </includes>
             <excludes>
                 <exclude>*-tests.jar</exclude>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE beans PUBLIC "-//ACTIVEMQ//DTD//EN" "http://activemq.org/dtd/activemq.dtd" -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jms="http://www.springframework.org/schema/jms" xmlns:amq="http://activemq.apache.org/schema/core"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/jms
+                           http://www.springframework.org/schema/jms/spring-jms.xsd
+                           http://activemq.apache.org/schema/core
+                           http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+	<!-- Allows us to use system properties as variables in this configuration 
+		file -->
+	<bean id="activemq.propertyPlaceholderConfigurer"
+		class="org.geoserver.cluster.impl.utils.JMSPropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="searchSystemEnvironment" value="true" />
+		<property name="ignoreUnresolvablePlaceholders" value="false" />
+		<property name="ignoreResourceNotFound" value="true" />
+		<constructor-arg index="0" type="Resource">
+			<value>embedded-broker.properties</value>
+		</constructor-arg>
+		<constructor-arg index="1" type="JMSConfiguration"
+			ref="JMSConfiguration" />
+
+	</bean>
+
+	<broker id="broker" persistent="${activemq.broker.persistent}"
+		useJmx="${activemq.jmx.useJmx}" xmlns="http://activemq.apache.org/schema/core"
+		dataDirectory="${activemq.base}" tmpDataDirectory="${activemq.base}/tmp"
+		startAsync="false" start="false" brokerName="${instanceName}">
+
+		<!-- The managementContext is used to configure how ActiveMQ is exposed 
+			in JMX. By default, ActiveMQ uses the MBean server that is started by the 
+			JVM. For more information, see: http://activemq.apache.org/jmx.html -->
+		<managementContext>
+			<managementContext createConnector="${activemq.jmx.createConnector}"
+				connectorPort="${activemq.jmx.port}" connectorHost="${activemq.jmx.host}" />
+		</managementContext>
+
+		<destinationInterceptors>
+			<virtualDestinationInterceptor>
+				<virtualDestinations>
+					<virtualTopic name=">" prefix="Consumer.*.VirtualTopic."
+						selectorAware="false" />
+				</virtualDestinations>
+			</virtualDestinationInterceptor>
+		</destinationInterceptors>
+
+		<!-- Configure message persistence for the broker. The default persistence 
+			mechanism is the KahaDB store (identified by the kahaDB tag). For more information, 
+			see: http://activemq.apache.org/persistence.html -->
+		<amq:persistenceAdapter>
+
+			<kahaDB directory="${activemq.base}/kahadb"
+				lockKeepAlivePeriod="0" />
+
+			<!-- <jdbcPersistenceAdapter dataDirectory="activemq-data" dataSource="#postgres-ds" 
+				lockKeepAlivePeriod="0" /> -->
+		</amq:persistenceAdapter>
+
+
+		<!-- The systemUsage controls the maximum amount of space the broker will 
+			use before slowing down producers. For more information, see: http://activemq.apache.org/producer-flow-control.html -->
+		<systemUsage>
+			<systemUsage>
+				<memoryUsage>
+					<memoryUsage limit="${activemq.broker.systemUsage.memoryUsage}" />
+				</memoryUsage>
+				<storeUsage>
+					<storeUsage limit="${activemq.broker.systemUsage.storeUsage}" />
+				</storeUsage>
+				<tempUsage>
+					<tempUsage limit="${activemq.broker.systemUsage.tempUsage}" />
+				</tempUsage>
+			</systemUsage>
+		</systemUsage>
+
+		<!-- The transport connectors expose ActiveMQ over a given protocol to 
+			clients and other brokers. For more information, see: http://activemq.apache.org/configuring-transports.html -->
+		<transportConnectors>
+			<transportConnector name="openwire"
+				uri="${activemq.transportConnectors.server.uri}" discoveryUri="${activemq.transportConnectors.server.discoveryURI}" />
+		</transportConnectors>
+		<networkConnectors xmlns="http://activemq.apache.org/schema/core">
+			<networkConnector
+				uri="${activemq.transportConnectors.server.discoveryURI}" />
+		</networkConnectors>
+
+		<!-- destroy the spring context on shutdown to stop jetty -->
+		<shutdownHooks>
+			<bean xmlns="http://www.springframework.org/schema/beans" class="org.apache.activemq.hooks.SpringContextHook" />
+		</shutdownHooks>
+
+	</broker>
+
+	<!-- This xbean configuration file supports all the standard spring xml 
+		configuration options -->
+
+	<!-- <bean id="postgres-ds" class="org.postgresql.ds.PGPoolingDataSource"> -->
+	<!-- <property name="serverName" value="localhost" /> -->
+	<!-- <property name="databaseName" value="activemq" /> -->
+	<!-- <property name="portNumber" value="5432" /> -->
+	<!-- <property name="user" value="postgres" /> -->
+	<!-- <property name="password" value="postgres" /> -->
+	<!-- <property name="dataSourceName" value="postgres" /> -->
+	<!-- <property name="initialConnections" value="1" /> -->
+	<!-- <property name="maxConnections" value="30" /> -->
+	<!-- </bean> -->
+
+	<!-- Oracle DataSource Sample Setup -->
+	<!-- <bean id="oracle-ds" class="org.apache.commons.dbcp.BasicDataSource" 
+		destroy-method="close"> <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/> 
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:AMQDB"/> <property 
+		name="username" value="scott"/> <property name="password" value="tiger"/> 
+		<property name="poolPreparedStatements" value="true"/> </bean> -->
+
+</beans>
+

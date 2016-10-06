@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-web-wms"/>
+    <constructor-arg index="1" value="GeoServer Web UI Web Map Service"/>
+  </bean>
   <bean id="wmsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
     <property name="id" value="wms"/>
     <property name="titleKey" value="wms.title"/>
@@ -23,13 +27,13 @@
     <property name="componentClass" value="org.geoserver.wms.web.publish.WMSLayerConfig"/>
   </bean>
 
-  <bean id="wmsLayerGroupConfig" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
-    <property name="id" value="wmsLayerGroupConfig"/>
+  <bean id="wmsLayerGroupConfig" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
+    <property name="id" value="authoritiesAndIdentifiersConfig"/>
     <property name="titleKey" value="publish.layergroup.config.wms"/>
-    <property name="componentClass" value="org.geoserver.wms.web.publish.WMSLayerGroupConfig"/>
+    <property name="componentClass" value="org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersConfigPanel"/>
   </bean>
 
-  <bean id="attributionLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+  <bean id="attributionLayerConfig" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
     <property name="id" value="attributionLayerConfig"/>
     <property name="titleKey" value="publish.layer.config.attribution"/>
     <property name="componentClass" value="org.geoserver.wms.web.publish.AttributionLayerConfigPanel"/>

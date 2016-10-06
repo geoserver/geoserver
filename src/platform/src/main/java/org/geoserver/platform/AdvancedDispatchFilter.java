@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -86,7 +87,9 @@ public class AdvancedDispatchFilter implements Filter {
         
         public String getPathInfo() {
             HttpServletRequest delegate = (HttpServletRequest) getRequest();
-            if(delegate.getPathInfo().startsWith(servletPath))
+            if (servletPath != null &&
+                    delegate.getPathInfo() != null &&
+                    delegate.getPathInfo().startsWith(servletPath))
                 return delegate.getPathInfo().substring(servletPath.length());
             else
                 return delegate.getPathInfo();

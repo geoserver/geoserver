@@ -8,16 +8,6 @@
   <resource class="coverage">
     <id>CoverageInfoImpl--4a9eec43:132d48aac79:-8000</id>
   </resource>
-  <enabled>true</enabled>
-  <metadata>
-    <entry key="GWC.metaTilingX">4</entry>
-    <entry key="GWC.autoCacheStyles">true</entry>
-    <entry key="GWC.metaTilingY">4</entry>
-    <entry key="GWC.gutter">0</entry>
-    <entry key="GWC.enabled">true</entry>
-    <entry key="GWC.gridSets">EPSG:4326,EPSG:900913</entry>
-    <entry key="GWC.cacheFormats">image/png,image/jpeg</entry>
-  </metadata>
   <attribution>
     <logoWidth>0</logoWidth>
     <logoHeight>0</logoHeight>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -57,7 +58,7 @@ public class PasswordValidatorImpl extends AbstractSecurityValidator implements 
      * return the prefix, if false return <code>null</code>
      * 
      * @param password
-     * @return
+     *
      */
     public static String  passwordStartsWithEncoderPrefix (char[] password) {
         
@@ -127,7 +128,7 @@ public class PasswordValidatorImpl extends AbstractSecurityValidator implements 
      * 
      * @param methodname
      * @param charArray
-     * @return
+     *
      */
     protected boolean checkUsingMethod(String methodname, char[] charArray) {
         try {

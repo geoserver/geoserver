@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -86,7 +87,7 @@ public class DataTransformer {
      *
      * @param inputs
      * @param parameters
-     * @return
+     *
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> decodeInputs(final List<InputType> inputs,
@@ -132,7 +133,7 @@ public class DataTransformer {
      *
      * @param identifier
      * @param reference
-     * @return
+     *
      */
     private Object decodeReferenceData(final String identifier, final InputReferenceType reference) {
         Object            data       = null;
@@ -203,7 +204,7 @@ public class DataTransformer {
      *
      * @param type
      * @param schema
-     * @return
+     *
      */
     public ComplexTransmuter getComplexTransmuter(final Class<?> type, final String schema) {
         for(Transmuter transmuter : this.transmuters) {
@@ -231,7 +232,7 @@ public class DataTransformer {
      * Return default a transmuter for a given Java type
      *
      * @param type
-     * @return
+     *
      */
     public Transmuter getDefaultTransmuter(final Class<?> type) {
         Transmuter transmuter = this.defaultTransmuters.get(type);
@@ -248,7 +249,7 @@ public class DataTransformer {
      * Tests if all inputs and outputs of a Process are transmutable
      *
      * @param pf
-     * @return
+     *
      */
     public boolean isTransmutable(ProcessFactory pf, Name name) {
         for(Parameter<?> param : pf.getParameterInfo(name).values()) {

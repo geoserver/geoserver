@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+    <ul>
+      <li>
+        <fieldset>
+          <legend>
+            <span><wicket:message key="passwords"></wicket:message></span>
+          </legend>
+          <ul>
+           <li>
+             <label for="passwordEncoderName"><wicket:message key="passwordEncryption"></wicket:message></label>
+             <select wicket:id="passwordEncoderName"/>
+           </li>
+           <li class="choiceItem">
+            <input wicket:id="recodeExistingPasswords" type="checkbox" />
+            <label for="recodeExistingPasswords"><wicket:message key="recodeExistingPasswords"></wicket:message></label>
+           </li>
+           <li>
+             <label for="passwordPolicyName"><wicket:message key="passwordPolicy"></wicket:message></label>
+             <select wicket:id="passwordPolicyName"/>
+           </li>
+          </ul>
+        </fieldset>
+      </li>
+      <li>
+        <wicket:child></wicket:child>
+      </li>
+    </ul>
+    
+</wicket:extend>
+</body>
+</html>

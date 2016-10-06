@@ -12,11 +12,11 @@ Direct integration with GeoServer WMS
 
 GeoWebCache can be transparently integrated with the GeoServer WMS, and so requires no special endpoint or custom URL. In this way one can have the simplicity of a standard WMS endpoint with the performance of a tiled client.
 
-Although this direct integration is disabled by default, it can be enabled by going to the :ref:`webadmin_tilecaching_defaults` page in the :ref:`web_admin`.
+Although this direct integration is disabled by default, it can be enabled by going to the :ref:`gwc_webadmin_defaults` page in the :ref:`web_admin`.
 
 When this feature is enabled, GeoServer WMS will cache and retrieve tiles from GeoWebCache (via a GetMap request) only if **all of the following criteria are followed**:
 
-* WMS Direct integration is enabled (you can set this on the :ref:`webadmin_tilecaching_defaults` page)
+* WMS Direct integration is enabled (you can set this on the :ref:`gwc_webadmin_defaults` page)
 * ``tiled=true`` is included in the request
 * The request only references a single layer
 * Caching is enabled for that layer
@@ -84,7 +84,20 @@ You can invoke the GeoWebCache WMS instead at this URL::
    
 In other words, add ``/gwc/service/wms`` in between the path to your GeoServer instance and the WMS call.
 
-As soon as tiles are requested through GeoWebCache, GeoWebCache automatically starts saving them. This means that initial requests for tiles will not be accelerated since GeoServer will still need to generate the tiles. To automate this process of requesting tiles, you can **seed** the cache. See the section on :ref:`gwc_seeding` for more details.
+This end-point works using either:
+
+* WMS-C: A tileset description is included in the WMS GetCapabilities document instructing clients how to retrieve content as a series of tiles (each retrieved by a GetMap request). This technique supports HTTP caching taking advantage of the browser cache and any caching proxies deployed. This technique requires a client to be created with tile server support.
+* full-wms mode: GeoWebCache behaves as normal WMS supported ad-hoc WMS GetMapRequests. Each WMS Request is handled by obtaining the tiles required and stitching the result into a single image. This technique relies only on internal tile cache, but supports ad-hoc GetMap requests and does not require a client be constructed with tile server support.
+  
+  To enable this mode add the following in :file:`geowebcache.xml` configuration file:
+   
+  .. code-block:: xml
+     
+     <fullWMS>true</fullWMS>
+   
+  The fullWMS setting only effects the ``/gwc/service/wms`` endpoint and is not used by direct WMS integration.
+
+As soon as tiles are requested through the ``gwc/service/wms`` endpoint GeoWebCache automatically starts saving them. The initial requests for each tile will not be accelerated since GeoServer will  need to generate the tile and store it from subsequent use. To automate this process of requesting tiles, you can **seed** the cache. See the section on :ref:`gwc_seeding` for more details.
 
 .. _gwc_diskquota:
 
@@ -93,7 +106,7 @@ Disk quota
 
 GeoWebCache has a built-in disk quota feature to prevent disk space from growing unbounded. You can set the maximum size of the cache directory, poll interval, and what policy of tile removal to use when the quota is exceeded. Tiles can be removed based on usage ("Least Frequently Used" or LFU) or timestamp ("Least Recently Used" or LRU).
 
-Disk quotas are turned off by default, but can be configured on the :ref:`webadmin_tilecaching_diskquotas` page in the :ref:`web_admin`. 
+Disk quotas are turned off by default, but can be configured on the :ref:`gwc_webadmin_diskquotas` page in the :ref:`web_admin`. 
 
 Integration with external mapping sites
 ---------------------------------------
@@ -108,5 +121,5 @@ The version of GeoWebCache that comes embedded in GeoServer automatically config
 * **EPSG:4326** (latitude/longitude)
 * **EPSG:900913** (Spherical Mercator, the projection used in Google Maps)
 
-You can also set a custom CRS from any that GeoServer recognizes. See the :ref:`webadmin_tilecaching_gridsets` page for details. 
+You can also set a custom CRS from any that GeoServer recognizes. See the :ref:`gwc_webadmin_gridsets` page for details. 
 

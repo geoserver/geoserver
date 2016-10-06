@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -127,14 +128,12 @@ public abstract class OneTimeSetupTest extends TestCase {
     
     /**
      * Per method setup (fixture can be stored in non static fields)
-     * @throws Exception
      */
     protected void setUpInternal() throws Exception {
     }
     
     /**
      * Per method tear down 
-     * @throws Exception
      */
     protected void tearDownInternal() throws Exception {
         

@@ -1,7 +1,9 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
+
 package org.geoserver.security.impl;
 
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -23,6 +26,11 @@ import org.geotools.util.logging.Logging;
  */
 public class RESTAccessRuleDAO extends AbstractAccessRuleDAO<String> {
     private final static Logger LOGGER = Logging.getLogger(RESTAccessRuleDAO.class);
+    
+    public static RESTAccessRuleDAO get() {
+        return GeoServerExtensions.bean(RESTAccessRuleDAO.class); 
+     }
+
     
     /**
      * rule pattern
@@ -54,7 +62,17 @@ public class RESTAccessRuleDAO extends AbstractAccessRuleDAO<String> {
     
     @Override
     protected Properties toProperties() {
-        return null;
+        Properties props = new Properties();
+        for (String rule : rules) {
+            rule=rule.replaceAll(":", ";");
+            if (!PATTERN.matcher(rule).matches()) {
+                LOGGER.severe("Invalid '" + rule + "' not matching " + PATTERN);
+                continue;
+            }
+            String[] parts=rule.split("=");
+            props.setProperty(parts[0], parts[1]);
+        }
+        return props;
     }
 
 }

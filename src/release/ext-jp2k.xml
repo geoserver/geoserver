@@ -18,6 +18,7 @@
 			<includes>
         <include>*gt-jp2k*.jar</include>
 				<include>*imageio-ext-kakadu*.jar</include>
+				<include>*imageio-ext-imagereadmt*.jar</include>
 			</includes>
 		</fileSet>
 		<fileSet>

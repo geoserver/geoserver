@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -75,7 +76,7 @@ public class DDSMapResponse extends RenderedImageMapResponse {
 	 * with correct colour model
 	 * (lifted from http://www.jguru.com/faq/view.jsp?EID=114602)
 	 * @param img
-	 * @return
+	 *
 	 */
 	protected BufferedImage convertRenderedImage(RenderedImage img) {
 		if (img instanceof BufferedImage) {

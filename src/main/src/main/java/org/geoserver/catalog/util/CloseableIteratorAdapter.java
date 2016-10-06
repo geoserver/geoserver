@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,6 +8,7 @@ package org.geoserver.catalog.util;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geotools.util.logging.Logging;
@@ -91,6 +93,12 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
     public static <T> CloseableIterator<T> filter(final Iterator<T> iterator, final Filter filter) {
 
         Predicate<T> predicate = filterAdapter(filter);
+        return filter(iterator, predicate);
+        
+    }
+    
+    public static <T> CloseableIterator<T> filter(final Iterator<T> iterator, final Predicate<T> predicate) {
+        
         UnmodifiableIterator<T> filteredNotCloseable = Iterators.filter(iterator, predicate);
         Closeable closeable = iterator instanceof Closeable ? (Closeable) iterator : null;
 
@@ -118,7 +126,11 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
 
     public static void close(Iterator<?> iterator) {
         if (iterator instanceof Closeable) {
-            Closeables.closeQuietly((Closeable) iterator);
+            try {
+                Closeables.close((Closeable) iterator, false);
+            } catch (IOException e) {
+                LOGGER.log(Level.FINE, "Ignoring exception on CloseableIteratorAdapter.close()", e);
+            }
         }
     }
 

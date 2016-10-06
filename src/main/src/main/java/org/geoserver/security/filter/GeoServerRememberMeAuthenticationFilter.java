@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,6 +8,7 @@ package org.geoserver.security.filter;
 
 import java.io.IOException;
 
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 
@@ -26,9 +28,10 @@ public class GeoServerRememberMeAuthenticationFilter extends GeoServerCompositeF
 //       not needed at the moment        
 //        RememberMeAuthenticationFilterConfig authConfig = 
 //                (RememberMeAuthenticationFilterConfig) config;
-        
+
+        GeoServerSecurityManager secMgr = getSecurityManager();
         RememberMeAuthenticationFilter filter = new RememberMeAuthenticationFilter(
-                getSecurityManager(),getSecurityManager().getRememberMeService());
+            secMgr.authenticationManager(), secMgr.getRememberMeService());
         filter.afterPropertiesSet();
         getNestedFilters().add(filter);        
     }

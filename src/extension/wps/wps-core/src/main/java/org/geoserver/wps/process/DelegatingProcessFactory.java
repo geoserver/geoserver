@@ -1,11 +1,13 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.wps.process;
 
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -78,7 +80,7 @@ public abstract class DelegatingProcessFactory implements ProcessFactory {
     
     /**
      * Returns the original process factory
-     * @return
+     *
      */
     public ProcessFactory getDelegate() {
         return delegate;
@@ -86,7 +88,7 @@ public abstract class DelegatingProcessFactory implements ProcessFactory {
 
     /**
      * Returns the innermost delegate, this method can be used to check what the original factory was
-     * @return
+     *
      */
     public ProcessFactory getInnermostDelegate() {
         ProcessFactory pf = delegate;

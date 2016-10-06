@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,29 +10,29 @@ import org.geoserver.gwc.GWC;
 
 /**
  * GeoServer life cycle listener that reloads the gwc configuration
- * 
  */
 public class GWCLifeCycleHandler implements GeoServerLifecycleHandler {
 
-    private final GWC mediator;
+    public GWCLifeCycleHandler() {
+        // nothing to do
+    }
 
-    public GWCLifeCycleHandler(GWC mediator) {
-        this.mediator = mediator;
+    public void beforeReload() {
+        // nothing to do
     }
 
     @Override
     public void onReload() {
-        mediator.reload();
+        GWC.tryReload();
     }
 
     @Override
     public void onReset() {
-        mediator.reset();
+        GWC.tryReset();
     }
 
     @Override
     public void onDispose() {
         onReset();
     }
-
 }

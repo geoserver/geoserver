@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,9 +8,12 @@ package org.geoserver.wms.kvp;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
-import java.io.File;
-import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -17,9 +21,12 @@ import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.stream.ImageInputStream;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.image.palette.InverseColorMapOp;
 import org.geotools.util.SoftValueHashMap;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Allows access to palettes (implemented as {@link IndexColorModel} classes)
@@ -44,7 +51,7 @@ public class PaletteManager {
     public static final String SAFE = "SAFE";
     public static final IndexColorModel safePalette = buildDefaultPalette();
     static SoftValueHashMap<String, PaletteCacheEntry> paletteCache = new SoftValueHashMap<String, PaletteCacheEntry>();
-    static SoftValueHashMap<IndexColorModel, InverseColorMapOp> opCache = new SoftValueHashMap<IndexColorModel, InverseColorMapOp>();
+    static SoftValueHashMap<IndexColorModelKey, InverseColorMapOp> opCache = new SoftValueHashMap<IndexColorModelKey, InverseColorMapOp>();
 
     /**
      * TODO: we should probably provide the data directory as a constructor
@@ -53,103 +60,94 @@ public class PaletteManager {
     private PaletteManager() {
     }
 
-	/**
-	 * Loads a PaletteManager
-	 * 
-	 * @param name
-	 * @return
-	 * @throws Exception
-	 */
-	public static IndexColorModel getPalette(String name)
-			throws Exception {
-		// check for safe paletteInverter
-		if ("SAFE".equals(name.toUpperCase())) {
-			return safePalette;
-		}
+    /**
+     * Loads a PaletteManager
+     * 
+     * @param name
+     *
+     */
+    public static IndexColorModel getPalette(String name) throws Exception {
+        // check for safe paletteInverter
+        if ("SAFE".equals(name.toUpperCase())) {
+            return safePalette;
+        }
 
-		// check for cached one, making sure it's not stale
-		final PaletteCacheEntry entry = (PaletteCacheEntry) paletteCache
-				.get(name);
-		if (entry != null) {
-			if (entry.isStale()) {
-				paletteCache.remove(name);
-			} else {
-				return entry.icm;
-			}
-		}
+        // check for cached one, making sure it's not stale
+        final PaletteCacheEntry entry = (PaletteCacheEntry) paletteCache.get(name);
+        if (entry != null) {
+            if (entry.isStale()) {
+                paletteCache.remove(name);
+            } else {
+                return entry.icm;
+            }
+        }
 
-		// ok, load it. for the moment we load palettes from .png and .gif
-		// files, but we may want to extend this ability to other file formats
-		// (Gimp palettes for example), in this case we'll adopt the classic
-		// plugin approach using either the Spring context of the SPI
+        // ok, load it. for the moment we load palettes from .png and .gif
+        // files, but we may want to extend this ability to other file formats
+        // (Gimp palettes for example), in this case we'll adopt the classic
+        // plugin approach using either the Spring context of the SPI
 
-		// hum... loading the paletteDir could be done once, but then if the
-		// users
-		// adds the paletteInverter dir with a running Geoserver, we won't find it
-		// anymore...
-		final File root = GeoserverDataDirectory.getGeoserverDataDirectory();
-		final File paletteDir = GeoserverDataDirectory.findConfigDir(root,
-				"palettes");
-		final String[] names = new String[] { name + ".gif", name + ".png",
-				name + ".pal", name + ".tif" };
-		final File[] paletteFiles = paletteDir.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				for (int i = 0; i < names.length; i++) {
-					if (name.toLowerCase().equals(names[i])) {
-						return true;
-					}
-				}
+        // hum... loading the paletteDir could be done once, but then if the
+        // users
+        // adds the paletteInverter dir with a running Geoserver, we won't find it
+        // anymore...
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 
-				return false;
-			}
-		});
+        Resource palettes = loader.get("palettes");
 
-		// scan the files found (we may have multiple files with different
-		// extensions and return the first paletteInverter you find
-		for (int i = 0; i < paletteFiles.length; i++) {
-			final File file = paletteFiles[i];
-			final String fileName = file.getName();
-			if (fileName.endsWith("pal")) {
-				final IndexColorModel icm = new PALFileLoader(file)
-						.getIndexColorModel();
+        Set<String> names = new HashSet<String>();
+        names.addAll(Arrays.asList(new String[] { name + ".gif", name + ".png", name + ".pal",
+                name + ".tif" }));
 
-				if (icm != null) {
-					paletteCache.put(name, new PaletteCacheEntry(file, icm));
-					return icm;
-				}
-			} else {
-				ImageInputStream iis = ImageIO.createImageInputStream(file);
+        List<Resource> paletteFiles = new ArrayList<Resource>();
+        for (Resource item : palettes.list()) {
+            if (names.contains(item.name().toLowerCase())) {
+                paletteFiles.add(item);
+            }
+        }
+
+        // scan the files found (we may have multiple files with different
+        // extensions and return the first paletteInverter you find
+        for (Resource resource : paletteFiles) {
+            final String fileName = resource.name();
+            if (fileName.endsWith("pal")) {
+                final IndexColorModel icm = new PALFileLoader(resource).getIndexColorModel();
+
+                if (icm != null) {
+                    paletteCache.put(name, new PaletteCacheEntry(resource, icm));
+                    return icm;
+                }
+            } else {
+                ImageInputStream iis = ImageIO.createImageInputStream(resource.in());
                 final Iterator it = ImageIO.getImageReaders(iis);
-				if (it.hasNext()) {
-					final ImageReader reader = (ImageReader) it.next();
-					reader.setInput(iis);
-					final ColorModel cm = ((ImageTypeSpecifier) reader
-							.getImageTypes(0).next()).getColorModel();
-					if (cm instanceof IndexColorModel) {
-						final IndexColorModel icm = (IndexColorModel) cm;
-						paletteCache.put(name,
-								new PaletteCacheEntry(file, icm));
-						return icm;
-					}
-				}
-			}
-			LOG
-					.warning("Skipping paletteInverter file "
-							+ file.getName()
-							+ " since color model is not indexed (no 256 colors paletteInverter)");
-		}
+                if (it.hasNext()) {
+                    final ImageReader reader = (ImageReader) it.next();
+                    reader.setInput(iis);
+                    final ColorModel cm = ((ImageTypeSpecifier) reader.getImageTypes(0).next())
+                            .getColorModel();
+                    if (cm instanceof IndexColorModel) {
+                        final IndexColorModel icm = (IndexColorModel) cm;
+                        paletteCache.put(name, new PaletteCacheEntry(resource, icm));
+                        return icm;
+                    }
+                }
+            }
+            LOG.warning("Skipping paletteInverter file " + fileName
+                    + " since color model is not indexed (no 256 colors paletteInverter)");
+        }
 
-		return null;
-	}
-	
-	public static InverseColorMapOp getInverseColorMapOp(IndexColorModel icm) {
-	    // check for cached one, making sure it's not stale
-        InverseColorMapOp op = (InverseColorMapOp) opCache.get(icm);
+        return null;
+    }
+
+    public static InverseColorMapOp getInverseColorMapOp(IndexColorModel icm) {
+        // check for cached one, making sure it's not stale
+        IndexColorModelKey key = new IndexColorModelKey(icm);
+        InverseColorMapOp op = (InverseColorMapOp) opCache.get(key);
         if (op != null) {
             return op;
         } else {
             op = new InverseColorMapOp(icm);
-            opCache.put(icm,  op);
+            opCache.put(key,  op);
             return op;
         }
 	}
@@ -198,27 +196,59 @@ public class PaletteManager {
 	 * too
 	 */
 	private static class PaletteCacheEntry {
-		File file;
+		Resource file;
 
 		long lastModified;
 
 		IndexColorModel icm;
 
-		public PaletteCacheEntry(File file,
+		public PaletteCacheEntry(Resource file,
 				IndexColorModel icm) {
 			this.file = file;
 			this.icm = icm;
-			this.lastModified = file.lastModified();
+			this.lastModified = file.lastmodified();
 		}
 
 		/**
 		 * Returns true if the backing file does not exist any more, or has been
 		 * modified
 		 * 
-		 * @return
+		 *
 		 */
 		public boolean isStale() {
-			return !file.exists() || (file.lastModified() != lastModified);
+			return !Resources.exists(file) || (file.lastmodified() != lastModified);
 		}
+	}
+	
+	/**
+	 * IndexColorModel has a broken hashcode implementation (inherited from ColorModel
+	 * and not overridden), use a custom key that leverages identity hash code instead
+	 * (a full equals would be expensive, palettes can have 65k entries)
+	 */
+	private static class IndexColorModelKey {
+	    IndexColorModel icm;
+	    
+        public IndexColorModelKey(IndexColorModel icm) {
+            this.icm = icm;
+        }
+
+        @Override
+        public int hashCode() {
+            return System.identityHashCode(icm);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            IndexColorModelKey other = (IndexColorModelKey) obj;
+            return icm == other.icm;
+        }
+	    
+	    
 	}
 }

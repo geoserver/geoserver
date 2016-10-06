@@ -1,0 +1,8 @@
+user=geotools
+port=5432
+password=geotools
+passwd=geotools
+host=localhost
+database=geotools
+driver=org.postgresql.Driver
+dbtype=postgis

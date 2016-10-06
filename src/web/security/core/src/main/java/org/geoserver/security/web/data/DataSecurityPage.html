@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+    <style type="text/css">
+       #catalogMode {
+         display:block;
+         padding-top: 0.5em;
+       }
+       #catalogMode input {
+          display: block;
+          float: left;
+          clear:left;
+          padding-top:0.5em;
+          margin-bottom: 0.5em;
+       }
+       #catalogMode label {
+          clear:right;
+          margin-bottom: 0.5em;
+       }
+     </style>
+</wicket:head>
+<body>
+<wicket:extend>
+
+     <wicket:fragment wicket:id="header">
+      <ul>
+        <li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
+        <li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
+      </ul>
+    </wicket:fragment>
+    
+    <div wicket:id="table"></div>
+
+    <form wicket:id="catalogModeForm" style="padding-top: 3em;">
+        <ul>
+          <li>
+            <fieldset>
+              <legend>
+                <span>Catalog Mode</span>
+                <a href="#" wicket:id="catalogModeHelp" class="help-link"></a>
+              </legend>
+              <span id="catalogMode" wicket:id="catalogMode">
+                <input type="radio"/>mode 1
+              </span>
+            </fieldset>
+          </li>
+        </ul>
+        <div class="button-group selfclear">
+          <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+          <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+        </div>
+    </form>
+    
+</wicket:extend>
+</body>
+</html>

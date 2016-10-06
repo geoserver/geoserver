@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,8 +10,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.SortedSet;
-
-import junit.framework.Assert;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -50,14 +49,10 @@ public class MemoryRoleServiceTest extends AbstractRoleServiceTest {
 
 
     @Test 
-    public void testInsert() {
+    public void testInsert() throws Exception{
         super.testInsert();
-        try {
-            for (GeoServerRole role : store.getRoles()) {
-                assertTrue(role.getClass()==MemoryGeoserverRole.class);
-            }
-        } catch (IOException e) {
-            Assert.fail(e.getMessage());
+        for (GeoServerRole role : store.getRoles()) {
+            assertTrue(role.getClass()==MemoryGeoserverRole.class);
         }
     }
     

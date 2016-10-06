@@ -1,0 +1,28 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+  <div wicket:id="externalGraphicContainer">
+    <ul wicket:id="list">
+      <li>
+        <label for="onlineResource"><wicket:message key="onlineResource">URL:</wicket:message></label>
+      </li>
+      <li>
+        <input wicket:id="onlineResource" type="text" class="text"></input><br>
+        <a href="#" wicket:id="autoFill"><wicket:message key="autoFill">Auto-detect image size and type</wicket:message></a>
+      </li>
+      <li><label for="width"><wicket:message key="width">Width</wicket:message></label></li>
+      <li><input wicket:id="width" type="text" class="text"></input></li>
+      <li><label for="height"><wicket:message key="height">Height</wicket:message></label></li>
+      <li><input wicket:id="height" type="text" class="text"></input></li>
+      <li><label for="format"><wicket:message key="format">format</wicket:message></label></li>
+      <li><input wicket:id="format" type="text" class="text"></input></li>      
+    </ul>
+    <form wicket:id="showhide" id="showhideForm">
+        <button wicket:id="show"><wicket:message key="show">Show</wicket:message></button>
+        <button wicket:id="hide"><wicket:message key="hide">Hide</wicket:message></button>
+    </form>
+  </div>  
+</wicket:panel>
+</body>
+</html>

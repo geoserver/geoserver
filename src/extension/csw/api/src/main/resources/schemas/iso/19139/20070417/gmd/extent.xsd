@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gmd="http://www.isotc211.org/2005/gmd" targetNamespace="http://www.isotc211.org/2005/gmd" elementFormDefault="qualified" version="2012-07-13">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>Geographic MetaData (GMD) extensible markup language is a component of the XML Schema Implementation of Geographic Information Metadata documented in ISO/TS 19139:2007. GMD includes all the definitions of http://www.isotc211.org/2005/gmd namespace. The root document of this namespace is the file gmd.xsd. This extent.xsd schema implements the UML conceptual schema defined in A.3.1 of ISO 19115:2003 and the associated corrigendum. It contains the implementation of the following classes: EX_TemporalExtent, EX_VerticalExtent, EX_BoundingPolygon, EX_Extent, EX_GeographicExtent, EX_GeographicBoundingBox, EX_SpatialTemporalExtent, EX_GeographicDescription.</xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.isotc211.org/2005/gss" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gss/gss.xsd"/>
+	<xs:import namespace="http://www.isotc211.org/2005/gts" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gts/gts.xsd"/>
+	<xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd"/>
+	<xs:import namespace="http://www.isotc211.org/2005/gsr" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gsr/gsr.xsd"/>
+	<xs:include schemaLocation="gmd.xsd"/>
+	<xs:include schemaLocation="referenceSystem.xsd"/>
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- ================================== Classes ================================= -->
+	<xs:complexType name="EX_TemporalExtent_Type">
+		<xs:annotation>
+			<xs:documentation>Time period covered by the content of the dataset</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="extent" type="gts:TM_Primitive_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="EX_TemporalExtent" type="gmd:EX_TemporalExtent_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="EX_TemporalExtent_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:EX_TemporalExtent"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="EX_VerticalExtent_Type">
+		<xs:annotation>
+			<xs:documentation>Vertical domain of dataset</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="minimumValue" type="gco:Real_PropertyType"/>
+					<xs:element name="maximumValue" type="gco:Real_PropertyType"/>
+					<xs:element name="verticalCRS" type="gsr:SC_CRS_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="EX_VerticalExtent" type="gmd:EX_VerticalExtent_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="EX_VerticalExtent_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:EX_VerticalExtent"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="EX_BoundingPolygon_Type">
+		<xs:annotation>
+			<xs:documentation>Boundary enclosing the dataset expressed as the closed set of (x,y) coordinates of the polygon (last point replicates first point)</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gmd:AbstractEX_GeographicExtent_Type">
+				<xs:sequence>
+					<xs:element name="polygon" type="gss:GM_Object_PropertyType" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="EX_BoundingPolygon" type="gmd:EX_BoundingPolygon_Type" substitutionGroup="gmd:AbstractEX_GeographicExtent"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="EX_BoundingPolygon_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:EX_BoundingPolygon"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="EX_Extent_Type">
+		<xs:annotation>
+			<xs:documentation>Information about spatial, vertical, and temporal extent</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="description" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="geographicElement" type="gmd:EX_GeographicExtent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="temporalElement" type="gmd:EX_TemporalExtent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="verticalElement" type="gmd:EX_VerticalExtent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="EX_Extent" type="gmd:EX_Extent_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="EX_Extent_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:EX_Extent"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="AbstractEX_GeographicExtent_Type" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Geographic area of the dataset</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="extentTypeCode" type="gco:Boolean_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="AbstractEX_GeographicExtent" type="gmd:AbstractEX_GeographicExtent_Type" abstract="true"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="EX_GeographicExtent_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:AbstractEX_GeographicExtent"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="EX_GeographicBoundingBox_Type">
+		<xs:annotation>
+			<xs:documentation>Geographic area of the entire dataset referenced to WGS 84</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gmd:AbstractEX_GeographicExtent_Type">
+				<xs:sequence>
+					<xs:element name="westBoundLongitude" type="gco:Decimal_PropertyType"/>
+					<xs:element name="eastBoundLongitude" type="gco:Decimal_PropertyType"/>
+					<xs:element name="southBoundLatitude" type="gco:Decimal_PropertyType"/>
+					<xs:element name="northBoundLatitude" type="gco:Decimal_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="EX_GeographicBoundingBox" type="gmd:EX_GeographicBoundingBox_Type" substitutionGroup="gmd:AbstractEX_GeographicExtent"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="EX_GeographicBoundingBox_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:EX_GeographicBoundingBox"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="EX_SpatialTemporalExtent_Type">
+		<xs:annotation>
+			<xs:documentation>Extent with respect to date and time</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gmd:EX_TemporalExtent_Type">
+				<xs:sequence>
+					<xs:element name="spatialExtent" type="gmd:EX_GeographicExtent_PropertyType" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="EX_SpatialTemporalExtent" type="gmd:EX_SpatialTemporalExtent_Type" substitutionGroup="gmd:EX_TemporalExtent"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="EX_SpatialTemporalExtent_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:EX_SpatialTemporalExtent"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="EX_GeographicDescription_Type">
+		<xs:complexContent>
+			<xs:extension base="gmd:AbstractEX_GeographicExtent_Type">
+				<xs:sequence>
+					<xs:element name="geographicIdentifier" type="gmd:MD_Identifier_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="EX_GeographicDescription" type="gmd:EX_GeographicDescription_Type" substitutionGroup="gmd:AbstractEX_GeographicExtent"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="EX_GeographicDescription_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:EX_GeographicDescription"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+</xs:schema>

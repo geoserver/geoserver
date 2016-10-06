@@ -26,6 +26,12 @@ where ``<format>`` is any of the options below.
    * - JPEG
      - ``format=image/jpeg``
      -
+   * - JPEG-PNG
+     - ``format=image/vnd.jpeg-png``
+     - A custom format that will decide dynamically, based on the image contents, if it's best to use a JPEG or PNG compression. The images are returned in JPEG format 
+       if fully opaque and not paletted. In order to use this format in a meaningful way the GetMap must include a "&transparent=TRUE" parameter, 
+       as without it GeoServer generates opaque images with the default/requested background color, making this format always return JPEG images (or always PNG, if they are paletted).
+       When using the layer preview to test this format, remember to add "&transparent=TRUE" to the preview URL, as normally the preview generates non transparent images.
    * - GIF
      - ``format=image/gif``
      -
@@ -59,3 +65,9 @@ where ``<format>`` is any of the options below.
    * - OpenLayers
      - ``format=application/openlayers``
      - Generates an OpenLayers HTML application.
+
+   * - UTFGrid
+     - ``format=application/json;type=utfgrid``
+     - Generates an `UTFGrid 1.3 <https://github.com/mapbox/utfgrid-spec/blob/master/1.3/utfgrid.md>`_ JSON response. Requires vector output, either from a vector layer, or
+       from a raster layer turned into vectors by a rendering transformation.
+     

@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>control-flow-*.jar</include>
+        <include>gs-control-flow-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

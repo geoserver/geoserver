@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcseo/1.0"
+    xmlns:wcseo="http://www.opengis.net/wcseo/1.0"
+    xmlns:wcs="http://www.opengis.net/wcs/2.0"
+    xmlns:ows="http://www.opengis.net/ows/2.0"
+    xmlns:gml="http://www.opengis.net/gml/3.2"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+    <annotation>
+        <appinfo>wcsEOGetCapabilities.xsd</appinfo>
+        <documentation>This XML Schema Document includes, directly and indirectly, all the XML Schema Documents defined by the OGC Web Coverage Service (WCS) Earth Observation Application Profile (EO-WCS).
+            Last updated: 2011-feb-04
+            Copyright (c) 2011 Open Geospatial Consortium, Inc. All Rights Reserved.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/.
+        </documentation>
+    </annotation>
+
+    <!-- =========================================================== -->
+    <!-- includes and imports                                        -->
+    <!-- =========================================================== -->
+    <import namespace="http://www.opengis.net/ows/2.0" schemaLocation="http://schemas.opengis.net/ows/2.0/owsAll.xsd"/>
+    <import namespace="http://www.opengis.net/wcs/2.0" schemaLocation="http://schemas.opengis.net/wcs/2.0/wcsAll.xsd"/>
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+    <include schemaLocation="wcsEOAll.xsd"/>
+
+    <!-- =========================================================== -->
+    <!-- elements and types                                          -->
+    <!-- =========================================================== -->
+    <element name="DatasetSeriesSummary" type="wcseo:DatasetSeriesSummaryType">
+        <annotation>
+            <documentation>A DatasetSeriesSummary contains information essential for accessing a Dataset Series served by an EO-WCS. The DatasetSeriesId is the identifier used to address a particular Dataset Series.</documentation>
+        </annotation>
+    </element>
+    <complexType name="DatasetSeriesSummaryType">
+        <complexContent>
+            <extension base="ows:DescriptionType">
+                <sequence>
+                    <element ref="ows:WGS84BoundingBox"/>
+                    <element ref="wcseo:DatasetSeriesId"/>
+                    <element ref="gml:TimePeriod"/>
+                    <element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+</schema>

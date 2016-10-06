@@ -1,10 +1,13 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.kml;
 
-import static org.junit.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,19 +40,22 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
     }
     
     @Test
-    public void testOutput() throws Exception {
+    public void testSelfLinks() throws Exception {
         final String path = 
             "wms?request=getmap&service=wms&version=1.1.1" + 
             "&format=" + KMLMapOutputFormat.MIME_TYPE + 
             "&layers=" + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart() + 
             "&styles=" + MockData.BASIC_POLYGONS.getLocalPart() + 
             "&height=1024&width=1024&bbox=-180,-90,0,90&srs=EPSG:4326" +  
-            "&featureid=BasicPolygons.1107531493643";
+            "&featureid=BasicPolygons.1107531493643&format_options=selfLinks:true";
 
         Document document = getAsDOM(path);
-        assertEquals("kml", document.getDocumentElement().getTagName());;
+        // print(document);
+        assertXpathEvaluatesTo("1", "count(//kml:Folder/kml:Placemark)", document);
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/cite/BasicPolygons/1107531493643.kml", "//kml:Placemark/atom:link/@href", document);
+        assertXpathEvaluatesTo("self", "//kml:Placemark/atom:link/@rel", document);
     }
-
+    
     /**
      * Test that requests regionated by data actually return stuff.
      */

@@ -1,0 +1,27 @@
+/* @title raster */
+[isCoverage()=true] {
+    raster-channels: auto;
+    raster-opacity: 1.0;
+}
+
+/* @title ${colorName} polygon */
+[dimension(geometry)=2] {
+    stroke: #000000;
+    stroke-width: 0.5;
+    fill: ${colorCode};
+}
+
+/* @title ${colorName} line */
+[dimension(geometry)=1] {
+    stroke: ${colorCode};
+}
+
+/* @title ${colorName} point */
+[dimension(geometry)=0] {
+    mark: symbol(square);
+    mark-size: 6px;
+    :mark {
+        fill: ${colorCode};
+    }
+}
+

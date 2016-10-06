@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+    <ul class="leftwise">
+      <li>
+        <fieldset>
+          <legend>
+            <span><wicket:message key="ldapSettings"></wicket:message></span>
+          </legend>
+          <ul>
+            <li>
+              <label for="serverURL"><wicket:message key="serverURL"></wicket:message></label>
+              <input id="serverURL" wicket:id="serverURL" type="text" class="text"></input>
+            </li>
+            
+            <li class="choiceItem">
+              <input id="useTLS" wicket:id="useTLS" type="checkbox"></input>
+              <label for="useTLS"><wicket:message key="useTLS"></wicket:message></label>
+            </li>
+            <li>
+              <label for="userDnPattern"><wicket:message key="userDnPattern"></wicket:message></label>
+              <input id="userDnPattern" wicket:id="userDnPattern" type="text" class="text"></input>
+            </li>
+            <li>
+              <label for="userFilter"><wicket:message key="userFilter"></wicket:message></label>
+              <input id="userFilter" wicket:id="userFilter" type="text" class="text"></input>
+            </li>
+            <li>
+              <label for="userFormat"><wicket:message key="userFormat"></wicket:message></label>
+              <input id="userFormat" wicket:id="userFormat" type="text" class="text"></input>
+            </li>
+          </ul>
+        </fieldset>
+      </li>
+      <li>
+         <fieldset>
+          <legend>
+            <span><wicket:message key="authorization"></wicket:message></span>
+          </legend>
+          <ul>
+           <li class="choiceItem">
+            <input id="useLdapAuthorization" wicket:id="useLdapAuthorization" type="checkbox"></input>
+            <label for="useLdapAuthorization">
+              <wicket:message key="useLdapAuthorization"></wicket:message>
+            </label>
+           </li>
+           <li>
+            <div wicket:id="authorizationPanelContainer">
+              <div wicket:id="authorizationPanel">
+              </div>
+            </div>
+           </li>
+          </ul>
+         </fieldset>
+      </li>
+    </ul>
+    <div wicket:id="testCx" class="rightwise" style="padding-right: 25%;">
+    </div>
+</wicket:extend>
+</body>
+</html>

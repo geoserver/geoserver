@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -26,7 +27,7 @@ public class SecurityUtils {
      * class SpringSecurityException, now the test is based on the package
      * name
      * 
-     * @param t, the exception to check
+     * @param t the exception to check
      * @return true if the exception is caused by Spring Security
      */
     public static boolean  isSecurityException(Throwable t) {
@@ -125,7 +126,7 @@ public class SecurityUtils {
     /**
      * Builds the write query based on the access limits class
      * 
-     * @return
+     *
      */
     public static Query getWriteQuery(WrapperPolicy policy) {
         if(policy.getAccessLevel() != AccessLevel.READ_WRITE) {

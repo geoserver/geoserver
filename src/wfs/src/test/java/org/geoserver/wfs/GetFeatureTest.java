@@ -1,24 +1,38 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Collections;
 
 import javax.xml.namespace.QName;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetFeatureTest extends WFSTestSupport {
 	
@@ -35,6 +49,11 @@ public class GetFeatureTest extends WFSTestSupport {
     	data.addVectorLayer (NULL_GEOMETRIES, Collections.EMPTY_MAP, getClass(), getCatalog());
     	data.addVectorLayer (FIFTEEN_DUPLICATE, Collections.EMPTY_MAP, getClass(), getCatalog());
     }
+
+    @Before
+    public void resetFifteen() throws IOException {
+        revertLayer(MockData.FIFTEEN);
+    }
        
     @Test
     public void testGet() throws Exception {
@@ -42,8 +61,38 @@ public class GetFeatureTest extends WFSTestSupport {
     }
     
     @Test
+    public void testPostForm() throws Exception {
+        String contentType = "application/x-www-form-urlencoded; charset=UTF-8";
+        String body = "request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs";
+        MockHttpServletRequest request = createRequest("wfs");
+        request.setMethod("POST");
+        request.setContent(body.getBytes("UTF-8"));
+        // this is normally done by the servlet container, but the mock system won't do it
+        request.addParameter("request", "GetFeature");
+        request.addParameter("typename", "cdf:Fifteen");
+        request.addParameter("version", "1.0.0");
+        request.addParameter("service", "wfs");
+        request.setContentType(contentType);
+        MockHttpServletResponse response = dispatch(request);
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(
+                response.getContentAsByteArray())) {
+            Document doc = dom(bis);
+            assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
+
+            NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
+            assertEquals(15, featureMembers.getLength());
+        }
+
+    }
+
+    @Test
     public void testGetPropertyNameEmpty() throws Exception {
     	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=");
+    }
+    
+    @Test
+    public void testGetFilterEmpty() throws Exception {
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&filter=");
     }
     
     @Test
@@ -288,6 +337,67 @@ public class GetFeatureTest extends WFSTestSupport {
         if(i >= parsedLocations.length) {
             fail("Could not find the http://www.opengis.net/cite schema location!");
         }
+    }
+    
+    @Test
+    public void testStrictComplianceBBoxValidator() throws Exception {
+        GeoServer geoServer = getGeoServer();
+        WFSInfo service = geoServer.getService(WFSInfo.class);
+        try {
+            service.setCiteCompliant(true);
+            geoServer.save(service);
+            
+            final QName typeName = MockData.FORESTS;
+            // used to throw an error since it was not accounting for the bbox epsg code
+            String path = "ows?service=WFS&version=1.1.0&request=GetFeature&typeName="
+                    + getLayerId(typeName) + "&bbox=1818131,6142575,1818198,6142642,EPSG:3857&srsName=EPSG:4326";
+            Document doc = getAsDOM(path);
+            print(doc);
+            XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
+        } finally {
+            service.setCiteCompliant(false);
+            geoServer.save(service);
+        }
+    }
+
+    @Test
+    public void testRequestDisabledResource() throws Exception {
+        Catalog catalog = getCatalog();
+        ResourceInfo fifteen = catalog.getResourceByName(getLayerId(MockData.FIFTEEN),
+                ResourceInfo.class);
+        fifteen.setEnabled(false);
+        catalog.save(fifteen);
+
+        Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
+        // print(doc);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", doc);
+        XMLAssert.assertXpathEvaluatesTo("InvalidParameterValue", "//ogc:ServiceException/@code",
+                doc);
+        XMLAssert.assertXpathEvaluatesTo("typeName", "//ogc:ServiceException/@locator", doc);
+    }
+    
+    /**
+     * Tests CQL filter
+     * 
+     */
+    @Test
+    public void testCQLFilter() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+
+        String request = "wfs?request=GetFeature&typename=" + layer + "&version=1.0.0&service=wfs";
+        Document doc = getAsDOM(request);
+        NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
+        assertTrue(featureMembers.getLength() > 0);
+
+        // Add CQL filter
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(layer);
+        info.setCqlFilter("NAME LIKE 'Red%'");
+        getCatalog().save(info);
+
+        doc = getAsDOM(request);
+        featureMembers = doc.getElementsByTagName("gml:featureMember");
+        assertTrue(featureMembers.getLength() == 0);
+
     }
 
 }

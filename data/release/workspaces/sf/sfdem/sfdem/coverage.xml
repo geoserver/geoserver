@@ -5,8 +5,11 @@
   <namespace>
     <id>NamespaceInfoImpl--570ae188:124761b8d78:-8000</id>
   </namespace>
-  <title>sfdem is a Tagged Image File Format with Geographic information</title>
+  <title>Spearfish elevation</title>
   <description>Generated from sfdem</description>
+  <abstract>Digital elevation model for the Spearfish region.&#xd;
+&#xd;
+sfdem is a Tagged Image File Format with Geographic information</abstract>
   <keywords>
     <string>WCS</string>
     <string>sfdem</string>
@@ -16,7 +19,7 @@
   GEOGCS[&quot;NAD27&quot;, 
     DATUM[&quot;North American Datum 1927&quot;, 
       SPHEROID[&quot;Clarke 1866&quot;, 6378206.4, 294.9786982138982, AUTHORITY[&quot;EPSG&quot;,&quot;7008&quot;]], 
-      TOWGS84[-4.2, 135.4, 181.9, 0.0, 0.0, 0.0, 0.0], 
+      TOWGS84[2.478, 149.752, 197.726, 0.526, -0.498, 0.501, 0.685], 
       AUTHORITY[&quot;EPSG&quot;,&quot;6267&quot;]], 
     PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
     UNIT[&quot;degree&quot;, 0.017453292519943295], 
@@ -65,7 +68,7 @@
       <scaleX>30.0</scaleX>
       <scaleY>-30.0</scaleY>
       <shearX>0.0</shearX>
-      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
       <translateX>589995.0</translateX>
       <translateY>4927995.0</translateY>
     </transform>

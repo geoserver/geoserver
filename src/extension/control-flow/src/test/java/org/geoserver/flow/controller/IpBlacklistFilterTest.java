@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,9 +18,9 @@ import javax.servlet.http.HttpServlet;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class IpBlacklistFilterTest extends GeoServerSystemTestSupport {
 
@@ -29,24 +30,29 @@ public class IpBlacklistFilterTest extends GeoServerSystemTestSupport {
         props.put("ip.blacklist", "192.168.1.8,192.168.1.10");
         IpBlacklistFilter filter = new IpBlacklistFilter(props);
         assertNotNull(filter);
-        MockFilterChain filterChain = new MockFilterChain();
-        filterChain.addFilter(filter);
         TestServlet testServlet = new TestServlet();
-        filterChain.setServlet(testServlet);
+        MockFilterChain filterChain = new MockFilterChain(testServlet, filter);
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setRemoteAddr("192.168.1.8");
         MockHttpServletResponse response = new MockHttpServletResponse();
         filterChain.doFilter(request, response);
         assertFalse(testServlet.wasServiceCalled());
         testServlet.reset();
+        filterChain.reset();
+        request = new MockHttpServletRequest();
         request.setRemoteAddr("192.168.1.9");
+        response = new MockHttpServletResponse();
         filterChain.doFilter(request, response);
         assertTrue(testServlet.wasServiceCalled());
         testServlet.reset();
+        filterChain.reset();
+        request = new MockHttpServletRequest();
         request.setRemoteAddr("192.168.1.10");
+        response = new MockHttpServletResponse();
         filterChain.doFilter(request, response);
         assertFalse(testServlet.wasServiceCalled());
         testServlet.reset();
+        filterChain.reset();
     }
 
     static class TestServlet extends HttpServlet {

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -46,7 +47,7 @@ public class ISO8601Formatter {
      * interval, if it's a DateRange (and will throw an {@link IllegalArgumentException} otherwise)
      * 
      * @param date
-     * @return
+     *
      */
     public String format(Object date) {
         if(date instanceof Date) {
@@ -69,7 +70,7 @@ public class ISO8601Formatter {
      * Formats the specified Date in ISO8601 format
      * 
      * @param date
-     * @return
+     *
      */
     public String format(Date date) {
         return format(date, new StringBuilder()).toString();

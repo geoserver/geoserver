@@ -1,0 +1,36 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+  <!--ul wicket:id="basicParams">
+    <li>
+      <label class="choice" for="excludeGeometryless">
+        <wicket:message key="excludeGeometryless">excludeGeometryless</wicket:message>
+      </label>
+      <input type="checkbox" id="excludeGeometryless" wicket:id="excludeGeometryless" size="6" class="field checkbox" /> 
+    </li>
+  </ul-->
+  
+  <a href="#" wicket:id="advancedLink"><wicket:message key="advanced">advanced</wicket:message></a>
+  <div wicket:id="advancedContainer">
+    <ul wicket:id="advanced">
+      <li class="choiceItem" wicket:id="excludeGeometrylessContainer">
+        <input type="checkbox" wicket:id="excludeGeometryless" size="6" /> 
+        <label for="excludeGeometrylessContainer">
+          <wicket:message key="excludeGeometryless">excludeGeometryless</wicket:message>
+        </label>
+      </li>
+      <li class="choiceItem" wicket:id="looseBBoxContainer">
+        <input type="checkbox" wicket:id="looseBBox" size="6" /> 
+        <label for="looseBBoxContainer">
+          <wicket:message key="looseBBox">looseBBox</wicket:message>
+        </label>
+      </li>
+      <li>
+        <label for="pkMetadata"><wicket:message key="pkMetadata">pkMetadata</wicket:message></label>
+        <input class="text" type="text" wicket:id="pkMetadata" />
+      </li>
+    </ul>
+  </div>
+</wicket:panel>
+</body>
+</html>

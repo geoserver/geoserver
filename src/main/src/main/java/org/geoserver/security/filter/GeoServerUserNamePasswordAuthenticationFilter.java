@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -35,8 +36,8 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
 
     //public static final String URL_FOR_LOGIN = "/j_spring_security_check";
     public static final String URL_LOGIN_SUCCCESS = "/web";
-    public static final String URL_LOGIN_FAILURE = "/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&error=true";
-    public static final String URL_LOGIN_FORM="/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&error=false";
+    public static final String URL_LOGIN_FAILURE = "/web/wicket/bookmarkable/org.geoserver.web.GeoServerLoginPage?error=true";
+    public static final String URL_LOGIN_FORM="/web/wicket/bookmarkable/org.geoserver.web.GeoServerLoginPage?error=false";
     //public static final String URL_LOGIN_FORM="/admin/login.do";
     
     
@@ -80,7 +81,7 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
 
         filter.setPasswordParameter(upConfig.getPasswordParameterName());
         filter.setUsernameParameter(upConfig.getUsernameParameterName());
-        filter.setAuthenticationManager(getSecurityManager());
+        filter.setAuthenticationManager(getSecurityManager().authenticationManager());
 
         filter.setRememberMeServices(rms);
         GeoServerWebAuthenticationDetailsSource s = new GeoServerWebAuthenticationDetailsSource();

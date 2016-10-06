@@ -1,15 +1,15 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.impl;
 
-import static org.geoserver.security.impl.DataAccessRule.*;
+import static org.geoserver.security.impl.DataAccessRule.ANY;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,7 +22,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.util.IOUtils;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -41,7 +45,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Parsed rules
      */
-    Set<R> rules;
+    protected Set<R> rules;
 
     /**
      * Used to check the file for modifications
@@ -51,12 +55,12 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Stores the time of the last rule list loading
      */
-    long lastModified;
+    protected long lastModified;
     
     /**
      * The security dir
      */
-    File securityDir;
+    Resource securityDir;
     
     /**
      * The property file name that stores the raw rule names. 
@@ -70,21 +74,20 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     
     protected AbstractAccessRuleDAO(GeoServerDataDirectory dd, String propertyFileName) throws IOException {
         this.dd = dd;
-        this.securityDir = dd.findOrCreateSecurityRoot();
+        this.securityDir = dd.getSecurity();
         this.propertyFileName = propertyFileName;
     }
     
-    protected AbstractAccessRuleDAO(File securityDirectory, String propertyFileName) {
+    protected AbstractAccessRuleDAO(Resource securityDirectory, String propertyFileName) {
         this.securityDir = securityDirectory; 
         this.propertyFileName = propertyFileName;
-        this.dd = org.vfny.geoserver.global.GeoserverDataDirectory.accessor();
+        this.dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
+        //this.dd = org.vfny.geoserver.global.GeoserverDataDirectory.accessor();
     }
     
     /**
      * Returns the list of rules contained in the property file. The returned rules are
-     * sorted against the {@link R} natural order
-     * 
-     * @return
+     * sorted against the <code>R</code> natural order
      */
     public List<R> getRules() {
         checkPropertyFile(false);
@@ -120,7 +123,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Removes the rule from rule set
      * @param rule
-     * @return
+     *
      */
     public boolean removeRule(R rule) {
         lastModified = System.currentTimeMillis();
@@ -131,7 +134,7 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
      * Returns the last modification date of the rules in this DAO (last time the rules were
      * reloaded from the property file)
      * 
-     * @return
+     *
      */
     public long getLastModified() {
         return lastModified;
@@ -146,15 +149,16 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
      * @throws IOException
      */
     public void storeRules() throws IOException {
-        FileOutputStream os = null;
+        OutputStream os = null;
         try {
             // turn back the users into a users map
             Properties p = toProperties();
 
             // write out to the data dir
-            File propFile = new File(securityDir, propertyFileName);
-            os = new FileOutputStream(propFile);
+            Resource propFile = securityDir.get(propertyFileName);
+            os = propFile.out();
             p.store(os, null);
+            lastModified = System.currentTimeMillis();
         } catch (Exception e) {
             if (e instanceof IOException)
                 throw (IOException) e;
@@ -171,24 +175,24 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     /**
      * Checks the property file is up to date, eventually rebuilds the tree
      */
-    void checkPropertyFile(boolean force) {
+    protected void checkPropertyFile(boolean force) {
         try {
             if (rules == null || force) {
                 // no security folder, let's work against an empty properties then
-                if (securityDir == null || !securityDir.exists()) {
+                if (securityDir == null || securityDir.getType() == Type.UNDEFINED) {
                     this.rules = new TreeSet<R>();
                 } else {
                     // no security config, let's work against an empty properties then
-                    File layers = new File(securityDir, propertyFileName);
-                    if (!layers.exists()) {
+                    Resource layers = securityDir.get(propertyFileName);
+                    if (layers.getType() == Type.UNDEFINED) {
                         //try to load a template and copy it over
                         InputStream in = getClass().getResourceAsStream(propertyFileName+".template");
                         if (in != null) {
-                            dd.copyToSecurityDir(in, propertyFileName);
+                            IOUtils.copy(in, layers.out());                      
                         }
                     }
                     
-                    if (!layers.exists()) {
+                    if (layers.getType() == Type.UNDEFINED) {
                         this.rules = new TreeSet<R>();
                     } else {
                         // ok, something is there, let's load it

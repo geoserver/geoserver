@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="400px" height="81px" viewBox="0 0 400 81" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3 (11970) - http://www.bohemiancoding.com/sketch -->
+    <title>symbolizer-order4</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="symbolizer-order4" sketch:type="MSArtboardGroup">
+            <rect id="Rectangle-1-Copy-7" stroke="#979797" stroke-width="2" sketch:type="MSShapeGroup" x="55.9106827" y="8.57388281" width="94.1786346" height="63.8522344"></rect>
+            <rect id="Rectangle-1-Copy-6" stroke="#979797" stroke-width="2" sketch:type="MSShapeGroup" x="233.910683" y="8.57388281" width="94.1786346" height="63.8522344"></rect>
+            <rect id="Rectangle-16-Copy" fill="#CFAD13" sketch:type="MSShapeGroup" x="261" y="26.9261172" width="15" height="14"></rect>
+            <rect id="Rectangle-16-Copy-3" fill="#CFAD13" sketch:type="MSShapeGroup" x="268.5" y="33.5" width="15" height="14"></rect>
+            <polygon id="Triangle-1-Copy-2" fill="#F62A15" sketch:type="MSShapeGroup" points="276.5 34 283 46 270 46 "></polygon>
+            <rect id="Rectangle-16-Copy-2" fill="#CFAD13" sketch:type="MSShapeGroup" x="83" y="26.9261172" width="15" height="14"></rect>
+            <polygon id="Triangle-1-Copy" fill="#F62A15" sketch:type="MSShapeGroup" points="91 28 97 40 85 40 "></polygon>
+            <rect id="Rectangle-16-Copy-4" fill="#CFAD13" sketch:type="MSShapeGroup" x="90.5" y="33.5" width="15" height="14"></rect>
+            <polygon id="Triangle-1-Copy-3" fill="#F62A15" sketch:type="MSShapeGroup" points="98.5 34 105 46 92 46 "></polygon>
+            <rect id="Rectangle-16-Copy-8" fill="#CFAD13" sketch:type="MSShapeGroup" x="163.589317" y="7.42611719" width="33.3554687" height="31.0118593"></rect>
+            <polygon id="Triangle-1-Copy-7" fill="#F62A15" sketch:type="MSShapeGroup" points="181.378901 9.80491024 194.721088 36.3865039 168.036713 36.3865039 "></polygon>
+            <rect id="Rectangle-16-Copy-7" fill="#CFAD13" sketch:type="MSShapeGroup" x="180.267052" y="21.9881407" width="33.3554687" height="31.0118593"></rect>
+            <polygon id="Triangle-1-Copy-6" fill="#F62A15" sketch:type="MSShapeGroup" points="198.056635 23.0957071 212.510671 49.6773008 183.602599 49.6773008 "></polygon>
+            <rect id="Rectangle-16-Copy-10" fill="#CFAD13" sketch:type="MSShapeGroup" x="343.589317" y="7.42611719" width="33.3554687" height="31.0118593"></rect>
+            <rect id="Rectangle-16-Copy-9" fill="#CFAD13" sketch:type="MSShapeGroup" x="360.267052" y="21.9881407" width="33.3554687" height="31.0118593"></rect>
+            <polygon id="Triangle-1-Copy-9" fill="#F62A15" sketch:type="MSShapeGroup" points="361.378901 9.80491024 374.721088 36.3865039 348.036713 36.3865039 "></polygon>
+            <polygon id="Triangle-1-Copy-8" fill="#F62A15" sketch:type="MSShapeGroup" points="378.056635 23.0957071 392.510671 49.6773008 363.602599 49.6773008 "></polygon>
+            <rect id="Rectangle-16-Copy-6" fill="#CFAD13" sketch:type="MSShapeGroup" x="118.5" y="46" width="15" height="14"></rect>
+            <polygon id="Triangle-1-Copy-5" fill="#F62A15" sketch:type="MSShapeGroup" points="126 47 132.5 59 119.5 59 "></polygon>
+            <rect id="Rectangle-16-Copy-5" fill="#CFAD13" sketch:type="MSShapeGroup" x="296.5" y="46" width="15" height="14"></rect>
+            <polygon id="Triangle-1-Copy-4" fill="#F62A15" sketch:type="MSShapeGroup" points="304 47 310.5 59 297.5 59 "></polygon>
+            <polygon id="Triangle-1" fill="#F62A15" sketch:type="MSShapeGroup" points="269 28 275 40 263 40 "></polygon>
+            <path d="M83.5,26.5 L163.5,8.5" id="Line" stroke="#979797" stroke-linecap="square" stroke-dasharray="3" sketch:type="MSShapeGroup"></path>
+            <path d="M91.5,47.5 L179.5,52.5" id="Line-Copy" stroke="#979797" stroke-linecap="square" stroke-dasharray="3" sketch:type="MSShapeGroup"></path>
+            <path d="M264.5,26.5 L344.5,8.5" id="Line-Copy-3" stroke="#979797" stroke-linecap="square" stroke-dasharray="3" sketch:type="MSShapeGroup"></path>
+            <path d="M272.5,47.5 L360.5,52.5" id="Line-Copy-2" stroke="#979797" stroke-linecap="square" stroke-dasharray="3" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,7 +8,6 @@ package org.geoserver.web;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -20,7 +20,7 @@ import org.apache.wicket.model.ResourceModel;
  */
 public class GeoServerErrorPage extends GeoServerBasePage {
 
-    public GeoServerErrorPage(Page originatingPage, Throwable error) {
+    public GeoServerErrorPage(Throwable error) {
         IModel notice = null, errorText = new Model("");
         
         boolean trace = false;
@@ -47,7 +47,7 @@ public class GeoServerErrorPage extends GeoServerBasePage {
         wmc.setVisible(trace);
         wmc.add(new ExternalLink(
                     "jiraLink", 
-                    new Model("http://jira.codehaus.org/browse/GEOS/"),
+                    new Model("https://osgeo-org.atlassian.net/projects/GEOS"),
                     new ResourceModel("GeoServerErrorPage.jiraName")
                     ).setVisible(trace)
        );

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -82,7 +83,7 @@ public class AuthenticationCacheEntry {
      * returns true if the entry has expired, false otherwise
      * 
      * @param timeInMilliSecs
-     * @return
+     *
      */
     public boolean hasExpired(long timeInMilliSecs) {
         if (lastAccessed+timeToIdleSeconds*1000 < timeInMilliSecs) return true;

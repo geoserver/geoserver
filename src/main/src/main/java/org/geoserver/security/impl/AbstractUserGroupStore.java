@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,7 +7,6 @@ package org.geoserver.security.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -17,6 +17,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
@@ -126,7 +127,7 @@ public abstract class AbstractUserGroupStore  implements GeoServerUserGroupStore
         deserialize();
     }
 
-    public File getConfigRoot() throws IOException {
+    public Resource getConfigRoot() throws IOException {
         return service.getConfigRoot();
     }
 
@@ -305,14 +306,14 @@ public abstract class AbstractUserGroupStore  implements GeoServerUserGroupStore
      */
     public void store() throws IOException {
         if (isModified()) {
-            LOGGER.info("Start storing user/grous for service named "+getName());
+            LOGGER.info("Start storing user/groups for service named "+getName());
             // prevent concurrent write from store and
             // read from service
             synchronized (service) { 
                 serialize();
             }
             setModified(false);
-            LOGGER.info("Storing user/grous successful for service named "+getName());
+            LOGGER.info("Storing user/groups successful for service named "+getName());
             service.load(); // service must reload
         }  else {
             LOGGER.info("Storing unnecessary, no change for user and groups");

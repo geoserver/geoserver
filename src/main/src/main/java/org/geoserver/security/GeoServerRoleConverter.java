@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,7 +23,7 @@ public interface GeoServerRoleConverter {
      * The {@link GeoServerRole#getUserName()} is not included
      * 
      * @param role
-     * @return
+     *
      */
     public abstract String convertRoleToString(GeoServerRole role);
 
@@ -30,7 +31,7 @@ public interface GeoServerRoleConverter {
      * converts a collection of roles to a string
      * 
      * @param roles
-     * @return
+     *
      */
     public abstract String convertRolesToString(Collection<? extends GrantedAuthority> roles);
 
@@ -41,7 +42,7 @@ public interface GeoServerRoleConverter {
      * 
      * @param rolesString
      * @param userName
-     * @return
+     *
      */
     public abstract Collection<GeoServerRole> convertRolesFromString(String rolesString,
             String userName);
@@ -55,7 +56,6 @@ public interface GeoServerRoleConverter {
      * 
      * @param roleString
      * @param userName
-     * @return 
      */
     public abstract GeoServerRole convertRoleFromString(String roleString, String userName);
 

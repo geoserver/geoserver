@@ -1,0 +1,17 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+  <div style="display:inline-block; vertical-align:top; margin:0.5em;">
+    <label><wicket:message key="defaultValue">Default Value</wicket:message></label>
+    <input type="text" wicket:id="defaultValue" />
+  </div><div style="display:inline-block; vertical-align:top; margin:0.5em;">
+    <label><wicket:message key="allowedValues">Allowed Values</wicket:message></label>
+    <textarea wicket:id="values" style="width:20ex;" rows="5" cols="20"></textarea>
+  </div><div style="display:inline-block; vertical-align:top; margin:0.5em;">
+    <label><wicket:message key="threshold">Threshold</wicket:message></label>
+    <input wicket:id="threshold" />
+  </div>
+</wicket:panel>
+</body>
+</html>

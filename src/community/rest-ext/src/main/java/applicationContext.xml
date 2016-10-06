@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>    
+    <bean id="ECQLRUPathMapper" class="org.geoserver.rest.ecql.RESTUploadECQLPathMapper">
+      <constructor-arg ref="catalog"/>
+    </bean>
+    
+    <bean id="restECQLSettingsPanel" class="org.geoserver.web.data.settings.SettingsPluginPanelInfo">
+      <description>This bean adds the necessary form fields to REST Settings</description>
+    <property name="id" value="restECQLSettingsPanel"/>
+    <property name="titleKey" value="restECQLsettings"/>
+    <property name="componentClass" value="org.geoserver.rest.web.RESTECQLSettingsPanel"/>
+    <property name="priority" value="1"/>
+  </bean>
+</beans>

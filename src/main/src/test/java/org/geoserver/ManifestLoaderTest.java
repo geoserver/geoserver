@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,6 +23,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.util.Assert;
@@ -188,7 +190,16 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
 
         @Override
         protected void setUpTestData(SystemTestData testData) throws Exception {
-
+        }
+        
+        @Before
+        public void paranoidCleanup() {
+            // this file randomly shows up on the main module root and breaks the test
+            // could not find where it's coming from, just going to remove it if it's there.
+            File rootMonitor = new File(".", "manifest.properties");
+            if(rootMonitor.exists()) {
+                rootMonitor.delete();
+            }
         }
 
         @Override

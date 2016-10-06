@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -80,8 +81,7 @@ public class Animator {
      * @param request
      * @param wms
      * @param wmsConfiguration
-     * @return
-     * @throws Exception
+     *
      */
     public static org.geoserver.wms.WebMap produce(GetMapRequest request, WebMapService wms,
             WMS wmsConfiguration) throws Exception {
@@ -139,7 +139,7 @@ public class Animator {
      * 
      * @param request
      * @param wmsConfiguration 
-     * @return
+     *
      */
     private static FrameCatalog initRequestManager(GetMapRequest request, WebMapService wms, WMS wmsConfiguration) {
         return new FrameCatalog(request, wms, wmsConfiguration);

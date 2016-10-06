@@ -1,14 +1,16 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.gs;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 
-import org.geoserver.wps.WPSStorageCleaner;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
@@ -43,38 +45,37 @@ public class StoreCoverage implements GSProcess {
         DEFAULT_WRITE_PARAMS.setTiling(512, 512);
     }
 
-    WPSStorageCleaner storage;
+    WPSResourceManager resources;
 
-    public StoreCoverage(WPSStorageCleaner storage) {
-        this.storage = storage;
+    public StoreCoverage(WPSResourceManager resources) {
+        this.resources = resources;
     }
 
     @DescribeResult(name = "coverageLocation", description = "URL at which raster can be accessed")
     public URL execute(
             @DescribeParameter(name = "coverage", description = "Input raster") GridCoverage2D coverage)
             throws IOException {
-        final File file = File.createTempFile(coverage.getName().toString(), ".tif", storage.getStorage());
-
-        // TODO check file prior to writing
-        GeoTiffWriter writer = new GeoTiffWriter(file);
+        String fileName = coverage.getName().toString() + ".tif";
+        final Resource resource = resources.getOutputResource(null, fileName);
 
         // setting the write parameters for this geotiff
         final ParameterValueGroup params = new GeoTiffFormat().getWriteParameters();
         params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(
                 DEFAULT_WRITE_PARAMS);
-        final GeneralParameterValue[] wps = (GeneralParameterValue[]) params.values().toArray(
-                new GeneralParameterValue[1]);
-        try {
-            writer.write(coverage, wps);
-        } finally {
+        final GeneralParameterValue[] wps = params.values().toArray(
+                new GeneralParameterValue[1]);        
+        
+        // TODO check file prior to writing        
+        try (OutputStream os = resource.out()) {
+            GeoTiffWriter writer = new GeoTiffWriter(os);    
             try {
+                writer.write(coverage, wps);
+            } finally {
                 writer.dispose();
-            } catch (Exception e) {
-                // we tried, no need to fuss around this one
             }
         }
 
-        return storage.getURL(file);
+        return new URL(resources.getOutputResourceUrl(fileName, "image/tiff"));
     }
 
 }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,9 +16,9 @@ import java.util.logging.Logger;
 
 
 import org.geoserver.data.test.LiveDbmsData;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.impl.Util;
+import org.geoserver.util.IOUtils;
 
 public class LiveDbmsDataSecurity extends LiveDbmsData {
 

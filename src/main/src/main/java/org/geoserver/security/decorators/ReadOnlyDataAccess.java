@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -57,7 +58,11 @@ public class ReadOnlyDataAccess<T extends FeatureType, F extends Feature> extend
     public void updateSchema(Name typeName, T featureType) throws IOException {
         throw notifyUnsupportedOperation();
     }
-    
+
+    @Override
+    public void removeSchema(Name typeName) throws IOException {
+        throw notifyUnsupportedOperation();
+    }
     /**
      * Notifies the caller the requested operation is not supported, using a plain {@link UnsupportedOperationException}
      * in case we have to conceal the fact the data is actually writable, using an Spring Security security exception otherwise

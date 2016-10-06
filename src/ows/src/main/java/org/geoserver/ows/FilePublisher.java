@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -30,8 +32,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 /**
  * Controller which publishes files through a web interface.
  * <p>
- * To use this controller, it should be mapped to a particular url in the url mapping of the spring
- * dispatcher servlet. Example:
+ * To use this controller, it should be mapped to a particular url in the url mapping of the spring dispatcher servlet. Example:
  * 
  * <pre>
  * <code>
@@ -48,10 +49,8 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * </code>
  * </pre>
  * 
- * </p>
  * 
  * @author Justin Deoliveira, The Open Planning Project
- * 
  */
 public class FilePublisher extends AbstractURLPublisher {
     /**
@@ -82,6 +81,7 @@ public class FilePublisher extends AbstractURLPublisher {
     protected URL getUrl(HttpServletRequest request) throws IOException {
         String ctxPath = request.getContextPath();
         String reqPath = request.getRequestURI();
+        reqPath = URLDecoder.decode(reqPath, "UTF-8");
         reqPath = reqPath.substring(ctxPath.length());
 
         if ((reqPath.length() > 1) && reqPath.startsWith("/")) {

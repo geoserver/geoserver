@@ -1,0 +1,36 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+<div>
+  <div wicket:id="container">
+     <div wicket:id="table">
+       <form wicket:id="filtersForm">
+	      <fieldset wicket:id="parameterFilters">
+	        <legend><label wicket:id="key">Key</label></legend>
+	        <div style="position:absolute; right:0; text-align:right;">
+	        <a href="#" wicket:id="removeLink"><span wicket:id="removeIcon" /></a></div>
+	        <div wicket:id="subform">Filter Specific Details</div>
+	      </fieldset>
+	  </form>
+    </div>
+  </div>
+  <div>
+   <div>
+   Add filter
+    <input type="text" wicket:id="newFilterKey" list="commonKeys"/>
+    <datalist id="commonKeys" style="display:none;">
+      <option wicket:id="commonKeys">KEY</option>
+    </datalist>
+    <select class="select" wicket:id="availableFilterTypes"></select>
+    <a href="#" wicket:id="addFilter"><span wicket:id="addIcon" /></a>
+   </div>
+   <div>
+   Add Style filter
+    <a href="#" wicket:id="addStyleFilter"><span wicket:id="addIcon" /></a>
+   </div>
+  </div>
+</div>
+</wicket:panel>
+</body>
+</html>

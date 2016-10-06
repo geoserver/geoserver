@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,7 +16,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WCSSettingsTest extends CatalogRESTTestSupport {
     
@@ -50,7 +51,7 @@ public class WCSSettingsTest extends CatalogRESTTestSupport {
         String json = "{'wcs': {'id':'wcs','enabled':'false','name':'WCS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wcs/settings/",
                 json, "text/json");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON("/rest/services/wcs/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
@@ -65,11 +66,11 @@ public class WCSSettingsTest extends CatalogRESTTestSupport {
                 + "<id>wcs</id>"
                 + "<enabled>false</enabled>"
                 + "<name>WCS</name><title>GeoServer Web Coverage Service</title>"
-                + "<maintainer>http://jira.codehaus.org/secure/BrowseProject.jspa?id=10311</maintainer>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
                 + "</wcs>";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wcs/settings", xml,
                 "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM("/rest/services/wcs/settings.xml");
         assertXpathEvaluatesTo("false", "/wcs/enabled", dom);
         assertXpathEvaluatesTo("WCS", "/wcs/name", dom);
@@ -77,6 +78,6 @@ public class WCSSettingsTest extends CatalogRESTTestSupport {
 
     @Test
     public void testDelete() throws Exception {
-        assertEquals(405, deleteAsServletResponse("/rest/services/wcs/settings").getStatusCode());
+        assertEquals(405, deleteAsServletResponse("/rest/services/wcs/settings").getStatus());
     }
 }

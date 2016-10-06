@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,7 +7,6 @@ package org.geoserver.security.impl;
 
 import static org.geoserver.security.impl.DataAccessRule.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -41,7 +42,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
     
     /**
      * Returns the instanced contained in the Spring context for the UI to use
-     * @return
+     *
      */
     public static ServiceAccessRuleDAO get() {
        return GeoServerExtensions.bean(ServiceAccessRuleDAO.class); 
@@ -58,7 +59,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
      * @param rawCatalog
      */
     public ServiceAccessRuleDAO() throws IOException {
-        super(org.vfny.geoserver.global.GeoserverDataDirectory.accessor(), SERVICES);
+        super(GeoServerExtensions.bean(GeoServerDataDirectory.class), SERVICES);
     }
     
     /**
@@ -66,7 +67,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
      * 
      * @param rawCatalog
      */
-    ServiceAccessRuleDAO(Catalog rawCatalog, File securityDir) {
+    ServiceAccessRuleDAO(Catalog rawCatalog, Resource securityDir) {
         super(securityDir, SERVICES);
     }
 
@@ -74,7 +75,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
      * Parses the rules contained in the property file
      * 
      * @param props
-     * @return
+     *
      */
     protected void loadRules(Properties props) {
         TreeSet<ServiceAccessRule> result = new TreeSet<ServiceAccessRule>();
@@ -103,7 +104,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
      * Parses a single layer.properties line into a {@link DataAccessRule}, returns false if the
      * rule is not valid
      * 
-     * @return
+     *
      */
     ServiceAccessRule parseServiceAccessRule(String ruleKey, String ruleValue) {
         final String rule = ruleKey + "=" + ruleValue;
@@ -133,7 +134,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
     
     /**
      * Turns the rules list into a property bag
-     * @return
+     *
      */
     protected Properties toProperties() {
         Properties props = new Properties();
@@ -147,7 +148,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
      * Parses workspace.layer.mode into an array of strings
      * 
      * @param path
-     * @return
+     *
      */
     private String[] parseElements(String path) {
         // regexp: ignore extra spaces, split on dot
@@ -158,7 +159,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
      * Returns a sorted set of rules associated to the role
      * 
      * @param role
-     * @return
+     *
      */
     public SortedSet<ServiceAccessRule> getRulesAssociatedWithRole(String role) {
         SortedSet<ServiceAccessRule> result = new TreeSet<ServiceAccessRule>();
@@ -166,7 +167,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
             if (rule.getRoles().contains(role))
                 result.add(rule);
         return result;
-    }               
+    }
 
 
 }

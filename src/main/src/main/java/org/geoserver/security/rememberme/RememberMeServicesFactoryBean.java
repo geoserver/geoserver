@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
@@ -26,6 +28,7 @@ import org.springframework.security.web.authentication.rememberme.AbstractRememb
  */
 public class RememberMeServicesFactoryBean implements FactoryBean<RememberMeServices> {
 
+    static final String PARAMETER_NAME = "_spring_security_remember_me";
     GeoServerSecurityManager securityManager;
 
     public RememberMeServicesFactoryBean(GeoServerSecurityManager securityManager) {
@@ -91,17 +94,17 @@ public class RememberMeServicesFactoryBean implements FactoryBean<RememberMeServ
 
             RememberMeServicesConfig rmsConfig = securityManager.getSecurityConfig().getRememberMeService();
             try {
-                rms = (RememberMeServices) Class.forName(rmsConfig.getClassName()).newInstance();
+                Class<RememberMeServices> rmsClass = (Class<RememberMeServices>) Class.forName(rmsConfig.getClassName());
+                rms = rmsClass.getConstructor(String.class, UserDetailsService.class)
+                    .newInstance(rmsConfig.getKey(), new RememberMeUserDetailsService(securityManager));
+                if (rms instanceof AbstractRememberMeServices) {
+                    ((AbstractRememberMeServices)rms).setParameter(PARAMETER_NAME);
+                }
             }
             catch(Exception e) {
                 throw new RuntimeException(e);
             }
 
-            if (rms instanceof AbstractRememberMeServices) {
-                AbstractRememberMeServices arms = (AbstractRememberMeServices) rms; 
-                arms.setUserDetailsService(new RememberMeUserDetailsService(securityManager));
-                arms.setKey(rmsConfig.getKey());
-            }
 //            if (rms instanceof GeoServerTokenBasedRememberMeServices) {
 //                ((GeoServerTokenBasedRememberMeServices) rms).setUserGroupServiceName(rmsConfig.getUserGroupService());
 //            }

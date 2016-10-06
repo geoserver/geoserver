@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -105,7 +106,7 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
     /**
      * Returns the key for the current rule. No other rule should have the same
      * 
-     * @return
+     *
      */
     public String getKey() {
         return workspace + "." + layer + "." + accessMode.getAlias();
@@ -113,7 +114,7 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
     
     /**
      * Returns the list of roles as a comma separated string for this rule
-     * @return
+     *
      */
     public String getValue() {
         if(roles.isEmpty()) {

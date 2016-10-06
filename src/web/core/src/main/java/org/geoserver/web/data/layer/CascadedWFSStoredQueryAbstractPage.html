@@ -1,0 +1,43 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="Cascaded Stored Query">Cascaded Stored Query</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+
+    <form wicket:id="form">
+
+    <div wicket:id="storedQueryName"></div>
+
+    <div wicket:id="parameters"></div>
+
+    <div class="button-group selfclear"><a href="#" wicket:id="save"><wicket:message
+        key="save">Save</wicket:message></a> <a href="#" wicket:id="cancel"><wicket:message
+        key="cancel">Cancel</wicket:message></a></div>
+    </form>
+
+<wicket:fragment wicket:id="newPage">
+  <div>
+    <wicket:message key="chooseNativeName">Layer name </wicket:message> <input type="text" wicket:id="nativeName"/>
+  </div>
+  <div>
+    <wicket:message key="selectStoredQuery">Select Stored Query </wicket:message> <select wicket:id="storedQueriesDropDown"></select>
+  </div>
+</wicket:fragment>
+
+<wicket:fragment wicket:id="editPage">
+</wicket:fragment>
+
+<wicket:fragment wicket:id="parameterMappingType">
+  <select wicket:id="dropdown"></select>
+</wicket:fragment>
+
+<wicket:fragment wicket:id="parameterMappingValue">
+  <input type="text" wicket:id="text"/>
+</wicket:fragment>
+
+</wicket:extend>
+
+
+</body>
+</html>

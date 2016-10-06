@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,8 @@ package org.geoserver.security;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.servlet.FilterChain;
@@ -71,6 +74,7 @@ public class GeoServerAuthenticationKeyFilter extends  GeoServerSecurityFilter
         mapper=(AuthenticationKeyMapper) GeoServerExtensions.bean(authKeyMapperName);
         mapper.setUserGroupServiceName(userGroupServiceName);
         mapper.setSecurityManager(getSecurityManager());
+        mapper.configureMapper(authConfig.getMapperParameters());
         
     }
 
@@ -168,18 +172,35 @@ public class GeoServerAuthenticationKeyFilter extends  GeoServerSecurityFilter
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);            
         KeyAuthenticationToken result = new KeyAuthenticationToken(authKey,  authKeyParamName,user, roles);
             
-        SecurityContextHolder.getContext().setAuthentication(result);                        
+        SecurityContextHolder.getContext().setAuthentication(result);
     }
 
 
     public String getAuthKey(HttpServletRequest req) {
-        String authKey=req.getParameter(getAuthKeyParamName());
+        String authKey=getAuthKeyParamValue(req);
         if (StringUtils.hasLength(authKey)==false)
             return null;
         return authKey;
     }        
 
+    /**
+     * Extracts authkey value from the request.
+     * 
+     * @param req
+     *
+     */
+    private String getAuthKeyParamValue(HttpServletRequest req) {
+        String keyParamName = getAuthKeyParamName();
+        for (Enumeration<String> a = req.getParameterNames(); a.hasMoreElements();) {
+            String paramName = a.nextElement();
 
+            if (keyParamName.equalsIgnoreCase(paramName)) {
+                return req.getParameter(paramName);
+            }
+        }
+
+        return null;
+    }
 
     /**
      * The cache key is the authentication key (global identifier)
@@ -210,11 +231,7 @@ public class GeoServerAuthenticationKeyFilter extends  GeoServerSecurityFilter
         // only cache if no HTTP session is available 
         if ( request.getSession(false) != null)
             return false;
-        
-       // if a session will be creaed, return false     
-       if (Boolean.TRUE.equals(request.getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR)))
-            return false;
-       
+               
        return true;
     
     }

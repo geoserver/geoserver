@@ -1,11 +1,10 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.util;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -17,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.ows.util.XmlCharsetDetector;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -63,8 +63,8 @@ public class LegacyCatalogReader {
      *
      * @throws IOException In event of a parser error.
      */
-    public void read(File file) throws IOException {
-        Reader reader = XmlCharsetDetector.getCharsetAwareReader(new FileInputStream(file));
+    public void read(Resource file) throws IOException {
+        Reader reader = XmlCharsetDetector.getCharsetAwareReader(file.in());
 
         try {
             catalog = ReaderUtils.parse(reader);

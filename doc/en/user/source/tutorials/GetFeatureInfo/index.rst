@@ -119,7 +119,7 @@ Custom Templates
 ````````````````		
 So, what do you have to do if you want to override the custom templates? Well, it depends on which template you want to override.
 
-``header.ftl`` and ``footer.ftl`` are type independent, so if you want to override them you have to place a file named ``header.ftl`` or ``footer.ftl`` in the ``templates`` directory, located in your GeoServer :ref:`data_directory`.  On the contrary, ``content.ftl`` may be generic, or specific to a feature type.
+``header.ftl`` and ``footer.ftl`` are type independent, so if you want to override them you have to place a file named ``header.ftl`` or ``footer.ftl`` in the ``templates`` directory, located in your GeoServer :ref:`datadir`.  On the contrary, ``content.ftl`` may be generic, or specific to a feature type.
 
 For example, let's say you would prefer a bulleted list appearance for your feature info output, and you want this to be applied to all GetFeatureInfo HTML output. In that case you would drop the following ``content.ftl`` in the templates directory::
 

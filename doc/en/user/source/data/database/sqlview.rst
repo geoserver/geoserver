@@ -13,7 +13,9 @@ Parameter values can be supplied in both WMS and WFS requests.
 Default values can be supplied for parameters, and input values can be validated by Regular Expressions 
 to eliminate the risk of SQL injection attacks.
 
-SQL Views are read-only, and thus cannot be updated by WFS-T transactions.
+.. note::
+
+   SQL Views are read-only, and thus cannot be updated by WFS-T transactions.
 
 Creating a SQL View
 -------------------------
@@ -112,6 +114,8 @@ the **Attributes** :guilabel:`Refresh` link is clicked to parse the query and re
 The computed geometry type and column identifier details can be corrected if required. 
 From this point on the workflow is the same as for a non-parameterized query.
 
+
+.. _using_a_parametric_sql_view:
 
 Using a parametric SQL View
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

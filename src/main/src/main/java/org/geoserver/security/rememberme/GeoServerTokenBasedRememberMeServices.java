@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.RememberMeAuthenticationToken
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 
 /**
@@ -31,6 +33,9 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
 public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeServices {
 
 
+    public GeoServerTokenBasedRememberMeServices(String key, UserDetailsService userDetailsService) {
+        super(key, userDetailsService);
+    }
 
     /**
      * Create the signature by removing the user group service name suffix

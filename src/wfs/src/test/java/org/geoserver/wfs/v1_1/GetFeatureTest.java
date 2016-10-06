@@ -1,33 +1,61 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.v1_1;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URLEncoder;
 import java.util.Collections;
+
 import javax.xml.namespace.QName;
+
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.RunTestSetup;
+import org.geoserver.util.XmlTestUtil;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.gml3.GML;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class GetFeatureTest extends WFSTestSupport {
-	
+    
+    XmlTestUtil xmlUtil;
+    
+    @Before
+    public void setupXmlUtil() {
+        xmlUtil = new XmlTestUtil();
+        xmlUtil.addNamespace("wfs", "http://www.opengis.net/wfs");
+        xmlUtil.addNamespace("sf", "http://cite.opengeospatial.org/gmlsf");
+        //xmlUtil.setShowXML(System.out); // Uncomment to display XML on failure
+    }
+    @Before
+    public void setupExternalEntities() {
+        GeoServerInfo gsi = this.getGeoServer().getGlobal();
+        gsi.setXmlExternalEntitiesEnabled(true);
+        getGeoServer().save(gsi);
+    }
+    
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
+        this.getGeoServer().getGlobal().setXmlExternalEntitiesEnabled(true);
     	WFSInfo wfs = getWFS();
         wfs.setFeatureBounding(true);
     	getGeoServer().save(wfs);
@@ -88,6 +116,21 @@ public class GetFeatureTest extends WFSTestSupport {
                 doc);
         XMLAssert.assertXpathEvaluatesTo("NamedPlaces.1107531895891",
                 "//wfs:FeatureCollection/gml:featureMembers/cite:NamedPlaces/@gml:id", doc);
+    }
+    
+    @Test
+    public void testGetWithTwoFeatureId() throws Exception {
+
+        Document doc;
+        doc = getAsDOM("wfs?request=GetFeature&&version=1.1.0&service=wfs&featureid=Fifteen.1,Fifteen.2");
+
+        // print(doc);
+        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen)",
+                doc);
+
+        XMLAssert.assertXpathExists("//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen[@gml:id='Fifteen.1']", doc);
+        XMLAssert.assertXpathExists("//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen[@gml:id='Fifteen.2']", doc);
     }
 
     @Test
@@ -219,6 +262,7 @@ public class GetFeatureTest extends WFSTestSupport {
     
     @Test
     public void testPostWithMatchingUrnBboxFilter() throws Exception {
+        assertThat(getGeoServer().getGlobal().isXmlExternalEntitiesEnabled(), Matchers.is(true));
         String xml = "<wfs:GetFeature " + "service=\"WFS\" "
             + "version=\"1.1.0\" "
             + "outputFormat=\"text/xml; subtype=gml/3.1.1\" "
@@ -240,9 +284,8 @@ public class GetFeatureTest extends WFSTestSupport {
             + "</wfs:GetFeature>";
 
         Document doc = postAsDOM("wfs", xml);
-        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
-        NodeList features = doc.getElementsByTagName("sf:PrimitiveGeoFeature");
-        assertEquals(1, features.getLength());
+        assertThat(doc, xmlUtil.hasNode("wfs:FeatureCollection"));
+        assertThat(doc, xmlUtil.hasNode("//sf:PrimitiveGeoFeature"));
     }
 
     @Test
@@ -528,6 +571,15 @@ public class GetFeatureTest extends WFSTestSupport {
     }
 
     @Test
+    public void testSortedInvalidAttribute() throws Exception {
+        Document dom = getAsDOM("wfs?request=GetFeature&typename="
+                + getLayerId(SystemTestData.BUILDINGS) + "&version=1.1.0&service=wfs&sortBy=GODOT");
+        checkOws10Exception(dom, "InvalidParameterValue");
+        XMLAssert.assertXpathEvaluatesTo("Illegal property name: GODOT for feature type "
+                + getLayerId(SystemTestData.BUILDINGS), "//ows:ExceptionText", dom);
+    }
+
+    @Test
     public void testEncodeSrsDimension() throws Exception {
         Document dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typename=" 
             + getLayerId(SystemTestData.PRIMITIVEGEOFEATURE));
@@ -542,4 +594,47 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathNotExists("//gml:Point[@srsDimension = '2']", dom);
     }
     
+    @Test
+    public void testWfs20AndGML31() throws Exception {
+        Document doc = getAsDOM("wfs?request=GetFeature&typeName=cdf:Fifteen&version=2.0.0&service=wfs&featureid=Fifteen.2&outputFormat=gml3");
+        // print(doc);
+
+        XMLAssert.assertXpathEvaluatesTo("1",
+                "count(//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen)", doc);
+        XMLAssert.assertXpathEvaluatesTo("Fifteen.2",
+                "//wfs:FeatureCollection/gml:featureMembers/cdf:Fifteen/@gml:id", doc);
+    }
+
+    @Test
+    public void testFeatureMembers() throws Exception {
+        WFSInfo wfs = getWFS();
+        GeoServer gs = getGeoServer();
+        try {
+            wfs.setEncodeFeatureMember(false);
+            gs.save(wfs);
+
+            Document dom = getAsDOM("wfs?request=GetFeature&typename="
+                    + getLayerId(SystemTestData.BUILDINGS)
+                    + "&version=1.1.0&service=wfs&sortBy=ADDRESS");
+            // print(dom);
+            XMLAssert.assertXpathEvaluatesTo("1", "count(//gml:featureMembers)", dom);
+            XMLAssert.assertXpathEvaluatesTo("0", "count(//gml:featureMember)", dom);
+
+            wfs.setEncodeFeatureMember(true);
+            gs.save(wfs);
+
+            dom = getAsDOM("wfs?request=GetFeature&typename="
+                    + getLayerId(SystemTestData.BUILDINGS)
+                    + "&version=1.1.0&service=wfs&sortBy=ADDRESS");
+            // print(dom);
+            XMLAssert.assertXpathEvaluatesTo("0", "count(//gml:featureMembers)", dom);
+            XMLAssert.assertXpathEvaluatesTo("2", "count(//gml:featureMember)", dom);
+
+
+        } finally {
+            wfs.setEncodeFeatureMember(false);
+            gs.save(wfs);
+        }
+    }
+
 }

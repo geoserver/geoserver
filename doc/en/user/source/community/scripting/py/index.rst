@@ -147,6 +147,33 @@ the process function itself:
    def run(arg1, arg2):
      pass
 
+Optionally, the input tuples can also host a third argument, a dictionary hosting more input metadata.
+Currently the following metadata are supported:
+
+* min: mininum number of occurrences for the input, 0 if the input is optional
+* max: maximum number of occurrences for the input, if greater than one the process will receive a list
+* domain: the list of values the input can receive, which will be advertised in the WPS DescribeProcess output
+
+For example:
+
+.. code-block:: python
+
+
+    @process(
+      inputs={'geom': (Geometry, 'The geometry to buffer'), 
+              'distance':(float, 'The buffer distance'),
+              'capStyle': (str, 'The style of buffer endings', 
+                          {'min': 0, 'domain' :  ('round', 'flat', 'square')}),
+              'quadrantSegments': (int, 'Number of segments' , {'min': 0})}
+              
+Finally, the default values assigned to the ``run`` function parameter will show up in the capabilities
+document as the parameter default value:
+
+.. code-block:: python
+   
+   @process(...)
+   def run(a, b, c='MyDefaultValue')              
+
 The ``outputs`` metadata is the same structure as the inputs dictionary except that for it describes
 the output arguments of the process:
 

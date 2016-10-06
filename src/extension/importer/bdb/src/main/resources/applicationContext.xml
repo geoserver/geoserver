@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-importer-bdb"/>
+    <constructor-arg index="1" value="Importer BDB"/>
+  </bean>
+  <!--  bdb import store -->
+  <bean id="bdbImportStore" class="org.geoserver.importer.bdb.BDBImportStore">
+    <constructor-arg ref="importer"></constructor-arg>
+  </bean>
+
+</beans>

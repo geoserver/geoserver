@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>xslt*</include>
+        <include>gs-xslt*</include>
       </includes>
     </fileSet>
   </fileSets>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -16,6 +17,7 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
+import org.geoserver.wms.WMSXStreamLoader;
 import org.geoserver.wms.WatermarkInfo;
 import org.geoserver.wms.WatermarkInfoImpl;
 import org.restlet.Context;
@@ -47,8 +49,7 @@ public class WMSSettingsResource extends ServiceSettingsResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setHideFeatureTypeAttributes();
-        persister.getXStream().alias("wms", WMSInfoImpl.class);
-        persister.getXStream().alias("class", WatermarkInfo.class, WatermarkInfoImpl.class);
+        WMSXStreamLoader.initXStreamPersister(persister);
     }
 
     static class WMSSettingsHTMLFormat extends CatalogFreemarkerHTMLFormat {

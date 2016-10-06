@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,33 +8,88 @@ package org.geoserver.wps.executor;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.geoserver.wps.ProcessDismissedException;
 import org.geoserver.wps.WPSException;
+import org.geotools.util.NullProgressListener;
+import org.geotools.util.SimpleInternationalString;
+import org.geotools.util.SubProgressListener;
+import org.opengis.util.ProgressListener;
 
 /**
- * A map using input providers internally, allows for deferred execution of the input parsing
+ * A map using input providers internally, allows for deferred execution of the input parsing (it
+ * happens in a single shot when the first input is fetched)
  * 
  * @author Andrea Aime - GeoSolutions
- * 
  */
 class LazyInputMap extends AbstractMap<String, Object> {
 
-    Map<String, InputProvider> providers = new HashMap<String, InputProvider>();
+    private static ProgressListener DEFAULT_LISTENER = new NullProgressListener();
+
+    Map<String, InputProvider> providers = new LinkedHashMap<String, InputProvider>();
+
+    Map<String, Object> values = new HashMap<String, Object>();
+
+    boolean parsed = false;
+
+    ProgressListener listener = DEFAULT_LISTENER;
 
     public LazyInputMap(Map<String, InputProvider> providers) {
         this.providers = providers;
     }
 
     public Object get(Object key) {
-        InputProvider provider = providers.get((String) key);
-        if (provider == null) {
-            return null;
-        } else {
+        // make sure we just kill the process is a dismiss happened
+        if (listener.isCanceled()) {
+            throw new ProcessDismissedException(listener);
+        }
+        // lazy parse inputs
+        parseInputs();
+        // return the value
+        return values.get(key);
+    }
+    
+    private void parseInputs() {
+        // we want to (try to) actually parse stuff just once
+        if (parsed) {
+            return;
+        }
+        parsed = true;
+
+        // count long parses
+        int totalSteps = 0;
+        for (InputProvider provider : providers.values()) {
+            totalSteps += provider.longStepCount();
+        }
+
+        listener.started();
+        float stepsSoFar = 0;
+        for (InputProvider provider : providers.values()) {
+            listener.setTask(new SimpleInternationalString("Retrieving/parsing process input: "
+                    + provider.getInputId()));
             try {
-                return provider.getValue();
+                // force parsing
+                float providerLongSteps = provider.longStepCount();
+                ProgressListener subListener;
+                if (providerLongSteps > 0) {
+                    subListener = new SubProgressListener(listener,
+                            (stepsSoFar / totalSteps) * 100, (providerLongSteps / totalSteps) * 100);
+                } else {
+                    subListener = new NullProgressListener();
+                }
+                stepsSoFar += providerLongSteps;
+                subListener.started();
+                subListener.progress(0);
+                Object value = provider.getValue(subListener);
+                values.put(provider.getInputId(), value);
             } catch (Exception e) {
+                listener.exceptionOccurred(e);
+                if (e instanceof WPSException) {
+                    throw (WPSException) e;
+                }
                 throw new WPSException("Failed to retrieve value for input "
                         + provider.getInputId(), e);
             }
@@ -42,46 +98,27 @@ class LazyInputMap extends AbstractMap<String, Object> {
 
     @Override
     public Set<Entry<String, Object>> entrySet() {
-        Set<Entry<String, InputProvider>> entries = providers.entrySet();
         Set<Entry<String, Object>> result = new HashSet<Map.Entry<String, Object>>();
-        for (Entry<String, InputProvider> entry : entries) {
-            result.add(new DeferredEntry(entry.getKey(), entry.getValue()));
+        for (String key : providers.keySet()) {
+            result.add(new DeferredEntry(key));
         }
         return result;
     }
     
-    public float getRetrievedInputPercentage() {
-        if(providers.size() == 0) {
-            return 1.0f;
-        }
-        
-        float count = 0;
+    public int longStepCount() {
+        int count = 0;
         for (InputProvider provider: providers.values()) {
-            if(provider.resolved()) {
-                count++;
-            }
+            count += provider.longStepCount();
         }
-        return count / providers.size();
-    }
-    
-    public boolean longParse() {
-        for (InputProvider provider: providers.values()) {
-            if(provider.longParse()) {
-                return true;
-            }
-        }
-        return false;
+        return count;
     }
 
     public class DeferredEntry implements Entry<String, Object> {
 
         private String key;
 
-        private InputProvider provider;
-
-        public DeferredEntry(String key, InputProvider provider) {
+        public DeferredEntry(String key) {
             this.key = key;
-            this.provider = provider;
         }
 
         @Override
@@ -91,12 +128,8 @@ class LazyInputMap extends AbstractMap<String, Object> {
 
         @Override
         public Object getValue() {
-            try {
-                return provider.getValue();
-            } catch (Exception e) {
-                throw new WPSException("Failed to retrieve value for input "
-                        + provider.getInputId());
-            }
+            parseInputs();
+            return values.get(key);
         }
 
         @Override
@@ -104,6 +137,14 @@ class LazyInputMap extends AbstractMap<String, Object> {
             throw new UnsupportedOperationException();
         }
 
+    }
+
+    /**
+     * The listener will be informed of the parse progress, when it happens
+     * @param listener
+     */
+    public void setListener(ProgressListener listener) {
+        this.listener = listener;
     }
 
     

@@ -4,7 +4,7 @@ ECQL Reference
 ==============
 
 This section provides a reference for the syntax of the ECQL language.
-The full language grammar is documented in the the GeoTools `ECQL BNF definition <http://docs.codehaus.org/display/GEOTOOLS/ECQL+Parser+Design>`_ 
+The full language grammar is documented in the the GeoTools `ECQL BNF definition <https://github.com/geotools/geotools/blob/master/modules/library/cql/ECQL.md>`_ 
 
 Syntax Notes
 ------------
@@ -156,10 +156,6 @@ OGC `Simple Features for SQL <http://www.opengeospatial.org/standards/sfs>`_ spe
        The optional *CRS* is a string containing an SRS code
        (For example, ``'EPSG:1234'``.  
        The default is to use the CRS of the queried layer)
-   * - ``BBOX (`` :ref:`ecql_expr` ``,`` :ref:`ecql_expr` **|** :ref:`Geometry <ecql_literal>` ``)``
-     - Tests whether a geometry intersects a bounding box 
-       specified by a geometric value computed by a function
-       or provided by a geometry literal.
      
      
 .. _ecql_expr:

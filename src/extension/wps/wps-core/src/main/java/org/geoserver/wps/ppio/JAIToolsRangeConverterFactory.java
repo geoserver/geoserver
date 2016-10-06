@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  *           (c) 2002-2008 Open Source Geospatial Foundation (LGPL)
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -59,7 +60,7 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
      * Return the parsed Range.
      *
      * @param sRange
-     * @return
+     *
      */
     static Range<Double> parseRangeInternal(Matcher m, String sRange) {
         Double min = null;
@@ -101,7 +102,7 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
     /**
      * Parses a list of ranges from a string
      * @param sRangeList
-     * @return
+     *
      */
     public static List<Range<Double>> parseRanges(String sRangeList) {
         // check that the whole input string is a list of ranges

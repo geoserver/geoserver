@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,6 +20,7 @@ import org.geoserver.data.util.IOUtils;
 import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.script.wps.ScriptProcess;
 import org.geoserver.script.wps.ScriptProcessFactory;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Parameter;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -44,7 +46,7 @@ public class JavaScriptWpsHookTest extends ScriptIntTestSupport {
     
     @Override
     protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        File fromDir = new File(getClass().getResource("scripts").getFile());
+        File fromDir = DataUtilities.urlToFile(getClass().getResource("scripts"));
         File toDir = new File(dataDirectory.getDataDirectoryRoot(), "scripts");
         IOUtils.deepCopy(fromDir, toDir);
         super.populateDataDirectory(dataDirectory);

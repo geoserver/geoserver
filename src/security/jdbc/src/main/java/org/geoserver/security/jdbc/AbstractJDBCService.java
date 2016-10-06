@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,15 +7,13 @@ package org.geoserver.security.jdbc;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -27,9 +26,13 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.AbstractGeoServerSecurityService;
 import org.geoserver.security.jdbc.config.JDBCSecurityServiceConfig;
+import org.geoserver.util.IOUtils;
 
 
 
@@ -89,7 +92,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
     /**
      * simple getter
      * 
-     * @return
+     *
      */
     protected DataSource getDataSource() {
         return datasource;
@@ -100,7 +103,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * check/set autocommit == false and isolation level
      * according to {@link #DEFAULT_ISOLATION_LEVEL}
      * 
-     * @return
+     *
      * @throws SQLException
      */
     protected Connection getConnection() throws SQLException{
@@ -149,7 +152,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * 
      * @param key
      * @param con
-     * @return
+     *
      * @throws IOException
      * @throws SQLException
      */
@@ -165,7 +168,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * @param key
      * @param props
      * @param con
-     * @return
+     *
      * @throws IOException if key does not exist
      * @throws SQLException
      */
@@ -182,7 +185,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * 
      * @param key
      * @param con
-     * @return
+     *
      * @throws IOException
      * @throws SQLException
      */
@@ -198,7 +201,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * other values result in false
      * 
      * @param booleanString
-     * @return
+     *
      */
     protected boolean convertFromString(String booleanString) {
         if (booleanString==null)
@@ -211,7 +214,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * true --> "Y"
      * false --> "N"
      * @param b
-     * @return
+     *
      */
     protected String convertToString(boolean b) {
         return b ? "Y" : "N";        
@@ -222,7 +225,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * Get ordered property keys for creating
      * tables/indexes
      * 
-     * @return
+     *
      */
     protected abstract String[] getOrderedNamesForCreate();
     
@@ -230,7 +233,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * Get ordered property keys for dropping
      * tables/indexes
      * 
-     * @return
+     *
      */
     protected abstract String[] getOrderedNamesForDrop();
     
@@ -360,7 +363,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * Checks if the tables are already created
      * 
      * @param con
-     * @return
+     *
      * @throws IOException
      */
     public boolean tablesAlreadyCreated() throws IOException {
@@ -460,31 +463,36 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      * If no template was found, use the default template
      * 
      * 
-     * @param fileName, target location
-     * @param namedRoot, parent dir if fileName is relative
-     * @param defaultResource, the standard template
+     * @param fileName target location
+     * @param namedRoot parent dir if fileName is relative
+     * @param defaultResource the standard template
      * @throws IOException
      * @return the file to use
      */
-    protected File checkORCreateJDBCPropertyFile(String fileName,
-            File namedRoot, String defaultResource) throws IOException {
+    protected Resource checkORCreateJDBCPropertyFile(String fileName,
+            Resource namedRoot, String defaultResource) throws IOException {
 
+        Resource resource;
         fileName = fileName != null ? fileName : defaultResource;
         File file = new File(fileName);
-        if (file.isAbsolute()==false) 
-            file = new File(namedRoot,fileName);
+        if (file.isAbsolute()) {
+            resource = Files.asResource(file);
+        } else {
+            resource = namedRoot.get(fileName);
+        }
 
-        if (file.exists()) 
-            return file; // we are happy
+        if (Resources.exists(resource)) { 
+            return resource; // we are happy
+        }
         
         // try to find a template with the same name
-        URL url = this.getClass().getResource(fileName);
-        if (url!=null) 
-            FileUtils.copyURLToFile(url, file);
+        InputStream is = this.getClass().getResourceAsStream(fileName);
+        if (is!=null) 
+            IOUtils.copy(is, resource.out());
         else // use the default template
             FileUtils.copyURLToFile(getClass().getResource(defaultResource), file);
         
-        return file;
+        return resource;
                             
     }
 }

@@ -15,7 +15,7 @@ the request life cycle to capture various information about the request. Such
 information includes:
 
 * Timestamp of the origin of the request
-* Total ime it took for the request to complete
+* Total time it took for the request to complete
 * Origin of the request 
 * HTTP information such as the body content type, header information, etc...
 

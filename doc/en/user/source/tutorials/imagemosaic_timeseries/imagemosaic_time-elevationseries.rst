@@ -1,4 +1,4 @@
-.. _tutorial_imagemosaic_timeseries:
+.. _tutorial_imagemosaic_timeelevationseries:
 
 Using the ImageMosaic plugin for raster with time and elevation data
 ====================================================================
@@ -11,7 +11,7 @@ This tutorial is the following of :ref:`tutorial_imagemosaic_timeseries` and exp
 
 The dataset used is a set of raster images used in weather forecast, representing the temperature in a certain zone at different times and elevations.
 
-All the steps explained in chapter *Configurations* of :ref:`tutorial_imagemosaic_timeseries` are still the same.
+All the steps explained in chapter *Configurations* of :ref:`data_imagemosaic` section are still the same.
 
 This tutorial explains just how to configure the **elevationregex.properties** that is an additional configuration file needed, and how to modify the **indexer.properties**.
 
@@ -34,7 +34,7 @@ indexer.properties:
 
 Here the user can specify the information that needs Geoserver for creating the table in the database. 
 
-In this case the time values are stored in the column ingestion as shown in the previous tutorial but now is mandatory specifiy the elevation coloumn too.
+In this case the time values are stored in the column ingestion as shown in the previous tutorial but now is mandatory specify the elevation column too.
 
 .. include:: src/indexerWithElevation.properties
    :literal:
@@ -52,7 +52,7 @@ an example of filename, that is used in this tutorial is::
 
 		gfs50kmTemperature20130310T180000000Z_0600.000_.tiff
 
-The geoserver imagemosaic plugin scans the filename and search for the first occurence that match with the pattern specified. Here the content of **timeregex.properties**:
+The geoserver imagemosaic plugin scans the filename and search for the first occurrence that match with the pattern specified. Here the content of **timeregex.properties**:
 
 .. include:: src/elevationregex.properties
    :literal:

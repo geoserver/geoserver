@@ -1,15 +1,14 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.eo;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.StyleInfo;
@@ -18,7 +17,11 @@ import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
 
@@ -37,20 +40,6 @@ public class EoStyleCatalogListener implements CatalogListener, EoStyles {
     private final GeoServerResourceLoader resourceLoader;
     private static final Logger LOGGER = Logging.getLogger(EoStyleCatalogListener.class);    
 
-    private static final String[] EO_STYLE_FILES = new String[] {
-        "black.sld",
-        "blue.sld",
-        "brown.sld",
-        "cyan.sld",
-        "green.sld",
-        "magenta.sld",
-        "orange.sld",
-        "red.sld",
-        "white.sld",
-        "yellow.sld"
-    };
-    
-    
     /**
      * Create WMS-EO styles if they are not present in the Catalog and start listening to Catalog events.
      * 
@@ -72,8 +61,9 @@ public class EoStyleCatalogListener implements CatalogListener, EoStyles {
      */
     private void initializeStyles() throws IOException {
         for (int i = 0; i < EO_STYLE_NAMES.length; i++) {
-            if (catalog.getStyleByName(EO_STYLE_NAMES[i]) == null) {
-                initializeStyle(EO_STYLE_NAMES[i], EO_STYLE_FILES[i]);
+            String name = EO_STYLE_NAMES[i];
+            if (catalog.getStyleByName(name) == null) {
+                initializeStyle(name, name + ".sld");
             }
         }
     }
@@ -85,9 +75,10 @@ public class EoStyleCatalogListener implements CatalogListener, EoStyles {
      */
     private void initializeStyle(String styleName, String sld) throws IOException {
         // copy the file out to the data directory if necessary
-        if (resourceLoader.find("styles", sld) == null) {
-            FileUtils.copyURLToFile(EoStyleCatalogListener.class.getResource(sld), 
-                    new File(resourceLoader.findOrCreateDirectory("styles"), sld));
+        Resource res = resourceLoader.get(Paths.path("styles", sld));
+        if (!Resources.exists(res)) {
+            IOUtils.copy(EoStyleCatalogListener.class.getResourceAsStream(sld), 
+                    res.out());
         }
         
         // create a style for it

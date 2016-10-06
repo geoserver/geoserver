@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,9 +13,8 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.format.DataFormat;
-import org.geoserver.wfs.GMLInfoImpl;
 import org.geoserver.wfs.WFSInfo;
-import org.geoserver.wfs.WFSInfoImpl;
+import org.geoserver.wfs.WFSXStreamLoader;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -43,9 +43,7 @@ public class WFSSettingsResource extends ServiceSettingsResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setHideFeatureTypeAttributes();
-        persister.getXStream().alias("wfs", WFSInfoImpl.class);
-        persister.getXStream().alias("version", WFSInfo.Version.class);
-        persister.getXStream().alias("gml", GMLInfoImpl.class);
+        WFSXStreamLoader.initXStreamPersister(persister);
     }
 
     static class WFSSettingsHTMLFormat extends CatalogFreemarkerHTMLFormat {
@@ -85,6 +83,7 @@ public class WFSSettingsResource extends ServiceSettingsResource {
                     properties.put("maxFeatures", String.valueOf(wfsInfo.getMaxFeatures()));
                     properties.put("isFeatureBounding", wfsInfo.isFeatureBounding() ? "true" : "false");
                     properties.put("hitsIgnoreMaxFeatures", wfsInfo.isHitsIgnoreMaxFeatures() ? "true" : "false");
+                    properties.put("maxNumberOfFeaturesForPreview", wfsInfo.getMaxNumberOfFeaturesForPreview());
                     properties.put("serviceLevel", wfsInfo.getServiceLevel());
                     properties.put("isCanonicalSchemaLocation", wfsInfo.isCanonicalSchemaLocation() ? "true" : "false");
                     properties.put("encodeFeatureMember", wfsInfo.isEncodeFeatureMember() ? "true" : "false");

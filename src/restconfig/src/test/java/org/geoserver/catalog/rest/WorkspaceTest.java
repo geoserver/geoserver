@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -23,7 +24,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WorkspaceTest extends CatalogRESTTestSupport {
 
@@ -70,12 +71,12 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
     
     @Test
     public void testPutAllUnauthorized() throws Exception {
-        assertEquals( 405, putAsServletResponse( "/rest/workspaces" ).getStatusCode() );
+        assertEquals( 405, putAsServletResponse( "/rest/workspaces" ).getStatus() );
     }
     
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
-        assertEquals( 405, deleteAsServletResponse( "/rest/workspaces").getStatusCode() );
+        assertEquals( 405, deleteAsServletResponse( "/rest/workspaces").getStatus() );
     }
     
     @Test
@@ -105,8 +106,28 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
     }
     
     @Test
+    public void testGetWrongWorkspace() throws Exception {
+        // Parameters for the request
+        String workspace = "sfsssss";
+        // Request path
+        String requestPath = "/rest/workspaces/" + workspace + ".html";
+        // Exception path
+        String exception = "No such workspace: " + workspace;
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
+                exception));
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
+                exception));
+    }
+    
+    @Test
     public void testGetNonExistant() throws Exception {
-        assertEquals( 404, getAsServletResponse( "/rest/workspaces/none").getStatusCode() );
+        assertEquals( 404, getAsServletResponse( "/rest/workspaces/none").getStatus() );
     }
     
     @Test
@@ -116,7 +137,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
               "<name>foo</name>" + 
             "</workspace>";
         MockHttpServletResponse response = postAsServletResponse( "/rest/workspaces", xml, "text/xml" );
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/foo" ) );
         
@@ -137,7 +158,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         String json = "{'workspace':{ 'name':'foo' }}";
         
         MockHttpServletResponse response = postAsServletResponse( "/rest/workspaces", json, "text/json" );
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/foo" ) );
         
@@ -155,12 +176,12 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             postAsServletResponse("/rest/workspaces/gs", xml, "text/xml" );
-        assertEquals( 405, response.getStatusCode() );
+        assertEquals( 405, response.getStatus() );
     }
     
     @Test
     public void testDeleteNonExistant() throws Exception {
-        assertEquals( 404, deleteAsServletResponse("/rest/workspaces/newExistant").getStatusCode() );
+        assertEquals( 404, deleteAsServletResponse("/rest/workspaces/newExistant").getStatus() );
     }
     
     @Test
@@ -174,19 +195,19 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( "/rest/workspaces/foo.xml");
         assertEquals( "workspace", dom.getDocumentElement().getNodeName() );
         
-        assertEquals( 200, deleteAsServletResponse( "/rest/workspaces/foo" ).getStatusCode() );
-        assertEquals( 404, getAsServletResponse( "/rest/workspaces/foo.xml" ).getStatusCode() );
+        assertEquals( 200, deleteAsServletResponse( "/rest/workspaces/foo" ).getStatus() );
+        assertEquals( 404, getAsServletResponse( "/rest/workspaces/foo.xml" ).getStatus() );
     }
     
     @Test
     public void testDeleteNonEmptyForbidden() throws Exception {
         getTestData().addVectorLayer(SystemTestData.PRIMITIVEGEOFEATURE, catalog);
-        assertEquals( 403, deleteAsServletResponse("/rest/workspaces/sf").getStatusCode() );
+        assertEquals( 403, deleteAsServletResponse("/rest/workspaces/sf").getStatus() );
     }
     
     @Test
     public void testDeleteDefaultNotAllowed() throws Exception {
-        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/default").getStatusCode() );
+        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/default").getStatus() );
     }
     
     @Test
@@ -200,8 +221,8 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
             // actually go and remove the store
             String resource = "/rest/workspaces/" + ws.getName();
-            assertEquals( 200, deleteAsServletResponse(resource).getStatusCode() );
-            assertEquals( 404, getAsServletResponse(resource).getStatusCode() );
+            assertEquals( 200, deleteAsServletResponse(resource).getStatus() );
+            assertEquals( 404, getAsServletResponse(resource).getStatus() );
         }
         Document dom = getAsDOM( "/rest/workspaces.xml");
         assertEquals(0, dom.getElementsByTagName( "workspace").getLength() );
@@ -215,7 +236,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response =
             deleteAsServletResponse("/rest/workspaces/sf?recurse=true");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         assertNull(catalog.getWorkspaceByName("sf"));
         assertNull(catalog.getNamespaceByPrefix("sf"));
@@ -239,7 +260,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/workspaces/gs", xml, "text/xml" );
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         Document dom = getAsDOM( "/rest/workspaces/gs.xml" );
         assertXpathEvaluatesTo("1", "count(//name[text()='gs'])", dom );
@@ -256,7 +277,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/workspaces/gs", xml, "text/xml" );
-        assertEquals( 403, response.getStatusCode() );
+        assertEquals( 403, response.getStatus() );
     }
     
     @Test
@@ -273,7 +294,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/workspaces/nonExistant", xml, "text/xml" );
-        assertEquals( 404, response.getStatusCode() );
+        assertEquals( 404, response.getStatus() );
     }
     
     @Test

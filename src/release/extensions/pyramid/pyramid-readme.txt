@@ -1,9 +1,10 @@
-GEOSERVER 2.4+ DATA STORE EXTRAS README
+GEOSERVER 2.9+ DATA STORE EXTRAS README
+---------------------------------------
 
 This package contains a Pyramid building coverage implementation that is 
 distributed as a separate plug-in.  
 
-Please report any bugs with jira (http://jira.codehaus.org/browse/GEOS). 
+Please report any bugs with jira (https://osgeo-org.atlassian.net/projects/GEOS).
 
 Any other issues can be discussed on the mailing list (http://lists.sourceforge.net/lists/listinfo/geoserver-users).
 
@@ -20,9 +21,9 @@ INSTALLATION
 
 imagepyramid should now show up as an option in the web admin tool at 
 Config -> Data -> CoverageStores -> New.  Fill out the appropriate params.  For more
-information see http://geoserver.org/display/GEOSDOC/Image+Pyramid
+information see http://docs.geoserver.org/latest/en/user/data/raster/imagepyramid.html
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 10.x.  
-Currently this is anything in 2.4.x.  
+This jar should work with any version of GeoServer based on GeoTools 15.x  
+Currently this is anything in 2.9.x.  

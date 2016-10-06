@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,7 +26,8 @@ public class LayerGroupPageTest extends LayerGroupBaseTest {
         tester.assertRenderedPage(LayerGroupPage.class);
         tester.assertNoErrorMessage();
         
-        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        @SuppressWarnings("unchecked")
+		DataView<LayerGroupInfo> dv = (DataView<LayerGroupInfo>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(getCatalog().getLayerGroups().size(), dv.size());
         LayerGroupInfo lg = (LayerGroupInfo) dv.getDataProvider().iterator(0, 1).next();
         assertEquals(getCatalog().getLayerGroups().get(0), lg);

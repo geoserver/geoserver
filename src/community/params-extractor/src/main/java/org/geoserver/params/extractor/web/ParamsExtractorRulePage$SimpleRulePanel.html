@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+    <ul>
+        <li>
+            <fieldset>
+                <ul>
+                    <li style="padding-top:10px;">
+                        <label for="position">
+                            <wicket:message key="position"></wicket:message>
+                        </label>
+                        <input id="position" wicket:id="position" type="number" class="number"/>
+                        <span style="font-size:11px"><wicket:message key="positionDescription"></wicket:message></span>
+                    </li>
+                    <li style="padding-top:10px;">
+                        <label for="parameter">
+                            <wicket:message key="parameter"></wicket:message>
+                        </label>
+                        <input id="parameter" wicket:id="parameter" type="text" class="text"/>
+                        <span style="font-size:11px"><wicket:message key="parameterDescription"></wicket:message></span>
+                    </li>
+                    <li style="padding-top:10px;">
+                        <label for="transform">
+                            <wicket:message key="transform"></wicket:message>
+                        </label>
+                        <input id="transform" wicket:id="transform" type="text" class="text"/>
+                        <span style="font-size:11px"><wicket:message key="transformSimpleDescription"></wicket:message></span>
+                    </li>
+                    <li style="padding-top:10px;">
+                        <label for="echo">
+                            <wicket:message key="echo"></wicket:message>
+                        </label>
+                        <input id="combine" wicket:id="echo" type="checkbox" class="boolean"/>
+                        <span style="font-size:11px"><wicket:message key="echoDescription"></wicket:message></span>
+                    </li>
+                </ul>
+            </fieldset>
+        </li>
+    </ul>
+</wicket:panel>
+</body>
+</html>

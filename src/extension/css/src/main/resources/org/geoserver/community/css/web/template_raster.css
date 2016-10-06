@@ -1,0 +1,5 @@
+/* @title raster */
+* {
+    raster-channels: auto;
+    raster-opacity: 1.0;
+}

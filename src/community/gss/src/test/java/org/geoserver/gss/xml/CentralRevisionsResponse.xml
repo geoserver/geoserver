@@ -1,7 +1,0 @@
-<gss:CentralRevisions xmlns:gss="http://geoserver.org/gss"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xmlns:sf="http://www.openplans.org/spearfish"
-   xsi:schemaLocation="http://geoserver.org/gss ../gss.xsd" >
-      <gss:LayerRevision typeName="sf:archsites" centralRevision="15"/>
-      <gss:LayerRevision typeName="sf:restricted" centralRevision="22"/>
-</gss:CentralRevisions> 

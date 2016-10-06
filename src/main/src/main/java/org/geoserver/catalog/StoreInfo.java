@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -157,7 +158,7 @@ public interface StoreInfo extends CatalogInfo {
     /**
      * Associates an error with the store.
      *
-     * @see {@link #getError()}
+     * @see #getError()
      */
     void setError(Throwable t);
     

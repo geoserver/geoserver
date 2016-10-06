@@ -1,12 +1,16 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.validation.FilterConfigException;
 import org.springframework.beans.factory.BeanNameAware;
 
 /**
@@ -27,7 +31,7 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
      * Returns <code>null</code> if the user is disabled
      * 
      * @param key
-     * @return
+     *
      */
     GeoServerUser getUser(String key) throws IOException;
     
@@ -44,8 +48,6 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
     /**
      * Returns <code>true</code> it the mapper can deal with read only u 
      * user/group services
-     * 
-     * @return 
      */
     boolean supportsReadOnlyUserGroupService();
     
@@ -57,5 +59,25 @@ public interface AuthenticationKeyMapper extends BeanNameAware {
     public GeoServerSecurityManager getSecurityManager();
     public void setSecurityManager(GeoServerSecurityManager securityManager);
     
+    /**
+     * Returns the list of configuration parameters supported by this mapper.
+     * 
+     *
+     */
+    public Set<String> getAvailableParameters();
+    
+    /**
+     * Configures the mapper parameters.
+     */
+    public void configureMapper(Map<String, String> parameters);
+    
+    /**
+     * Returns the mapper parameters.
+     */
+    public Map<String, String> getMapperConfiguration();
 
+    /**
+     * Validates the given parameter.
+     */
+    public void validateParameter(String paramName, String value) throws FilterConfigException;
 }

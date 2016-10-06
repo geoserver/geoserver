@@ -1,0 +1,27 @@
+<assembly>
+  <id>css-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-css-*.jar</include>
+        <include>gt-css-*.jar</include>
+        <include>gt-brewer-*.jar</include>
+        <include>parboiled*.jar</include>
+        <include>asm*.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+       <directory>release/extensions/css</directory>
+       <outputDirectory></outputDirectory>
+       <includes>
+         <include>SCALA-LICENSE.txt</include>
+       </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

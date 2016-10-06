@@ -1,21 +1,26 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.opengis.coverage.grid.GridCoverageReader;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -63,6 +68,7 @@ public class CoverageStoreResource extends AbstractCatalogResource {
     @Override
     protected String handleObjectPost(Object object) throws Exception {
         CoverageStoreInfo coverageStore = (CoverageStoreInfo) object;
+        catalog.validate(coverageStore, true).throwIfInvalid();
         catalog.add( coverageStore );
         
         LOGGER.info( "POST coverage store " + coverageStore.getName() );
@@ -82,7 +88,8 @@ public class CoverageStoreResource extends AbstractCatalogResource {
         CoverageStoreInfo cs = (CoverageStoreInfo) object;
         CoverageStoreInfo original = catalog.getCoverageStoreByName(workspace, coveragestore);
         new CatalogBuilder( catalog ).updateCoverageStore( original, cs );
-        
+
+        catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         clear(original);
         
@@ -99,7 +106,8 @@ public class CoverageStoreResource extends AbstractCatalogResource {
         String workspace = getAttribute("workspace");
         String coveragestore = getAttribute("coveragestore");
         boolean recurse = getQueryStringValue("recurse", Boolean.class, false);
-        
+        String deleteType = getQueryStringValue("purge", String.class, "none");
+
         CoverageStoreInfo cs = catalog.getCoverageStoreByName(workspace, coveragestore);
         if (!recurse) {
             if ( !catalog.getCoveragesByCoverageStore(cs).isEmpty() ) {
@@ -110,15 +118,44 @@ public class CoverageStoreResource extends AbstractCatalogResource {
         else {
             new CascadeDeleteVisitor(catalog).visit(cs);
         }
+        delete(deleteType, cs);
         clear(cs);
         
         LOGGER.info( "DELETE coverage store " + workspace + "," + coveragestore );
+    }
+
+    /**
+     * Check the deleteType parameter in order to decide whether to delete some data too (all, or just metadata).
+     * @param deleteType
+     * @param cs
+     * @throws IOException
+     */
+    private void delete(String deleteType, CoverageStoreInfo cs) throws IOException {
+        if (deleteType.equalsIgnoreCase("none")) {
+            return;
+        } else if (deleteType.equalsIgnoreCase("all") || deleteType.equalsIgnoreCase("metadata")) {
+            final boolean deleteData = deleteType.equalsIgnoreCase("all");
+            GridCoverageReader reader = cs.getGridCoverageReader(null, null);
+            if (reader instanceof StructuredGridCoverage2DReader) {
+                ((StructuredGridCoverage2DReader) reader).delete(deleteData);
+            }
+        }
     }
 
     @Override
     protected void configurePersister(XStreamPersister persister, final DataFormat format ) {
         persister.setCallback( 
             new XStreamPersister.Callback() {
+                @Override
+                protected CatalogInfo getCatalogObject() {
+                    String workspace = getAttribute("workspace");
+                    String coveragestore = getAttribute("coveragestore");
+                    
+                    if (workspace == null || coveragestore == null) {
+                        return null;
+                    }
+                    return catalog.getCoverageStoreByName(workspace, coveragestore);
+                }
                 @Override
                 protected void postEncodeCoverageStore(CoverageStoreInfo cs,
                         HierarchicalStreamWriter writer,

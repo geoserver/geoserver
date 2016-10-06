@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -45,7 +46,7 @@ public class WMSAccessLimits extends DataAccessLimits {
     /**
      * Acts as a ROI on the returned images
      * 
-     * @return
+     *
      */
     public MultiPolygon getRasterFilter() {
         return rasterFilter;
@@ -54,7 +55,7 @@ public class WMSAccessLimits extends DataAccessLimits {
     /**
      * Wheter to allow GetFeatureInfo cascading or not
      * 
-     * @return
+     *
      */
     public boolean isAllowFeatureInfo() {
         return allowFeatureInfo;

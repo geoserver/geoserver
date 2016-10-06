@@ -1,15 +1,14 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.wms_1_3;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +19,8 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
@@ -28,13 +29,17 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.junit.Before;
+import org.geoserver.wms.map.OpenLayersMapOutputFormat;
+import org.geotools.referencing.CRS;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -75,6 +80,13 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
         getGeoServer().save(global);
         
+        // add a workspace qualified style
+        WorkspaceInfo ws = catalog.getWorkspaceByName(MockData.CITE_PREFIX);
+        testData.addStyle(ws, "Lakes", "Lakes.sld", SystemTestData.class, catalog);
+        StyleInfo lakesStyle = catalog.getStyleByName(ws, "Lakes");
+        LayerInfo lakesLayer = catalog.getLayerByName(MockData.LAKES.getLocalPart());
+        lakesLayer.setDefaultStyle(lakesStyle);
+        catalog.save(lakesLayer);
     }
     
     
@@ -170,14 +182,16 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
 
     @org.junit.Test 
     public void testLayerQualified() throws Exception {
-        Document dom = dom(get("cite/Forests/wms?request=getCapabilities&version=1.3.0"), true);
+        // Qualify the request with a layer.  Other layers should not be included.
+        Document dom = dom(get("cite/Forests/wms?service=WMS&request=getCapabilities&version=1.3.0"), true);
+        // print(dom);
         Element e = dom.getDocumentElement();
         assertEquals("WMS_Capabilities", e.getLocalName());
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertTrue(xpath
-                .getMatchingNodes("//wms:Layer/wms:Name[starts-with(., cite:Forests)]", dom)
-                .getLength() == 1);
-        assertEquals(1, xpath.getMatchingNodes("//wms:Layer/wms:Layer", dom).getLength());
+        assertEquals(0, xpath
+                .getMatchingNodes("//wms:Layer/wms:Name[starts-with(., 'cite:Forests')]", dom)
+                .getLength());
+        assertEquals(2, xpath.getMatchingNodes("//wms:Layer/wms:Layer", dom).getLength());
 
         NodeList nodes = xpath.getMatchingNodes("//wms:Layer//wms:OnlineResource", dom);
         assertTrue(nodes.getLength() > 0);
@@ -239,6 +253,39 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(//wms:Attribution/wms:Title)", doc);
         assertXpathEvaluatesTo("1", "count(//wms:Attribution/wms:LogoURL)", doc);
     }
+    
+    @Test
+    public void testLayerGroup() throws Exception {
+        LayerInfo points = getCatalog().getLayerByName(MockData.POINTS.getLocalPart());
+        CatalogBuilder builder = new CatalogBuilder(getCatalog());        
+        
+        //create layergr
+        LayerGroupInfo lg = getCatalog().getFactory().createLayerGroup();
+        //attribution
+        lg.setName("MyLayerGroup");
+        lg.getLayers().add(points);
+        builder.calculateLayerGroupBounds(lg, CRS.decode("EPSG:4326"));
+        lg.setAttribution(getCatalog().getFactory().createAttribution());
+        lg.getAttribution().setTitle("My Attribution");
+        MetadataLinkInfo info = getCatalog().getFactory().createMetadataLink();
+        info.setType("text/html");
+        info.setMetadataType("FGDC");
+        info.setContent("http://my/metadata/link");
+        lg.getMetadataLinks().add(info);
+        getCatalog().add(lg);
+        
+        try {
+            Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+            //print(doc);
+            assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/Attribution)", doc);
+            assertXpathEvaluatesTo("My Attribution", "//Layer[Name='MyLayerGroup']/Attribution/Title", doc);
+            assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/MetadataURL)", doc);
+            assertXpathEvaluatesTo("http://my/metadata/link", "//Layer[Name='MyLayerGroup']/MetadataURL/OnlineResource/@xlink:href", doc);
+        } finally {    
+            //clean up
+            getCatalog().remove(lg);
+        }
+    }
 
     @org.junit.Test 
     public void testAlternateStyles() throws Exception {
@@ -260,14 +307,14 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
                         "//wms:Layer[wms:Name='cdf:Fifteen']/wms:Style[wms:Name='Default']/wms:LegendURL/wms:OnlineResource/@xlink:href",
                         doc);
         assertTrue(href.contains("GetLegendGraphic"));
-        assertTrue(href.contains("layer=Fifteen"));
+        assertTrue(href.contains("layer=cdf%3AFifteen"));
         assertFalse(href.contains("style"));
         href = xpath
                 .evaluate(
                         "//wms:Layer[wms:Name='cdf:Fifteen']/wms:Style[wms:Name='point']/wms:LegendURL/wms:OnlineResource/@xlink:href",
                         doc);
         assertTrue(href.contains("GetLegendGraphic"));
-        assertTrue(href.contains("layer=Fifteen"));
+        assertTrue(href.contains("layer=cdf%3AFifteen"));
         assertTrue(href.contains("style=point"));
     }
 
@@ -327,6 +374,44 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         assertXpathEvaluatesTo("e@mail", cinfo + "wms:ContactElectronicMailAddress", doc);
     }
     
+    @Test 
+    public void testNoFeesOrContraints() throws Exception {
+        final WMSInfo service = getGeoServer().getService(WMSInfo.class);
+        service.setAccessConstraints(null);
+        service.setFees(null);
+        getGeoServer().save(service);
+
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        // print(doc);
+
+        String base = "wms:WMS_Capabilities/wms:Service/";
+        assertXpathEvaluatesTo("WMS", base + "wms:Name", doc);
+        assertXpathEvaluatesTo("none", base + "wms:Fees", doc);
+        assertXpathEvaluatesTo("none", base + "wms:AccessConstraints", doc);
+    }
+    
+    @Test
+    public void testExceptions() throws Exception {
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo("XML", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[1]", doc);
+        assertXpathEvaluatesTo("INIMAGE", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[2]", doc);
+        assertXpathEvaluatesTo("BLANK", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[3]", doc);
+        assertXpathEvaluatesTo("JSON", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[4]", doc);
+
+        boolean jsonpOriginal = JSONType.isJsonpEnabled();
+        try {
+            JSONType.setJsonpEnabled(true);
+            doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+            assertXpathEvaluatesTo("JSONP", "wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format[5]", doc);
+            assertXpathEvaluatesTo("5", "count(wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format)", doc);
+            JSONType.setJsonpEnabled(false);
+            doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+            assertXpathEvaluatesTo("4", "count(wms:WMS_Capabilities/wms:Capability/wms:Exception/wms:Format)", doc);
+        } finally {
+            JSONType.setJsonpEnabled(jsonpOriginal);
+        }
+    }
+
     @org.junit.Test
     public void testQueryable() throws Exception {
         LayerInfo lines = getCatalog().getLayerByName(MockData.LINES.getLocalPart());
@@ -343,6 +428,24 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
 
         assertXpathEvaluatesTo("1", "//wms:Layer[wms:Name='" + linesName + "']/@queryable", doc);
         assertXpathEvaluatesTo("0", "//wms:Layer[wms:Name='" + pointsName + "']/@queryable", doc);
+    }
+    
+    @org.junit.Test
+    public void testOpaque() throws Exception {
+        LayerInfo lines = getCatalog().getLayerByName(MockData.LINES.getLocalPart());
+        lines.setOpaque(true);
+        getCatalog().save(lines);
+        LayerInfo points = getCatalog().getLayerByName(MockData.POINTS.getLocalPart());
+        points.setOpaque(false);
+        getCatalog().save(points);
+
+        String linesName = MockData.LINES.getPrefix() + ":" + MockData.LINES.getLocalPart();
+        String pointsName = MockData.POINTS.getPrefix() + ":" + MockData.POINTS.getLocalPart();
+
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+
+        assertXpathEvaluatesTo("1", "//wms:Layer[wms:Name='" + linesName + "']/@opaque", doc);
+        assertXpathEvaluatesTo("0", "//wms:Layer[wms:Name='" + pointsName + "']/@opaque", doc);
     }
 
     @org.junit.Test
@@ -433,4 +536,68 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         assertXpathEvaluatesTo("http://localhost/metadata?" + query, xpath, doc);
         
     }
+    
+    @org.junit.Test 
+    public void testDataLinks() throws Exception {
+        String layerName = MockData.POINTS.getPrefix() + ":" + MockData.POINTS.getLocalPart();
+        
+        LayerInfo layer = getCatalog().getLayerByName(MockData.POINTS.getLocalPart());
+        DataLinkInfo mdlink = getCatalog().getFactory().createDataLink();
+        mdlink.setContent("http://geoserver.org");
+        mdlink.setType("text/xml");
+        ResourceInfo resource = layer.getResource();
+        resource.getDataLinks().add(mdlink);
+        getCatalog().save(resource);
+        
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        String xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:DataURL/wms:Format";
+        assertXpathEvaluatesTo("text/xml", xpath, doc);
+        
+        xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:DataURL/wms:OnlineResource/@xlink:type";
+        assertXpathEvaluatesTo("simple", xpath, doc);
+        
+        xpath = "//wms:Layer[wms:Name='" + layerName + "']/wms:DataURL/wms:OnlineResource/@xlink:href";
+        assertXpathEvaluatesTo("http://geoserver.org", xpath, doc);
+        
+        // Test transforming localhost to proxyBaseUrl
+        GeoServerInfo global = getGeoServer().getGlobal();
+        String proxyBaseUrl = global.getSettings().getProxyBaseUrl();
+        mdlink.setContent("/metadata");
+        getCatalog().save(resource);
+        
+        doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo(proxyBaseUrl + "/metadata", xpath, doc);
+        
+        // Test KVP in URL
+        String query = "key=value";
+        mdlink.setContent("/metadata?" + query);
+        getCatalog().save(resource);
+        
+        doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo(proxyBaseUrl + "/metadata?" + query, xpath, doc);
+
+        mdlink.setContent("http://localhost/metadata?" + query);
+        getCatalog().save(resource);
+        
+        doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo("http://localhost/metadata?" + query, xpath, doc);
+        
+    }
+    
+    // [GEOS-6312] OpenLayers output format is not listed in WMS 1.3 capabilities document
+    @Test
+    public void testOpenlayersFormat() throws Exception {
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo("1", "count(//wms:GetMap[wms:Format = '" + OpenLayersMapOutputFormat.MIME_TYPE + "'])", doc);
+    }
+
+    @Test
+    public void testStyleWorkspaceQualified() throws Exception {
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+
+        // check the style name got prefixed too
+        assertXpathEvaluatesTo("cite:Lakes",
+                "//wms:Layer[wms:Name='cite:Lakes']/wms:Style[1]/wms:Name", doc);
+    }
+
 }

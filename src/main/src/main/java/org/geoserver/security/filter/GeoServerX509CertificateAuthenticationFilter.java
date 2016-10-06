@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -20,7 +21,7 @@ import org.springframework.security.web.authentication.preauth.x509.X509Principa
  * @author mcr
  *
  */
-public class GeoServerX509CertificateAuthenticationFilter extends GeoServerPreAuthenticatedUserNameFilter {
+public class GeoServerX509CertificateAuthenticationFilter extends GeoServerJ2eeBaseAuthenticationFilter {
     
     private X509PrincipalExtractor principalExtractor;
 

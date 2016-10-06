@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -44,7 +45,7 @@ import org.restlet.resource.OutputRepresentation;
  * <p>
  * This app hook adapts the incoming request into a WSGI request requiring the app script to 
  * implement a WSGI interface via a function named "app". See 
- * {@linkplain http://en.wikipedia.org/wiki/Web_Server_Gateway_Interface} for more details about 
+ * <a href="http://en.wikipedia.org/wiki/Web_Server_Gateway_Interface">web service gateway interface</a> for more details about 
  * WSGI.
  * </p>
  * 
@@ -235,7 +236,7 @@ public class PyAppHook extends AppHook {
      *   based on CGI (or something similar).
      * </pre>
      * @param request
-     * @return
+     *
      * @throws IOException 
      */
     PyObject createEnviron(Request request) throws IOException {

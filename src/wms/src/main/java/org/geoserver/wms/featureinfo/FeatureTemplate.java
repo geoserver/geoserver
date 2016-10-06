@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -77,17 +78,35 @@ public class FeatureTemplate {
     }
     
     /**
+     * The pattern used by DATETIME_FORMAT
+     */
+    public static String DATE_FORMAT_PATTERN = "MM/dd/yy";
+    
+    /**
      * Default date format produced by templates
      */
-    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yy");
+    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+    
+    
+    /**
+     * The pattern used by DATETIME_FORMAT
+     */
+    public static String DATETIME_FORMAT_PATTERN = "MM/dd/yy HH:mm:ss";
+    
     /**
      * Default datetime format produced by templates
      */
-    public static SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
+    public static SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat(DATETIME_FORMAT_PATTERN);
+
+    /**
+     * The pattern used by DATETIME_FORMAT
+     */
+    public static String TIME_FORMAT_PATTERN = "HH:mm:ss";
+    
     /**
      * Default time format produced by templates
      */
-    public static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+    public static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat();
     
     /**
      * Template cache used to avoid paying the cost of template lookup for each feature
@@ -118,6 +137,26 @@ public class FeatureTemplate {
     public void title(SimpleFeature feature, OutputStream output)
         throws IOException {
         title(feature, new OutputStreamWriter(output, Charset.forName("UTF-8")));
+    }
+
+    /**
+     * Executes the link template for a feature writing the results to an
+     * output stream.
+     * <p>
+     * This method is convenience for:
+     * <code>
+     * link( feature, new OutputStreamWriter( output ) );
+     * </code>
+     * </p>
+     *
+     * @param feature The feature to execute the template against.
+     * @param output The output to write the result of the template to.
+     *
+     * @throws IOException Any errors that occur during execution of the template.
+     */
+    public void link(SimpleFeature feature, OutputStream output)
+        throws IOException {
+        link(feature, new OutputStreamWriter(output, Charset.forName("UTF-8")));
     }
 
     /**
@@ -154,6 +193,19 @@ public class FeatureTemplate {
     }
 
     /**
+     * Executes the link template for a feature writing the results to a
+     * writer.
+     *
+     * @param feature The feature to execute the template against.
+     * @param writer The writer to write the template output to.
+     *
+     * @throws IOException Any errors that occur during execution of the template.
+     */
+    public void link(SimpleFeature feature, Writer writer) throws IOException {
+        execute(feature, feature.getFeatureType(), writer, "link.ftl",null);
+    }
+
+    /**
      * Executes the description template for a feature writing the results to a
      * writer.
      *
@@ -178,6 +230,21 @@ public class FeatureTemplate {
     public String title(SimpleFeature feature) throws IOException {
         caw.reset();
         title(feature, caw);
+
+        return caw.toString();
+    }
+
+    /**
+     * Executes the link template for a feature returning the result as a
+     * string.
+     *
+     * @param feature The feature to execute the template against.
+     *
+     * @throws IOException Any errors that occur during execution of the template.
+     */
+    public String link(SimpleFeature feature) throws IOException {
+        caw.reset();
+        link(feature, caw);
 
         return caw.toString();
     }
@@ -307,7 +374,7 @@ public class FeatureTemplate {
      * @param featureType
      * @param template
      * @param lookup
-     * @return
+     *
      * @throws IOException 
      */
     public boolean isTemplateEmpty(SimpleFeatureType featureType, String template,

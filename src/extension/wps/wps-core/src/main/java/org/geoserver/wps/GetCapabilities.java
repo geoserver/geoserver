@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -141,7 +142,8 @@ public class GetCapabilities {
         caps.setProcessOfferings(po);
 
         // gather the process list
-        for (ProcessFactory pf : GeoServerProcessors.getProcessFactories()) {
+        Set<ProcessFactory> pfs = GeoServerProcessors.getProcessFactories();
+        for (ProcessFactory pf : pfs) {
             for (Name name : pf.getNames()) {
                 ProcessBriefType p = wpsf.createProcessBriefType();
                 p.setProcessVersion(pf.getVersion(name));

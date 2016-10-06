@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,6 +8,7 @@ package org.geoserver.catalog.rest;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -27,7 +29,6 @@ public class LayerResource extends AbstractCatalogResource {
     public LayerResource(Context context, Request request, Response response,
          Catalog catalog) {
         super(context, request, response, LayerInfo.class, catalog);
-        
     }
     
     @Override
@@ -99,13 +100,25 @@ public class LayerResource extends AbstractCatalogResource {
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setCallback(new XStreamPersister.Callback() {
             @Override
+            protected CatalogInfo getCatalogObject() {
+                String l = getAttribute( "layer" );
+                if (l == null) {
+                    return null;
+                }
+                return catalog.getLayerByName(l);
+            }
+            @Override
             protected void postEncodeReference(Object obj, String ref, String prefix, 
                     HierarchicalStreamWriter writer, MarshallingContext context) {
                 if ( obj instanceof StyleInfo ) {
                     StyleInfo style = (StyleInfo) obj;
                     StringBuffer link = new StringBuffer();
                     if (style.getWorkspace() != null) {
-                        link.append("/workspaces/").append(encode(style.getWorkspace().getName()));
+                        String wsName = style.getWorkspace().getName();
+                        writer.startNode("workspace");
+                        writer.setValue(wsName);
+                        writer.endNode();
+                        link.append("/workspaces/").append(encode(wsName));
                     }
                     link.append("/styles/").append(encode(style.getName()));
                     encodeLink(link.toString(), writer);

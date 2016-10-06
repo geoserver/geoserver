@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -38,6 +39,7 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.json.JSONType;
+import org.geoserver.wms.map.RenderedImageMap;
 import org.geotools.util.Version;
 
 /**
@@ -154,21 +156,34 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
                 // use default
                 handleXmlException(exception, request);
             }
+        } else if (isPartialMapExceptionType(exceptions)) {
+            try {
+                format = (String) request.getKvp().get("FORMAT");
+                if (exception instanceof WMSPartialMapException && FORMATS.contains(format)) {
+                    handlePartialMapException(exception, request, format);
+                } else {
+                    handleXmlException(exception, request);
+                }
+            } catch (Exception e) {
+                // may have invalid exception type (not WMSServiceException)
+                // use default
+                handleXmlException(exception, request);
+            }
         } else {
         	// use default
             handleXmlException(exception, request);
         }
     }
     
-    private boolean isImageExceptionType(String exceptions) {
+    public static boolean isImageExceptionType(String exceptions) {
         return "application/vnd.ogc.se_inimage".equals(exceptions) || "INIMAGE".equals(exceptions)
-                || "BLANK".equals(exceptions);
+                || "BLANK".equals(exceptions) || "application/vnd.ogc.se_blank".equals(exceptions);
     }
     
     private void handleImageException(ServiceException exception, Request request, final int width,
             final int height, final String format, String exceptionFormat, Color bgcolor, Boolean transparent) {
        
-        if ("BLANK".equals(exceptionFormat) && bgcolor == null && Boolean.TRUE.equals(transparent)) {
+        if (("BLANK".equals(exceptionFormat) || "application/vnd.ogc.se_blank".equals(exceptionFormat)) && bgcolor == null && Boolean.TRUE.equals(transparent)) {
             bgcolor = new Color(0, 0, 0, 0);
         }
         
@@ -183,7 +198,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
         g.setColor(bgcolor);
         g.fillRect(0, 0, img.getWidth(), img.getHeight());
         
-        if (!"BLANK".equals(exceptionFormat)) { //wms 1.3 only
+        if (!("BLANK".equals(exceptionFormat) || "application/vnd.ogc.se_blank".equals(exceptionFormat))) { //wms 1.3 only
             g.setColor(Color.BLACK);
 
             // draw the exception text (give it a good offset so that it can be read
@@ -202,6 +217,28 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
             }
             final ServletOutputStream os = response.getOutputStream();
             ImageIO.write(img, IMAGEIO_FORMATS.get(format), os);
+            os.flush();
+        } catch (IOException e) {
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:",
+                    e);
+        }
+    }
+    public static boolean isPartialMapExceptionType(String exceptions) {
+        return "application/vnd.gs.wms_partial".equals(exceptions) 
+                || "PARTIALMAP".equals(exceptions);
+    }
+    private void handlePartialMapException(ServiceException exception, Request request, String format) {
+        RenderedImageMap map = (RenderedImageMap) ((WMSPartialMapException)exception).getMap();
+        try {
+            final HttpServletResponse response = request.getHttpResponse();
+            if("image/png8".equals(format)) {
+                response.setContentType("image/png");
+            } else {
+                response.setContentType(format);
+            }
+            
+            final ServletOutputStream os = response.getOutputStream();
+            ImageIO.write(map.getImage(), IMAGEIO_FORMATS.get(format), os);
             os.flush();
         } catch (IOException e) {
             LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:",
@@ -276,7 +313,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
 
         // exception locator
         if ((exception.getLocator() != null) && !exception.getLocator().equals("")) {
-            sb.append(" locator=\"" + exception.getLocator() + "\"");
+            sb.append(" locator=\"" + ResponseUtils.encodeXML(exception.getLocator()) + "\"");
         }
 
         sb.append(">");

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmx="http://www.isotc211.org/2005/gmx" targetNamespace="http://www.isotc211.org/2005/gmx" elementFormDefault="qualified" version="2012-07-13">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>Geographic Metadata XML (GMX) Schema is a component of the XML Schema Implementation of Geographic Information Metadata documented in ISO/TS 19139:2007. GMX includes all the definitions of http://www.isotc211.org/2005/gmx namespace. The root document of this namespace is the file gmx.xsd. This uomItem.xsd schema implements the UML conceptual schema defined in 7.4.4.2 of ISO/TS 19139:2007. It contains the implementation of the UnitDefinition class.</xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd"/>
+	<xs:import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+	<xs:import namespace="http://www.isotc211.org/2005/gmd" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd"/>
+	<xs:include schemaLocation="gmx.xsd"/>
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- ================================== Classes ================================= -->
+	<!-- ........................................................................ -->
+	<!-- ........................................................................ -->
+	<xs:complexType name="UnitDefinition_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gml:UnitDefinition"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<!-- ........................................................................ -->
+	<xs:complexType name="BaseUnit_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gml:BaseUnit"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<!-- ........................................................................ -->
+	<xs:complexType name="DerivedUnit_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gml:DerivedUnit"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<!-- ........................................................................ -->
+	<xs:complexType name="ConventionalUnit_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gml:ConventionalUnit"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="ML_BaseUnit_Type">
+		<xs:complexContent>
+			<xs:extension base="gml:BaseUnitType">
+				<xs:sequence>
+					<xs:element name="alternativeExpression" type="gmx:UomAlternativeExpression_PropertyType" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="ML_BaseUnit" type="gmx:ML_BaseUnit_Type" substitutionGroup="gml:BaseUnit"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="ML_BaseUnit_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmx:ML_BaseUnit"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="ML_DerivedUnit_Type">
+		<xs:complexContent>
+			<xs:extension base="gml:DerivedUnitType">
+				<xs:sequence>
+					<xs:element name="alternativeExpression" type="gmx:UomAlternativeExpression_PropertyType" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="ML_DerivedUnit" type="gmx:ML_DerivedUnit_Type" substitutionGroup="gml:DerivedUnit"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="ML_DerivedUnit_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmx:ML_DerivedUnit"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="ML_ConventionalUnit_Type">
+		<xs:complexContent>
+			<xs:extension base="gml:ConventionalUnitType">
+				<xs:sequence>
+					<xs:element name="alternativeExpression" type="gmx:UomAlternativeExpression_PropertyType" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="ML_ConventionalUnit" type="gmx:ML_ConventionalUnit_Type" substitutionGroup="gml:ConventionalUnit"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="ML_ConventionalUnit_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmx:ML_ConventionalUnit"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="ML_UnitDefinition_Type">
+		<xs:complexContent>
+			<xs:extension base="gml:UnitDefinitionType">
+				<xs:sequence>
+					<xs:element name="alternativeExpression" type="gmx:UomAlternativeExpression_PropertyType" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="ML_UnitDefinition" type="gmx:ML_UnitDefinition_Type" substitutionGroup="gml:UnitDefinition"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="ML_UnitDefinition_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmx:ML_UnitDefinition"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- =========================================================================== -->
+	<!--===================== Alternative Expresssion type ===============================-->
+	<xs:complexType name="UomAlternativeExpression_Type">
+		<xs:annotation>
+			<xs:documentation>XML attributes contraints: - 1) Id is mandatory - 2) codeSpace (type xsd:anyURI) is mandatory</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gml:UnitDefinitionType">
+				<xs:sequence>
+					<xs:element name="locale" type="gmd:PT_Locale_PropertyType"/>
+				</xs:sequence>
+				<xs:attribute name="codeSpace" type="xs:anyURI" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="UomAlternativeExpression" type="gmx:UomAlternativeExpression_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="UomAlternativeExpression_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmx:UomAlternativeExpression"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- =========================================================================== -->
+	<!-- === End of file === -->
+</xs:schema>

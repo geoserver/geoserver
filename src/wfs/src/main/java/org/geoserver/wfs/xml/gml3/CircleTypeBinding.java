@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,6 +8,7 @@ package org.geoserver.wfs.xml.gml3;
 import javax.xml.namespace.QName;
 
 import org.geoserver.wfs.WFSException;
+import org.geotools.gml3.Circle;
 import org.geotools.gml3.GML;
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
@@ -34,8 +36,6 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
- * </p>
- *
  * @generated
  */
 public class CircleTypeBinding extends AbstractComplexBinding {
@@ -53,7 +53,7 @@ public class CircleTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     public Class getType() {
-        return null;
+        return Circle.class;
     }
 
     /**

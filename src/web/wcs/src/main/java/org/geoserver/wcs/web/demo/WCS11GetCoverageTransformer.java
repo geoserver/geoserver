@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -135,7 +136,7 @@ class WCS11GetCoverageTransformer extends TransformerBase {
          * Helper to build a set of attributes out of a list of key/value pairs
          * 
          * @param nameValues
-         * @return
+         *
          */
         AttributesImpl attributes(String... nameValues) {
             AttributesImpl atts = new AttributesImpl();

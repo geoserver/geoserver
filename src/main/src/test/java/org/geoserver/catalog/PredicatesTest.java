@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -89,7 +90,7 @@ public class PredicatesTest {
         vectorLayer.setEnabled(true);
         vectorLayer.setName("vectorLayer");
         vectorLayer.setId("vectorLayerId");
-        vectorLayer.setType(LayerInfo.Type.VECTOR);
+        vectorLayer.setType(PublishedType.VECTOR);
 
         defaultStyle = new StyleInfoImpl(null);
         defaultStyle.setName("default");
@@ -122,6 +123,11 @@ public class PredicatesTest {
 
         styles.add(style2);
         assertTrue(equal("styles", styles).evaluate(vectorLayer));
+    }
+
+    @Test
+    public void testPropertyNotEqualsSimple() {
+        assertTrue(Predicates.notEqual("id", "somethingElse").evaluate(ws));
     }
 
     @Test

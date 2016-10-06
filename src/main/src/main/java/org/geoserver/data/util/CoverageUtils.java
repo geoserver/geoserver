@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -130,9 +131,9 @@ public class CoverageUtils {
             }
 
             return (!parameters.isEmpty())? 
-            		(GeneralParameterValue[]) parameters.toArray(new GeneralParameterValue[parameters.size()]): null;
+            		(GeneralParameterValue[]) parameters.toArray(new GeneralParameterValue[parameters.size()]): new GeneralParameterValue[0];
         } else {
-            return null;
+            return new GeneralParameterValue[0];
         }
     }
 
@@ -193,7 +194,7 @@ public class CoverageUtils {
      * @param paramValues
      * @param key
      * @param param
-     * @return
+     *
      */
     public static Object getCvParamValue(final String key, ParameterValue param,
         final List paramValues, final int index) {
@@ -264,7 +265,7 @@ public class CoverageUtils {
      * @param params
      * @param key
      * @param param
-     * @return
+     *
      */
     public static Object getCvParamValue(final String key, ParameterValue param, final Map params) {
         Object value = null;
@@ -396,7 +397,7 @@ public class CoverageUtils {
      * @param readParameters The current set of reader parameters
      * @param value
      * @param parameterAliases
-     * @return
+     *
      */
     public static GeneralParameterValue[] mergeParameter(List<GeneralParameterDescriptor> parameterDescriptors, 
             GeneralParameterValue[] readParameters, Object value, String... parameterAliases) {

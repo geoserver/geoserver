@@ -1,12 +1,13 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.xml;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -19,8 +20,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.KeyStoreProvider;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
@@ -33,6 +35,7 @@ import org.geoserver.security.impl.Util;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.password.PasswordEncodingType;
 import org.geoserver.security.password.RandomPasswordProvider;
+import org.geoserver.util.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -46,7 +49,7 @@ public class XMLUserGroupService extends AbstractUserGroupService {
             
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
     protected DocumentBuilder builder;
-    protected File userFile;
+    protected Resource userResource;
     /**
      * Validate against schema on load/store,
      * default = true;
@@ -88,21 +91,24 @@ public class XMLUserGroupService extends AbstractUserGroupService {
         if (config instanceof XMLSecurityServiceConfig) {
             validatingXMLSchema =((XMLSecurityServiceConfig) config).isValidating();
             // copy schema file 
-            File xsdFile = new File(getConfigRoot(), XMLConstants.FILE_UR_SCHEMA);
-            if (xsdFile.exists()==false) {
-                FileUtils.copyURLToFile(getClass().getResource(XMLConstants.FILE_UR_SCHEMA), xsdFile);
-            }            
+            Resource xsdFile = getConfigRoot().get(XMLConstants.FILE_UR_SCHEMA);
+            if (xsdFile.getType() == Type.UNDEFINED) {
+                IOUtils.copy(getClass().getResourceAsStream(XMLConstants.FILE_UR_SCHEMA), xsdFile.out());
+            }
 
         }
         
         if (config instanceof FileBasedSecurityServiceConfig) {
             String fileName = ((FileBasedSecurityServiceConfig) config).getFileName();
-            userFile = new File(fileName);
-            if (userFile.isAbsolute()==false) {
-                userFile= new File(getConfigRoot(), fileName);
-            } 
-            if (userFile.exists()==false) {
-                FileUtils.copyURLToFile(getClass().getResource("usersTemplate.xml"), userFile);
+            File userFile = new File(fileName);
+            if (userFile.isAbsolute()) {
+                userResource = Files.asResource(userFile);
+            } else {
+                userResource = getConfigRoot().get(fileName);
+            }
+            
+            if (userResource.getType() == Type.UNDEFINED) {
+                IOUtils.copy(getClass().getResourceAsStream("usersTemplate.xml"), userResource.out());                
             }
         } else {
             throw new IOException("Cannot initialize from " +config.getClass().getName());
@@ -141,15 +147,11 @@ public class XMLUserGroupService extends AbstractUserGroupService {
         try {
             
             Document doc=null;
-            FileInputStream is = null;
-            try {
-                is = new FileInputStream(userFile);
-				doc = builder.parse(is);
+            try (InputStream is = userResource.in()) {
+                doc = builder.parse(is);
             } catch (SAXException e) {
                 throw new IOException(e);
-            } finally {
-            	IOUtils.closeQuietly(is);
-            }
+            } 
             
             if (isValidatingXMLSchema()) {
                 XMLValidator.Singleton.validateUserGroupRegistry(doc);

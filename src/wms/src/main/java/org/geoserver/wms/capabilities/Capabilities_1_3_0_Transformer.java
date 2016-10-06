@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,11 +8,13 @@ package org.geoserver.wms.capabilities;
 import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.asc;
 import static org.geoserver.catalog.Predicates.equal;
+import static org.geoserver.ows.util.ResponseUtils.appendPath;
 import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,24 +37,27 @@ import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilities;
@@ -66,6 +72,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
+import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
@@ -74,6 +81,7 @@ import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
+import org.opengis.util.InternationalString;
 import org.springframework.util.Assert;
 import org.vfny.geoserver.util.ResponseUtils;
 import org.xml.sax.Attributes;
@@ -82,6 +90,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
+import org.geoserver.wfs.json.JSONType;
 
 /**
  * Geotools xml framework based encoder for a Capabilities WMS 1.3.0 document.
@@ -100,7 +109,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
     public static final String WMS_CAPS_MIME = "text/xml";
 
     /** the WMS supported exception formats */
-    static final String[] EXCEPTION_FORMATS = { "XML", "INIMAGE", "BLANK" };
+    static final String[] EXCEPTION_FORMATS = { "XML", "INIMAGE", "BLANK", "JSON" };
 
     /**
      * The geoserver base URL to append it the schemas/wms/1.3.0/exceptions_1_3_0.xsd schema
@@ -182,6 +191,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         DimensionHelper dimensionHelper;
 
         private boolean skipping;
+        
+        private LegendSample legendSample;
 
         /**
          * Creates a new CapabilitiesTranslator object.
@@ -214,6 +225,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     Capabilities_1_3_0_Translator.this.element(element, content);
                 }
             };
+            legendSample = GeoServerExtensions.bean(LegendSample.class);
             this.skipping = 
                 ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
                     wmsConfig.getGeoServer().getGlobal().getResourceErrorHandling());
@@ -333,8 +345,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             ContactInfo contact = geoServer.getSettings().getContact();
             handleContactInfo(contact);
 
-            element("Fees", serviceInfo.getFees());
-            element("AccessConstraints", serviceInfo.getAccessConstraints());
+            String fees = serviceInfo.getFees();
+            element("Fees", fees == null ? "none" : fees);
+            String constraints = serviceInfo.getAccessConstraints();
+            element("AccessConstraints", constraints == null ? "none" : constraints);
 
             // TODO: LayerLimit, MaxWidth and MaxHeight have no equivalence in GeoServer config so
             // far
@@ -419,6 +433,31 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         /**
+         * Turns the data URL list to XML
+         * 
+         * @param keywords
+         */
+        private void handleDataList(Collection<DataLinkInfo> dataURLs) {
+            if (dataURLs == null) {
+                return;
+            }
+
+            for (DataLinkInfo link : dataURLs) {
+
+                start("DataURL");
+
+                element("Format", link.getType());
+
+                String content = ResponseUtils.proxifyDataLink(link, request.getBaseUrl());
+
+                AttributesImpl orAtts = attributes("xlink:type", "simple", "xlink:href", content);
+                element("OnlineResource", null, orAtts);
+
+                end("DataURL");
+            }
+        }
+
+        /**
          * Encodes the capabilities metadata section of a WMS capabilities document
          */
         private void handleCapability() {
@@ -456,7 +495,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 } else {
                     if (LOGGER.isLoggable(Level.WARNING)) {
                         LOGGER.warning("Map output format "
-                                + format.getMimeType()
+                                + format.getMimeType() + " (" + format.getClass() + ")"
                                 + " does "
                                 + "not include mime type in output format names. Will be excluded from"
                                 + " capabilities document.");
@@ -481,7 +520,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             start("GetFeatureInfo");
 
-            for (String format : wmsConfig.getAvailableFeatureInfoFormats()) {
+            for (String format : wmsConfig.getAllowedFeatureInfoFormats()) {
                 element("Format", format);
             }
 
@@ -554,7 +593,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             for (String exceptionFormat : EXCEPTION_FORMATS) {
                 element("Format", exceptionFormat);
             }
-
+            if (JSONType.isJsonpEnabled()) {
+                element("Format", "JSONP");
+            }
             end("Exception");
         }
 
@@ -636,6 +677,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             if (srsList != null) {
                 srs.addAll(srsList);
             }
+            for (ExtendedCapabilitiesProvider provider : extCapsProviders) {
+                provider.customizeRootCrsList(srs);
+            }
             handleRootCrsList(srs);
 
             CloseableIterator<LayerInfo> layers;
@@ -664,13 +708,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }            
             try {
                 layersAlreadyProcessed = handleLayerGroups(layerGroups);
-            } catch (FactoryException e) {
+            } catch (Exception e) {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
-            } catch (TransformException e) {
-                throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
-                        + e.getMessage(), e);
-            }finally{
+            } finally {
                 layerGroups.close();
             }            
             
@@ -842,7 +883,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 commit();
             } catch (Exception e) {
                 // report what layer we failed on to help the admin locate and fix it
+                
                 if (skipping) {
+                    LOGGER.log(Level.WARNING,
+                            "Error writing metadata; skipping layer: " + layer.getName(), e);
                     reset();
                 } else { 
                     throw new ServiceException(
@@ -860,11 +904,11 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
 
             boolean wmsExposable = false;
-            if (layer.getType() == Type.RASTER || layer.getType() == Type.WMS) {
+            if (layer.getType() == PublishedType.RASTER || layer.getType() == PublishedType.WMS) {
                 wmsExposable = true;
             } else {
                 try {
-                    wmsExposable = layer.getType() == Type.VECTOR
+                    wmsExposable = layer.getType() == PublishedType.VECTOR
                             && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
                                     .getGeometryDescriptor() != null;
                 } catch (Exception e) {
@@ -876,10 +920,14 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         /**
+         * @throws IOException 
+         * @throws RuntimeException 
          */
-        protected void handleLayer(final LayerInfo layer) {
+        protected void handleLayer(final LayerInfo layer) throws IOException {
             boolean queryable = wmsConfig.isQueryable(layer);
             AttributesImpl qatts = attributes("queryable", queryable ? "1" : "0");
+            boolean opaque = wmsConfig.isOpaque(layer);
+            qatts.addAttribute("", "opaque", "opaque", "", opaque ? "1" : "0");
             Integer cascadedHopCount = wmsConfig.getCascadedHopCount(layer);
             if (cascadedHopCount != null) {
                 qatts.addAttribute("", "cascaded", "cascaded", "", String.valueOf(cascadedHopCount));
@@ -915,9 +963,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
 
             // handle dimensions
-            if (layer.getType() == Type.VECTOR) {
+            if (layer.getType() == PublishedType.VECTOR) {
                 dimensionHelper.handleVectorLayerDimensions(layer);
-            } else if (layer.getType() == Type.RASTER) {
+            } else if (layer.getType() == PublishedType.RASTER) {
                 dimensionHelper.handleRasterLayerDimensions(layer);
             }
 
@@ -933,7 +981,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             // handle metadata URLs
             handleMetadataList(layer.getResource().getMetadataLinks());
 
-            // TODO: DataURL
+            // handle DataURLs
+            handleDataList(layer.getResource().getDataLinks());
             // TODO: FeatureListURL
             handleStyles(layer);
             
@@ -952,26 +1001,30 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * 
          * @param layer
          */
-		private void handleScaleDenominator(final LayerInfo layer) {
+        private void handleScaleDenominator(final PublishedInfo layer) {
 
-			try {
-				final String minScaleDenominator = "MinScaleDenominator";
-				final String maxScaleDenominator = "MaxScaleDenominator";
-				Map<String, Double> denominators = CapabilityUtil.searchMinMaxScaleDenominator(
-														minScaleDenominator, maxScaleDenominator, layer);
-				
-				if(denominators.get(minScaleDenominator) != 0.0){
-					element(minScaleDenominator, String.valueOf(denominators.get(minScaleDenominator)) );
-				}
-				
-				if(denominators.get(maxScaleDenominator) != Double.POSITIVE_INFINITY){
-					element(maxScaleDenominator, String.valueOf(denominators.get(maxScaleDenominator)) );
-				}
+            try {
+                NumberRange<Double> scaleDenominators = CapabilityUtil
+                        .searchMinMaxScaleDenominator(layer);
 
-			} catch (IOException e) {
-				LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
-			}
-		}
+                // allow extension points to customize
+                for (ExtendedCapabilitiesProvider provider : extCapsProviders) {
+                    scaleDenominators = provider
+                            .overrideScaleDenominators(layer, scaleDenominators);
+                }
+
+                if (scaleDenominators.getMinimum() != 0.0) {
+                    element("MinScaleDenominator", String.valueOf(scaleDenominators.getMinimum()));
+                }
+
+                if (scaleDenominators.getMaximum() != Double.POSITIVE_INFINITY) {
+                    element("MaxScaleDenominator", String.valueOf(scaleDenominators.getMaximum()));
+                }
+
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+            }
+        }
 
 		private void handleStyles(final LayerInfo layer) {
             if (layer.getResource() instanceof WMSLayerInfo) {
@@ -992,10 +1045,12 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                element("Name", defaultStyle.getName());
-                element("Title", ftStyle.getTitle());
-                element("Abstract", ftStyle.getAbstract());
-                handleLegendURL(layer.getName(), layer.getLegend(), null);
+                element("Name", defaultStyle.prefixedName());
+                if (ftStyle.getDescription() != null) {
+                    element("Title", ftStyle.getDescription().getTitle());
+                    element("Abstract", ftStyle.getDescription().getAbstract());
+                }
+                handleLegendURL(layer, defaultStyle.getLegend(), null, defaultStyle);
                 end("Style");
 
                 Set<StyleInfo> styles = layer.getStyles();
@@ -1008,18 +1063,26 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                             throw new RuntimeException(e);
                         }
                         start("Style");
-                        element("Name", styleInfo.getName());
-                        element("Title", ftStyle.getTitle());
-                        element("Abstract", ftStyle.getAbstract());
-                        handleLegendURL(layer.getName(), null, styleInfo);
+                        element("Name", styleInfo.prefixedName());
+                        if (ftStyle.getDescription() != null) {
+                            element("Title", ftStyle.getDescription().getTitle());
+                            element("Abstract", ftStyle.getDescription().getAbstract());
+                        }
+                        handleLegendURL(layer, styleInfo.getLegend(), styleInfo, styleInfo);
                         end("Style");
                     }
                 }
             }
         }
+
+        private void element(String element, InternationalString is) {
+            if (is != null) {
+                element(element, is.toString());
+            }
+        }
         
         protected Set<LayerInfo> handleLayerGroups(Iterator<LayerGroupInfo> layerGroups) throws FactoryException,
-                TransformException {
+                TransformException, IOException {
             Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
             
             if (layerGroups == null) {
@@ -1029,7 +1092,26 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             List<LayerGroupInfo> topLevelGroups = filterNestedGroups(layerGroups);
 
             for (LayerGroupInfo group : topLevelGroups) {
-                handleLayerGroup(group, layersAlreadyProcessed);
+                try {
+                    mark();
+                    handleLayerGroup(group, layersAlreadyProcessed);
+                    commit();
+                } catch (Exception e) {
+                    // report what layer we failed on to help the admin locate and fix it
+                    if (skipping) {
+                        if(group != null) {
+                            LOGGER.log(Level.WARNING, "Skipping layer group " + group.getName() + " as its caps document element failed to generate", e);
+                        } else {
+                            LOGGER.log(Level.WARNING, "Skipping a null layer group during caps during caps document generation", e);
+                        }
+
+                        reset();
+                    } else { 
+                        throw new ServiceException(
+                            "Error occurred trying to write out metadata for layer group: " + 
+                            group.getName(), e);
+                    }
+                }
             }
             
             return layersAlreadyProcessed;
@@ -1040,7 +1122,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          * other layer groups
          * 
          * @param allGroups
-         * @return
+         *
          */
         private List<LayerGroupInfo> filterNestedGroups(Iterator<LayerGroupInfo> iterator) {
             List<LayerGroupInfo> allGroups = new ArrayList<LayerGroupInfo>();
@@ -1061,7 +1143,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         
 
 
-        protected void handleLayerGroup(LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) throws TransformException, FactoryException {
+        protected void handleLayerGroup(LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) throws TransformException, FactoryException, IOException {
             String layerName = layerGroup.prefixedName();
 
             AttributesImpl qatts = new AttributesImpl();
@@ -1101,14 +1183,17 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 LayerInfo rootLayer = layerGroup.getRootLayer();
                 
                 // handle dimensions
-                if (rootLayer.getType() == Type.VECTOR) {
+                if (rootLayer.getType() == PublishedType.VECTOR) {
                     dimensionHelper.handleVectorLayerDimensions(rootLayer);
-                } else if (rootLayer.getType() == Type.RASTER) {
+                } else if (rootLayer.getType() == PublishedType.RASTER) {
                     dimensionHelper.handleRasterLayerDimensions(rootLayer);
                 }
                 
                 layersAlreadyProcessed.add(layerGroup.getRootLayer());
-            }                
+            }       
+            
+            // handle data attribution
+            handleAttribution(layerGroup);
             
             // handle AuthorityURL
             handleAuthorityURL(layerGroup.getAuthorityURLs());
@@ -1116,15 +1201,19 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             // handle identifiers
             handleLayerIdentifiers(layerGroup.getIdentifiers());
             
-            // Aggregated metadata links (see GEOS-4500)
-            Set<MetadataLinkInfo> aggregatedLinks = new HashSet<MetadataLinkInfo>();
-            for (LayerInfo layer : Iterables.filter(layerGroup.getLayers(), LayerInfo.class)) {
-                List<MetadataLinkInfo> metadataLinks = layer.getResource().getMetadataLinks();
-                if (metadataLinks != null) {
-                    aggregatedLinks.addAll(metadataLinks);
+            Collection<MetadataLinkInfo> metadataLinks = layerGroup.getMetadataLinks();
+            if (metadataLinks == null || metadataLinks.isEmpty()) {
+                //Aggregated metadata links (see GEOS-4500)               
+                Set<MetadataLinkInfo> aggregatedLinks = new HashSet<MetadataLinkInfo>();
+                for (LayerInfo layer : Iterables.filter(layerGroup.getLayers(), LayerInfo.class)) {
+                    List<MetadataLinkInfo> metadataLinksLayer = layer.getResource().getMetadataLinks();
+                    if (metadataLinksLayer != null) {
+                        aggregatedLinks.addAll(metadataLinksLayer);
+                    }
                 }
+                metadataLinks = aggregatedLinks;
             }
-            handleMetadataList(aggregatedLinks);
+            handleMetadataList(metadataLinks);
 
             // handle children layers and groups
             if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
@@ -1144,53 +1233,57 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             // the layer style is not provided since the group does just have
             // one possibility, the lack of styles that will make it use
             // the default ones for each layer
+            
+            handleScaleDenominator(layerGroup);
 
             end("Layer");            
         }
         
-        protected void handleAttribution(LayerInfo layer) {
+        protected void handleAttribution(PublishedInfo layer) {
             AttributionInfo attribution = layer.getAttribution();
 
-            String title = attribution.getTitle();
-            String url = attribution.getHref();
-            String logoURL = attribution.getLogoURL();
-            String logoType = attribution.getLogoType();
-            int logoWidth = attribution.getLogoWidth();
-            int logoHeight = attribution.getLogoHeight();
-
-            boolean titleGood = (title != null), urlGood = (url != null), logoGood = (logoURL != null
-                    && logoType != null && logoWidth > 0 && logoHeight > 0);
-
-            if (titleGood || urlGood || logoGood) {
-                start("Attribution");
-                if (titleGood)
-                    element("Title", title);
-
-                if (urlGood) {
-                    AttributesImpl urlAttributes = new AttributesImpl();
-                    urlAttributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
-                    urlAttributes.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
-                    urlAttributes.addAttribute(XLINK_NS, "href", "xlink:href", "", url);
-                    element("OnlineResource", null, urlAttributes);
+            if (attribution != null) {
+                String title = attribution.getTitle();
+                String url = attribution.getHref();
+                String logoURL = attribution.getLogoURL();
+                String logoType = attribution.getLogoType();
+                int logoWidth = attribution.getLogoWidth();
+                int logoHeight = attribution.getLogoHeight();
+    
+                boolean titleGood = (title != null), urlGood = (url != null), logoGood = (logoURL != null
+                        && logoType != null && logoWidth > 0 && logoHeight > 0);
+    
+                if (titleGood || urlGood || logoGood) {
+                    start("Attribution");
+                    if (titleGood)
+                        element("Title", title);
+    
+                    if (urlGood) {
+                        AttributesImpl urlAttributes = new AttributesImpl();
+                        urlAttributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
+                        urlAttributes.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
+                        urlAttributes.addAttribute(XLINK_NS, "href", "xlink:href", "", url);
+                        element("OnlineResource", null, urlAttributes);
+                    }
+    
+                    if (logoGood) {
+                        AttributesImpl logoAttributes = new AttributesImpl();
+                        logoAttributes.addAttribute("", "", "height", "", "" + logoHeight);
+                        logoAttributes.addAttribute("", "", "width", "", "" + logoWidth);
+                        start("LogoURL", logoAttributes);
+                        element("Format", logoType);
+    
+                        AttributesImpl urlAttributes = new AttributesImpl();
+                        urlAttributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
+                        urlAttributes.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
+                        urlAttributes.addAttribute(XLINK_NS, "href", "xlink:href", "", logoURL);
+    
+                        element("OnlineResource", null, urlAttributes);
+                        end("LogoURL");
+                    }
+    
+                    end("Attribution");
                 }
-
-                if (logoGood) {
-                    AttributesImpl logoAttributes = new AttributesImpl();
-                    logoAttributes.addAttribute("", "", "height", "", "" + logoHeight);
-                    logoAttributes.addAttribute("", "", "width", "", "" + logoWidth);
-                    start("LogoURL", logoAttributes);
-                    element("Format", logoType);
-
-                    AttributesImpl urlAttributes = new AttributesImpl();
-                    urlAttributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
-                    urlAttributes.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
-                    urlAttributes.addAttribute(XLINK_NS, "href", "xlink:href", "", logoURL);
-
-                    element("OnlineResource", null, urlAttributes);
-                    end("LogoURL");
-                }
-
-                end("Attribution");
             }
         }
 
@@ -1210,9 +1303,12 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          *            GetLegendGraphic operation will be automatically created.
          * @param style
          *            The styel for the layer.
+         * @param sampleStyle
+         *            The styel to use for sample sizing.
          * 
          */
-        protected void handleLegendURL(String layerName, LegendInfo legend, StyleInfo style) {
+        protected void handleLegendURL(LayerInfo layer, LegendInfo legend,
+                StyleInfo style, StyleInfo sampleStyle) {
             if (legend != null) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.fine("using user supplied legend URL");
@@ -1228,12 +1324,38 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 attrs.clear();
                 attrs.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
                 attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
-                attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legend.getOnlineResource());
-
+                WorkspaceInfo styleWs = sampleStyle.getWorkspace();
+                String legendUrl;
+                if ( styleWs != null){
+                    legendUrl = buildURL(request.getBaseUrl(),
+                            appendPath("styles", styleWs.getName() ,legend.getOnlineResource()), null, URLType.RESOURCE);
+                } else {
+                    legendUrl = buildURL(request.getBaseUrl(),
+                            appendPath("styles", legend.getOnlineResource()), null, URLType.RESOURCE);
+                }
+                attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendUrl);
                 element("OnlineResource", null, attrs);
-
+                
                 end("LegendURL");
             } else {
+                int legendWidth = GetLegendGraphicRequest.DEFAULT_WIDTH;
+                int legendHeight = GetLegendGraphicRequest.DEFAULT_HEIGHT;
+                
+                if(sampleStyle != null) {
+                    // delegate to legendSample the calculus of proper legend size for
+                    // the given style
+                    Dimension dimension;
+                    try {
+                        dimension = legendSample.getLegendURLSize(sampleStyle);
+                        if(dimension != null) {
+                            legendWidth = (int)dimension.getWidth();
+                            legendHeight = (int)dimension.getHeight();
+                        }
+                    } catch (Exception e) {
+                        LOGGER.log(Level.WARNING, "Error getting LegendURL dimensions from sample", e);
+                    }
+                }
+                
                 String defaultFormat = GetLegendGraphicRequest.DEFAULT_FORMAT;
 
                 if (null == wmsConfig.getLegendGraphicOutputFormat(defaultFormat)) {
@@ -1253,33 +1375,17 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
                 AttributesImpl attrs = new AttributesImpl();
                 attrs.addAttribute("", "width", "width", "",
-                        String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH));
+                        String.valueOf(legendWidth));
 
-                // DJB: problem here is that we do not know the size of the
-                // legend apriori - we need
-                // to make one and find its height. Not the best way, but it
-                // would work quite well.
-                // This was advertising a 20*20 icon, but actually producing
-                // ones of a different size.
-                // An alternative is to just scale the resulting icon to what
-                // the server requested, but this isnt
-                // the nicest thing since warped images dont look nice. The
-                // client should do the warping.
-
-                // however, to actually estimate the size is a bit difficult.
-                // I'm going to do the scaling
-                // so it obeys the what the request says. For people with a
-                // problem with that should consider
-                // changing the default size here so that the request is for the
-                // correct size.
                 attrs.addAttribute("", "height", "height", "",
-                        String.valueOf(GetLegendGraphicRequest.DEFAULT_HEIGHT));
+                        String.valueOf(legendHeight));
 
                 start("LegendURL", attrs);
 
                 element("Format", defaultFormat);
                 attrs.clear();
 
+                String layerName = layer.prefixedName();
                 Map<String, String> params = params("service", "WMS", "request",
                         "GetLegendGraphic", "format", defaultFormat, "width",
                         String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH), "height",

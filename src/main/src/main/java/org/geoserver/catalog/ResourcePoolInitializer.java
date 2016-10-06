@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,6 +11,8 @@ import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerInitializer;
+import org.geoserver.config.GeoServerReinitializer;
+import org.geoserver.util.EntityResolverProvider;
 
 /**
  * Initializes parameters of the {@link ResourcePool} class from configuration.
@@ -17,10 +20,15 @@ import org.geoserver.config.GeoServerInitializer;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class ResourcePoolInitializer implements GeoServerInitializer {
+public class ResourcePoolInitializer implements GeoServerReinitializer {
 
     GeoServer gs;
+    EntityResolverProvider resolverProvider;
     
+    public ResourcePoolInitializer(EntityResolverProvider resolverProvider) {
+        this.resolverProvider = resolverProvider;
+    }
+
     public void initialize(GeoServer geoServer) throws Exception {
         this.gs = geoServer;
         
@@ -42,6 +50,8 @@ public class ResourcePoolInitializer implements GeoServerInitializer {
                 gs.getCatalog().getResourcePool().setCoverageExecutor(global.getCoverageAccess().getThreadPoolExecutor());
             }
         });
+        
+        gs.getCatalog().getResourcePool().setEntityResolverProvider(resolverProvider);
     }
     
 }

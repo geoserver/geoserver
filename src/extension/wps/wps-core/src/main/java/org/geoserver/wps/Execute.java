@@ -1,13 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.wps;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.opengis.wps10.ExecuteResponseType;
@@ -15,7 +13,6 @@ import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.OutputDefinitionType;
 import net.opengis.wps10.ResponseDocumentType;
 
-import org.geoserver.wps.executor.ExecuteResponseBuilder;
 import org.geoserver.wps.executor.ExecuteRequest;
 import org.geoserver.wps.executor.WPSExecutionManager;
 import org.geotools.util.logging.Logging;
@@ -66,21 +63,8 @@ public class Execute {
 
         ExecuteRequest request = new ExecuteRequest(execute);
 
-        // TODO: get the startup time from the execution status
-        ExecuteResponseBuilder builder = new ExecuteResponseBuilder(execute, context, new Date());
-        String executionId = executionManager.submit(request, !request.isAsynchronous());
-        builder.setExecutionId(executionId);
-        if (!request.isAsynchronous()) {
-            try {
-                Map<String, Object> outputs = executionManager.getOutput(executionId, -1);
-                builder.setOutputs(outputs);
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Process execution failed", e);
-                builder.setException(e);
-            }
-        }
-
-        return builder.build();
+        ExecuteResponseType response = executionManager.submit(request, !request.isAsynchronous());
+        return response;
     }
 
 }

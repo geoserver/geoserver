@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -193,7 +194,7 @@ public interface Response {
      * In particular, a WMS might wish to have some external caching information added
      * to the HTTP response, so that caches can hang onto this map for a while and ligten
      * the load on geoserver.
-     * @return
+     *
      */
     public HashMap<String, String> getResponseHeaders();
 

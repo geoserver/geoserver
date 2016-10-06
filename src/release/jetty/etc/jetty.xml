@@ -1,183 +1,132 @@
 <?xml version="1.0"?>
-<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd">
 
 <!-- =============================================================== -->
-<!-- Configure the Jetty Server                                      -->
+<!-- Documentation of this file format can be found at:              -->
+<!-- http://wiki.eclipse.org/Jetty/Reference/jetty.xml_syntax        -->
+<!--                                                                 -->
+<!-- Additional configuration files are available in $JETTY_HOME/etc -->
+<!-- and can be mixed in. See start.ini file for the default         -->
+<!-- configuration files.                                            -->
+<!--                                                                 -->
+<!-- For a description of the configuration mechanism, see the       -->
+<!-- output of:                                                      -->
+<!--   java -jar start.jar -?                                        -->
 <!-- =============================================================== -->
-<Configure id="Server" class="org.mortbay.jetty.Server">
+
+<!-- =============================================================== -->
+<!-- Configure a Jetty Server instance with an ID "Server"           -->
+<!-- Other configuration files may also configure the "Server"       -->
+<!-- ID, in which case they are adding configuration to the same     -->
+<!-- instance.  If other configuration have a different ID, they     -->
+<!-- will create and configure another instance of Jetty.            -->
+<!-- Consult the javadoc of o.e.j.server.Server for all              -->
+<!-- configuration that may be set here.                             -->
+<!-- =============================================================== -->
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
 
     <!-- =========================================================== -->
-    <!-- Server Thread Pool                                          -->
+    <!-- Configure the Server Thread Pool.                           -->
+    <!-- The server holds a common thread pool which is used by      -->
+    <!-- default as the executor used by all connectors and servlet  -->
+    <!-- dispatches.                                                 -->
+    <!--                                                             -->
+    <!-- Configuring a fixed thread pool is vital to controlling the -->
+    <!-- maximal memory footprint of the server and is a key tuning  -->
+    <!-- parameter for tuning.  In an application that rarely blocks -->
+    <!-- then maximal threads may be close to the number of 5*CPUs.  -->
+    <!-- In an application that frequently blocks, then maximal      -->
+    <!-- threads should be set as high as possible given the memory  -->
+    <!-- available.                                                  -->
+    <!--                                                             -->
+    <!-- Consult the javadoc of o.e.j.util.thread.QueuedThreadPool   -->
+    <!-- for all configuration that may be set here.                 -->
     <!-- =========================================================== -->
-    <Set name="ThreadPool">
-      <New class="org.mortbay.thread.BoundedThreadPool">
-        <Set name="minThreads">10</Set>
-        <Set name="lowThreads">50</Set>
-        <Set name="maxThreads">250</Set>
-      </New>
-    </Set>
-
-    <!-- =========================================================== -->
-    <!-- Set connectors                                              -->
-    <!-- =========================================================== -->
-    <!-- One of each type!                                           -->
-    <!-- =========================================================== -->
-
-    <!-- Use this connector for many frequently idle connections
-         and for threadless continuations.
-    -->    
-    <Call name="addConnector">
-      <Arg>
-          <New class="org.mortbay.jetty.nio.SelectChannelConnector">
-            <Set name="port"><SystemProperty name="jetty.port" default="8080"/></Set>
-            <Set name="maxIdleTime">30000</Set>
-            <Set name="Acceptors">2</Set>
-            <Set name="confidentialPort">8443</Set>
-          </New>
-      </Arg>
-    </Call>
-        
-
-    <!-- Use this connector if NIO is not available.
-    <Call name="addConnector">
-      <Arg>
-          <New class="org.mortbay.jetty.bio.SocketConnector">
-            <Set name="port">8081</Set>
-            <Set name="maxIdleTime">50000</Set>
-            <Set name="lowResourceMaxIdleTime">1500</Set>
-          </New>
-      </Arg>
-    </Call>
+    <!-- uncomment to change type of threadpool
+    <Arg name="threadpool"><New id="threadpool" class="org.eclipse.jetty.util.thread.QueuedThreadPool"/></Arg>
     -->
+    <Get name="ThreadPool">
+      <Set name="minThreads" type="int"><Property name="threads.min" default="10"/></Set>
+      <Set name="maxThreads" type="int"><Property name="threads.max" default="200"/></Set>
+      <Set name="idleTimeout" type="int"><Property name="threads.timeout" default="60000"/></Set>
+      <Set name="detailedDump">false</Set>
+    </Get>
 
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <!-- To add a HTTPS SSL listener                                     -->
-    <!-- see jetty-ssl.xml to add an ssl connector. use                  -->
-    <!-- java -jar start.jar etc/jetty.xml etc/jetty-ssl.xml             -->
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    
+    <!-- =========================================================== -->
+    <!-- Add shared Scheduler instance                               -->
+    <!-- =========================================================== -->
+    <Call name="addBean">
+      <Arg>
+        <New class="org.eclipse.jetty.util.thread.ScheduledExecutorScheduler"/>
+      </Arg>
+    </Call>
+
+    <!-- =========================================================== -->
+    <!-- Http Configuration.                                         -->
+    <!-- This is a common configuration instance used by all         -->
+    <!-- connectors that can carry HTTP semantics (HTTP, HTTPS, SPDY)-->
+    <!-- It configures the non wire protocol aspects of the HTTP     -->
+    <!-- semantic.                                                   -->
+    <!--                                                             -->
+    <!-- This configuration is only defined here and is used by      -->
+    <!-- reference from the jetty-http.xml, jetty-https.xml and      -->
+    <!-- jetty-spdy.xml configuration files which instantiate the    -->
+    <!-- connectors.                                                 -->
+    <!--                                                             -->
+    <!-- Consult the javadoc of o.e.j.server.HttpConfiguration       -->
+    <!-- for all configuration that may be set here.                 -->
+    <!-- =========================================================== -->
+    <New id="httpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
+      <Set name="secureScheme">https</Set>
+      <Set name="securePort"><Property name="jetty.secure.port" default="8443" /></Set>
+      <Set name="outputBufferSize"><Property name="jetty.output.buffer.size" default="32768" /></Set>
+      <Set name="outputAggregationSize"><Property name="jetty.output.aggregation.size" default="8192" /></Set>
+      <Set name="requestHeaderSize"><Property name="jetty.request.header.size" default="8192" /></Set>
+      <Set name="responseHeaderSize"><Property name="jetty.response.header.size" default="8192" /></Set>
+      <Set name="sendServerVersion"><Property name="jetty.send.server.version" default="true" /></Set>
+      <Set name="sendDateHeader"><Property name="jetty.send.date.header" default="false" /></Set>
+      <Set name="headerCacheSize">512</Set>
+      <Set name="delayDispatchUntilContent"><Property name="jetty.delayDispatchUntilContent" default="false"/></Set>
+      <!-- Uncomment to enable handling of X-Forwarded- style headers
+      <Call name="addCustomizer">
+        <Arg><New class="org.eclipse.jetty.server.ForwardedRequestCustomizer"/></Arg>
+      </Call>
+      -->
+    </New>
 
 
     <!-- =========================================================== -->
-    <!-- Set handler Collection Structure                            --> 
+    <!-- Set the default handler structure for the Server            -->
+    <!-- A handler collection is used to pass received requests to   -->
+    <!-- both the ContextHandlerCollection, which selects the next   -->
+    <!-- handler by context path and virtual host, and the           -->
+    <!-- DefaultHandler, which handles any requests not handled by   -->
+    <!-- the context handlers.                                       -->
+    <!-- Other handlers may be added to the "Handlers" collection,   -->
+    <!-- for example the jetty-requestlog.xml file adds the          -->
+    <!-- RequestLogHandler after the default handler                 -->
     <!-- =========================================================== -->
     <Set name="handler">
-      <New id="handlers" class="org.mortbay.jetty.handler.HandlerCollection">
+      <New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
         <Set name="handlers">
-         <Array type="org.mortbay.jetty.Handler">
+         <Array type="org.eclipse.jetty.server.Handler">
            <Item>
-             <New id="contexts" class="org.mortbay.jetty.handler.ContextHandlerCollection"/>
+             <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
            </Item>
            <Item>
-             <New id="defaultHandler" class="org.mortbay.jetty.handler.DefaultHandler"/>
-           </Item>
-           <Item>
-             <New id="requestLog" class="org.mortbay.jetty.handler.RequestLogHandler"/>
+             <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler"/>
            </Item>
          </Array>
         </Set>
       </New>
     </Set>
-    
-    
-    <!-- ======================================================= -->
-    <!-- Configure a WebApp                                      -->
-    <!-- ======================================================= -->
-    <!--
-    <New id="TestContext" class="org.mortbay.jetty.webapp.WebAppContext">
-      <Arg><Ref id="contexts"/></Arg>
-      <Arg><SystemProperty name="jetty.home" default="."/>/webapps/test</Arg>
-      <Arg>/</Arg>
-      <Set name="classLoader">
-        <New class="org.mortbay.jetty.webapp.TransformingWebAppClassLoader">
-          <Arg><Ref id="TestContext"/></Arg>
-        </New>
-      </Set>
-      <Set name="defaultsDescriptor"><SystemProperty name="jetty.home" default="."/>/etc/webdefault.xml</Set>
-      <Set name="virtualHosts">
-        <Array type="java.lang.String">
-          <Item>localhost</Item>
-        </Array>
-      </Set>
-      
-      <Get name="SessionHandler">
-        <Set name="SessionManager">
-          <New class="org.mortbay.jetty.servlet.HashSessionManager">
-            <Set name="maxInactiveInterval">600</Set>
-          </New>
-        </Set>
-      </Get>
-    </New>
-    -->
-
-    <!-- ======================================================= -->
-    <!-- Configure a Context                                     -->
-    <!-- ======================================================= -->
-    <New class="org.mortbay.jetty.servlet.Context">
-      <Arg><Ref id="contexts"/></Arg>
-      <Arg>/javadoc</Arg>
-      <Set name="resourceBase"><SystemProperty name="jetty.home" default="."/>/javadoc/</Set>
-      <Call name="addServlet">
-        <Arg>org.mortbay.jetty.servlet.DefaultServlet</Arg>
-        <Arg>/</Arg>
-      </Call>
-    </New>
 
     <!-- =========================================================== -->
-    <!-- Discover contexts from webapps directory                    -->
-    <!-- =========================================================== -->
-    <Call class="org.mortbay.jetty.webapp.WebAppContext" name="addWebApplications">
-      <Arg><Ref id="contexts"/></Arg>
-      <Arg><SystemProperty name="jetty.home" default="."/>/webapps</Arg>
-      <Arg><SystemProperty name="jetty.home" default="."/>/etc/webdefault.xml</Arg>
-      <Arg type="boolean">True</Arg>  <!-- extract -->
-      <Arg type="boolean">True</Arg> <!-- parent priority class loading -->
-    </Call>
-
-    <!-- =========================================================== -->
-    <!-- Configure Realms                                            -->
-    <!-- =========================================================== -->
-    <Set name="UserRealms">
-      <Array type="org.mortbay.jetty.security.UserRealm">
-        <Item>
-          <New class="org.mortbay.jetty.security.HashUserRealm">
-            <Set name="name">Test Realm</Set>
-            <Set name="config"><SystemProperty name="jetty.home" default="."/>/etc/realm.properties</Set>
-          </New>
-        </Item>
-      </Array>
-    </Set>
-    
-
-    <!-- =========================================================== -->
-    <!-- Configure Request Log                                       -->
-    <!-- =========================================================== -->
-    <Ref id="requestLog">
-      <Set name="requestLog">
-        <New id="requestLogImpl" class="org.mortbay.jetty.NCSARequestLog">
-          <Arg><SystemProperty name="jetty.logs" default="./logs"/>/yyyy_mm_dd.request.log</Arg>
-          <Set name="retainDays">90</Set>
-          <Set name="append">true</Set>
-          <Set name="extended">false</Set>
-          <Set name="LogTimeZone">GMT</Set>
-        </New>
-      </Set>
-    </Ref>
-
-    <!-- =========================================================== -->
-    <!-- extra options                                               -->
+    <!-- extra server options                                        -->
     <!-- =========================================================== -->
     <Set name="stopAtShutdown">true</Set>
-    <!-- ensure/prevent Server: header being sent to browsers        -->
-    <Set name="sendServerVersion">true</Set>
+    <Set name="stopTimeout">5000</Set>
+    <Set name="dumpAfterStart"><Property name="jetty.dump.start" default="false"/></Set>
+    <Set name="dumpBeforeStop"><Property name="jetty.dump.stop" default="false"/></Set>
 
 </Configure>
-
-
-
-
-
-
-
-
-

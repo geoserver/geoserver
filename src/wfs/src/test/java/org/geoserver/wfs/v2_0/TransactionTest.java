@@ -1,16 +1,19 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.v2_0;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
+
 import javax.xml.namespace.QName;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
@@ -23,7 +26,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class TransactionTest extends WFS20TestSupport {
 
@@ -169,7 +172,8 @@ public class TransactionTest extends WFS20TestSupport {
             + "</wfs:Query> "
             + "</wfs:GetFeature>";
         dom = postAsDOM("wfs", getFeature);
-        assertEquals("20.0 40.0", getFirstElementByTagName(dom, "gml:pos").getFirstChild().getNodeValue());
+        assertEquals("20 40", getFirstElementByTagName(dom, "gml:pos").getFirstChild()
+                .getNodeValue());
     }
 
     @Test
@@ -265,7 +269,7 @@ public class TransactionTest extends WFS20TestSupport {
          Element location = getFirstElementByTagName( feature, "gml:location" );
          Element pos = getFirstElementByTagName(location, "gml:pos");
          
-         assertEquals( "2.0 2.0", pos.getFirstChild().getNodeValue() );
+        assertEquals("2 2", pos.getFirstChild().getNodeValue());
          
          xml = "<wfs:Transaction service=\"WFS\" version=\"2.0.0\" " + 
          "xmlns:wfs='" + WFS.NAMESPACE + "' " + 
@@ -300,7 +304,7 @@ public class TransactionTest extends WFS20TestSupport {
          location = getFirstElementByTagName( feature, "gml:location" );
          pos = getFirstElementByTagName(location, "gml:pos");
          
-         assertEquals( "3.0 3.0", pos.getFirstChild().getNodeValue() );
+        assertEquals("3 3", pos.getFirstChild().getNodeValue());
     }
     
     @Test
@@ -354,7 +358,7 @@ public class TransactionTest extends WFS20TestSupport {
         Element location = getFirstElementByTagName( feature, "gml:location" );
         Element pos = getFirstElementByTagName(location, "gml:pos");
         
-        assertEquals( "2.0 2.0", pos.getFirstChild().getNodeValue() );
+        assertEquals("2 2", pos.getFirstChild().getNodeValue());
         
         xml = 
             "<wfs:Transaction service=\"WFS\" version=\"2.0.0\" " + 
@@ -406,7 +410,7 @@ public class TransactionTest extends WFS20TestSupport {
         location = getFirstElementByTagName( feature, "gml:location" );
         pos = getFirstElementByTagName(location, "gml:pos");
         
-        assertEquals( "3.0 3.0", pos.getFirstChild().getNodeValue() );
+        assertEquals("3 3", pos.getFirstChild().getNodeValue());
     }
     
     @Test
@@ -816,7 +820,7 @@ public class TransactionTest extends WFS20TestSupport {
        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/soap+xml");
        assertEquals("application/soap+xml", resp.getContentType());
        
-       Document dom = dom(new ByteArrayInputStream(resp.getOutputStreamContent().getBytes()));
+       Document dom = dom(new ByteArrayInputStream(resp.getContentAsString().getBytes()));
        assertEquals("soap:Envelope", dom.getDocumentElement().getNodeName());
        assertEquals(1, dom.getElementsByTagName("wfs:TransactionResponse").getLength());
    }

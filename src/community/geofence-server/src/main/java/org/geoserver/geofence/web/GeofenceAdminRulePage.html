@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+  <form wicket:id="form">
+  <ul>
+     <li>
+      <fieldset>
+        <ul>
+          <li>
+            <label for="priority"><wicket:message key="priority"></wicket:message></label>
+            <input id="priority" wicket:id="priority" type="text" class="text" />
+          </li>
+          <li>
+            <label for="roleName"><wicket:message key="roleName"></wicket:message></label>
+            <select wicket:id="roleName" id="roleName" />
+          </li>
+          <li>
+            <label for="userName"><wicket:message key="username"></wicket:message></label>
+            <select wicket:id="userName" id="userName" />
+          </li>
+          <li>
+            <label for="workspace"><wicket:message key="workspace"></wicket:message></label>
+            <select wicket:id="workspace" id="workspace" />
+          </li>
+          <li>
+            <label for="access"><wicket:message key="access"></wicket:message></label>
+            <select wicket:id="access" id="access" />
+          </li>
+        </ul>
+      </fieldset>
+    </li>  
+  </ul>
+  <div class="button-group selfclear">
+    <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+    <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+  </div>
+  </form>
+</wicket:extend>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+   <wicket:link>
+      <link rel="stylesheet" href="styleResourceBrowser.css" type="text/css">
+   </wicket:link>
+</wicket:head>    
+<body>
+    <wicket:extend>    
+        <div wicket:id="dialog"></div>
+        
+        <div class="menu-wrapper">
+            <div class="menu">
+                <a wicket:id="upload"><span class="button-content" id="upload"><wicket:message key="upload"></wicket:message></span></a>
+                <a wicket:id="download"><span class="button-content" id="download"><wicket:message key="download"></wicket:message></span></a>
+                <a wicket:id="new"><span class="button-content" id="new"><wicket:message key="new"></wicket:message></span></a>
+                <a wicket:id="edit"><span class="button-content" id="edit"><wicket:message key="edit"></wicket:message></span></a>
+                <a wicket:id="cut"><span class="button-content" id="cut"><wicket:message key="cut"></wicket:message></span></a>
+                <a wicket:id="copy"><span class="button-content" id="copy"><wicket:message key="copy"></wicket:message></span></a>
+                <a wicket:id="paste"><span class="button-content" id="paste"><wicket:message key="paste"></wicket:message></span></a>
+                <a wicket:id="rename"><span class="button-content" id="rename"><wicket:message key="rename"></wicket:message></span></a>
+                <a wicket:id="delete" ><span class="button-content" id="delete"><wicket:message key="delete"></wicket:message></span></a>
+            </div>
+        </div>
+        <div wicket:id="treeview"></div>
+    </wicket:extend>
+</body>
+</html>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -79,7 +80,7 @@ public class FrameCatalogVisitor {
     /**
      * Invokes the Executor service and produces the frames images.
      * @param wmsConfiguration
-     * @return
+     *
      * @throws IOException
      */
     public RenderedImageList produce(WMS wmsConfiguration) throws IOException {
@@ -224,7 +225,7 @@ class FrameLoader implements Callable<RenderedImage> {
      * @param theRequest
      * @param param
      * @param value
-     * @return
+     *
      * @throws Exception 
      */
     private static GetMapRequest replaceRequestParams(GetMapRequest theRequest, String param,

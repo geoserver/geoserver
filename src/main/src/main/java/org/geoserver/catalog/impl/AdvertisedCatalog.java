@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -37,8 +38,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
     private LayerGroupVisibilityPolicy layerGroupPolicy = LayerGroupVisibilityPolicy.HIDE_NEVER;
     
     /**
-     * @param catalog, wrapped Catalog
-     * @throws Exception
+     * @param catalog wrapped Catalog
      */
     public AdvertisedCatalog(Catalog catalog) {
         super(catalog);
@@ -56,11 +56,11 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
      * Hide Layer if Request is GetCapabilities and Layer or its Resource are not advertised.
      * 
      * @param layer
-     * @return
+     *
      */
     private boolean hideLayer(LayerInfo layer) {
         if (!layer.isAdvertised()) {
-            return isOgcCapabilitiesRequest();
+            return checkCapabilitiesRequest(layer.getResource());
         } else {
             return hideResource(layer.getResource());
         }
@@ -70,11 +70,11 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
      * Hide Resource if it's not advertised and Request is GetCapabilities.
      * 
      * @param resource
-     * @return
+     *
      */
     private boolean hideResource(ResourceInfo resource) {
         if (!resource.isAdvertised()) {
-            return isOgcCapabilitiesRequest();
+            return checkCapabilitiesRequest(resource);
         } else {
             return false;
         }
@@ -83,6 +83,26 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
     private boolean isOgcCapabilitiesRequest() {
         Request request = Dispatcher.REQUEST.get();
         return request != null && "GetCapabilities".equalsIgnoreCase(request.getRequest());
+    }
+    
+    /**
+     * Returns true if the layer should be hidden, false otherwise
+     * <ol>
+     * <li>has a request</li>
+     * <li>is a GetCapabilities request</li>
+     * <li>is not for a layer-specific virtual service</li>
+     * </ol>
+     */
+    boolean checkCapabilitiesRequest(ResourceInfo resource) {
+        Request request = Dispatcher.REQUEST.get();
+        if (request != null) {
+            if ("GetCapabilities".equalsIgnoreCase(request.getRequest())) {
+                String resourceContext = resource.getNamespace().getPrefix() + "/"
+                        + resource.getName();
+                return !resourceContext.equalsIgnoreCase(request.getContext());
+            }
+        }
+        return false;
     }
 
     @Override
@@ -176,6 +196,12 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
 
     @Override
     protected <T extends CatalogInfo> Filter securityFilter(Class<T> infoType, Filter filter) {
+        if(!isOgcCapabilitiesRequest()) {
+            // Not needed for other kinds of request
+            // TODO use a common implementation for GetCapabilities and Layer Preview
+            return filter;
+        }
+        
         if (!ResourceInfo.class.isAssignableFrom(infoType) && 
             !LayerInfo.class.isAssignableFrom(infoType) &&
             !LayerGroupInfo.class.isAssignableFrom(infoType)) 

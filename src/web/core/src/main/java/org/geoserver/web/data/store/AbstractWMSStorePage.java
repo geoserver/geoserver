@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,7 +8,6 @@ package org.geoserver.web.data.store;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -17,6 +17,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
@@ -112,7 +114,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
             protected void onUpdate(AjaxRequestTarget target) {
                 boolean enabled = useHttpConnectionPoolModel.getObject();
                 maxConnections.setEnabled(enabled);
-                target.addComponent(maxConnections);
+                target.add(maxConnections);
             }
         });
         
@@ -145,18 +147,18 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
                 super.onError(target, form);
-                target.addComponent(form);
+                target.add(form);
             }
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form form) {
-                form.process();
+                form.process(this);
                 WMSStoreInfo info = (WMSStoreInfo) form.getModelObject();
                 try {
                     onSave(info, target);
                 } catch (IllegalArgumentException e) {
                     form.error(e.getMessage());
-                    target.addComponent(form);
+                    target.add(form);
                 }
             }
         };
@@ -174,21 +176,6 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
      */
     protected abstract void onSave(WMSStoreInfo info, AjaxRequestTarget target)
             throws IllegalArgumentException;
-
-    protected void clone(final WMSStoreInfo source, WMSStoreInfo target) {
-        target.setDescription(source.getDescription());
-        target.setEnabled(source.isEnabled());
-        target.setName(source.getName());
-        target.setType(source.getType());
-        target.setCapabilitiesURL(source.getCapabilitiesURL());
-        target.setWorkspace(source.getWorkspace());
-        target.setUsername(source.getUsername());
-        target.setPassword(source.getPassword());
-        target.setUseConnectionPooling(source.isUseConnectionPooling());
-        target.setMaxConnections(source.getMaxConnections());
-        target.setConnectTimeout(source.getConnectTimeout());
-        target.setReadTimeout(source.getReadTimeout());
-    }
 
     @Override
     protected ComponentAuthorizer getPageAuthorizer() {

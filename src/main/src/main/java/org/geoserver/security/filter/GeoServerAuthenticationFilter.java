@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -18,7 +19,7 @@ public interface GeoServerAuthenticationFilter {
      * can be put into a chain doing authentication for
      * a web interface.  
      * 
-     * @return
+     *
      */
     public boolean applicableForHtml ();
     /**
@@ -26,7 +27,7 @@ public interface GeoServerAuthenticationFilter {
      * for services (NO GUI). Such a filter can be put into
      * a chain doing authentication for  services.
      * 
-     * @return
+     *
      */
     public boolean applicableForServices ();
     

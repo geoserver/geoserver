@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -178,7 +179,7 @@ public abstract class JDBCSecurityServiceConfig extends BaseSecurityNamedService
     /**
      * Indicates if the tables are created behind the scenes
      * 
-     * @return
+     *
      */
     public boolean isCreatingTables() {
         return creatingTables;

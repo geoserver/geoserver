@@ -1,0 +1,27 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+   <wicket:extend>
+    <form wicket:id="form">
+     <ul>
+       <li>
+         <label for="store"><wicket:message key="sourceStore">Source store</wicket:message></label>
+         <select wicket:id="store" id="store" ></select>
+       </li>
+       <li wicket:id="coveragesContainer">
+         <label for="coverages"><wicket:message key="coverages">coverages</wicket:message></label>
+         <div wicket:id="coverages"/>
+       </li>
+       <li class="button-group selfclear">
+         <a href="#" wicket:id="save"><wicket:message key="addToGroup">AddToGroup</wicket:message></a>
+         <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a> 
+       </li>  
+       
+     </ul>
+     
+    </form>
+    <wicket:fragment wicket:id="typeFragment">
+        <select wicket:id="type"></select>
+    </wicket:fragment>
+    </wicket:extend>
+  </body>
+</html>

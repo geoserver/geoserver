@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -16,6 +17,8 @@ import org.opengis.feature.type.Name;
  */
 public class Resource implements Comparable<Resource>, Serializable {
 
+    /** serialVersionUID */
+    private static final long serialVersionUID = 8744964557875392120L;
     /**
      * The resource name
      */
@@ -26,6 +29,11 @@ public class Resource implements Comparable<Resource>, Serializable {
      * If this resource has already been published, or not
      */
     boolean published;
+    
+    /**
+     * Specified if this resource is from a multi-coverage reader
+     */
+    boolean multiCoverageReader;
 
     public void setPublished(boolean published) {
         this.published = published;
@@ -88,6 +96,14 @@ public class Resource implements Comparable<Resource>, Serializable {
     @Override
     public String toString() {
         return name + "(" + published + ")";
+    }
+
+    public boolean isMultiCoverageReader() {
+        return multiCoverageReader;
+    }
+
+    public void setMultiCoverageReader(boolean multiCoverageReader) {
+        this.multiCoverageReader = multiCoverageReader;
     }
 
 }

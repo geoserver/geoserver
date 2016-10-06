@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,12 +11,9 @@ import org.geoserver.ows.KvpParser;
 
 
 /**
- * Parses url kvp's of the form 'key=<url>'.
- * <p>
- *
- * </p>
+ * Parses url kvp's of the form 'key=&lt;url&gt;'.
+ * 
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
  */
 public class URLKvpParser extends KvpParser {
     /**
@@ -35,9 +33,9 @@ public class URLKvpParser extends KvpParser {
      * URLEncoder.encode does not respect the RFC 2396, so we rolled our own little
      * encoder. It's not complete, but should work in most cases
      * @param url
-     * @return
+     *
      */
-    String fixURL(String url) {
+    public static String fixURL(String url) {
         StringBuffer sb = new StringBuffer();
 
         for (int i = 0; i < url.length(); i++) {

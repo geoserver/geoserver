@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+    <ul>
+      <li>
+       <fieldset>
+         <legend>
+            <span><wicket:message key="settings"></wicket:message></span>
+         </legend>
+         <ul>
+            <li>  
+              <label for="fileName"><wicket:message key="fileName"></wicket:message></label>
+              <input wicket:id="fileName" type="text" class="field text"></input>
+            </li>
+            <li class="choiceItem">
+              <input wicket:id="validating" type="checkbox"></input>
+              <label for="validating"><wicket:message key="validating"></wicket:message></label>
+            </li>
+            <li>
+              <label for="checkInterval"><wicket:message key="checkInterval"></wicket:message></label>
+              <input wicket:id="checkInterval" type="text" class="field text"></input>
+            </li>
+         </ul>
+       </fieldset>
+      </li>
+    </ul>
+</wicket:extend>
+</body>
+</html>

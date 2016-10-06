@@ -10,7 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gt-jdbc-spatialite-*</include>
-        <include>sqlite-jdbc-spatialite*</include>
+        <include>spatialite-jdbc-*</include>
       </includes>
     </fileSet>
   </fileSets>

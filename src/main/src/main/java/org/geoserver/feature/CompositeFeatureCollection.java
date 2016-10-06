@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,7 +7,6 @@ package org.geoserver.feature;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
     /**
      * wrapped collecitons
      */
-    List collections;
+    List<FeatureCollection> collections;
 
     public CompositeFeatureCollection(List collections) {
         this.collections = collections;
@@ -88,7 +88,7 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
                 }
 
                 //grap next
-                iterator = ((FeatureCollection) collections.get(index++)).features();
+                iterator = collections.get(index++).features();
 
                 if (iterator.hasNext()) {
                     return true;
@@ -127,5 +127,12 @@ public class CompositeFeatureCollection extends DataFeatureCollection {
 
     public FeatureId getIdentifier() {
         throw new RuntimeException("Can't get the id for a composite featurecollection; you need to identify the consituent collections directly.");
+    }
+
+    /**
+     * @return the collections
+     */
+    public List<FeatureCollection> getCollections() {
+        return collections;
     }
 }

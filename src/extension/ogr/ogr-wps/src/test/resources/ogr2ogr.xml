@@ -1,0 +1,37 @@
+<OgrConfiguration>
+    <ogr2ogrLocation>ogr2ogr</ogr2ogrLocation>
+    <!-- <gdalData>...</gdalData> -->
+    <formats>
+        <Format>
+            <ogrFormat>MapInfo File</ogrFormat>
+            <formatName>OGR-TAB</formatName>
+            <fileExtension>.tab</fileExtension>
+            <type>binary</type> <!-- not really required, it’s the default -->
+        </Format>
+        <Format>
+            <ogrFormat>MapInfo File</ogrFormat>
+            <formatName>OGR-MIF</formatName>
+            <fileExtension>.mif</fileExtension>
+            <option>-dsco</option>
+            <option>FORMAT=MIF</option>
+        </Format>
+        <Format>
+            <ogrFormat>CSV</ogrFormat>
+            <formatName>OGR-CSV</formatName>
+            <fileExtension>.csv</fileExtension>
+            <singleFile>true</singleFile>
+            <mimeType>text/csv</mimeType>
+            <option>-lco</option>
+            <option>GEOMETRY=AS_WKT</option>
+            <type>text</type>
+        </Format>
+        <Format>
+            <ogrFormat>KML</ogrFormat>
+            <formatName>OGR-KML</formatName>
+            <fileExtension>.kml</fileExtension>
+            <singleFile>true</singleFile>
+            <mimeType>application/vnd.google-earth.kml</mimeType>
+            <type>xml</type>
+        </Format>
+    </formats>
+</OgrConfiguration>

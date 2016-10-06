@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -40,7 +41,7 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
         UsernamePasswordAuthenticationToken upAuth = 
             new UsernamePasswordAuthenticationToken("foo", "bar");
         try {
-            getSecurityManager().authenticate(upAuth);            
+            getSecurityManager().authenticationManager().authenticate(upAuth);            
         }
         catch(BadCredentialsException e) {}
         catch(ProviderNotFoundException e) {}
@@ -62,7 +63,7 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
         secMgr.saveSecurityConfig(mgrConfig);
 
         Authentication auth = new UsernamePasswordAuthenticationToken("foo", "bar");
-        auth = getSecurityManager().authenticate(auth);
+        auth = getSecurityManager().authenticationManager().authenticate(auth);
         assertTrue(auth.isAuthenticated());
     }
     

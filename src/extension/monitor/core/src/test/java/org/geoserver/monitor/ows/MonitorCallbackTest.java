@@ -1,27 +1,77 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.monitor.ows;
 
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.easymock.EasyMock.*;
 
-import java.net.URI;
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.xml.namespace.QName;
+
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.config.GeoServer;
+import org.geoserver.monitor.BBoxAsserts;
+import org.geoserver.monitor.MemoryMonitorDAO;
+import org.geoserver.monitor.Monitor;
+import org.geoserver.monitor.MonitorConfig;
+import org.geoserver.monitor.MonitorDAO;
+import org.geoserver.monitor.MonitorTestData;
+import org.geoserver.monitor.RequestData;
+import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.Operation;
+import org.geoserver.platform.Service;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.security.PropertyFileWatcher;
+import org.geoserver.wms.GetFeatureInfoRequest;
+import org.geoserver.wms.GetLegendGraphicRequest;
+import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.WMS;
+import org.geotools.feature.NameImpl;
+import org.geotools.filter.text.cql2.CQL;
+import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.util.Version;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.Filter;
+import org.opengis.geometry.BoundingBox;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 import net.opengis.ows11.CodeType;
 import net.opengis.ows11.Ows11Factory;
 import net.opengis.wcs10.DescribeCoverageType;
 import net.opengis.wcs10.GetCoverageType;
 import net.opengis.wcs10.Wcs10Factory;
-import net.opengis.wcs10.Wcs10Package;
 import net.opengis.wcs11.Wcs11Factory;
-import net.opengis.wcs11.impl.DomainSubsetTypeImpl;
 import net.opengis.wfs.DeleteElementType;
 import net.opengis.wfs.DescribeFeatureTypeType;
 import net.opengis.wfs.GetFeatureType;
@@ -32,55 +82,6 @@ import net.opengis.wfs.QueryType;
 import net.opengis.wfs.TransactionType;
 import net.opengis.wfs.UpdateElementType;
 import net.opengis.wfs.WfsFactory;
-
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogFactory;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.CatalogImpl;
-import org.geoserver.config.GeoServer;
-import org.geoserver.monitor.BBoxAsserts;
-import org.geoserver.monitor.MemoryMonitorDAO;
-import org.geoserver.monitor.Monitor;
-import org.geoserver.monitor.MonitorConfig;
-import org.geoserver.monitor.MonitorConfig.BboxMode;
-import org.geoserver.monitor.MonitorDAO;
-import org.geoserver.monitor.MonitorTestData;
-import org.geoserver.monitor.RequestData;
-import org.geoserver.ows.Request;
-import org.geoserver.platform.Operation;
-import org.geoserver.platform.Service;
-import org.geoserver.wms.GetFeatureInfoRequest;
-import org.geoserver.wms.GetLegendGraphicRequest;
-import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wms.WMS;
-import org.geotools.data.ows.CRSEnvelope;
-import org.geotools.factory.FactoryFinder;
-import org.geotools.feature.NameImpl;
-import org.geotools.filter.spatial.BBOXImpl;
-import org.geotools.filter.text.cql2.CQL;
-import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.geometry.GeneralEnvelope;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
-import org.geotools.util.Version;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.Filter;
-import org.opengis.geometry.BoundingBox;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 
 
@@ -302,6 +303,17 @@ public class MonitorCallbackTest {
     }
     
     @Test
+    public void testWMSReflect() throws Exception {
+        GetMapRequest gm = new GetMapRequest();
+        
+        gm.setLayers(Arrays.asList(createMapLayer("foo", "acme")));
+        
+        callback.operationDispatched(new Request(), op("reflect", "WMS", "1.1.1", gm));
+        
+        assertEquals("acme:foo", data.getResources().get(0));
+    }
+    
+    @Test
     public void testWMSGetFeatureInfo() throws Exception {
         GetFeatureInfoRequest gfi = new GetFeatureInfoRequest();
         
@@ -424,7 +436,7 @@ public class MonitorCallbackTest {
         
         LayerInfo l = createMock(LayerInfo.class);
         expect(l.getResource()).andReturn(r);
-        expect(l.getType()).andReturn(LayerInfo.Type.VECTOR);
+        expect(l.getType()).andReturn(PublishedType.VECTOR);
         replay(l);
         
         return new MapLayerInfo(l);
@@ -556,4 +568,27 @@ public class MonitorCallbackTest {
         BBoxAsserts.assertEqualsBbox(new ReferencedEnvelope(48.4,48.4,-123.3,-123.3,logCrs),data.getBbox(), 0.1);
     }
 
+    @Test
+    public void testConfiguration() throws IOException {
+        // store the properties into a temp folder and relaod
+        assertTrue(monitor.getConfig().getFileLocations().isEmpty());
+        
+        File tmpDir = createTempDir();
+        GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(tmpDir);
+        
+        monitor.getConfig().saveConfiguration(resourceLoader);
+        Resource controlFlowProps = Files.asResource(resourceLoader.find("monitor.properties"));
+        assertTrue(Resources.exists(controlFlowProps));
+        
+        PropertyFileWatcher savedProps = new PropertyFileWatcher(controlFlowProps);
+        
+        assertEquals(savedProps.getProperties(), monitor.getConfig().getProperties());
+    }
+    
+    static File createTempDir() throws IOException {
+        File f = File.createTempFile("monitoring", "data", new File("target"));
+        f.delete();
+        f.mkdirs();
+        return f;
+    }
 }

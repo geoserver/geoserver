@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcs/2.0"
+    xmlns:wcs="http://www.opengis.net/wcs/2.0"
+    xmlns:ows="http://www.opengis.net/ows/2.0"
+    xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0"
+    xmlns:gml="http://www.opengis.net/gml/3.2"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" version="2.0.1" xml:lang="en">
+    <annotation>
+        <appinfo>wcsCommon.xsd</appinfo>
+        <documentation>This XML Schema Document defines the XML elements and types that are shared by multiple WCS operations.
+            Last updated: 2012-feb-06
+            Copyright (c) 2012 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/.
+        </documentation>
+    </annotation>
+
+    <!-- ============================================================== -->
+    <!-- includes and imports                                           -->
+    <!-- ============================================================== -->
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+    <import namespace="http://www.opengis.net/ows/2.0" schemaLocation="http://schemas.opengis.net/ows/2.0/owsAll.xsd"/>
+    <import namespace="http://www.opengis.net/gmlcov/1.0" schemaLocation="http://schemas.opengis.net/gmlcov/1.0/gmlcovAll.xsd"/>
+    <include schemaLocation="wcsAll.xsd"/>
+
+    <!-- ============================================================== -->
+    <!-- elements and types                                             -->
+    <!-- ============================================================== -->
+    <complexType name="RequestBaseType" abstract="true">
+        <annotation>
+            <documentation>XML encoded WCS operation request base, for all operations except GetCapabilities. In this XML encoding, no "request" parameter is included, since the element name specifies the specific operation. 'Extension' elements allow WCS extension standards to define their individual extra request parameters. </documentation>
+        </annotation>
+        <sequence>
+            <element ref="wcs:Extension" minOccurs="0"/>
+        </sequence>
+        <attribute name="service" type="string" use="required" fixed="WCS">
+            <annotation>
+                <documentation>Service type identifier, where the value is the OWS type abbreviation. For WCS operation requests, the value is "WCS". </documentation>
+            </annotation>
+        </attribute>
+        <attribute name="version" type="wcs:VersionStringType" use="required">
+            <annotation>
+                <documentation>Specification version for WCS version and operation. See Version parameter Subclause 7.3.1 of OWS Common for more information. </documentation>
+            </annotation>
+        </attribute>
+    </complexType>
+    <simpleType name="VersionStringType">
+        <restriction base="string">
+            <pattern value="2\.0\.\d+"/>
+        </restriction>
+    </simpleType>
+    <!-- =========================================================== -->
+    <element name="CoverageId" type="NCName">
+        <annotation>
+            <documentation>This element represents coverage identifiers. It uses the same type as gml:id to allow for identifier values to be used in both contexts. </documentation>
+        </annotation>
+    </element>
+    <!-- =========================================================== -->
+    <element name="CoverageOfferings" type="wcs:CoverageOfferingsType">
+        <annotation>
+            <documentation>CoverageOfferings is the virtual document that a WCS offers. It consists of service metadata and a set of offered coverages. The CoverageOfferings element is never delivered to the client, however, responses of WCS requests are composed of constituents of the CoverageOfferings tree. Hence, CoverageOfferings serves to define responses. </documentation>
+        </annotation>
+    </element>
+    <complexType name="CoverageOfferingsType">
+        <sequence>
+            <element ref="wcs:ServiceMetadata"/>
+            <element ref="wcs:OfferedCoverage" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="ServiceMetadata" type="wcs:ServiceMetadataType">
+        <annotation>
+            <documentation>ServiceMetadata contains information describing the WCS service on hand. Extension elements allow WCS extension standards to define their individual extra service metadata. </documentation>
+        </annotation>
+    </element>
+    <complexType name="ServiceMetadataType">
+        <sequence>
+            <element name="formatSupported" type="anyURI" maxOccurs="unbounded"/>
+            <element ref="wcs:Extension" minOccurs="0"/>
+        </sequence>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="OfferedCoverage" type="wcs:OfferedCoverageType">
+        <annotation>
+            <documentation>An OfferedCoverage is the information set about a specific coverage offered by the WCS service on hand. It consists of a coverage, as defined in the GML Application Schema for Coverages [OGC 09-146r2] and coverage specific service parameters. Like CoverageOfferings, an OfferedCoverage element is never delivered to the client, but defines the response of coverage access requests. </documentation>
+        </annotation>
+    </element>
+    <complexType name="OfferedCoverageType">
+        <sequence>
+            <element ref="gmlcov:AbstractCoverage"/>
+            <element ref="wcs:ServiceParameters"/>
+        </sequence>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="ServiceParameters" type="wcs:ServiceParametersType">
+        <annotation>
+            <documentation>ServiceParameters further define how the corresponding coverage is accessible. CoverageSubtype helps identifying the type of coverage on hand, in particular with respect to the potential size of its domainSet and rangeSet components. Extension elements allow WCS extensions to plug in their particular coverage-specific service information. </documentation>
+        </annotation>
+    </element>
+    <complexType name="ServiceParametersType">
+        <sequence>
+            <element ref="wcs:CoverageSubtype"/>
+            <element ref="wcs:CoverageSubtypeParent" minOccurs="0"/>
+            <element name="nativeFormat" type="anyURI"/>
+            <element ref="wcs:Extension" minOccurs="0"/>
+        </sequence>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="CoverageSubtype" type="QName">
+        <annotation>
+            <documentation>CoverageSubtype characterizes the type of a coverage. This element shall contain the name of the XML root element that would be delivered if a GML encoded result were requested from the GetCoverage operation. The content model of the named element shall be described by a schema that is either normatively referenced by the WCS core specification or by a requirement in a WCS extension, the associated conformance class for which has been included in the ows:Profiles of the server's GetCapabilities response.
+This CoverageSubtype is delivered in GetCapabilities and DescribeCoverage to allow clients an estimation of the amount of data to be expected in the domain and range set. For example, a GridCoverage has a small domain set structure, but typically a large range set; a MultiSolidCoverage, on the other hand, tends to have large domain sets and small range sets. </documentation>
+        </annotation>
+    </element>
+    <!-- =========================================================== -->
+    <element name="CoverageSubtypeParent" type="wcs:CoverageSubtypeParentType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+    </element>
+    <complexType name="CoverageSubtypeParentType">
+        <sequence>
+            <element ref="wcs:CoverageSubtype"/>
+            <element ref="wcs:CoverageSubtypeParent" minOccurs="0"/>
+        </sequence>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="Extension" type="wcs:ExtensionType">
+        <annotation>
+            <documentation>Extension element used to hook in additional content e.g. in extensions or application profiles.</documentation>
+        </annotation>
+    </element>
+    <complexType name="ExtensionType">
+        <sequence>
+            <any minOccurs="0" maxOccurs="unbounded" processContents="lax" namespace="##other"/>
+        </sequence>
+    </complexType>
+</schema>

@@ -1,0 +1,70 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>netcdfoutparams</head>
+<body>
+    <wicket:panel>
+    <!--legend>
+    <span>
+    <wicket:message key="netcdfoutparams">netcdfoutparams</wicket:message></span></legend-->
+    <fieldset>
+    <legend>
+        <label>
+            <wicket:message key="netcdfoutparams">netcdfoutparams</wicket:message>
+        </label>
+    </legend>
+        <div wicket:id="container">
+
+            <ul>
+                <li>
+                    <label for="dataPacking">
+                        <wicket:message key="dataPacking">Data Packing</wicket:message>
+                    </label> 
+                    <select class="select" id="dataPacking" wicket:id="dataPacking"></select>
+                </li>
+                <li>
+                    <fieldset wicket:id="globalAttributes">
+                        <!-- legend -->
+                            <label wicket:id="key">Key</label>
+                        <!-- </legend> -->
+                        <label wicket:id="value">Value</label>
+                        <div style="position: absolute; right: 0; text-align: right;">
+                            <span wicket:id="remove"></span>
+                        </div>
+                    </fieldset>
+                </li>
+                <li>
+                    Add Attribute 
+                    <input type="text" wicket:id="newKey"></input> 
+                    <input type="text" wicket:id="newValue"></input>
+                    <a href="#" wicket:id="add">
+                        <span wicket:id="addIcon"></span>
+                    </a>
+                </li>
+                <li>
+                    <div>
+                       <label>
+                         <span>
+                           <wicket:message key="NetCDFOutTabPanel.netcdf4">NetCDF4 Output Settings</wicket:message>
+                         </span>
+                        </label>
+                        <ul>
+                            <li>
+                                <label for="compressionLevel" class="text">
+                                    <wicket:message key="NetCDFOutSettingsPanel.compressionLevel">Compression Level</wicket:message>
+                                </label>
+                                <input id="compressionLevel" class="field text" type="text" wicket:id="compressionLevel" />
+                            </li>    
+                            <li>
+                                <label for="shuffle" class="checkbox">
+                                    <wicket:message key="NetCDFOutSettingsPanel.shuffle">Shuffle</wicket:message>
+                                </label> 
+                                <input id="shuffle" class="field checkbox" type="checkbox" wicket:id="shuffle" />                            
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </fieldset>
+    </wicket:panel>
+</body>
+</html>

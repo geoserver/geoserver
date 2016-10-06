@@ -1,0 +1,34 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="Coverage View">Coverage View</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+
+    <form wicket:id="form">
+
+    <ul>
+        <li><label for="name"><wicket:message key="name">name</wicket:message></label>
+          <input type="text" wicket:id="name"/>
+        </li>
+        <li>
+          <ul>
+              <li>
+             <div wicket:id="coverages"></div>
+             </li>
+          </ul>
+       </li>
+       
+    </ul>
+
+    <div class="button-group selfclear"><a href="#" wicket:id="save"><wicket:message
+        key="save">Save</wicket:message></a> <a href="#" wicket:id="cancel"><wicket:message
+        key="cancel">Cancel</wicket:message></a></div>
+    </form>
+    
+
+</wicket:extend>
+
+
+</body>
+</html>

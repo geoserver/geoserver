@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -27,14 +28,11 @@ import org.geoserver.platform.ServiceException;
  *  &lt;/bean&gt;
  * </code>
  * </pre>
- *
+ * <p>
  * Where <code>myService</code> is the id of another bean somewhere in the
- * context.
- *
- * </p>
+ * context.</p>
  *
  * @author Justin Deoliveira, The Open Planning Project
- *
  */
 public abstract class ServiceExceptionHandler {
     /**

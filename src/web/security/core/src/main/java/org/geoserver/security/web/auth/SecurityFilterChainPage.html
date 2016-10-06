@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+</wicket:head>
+<body>
+<wicket:extend>
+  <form id="form" wicket:id="form">
+  <ul>
+    <li>
+      <fieldset>
+        <legend>
+          <span><wicket:message key="chainConfig"></wicket:message></span>
+          <a href="#" wicket:id="chainConfigHelp" class="help-link"></a>
+        </legend>
+        <ul>
+          <li>
+            <span wicket:id="message"></span>
+          </li>
+          <li>
+            <label for="name"><wicket:message key="name"></wicket:message></label>
+            <input type="text" wicket:id="name" class="text"/>
+          </li>
+          <li>
+            <label for="patternString"><wicket:message key="patternString"></wicket:message></label>
+            <input type="text" wicket:id="patternString" class="text"/>
+          </li>
+
+          <li class="choiceItem">
+            <input id="disabled" wicket:id="disabled" type="checkbox"/>
+            <label for="disabled"><wicket:message key="disabled"></wicket:message></label>
+          </li>
+          <li class="choiceItem">
+            <input id="allowSessionCreation" wicket:id="allowSessionCreation" type="checkbox"/>
+            <label for="allowSessionCreation"><wicket:message key="allowSessionCreation"></wicket:message></label>
+          </li>
+          <li class="choiceItem">
+            <input id="requireSSL" wicket:id="requireSSL" type="checkbox"/>
+            <label for="requireSSL"><wicket:message key="requireSSL"></wicket:message></label>
+          </li>
+          <li>
+             <label for="roleFilterName"><wicket:message key="roleFilterName"></wicket:message></label>
+             <select wicket:id="roleFilterName"></select>
+          </li>
+         </ul>
+       </fieldset>
+       <fieldset>
+         <legend>
+          <span><wicket:message key="chainConfigMethod"></wicket:message></span>
+          <a href="#" wicket:id="chainConfigMethodHelp" class="help-link"></a>
+         </legend>
+         <ul class="choiceList">
+          <li style="margin-bottom: 0.5em;">
+            <input id="matchHTTPMethod" wicket:id="matchHTTPMethod" type="checkbox"/>
+            <label for="matchHTTPMethod"><wicket:message key="matchHTTPMethod"></wicket:message></label>
+          </li>
+          <li>
+	         <input id="GET" wicket:id="GET" type="checkbox"/>
+	         <label for="GET">GET</label>
+         </li>
+         <li>
+	         <input id="POST" wicket:id="POST" type="checkbox"/>
+	         <label for="POST">POST</label>
+         </li>
+         <li>
+             <input id="PUT" wicket:id="PUT" type="checkbox"/>
+             <label for="PUT">PUT</label>
+         </li>
+         <li>
+             <input id="DELETE" wicket:id="DELETE" type="checkbox"/>
+             <label for="DELETE">DELETE</label>
+         </li>
+         <li>
+             <input id="OPTIONS" wicket:id="OPTIONS" type="checkbox"/>
+             <label for="OPTIONS">OPTIONS</label>
+         </li>
+         <li>
+            <input id="HEAD" wicket:id="HEAD" type="checkbox"/>
+            <label for="HEAD">HEAD</label>
+         </li>
+         <li>
+            <input id="TRACE" wicket:id="TRACE" type="checkbox"/>
+            <label for="TRACE">TRACE</label>
+         </li>
+         </ul>
+      </fieldset>
+      <wicket:child/>
+    </li>
+  </ul>
+
+  <div class="button-group selfclear">
+      <a href="#" wicket:id="close"><wicket:message key="close">Save</wicket:message></a>
+      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+  </div>
+  <div wicket:id="dialog"></div>
+  </form>
+</wicket:extend>
+</body>
+</html>
+

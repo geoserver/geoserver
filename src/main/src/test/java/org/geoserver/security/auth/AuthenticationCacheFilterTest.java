@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -21,8 +22,9 @@ import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
+import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.RoleSource;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
 import org.geoserver.security.config.X509CertificateAuthenticationFilterConfig;
 import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
@@ -41,9 +43,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.mockrunner.mock.web.MockFilterChain;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 @Category(SystemTest.class)
 public class AuthenticationCacheFilterTest extends AbstractAuthenticationProviderTest {
@@ -141,7 +143,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNotNull(tmp);
         assert(tmp.indexOf(GeoServerSecurityManager.REALM) !=-1 );
         assert(tmp.indexOf("Basic") !=-1 );
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
         
@@ -153,7 +155,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         request.addHeader("Authorization",  "Basic " + 
                 new String(Base64.encodeBytes((testUserName+":"+testPassword).getBytes())));
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         Authentication auth = getAuth(testFilterName, testUserName,null,null);
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -192,7 +194,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNotNull(tmp);
         assert(tmp.indexOf(GeoServerSecurityManager.REALM) !=-1 );
         assert(tmp.indexOf("Basic") !=-1 );
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         auth = getAuth("unknow", testPassword,null,null);
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -205,7 +207,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         request.addHeader("Authorization",  "Basic " + 
                 new String(Base64.encodeBytes((GeoServerUser.ROOT_USERNAME+":"+getMasterPassword()).getBytes())));
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(GeoServerUser.ROOT_USERNAME, "geoserver",null,null);
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -222,7 +224,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         request.addHeader("Authorization",  "Basic " + 
                 new String(Base64.encodeBytes((testUserName+":"+testPassword).getBytes())));
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName, testUserName,null,null);
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -244,7 +246,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNotNull(tmp);
         assert(tmp.indexOf(GeoServerSecurityManager.REALM) !=-1 );
         assert(tmp.indexOf("Basic") !=-1 );
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         
         updateUser("ug1", testUserName, true);
@@ -257,6 +259,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         J2eeAuthenticationFilterConfig config = new J2eeAuthenticationFilterConfig();        
         config.setClassName(GeoServerJ2eeAuthenticationFilter.class.getName());        
         config.setName(testFilterName3);
+        config.setRoleSource(J2EERoleSource.J2EE);
         config.setRoleServiceName("rs1");        
         getSecurityManager().saveFilter(config);
         
@@ -272,7 +275,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         MockFilterChain chain = new MockFilterChain();                
         
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getStatus());
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
 
@@ -286,11 +289,15 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
                 return testUserName;
             }
         });
-        request.setUserInRole(derivedRole,true);
-        request.setUserInRole(rootRole,false);
+        if(true) {
+            request.addUserRole(derivedRole);
+        }
+        if(false) {
+            request.addUserRole(rootRole);
+        }
         getProxy().doFilter(request, response, chain);
         
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         Authentication auth = getAuth(testFilterName3, testUserName,null,null);
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -311,7 +318,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         });
         getProxy().doFilter(request, response, chain);
         
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName3, GeoServerUser.ROOT_USERNAME,null,null);
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -330,11 +337,15 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
                 return testUserName;
             }
         });
-        request.setUserInRole(derivedRole,true);
-        request.setUserInRole(rootRole,false);
+        if(true) {
+            request.addUserRole(derivedRole);
+        }
+        if(false) {
+            request.addUserRole(rootRole);
+        }
         getProxy().doFilter(request, response, chain);
         
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName3, testUserName,null,null);
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -349,7 +360,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();                        
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         // Anonymous context is not stored in http session, no further testing
         removeAnonymousFilter();
 
@@ -365,7 +376,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         config.setName(testFilterName4);
         config.setRoleServiceName("rs1");
         config.setPrincipalHeaderAttribute("principal");
-        config.setRoleSource(RoleSource.RoleService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.RoleService);
         config.setUserGroupServiceName("ug1");
         config.setPrincipalHeaderAttribute("principal");
         config.setRolesHeaderAttribute("roles");;
@@ -383,11 +394,11 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         MockFilterChain chain = new MockFilterChain();                
         
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getStatus());
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         
         
-        for (RoleSource rs : RoleSource.values()) {            
+        for (PreAuthenticatedUserNameRoleSource rs : PreAuthenticatedUserNameRoleSource.values()) {            
             getCache().removeAll();
             
             config.setRoleSource(rs);
@@ -395,14 +406,14 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
             request= createRequest("/foo/bar");
             response= new MockHttpServletResponse();
             chain = new MockFilterChain();            
-            request.setHeader("principal", testUserName);
-            if (rs==RoleSource.Header) {
-                request.setHeader("roles", derivedRole+";"+rootRole);
+            request.addHeader("principal", testUserName);
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
+                request.addHeader("roles", derivedRole+";"+rootRole);
             }
             getProxy().doFilter(request, response, chain);            
-            assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
             Authentication auth = getAuth(testFilterName4, testUserName,null,null);
-            if (rs==RoleSource.Header) {
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
                 continue; // no cache
             }
             assertNotNull(auth);
@@ -414,7 +425,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         }
 
         // unknown user
-        for (RoleSource rs : RoleSource.values()) {
+        for (PreAuthenticatedUserNameRoleSource rs : PreAuthenticatedUserNameRoleSource.values()) {
             getCache().removeAll();            
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
@@ -423,10 +434,10 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
             request= createRequest("/foo/bar");
             response= new MockHttpServletResponse();
             chain = new MockFilterChain();            
-            request.setHeader("principal", "unknown");
+            request.addHeader("principal", "unknown");
             getProxy().doFilter(request, response, chain);            
-            assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
-            if (rs==RoleSource.Header) {
+            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
                 continue; // no cache
             }
             Authentication auth = getAuth(testFilterName4, "unknown",null,null);
@@ -438,17 +449,17 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         // test disabled user, should not work since cache is active 
         
-        config.setRoleSource(RoleSource.UserGroupService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.UserGroupService);
         // saving a filter empties the cache
         getSecurityManager().saveFilter(config);
         updateUser("ug1", testUserName, false);
                 
         request= createRequest("/foo/bar");
-        request.setHeader("principal", testUserName);
+        request.addHeader("principal", testUserName);
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();            
         getProxy().doFilter(request, response, chain);                                    
-        assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getStatus());
         Authentication auth = getAuth(testFilterName4, testUserName,null,null);
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -461,7 +472,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();                        
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         // Anonymous context is not stored in http session, no further testing
         removeAnonymousFilter();
 
@@ -490,7 +501,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         MockFilterChain chain = new MockFilterChain();                
             
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED,response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED,response.getStatus());
         String tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
         assert(tmp.indexOf(GeoServerSecurityManager.REALM) !=-1 );
@@ -506,7 +517,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         String headerValue=clientDigestString(tmp, testUserName, testPassword, request.getMethod());
         request.addHeader("Authorization",  headerValue);
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         Authentication auth = getAuth(testFilterName2, testUserName,300,300);
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -545,7 +556,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNotNull(tmp);
         assert(tmp.indexOf(GeoServerSecurityManager.REALM) !=-1 );
         assert(tmp.indexOf("Digest") !=-1 );
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         auth = getAuth(testFilterName2, "unknown",300,300);
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -558,7 +569,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         headerValue=clientDigestString(tmp, GeoServerUser.ROOT_USERNAME, getMasterPassword(), request.getMethod());
         request.addHeader("Authorization",  headerValue);        
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName2, GeoServerUser.ROOT_USERNAME,300,300);
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -575,7 +586,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNotNull(tmp);
         assert(tmp.indexOf(GeoServerSecurityManager.REALM) !=-1 );
         assert(tmp.indexOf("Digest") !=-1 );
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         auth = getAuth(testFilterName2, GeoServerUser.ROOT_USERNAME,300,300);
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -591,7 +602,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         headerValue=clientDigestString(tmp, testUserName, testPassword, request.getMethod());
         request.addHeader("Authorization",  headerValue);
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName2, testUserName,300,300);
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -614,7 +625,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNotNull(tmp);
         assert(tmp.indexOf(GeoServerSecurityManager.REALM) !=-1 );
         assert(tmp.indexOf("Digest") !=-1 );
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         auth = getAuth(testFilterName2, testUserName,300,300);
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());        
@@ -627,7 +638,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();                        
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         // Anonymous context is not stored in http session, no further testing
         removeAnonymousFilter();
     }
@@ -650,19 +661,19 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         
         // Test entry point                
         MockHttpServletRequest request= createRequest("/foo/bar");
-        request.setupAddParameter("_spring_security_remember_me", "yes");
+        request.addParameter("_spring_security_remember_me", "yes");
         MockHttpServletResponse response= new MockHttpServletResponse();
         MockFilterChain chain = new MockFilterChain();        
                 
         getProxy().doFilter(request, response, chain);
-        assertEquals(0, response.getCookies().size());
+        assertEquals(0, response.getCookies().length);
         String tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
     
         
         // check success
         request= createRequest("/foo/bar");
-        request.setupAddParameter("_spring_security_remember_me", "yes");
+        request.addParameter("_spring_security_remember_me", "yes");
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();        
     
@@ -670,21 +681,21 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         request.addHeader("Authorization",  "Basic " + 
                 new String(Base64.encodeBytes(("abc@xyz.com:abc").getBytes())));
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         Authentication auth = getAuth(testFilterName5, "abc@xyz.com", null,null);
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         checkForAuthenticatedRole(auth);
-        assertEquals(1,response.getCookies().size());
-        Cookie cookie = (Cookie) response.getCookies().get(0);
+        assertEquals(1,response.getCookies().length);
+        Cookie cookie = (Cookie) response.getCookies()[0];
 
         request= createRequest("/foo/bar");
-        request.setupAddParameter("_spring_security_remember_me", "yes");
-        request.addCookie(cookie);
+        request.addParameter("_spring_security_remember_me", "yes");
+        request.setCookies(cookie);
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName5, "abc@xyz.com", null,null);
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -695,14 +706,14 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         // send cookie + auth header
         request= createRequest("/foo/bar");
-        request.setupAddParameter("_spring_security_remember_me", "yes");
-        request.addCookie(cookie);
+        request.addParameter("_spring_security_remember_me", "yes");
+        request.setCookies(cookie);
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();
         request.addHeader("Authorization",  "Basic " + 
                 new String(Base64.encodeBytes(("abc@xyz.com:abc").getBytes())));
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName5, "abc@xyz.com", null,null);
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -711,7 +722,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         // check no remember me for root user
         request= createRequest("/foo/bar");
-        request.setupAddParameter("_spring_security_remember_me", "yes");
+        request.addParameter("_spring_security_remember_me", "yes");
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();        
     
@@ -719,27 +730,27 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         request.addHeader("Authorization",  "Basic " + 
                 new String(Base64.encodeBytes((GeoServerUser.ROOT_USERNAME+":"+getMasterPassword()).getBytes())));
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName5, GeoServerUser.ROOT_USERNAME, null,null);        
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         //checkForAuthenticatedRole(auth);
         // no cookie for root user
-        assertEquals(0,response.getCookies().size());
+        assertEquals(0,response.getCookies().length);
         
         // check disabled user
         updateUser("ug1", "abc@xyz.com", false);
         
         request= createRequest("/foo/bar");
-        request.setupAddParameter("_spring_security_remember_me", "yes");
-        request.addCookie(cookie);
+        request.addParameter("_spring_security_remember_me", "yes");
+        request.setCookies(cookie);
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         // check for cancel cookie
-        assertEquals(1,response.getCookies().size());
-        Cookie cancelCookie = (Cookie) response.getCookies().get(0);
+        assertEquals(1,response.getCookies().length);
+        Cookie cancelCookie = (Cookie) response.getCookies()[0];
         assertNull(cancelCookie.getValue());
         updateUser("ug1", "abc@xyz.com", true);
 
@@ -754,7 +765,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         config.setClassName(GeoServerX509CertificateAuthenticationFilter.class.getName());        
         config.setName(testFilterName8);
         config.setRoleServiceName("rs1");
-        config.setRoleSource(org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.RoleService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.RoleService);
         config.setUserGroupServiceName("ug1");
         config.setRolesHeaderAttribute("roles");
         getSecurityManager().saveFilter(config);
@@ -771,26 +782,26 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         MockFilterChain chain = new MockFilterChain();                
         
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getStatus());
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         
         
-        for (org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource rs : 
-            org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.values()) {
+        for (PreAuthenticatedUserNameRoleSource rs : 
+            PreAuthenticatedUserNameRoleSource.values()) {
             getCache().removeAll();
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
             request= createRequest("/foo/bar");
             response= new MockHttpServletResponse();
             chain = new MockFilterChain();
-            if (rs==RoleSource.Header) {
-                request.setHeader("roles", derivedRole+";"+rootRole);
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
+                request.addHeader("roles", derivedRole+";"+rootRole);
             }
             setCertifacteForUser(testUserName, request);                        
             getProxy().doFilter(request, response, chain);            
-            assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
             
-            if (rs==RoleSource.Header) {
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
                 continue; // no cache
             }
             Authentication auth = getAuth(testFilterName8, testUserName,null,null);
@@ -803,8 +814,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         }
 
         // unknown user
-        for (org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource rs : 
-            org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.values()) {
+        for (PreAuthenticatedUserNameRoleSource rs : 
+            PreAuthenticatedUserNameRoleSource.values()) {
             getCache().removeAll();
             config.setRoleSource(rs);
             getSecurityManager().saveFilter(config);
@@ -816,8 +827,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
             //TODO
             setCertifacteForUser("unknown", request);
             getProxy().doFilter(request, response, chain);            
-            assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
-            if (rs==RoleSource.Header) {
+            assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+            if (rs.equals(PreAuthenticatedUserNameRoleSource.Header)) {
                 continue; // no cache
             }
             Authentication auth = getAuth(testFilterName8, "unknown",null,null);
@@ -829,7 +840,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         // test disabled user, should not work because of active cache
         updateUser("ug1", testUserName, false);
-        config.setRoleSource(org.geoserver.security.config.X509CertificateAuthenticationFilterConfig.RoleSource.UserGroupService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.UserGroupService);
         // saving the filter clears the cache
         getSecurityManager().saveFilter(config);
                 
@@ -838,7 +849,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         chain = new MockFilterChain();
         setCertifacteForUser(testUserName, request);
         getProxy().doFilter(request, response, chain);            
-        assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getStatus());
         Authentication auth = getAuth(testFilterName8, testUserName,0,0);
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -851,7 +862,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         response= new MockHttpServletResponse();
         chain = new MockFilterChain();                        
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         // Anonymous context is not stored in http session, no further testing
         removeAnonymousFilter();
 
@@ -882,7 +893,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         MockFilterChain chain = new MockFilterChain();                
             
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_UNAUTHORIZED,response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED,response.getStatus());
         String tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
         assert(tmp.indexOf(GeoServerSecurityManager.REALM) !=-1 );
@@ -898,7 +909,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         String headerValue=clientDigestString(tmp, testUserName, testPassword, request.getMethod());
         request.addHeader("Authorization",  headerValue);
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         Authentication auth = getAuth(testFilterName2, testUserName, 300,300);        
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -915,7 +926,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         request.addHeader("Authorization",  "Basic " + 
                 new String(Base64.encodeBytes((testUserName+":"+testPassword).getBytes())));
         getProxy().doFilter(request, response, chain);
-        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName, testUserName, null,null);
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());

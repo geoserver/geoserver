@@ -1,0 +1,28 @@
+<layerGroup>
+  <id>LayerGroupInfoImpl--41a0bb84:13f0e23325f:-7ffe</id>
+  <name>nestedgroup</name>
+  <mode>SINGLE</mode>
+  <title>Layer Group 1</title>
+  <workspace>
+    <id>WorkspaceInfoImpl--570ae188:124761b8d78:-7ffd</id>
+  </workspace>
+  <publishables>
+    <published type="layerGroup">
+      <id>LayerGroupInfoImpl-559bd2f7:13f1345fd7a:-8000</id>
+    </published>
+    <published type="layer">
+      <id>LayerInfoImpl-2bc80f29:12cef718474:-7fb9</id>
+    </published>    
+  </publishables>
+  <styles>
+    <style/>
+    <style/>      
+  </styles>
+  <bounds>
+    <minx>1661829.656</minx>
+    <maxx>1673782.331</maxx>
+    <miny>4853708.717</miny>
+    <maxy>4868326.037</maxy>
+    <crs class="projected">EPSG:3003</crs>
+  </bounds>
+</layerGroup>

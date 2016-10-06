@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -39,11 +40,11 @@ public class MigrateFrom_2_2_Test extends GeoServerSystemTestSupport {
     @Test
     public void testMigration() throws Exception{
         
-        File logoutFilterDir = new File(getSecurityManager().getFilterRoot(),GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);        
+        File logoutFilterDir = new File(getSecurityManager().get("security/filter").dir(),GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);        
         File oldLogoutFilterConfig = new File(logoutFilterDir,"config.xml.2.2.x");
         assertTrue(oldLogoutFilterConfig.exists());
         
-        File oldSecManagerConfig = new File(getSecurityManager().getSecurityRoot(), "config.xml.2.2.x");
+        File oldSecManagerConfig = new File(getSecurityManager().get("security").dir(), "config.xml.2.2.x");
         assertTrue(oldSecManagerConfig.exists());
         
         RoleFilterConfig rfConfig = (RoleFilterConfig) 
@@ -93,5 +94,16 @@ public class MigrateFrom_2_2_Test extends GeoServerSystemTestSupport {
             }
         }
         
+    }
+
+    @Test
+    public void testWebLoginChainSessionCreation() throws Exception {
+        //GEOS-6077
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        SecurityManagerConfig config = secMgr.loadSecurityConfig();
+
+        RequestFilterChain chain = 
+            config.getFilterChain().getRequestChainByName(GeoServerSecurityFilterChain.WEB_LOGIN_CHAIN_NAME);
+        assertTrue(chain.isAllowSessionCreation());
     }
 }

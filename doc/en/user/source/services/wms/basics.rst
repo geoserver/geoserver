@@ -51,6 +51,6 @@ For example, consider the WMS 1.1 request using the WGS84 SRS (EPSG:4326)::
 
 The equivalent WMS 1.3 request is::
 
-   geoserver/wms?VERSION=1.1.1&REQUEST=GetMap&CRS=epsg:4326&BBOX=-90,-180,90,180&...
+   geoserver/wms?VERSION=1.3.0&REQUEST=GetMap&CRS=epsg:4326&BBOX=-90,-180,90,180&...
 
 Note that the coordinates specified in the ``BBOX`` parameter are reversed.

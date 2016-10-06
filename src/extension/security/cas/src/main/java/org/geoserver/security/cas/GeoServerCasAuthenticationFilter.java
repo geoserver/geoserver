@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2016 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,8 +26,11 @@ import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.filter.GeoServerSecurityContextPersistenceFilter;
 import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jasig.cas.client.session.SingleSignOutHandler;
+import org.jasig.cas.client.util.CommonUtils;
 import org.jasig.cas.client.validation.Assertion;
+import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidationException;
+import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.web.authentication.ServiceAuthenticationDetailsSource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,8 +53,8 @@ import org.springframework.util.StringUtils;
 public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedUserNameFilter implements LogoutHandler {
     
     
-    protected GeoServerCas20ProxyTicketValidator validator;
-    protected ServiceAuthenticationDetailsSource casAuthenticationDetailsSource = new ServiceAuthenticationDetailsSource();
+    protected Cas20ProxyTicketValidator validator;
+    protected ServiceAuthenticationDetailsSource casAuthenticationDetailsSource ;
     protected String casLogoutURL;
     protected String urlInCasLogoutPage;
     protected boolean singleSignOut;
@@ -59,6 +63,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
 
     public GeoServerCasAuthenticationFilter(ProxyGrantingTicketStorage pgtStorageFilter) {
         this.pgtStorageFilter = pgtStorageFilter;
+        
     }
     
 
@@ -70,7 +75,16 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         CasAuthenticationFilterConfig authConfig = 
                 (CasAuthenticationFilterConfig) config;
         
-        validator = new GeoServerCas20ProxyTicketValidator(authConfig.getCasServerUrlPrefix());
+        
+        ServiceProperties props = new ServiceProperties();
+        props.setSendRenew(authConfig.isSendRenew());
+        // TODO, investigate in
+        // props.setAuthenticateAllArtifacts(true);
+        casAuthenticationDetailsSource= new 
+                ServiceAuthenticationDetailsSource(props,GeoServerCasConstants.ARTIFACT_PARAMETER);
+        
+        //validator = new GeoServerCas20ProxyTicketValidator(authConfig.getCasServerUrlPrefix());
+        validator = new Cas20ProxyTicketValidator(authConfig.getCasServerUrlPrefix());
         validator.setAcceptAnyProxy(true);
         validator.setProxyGrantingTicketStorage(pgtStorageFilter);
         
@@ -80,7 +94,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         
         casLogoutURL=GeoServerCasConstants.createCasURl(authConfig.getCasServerUrlPrefix(), GeoServerCasConstants.LOGOUT_URI);
         if (StringUtils.hasLength(authConfig.getUrlInCasLogoutPage()))
-                casLogoutURL+=GeoServerCasConstants.LOGOUT_URL_PARAM+"="+URLEncoder.encode(authConfig.getUrlInCasLogoutPage(),"utf-8");
+                casLogoutURL+="?"+GeoServerCasConstants.LOGOUT_URL_PARAM+"="+URLEncoder.encode(authConfig.getUrlInCasLogoutPage(),"utf-8");
                 
         singleSignOut=authConfig.isSingleSignOut();
         aep = new GeoServerCasAuthenticationEntryPoint(authConfig);
@@ -107,15 +121,28 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
     }
     
     protected static String retrieveService(HttpServletRequest request) {
-        StringBuffer buff  = new StringBuffer(request.getRequestURL().toString());
+        
+        String serviceBaseUrl = null;
+        String proxyBaseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");
+        if (StringUtils.hasLength(proxyBaseUrl)) {
+            serviceBaseUrl = proxyBaseUrl;
+        } else {
+            serviceBaseUrl = request.getRequestURL().toString();
+        }
+        StringBuffer buff  = new StringBuffer(serviceBaseUrl);
+        
+        
         if (StringUtils.hasLength(request.getQueryString())) {
             String query = request.getQueryString();
             String[] params = query.split("&");
             boolean firsttime=true;
             for (String param : params)  
             {  
-                String name = param.split("=")[0];  
-                String value = param.split("=")[1];  
+                                
+                String[] keyValue = param.split("=");
+                if (keyValue.length == 0) continue;
+                String name = keyValue[0];
+                
                 if (GeoServerCasConstants.ARTIFACT_PARAMETER.equals(name.trim()))
                     continue;
                 if (GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT.equals(name.trim()))
@@ -126,7 +153,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
                 } else {
                     buff.append("&");
                 }                                    
-                buff.append(name).append("=").append(value);
+                buff.append(param);
             }                            
         }
         String serviceUrl = buff.toString();
@@ -141,16 +168,12 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         String principal = super.getPreAuthenticatedPrincipal(request);
         
         HttpSession session = request.getSession(false);        
-        if (session==null && Boolean.TRUE.equals(request.getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR))) {
-            session=request.getSession();
-            LOGGER.info("Http session created by CAS");
-        }
 
         if (principal!=null && session!=null) {
             session.setAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY, 
                     request.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY));
             request.removeAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY);
-            getHandler().recordSession(request);
+            getHandler().process(request, null);
         }
         
         if (principal==null) {
@@ -173,8 +196,14 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
     }
 
     
+    protected static boolean handlerInitialized = false;
     protected static SingleSignOutHandler getHandler() {
-        return GeoServerExtensions.bean(SingleSignOutHandler.class);
+        SingleSignOutHandler handler = GeoServerExtensions.bean(SingleSignOutHandler.class);
+        if (!handlerInitialized) {
+            handler.init();
+            handlerInitialized=true;
+        }
+        return handler;
     }
 
     
@@ -187,10 +216,10 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
                 
         SingleSignOutHandler handler = getHandler();
         // check for sign out request from cas server
-        if (handler.isLogoutRequest(httpReq)) {
+        if (isLogoutRequest(httpReq)) {
             if (singleSignOut) { // do we participate
-                LOGGER.info("Single Sign Out received from CAS server --> starting log out");
-                handler.destroySession(httpReq);                
+                LOGGER.info("Single Sign Out received from CAS server --> starting log out");                
+                handler.process(httpReq, httpRes);
                 LogoutFilterChain logOutChain = (LogoutFilterChain) 
                         getSecurityManager().getSecurityConfig().getFilterChain().getRequestChainByName("webLogout");
                 logOutChain.doLogout(getSecurityManager(), httpReq, httpRes,getName());
@@ -203,23 +232,35 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         
         if (SecurityContextHolder.getContext().getAuthentication()!=null) {
             HttpSession session = httpReq.getSession(false);        
-            if (session==null && Boolean.TRUE.equals(httpReq.getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR))) {
-                session=httpReq.getSession();
-                LOGGER.info("Http session created by CAS");
-            }
 
             if (session !=null && 
                     session.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY)!=null && singleSignOut) {
-                getHandler().recordSession(httpReq);
+                handler.process(httpReq, httpRes);
+                
                 if (LOGGER.isLoggable(Level.INFO))
                     LOGGER.info("Record HTTP Session "+session.getId()+ " for CAS single sign out");
             }
         }
             
-
                 
     }
+    
+    /**
+     * Determines whether the given request is a CAS logout request.
+     *
+     * @param request HTTP request.
+     *
+     * @return True if request is logout request, false otherwise.
+     */
+    public boolean isLogoutRequest(final HttpServletRequest request) {
+        return "POST".equals(request.getMethod()) &&
+            CommonUtils.isNotBlank(CommonUtils.safeGetParameter(request, 
+                    SingleSignOutHandler.DEFAULT_LOGOUT_PARAMETER_NAME));
+    }
 
+    
+
+    
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) {

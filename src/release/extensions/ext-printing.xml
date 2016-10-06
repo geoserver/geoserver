@@ -1,0 +1,23 @@
+<assembly>
+  <id>printing-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>jtsio*</include>
+        <include>jyaml*</include>
+        <include>mapfish-geo-lib*</include>
+        <include>gs-printing-*.jar</include>
+        <include>print-lib-*.jar</include>
+        <include>pvalsecc-*.jar</include>
+        <include>xercesImpl-*.jar</include>
+        <include>xml-apis-xerces-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

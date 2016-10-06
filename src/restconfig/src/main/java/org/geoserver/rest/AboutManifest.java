@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,8 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import jj2000.j2k.NotImplementedError;
 
 import org.geoserver.ManifestLoader;
 import org.geoserver.ManifestLoader.AboutModel;
@@ -117,6 +116,7 @@ public class AboutManifest extends ReflectiveResource {
     protected void configureXStream(XStream xs) {
         // AboutModel
         xs.processAnnotations(AboutModel.class);
+        xs.allowTypes(new Class[] { AboutModel.class });
         xs.addImplicitCollection(AboutModel.class, "manifests");
         xs.alias("about", AboutModel.class);
 
@@ -156,7 +156,7 @@ public class AboutManifest extends ReflectiveResource {
                         @Override
                         public Object unmarshal(HierarchicalStreamReader reader,
                                 UnmarshallingContext context) {
-                            throw new NotImplementedError("Not implemented");
+                            throw new UnsupportedOperationException("Not implemented");
                         }
 
                     });
@@ -164,7 +164,7 @@ public class AboutManifest extends ReflectiveResource {
 
             @Override
             public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-                throw new NotImplementedError("Not implemented");
+                throw new UnsupportedOperationException("Not implemented");
             }
 
         });

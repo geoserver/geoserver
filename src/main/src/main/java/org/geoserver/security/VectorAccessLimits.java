@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -63,7 +64,7 @@ public class VectorAccessLimits extends DataAccessLimits {
     /**
      * The list of attributes the user is allowed to read
      * 
-     * @return
+     *
      */
     public List<PropertyName> getReadAttributes() {
         return readAttributes;
@@ -72,7 +73,7 @@ public class VectorAccessLimits extends DataAccessLimits {
     /**
      * The list of attributes the user is allowed to write
      * 
-     * @return
+     *
      */
     public List<PropertyName> getWriteAttributes() {
         return writeAttributes;
@@ -81,7 +82,7 @@ public class VectorAccessLimits extends DataAccessLimits {
     /**
      * Identifies the features the user can write onto
      * 
-     * @return
+     *
      */
     public Filter getWriteFilter() {
         return writeFilter;
@@ -89,7 +90,7 @@ public class VectorAccessLimits extends DataAccessLimits {
     
     /**
      * Returns a GeoTools query wrapping the read attributes and the read filter
-     * @return
+     *
      */
     public Query getReadQuery() {
         return buildQuery(readAttributes, readFilter);
@@ -97,7 +98,7 @@ public class VectorAccessLimits extends DataAccessLimits {
     
     /**
      * Returns a GeoTools query wrapping the write attributes and the write filter
-     * @return
+     *
      */
     public Query getWriteQuery() {
         return buildQuery(writeAttributes, writeFilter);
@@ -105,7 +106,7 @@ public class VectorAccessLimits extends DataAccessLimits {
 
     /**
      * Returns a GeoTools query build with the provided attributes and filters
-     * @return
+     *
      */
     private Query buildQuery(List<PropertyName> attributes, Filter filter) {
         if(attributes == null && (filter == null || filter == Filter.INCLUDE)) {
@@ -122,7 +123,7 @@ public class VectorAccessLimits extends DataAccessLimits {
     /**
      * Turns a list of {@link PropertyName} into a list of {@link String}
      * @param names
-     * @return
+     *
      */
     List<String> flattenNames(List<PropertyName> names) {
         if(names == null) {

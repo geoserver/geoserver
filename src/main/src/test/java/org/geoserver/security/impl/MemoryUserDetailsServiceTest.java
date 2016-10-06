@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,7 +16,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -110,38 +111,32 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
     }
 
     @Test
-    public void testCopyFrom() {
-        try {
-    
-            // from crypt tp crytp
-            GeoServerUserGroupService service1 = createUserGroupService("copyFrom");
-            GeoServerUserGroupService service2 = createUserGroupService("copyTo");            
-            copyFrom(service1,service2);
+    public void testCopyFrom() throws Exception {
+        // from crypt tp crytp
+        GeoServerUserGroupService service1 = createUserGroupService("copyFrom");
+        GeoServerUserGroupService service2 = createUserGroupService("copyTo");            
+        copyFrom(service1,service2);
+        
+        // from plain to plain
+        service1 = createUserGroupService("copyFrom1",getPlainTextPasswordEncoder().getName());
+        service2 = createUserGroupService("copyTo1",getPlainTextPasswordEncoder().getName());            
+        copyFrom(service1,service2);
+        
+        // cypt to digest
+        service1 = createUserGroupService("copyFrom2");
+        service2 = createUserGroupService("copyTo2",getDigestPasswordEncoder().getName());            
+        copyFrom(service1,service2);
+
+        // digest to digest
+        service1 = createUserGroupService("copyFrom3",getDigestPasswordEncoder().getName());
+        service2 = createUserGroupService("copyTo3",getDigestPasswordEncoder().getName());            
+        copyFrom(service1,service2);
+        
+        // digest to crypt
+        service1 = createUserGroupService("copyFrom4",getDigestPasswordEncoder().getName());
+        service2 = createUserGroupService("copyTo4");            
+        copyFrom(service1,service2);
             
-            // from plain to plain
-            service1 = createUserGroupService("copyFrom1",getPlainTextPasswordEncoder().getName());
-            service2 = createUserGroupService("copyTo1",getPlainTextPasswordEncoder().getName());            
-            copyFrom(service1,service2);
-            
-            // cypt to digest
-            service1 = createUserGroupService("copyFrom2");
-            service2 = createUserGroupService("copyTo2",getDigestPasswordEncoder().getName());            
-            copyFrom(service1,service2);
-    
-            // digest to digest
-            service1 = createUserGroupService("copyFrom3",getDigestPasswordEncoder().getName());
-            service2 = createUserGroupService("copyTo3",getDigestPasswordEncoder().getName());            
-            copyFrom(service1,service2);
-            
-            // digest to crypt
-            service1 = createUserGroupService("copyFrom4",getDigestPasswordEncoder().getName());
-            service2 = createUserGroupService("copyTo4");            
-            copyFrom(service1,service2);
-            
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail(ex.getMessage());
-        }
     
     }
     
@@ -181,8 +176,8 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         getSecurityManager().saveRoleService(roleConfig);        
         getSecurityManager().saveUserGroupService(ugConfig);
         
-        File roleDir= new File(getSecurityManager().getRoleRoot(),serviceName);
-        File ugDir= new File(getSecurityManager().getUserGroupRoot(),serviceName);
+        File roleDir= new File(getSecurityManager().get("security/role").dir(),serviceName);
+        File ugDir= new File(getSecurityManager().get("security/usergroup").dir(),serviceName);
         File roleFile = new File(roleDir,GeoServerSecurityManager.CONFIG_FILENAME);
         File ugFile = new File(ugDir,GeoServerSecurityManager.CONFIG_FILENAME);
         
@@ -240,8 +235,8 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         getSecurityManager().saveRoleService(roleConfig);        
         getSecurityManager().saveUserGroupService(ugConfig);
         
-        File roleDir= new File(getSecurityManager().getRoleRoot(),serviceName);
-        File ugDir= new File(getSecurityManager().getUserGroupRoot(),serviceName);
+        File roleDir= new File(getSecurityManager().get("security/role").dir(),serviceName);
+        File ugDir= new File(getSecurityManager().get("security/usergroup").dir(),serviceName);
         File roleFile = new File(roleDir,GeoServerSecurityManager.CONFIG_FILENAME);
         File ugFile = new File(ugDir,GeoServerSecurityManager.CONFIG_FILENAME);
         

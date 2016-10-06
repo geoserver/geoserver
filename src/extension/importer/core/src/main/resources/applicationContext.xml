@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-importer-core"/>
+    <constructor-arg index="1" value="Importer Core"/>
+  </bean>
+  <!-- 
+   core importer setup
+    -->
+  
+  <bean id="importer" class="org.geoserver.importer.Importer">
+    <constructor-arg ref="catalog"/>
+  </bean>
+  
+  <!--  format beans -->
+  <bean id="kmlFormat" class="org.geoserver.importer.format.KMLFileFormat" />
+  <bean id="gmlFormat" class="org.geoserver.importer.format.GMLFileFormat" />
+  <bean id="geoJsonFormat" class="org.geoserver.importer.format.GeoJSONFormat" />
+
+</beans>

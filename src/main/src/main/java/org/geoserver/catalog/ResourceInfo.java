@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -33,6 +34,17 @@ public interface ResourceInfo extends CatalogInfo {
      * Prefix for custom dimensions
      */
     public static final String CUSTOM_DIMENSION_PREFIX = "custom_dimension_";
+    
+    /**
+     * Key for the HTTP caching max age value in the metadata map
+     */
+    public static final String CACHE_AGE_MAX = "cacheAgeMax";
+    
+    /**
+     * Key for enabling/disabling HTTP caching flag in the metadata map
+     */
+    public static final String CACHING_ENABLED = "cachingEnabled";
+    
 
     /**
      * The catalog the resource is part of.
@@ -98,7 +110,7 @@ public interface ResourceInfo extends CatalogInfo {
      * return getNamespace().getPrefix() + ":" + getName();
      * </pre>
      * </p>
-     * @return
+     *
      */
     String prefixedName();
 
@@ -196,6 +208,13 @@ public interface ResourceInfo extends CatalogInfo {
      * @see MetadataLinkInfo
      */
     List<MetadataLinkInfo> getMetadataLinks();
+
+    /**
+     * A collection of data links for the resource.
+     * 
+     * @see DataLinkInfo
+     */
+    List<DataLinkInfo> getDataLinks();
 
     /**
      * Returns the bounds of the resource in lat / lon.
@@ -399,7 +418,7 @@ public interface ResourceInfo extends CatalogInfo {
     
     /**
      * Returns true if the resource existence should be advertised (true by default, unless otherwise set)
-     * @return
+     *
      */
     boolean isAdvertised();
     

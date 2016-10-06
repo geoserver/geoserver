@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,7 +11,10 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.geoserver.ows.XmlRequestReader;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.util.Version;
+import org.geotools.wcs.v1_1.WCS;
+import org.geotools.wcs.v1_1.WCSConfiguration;
 import org.geotools.xml.Parser;
 import org.vfny.geoserver.wcs.WcsException;
 
@@ -28,9 +32,13 @@ public class WcsXmlReader extends XmlRequestReader {
      */
     WCSConfiguration configuration;
 
-    public WcsXmlReader(String element, String version, WCSConfiguration configuration) {
+    private EntityResolverProvider resolverProvider;
+
+    public WcsXmlReader(String element, String version, WCSConfiguration configuration,
+            EntityResolverProvider resolverProvider) {
         super(new QName(WCS.NAMESPACE, element), new Version(version), "wcs");
         this.configuration = configuration;
+        this.resolverProvider = resolverProvider;
     }
 
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
@@ -39,6 +47,7 @@ public class WcsXmlReader extends XmlRequestReader {
         parser.setValidating(true);
         parser.setFailOnValidationError(true);
         parser.setStrict(true);
+        parser.setEntityResolver(resolverProvider.getEntityResolver());
         
         // parse
         Object parsed;

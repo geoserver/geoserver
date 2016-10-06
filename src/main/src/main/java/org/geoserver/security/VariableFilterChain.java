@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -43,7 +44,7 @@ public abstract class VariableFilterChain extends RequestFilterChain {
      * list the filter names which can be added to this chain
      * 
      * @param m
-     * @return
+     *
      */
     public abstract SortedSet<String> listFilterCandidates(GeoServerSecurityManager m) throws IOException;
         

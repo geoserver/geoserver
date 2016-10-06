@@ -10,7 +10,11 @@
     <property name="xmlConfig" ref="gwcXmlConfig"/>
     <property name="tileBreeder" ref="gwcTileBreeder"/>
   </bean>
-
+  <bean id="gwcMassTruncateRestlet" class="org.geowebcache.rest.seed.MassTruncateRestlet">
+    <property name="xmlConfig" ref="gwcXmlConfig"/>
+    <property name="storageBroker" ref="gwcStorageBroker"/>
+  </bean>
+  
   <bean id="gwcSeedFormRestlet" class="org.geowebcache.rest.seed.SeedFormRestlet">
     <property name="tileBreeder" ref="gwcTileBreeder"/>
   </bean>
@@ -22,6 +26,7 @@
     <property name="tileLayerDispatcher" ref="gwcTLDispatcher"/>
     <property name="urlMangler" ref="gwcURLMangler"/>
     <property name="controller" ref="geowebcacheDispatcher"/>
+    <property name="storageBroker" ref="gwcStorageBroker"/>
   </bean>
   <bean id="gwcBoundsRestlet" class="org.geowebcache.rest.bounds.BoundsRestlet">
     <property name="tileLayerDispatcher" ref="gwcTLDispatcher"/>
@@ -35,6 +40,10 @@
    <bean id="gwcRestMappings" class="org.geowebcache.rest.RESTMapping">
     <property name="routes">
       <map>
+      	<entry>
+          <key><value>/rest/masstruncate</value></key>
+          <ref bean="gwcMassTruncateRestlet" />
+        </entry>
         <entry>
           <key><value>/rest/seed/{layer}.{extension}</value></key>
           <ref bean="gwcSeedRestlet" />
@@ -79,6 +88,10 @@
           <key><value>/rest/web/{filename}</value></key>
           <ref bean="gwcByteStreamerRestlet" />
         </entry>
+        <entry>
+          <key><value>/statistics.{extension}</value></key>
+          <ref bean="gwcMemoryStatsResourceFinder" />
+        </entry>
       </map>
     </property>
   </bean>
@@ -96,6 +109,10 @@
         <prop key="/gwc/rest/**">gwcRestDispatcher</prop>        
       </props>
     </property>
+  </bean>
+  
+      <bean id="gwcMemoryStatsResourceFinder" class="org.geowebcache.rest.statistics.MemoryCacheStatsFinder">
+    <constructor-arg ref="gwcStorageBroker" />
   </bean>
 
 </beans>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,6 +11,7 @@ import java.util.List;
 import org.geoserver.config.GeoServerInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.Hints;
+import org.geotools.measure.Measure;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
@@ -28,6 +30,11 @@ public interface FeatureTypeInfo extends ResourceInfo {
      */
     static final String JDBC_VIRTUAL_TABLE = "JDBC_VIRTUAL_TABLE";
     
+    /**
+     * The cascaded stored query configuration
+     */
+    static final String STORED_QUERY_CONFIGURATION = "WFS_NG_STORED_QUERY_CONFIGURATION";
+
     /**
      * The data store the feature type is a part of.
      * <p>
@@ -51,17 +58,7 @@ public interface FeatureTypeInfo extends ResourceInfo {
      * @return A filter, or <code>null</code> if one not set.
      * @uml.property name="filter"
      */
-    Filter getFilter();
-
-    /**
-     * Sets a filter which should be applied to all queries of the dataset
-     * represented by the feature type.
-     * 
-     * @param filter
-     *                A filter, can be <code>null</code>
-     * @uml.property name="filter"
-     */
-    void setFilter(Filter filter);
+    Filter filter();
 
     /**
      * A cap on the number of features that a query against this type can return.
@@ -95,6 +92,54 @@ public interface FeatureTypeInfo extends ResourceInfo {
     void setNumDecimals( int numDecimals );
     
     /**
+     * Tolerance used to linearize this feature type, as an absolute value expressed in the
+     * geometries own CRS
+     * 
+     *
+     */
+    Measure getLinearizationTolerance();
+
+    /**
+     * Tolerance used to linearize this feature type, as an absolute value expressed in the
+     * geometries own CRS
+     * 
+     *
+     */
+    void setLinearizationTolerance(Measure tolerance);
+
+    /**
+     * True if this feature type info is overriding the WFS global SRS list
+     * 
+     *
+     */
+    boolean isOverridingServiceSRS();
+    
+    /**
+     * Set to true if this feature type info is overriding the WFS global SRS list
+     *
+     */
+    void setOverridingServiceSRS(boolean overridingServiceSRS);
+
+    /**
+     * True if this feature type info is overriding the counting of numberMatched.
+     *
+     *
+     */
+    boolean getSkipNumberMatched();
+
+    /**
+     * Set to true if this feature type info is overriding the default counting of numberMatched.
+     * @param skipNumberMatched
+     */
+    void setSkipNumberMatched(boolean skipNumberMatched);
+
+    /**
+     * The srs's that the WFS service will advertise in the capabilities document for this feature type
+     * (overriding the global WFS settings)
+     */
+    List<String> getResponseSRS();
+    
+    /**
      * Returns the derived set of attributes for the feature type.
      * <p>
      * This value is derived from the underlying feature, and any 
@@ -111,6 +156,18 @@ public interface FeatureTypeInfo extends ResourceInfo {
      * </p>
      */
     FeatureType getFeatureType() throws IOException;
+    
+    /**
+     * Return the ECQL string used as default feature type filter
+     *
+     */
+    String getCqlFilter();
+
+    /**
+     * Set the ECQL string used as default featue type filter
+     *
+     */
+    void setCqlFilter(String cqlFilterString);
     
     /**
      * Returns the underlying feature source instance.
@@ -132,9 +189,8 @@ public interface FeatureTypeInfo extends ResourceInfo {
     FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource( ProgressListener listener, Hints hints )
             throws IOException;
 
-    /**
-     * The live feature resource, an instance of of {@link FeatureResource}.
-     */
-    //FeatureResource getResource(ProgressListener listener)
-    //        throws IOException;
+	boolean isCircularArcPresent();
+	
+	void setCircularArcPresent(boolean arcsPresent);
+
 }

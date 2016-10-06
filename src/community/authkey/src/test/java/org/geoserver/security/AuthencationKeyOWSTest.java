@@ -1,12 +1,13 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,6 +35,8 @@ import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+import org.springframework.mock.web.MockHttpServletResponse;
+
 public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
 
     private static String adminKey;
@@ -55,7 +58,12 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
         props.put("sf.*.r", "*");
         props.put("cite.*.r", "cite");
         props.put("cite.*.w", "cite");
-        props.store(new FileOutputStream(layers), "");
+        FileOutputStream outputFile = new FileOutputStream(layers);
+        try {
+            props.store(outputFile, "");
+        } finally {
+            outputFile.close();
+        }
 
     }
     
@@ -242,5 +250,37 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
         XpathEngine engine = XMLUnit.newXpathEngine();
         String url = engine.evaluate("//wfs:FeatureCollection/@xsi:schemaLocation", doc);
         assertTrue(url.contains("&authkey=" + citeKey));
+    }
+    
+    @Test
+    public void testCiteGetFeatureCaseInsensitive() throws Exception {
+        Document doc = getAsDOM("wfs?service=WFS&version=1.0.0&request=GetFeature&typeName="
+                + getLayerId(MockData.PONDS) + "&AUTHKEY=" + citeKey);
+        // print(doc);
+        assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
+
+        XpathEngine engine = XMLUnit.newXpathEngine();
+        String url = engine.evaluate("//wfs:FeatureCollection/@xsi:schemaLocation", doc);
+        assertTrue(url.contains("&authkey=" + citeKey));
+    }
+
+    /*
+     * Tests that URLs in the OpenLayers Map are correctly generated (see: GEOS-7295)
+     */
+    @Test
+    public void testOpenLayersMapOutput() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("cite/wms?service=WMS&"
+                + "version=1.1.0&"
+                + "request=GetMap&"
+                + "bbox=-2.0,2.0,-1.0,6.0&"
+                + "layers=" + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart() + "&"
+                + "width=300&"
+                + "height=300&"
+                + "srs=EPSG:4326&"
+                + "format=application/openlayers"
+                + "&authkey=" + citeKey);
+        byte[] responseContent = getBinary(response);
+        String htmlDoc = new String(responseContent, "UTF-8");
+        assertTrue(htmlDoc.indexOf("http://localhost:8080/geoserver/cite/wms?authkey=" + citeKey) > 0);
     }
 }

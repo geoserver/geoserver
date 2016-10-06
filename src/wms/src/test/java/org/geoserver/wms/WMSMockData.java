@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,6 +16,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
@@ -129,6 +131,7 @@ public class WMSMockData {
         dataStoreInfo.setWorkspace(workspaceInfo);
 
         dataStore = new MemoryDataStore();
+        dataStore.setNamespaceURI("http://geoserver.org"); // required for GeoTools 12 implemetnation of MemoryDataStore
         ResourcePool resourcePool = new ResourcePool(catalog) {
             @Override
             public DataStore getDataStore(DataStoreInfo info) throws IOException {
@@ -294,7 +297,7 @@ public class WMSMockData {
         layerInfo.setName(name);
         layerInfo.setEnabled(true);
         layerInfo.setDefaultStyle(defaultStyle);
-        layerInfo.setType(LayerInfo.Type.VECTOR);
+        layerInfo.setType(PublishedType.VECTOR);
         catalog.add(layerInfo);
 
         SimpleFeatureTypeBuilder ftb = new SimpleFeatureTypeBuilder();

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -39,7 +40,8 @@ public class ScriptTransctionPluginTest extends TestCase {
 
     ScriptManager createScriptMgr() throws Exception {
         ScriptManager mgr = createNiceMock(ScriptManager.class);
-        expect(mgr.getWfsTxRoot()).andReturn(Files.createTempDir()).anyTimes();
+        expect(mgr.wfsTx()).andReturn(org.geoserver.platform.resource.Files.asResource(
+                Files.createTempDir())).anyTimes();
         replay(mgr);
         return mgr;
     }

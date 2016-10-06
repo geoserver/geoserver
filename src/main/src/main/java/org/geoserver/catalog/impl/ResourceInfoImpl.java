@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -26,6 +27,7 @@ import org.opengis.feature.type.Name;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.geoserver.catalog.DataLinkInfo;
 
 /**
  * Default implementation of {@link ResourceInfo}.
@@ -55,6 +57,8 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     protected List<KeywordInfo> keywords = new ArrayList<KeywordInfo>();
 
     protected List<MetadataLinkInfo> metadataLinks = new ArrayList<MetadataLinkInfo>();
+
+    protected List<DataLinkInfo> dataLinks = new ArrayList<DataLinkInfo>();
 
     protected CoordinateReferenceSystem nativeCRS;
     
@@ -196,6 +200,10 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         return metadataLinks;
     }
 
+    public List<DataLinkInfo> getDataLinks() {
+        return dataLinks;
+    }
+
     public String getSRS() {
         return srs;
     }
@@ -220,14 +228,19 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
           }
       }
       
+      ReferencedEnvelope result;
       if ( !CRS.equalsIgnoreMetadata(declaredCRS, nativeCRS) && 
           php == ProjectionPolicy.REPROJECT_TO_DECLARED ) {
-          return nativeBox.transform(declaredCRS,true); 
+          result = nativeBox.transform(declaredCRS,true); 
       } else if(php == ProjectionPolicy.FORCE_DECLARED) {
-    	  return ReferencedEnvelope.create( (Envelope) nativeBox, declaredCRS);
+    	  result = ReferencedEnvelope.create( (Envelope) nativeBox, declaredCRS);
+      } else {
+          result = nativeBox;
       }
       
-      return nativeBox;
+      // make sure that in no case the actual field value is returned to the client, this
+      // is not a getter, it's a derivative, thus ModificationProxy won't do a copy on its own 
+      return ReferencedEnvelope.create(result);
     }
 
     public ReferencedEnvelope getLatLonBoundingBox() {
@@ -265,6 +278,10 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     
     public void setMetadataLinks(List<MetadataLinkInfo> metaDataLinks) {
         this.metadataLinks = metaDataLinks;
+    }
+
+    public void setDataLinks(List<DataLinkInfo> dataLinks) {
+        this.dataLinks = dataLinks;
     }
 
     public StoreInfo getStore() {

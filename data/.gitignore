@@ -1,0 +1,7 @@
+release/gwc
+release/gwc-gs.xml
+release/gwc-layers
+release/logs
+release/security/geoserver.jceks
+release/security/masterpw.digest
+release/security/version.properties

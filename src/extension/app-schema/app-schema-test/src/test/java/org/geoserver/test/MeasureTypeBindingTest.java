@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,7 +26,7 @@ public class MeasureTypeBindingTest extends AbstractAppSchemaTestSupport {
     /**
      * This is to test MeasureTypeBinding without 'uom' in app-schema.
      * GeoServer should encode output without error
-     * (http://jira.codehaus.org/browse/GEOT-1272)
+     * (https://osgeo-org.atlassian.net/browse/GEOT-1272)
      */
     @Test
     public void testMeasureTypeBindingWithoutUOM() {

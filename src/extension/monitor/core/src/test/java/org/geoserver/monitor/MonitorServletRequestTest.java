@@ -1,27 +1,27 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.monitor;
 
-import static org.junit.Assert.*;
+import static junit.framework.Assert.assertEquals;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.geoserver.monitor.MonitorServletRequest.MonitorInputStream;
 import org.junit.Test;
-
-import com.mockrunner.mock.web.MockServletInputStream;
-import static junit.framework.Assert.assertEquals;
+import org.springframework.mock.web.DelegatingServletInputStream;
 
 public class MonitorServletRequestTest {
 
     @Test
     public void testInputStreamMaxSizeZero() throws Exception {
         byte[] data = data();
-        MockServletInputStream mock = new MockServletInputStream(data);
+        DelegatingServletInputStream mock = new DelegatingServletInputStream(new ByteArrayInputStream(data));
 
         MonitorInputStream in = new MonitorInputStream(mock, 0);
         byte[] read = read(in);
@@ -38,7 +38,7 @@ public class MonitorServletRequestTest {
     @Test
     public void testInputStream() throws Exception {
         byte[] data = data();
-        MockServletInputStream mock = new MockServletInputStream(data);
+        DelegatingServletInputStream mock = new DelegatingServletInputStream(new ByteArrayInputStream(data));
         
         MonitorInputStream in = new MonitorInputStream(mock, 1024);
         byte[] read = read(in);

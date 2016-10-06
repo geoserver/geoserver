@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -23,14 +24,14 @@ public interface CoverageResponseDelegate {
     /**
      * Returns true if the specified output format is supported, false otherwise 
      * @param outputFormat
-     * @return
+     *
      */
     boolean canProduce(String outputFormat);
 
     /**
      * Returns the content type for the specified output format
      * @param outputFormat
-     * @return
+     *
      */
     String getMimeType(String outputFormat);
 
@@ -39,7 +40,7 @@ public interface CoverageResponseDelegate {
      * mainly when storing the coverage on disk for later retrieval). For example a GeoTiff encoding
      * delegate might return "tif" (no period, just extension).
      * 
-     * @return
+     *
      */
     String getFileExtension(String outputFormat);
 
@@ -55,20 +56,20 @@ public interface CoverageResponseDelegate {
     
     /**
      * Returns the list of output formats managed by this delegate
-     * @return
+     *
      */
     List<String> getOutputFormats();
     
     /**
      * True if the encoder is available, false otherwise (possibly due to missing libraries and the like)
-     * @return
+     *
      */
     boolean isAvailable();
 
     /**
      * Returns the GML conformance class for this output format.
      * @param format
-     * @return
+     *
      */
     String getConformanceClass(String format);
     

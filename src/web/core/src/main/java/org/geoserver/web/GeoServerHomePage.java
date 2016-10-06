@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,6 +30,8 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.web.data.layer.LayerPage;
 import org.geoserver.web.data.layer.NewLayerPage;
 import org.geoserver.web.data.store.NewDataPage;
@@ -37,7 +40,6 @@ import org.geoserver.web.data.workspace.WorkspaceNewPage;
 import org.geoserver.web.data.workspace.WorkspacePage;
 import org.opengis.filter.Filter;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.base.Stopwatch;
 
@@ -55,7 +57,7 @@ import com.google.common.base.Stopwatch;
  * @author Andrea Aime - TOPP
  * 
  */
-public class GeoServerHomePage extends GeoServerBasePage {
+public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnlockablePage {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public GeoServerHomePage() {
@@ -70,16 +72,16 @@ public class GeoServerHomePage extends GeoServerBasePage {
             String contactEmail = contact.getContactEmail();
             HashMap<String, String>params = new HashMap<String, String>();
             params.put("version", version);
-            params.put("contactEmail", contactEmail);
+            params.put("contactEmail", (contactEmail == null ? "geoserver@example.org" : contactEmail));
             Label label = new Label("footerMessage", new StringResourceModel("GeoServerHomePage.footer", this, new Model(params)));
             label.setEscapeModelStrings(false);
             add(label);
         }
         
+        
         Authentication auth = getSession().getAuthentication();
         if(isAdmin(auth)) {
-            Stopwatch sw = new Stopwatch();
-            sw.start();
+            Stopwatch sw = Stopwatch.createStarted();
             Fragment f = new Fragment("catalogLinks", "catalogLinksFragment", this);
             Catalog catalog = getCatalog();
             
@@ -169,15 +171,10 @@ public class GeoServerHomePage extends GeoServerBasePage {
     /**
      * Checks if the current user is authenticated and is the administrator
      */
-    private boolean isAdmin(Authentication authentication) {
-        if(authentication == null || !authentication.isAuthenticated())
-            return false;
+    private boolean isAdmin(Authentication authentication) {        
         
-        for (GrantedAuthority authority : authentication.getAuthorities()) {
-            if ("ROLE_ADMINISTRATOR".equals(authority.getAuthority()))
-                return true;
-        }
-        return false;
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class).
+            checkAuthenticationForAdminRole(authentication);
     }
 
 }

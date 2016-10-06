@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,6 +16,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class DescribeLayerTest extends WMSTestSupport {
     
@@ -58,7 +60,11 @@ public class DescribeLayerTest extends WMSTestSupport {
         
         dom = getAsDOM("sf/wms?service=wms&version=1.1.1&request=DescribeLayer" +
                 "&layers=PrimitiveGeoFeature", true);
+        print(dom);
         assertEquals("WMS_DescribeLayerResponse", dom.getDocumentElement().getNodeName());
-        
+
+        Element e = (Element) dom.getElementsByTagName("LayerDescription").item(0);
+        String attribute = e.getAttribute("owsURL");
+        assertTrue(attribute.contains("sf/wfs"));
     }
 }

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcs/2.0"
+    xmlns:wcs="http://www.opengis.net/wcs/2.0"
+    xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" version="2.0.1" xml:lang="en">
+    <annotation>
+        <appinfo>wcsGetCoverage.xsd</appinfo>
+        <documentation>This XML Schema Document defines the GetCoverage operation request elements and types, for the OGC Web Coverage Service (WCS).
+            The GetCoverage request element is GetCoverage. The GetCoverage response is a gmlcov:AbstractCoverage.
+            Last updated: 2012-feb-06
+            Copyright (c) 2012 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/.
+        </documentation>
+    </annotation>
+
+    <!-- ============================================================== -->
+    <!-- includes and imports                                           -->
+    <!-- ============================================================== -->
+    <import namespace="http://www.opengis.net/gmlcov/1.0" schemaLocation="http://schemas.opengis.net/gmlcov/1.0/gmlcovAll.xsd"/>
+    <include schemaLocation="wcsCommon.xsd"/>
+
+    <!-- ============================================================== -->
+    <!-- elements and types                                             -->
+    <!-- ============================================================== -->
+    <element name="GetCoverage" type="wcs:GetCoverageType">
+        <annotation>
+            <documentation>Request to a WCS to perform the GetCoverage operation. This operation allows a client to retrieve a subset of one coverage. </documentation>
+        </annotation>
+    </element>
+    <complexType name="GetCoverageType">
+        <complexContent>
+            <extension base="wcs:RequestBaseType">
+                <sequence>
+                    <element ref="wcs:CoverageId">
+                        <annotation>
+                            <documentation>Identifier of the coverage that this GetCoverage operation request shall draw from. </documentation>
+                        </annotation>
+                    </element>
+                    <element ref="wcs:DimensionSubset" minOccurs="0" maxOccurs="unbounded"/>
+                    <element name="format" type="anyURI" minOccurs="0">
+                        <annotation>
+                            <documentation>MimeType of the format the resulting coverage shall be encoded in. Dafault is the coverage's native format. Type is anyURI because of the type of the element "mimeType" in "gml:FileType".</documentation>
+                        </annotation>
+                    </element>
+                    <element name="mediaType" type="anyURI" minOccurs="0">
+                        <annotation>
+                            <documentation>Optional element indicating the MimeType of the response of a GetCoverage request. Only currently allowed valued is "multipart/related".</documentation>
+                        </annotation>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <!-- ======================================================= -->
+    <!-- Domain subset types and elements                        -->
+    <!-- ======================================================= -->
+    <element name="DimensionSubset" type="wcs:DimensionSubsetType" abstract="true">
+        <annotation>
+            <documentation>Definition of the desired subset of the domain of the coverage. This is either a Trim operation, or a Slice operation.</documentation>
+        </annotation>
+    </element>
+    <complexType name="DimensionSubsetType" abstract="true">
+        <sequence>
+            <element name="Dimension" type="NCName"/>
+        </sequence>
+    </complexType>
+    <!-- ======================================================= -->
+    <element name="DimensionTrim" type="wcs:DimensionTrimType" substitutionGroup="wcs:DimensionSubset">
+        <annotation>
+            <documentation>Describes the trimming of a coverage's domain axis, between two values.</documentation>
+        </annotation>
+    </element>
+    <complexType name="DimensionTrimType">
+        <complexContent>
+            <extension base="wcs:DimensionSubsetType">
+                <sequence>
+                    <element name="TrimLow" type="string" minOccurs="0"/>
+                    <element name="TrimHigh" type="string" minOccurs="0"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <!-- ======================================================= -->
+    <element name="DimensionSlice" type="wcs:DimensionSliceType" substitutionGroup="wcs:DimensionSubset">
+        <annotation>
+            <documentation>Describes the slicing of a coverage's domain axis at a particular point.</documentation>
+        </annotation>
+    </element>
+    <complexType name="DimensionSliceType">
+        <complexContent>
+            <extension base="wcs:DimensionSubsetType">
+                <sequence>
+                    <element name="SlicePoint" type="string"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+</schema>
+

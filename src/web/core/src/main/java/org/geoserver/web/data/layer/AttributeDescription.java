@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -27,7 +28,7 @@ import com.vividsolutions.jts.geom.Polygon;
 @SuppressWarnings("serial")
 class AttributeDescription implements Serializable {
 
-    static final List BINDINGS = Arrays.asList(String.class, Boolean.class, Integer.class,
+    static final List<Class<?>> BINDINGS = Arrays.asList(String.class, Boolean.class, Integer.class,
             Long.class, Float.class, Double.class, Date.class, Time.class, Timestamp.class,
             Geometry.class, Point.class, LineString.class, Polygon.class, MultiPoint.class,
             MultiLineString.class, MultiPolygon.class, GeometryCollection.class);
@@ -44,7 +45,7 @@ class AttributeDescription implements Serializable {
 
     String name;
 
-    Class binding = String.class;
+    Class<?> binding = String.class;
 
     boolean nullable = true;
 
@@ -56,9 +57,9 @@ class AttributeDescription implements Serializable {
      * Returns the localized named of the attribute type
      * 
      * @param binding
-     * @return
+     *
      */
-    static String getLocalizedName(Class binding) {
+    static String getLocalizedName(Class<?> binding) {
         if (binding == null) {
             return "-";
         } else if (BINDINGS.contains(binding)) {
@@ -77,11 +78,11 @@ class AttributeDescription implements Serializable {
         this.name = name;
     }
 
-    public Class getBinding() {
+    public Class<?> getBinding() {
         return binding;
     }
 
-    public void setBinding(Class binding) {
+    public void setBinding(Class<?> binding) {
         this.binding = binding;
     }
 

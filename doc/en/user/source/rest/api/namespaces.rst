@@ -53,14 +53,17 @@ Controls a particular namespace.
      - Status code
      - Formats
      - Default Format
+     - Parameters 
    * - GET
      - Return namespace ``ns``
      - 200
      - HTML, XML, JSON
      - HTML
+     - :ref:`quietOnNotFound <rest_api_namespaces_quietOnNotFound>`
    * - POST
      -
      - 405
+     -
      -
      -
    * - PUT
@@ -68,10 +71,12 @@ Controls a particular namespace.
      - Modify namespace ``ns``
      - XML, JSON
      -
+     -
    * - DELETE
      - 200
      - Delete namespace ``ns``
      - XML, JSON
+     -
      -
 
 Exceptions
@@ -90,6 +95,16 @@ Exceptions
      - 403
 
 
+Parameters
+~~~~~~~~~~
+
+.. _rest_api_namespaces_quietOnNotFound:
+
+``quietOnNotFound``
+^^^^^^^^^^^^^^^^^^^^
+
+The ``quietOnNotFound`` parameter avoids to log an Exception when the Namespace is not present. Note that 404 status code will be returned anyway.
+	 
 ``/namespaces/default[.<format>]``
 ----------------------------------
 

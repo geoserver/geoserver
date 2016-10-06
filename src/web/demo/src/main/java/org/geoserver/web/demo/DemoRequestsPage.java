@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,29 +18,36 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.protocol.http.WebRequest;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.global.ConfigurationException;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
+import org.geoserver.config.GeoServer;
 
 /**
  * 
@@ -51,7 +60,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.web.demo");
 
-    private final File demoDir;
+    final Resource demoDir;
 
     private TextField urlTextField;
 
@@ -63,12 +72,13 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     public DemoRequestsPage() {
         try {
-            demoDir = GeoserverDataDirectory.findCreateConfigDir("demo/");
-        } catch (ConfigurationException e) {
+            GeoServerResourceLoader loader = this.getGeoServer().getCatalog().getResourceLoader();
+            demoDir = Resources.serializable(loader.get("demo"));
+        } catch (Exception e) {
             throw new WicketRuntimeException("Can't access demo requests directory: "
                     + e.getMessage());
         }
-        DemoRequest model = new DemoRequest(demoDir);
+        DemoRequest model = new DemoRequest(demoDir.path());
         setDefaultModel(new Model(model));
 
         setUpDemoRequestsForm(demoDir);
@@ -79,16 +89,16 @@ public class DemoRequestsPage extends GeoServerBasePage {
      * 
      * @param demoDir
      */
-    DemoRequestsPage(final File demoDir) {
-        this.demoDir = demoDir;
-        DemoRequest model = new DemoRequest(demoDir);
+    DemoRequestsPage(final Resource demoDir) {
+        this.demoDir = Resources.serializable(demoDir);
+        DemoRequest model = new DemoRequest(demoDir.path());
         setDefaultModel(new Model(model));
         setUpDemoRequestsForm(demoDir);
     }
 
     /**
      * Loads the contents of the demo request file named {@code reqFileName} and located in the
-     * {@link #getDemoDir() demo directory}.
+     * demo directory.
      * 
      * @param reqFileName
      *            the file name to load the contents for
@@ -97,9 +107,9 @@ public class DemoRequestsPage extends GeoServerBasePage {
      *             if an io exception occurs opening or loading the file
      */
     private String getFileContents(final String reqFileName) throws IOException {
-        final File file = new File(demoDir, reqFileName);
+        final Resource file = demoDir.get(reqFileName);
         final StringBuilder sb = new StringBuilder();
-        final BufferedReader reader = new BufferedReader(new FileReader(file));
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()));
         String line;
         try {
             while ((line = reader.readLine()) != null) {
@@ -112,7 +122,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
         return sb.toString();
     }
 
-    private void setUpDemoRequestsForm(final File demoDir) {
+    private void setUpDemoRequestsForm(final Resource demoDir) {
         final IModel requestModel = getDefaultModel();
 
         final Form demoRequestsForm;
@@ -125,7 +135,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
         final DropDownChoice demoRequestsList;
         final IModel reqFileNameModel = new PropertyModel(requestModel, "requestFileName");
         demoRequestsList = new DropDownChoice("demoRequestsList", reqFileNameModel, demoList,
-                new IChoiceRenderer() {
+                new ChoiceRenderer() {
                     public String getIdValue(Object obj, int index) {
                         return String.valueOf(obj);
                     }
@@ -137,23 +147,33 @@ public class DemoRequestsPage extends GeoServerBasePage {
         demoRequestsForm.add(demoRequestsList);
 
         /*
-         * Wanted to use a simpler OnChangeAjaxBehavior but target.addComponent(body) does not make
+         * Wanted to use a simpler OnChangeAjaxBehavior but target.add(body) does not make
          * the EditAreaBehavior to update the body contents inside it, but instead puts the plain
          * TextArea contents above the empty xml editor
          */
-        demoRequestsList.add(new AjaxFormSubmitBehavior(demoRequestsForm, "onchange") {
+        demoRequestsList.add(new AjaxFormSubmitBehavior(demoRequestsForm, "change") {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 final String reqFileName = demoRequestsList.getModelValue();
                 final String contents;
-
+                String proxyBaseUrl;
                 final String baseUrl;
                 {
-                    WebRequest request = (WebRequest) DemoRequestsPage.this.getRequest();
-                    HttpServletRequest httpServletRequest;
-                    httpServletRequest = ((WebRequest) request).getHttpServletRequest();
-                    baseUrl = ResponseUtils.baseURL(httpServletRequest);
+                    HttpServletRequest httpServletRequest = 
+                        getGeoServerApplication().servletRequest(DemoRequestsPage.this.getRequest());
+                    proxyBaseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");                    
+                    if (StringUtils.isEmpty(proxyBaseUrl)) {
+                        GeoServer gs = getGeoServer();
+                        proxyBaseUrl = gs.getGlobal().getSettings().getProxyBaseUrl();
+                        if (StringUtils.isEmpty(proxyBaseUrl)) {
+                            baseUrl = ResponseUtils.baseURL(httpServletRequest);
+                        } else {
+                            baseUrl = proxyBaseUrl;
+                        }
+                    } else {
+                        baseUrl = proxyBaseUrl;
+                    }
                 }
                 try {
                     contents = getFileContents(reqFileName);
@@ -165,18 +185,18 @@ public class DemoRequestsPage extends GeoServerBasePage {
                 boolean demoRequestIsHttpGet = reqFileName.endsWith(".url");
                 final String service = reqFileName.substring(0, reqFileName.indexOf('_'))
                         .toLowerCase();
-                final String serviceUrl = baseUrl + service;
                 if (demoRequestIsHttpGet) {
-                    String url = baseUrl + contents;
+                    String url = ResponseUtils.appendPath(baseUrl, contents);
                     urlTextField.setModelObject(url);
                     body.setModelObject("");
                 } else {
+                    String serviceUrl = ResponseUtils.appendPath(baseUrl, service);
                     urlTextField.setModelObject(serviceUrl);
                     body.setModelObject(contents);
                 }
 
-                // target.addComponent(urlTextField);
-                // target.addComponent(body);
+                // target.add(urlTextField);
+                // target.add(body);
                 /*
                  * Need to setResponsePage, addComponent causes the EditAreaBehavior to sometimes
                  * not updating properly
@@ -214,7 +234,8 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
         responseWindow = new ModalWindow("responseWindow");
         add(responseWindow);
-        responseWindow.setPageMapName("demoResponse");
+        
+        //responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(new ModalWindow.PageCreator() {
@@ -231,27 +252,26 @@ public class DemoRequestsPage extends GeoServerBasePage {
             }
 
             @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
                 // we need to force EditArea to update the textarea contents (which it hides)
                 // before submitting the form, otherwise the contents won't be the ones the user
                 // edited
-                return new AjaxCallDecorator() {
+                attributes.getAjaxCallListeners().add(new AjaxCallListener() {
                     @Override
-                    public CharSequence decorateScript(CharSequence script) {
-                        return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getCode();"
-                                + script;
+                    public CharSequence getBeforeHandler(Component component) {
+                        return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getValue();";
                     }
-                };
+                });
             }
-
         });
     }
 
-    private List<String> getDemoList(final File demoDir) {
+    private List<String> getDemoList(final Resource demoDir) {
         final List<String> demoList = new ArrayList<String>();
-        for (File file : demoDir.listFiles()) {
-            if (!file.isDirectory()) {
-                final String name = file.getName();
+        for (Resource file : demoDir.list()) {
+            if (file.getType() != Type.DIRECTORY) {
+                final String name = file.name();
                 if (name.endsWith(".url") || name.endsWith(".xml")) {
                     demoList.add(name);
                 } else {

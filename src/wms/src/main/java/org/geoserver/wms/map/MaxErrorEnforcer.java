@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -53,7 +54,7 @@ public class MaxErrorEnforcer {
 
     /**
      * True if the max error threshold was exceeded
-     * @return
+     *
      */
     public boolean exceedsMaxErrors() {
         return maxErrors > 0 && errors > maxErrors;
@@ -61,7 +62,7 @@ public class MaxErrorEnforcer {
     
     /**
      * Returns the last exception occurred (or null if none happened)
-     * @return
+     *
      */
     public Exception getLastException() {
         return lastException;

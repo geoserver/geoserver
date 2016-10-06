@@ -1,0 +1,16 @@
+<assembly>
+  <id>colormap-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-colormap*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

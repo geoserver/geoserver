@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,22 +10,27 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
-import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.UrlValidator;
-import org.geotools.util.Converters;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 
 /**
  * Checks the specified file exists on the file system, including checks in the data directory
  */
 @SuppressWarnings("serial")
-public class FileExistsValidator extends AbstractValidator {
+public class FileExistsValidator implements IValidator<String> {
     
     private UrlValidator delegate;
+    
+    /** Optional base directory for use during testing */
+    File baseDirectory = null;
     
     /**
      * Checks the file exists on the local file system
@@ -45,9 +51,9 @@ public class FileExistsValidator extends AbstractValidator {
     }
     
     @Override
-    protected void onValidate(IValidatable validatable) {
-        String uriSpec = Converters.convert(validatable.getValue(), String.class);
-        
+    public void validate(IValidatable<String> validatable) {
+        String uriSpec = validatable.getValue();
+
         // Make sure we are dealing with a local path
         try {
             URI uri = new URI(uriSpec);
@@ -60,8 +66,10 @@ public class FileExistsValidator extends AbstractValidator {
                         connection.setConnectTimeout(10000);
                         is = connection.getInputStream();
                     } catch(Exception e) {
-                        error(validatable, "FileExistsValidator.unreachable", 
-                                Collections.singletonMap("file", uriSpec));
+                        IValidationError err = new ValidationError("FileExistsValidator.unreachable")
+                                .addKey("FileExistsValidator.unreachable")
+                                .setVariable("file", uriSpec);
+                        validatable.error(err);
                     } finally {
                         IOUtils.closeQuietly(is);
                     }
@@ -75,14 +83,26 @@ public class FileExistsValidator extends AbstractValidator {
                 }
             }
         } catch(URISyntaxException e) {
-            // may be a windows path, move on               
+            // may be a windows path, move on
         }
-        
-        // local to data dir?
-        File relFile = GeoserverDataDirectory.findDataFile(uriSpec);
-        if(relFile == null || !relFile.exists()) {
-            error(validatable, "FileExistsValidator.fileNotFoundError", 
-                    Collections.singletonMap("file", uriSpec));
+
+        File relFile = null;
+
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        if (baseDirectory != null ){
+            // local to provided baseDirectory
+            relFile = Files.url(baseDirectory, uriSpec);
+        }
+        else if( loader != null ){
+            // local to data directory?
+            relFile = loader.url(uriSpec);
+        }
+
+        if (relFile == null || !relFile.exists()) {
+            IValidationError err = new ValidationError("FileExistsValidator.fileNotFoundError")
+                    .addKey("FileExistsValidator.fileNotFoundError")
+                    .setVariable("file", uriSpec);
+            validatable.error(err);
         }
     }
 

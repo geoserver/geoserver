@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -151,17 +152,11 @@ public class GeoServerTemplateLoader2Test {
         expect(cat.getFeatureTypeByName(ft.getName())).andReturn(null).once();
         replay(dd, cat);
         
-        org.vfny.geoserver.global.GeoserverDataDirectory.setCatalog(cat);
-        try {
-            GeoServerTemplateLoader tl = new GeoServerTemplateLoader(getClass(), dd);
-            tl.setCatalog(cat);
-            tl.setFeatureType(ft);
-            tl.findTemplateSource("header.ftl");
-    
-            verify(cat);
-        }
-        finally {
-            org.vfny.geoserver.global.GeoserverDataDirectory.setCatalog(null);
-        }
+        GeoServerTemplateLoader tl = new GeoServerTemplateLoader(getClass(), dd);
+        tl.setCatalog(cat);
+        tl.setFeatureType(ft);
+        tl.findTemplateSource("header.ftl");
+
+        verify(cat);
     }
 }

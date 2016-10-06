@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -38,7 +39,6 @@ public interface DirectInvocationService {
      * @throws IllegalArgumentException
      *             if either the operation name or arguments list doesn't match one of the service
      *             provided operations
-     * @throws Exception
      *             under any other circumstances, specific to the operation being executed
      */
     Object invokeDirect(String operationName, Object[] parameters) throws IllegalArgumentException,

@@ -1,14 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.jdbcconfig;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.logging.Logger;
-
+import com.google.common.base.Stopwatch;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -24,12 +21,16 @@ import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.jdbcconfig.internal.JDBCConfigProperties;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
-import com.google.common.base.Stopwatch;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
 
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = Logging.getLogger(JDBCGeoServerLoader.class);
 
     private CatalogFacade catalogFacade;
@@ -53,8 +54,8 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         }
 
         ConfigDatabase configDatabase = ((JDBCCatalogFacade) catalogFacade).getConfigDatabase();
-
-        URL initScript = config.isInitDb() ? config.getInitScript() : null;
+        
+        Resource initScript = config.isInitDb() ? config.getInitScript() : null;
         configDatabase.initDb(initScript);
 
         config.setInitDb(false);
@@ -72,7 +73,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
             return;
         }
 
-        Stopwatch sw = new Stopwatch().start();
+        Stopwatch sw = Stopwatch.createStarted();
         loadCatalogInternal(catalog, xp);
         sw.stop();
         //System.err.println("Loaded catalog in " + sw.toString());
@@ -89,6 +90,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected void loadGeoServer(GeoServer geoServer, XStreamPersister xp) throws Exception {
         if (!config.isEnabled()) {

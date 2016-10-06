@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,7 +30,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DataStoreTest extends CatalogRESTTestSupport {
 
@@ -87,12 +88,12 @@ public class DataStoreTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAllUnauthorized() throws Exception {
-        assertEquals( 405, putAsServletResponse("/rest/workspaces/sf/datastores").getStatusCode() );
+        assertEquals( 405, putAsServletResponse("/rest/workspaces/sf/datastores").getStatus() );
     }
 
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
-        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/sf/datastores").getStatusCode() );
+        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/sf/datastores").getStatus() );
     }
 
     @Test
@@ -120,6 +121,29 @@ public class DataStoreTest extends CatalogRESTTestSupport {
             
             assertTrue( link.getAttribute("href").endsWith( ft.getName() + ".html") );
         }
+    }
+    
+    @Test
+    public void testGetWrongDataStore() throws Exception {
+        // Parameters for the request
+        String ws = "sf";
+        String ds = "sfssssss";
+        // Request path
+        String requestPath = "/rest/workspaces/" + ws + "/datastores/" + ds + ".html";
+        // Exception path
+        String exception = "No such datastore: " + ws + "," + ds;
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
+                exception));
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getContentAsString().isEmpty());
     }
     
     File setupNewDataStore() throws Exception {
@@ -156,7 +180,7 @@ public class DataStoreTest extends CatalogRESTTestSupport {
             "</dataStore>";
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/sf/datastores", xml, "text/xml" );
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/sf/datastores/newDataStore" ) );
 
@@ -196,7 +220,7 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/sf/datastores", json, "text/json" );
         
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/sf/datastores/newDataStore" ) );
         
@@ -217,7 +241,7 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/sf/datastores/sf", xml, "text/xml");
-        assertEquals( 405, response.getStatusCode() );
+        assertEquals( 405, response.getStatus() );
     }
 
     @Test
@@ -233,7 +257,7 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse( "/rest/workspaces/sf/datastores/sf", xml, "text/xml");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
 
         dom = getAsDOM( "/rest/workspaces/sf/datastores/sf.xml");
         assertXpathEvaluatesTo("false", "/dataStore/enabled", dom );
@@ -261,12 +285,29 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse( "/rest/workspaces/sf/datastores/sf", xml, "text/xml");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         DataStoreInfo ds = catalog.getDataStoreByName( "sf", "sf" );
         assertEquals( 2, ds.getConnectionParameters().size() );
         assertTrue( ds.getConnectionParameters().containsKey( "one" ) );
         assertTrue( ds.getConnectionParameters().containsKey( "two" ) );
+    }
+    
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        DataStoreInfo ds = catalog.getDataStoreByName( "sf", "sf");
+        assertTrue(ds.isEnabled());
+        
+        String xml = 
+        "<dataStore>" + 
+         "<name>sf</name>" + 
+        "</dataStore>";
+        
+        MockHttpServletResponse response = 
+            putAsServletResponse( "/rest/workspaces/sf/datastores/sf", xml, "text/xml");
+        assertEquals( 200, response.getStatus() );
+        
+        assertTrue(ds.isEnabled());
     }
 
     @Test
@@ -278,12 +319,12 @@ public class DataStoreTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/workspaces/sf/datastores/nonExistant", xml, "text/xml" );
-        assertEquals( 404, response.getStatusCode() );
+        assertEquals( 404, response.getStatus() );
     }
 
     @Test
     public void testDeleteNonExistant() throws Exception {
-        assertEquals( 404, deleteAsServletResponse("/rest/workspaces/sf/datastores/nonExistant").getStatusCode() );
+        assertEquals( 404, deleteAsServletResponse("/rest/workspaces/sf/datastores/nonExistant").getStatus() );
     }
 
     @Test
@@ -307,16 +348,16 @@ public class DataStoreTest extends CatalogRESTTestSupport {
             "</dataStore>";
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/sf/datastores", xml, "text/xml" );
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( catalog.getDataStoreByName("sf", "newDataStore"));
         
-        assertEquals( 200, deleteAsServletResponse("/rest/workspaces/sf/datastores/newDataStore").getStatusCode());
+        assertEquals( 200, deleteAsServletResponse("/rest/workspaces/sf/datastores/newDataStore").getStatus());
         assertNull( catalog.getDataStoreByName("sf", "newDataStore"));
     }
 
     @Test
     public void testDeleteNonEmptyForbidden() throws Exception {
-        assertEquals( 403, deleteAsServletResponse("/rest/workspaces/sf/datastores/sf").getStatusCode());
+        assertEquals( 403, deleteAsServletResponse("/rest/workspaces/sf/datastores/sf").getStatus());
     }
 
     @Test
@@ -324,7 +365,7 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getDataStoreByName("sf", "sf"));
         MockHttpServletResponse response =
             deleteAsServletResponse("/rest/workspaces/sf/datastores/sf?recurse=true");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         assertNull(catalog.getDataStoreByName("sf", "sf"));
         
@@ -341,7 +382,7 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         String xml = "<dataStore>" +
             "<name>newName</name>" + 
             "</dataStore>";
-        assertEquals( 403, putAsServletResponse("/rest/workspaces/sf/datastores/sf", xml, "text/xml").getStatusCode());
+        assertEquals( 403, putAsServletResponse("/rest/workspaces/sf/datastores/sf", xml, "text/xml").getStatus());
     }
 
     @Test
@@ -349,6 +390,6 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         String xml = "<dataStore>" +
         "<workspace>gs</workspace>" + 
         "</dataStore>";
-        assertEquals( 403, putAsServletResponse("/rest/workspaces/sf/datastores/sf", xml, "text/xml").getStatusCode());
+        assertEquals( 403, putAsServletResponse("/rest/workspaces/sf/datastores/sf", xml, "text/xml").getStatus());
     }
 }

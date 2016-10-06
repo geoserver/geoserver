@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,7 +8,7 @@ package org.geoserver.ows.util;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.TreeMap;
 
 /**
  * Map decorator which makes String keys case-insensitive.
@@ -16,10 +17,10 @@ import java.util.Set;
  *
  */
 public class CaseInsensitiveMap implements Map {
-    Map delegate;
+    Map delegate = new TreeMap();
 
     public CaseInsensitiveMap(Map delegate) {
-        this.delegate = delegate;
+        putAll(delegate);
     }
 
     public void clear() {
@@ -63,7 +64,12 @@ public class CaseInsensitiveMap implements Map {
     }
 
     public void putAll(Map t) {
-        delegate.putAll(t);
+        // make sure to upcase all keys
+        for (Object entry : t.entrySet()) {
+            Object key = ((Entry) entry).getKey();
+            Object value = ((Entry) entry).getValue();
+            put(key, value);
+        }
     }
 
     public Object remove(Object key) {

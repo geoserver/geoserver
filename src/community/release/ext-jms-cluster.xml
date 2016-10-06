@@ -1,0 +1,48 @@
+<assembly>
+  <id>jms-cluster-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+   <fileSets>
+	<fileSet>
+	      <directory>release/target/dependency</directory>
+	      <outputDirectory></outputDirectory>
+	      <includes>
+			<include>gs-jms*.jar</include>
+			<include>jms-api*.jar</include>
+			<include>xbean-spring*.jar</include>
+			<include>spring-jms*.jar</include>
+			<!-- ALREADY IN GEOSERVER -->
+			<!--include>commons-io*.jar</include-->		
+			<!--include>spring-context*.jar</include-->
+			<!--include>spring-asm*.jar</include-->
+			<!--include>spring-aop*.jar</include-->
+			<!--include>spring-expression*.jar</include-->
+
+			<include>ant*.jar</include>
+			<include>activemq*.jar</include>
+			<include>activemq-broker*.jar</include>
+			<include>activemq-kahadb-store*.jar</include>
+
+			<!-- levelDB (version conflicts with css plugin) -->
+			<!--include>activemq-leveldb-store*.jar</include>
+			<include>leveldb*.jar</include>
+			<include>scala*.jar</include-->
+
+			<include>activemq-all.jar</include>
+			<include>proton-*.jar</include>
+			<include>bcpkix-*.jar</include>
+			<include>activemq-client*.jar</include>
+			<include>geronimo-*.jar</include>
+			<include>activemq-openwire-legacy*.jar</include>
+			<include>hawtbuf*.jar</include>
+			<include>hawtjni*.jar</include>
+			<include>hawtdispatch*.jar</include>
+			<include>activemq-spring*.jar</include>
+			<include>activemq-pool*.jar</include>
+			<include>activemq-protobuf*.jar</include>
+	      </includes>
+	</fileSet>
+ </fileSets>
+</assembly>

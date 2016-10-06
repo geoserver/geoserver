@@ -1,10 +1,10 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -13,6 +13,7 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 
@@ -24,10 +25,11 @@ public interface KeyStoreProvider {
     void setSecurityManager(GeoServerSecurityManager securityManager);
 
     /**
-     * @return the default key store {@link File} object
+     * @return the default key store {@link Resource} object
+     * 
      */
-    File getFile();
-
+    Resource getResource();
+    
     /**
      * Forces a reload of the key store
      * 
@@ -41,7 +43,7 @@ public interface KeyStoreProvider {
      * exist
      * 
      * @param alias
-     * @return
+     *
      * @throws IOException
      */
     Key getKey(String alias) throws IOException;
@@ -50,7 +52,7 @@ public interface KeyStoreProvider {
      * Gets the key for encrypting passwords stored
      * in configuration files, may be <code>null</code>
      * 
-     * @return
+     *
      * @throws IOException
      */
     byte[] getConfigPasswordKey() throws IOException;
@@ -59,7 +61,7 @@ public interface KeyStoreProvider {
      * Checks if a such a key is available
      * without presenting the key itself
      * 
-     * @return
+     *
      * @throws IOException
      */
     boolean hasConfigPasswordKey() throws IOException;
@@ -69,7 +71,7 @@ public interface KeyStoreProvider {
      * Test it the key store contains a alias
      * 
      * @param alias
-     * @return
+     *
      * @throws IOException
      */
     boolean containsAlias(String alias) throws IOException;
@@ -81,7 +83,7 @@ public interface KeyStoreProvider {
      * 
      * may be <code>null</code>
      * @param serviceName
-     * @return
+     *
      * @throws IOException
      */
     byte[] getUserGroupKey(String serviceName) throws IOException;
@@ -90,7 +92,7 @@ public interface KeyStoreProvider {
      * Checks if a such a key is available
      * without presenting the key itself
      * 
-     * @return
+     *
      * @throws IOException
      */
     boolean hasUserGroupKey(String serviceName) throws IOException;
@@ -100,7 +102,7 @@ public interface KeyStoreProvider {
      * <code>null</code> if the alias does not
      * exist
      * @param name
-     * @return
+     *
      * @throws IOException if the key exists but has the wrong type
      */
     SecretKey getSecretKey(String name) throws IOException;
@@ -110,7 +112,7 @@ public interface KeyStoreProvider {
      * <code>null</code> if the alias does not
      * exist
      * @param name
-     * @return
+     *
      * @throws IOException if the key exists but has the wrong type
      */
     PublicKey getPublicKey(String name) throws IOException;
@@ -120,7 +122,7 @@ public interface KeyStoreProvider {
      * <code>null</code> if the alias does not
      * exist
      * @param name
-     * @return
+     *
      * @throws IOException if the key exists but has the wrong type
      */
     PrivateKey getPrivateKey(String name) throws IOException;
@@ -137,7 +139,7 @@ public interface KeyStoreProvider {
      * Tests if the password is the key store password
      * 
      * @param password
-     * @return
+     *
      * @throws IOException
      */
     boolean isKeyStorePassword(char[] password) throws IOException;
@@ -147,7 +149,6 @@ public interface KeyStoreProvider {
      * 
      * @param alias
      * @param key
-     * @throws Exception
      */
     void setSecretKey(String alias, char[] key) throws IOException;
 
@@ -202,7 +203,7 @@ public interface KeyStoreProvider {
     /**
      * if {@link #DEFAULT_FILE_NAME} and {@link #PREPARED_FILE_NAME} exist,
      * this method checks if {@link #PREPARED_FILE_NAME} can be used
-     * with new {@link MasterPasswordProvider.#getMasterPassword() method.
+     * with new {@link MasterPasswordProvider#getMasterPassword()} method.
      * 
      * YES: replace the old keystore with the new one
      * 

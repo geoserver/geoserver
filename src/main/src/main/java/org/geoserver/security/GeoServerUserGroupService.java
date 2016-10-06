@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -77,7 +78,7 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService,User
      * @param username
      * @param password
      * @param isEnabled
-     * @return
+     *
      */
     GeoServerUser createUserObject(String username,String password, boolean isEnabled)  throws IOException;
     
@@ -87,7 +88,7 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService,User
      * @param groupname
      * @param password
      * @param isEnabled
-     * @return
+     *
      */
     GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled)  throws IOException;
     
@@ -144,7 +145,7 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService,User
      * @return the  name of the {@link PasswordValidator} object.
      * mandatory, default is {@link PasswordValidator#DEFAULT_NAME}
      * Validators can be loaded using 
-     * {@link GeoServerSecurityManager#loadPasswordValidator(String)
+     * {@link GeoServerSecurityManager#loadPasswordValidator(String)}
      * 
      */
     String getPasswordValidatorName();
@@ -166,7 +167,7 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService,User
      * having the specified property
      * 
      * @param propname
-     * @return
+     *
      * @throws IOException
      */
     SortedSet<GeoServerUser> getUsersHavingProperty(String propname) throws IOException;
@@ -176,7 +177,7 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService,User
      * having the specified property
      *
      * @param propname
-     * @return
+     *
      * @throws IOException
      */
     int getUserCountHavingProperty(String propname) throws IOException;
@@ -187,7 +188,7 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService,User
      * having the specified property
      * 
      * @param propname
-     * @return
+     *
      * @throws IOException
      */
     SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) throws IOException;
@@ -197,7 +198,7 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService,User
      * having the specified property
      * 
      * @param propname
-     * @return
+     *
      * @throws IOException
      */
     int getUserCountNotHavingProperty(String propname) throws IOException;
@@ -208,7 +209,7 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService,User
      * 
      * @param propname
      * @param propvalue
-     * @return
+     *
      * @throws IOException
      */
     SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname,String propvalue) throws IOException;
@@ -219,7 +220,7 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService,User
      * 
      * @param propname
      * @param propvalue
-     * @return
+     *
      * @throws IOException
      */
     int getUserCountHavingPropertyValue(String propname,String propvalue) throws IOException;

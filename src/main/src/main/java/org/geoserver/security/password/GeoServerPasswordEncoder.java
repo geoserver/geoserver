@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -74,7 +75,7 @@ public interface GeoServerPasswordEncoder extends PasswordEncoder,BeanNameAware 
     /**
      * Validates a specified "raw" password (as char array) against an encoded password.
      * 
-     * @see {@link #isPasswordValid(String, String, Object)
+     * @see {@link #isPasswordValid(String, String, Object)}
      */
     boolean isPasswordValid(String encPass, char[] rawPass, Object salt);
 
@@ -100,7 +101,7 @@ public interface GeoServerPasswordEncoder extends PasswordEncoder,BeanNameAware 
      * the unrestricted policy files of the java
      * cryptographic extension 
      * 
-     * @return
+     *
      */
     boolean isAvailableWithoutStrongCryptogaphy();
 

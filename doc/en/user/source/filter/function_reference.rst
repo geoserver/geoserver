@@ -65,6 +65,9 @@ Comparison functions
      - ``candidate``:Object, ``v1``:Object, ..., ``v9``:Object
      - Returns true if ``candidate`` is equal to one of the ``v1``, ..., ``v9`` values. 
        Use the function name matching the number of arguments specified.
+   * - in
+     - ``candidate``:Object, ``v1``:Object, ``v2``:Object, ...
+     - Works exactly the same as the in2, ..., in10 functions described above, but takes any number of values as input.
    * - isLike
      - ``string``:String, ``pattern``:String
      - Returns true if the string matches the specified pattern. For the full syntax of the pattern specification see the `Java Pattern class javadocs <http://java.sun.com/javase/6/docs/api/java/util/regex/Pattern.html>`_
@@ -218,9 +221,6 @@ Geometric functions
    * - bufferWithSegments
      - ``geometry``:Geometry, ``distance``:Double, ``segments``:Integer
      - Returns the buffered area around the geometry using the specified distance and using the specified number of segments to represent a quadrant of a circle.
-   * - bufferWithSegments
-     - ``geometry``:Geometry, ``distance``:Double, ``segments``:Integer
-     - Returns the buffered area around the geometry using the specified distance and using the specified number of segments to represent a quadrant of a circle.
    * - centroid
      - ``geometry``:Geometry
      - Returns the centroid of the geometry. Can be often used as a label point for polygons, though there is no guarantee it will actually lie inside the geometry 
@@ -250,7 +250,7 @@ Geometric functions
      - Returns the exterior ring of the specified polygon
    * - geometryType
      - ``geometry``:Geometry
-     - Returns the type of the geometry as a string. May be ``Point``, ``MultiPoint``, ``LineString``, ``LinearRing``, ``MultiLineString``, ``Polygon``, ``MultiPoligon``, ``GeometryCollection``
+     - Returns the type of the geometry as a string. May be ``Point``, ``MultiPoint``, ``LineString``, ``LinearRing``, ``MultiLineString``, ``Polygon``, ``MultiPolygon``, ``GeometryCollection``
    * - geomFromWKT
      - ``wkt``:String
      - Returns the ``Geometry`` represented in the Well Known Text format contained in the ``wkt`` parameter
@@ -505,13 +505,13 @@ Parsing and formatting functions
      - **Arguments**
      - **Description**
    * - dateFormat
-     - ``date``:Timestamp, ``format``:String
+     - ``format``:String, date``:Timestamp
      - Formats the specified date according to the provided format. The format syntax can be found in the `Java SimpleDateFormat javadocs <http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html>`_
    * - dateParse
-     - ``dateString``:String, ``format``:String
+     - ``format``:String, dateString``:String
      - Parses a date from a ``dateString`` formatted according to the ``format`` specification. The format syntax can be found in the `Java SimpleDateFormat javadocs <http://java.sun.com/javase/6/docs/api/java/text/SimpleDateFormat.html>`_
    * - numberFormat
-     - ``number``:Double, ``format``:String
+     - ``format``:String, number``:Double
      - Formats the number according to the specified ``format``. The format syntax can be found in the `Java DecimalFormat javadocs <http://java.sun.com/javase/6/docs/api/java/text/DecimalFormat.html>`_
    * - parseBoolean
      - ``boolean``:String

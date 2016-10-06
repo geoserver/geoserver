@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -17,7 +18,7 @@ import org.geotools.util.logging.Logging;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class LocalizedChoiceRenderer implements IChoiceRenderer<String> {
+public class LocalizedChoiceRenderer extends ChoiceRenderer<String> {
     private static final long serialVersionUID = -8773437372842472840L;
 
     static final Logger LOGGER = Logging.getLogger(LocalizedChoiceRenderer.class);

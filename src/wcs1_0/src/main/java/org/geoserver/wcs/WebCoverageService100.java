@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -16,7 +17,7 @@ import org.opengis.coverage.grid.GridCoverage;
  * Web Coverage Services interface.
  * <p>
  * Each of the methods on this class corresponds to an operation as defined by the Web Coverage
- * Specification. See {@link http://www.opengeospatial.org/standards/wcs} for more details.
+ * Specification. See {@link "http://www.opengeospatial.org/standards/wcs"} for more details.
  * </p>
  * 
  * @author Andrea Aime, TOPP
@@ -24,6 +25,12 @@ import org.opengis.coverage.grid.GridCoverage;
  * 
  */
 public interface WebCoverageService100 {
+    
+    /**
+     * WCS service info.
+     */
+    WCSInfo getServiceInfo();
+    
     /**
      * GetCapabilities operation.
      */

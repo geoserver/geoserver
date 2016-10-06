@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" targetNamespace="http://www.isotc211.org/2005/gmd" elementFormDefault="qualified" version="2012-07-13">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>Geographic MetaData (GMD) extensible markup language is a component of the XML Schema Implementation of Geographic Information Metadata documented in ISO/TS 19139:2007. GMD includes all the definitions of http://www.isotc211.org/2005/gmd namespace. The root document of this namespace is the file gmd.xsd. This freeText.xsd schema implements cultural and linguistic adaptability extensions defined in 7.3 of ISO/TS 19139:2007. This extension essentially formalizes the free text concept described in Annex J of ISO 19115:2003. For this reason, and in order to simplify the organization of overall geographic metadata XML schema, this schema has been included as part of the gmd namespace instead of the gmx namespace.</xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd"/>
+	<xs:include schemaLocation="gmd.xsd"/>
+	<xs:include schemaLocation="identification.xsd"/>
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- ================================== Classes ================================= -->
+	<xs:complexType name="PT_FreeText_Type">
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="textGroup" type="gmd:LocalisedCharacterString_PropertyType" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="PT_FreeText" type="gmd:PT_FreeText_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="PT_FreeText_PropertyType">
+		<xs:complexContent>
+			<xs:extension base="gco:CharacterString_PropertyType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="gmd:PT_FreeText"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="PT_Locale_Type">
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="languageCode" type="gmd:LanguageCode_PropertyType"/>
+					<xs:element name="country" type="gmd:Country_PropertyType" minOccurs="0"/>
+					<xs:element name="characterEncoding" type="gmd:MD_CharacterSetCode_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="PT_Locale" type="gmd:PT_Locale_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="PT_Locale_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:PT_Locale"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="LocalisedCharacterString_Type">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="id" type="xs:ID"/>
+				<xs:attribute name="locale" type="xs:anyURI"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="LocalisedCharacterString" type="gmd:LocalisedCharacterString_Type" substitutionGroup="gco:CharacterString"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="LocalisedCharacterString_PropertyType">
+		<xs:complexContent>
+			<xs:extension base="gco:ObjectReference_PropertyType">
+				<xs:sequence minOccurs="0">
+					<xs:element ref="gmd:LocalisedCharacterString"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="PT_LocaleContainer_Type">
+		<xs:sequence>
+			<xs:element name="description" type="gco:CharacterString_PropertyType"/>
+			<xs:element name="locale" type="gmd:PT_Locale_PropertyType"/>
+			<xs:element name="date" type="gmd:CI_Date_PropertyType" maxOccurs="unbounded"/>
+			<xs:element name="responsibleParty" type="gmd:CI_ResponsibleParty_PropertyType" maxOccurs="unbounded"/>
+			<xs:element name="localisedString" type="gmd:LocalisedCharacterString_PropertyType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="PT_LocaleContainer" type="gmd:PT_LocaleContainer_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="PT_LocaleContainer_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:PT_LocaleContainer"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- =========================================================================== -->
+	<!-- =========================================================================== -->
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<xs:element name="LanguageCode" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="LanguageCode_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:LanguageCode"/>
+		</xs:sequence>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<xs:element name="Country" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="Country_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:Country"/>
+		</xs:sequence>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!--====EOF====-->
+</xs:schema>

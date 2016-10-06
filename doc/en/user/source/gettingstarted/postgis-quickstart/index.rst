@@ -1,162 +1,179 @@
 .. _postgis_quickstart:
 
-Publishing a PostGIS Table
+Publishing a PostGIS table
 ==========================
 
 This tutorial walks through the steps of publishing a PostGIS table with GeoServer.
 
-.. note::
+.. note:: This tutorial assumes that PostgreSQL/PostGIS has been previously installed on the system and responding on ``localhost`` on port ``5432``, and also that GeoServer is running at ``http://localhost:8080/geoserver``.
 
-   This tutorial assumes that GeoServer is running at http://localhost:8080/geoserver.
+Data preparation
+----------------
 
-.. note::
+First let's gather that the data that we'll be publishing.
 
-   This tutorial assumes PostGIS has been previously installed on the system.
+#. Download the file :download:`nyc_buildings.zip`. It contains a PostGIS dump of a dataset of buildings from New York City.
 
-Getting Started
----------------
+#. Create a PostGIS database called ``nyc``. This can be done with the following commands:
 
-#. Download the zip file :download:`nyc_buildings.zip`. It contains a PostGIS dump of a dataset of buildings from New York City that will be used during in this tutorial.
+   .. code-block:: console
 
-#. Create a PostGIS database called "nyc". This can be done with the following command line::
+      createdb nyc
+      psql -d nyc -c 'CREATE EXTENSION postgis'
 
-         createdb -T template_postgis nyc
+   .. note:: You may need to supply a user name and password with these commands.
 
-   If the PostGIS install is not set up with the "postgis_template" then the following sequence of commands will perform the equivalent::
+#. Extract :file:`nyc_buildings.sql` from :file:`nyc_buildings.zip`.
 
-        ...
+#. Import :file:`nyc_buildings.sql` into the ``nyc`` database:
 
-#. Unzip ``nyc_buildings.zip`` to some location on the file system. This will result in the file ``nyc_buildings.sql``. 
+   .. code-block:: console
 
-#. Import ``nyc_buildings.sql`` into the ``nyc`` database::
+      psql -f nyc_buildings.sql nyc
 
-         psql -f nyc_buildings.sql nyc
+Creating a new workspace
+------------------------
 
+The next step is to create a workspace for the data. A workspace is a container used to group similar layers together.
 
-Create a Data Store
--------------------
+.. note:: This step is optional if you'd like to use an existing workspace. Usually, a workspace is created for each project, which can include stores and layers that are related to each other.
 
-The first step is to create a *data store* for the PostGIS database "nyc". The data store tells GeoServer how to connect to the database.
+#. In a web browser, navigate to ``http://localhost:8080/geoserver``.
 
-    #. In a web browser navigate to http://localhost:8080/geoserver.
+#. Log into GeoServer as described in the :ref:`logging_in` section. 
 
-    #. Navigate to :menuselection:`Data-->Stores`.
+#. Navigate to :menuselection:`Data --> Workspaces`.
 
-	.. figure:: datastores.png
-	   :align: center
+   .. figure:: ../../data/webadmin/img/data_workspaces.png
 
-	   *Adding a New Data Source*
+      Workspaces page
 
-    #. Create a new data store by clicking the ``PostGIS NG`` link.
+#. Click the :guilabel:`Add new workspace` button.
 
-    #. Enter the :guilabel:`Basic Store Info`.  Keep the default :guilabel:`Workspace`, and enter the :guilabel:`Data Source Name` as ``nyc_buildings`` and a brief :guilabel:`Description`.
+#. You will be prompted to enter a workspace :guilabel:`Name` and :guilabel:`Namespace URI`.
 
-	.. figure:: basicStore.png
-	   :align: center
+   .. figure:: ../shapefile-quickstart/new_workspace.png
 
-	   *Basic Store Info*
+      Configure a new workspace
 
-    #. Specify the PostGIS database :guilabel:`Connection Parameters`
+#. Enter the :guilabel:`Name` as ``nyc`` and the :guilabel:`Namespace URI` as ``http://geoserver.org/nyc``.
 
-       .. list-table::
+   .. note:: A workspace name is a identifier describing your project. It must not exceed ten characters or contain spaces. A Namespace URI (Uniform Resource Identifier) can usually be a URL associated with your project with an added trailing identifier indicating the workspace. The Namespace URI filed does not need to resolve to an actual valid web address.
 
-          * - ``dbtype``
-            - postgisng
-          * - ``host``
-            - localhost
-          * - ``post``
-            - 5432
-          * - ``database``
-            - nyc
-          * - ``schema``
-            - public
-          * - ``user``
-            - postgres
-          * - ``passwd``
-            - enter postgres password
-          * - ``validate connections``
-            - enable with check box
+#. Click the :guilabel:`Submit` button. The ``nyc`` workspace will be added to the :guilabel:`Workspaces` list. 
 
-       .. note::
+Creating a store
+----------------
 
-          The **username** and **password** parameters are specific to the user who created the postgis database. Depending on how PostgreSQL is configured the password parameter may be unnecessary.
+Once the workspace is created, we are ready to add a new store. The store tells GeoServer how to connect to the shapefile. 
+
+#. Navigate to :menuselection:`Data-->Stores`.
+    
+#. You should see a list of stores, including the type of store and the workspace that the store belongs to.
+
+   .. figure:: datastores.png
+
+      Adding a new data source
+
+#. Create a new store by clicking the ``PostGIS`` link.
+
+#. Enter the :guilabel:`Basic Store Info`:
+
+   * Select the ``nyc`` :guilabel:`Workspace`
+   * Enter the :guilabel:`Data Source Name` as ``nyc_buildings``
+   * Add a brief :guilabel:`Description`
+
+   .. figure:: basicStore.png
+
+      Basic Store Info
+
+#. Specify the PostGIS database :guilabel:`Connection Parameters`:
+
+   .. list-table::
+      :header-rows: 1 
+
+      * - Option
+        - Value
+      * - :guilabel:`dbtype`
+        - :kbd:`postgis`
+      * - :guilabel:`host`
+        - :kbd:`localhost`
+      * - :guilabel:`port`
+        - :kbd:`5432`
+      * - :guilabel:`database`
+        - :kbd:`nyc`
+      * - :guilabel:`schema`
+        - :kbd:`public`
+      * - :guilabel:`user`
+        - :kbd:`postgres`
+      * - :guilabel:`passwd`
+        - (Password for the ``postgres`` user)
+      * - :guilabel:`validate connections`
+        - (Checked)
+
+   .. note:: Leave all other fields at their default values.
            
-       .. figure:: connectionParameters.png
-          :align: center
+   .. figure:: connectionParameters.png
+       
+      Connection Parameters
 
-	  *Connection Parameters*
+#. Click :guilabel:`Save`. 
 
-    #. Click :guilabel:`Save`. 
+Creating a layer
+----------------
 
-Create a Layer 
---------------
+Now that the store is loaded, we can publish the layer.
 
-    #. Navigate to :menuselection:`Data-->Layers`.
+#. Navigate to :menuselection:`Data --> Layers`.
 
-    #. Click :guilabel:`Add a new resource`.
-	
-    #. From the :guilabel:`New Layer chooser` drop-down menu, select ``cite:nyc_buidings``.
-	
-	.. figure:: newlayerchooser.png
-	   :align: center
+#. Click :guilabel:`Add a new resource`.
 
-	   *New Layer drop down selection*	
-	
-    #. On the resulting layer row, select the layer name ``nyc_buildings``. 
+#. From the :guilabel:`New Layer chooser` menu, select ``nyc:nyc_buidings``.
 
-	.. figure:: layerrow.png
-	   :align: center
+   .. figure:: newlayerchooser.png
 
-	   *New Layer row*
-	
-    #. The :guilabel:`Edit Layer` page defines the Data and Publishing parameters for a layer. Enter a short :guilabel:`Title` and an :guilabel:`Abstract` for the ``nyc_buildings`` layer.   
-	
-	.. figure:: basicInfo.png
-	   :align: center
+      Store selection
 
-	   *Basic Resource Info*
-	
-    #. Generate the layer's *bounding boxes* by clicking the :guilabel:`Compute from data` and then :guilabel:`Compute from Native bounds.`
-	
-	.. figure:: boundingbox.png
-	   :align: center
+#. On the resulting layer row, select the layer name ``nyc_buildings``. 
 
-	   *Generate Bounding Boxes*
-	
-    #. Set the layer's style by switching to the :guilabel:`Publishing` tab.  
+   .. figure:: layerrow.png
 
-    #. Select the :guilabel:`polygon` style from the :guilabel:`Default Style` drop down list.
+      New layer selection
 
-	.. figure:: style.png
-	   :align: center
+#. The :guilabel:`Edit Layer` page defines the data and publishing parameters for a layer. Enter a short :guilabel:`Title` and an :guilabel:`Abstract` for the ``nyc_buildings`` layer.
 
-	   *Select Default Style*
+   .. figure:: basicInfo.png
 
-    #. Finalize the layer configuration by scrolling to the bottom of the page and clicking :guilabel:`Save`.
+      Basic Resource Info
 
-Preview the Layer
------------------
+#. Generate the layer's bounding boxes by clicking the :guilabel:`Compute from data` and then :guilabel:`Compute from native bounds` links.
 
-    #. In order to verify that the ``nyc_buildings`` layer is published correctly you can preview the layer.  Navigate to the :guilabel:`Layer Preview` screen and find the ``cite:nyc_buildings`` layer.
+   .. figure:: boundingbox.png
 
-	.. figure:: layer-preview.png
-	   :align: center
+      Generating bounding boxes
 
-	   *Layer Preview*
+#. Click the :guilabel:`Publishing` tab at the top of the page.
 
-    #. Click on the :guilabel:`OpenLayers` link in the :guilabel:`Common Formats` column. 
+#. We can set the layer's style here. Under :guilabel:`WMS Settings`, ensure that the :guilabel:`Default Style` is set to :guilabel:`polygon`.
 
-    #. Success! An OpenLayers map loads in a new page and displays the layer data with the default polygon style. You can use the Preview Map to zoom and pan around the dataset, as well as display the attributes of features.
+   .. figure:: style.png
 
-	.. figure:: openlayers.png
-	   :align: center
+      Select Default Style
 
-	   *Preview map of nyc_buildings*
-	
-	
-	
-	
-	
-	
-	
-	
+#. Finalize the layer configuration by scrolling to the bottom of the page and clicking :guilabel:`Save`.
+
+Previewing the layer
+--------------------
+
+In order to verify that the ``nyc_buildings`` layer is published correctly, we can preview the layer.
+
+#. Navigate to the :guilabel:`Layer Preview` screen and find the ``nyc:nyc_buildings`` layer.
+
+#. Click the :guilabel:`OpenLayers` link in the :guilabel:`Common Formats` column.
+
+#. An OpenLayers map will load in a new tab and display the shapefile data with the default line style. You can use this preview map to zoom and pan around the dataset, as well as display the attributes of features.
+
+   .. figure:: openlayers.png
+
+      Preview map of nyc_buildings
+

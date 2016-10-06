@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,19 +11,14 @@ import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpServletResponse;
-
 public class IpFlowControllerTest extends AbstractFlowControllerTest {
-
-    private static final long MAX_WAIT = 10000;
 
     @Test
     public void testConcurrentRequestsSingleIPAddress() {
         // an ip based flow controller that will allow just one request at a time
         IpFlowController controller = new IpFlowController(1);
         String ipAddress = "127.0.0.1";
-        Request firstRequest = buildRequest(ipAddress, "");
+        Request firstRequest = buildIpRequest(ipAddress, "");
         FlowControllerTestingThread tSample = new FlowControllerTestingThread(firstRequest,
                 0, 0, controller);
         tSample.start();
@@ -34,9 +30,9 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
         // make three testing threads that will "process" forever, and will use the ip to identify themselves
         // as the same client, until we interrupt them
-        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildRequest(
+        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildIpRequest(
                 ip, ""), 0, Long.MAX_VALUE, controller);
-        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildRequest(
+        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildIpRequest(
                 ip, ""), 0, Long.MAX_VALUE, controller);
 
         try {
@@ -55,7 +51,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
-            assertEquals(ThreadState.PROCESSING, t2.state);
+            waitState(ThreadState.PROCESSING, t2, MAX_WAIT);
 
             t2.interrupt();
         } catch (Exception e) {
@@ -71,9 +67,9 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
     public void testUserAndIPAddressFlowControl() {
         // an ip based flow controller that will allow just one request at a time
         IpFlowController ipController = new IpFlowController(1);
-        UserFlowController userController = new UserFlowController(1);
+        UserConcurrentFlowController userController = new UserConcurrentFlowController(1);
         String ipAddress = "127.0.0.1";
-        Request firstRequest = buildRequest(ipAddress, "");
+        Request firstRequest = buildIpRequest(ipAddress, "");
         FlowControllerTestingThread tSample = new FlowControllerTestingThread(firstRequest,
                 0, 0, userController, ipController);
         tSample.start();
@@ -85,9 +81,9 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
         // make three testing threads that will "process" forever, and will use the ip to identify themselves
         // as the same client, until we interrupt them
-        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildRequest(
+        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildIpRequest(
                 ip, ""), 0, Long.MAX_VALUE, ipController);
-        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildRequest(
+        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildIpRequest(
                 ip, ""), 0, Long.MAX_VALUE, ipController);
 
         try {
@@ -106,7 +102,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
-            assertEquals(ThreadState.PROCESSING, t2.state);
+            waitState(ThreadState.PROCESSING, t2, MAX_WAIT);
 
             t2.interrupt();
             waitTerminated(t2, MAX_WAIT);
@@ -127,13 +123,13 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
         IpFlowController controller = new IpFlowController(1);
         String ipAddress = "192.168.1.1";
 
-        Request firstRequest = buildRequest(ipAddress, "");
+        Request firstRequest = buildIpRequest(ipAddress, "");
 
         String ip = firstRequest.getHttpRequest().getRemoteAddr();
 
-        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildRequest(
+        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildIpRequest(
                 ip, "192.168.1.2"), 0, Long.MAX_VALUE, controller);
-        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildRequest(
+        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildIpRequest(
                 ip, "192.168.1.3"), 0, Long.MAX_VALUE, controller);
 
         try {
@@ -153,7 +149,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
-            assertEquals(ThreadState.PROCESSING, t2.state);
+            waitState(ThreadState.PROCESSING, t2, MAX_WAIT);
 
             t2.interrupt();
         } catch (Exception e) {
@@ -165,21 +161,6 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
     }
 
-    Request buildRequest(String ipAddress, String proxyIp) {
-        Request request = new Request();
-        MockHttpServletRequest httpRequest = new MockHttpServletRequest();
-        request.setHttpRequest(httpRequest);
-        request.setHttpResponse(new MockHttpServletResponse());
 
-        if (ipAddress != null && !ipAddress.equals("")) {
-            httpRequest.setRemoteAddr(ipAddress);
-        } else {
-            httpRequest.setRemoteAddr("127.0.0.1");
-        }
-        if (!proxyIp.equals("")) {
-            httpRequest.setHeader("x-forwarded-for", proxyIp + ", " + ipAddress);
-        }
-        return request;
-    }
 
 }

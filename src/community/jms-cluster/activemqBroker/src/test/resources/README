@@ -1,0 +1,43 @@
+Remember to append the 'release' profile to the mvn compile command
+then copy the datadir:
+cp ${PROJECT}/src/web/app/src/main/webapp/data/ ${PROJECT}/src/web/app/src/main/webapp/data2/
+
+To perform tests using Jetty (similar things for Tomcat) Use the Start class in src/test/java/ setting two different run with the following arguments:
+ 
+Run 1 arguments:
+-Djetty.port=8081
+-Xmx512M
+-DGEOSERVER_DATA_DIR=${PROJECT}/src/web/app/src/main/webapp/data/
+-DGEOWEBCACHE_CACHE_DIR=/tmp/gwc1
+-DCLUSTER_CONFIG_DIR=/tmp/cache1
+-Dactivemq.base=/tmp/cache1/
+-DGWC_DISKQUOTA_DISABLED=true
+-DGWC_METASTORE_DISABLED=true
+-Dactivemq.transportConnectors.server.uri=tcp://127.0.0.1:61111?maximumConnections=1000&wireFormat.maxFrameSize=104857600&jms.useAsyncSend=true,trace=true
+-Dactivemq.jmx.host=localhost
+-Dactivemq.jmx.port=1077
+-Djava.security.policy=security.policy
+-Dcom.sun.management.jmxremote=true
+-Dcom.sun.management.jmxremote.authenticate=false
+-Dcom.sun.management.jmxremote.ssl=false
+
+Run 2 arguments:
+-Djetty.port=8082
+-Xmx512M
+-DGEOSERVER_DATA_DIR=${PROJECT}/src/web/app/src/main/webapp/data2/
+-DGEOWEBCACHE_CACHE_DIR=/tmp/gwc2
+-DCLUSTER_CONFIG_DIR=/tmp/cache2
+-Dactivemq.base=/tmp/cache2/
+-DGWC_DISKQUOTA_DISABLED=true
+-DGWC_METASTORE_DISABLED=true
+-Dactivemq.transportConnectors.server.uri=tcp://127.0.0.1:61222?maximumConnections=1000&wireFormat.maxFrameSize=104857600&jms.useAsyncSend=true,trace=true
+-Dactivemq.jmx.host=localhost
+-Dactivemq.jmx.port=1078
+-Djava.security.policy=security.policy
+-Dcom.sun.management.jmxremote=true
+-Dcom.sun.management.jmxremote.authenticate=false
+-Dcom.sun.management.jmxremote.ssl=false
+
+NOTE:
+- jetty.port is specific for jetty and can be set also in jetty.property (environment will override it)
+- activemq.jmx.port is specific of the defined activemq configuration and can be set into activemq-jmx.properties (environment will override it)

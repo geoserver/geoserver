@@ -1,0 +1,6 @@
+<map name="VariousPoints">
+<area shape="circle" id="VariousPoints.1107531643021"  coords="0,600,6" title="ADDRESS: 221 Main Street"/>
+<area shape="circle" id="VariousPoints.1107531643022"  coords="200,400,6" title="ADDRESS: 222 Main Street"/>
+<area shape="circle" id="VariousPoints.1107531643023"  coords="400,200,6" title="ADDRESS: 223 Main Street"/>
+<area shape="circle" id="VariousPoints.1107531643024"  coords="600,0,6" title="ADDRESS: 224 Main Street"/>
+</map>

@@ -1,18 +1,23 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.layer;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
@@ -23,15 +28,24 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import com.google.common.collect.Iterators;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.ows.LocalWorkspace;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
 import org.junit.After;
@@ -77,9 +91,9 @@ public class CatalogConfigurationTest {
         defaults.setCacheLayersByDefault(false);
         defaults.setCacheNonDefaultStyles(true);
 
-        layer1 = mockLayer("layer1", new String[]{}, LayerInfo.Type.RASTER);
-        layer2 = mockLayer("layer2", new String[]{}, LayerInfo.Type.RASTER);
-        layerWithNoTileLayer = mockLayer("layerWithNoTileLayer", new String[]{}, LayerInfo.Type.RASTER);
+        layer1 = mockLayer("layer1", "test", new String[]{}, PublishedType.RASTER);
+        layer2 = mockLayer("layer2", "test", new String[]{}, PublishedType.RASTER);
+        layerWithNoTileLayer = mockLayer("layerWithNoTileLayer", new String[]{}, PublishedType.RASTER);
 
 
         group1 = mockGroup("group1", layer1, layer2);
@@ -161,6 +175,7 @@ public class CatalogConfigurationTest {
         mockMediator = mock(GWC.class);
         GWC.set(mockMediator);
         when(mockMediator.getConfig()).thenReturn(defaults);
+        when(mockMediator.getCatalog()).thenReturn(catalog);
     }
 
     @After
@@ -357,7 +372,7 @@ public class CatalogConfigurationTest {
         doThrow(new IllegalArgumentException("failedSave")).when(tileLayerCatalog).save(
                 eq(forceState2));
 
-        verify(mockMediator, never()).layerRemoved(anyString());
+        verify(mockMediator, times(1)).layerRemoved(layerInfo2.getName());
         verify(mockMediator, never()).layerRenamed(anyString(), anyString());
 
         GeoServerTileLayerInfo addedState1 = TileLayerInfoUtil.loadOrCreate(layerWithNoTileLayer,
@@ -386,18 +401,26 @@ public class CatalogConfigurationTest {
         verify(mockMediator, times(1)).layerAdded(eq(addedState2.getName()));
     }
 
+    @Test public void testCanSave() {
+        // Create mock layer not transient and ensure that the Layer cannot be saved
+        GeoServerTileLayer l = mock(GeoServerTileLayer.class);
+        when(l.isTransientLayer()).thenReturn(true);
+        assertFalse(config.canSave(l));
+    }
+
     @Test  public void testNoGeometry() throws Exception {
         org.opengis.feature.type.FeatureType featureTypeWithNoGeometry = mock(org.opengis.feature.type.FeatureType.class);
         when(featureTypeWithNoGeometry.getGeometryDescriptor()).thenReturn(null);
         org.geoserver.catalog.FeatureTypeInfo resourceWithNoGeometry = mock(org.geoserver.catalog.FeatureTypeInfo.class);
         when(resourceWithNoGeometry.getFeatureType()).thenReturn(featureTypeWithNoGeometry);
-        LayerInfo layerWithNoGeometry = mockLayer("layerWithNoGeometry", new String[]{}, LayerInfo.Type.VECTOR);
+        LayerInfo layerWithNoGeometry = mockLayer("layerWithNoGeometry", new String[]{}, PublishedType.VECTOR);
         layerWithNoGeometry.setResource(resourceWithNoGeometry);
         GeoServerTileLayer tl = mock(GeoServerTileLayer.class);
         GeoServerTileLayerInfo info = new GeoServerTileLayerInfoImpl();
         info.setId("layerWithNoGeometry");
         info.setName("layerWithNoGeometry");
         when(tl.getId()).thenReturn("layerWithNoGeometry");
+        when(tl.isTransientLayer()).thenReturn(false);
         when(tl.getInfo()).thenReturn(info);
         when(tl.getLayerInfo()).thenReturn(layerWithNoGeometry);
         when(catalog.getLayer(layerWithNoGeometry.getId())).thenReturn(layerWithNoGeometry);
@@ -408,5 +431,86 @@ public class CatalogConfigurationTest {
         config.save();
         
         verify(this.tileLayerCatalog, never()).save(info);
+    }
+    
+    @Test
+    public void testConfigurationDeadlock() throws Exception {
+        // to make it reproducible with some reliability on my machine
+        // 100000 loops need to be attempted. With the fix it works, but runs for 
+        // a minute and a half, so not suitable for actual builds.
+        // For in-build tests I've thus settled down for 1000 loops instead 
+        final int LOOPS = 1000;
+        ExecutorService service = Executors.newFixedThreadPool(8);
+        Runnable reloader = new Runnable() {
+            
+            @Override
+            public void run() {
+                config.initialize(gridSetBroker);
+            }
+        };
+        Runnable tileLayerFetcher = new Runnable() {
+            
+            @Override
+            public void run() {
+                config.getTileLayer(layer1.getName());
+                config.getTileLayer(layer2.getName());
+                config.getTileLayer(group1.getName());
+                config.getTileLayer(group2.getName());
+            }
+        };
+        try {
+            List<Future<?>> futures = new ArrayList<>();
+            for (int i = 0; i < LOOPS; i++) {
+                futures.add(service.submit(reloader));
+                futures.add(service.submit(tileLayerFetcher));
+            }
+            for (Future<?> future : futures) {
+                future.get();
+            }
+        } finally {
+            service.shutdown();
+        }
+    }
+
+    @Test
+    public void getLayerByIdWithLocalWorkspace() {
+        try {
+            // create test workspaces
+            WorkspaceInfo testWorkspace = new WorkspaceInfoImpl();
+            testWorkspace.setName("test");
+            WorkspaceInfo otherWorkspace = new WorkspaceInfoImpl();
+            otherWorkspace.setName("other");
+            // setting the local workspace equal to layers workspace
+            LocalWorkspace.set(testWorkspace);
+            assertThat(config.getTileLayerById(layer1.getId()), notNullValue());
+            assertThat(config.getTileLayerById(layer2.getId()), notNullValue());
+            // setting the local workspace different from layers workspaces
+            LocalWorkspace.set(otherWorkspace);
+            assertThat(config.getTileLayerById(layer1.getId()), nullValue());
+            assertThat(config.getTileLayerById(layer2.getId()), nullValue());
+        } finally {
+            // cleaning
+            LocalWorkspace.set(null);
+        }
+    }
+
+    @Test
+    public void getLayersWithLocalWorkspace() {
+        try {
+            // create test workspaces
+            WorkspaceInfo testWorkspace = new WorkspaceInfoImpl();
+            testWorkspace.setName("test");
+            WorkspaceInfo otherWorkspace = new WorkspaceInfoImpl();
+            otherWorkspace.setName("other");
+            // setting the local workspace equal to layers workspace
+            LocalWorkspace.set(testWorkspace);
+            assertThat(Iterators.size(config.getLayers().iterator()), is(2));
+            // setting the local workspace different from layers workspaces
+            LocalWorkspace.set(otherWorkspace);
+            assertThat(Iterators.size(config.getLayers().iterator()), is(0));
+        } finally {
+            // cleaning
+            LocalWorkspace.set(null);
+        }
     }
 }

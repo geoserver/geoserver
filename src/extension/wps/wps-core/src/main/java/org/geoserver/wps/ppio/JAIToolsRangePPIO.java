@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -21,7 +22,7 @@ public class JAIToolsRangePPIO extends LiteralPPIO {
      * Parses a single range from a string
      *
      * @param sRange
-     * @return
+     *
      */
     public static Range<Double> parseRange(String sRange) {
     	try {

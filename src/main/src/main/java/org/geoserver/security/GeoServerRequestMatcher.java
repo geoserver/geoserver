@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,7 +11,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.security.web.util.RequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * GeoServer {@link RequestMatcher} implementation.
@@ -64,7 +65,7 @@ public  class GeoServerRequestMatcher implements RequestMatcher {
      * in {@link #methods}
      * 
      * @param request
-     * @return
+     *
      */
     protected boolean matchesHTTPMethod(HttpServletRequest request) {
         if (methods==null)

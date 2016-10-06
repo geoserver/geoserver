@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -9,5 +9,7 @@
   <!-- memory backend provider -->
   <bean id="memorySecurityProvider" class="org.geoserver.security.impl.MemorySecurityProvider"/>
  <!-- memory read only backend provider -->
-  <bean id="memoryRISecurityProvider" class="org.geoserver.security.impl.MemoryReadOnlySecurityProvider"/>  
+  <bean id="memoryRISecurityProvider" class="org.geoserver.security.impl.MemoryReadOnlySecurityProvider"/>
+
+  <bean id="propStyleHandler" class="org.geoserver.catalog.PropertyStyleHandler"/>
 </beans>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="pgrasterCoverageStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="pgraster_gce"/>
+    <property name="factoryClass" value="org.geotools.gce.imagemosaic.jdbc.ImageMosaicJDBCFormat"/>
+    <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
+    <property name="icon" value="img/icons/geosilk/database_raster.png"/>
+    <property name="componentClass" value="org.geoserver.web.data.store.pgraster.PGRasterCoverageStoreEditPanel"/>
+  </bean>
+  
+ </beans>

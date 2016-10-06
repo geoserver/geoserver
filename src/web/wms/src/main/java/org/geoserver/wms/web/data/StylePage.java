@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -18,10 +19,10 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.SelectionRemovalLink;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /**
  * Page listing all the styles, allows to edit, add, remove styles
@@ -41,7 +42,7 @@ public class StylePage extends GeoServerSecuredPage {
         add(table = new GeoServerTablePanel<StyleInfo>("table", provider, true) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel,
+            protected Component getComponentForProperty(String id, IModel<StyleInfo> itemModel,
                     Property<StyleInfo> property) {
                 
                 if ( property == StyleProvider.NAME ) {
@@ -56,7 +57,7 @@ public class StylePage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(table.getSelection().size() > 0);
-                target.addComponent(removal);
+                target.add(removal);
             }  
             
         });
@@ -72,7 +73,7 @@ public class StylePage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         
         // the add button
-        header.add(new BookmarkablePageLink("addNew", StyleNewPage.class));
+        header.add(new BookmarkablePageLink<StyleNewPage>("addNew", StyleNewPage.class));
         
         // the removal button
         header.add(removal = new SelectionRemovalLink("removeSelected", table, dialog) {
@@ -82,7 +83,8 @@ public class StylePage extends GeoServerSecuredPage {
                 if ( StyleInfo.DEFAULT_POINT.equals( s.getName() ) || 
                     StyleInfo.DEFAULT_LINE.equals( s.getName() ) || 
                     StyleInfo.DEFAULT_POLYGON.equals( s.getName() ) || 
-                    StyleInfo.DEFAULT_RASTER.equals( s.getName() ) ) {
+                    StyleInfo.DEFAULT_RASTER.equals(s.getName()) ||
+                    StyleInfo.DEFAULT_GENERIC.equals(s.getName())) {
                     return new StringResourceModel("cantRemoveDefaultStyle", StylePage.this, null );
                 }
                 return null;
@@ -94,9 +96,9 @@ public class StylePage extends GeoServerSecuredPage {
         return header;
     }
 
-    Component styleLink( String id, IModel model ) {
-        IModel nameModel = StyleProvider.NAME.getModel(model);
-        IModel wsModel = StyleProvider.WORKSPACE.getModel(model);
+    Component styleLink( String id, IModel<StyleInfo> model ) {
+        IModel<?> nameModel = StyleProvider.NAME.getModel(model);
+        IModel<?> wsModel = StyleProvider.WORKSPACE.getModel(model);
         
         String name = (String) nameModel.getObject();
         String wsName = (String) wsModel.getObject();
@@ -105,12 +107,12 @@ public class StylePage extends GeoServerSecuredPage {
             StyleEditPage.NAME, name, StyleEditPage.WORKSPACE, wsName);
     }
 
-    Component workspaceLink( String id, IModel model ) {
-        IModel wsNameModel = StyleProvider.WORKSPACE.getModel(model);
+    Component workspaceLink( String id, IModel<StyleInfo> model ) {
+        IModel<?> wsNameModel = StyleProvider.WORKSPACE.getModel(model);
         String wsName = (String) wsNameModel.getObject();
         if (wsName != null) {
             return new SimpleBookmarkableLink(
-                id, WorkspaceEditPage.class, new Model(wsName), "name", wsName);
+                id, WorkspaceEditPage.class, new Model<String>(wsName), "name", wsName);
         }
         else {
             return new WebMarkupContainer(id);

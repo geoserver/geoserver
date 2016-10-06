@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -16,14 +17,17 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import javax.xml.namespace.QName;
 
@@ -34,7 +38,10 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
+import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
+import org.geoserver.wms.legendgraphic.Cell.SingleColorMapEntryLegendBuilder;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -49,6 +56,9 @@ import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.resources.image.ImageUtilities;
+import org.geotools.styling.ColorMapEntry;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
@@ -73,46 +83,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * @author Gabriel Roldan
  * @version $Id$
  */
-public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
-
-    private static final Logger LOGGER = Logging
-            .getLogger(AbstractLegendGraphicOutputFormatTest.class);
-
-    private BufferedImageLegendGraphicBuilder legendProducer;
-
-    GetLegendGraphic service;
-
-    
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-        Catalog catalog = getCatalog();           
-        testData.addRasterLayer(new QName("http://www.geo-solutions.it", "world", "gs")
-            , "world.tiff", "tiff", new HashMap(), MockData.class,catalog);
-        testData.addStyle("rainfall",MockData.class,catalog);
-        testData.addStyle("rainfall_ramp",MockData.class,catalog);
-        testData.addStyle("rainfall_classes",MockData.class,catalog);
-        //add raster layer for rendering transform test                
-        testData.addRasterLayer(new QName("http://www.opengis.net/wcs/1.1.1", "DEM", "wcs"), 
-        		"tazdem.tiff", "tiff", new HashMap(), MockData.class, catalog);	        
-    }
-    
-    @Before
-    public void setLegendProducer() throws Exception {
-        this.legendProducer = new BufferedImageLegendGraphicBuilder() {
-            public String getContentType() {
-                return "image/png";
-            }
-
-        };
-
-        service = new GetLegendGraphic(getWMS());
-    }
-
-    @After 
-    public void resetLegendProducer() throws Exception {
-        this.legendProducer = null;
-    }
+public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
 
     /**
      * Tests that a legend is produced for the explicitly specified rule, when the FeatureTypeStyle
@@ -244,15 +215,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         
         FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
                 MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
-        List<FeatureType> layers=new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        
-        req.setLayers(layers);
-        
-        List<Style> styles=new ArrayList<Style>();
-        styles.add(getCatalog().getStyleByName(
-                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
-        req.setStyles(styles);
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
         
         this.legendProducer.buildLegendGraphic(req);
 
@@ -262,9 +226,10 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
         int height=image.getHeight();
         
-        layers.add(ftInfo.getFeatureType());
-        styles.add(getCatalog().getStyleByName(
-                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType());
+        legend.setStyle(getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        req.getLegends().add( legend );
+        
         this.legendProducer.buildLegendGraphic(req);
 
         image = this.legendProducer.buildLegendGraphic(req);        
@@ -303,22 +268,20 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
      */
     @org.junit.Test
     public void testForceTitlesOff() throws Exception {        
+        Catalog cat = getCatalog();
         
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         Map<String,String> options = new HashMap<String,String>();
         options.put("forceTitles", "off");
         req.setLegendOptions(options);
-        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
+        
+        FeatureTypeInfo ftInfo = cat.getFeatureTypeByName(
                 MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         List<FeatureType> layers=new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
+        req.setLayer(ftInfo.getFeatureType());
         
-        req.setLayers(layers);
-        
-        List<Style> styles = new ArrayList<Style>();
-        styles.add(getCatalog().getStyleByName(
+        req.setStyle(cat.getStyleByName(
                 MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
-        req.setStyles(styles);
         
         this.legendProducer.buildLegendGraphic(req);
 
@@ -328,9 +291,10 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
         int height=image.getHeight();
         
-        layers.add(ftInfo.getFeatureType());
-        styles.add(getCatalog().getStyleByName(
-                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType());
+        legend.setStyle(cat.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        req.getLegends().add(legend);
+        
         this.legendProducer.buildLegendGraphic(req);
 
         image = this.legendProducer.buildLegendGraphic(req);        
@@ -586,17 +550,10 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
                         MockData.MPOINTS.getLocalPart());
     
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("BigSymbol.sld"));
     
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("BigSymbol.sld"));
-    
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
-        
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);        
         
         assertNotBlank("testSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
     
@@ -619,14 +576,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
                         MockData.MPOINTS.getLocalPart());
     
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
-    
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("SymbolExpression.sld"));
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("SymbolExpression.sld"));
     
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
         
@@ -637,8 +588,6 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
     
         // symbol in the center
         assertPixel(image, 10, 10, new Color(255, 0, 0));
-        
-        
     }
     
     /**
@@ -652,14 +601,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
                         MockData.MPOINTS.getLocalPart());
     
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
-    
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("ProportionalSymbols.sld"));
+        req.setLayer(ftInfo.getFeatureType());    
+        req.setStyle(readSLD("ProportionalSymbols.sld"));
     
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
         
@@ -699,14 +642,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
                         MockData.MPOINTS.getLocalPart());
     
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
-    
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("ProportionalSymbolsUOM.sld"));
+        req.setLayer(ftInfo.getFeatureType());    
+        req.setStyle(readSLD("ProportionalSymbolsUOM.sld"));
     
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
                 
@@ -750,14 +687,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
                         MockData.MPOINTS.getLocalPart());
     
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
-    
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("ProportionalSymbolsPartialUOM.sld"));
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("ProportionalSymbolsPartialUOM.sld"));
     
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
         
@@ -789,15 +720,9 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         options.put("minSymbolSize", "10");
         req.setLegendOptions(options);
         
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
-    
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("ProportionalSymbols.sld"));
-    
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("ProportionalSymbols.sld"));
+        
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
         
         assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
@@ -811,6 +736,43 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertPixel(image, 1, 61, new Color(255, 255, 255));
         assertPixel(image, 7, 67, new Color(255, 0, 0));
         assertPixel(image, 10, 70, new Color(255, 0, 0));
+    }
+    
+    /**
+     * Tests that minSymbolSize legend option is respected.
+     */
+    @org.junit.Test
+    public void testInternationalizedLabels() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        
+        Map<String,String> options = new HashMap<String,String>();
+        options.put("forceLabels", "on");
+        req.setLegendOptions(options);
+        
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+        
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("Internationalized.sld"));
+    
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        int noLocalizedWidth = image.getWidth();        
+        
+        
+        req.setLocale(Locale.ITALIAN);
+        image = this.legendProducer.buildLegendGraphic(req);
+        // test that using localized labels we get a different label than when not using it
+        int itWidth = image.getWidth();
+        assertTrue(itWidth != noLocalizedWidth);
+        
+        req.setLocale(Locale.ENGLISH);
+        image = this.legendProducer.buildLegendGraphic(req);
+        // test that using localized labels we get a different label than when not using it
+        int enWidth = image.getWidth();
+        assertTrue(enWidth != noLocalizedWidth);
+        assertTrue(enWidth != itWidth);
+        
     }
     
     /**
@@ -863,6 +825,78 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
     	
     }
     
+    /**
+     * Test that the legend is not the same if there is a rendering transformation that 
+     * converts the rendered layer from raster to vector
+     */
+    @org.junit.Test
+    public void testColorMapWithCql() throws Exception {
+                   
+        Style style = readSLD("ColorMapWithCql.sld");
+        assertNotNull(style.featureTypeStyles());
+        assertEquals(1, style.featureTypeStyles().size());
+        FeatureTypeStyle fts = style.featureTypeStyles().get(0);
+        assertNotNull(fts.rules());
+        assertEquals(1, fts.rules().size());
+        Rule rule = fts.rules().get(0);
+        assertNotNull(rule.symbolizers());
+        assertEquals(1, rule.symbolizers().size());
+        assertTrue(rule.symbolizers().get(0) instanceof RasterSymbolizer);
+        RasterSymbolizer symbolizer = (RasterSymbolizer)rule.symbolizers().get(0);
+        assertNotNull(symbolizer.getColorMap());
+        assertEquals(3, symbolizer.getColorMap().getColorMapEntries().length);
+        ColorMapEntry[] entries = symbolizer.getColorMap().getColorMapEntries();
+        
+        Color color = LegendUtils.color(entries[0]);
+        int red = color.getRed();
+        assertEquals(255, red);
+        int green = color.getGreen();
+        assertEquals(0, green);
+        int blue = color.getBlue();
+        assertEquals(0, blue);
+        
+        double quantity = LegendUtils.getQuantity(entries[1]);
+        assertEquals(20.0, quantity, 0.0);
+        
+        double opacity = LegendUtils.getOpacity(entries[2]);
+        assertEquals(0.5, opacity, 0.0);
+        
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        CoverageInfo cInfo = getCatalog().getCoverageByName("world");
+        assertNotNull(cInfo);
+
+        GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        try {
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            req.setLayer(feature.getSchema());
+            req.setStyle(style);
+            req.setLegendOptions(new HashMap());
+            
+            final int HEIGHT_HINT = 30;
+            req.setHeight(HEIGHT_HINT);
+            
+            // use default values for the rest of parameters
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+            // was the legend painted?
+            assertNotBlank("testColorMapWithCql", image, LegendUtils.DEFAULT_BG_COLOR);
+            
+            // was the legend painted?
+            assertNotBlank("testColorMapWithCql", image, LegendUtils.DEFAULT_BG_COLOR);
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if(coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if(ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
+    }
+    
     
     /**
      * Test that the legend is not the same if there is a rendering transformation that 
@@ -895,10 +929,53 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertPixel(image, 10, 80, new Color (68, 68, 255));            
         assertPixel(image, 10, 130, new Color (255, 152, 0));    	
     }
+    
+    /**
+     * Tests that a legend containing an ExternalGraphic icon is rendered properly.
+     */
+    @org.junit.Test
+    public void testExternalGraphic() throws Exception {
+        // load a style with 3 rules
+        Style externalGraphicStyle = readSLD("ExternalGraphicDemo.sld");
+
+        assertNotNull(externalGraphicStyle);
+
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        CoverageInfo cInfo = getCatalog().getCoverageByName("world");
+        assertNotNull(cInfo);
+
+        GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        try {
+            LegendRequest legend = req.new LegendRequest();
+            legend.setStyle(externalGraphicStyle);
+            
+            req.getLegends().add( legend );
+            req.setScale(1.0);
+            
+            final int HEIGHT_HINT = 30;
+            req.setHeight(HEIGHT_HINT);
+            
+            // use default values for the rest of parameters
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+            // was our external graphic icon painted?
+            assertPixel(image, 10, HEIGHT_HINT + HEIGHT_HINT/2, Color.YELLOW);
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if(coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if(ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
+    }
 
     /**
      * @param sldName
-     * @return
+     *
      * @throws IOException
      */
     private Style readSLD(String sldName) throws IOException {
@@ -911,26 +988,4 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         return style;
     }
     
-    private int getTitleHeight(GetLegendGraphicRequest req) {    
-        final BufferedImage image = ImageUtils.createImage(req.getWidth(),
-                req.getHeight(), (IndexColorModel) null, req.isTransparent());
-        return getRenderedLabel(image, "TESTTITLE", req).getHeight();
-    }
-    
-    private BufferedImage getRenderedLabel(BufferedImage image, String label,
-            GetLegendGraphicRequest request) {
-        Font labelFont = LegendUtils.getLabelFont(request);
-        boolean useAA = LegendUtils.isFontAntiAliasing(request);
-    
-        final Graphics2D graphics = image.createGraphics();
-        graphics.setFont(labelFont);
-        if (useAA) {
-            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
-        } else {
-            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_OFF);
-        }
-        return LegendUtils.renderLabel(label, graphics, request);
-    }
 }

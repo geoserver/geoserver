@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -57,13 +58,13 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         tester.assertLabel("rasterStoreForm:storeType", "GeoTIFF");
-        tester.assertModelValue("rasterStoreForm:namePanel:border:paramValue", "BlueMarble");
+        tester.assertModelValue("rasterStoreForm:namePanel:border:border_body:paramValue", "BlueMarble");
     }
 
     @Test
     public void testChangeName() {
         FormTester form = tester.newFormTester("rasterStoreForm");
-        form.setValue("namePanel:border:paramValue", "BlueMarbleModified");
+        form.setValue("namePanel:border:border_body:paramValue", "BlueMarbleModified");
         form.submit();
         tester.clickLink("rasterStoreForm:save");
 
@@ -75,7 +76,7 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testNameRequired() {
         FormTester form = tester.newFormTester("rasterStoreForm");
-        form.setValue("namePanel:border:paramValue", null);
+        form.setValue("namePanel:border:border_body:paramValue", null);
         form.submit();
         tester.clickLink("rasterStoreForm:save");
 
@@ -93,12 +94,12 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
 
         final FormTester formTester = tester.newFormTester("rasterStoreForm");
 
-        final String wsDropdownPath = "rasterStoreForm:workspacePanel:border:paramValue";
+        final String wsDropdownPath = "rasterStoreForm:workspacePanel:border:border_body:paramValue";
 
         tester.assertModelValue(wsDropdownPath, catalog.getWorkspaceByName(MockData.WCS_PREFIX));
 
         // select the fifth item in the drop down, which is the cdf workspace
-        formTester.select("workspacePanel:border:paramValue", 2);
+        formTester.select("workspacePanel:border:border_body:paramValue", 2);
 
         // weird on this test I need to both call form.submit() and also simulate clicking on the
         // ajax "save" link for the model to be updated. On a running geoserver instance it works ok
@@ -134,19 +135,52 @@ public class CoverageStoreEditPageTest extends GeoServerWicketTestSupport {
         new CatalogBuilder(catalog).updateCoverageStore(store, coverageStore);
         assertNull(store.getId());
 
-        tester.startPage(new CoverageStoreEditPage(store));
-        tester.assertNoErrorMessage();
+        try {
+            tester.startPage(new CoverageStoreEditPage(store));
+            tester.assertNoErrorMessage();
+            
+            FormTester form = tester.newFormTester("rasterStoreForm");
+            form.setValue("namePanel:border:border_body:paramValue", "foo");
+            form.submit();
+            tester.clickLink("rasterStoreForm:save");
+            tester.assertNoErrorMessage();
+    
+            assertNotNull(store.getId());
+            assertEquals("foo", store.getName());
+            assertNotNull(catalog.getStoreByName(coverageStore.getName(), CoverageStoreInfo.class));
+            assertNotNull(catalog.getStoreByName("foo", CoverageStoreInfo.class));
+        } finally {
+            catalog.remove(store);
+        }
+    }
+    
+    @Test
+    public void testCoverageStoreEdit() throws Exception {
+        final Catalog catalog = getCatalog();
+        CoverageStoreInfo store = catalog.getFactory().createCoverageStore();
+        new CatalogBuilder(catalog).updateCoverageStore(store, coverageStore);
+        assertNull(store.getId());
         
-        FormTester form = tester.newFormTester("rasterStoreForm");
-        form.setValue("namePanel:border:paramValue", "foo");
-        form.submit();
-        tester.clickLink("rasterStoreForm:save");
-        tester.assertNoErrorMessage();
+        try {
+            tester.startPage(new CoverageStoreEditPage(store));
+            tester.assertNoErrorMessage();
+            
+            FormTester form = tester.newFormTester("rasterStoreForm");
+            form.setValue("namePanel:border:border_body:paramValue", "foo");
+            form.submit();
+            tester.clickLink("rasterStoreForm:save");
+            tester.assertNoErrorMessage();
 
-        assertNotNull(store.getId());
-        assertEquals("foo", store.getName());
-        assertNotNull(catalog.getStoreByName(coverageStore.getName(), CoverageStoreInfo.class));
-        assertNotNull(catalog.getStoreByName("foo", CoverageStoreInfo.class));
+            assertNotNull(store.getId());
 
+            CoverageStoreInfo expandedStore = catalog.getResourcePool().clone(store, true);
+
+            assertNotNull(expandedStore.getId());
+            assertNotNull(expandedStore.getCatalog());
+            
+            catalog.validate(expandedStore, false).throwIfInvalid();
+        } finally {
+            catalog.remove(store);
+        }
     }
 }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,6 +12,7 @@ import java.util.Map;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
@@ -23,6 +25,7 @@ import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.measure.Measure;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
@@ -94,8 +97,8 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
         return delegate.getFeatureType();
     }
 
-    public Filter getFilter() {
-        return delegate.getFilter();
+    public Filter filter() {
+        return delegate.filter();
     }
 
     public String getId() {
@@ -125,6 +128,10 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
 
     public List<MetadataLinkInfo> getMetadataLinks() {
         return delegate.getMetadataLinks();
+    }
+
+    public List<DataLinkInfo> getDataLinks() {
+        return delegate.getDataLinks();
     }
 
     public String getName() {
@@ -205,10 +212,6 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
         delegate.setEnabled(enabled);
     }
 
-    public void setFilter(Filter filter) {
-        delegate.setFilter(filter);
-    }
-
     public void setLatLonBoundingBox(ReferencedEnvelope box) {
         delegate.setLatLonBoundingBox(box);
     }
@@ -269,6 +272,61 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     @Override
     public void setAdvertised(boolean advertised) {
         delegate.setAdvertised(advertised);
+    }
+
+    @Override
+    public List<String> getResponseSRS() {
+        return delegate.getResponseSRS();
+    }
+    
+    @Override
+    public boolean isOverridingServiceSRS() {
+        return delegate.isOverridingServiceSRS();
+    }
+    
+    @Override
+    public void setOverridingServiceSRS(boolean overridingServiceSRS) {
+        delegate.setOverridingServiceSRS(overridingServiceSRS);
+    }
+
+    @Override
+    public boolean getSkipNumberMatched() {
+        return delegate.getSkipNumberMatched();
+    }
+
+    @Override
+    public void setSkipNumberMatched(boolean skipNumberMatched) {
+        delegate.setSkipNumberMatched(skipNumberMatched);
+    }
+
+    @Override
+    public Measure getLinearizationTolerance() {
+        return delegate.getLinearizationTolerance();
+    }
+
+    @Override
+    public void setLinearizationTolerance(Measure tolerance) {
+        delegate.setLinearizationTolerance(tolerance);
+    }
+    
+    @Override
+    public boolean isCircularArcPresent() {
+    	return delegate.isCircularArcPresent();
+    }
+    
+    @Override
+    public void setCircularArcPresent(boolean enabled) {
+    	delegate.setCircularArcPresent(enabled);
+    }
+    
+    @Override
+    public String getCqlFilter() {
+        return delegate.getCqlFilter();
+    }
+
+    @Override
+    public void setCqlFilter(String cqlFilter) {
+        delegate.setCqlFilter(cqlFilter);
     }
 
 }

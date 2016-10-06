@@ -1,0 +1,107 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<title><wicket:message key="title">Cluster</wicket:message></title>
+</head>
+<body>
+
+	<wicket:extend>
+		<div>
+			<table>
+				<tr>
+					<td>
+						<form wicket:id="form">
+							<ul>
+								<li><label for="brokerURL"><wicket:message
+											key="brokerURL">brokerURL</wicket:message></label> <input
+									id="brokerURL" class="field text" type="text"
+									wicket:id="brokerURL" /></li>
+
+								<li><label for="instanceName"><wicket:message
+											key="instanceName">instanceName</wicket:message></label> <input
+									id="instanceName" class="field text" type="text"
+									wicket:id="instanceName" /></li>
+									
+								<li><label for="group"><wicket:message
+											key="group">group</wicket:message></label> <input
+									id="group" class="field text" type="text"
+									wicket:id="group" /></li>
+									
+								<li><label for="topicName"><wicket:message
+											key="topicName">topicName</wicket:message></label> <input
+									id="topicName" class="field text" type="text"
+									wicket:id="topicName" /></li>
+								<li><table>
+										<tr>
+											<td>
+												<button wicket:id="toggleMasterB">
+													<wicket:message key="toggleMasterB">toggleMasterB</wicket:message>
+												</button>
+											</td>
+											<td><label for="toggleMaster"><wicket:message
+														key="toggleMaster">toggleMaster</wicket:message></label> <input
+												id="toggleMaster" style="width: 30px;" class="field text"
+												type="text" wicket:id="toggleMaster" /></td>
+										</tr>
+										<tr>
+											<td>
+												<button type="submit" wicket:id="toggleSlaveB">
+													<wicket:message key="toggleSlaveB">toggleSlaveB</wicket:message>
+												</button>
+											</td>
+											<td><label for="toggleSlave"><wicket:message
+														key="toggleSlave">toggleSlave</wicket:message></label> <input
+												id="toggleSlave" style="width: 30px;" class="field text"
+												type="text" wicket:id="toggleSlave" /></td>
+										</tr>
+										<tr>
+											<td>
+												<button type="submit" wicket:id="connectionB">
+													<wicket:message key="connectionB">connectionB</wicket:message>
+												</button>
+											</td>
+											<td><label for="connection"><wicket:message
+														key="connection">connection</wicket:message></label><input
+												id="connection" style="width: 50px;" class="field text"
+												type="text" wicket:id="connection" /></td>
+										</tr>
+										<tr>
+											<td>
+												<button type="submit" wicket:id="readOnlyB">
+													<wicket:message key="readOnlyB">readOnlyB</wicket:message>
+												</button>
+											</td>
+											<td><label for="readOnly"><wicket:message
+														key="readOnly">readOnly</wicket:message></label> <input
+												id="readOnly" style="width: 50px;" class="field text"
+												type="text" wicket:id="readOnly" /></td>
+										</tr>
+										<tr>
+											<td>
+												<button type="submit" wicket:id="embeddedBrokerB">
+													<wicket:message key="embeddedBrokerB">embeddedBrokerB</wicket:message>
+												</button>
+											</td>
+											<td><label for="embeddedBroker"><wicket:message
+														key="embeddedBroker">embeddedBroker</wicket:message></label> <input
+												id="readOnly" style="width: 50px;" class="field text"
+												type="text" wicket:id="embeddedBroker" /></td>
+										</tr>
+									</table></li>
+
+								<li class="button-group selfclear">
+									<button type="submit" wicket:id="saveB">
+										<wicket:message key="saveB">submit</wicket:message>
+									</button>
+								</li>
+							</ul>
+						</form>
+					</td>
+				</tr>
+
+			</table>
+		</div>
+	</wicket:extend>
+
+
+</body>
+</html>

@@ -113,7 +113,7 @@ The following is a more complete XML fragment for a seed request, including para
 Truncating
 ~~~~~~~~~~
 
-The following XML request initiates a seeding task:
+The following XML request initiates a truncating task:
 
 .. code-block:: console
 

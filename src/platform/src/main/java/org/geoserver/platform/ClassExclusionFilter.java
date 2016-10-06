@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,7 +23,7 @@ public class ClassExclusionFilter implements ExtensionFilter {
 
     /**
      * Specifies which class to be filtered away
-     * @param beanClass
+     * @param beanClass bean to be filtered
      */
     public void setBeanClass(Class beanClass) {
         this.beanClass = beanClass;
@@ -34,7 +35,6 @@ public class ClassExclusionFilter implements ExtensionFilter {
 
     /**
      * When true enables hierarchy matching. Defaults to false
-     * @param matchSubclasses
      */
     public void setMatchSubclasses(boolean matchSubclasses) {
         this.matchSubclasses = matchSubclasses;

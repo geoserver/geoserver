@@ -1,10 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.ppio;
 
 import java.awt.Dimension;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,8 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.imageio.ImageIO;
 import javax.media.jai.JAI;
+import javax.media.jai.OpImage;
+import javax.media.jai.RenderedOp;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.wps.WPSException;
@@ -24,27 +27,31 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.coverage.grid.io.UnknownFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
-import org.geotools.factory.Hints;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
+import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.image.ImageWorker;
+import org.geotools.process.ProcessException;
+import org.geotools.resources.image.ImageUtilities;
+import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.EngineeringCRS;
 
-import com.sun.media.jai.operator.ImageReadDescriptor;
-
 /**
  * Decodes/encodes a GeoTIFF file
  * 
  * @author Andrea Aime - OpenGeo
+ * @author Simone Giannecchini, GeoSolutions
  * 
  */
 public class GeoTiffPPIO extends BinaryPPIO {
 
     private final static GeoTiffWriteParams DEFAULT_WRITE_PARAMS;
+
+    private final static GeoTiffFormat TIFF_FORMAT = new GeoTiffFormat();    
 
     static {
         // setting the write parameters (write out using tiling)
@@ -83,34 +90,29 @@ public class GeoTiffPPIO extends BinaryPPIO {
     @Override
     public void encode(Object value, OutputStream os) throws Exception {
         GridCoverage2D coverage = (GridCoverage2D) value;
-        
+                
         CoordinateReferenceSystem crs = coverage.getCoordinateReferenceSystem();
-        boolean unreferenced = crs == null || crs instanceof EngineeringCRS;
-        
+        boolean unreferenced = crs == null || crs instanceof EngineeringCRS;    
+                
         // did we get lucky and all we need to do is to copy a file over?
         final Object fileSource = coverage.getProperty(AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY);
-        if (fileSource != null && fileSource instanceof String) {
+        if (fileSource != null && fileSource instanceof String && isUnprocessed(coverage)) {
             File file = new File((String) fileSource);
             if(file.exists()) {
                 GeoTiffReader reader = null;
                 FileInputStream fis = null;
                 try {
-                    // geotiff reader won't read unreferenced tiffs unless we tell it to
-                    if(unreferenced) {
-                        // just check if it has the proper extension for the moment, until
-                        // we get a more reliable way to check if it's a tiff
-                        String name = file.getName().toLowerCase();
-                        if(!name.endsWith(".tiff") && !name.endsWith(".tif")) {
-                            throw new IOException("Not a tiff");
-                        }
-                    } else {
-                        reader = new GeoTiffReader(file);
-                        reader.read(null);
+                    reader = new GeoTiffReader(file);
+                    GeneralEnvelope originalEnvelope = reader.getOriginalEnvelope();
+                    Envelope envelope = coverage.getEnvelope();
+                    if(originalEnvelope.equals(envelope, 1e-9, false)) {  
+                        GridCoverage2D test = reader.read(null);
+                        ImageUtilities.disposeImage(test.getRenderedImage());
+                        // ooh, a geotiff already!
+                        fis = new FileInputStream(file);
+                        IOUtils.copyLarge(fis, os);
+                        return;
                     }
-                    // ooh, a geotiff already!
-                    fis = new FileInputStream(file);
-                    IOUtils.copyLarge(fis, os);
-                    return;
                 } catch(Exception e) {
                     // ok, not a geotiff!
                 } finally {
@@ -124,23 +126,38 @@ public class GeoTiffPPIO extends BinaryPPIO {
             }
         }
 
+        // tiling
+        final RenderedImage renderedImage = coverage.getRenderedImage();
+        final int tileWidth=renderedImage.getTileWidth();
+        final int tileHeight=renderedImage.getTileHeight();
+        final boolean tiled= tileWidth!=renderedImage.getWidth()&& tileHeight!=renderedImage.getHeight();
+        
         // ok, encode in geotiff
         if(unreferenced) {
-            new ImageWorker(coverage.getRenderedImage()).writeTIFF(os, "LZW", 0.75f, 256, 256);
+            if(tiled){
+                new ImageWorker(renderedImage).writeTIFF(os, null, 0.75f, tileWidth, tileHeight);
+            } else {
+
+                final Dimension defaultTileSize = JAI.getDefaultTileSize();
+                new ImageWorker(renderedImage).writeTIFF(os, null, 0.75f, defaultTileSize.width,  defaultTileSize.height);
+            }
         } else {
             GeoTiffFormat format = new GeoTiffFormat();
-            final GeoTiffFormat wformat = new GeoTiffFormat();
             final GeoTiffWriteParams wp = new GeoTiffWriteParams();
-            wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
-            wp.setCompressionType("LZW");
+
+            // tiling 
             wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
-            wp.setTiling(256, 256);
-            final ParameterValueGroup wparams = wformat.getWriteParameters();
-            wparams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
-                    .setValue(wp);
+            if(tiled){
+                wp.setTiling(tileWidth, tileHeight);
+            } else {
+
+                final Dimension defaultTileSize = JAI.getDefaultTileSize();
+                wp.setTiling(defaultTileSize.width, defaultTileSize.height);
+            }
             
-            final GeneralParameterValue[] wps = (GeneralParameterValue[]) wparams.values().toArray(
-                    new GeneralParameterValue[1]);
+            final ParameterValueGroup wparams = TIFF_FORMAT.getWriteParameters();
+            wparams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
+            final GeneralParameterValue[] wps = (GeneralParameterValue[]) wparams.values().toArray(new GeneralParameterValue[1]);
             // write out the coverage
             AbstractGridCoverageWriter writer = (AbstractGridCoverageWriter) format.getWriter(os);
             if (writer == null)
@@ -148,6 +165,8 @@ public class GeoTiffPPIO extends BinaryPPIO {
                         "Could not find the GeoTIFF writer, please check it's in the classpath");
             try {
                 writer.write(coverage, wps);
+            } catch(IOException e) {
+                throw new ProcessException(e);
             } finally {
                 try {
                     writer.dispose();
@@ -158,6 +177,24 @@ public class GeoTiffPPIO extends BinaryPPIO {
         }
     }
     
+    /**
+     * Returns true if the coverage has not been processed in any way since it has been read
+     * 
+     * @param coverage
+     *
+     */
+    private boolean isUnprocessed(GridCoverage2D coverage) {
+        RenderedImage ri = coverage.getRenderedImage();
+        if(ri instanceof RenderedOp) {
+            RenderedOp op = (RenderedOp) ri;
+            return op.getOperationName().startsWith("ImageRead");
+        } else if(ri instanceof OpImage) {
+            return ri.getClass().getSimpleName().startsWith("ImageRead");
+        } else {
+            return true;
+        }
+    }
+
     @Override
     public String getFileExtension() {
         return "tiff";

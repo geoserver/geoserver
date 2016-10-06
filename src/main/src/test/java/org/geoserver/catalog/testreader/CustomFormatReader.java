@@ -1,10 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.testreader;
 
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
+
 import java.awt.Color;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -15,10 +17,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
+
 import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
+
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -28,6 +33,7 @@ import org.geotools.factory.Hints;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.io.ImageIOExt;
+import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.resources.i18n.Vocabulary;
 import org.geotools.resources.i18n.VocabularyKeys;
 import org.geotools.util.Converters;
@@ -142,17 +148,21 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     }
     
     private String dimensionValueList() {
-        final StringBuilder sb = new StringBuilder();
+        final TreeSet<String>elements= new TreeSet<String>();
         for (String filename : this.dataDirectory.list()) {
             if (isDataFile(filename)) {
-                sb.append(getDimensionValue(filename));
-                sb.append(',');
+                elements.add(getDimensionValue(filename));
             }
         }
-        final int len = sb.length();
-        if (len == 0) {
+        if(elements.size()<=0){
             return null;
         }
+
+        final StringBuilder sb = new StringBuilder();
+        for(String item:elements){
+            sb.append(item).append(',');
+        }
+        final int len = sb.length();
         return sb.substring(0, len - 1);
     }
     
@@ -179,7 +189,7 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         }
         
         final GeoTiffReader geotiffReader = new GeoTiffReader(dataFile, hints);
-        this.crs = geotiffReader.getCrs();
+        this.crs = geotiffReader.getCoordinateReferenceSystem();
         this.originalGridRange = geotiffReader.getOriginalGridRange();
         this.originalEnvelope = geotiffReader.getOriginalEnvelope();
     }
@@ -228,15 +238,13 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         Category noDataCategory = new Category(
                 Vocabulary.formatInternational(VocabularyKeys.NODATA), 
                 new Color[] { new Color(0, 0, 0, 0) }, 
-                NumberRange.create(DEFAULT_NODATA, DEFAULT_NODATA), 
                 NumberRange.create(DEFAULT_NODATA, DEFAULT_NODATA));
         Category[] categories = new Category[] { noDataCategory };
         GridSampleDimension[] bands;
         bands = new GridSampleDimension[1];
-        bands[0] = 
-            new GridSampleDimension(null, categories, null).geophysics(true);
-        final Map<String, Double> properties = new HashMap<String, Double>();
-        properties.put("GC_NODATA", DEFAULT_NODATA);
+        bands[0] = new GridSampleDimension(null, categories, null);
+        final Map<String, Object> properties = new HashMap<String, Object>();
+        CoverageUtilities.setNoDataProperty(properties, DEFAULT_NODATA);
         return this.coverageFactory.create(name, image, this.originalEnvelope,
                                            bands, null, properties);
     }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -36,7 +37,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * http://jira.codehaus.org/browse/GEOS-1875
+     * https://osgeo-org.atlassian.net/browse/GEOS-1875
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -65,7 +66,6 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
     /**
      * Same as GEOS-1875, but let's check without bbox and without name prefix
      * 
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -88,9 +88,8 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-1875
+     * See https://osgeo-org.atlassian.net/browse/GEOS-1875
      * 
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -119,9 +118,8 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-1875
+     * See https://osgeo-org.atlassian.net/browse/GEOS-1875
      * 
-     * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test

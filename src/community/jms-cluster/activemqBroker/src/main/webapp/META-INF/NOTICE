@@ -1,0 +1,107 @@
+Apache ActiveMQ
+Copyright 2005-2006 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+=========================================================================
+==  Derby Notice                                                       ==
+=========================================================================
+
+Portions of Derby were orginally developed by
+International Business Machines Corporation and are
+licensed to the Apache Software Foundation under the
+"Software Grant and Corporate Contribution License Agreement",
+informally known as the "Derby CLA".
+
+The portion of the functionTests under 'nist' was originally
+developed by the National Institute of Standards and Technology (NIST),
+an agency of the United States Department of Commerce, and adapted by
+International Business Machines Corporation in accordance with the NIST
+Software Acknowledgment and Redistribution document at
+http://www.itl.nist.gov/div897/ctg/sql_form.htm
+
+==============================================================
+ Jetty Web Container
+ Copyright 1995-2006 Mort Bay Consulting Pty Ltd
+==============================================================
+
+This product includes some software developed at The Apache Software
+Foundation (http://www.apache.org/).
+
+The javax.servlet package used by Jetty is copyright
+Sun Microsystems, Inc and Apache Software Foundation. It is
+distributed under the Common Development and Distribution License.
+You can obtain a copy of the license at
+https://glassfish.dev.java.net/public/CDDLv1.0.html.
+
+The UnixCrypt.java code ~Implements the one way cryptography used by
+Unix systems for simple password protection.  Copyright 1996 Aki Yoshida,
+modified April 2001  by Iris Van den Broeke, Daniel Deville.
+
+The default JSP implementation is provided by the Glassfish JSP engine
+from project Glassfish http://glassfish.dev.java.net.  Copyright 2005
+Sun Microsystems, Inc. and portions Copyright Apache Software Foundation.
+
+Some portions of the code are Copyright:
+  2006 Tim Vernum
+  1999 Jason Gilbert.
+
+The jboss integration module contains some LGPL code.
+
+=========================================================================
+==  Spring Notice                                                      ==
+=========================================================================
+
+This product includes software developed by
+the Apache Software Foundation (http://www.apache.org).
+
+This product also includes software developed by
+Clinton Begin (http://www.ibatis.com).
+
+The end-user documentation included with a redistribution, if any,
+must include the following acknowledgement:
+
+ "This product includes software developed by the Spring Framework
+  Project (http://www.springframework.org)."
+
+Alternately, this acknowledgement may appear in the software itself,
+if and wherever such third-party acknowledgements normally appear.
+
+The names "Spring" and "Spring Framework" must not be used to
+endorse or promote products derived from this software without
+prior written permission. For written permission, please contact
+rod.johnson@interface21.com or juergen.hoeller@interface21.com.
+
+
+=========================================================================
+==  MX4J Notice                                                        ==
+=========================================================================
+
+This product includes software developed by the MX4J project
+(http://sourceforge.net/projects/mx4j).
+=========================================================================
+==  Sitemesh Notice                                                    ==
+=========================================================================
+
+This product includes software developed by the
+OpenSymphony Group (http://www.opensymphony.com/).
+
+=========================================================================
+==  Smackx Notice (not from Jive Software)                             ==
+=========================================================================
+
+This product includes software developed by JiveSoftware
+(http://www.igniterealtime.org/).
+
+=========================================================================
+==  Woodstox Notice (http://woodstox.codehaus.org)                     ==
+=========================================================================
+This product currently only contains code developed by authors
+of specific components, as identified by the source code files.
+
+Since product implements StAX API, it has dependencies to StAX API
+classes.
+
+For additional credits (generally to people who reported problems)
+see CREDITS file.

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -18,12 +19,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.geoserver.ows.LocalLayer;
+import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
@@ -36,8 +39,14 @@ import org.geotools.map.Layer;
 import org.geotools.map.WMSLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
+import org.geotools.renderer.crs.ProjectionHandler;
+import org.geotools.renderer.crs.ProjectionHandlerFinder;
+import org.geotools.renderer.crs.WrappingProjectionHandler;
+import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.ProjectedCRS;
 
@@ -57,13 +66,18 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     /**
      * The mime type for the response header
      */
-    private static final String MIME_TYPE = "text/html";
+    public static final String MIME_TYPE = "text/html; subtype=openlayers";
+
+    /**
+     * System property name to toggle OL3 support.
+     */
+    public static final String ENABLE_OL3 = "ENABLE_OL3";
 
     /**
      * The formats accepted in a GetMap request for this producer and stated in getcaps
      */
     private static final Set<String> OUTPUT_FORMATS = new HashSet<String>(Arrays.asList(
-            "application/openlayers", "openlayers"));
+            "application/openlayers", "openlayers", MIME_TYPE));
     
     /** 
      * Default capabilities for OpenLayers format.
@@ -139,31 +153,62 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             throws ServiceException, IOException {
         try {
             // create the template
-            Template template = cfg.getTemplate("OpenLayersMapTemplate.ftl");
+            String templateName;
+            boolean useOpenLayers3 = isOL3Enabled(mapContent) && browserSupportsOL3(mapContent);
+            if(useOpenLayers3) {
+                templateName = "OpenLayers3MapTemplate.ftl";
+            } else {
+                templateName = "OpenLayers2MapTemplate.ftl";                
+            }
+            Template template = cfg.getTemplate(templateName);
             HashMap<String, Object> map = new HashMap<String, Object>();
             map.put("context", mapContent);
             map.put("pureCoverage", hasOnlyCoverages(mapContent));
             map.put("styles", styleNames(mapContent));
-            map.put("request", mapContent.getRequest());
-            map.put("yx", String.valueOf(isWms13FlippedCRS(mapContent.getRequest().getCrs())));
+            GetMapRequest request = mapContent.getRequest();
+            map.put("request", request);
+            map.put("yx", String.valueOf(isWms13FlippedCRS(request.getCrs())));
             map.put("maxResolution", new Double(getMaxResolution(mapContent.getRenderingArea())));
+            ProjectionHandler handler = null;
+            try {
+                handler = ProjectionHandlerFinder.getHandler(
+                        new ReferencedEnvelope(request.getCrs()), 
+                        request.getCrs(), wms.isContinuousMapWrappingEnabled());
+            } catch (MismatchedDimensionException e) {
+                LOGGER.log(Level.FINER, e.getMessage(), e);
+            } catch (FactoryException e) {
+                LOGGER.log(Level.FINER, e.getMessage(), e);
+            }
+            map.put("global", String.valueOf(
+                    handler != null && handler instanceof WrappingProjectionHandler));
 
-            String baseUrl = ResponseUtils.buildURL(mapContent.getRequest().getBaseUrl(), "/", null, URLType.RESOURCE);
+            String baseUrl = ResponseUtils.buildURL(request.getBaseUrl(), "/", null, URLType.RESOURCE);
+            String queryString = null;
+            // remove query string from baseUrl
+            if (baseUrl.indexOf("?") > 0) {
+                int idx = baseUrl.indexOf("?");
+                queryString = baseUrl.substring(idx); // include question mark
+                baseUrl = baseUrl.substring(0, idx); // leave out question mark
+            }
             map.put("baseUrl", canonicUrl(baseUrl));
 
             // TODO: replace service path with call to buildURL since it does this
             // same dance
             String servicePath = "wms";
-            if (LocalLayer.get() != null) {
-                servicePath = LocalLayer.get().getName() + "/" + servicePath;
+            if (LocalPublished.get() != null) {
+                servicePath = LocalPublished.get().getName() + "/" + servicePath;
             }
             if (LocalWorkspace.get() != null) {
                 servicePath = LocalWorkspace.get().getName() + "/" + servicePath;
             }
+            // append query string to servicePath
+            if (queryString != null) {
+                servicePath += queryString;
+            }
             map.put("servicePath", servicePath);
 
-            map.put("parameters", getLayerParameter(mapContent.getRequest().getRawKvp()));
-            map.put("units", getOLUnits(mapContent.getRequest()));
+            map.put("parameters", getLayerParameter(request.getRawKvp()));
+            map.put("units", useOpenLayers3 ? getOL3Units(request) : getOL2Units(request));
 
             if (mapContent.layers().size() == 1) {
                 map.put("layerName", mapContent.layers().get(0).getTitle());
@@ -178,6 +223,36 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
             return result;
         } catch (TemplateException e) {
             throw new ServiceException(e);
+        }
+    }
+
+    private boolean isOL3Enabled(WMSMapContent mapContent) {
+        GetMapRequest req = mapContent.getRequest();
+
+        // check format options
+        Object enableOL3 = Converters.convert(req.getFormatOptions().get(ENABLE_OL3), Boolean.class);
+        if (enableOL3 == null) {
+            // check system property
+            enableOL3 = GeoServerExtensions.getProperty(ENABLE_OL3);
+        }
+
+        // enable by default
+        return enableOL3 == null || Converters.convert(enableOL3, Boolean.class);
+    }
+
+    private boolean browserSupportsOL3(WMSMapContent mc) {
+        String agent = mc.getRequest().getHttpRequestHeader("USER-AGENT");
+        if(agent == null) {
+            // play it safe
+            return false;
+        }
+        
+        Pattern MSIE_PATTERN = Pattern.compile("MSIE (\\d+)\\.");
+        Matcher matcher = MSIE_PATTERN.matcher(agent);
+        if(!matcher.matches()) {
+            return true;
+        } else {
+            return Integer.valueOf(matcher.group(1)) > 8;
         }
     }
 
@@ -198,7 +273,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * type. Ugly, if you come up with better means of doing so, fix it.
      * 
      * @param mapContent
-     * @return
+     *
      */
     private boolean hasOnlyCoverages(WMSMapContent mapContent) {
         for (Layer layer : mapContent.layers()) {
@@ -226,9 +301,9 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * "dd"), "m", "ft", "km", "mi", "inches".
      * 
      * @param request
-     * @return
+     *
      */
-    private String getOLUnits(GetMapRequest request) {
+    private String getOL2Units(GetMapRequest request) {
         CoordinateReferenceSystem crs = request.getCrs();
         // first rough approximation, meters for projected CRS, degrees for the
         // others
@@ -255,6 +330,30 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
         }
         return result;
     }
+    
+    /**
+     * OL3 does support a very limited set of unit types, we have to try and return one of those,
+     * otherwise the scale won't be shown. 
+     * 
+     * @param request
+     *
+     */
+    private String getOL3Units(GetMapRequest request) {
+        CoordinateReferenceSystem crs = request.getCrs();
+        // first rough approximation, meters for projected CRS, degrees for the
+        // others
+        String result = crs instanceof ProjectedCRS ? "m" : "degrees";
+        try {
+            String unit = crs.getCoordinateSystem().getAxis(0).getUnit().toString();
+            // use the unicode escape sequence for the degree sign so its not
+            // screwed up by different local encodings
+            if ("ft".equals(unit) || "feets".equals(unit))
+                result = "feet";
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error trying to determine unit of measure", e);
+        }
+        return result;
+    }
 
     /**
      * Returns a list of maps with the name and value of each parameter that we have to forward to
@@ -264,7 +363,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * 
      * 
      * @param rawKvp
-     * @return
+     *
      */
     private List<Map<String, String>> getLayerParameter(Map<String, String> rawKvp) {
         List<Map<String, String>> result = new ArrayList<Map<String, String>>(rawKvp.size());
@@ -292,7 +391,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
      * "http://localhost:8080/geoserver//wms?LAYERS=..." and Jetty 6.1 won't digest them...
      * 
      * @param baseUrl
-     * @return
+     *
      */
     private String canonicUrl(String baseUrl) {
         if (baseUrl.endsWith("/")) {

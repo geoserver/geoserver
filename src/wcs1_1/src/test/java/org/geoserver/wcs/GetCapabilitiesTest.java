@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,13 +11,12 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.geoserver.data.test.MockData.TASMANIA_DEM;
-import static org.junit.Assert.assertEquals;
 
-import java.util.List;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -29,11 +29,14 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.junit.Before;
 import org.junit.Test;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetCapabilitiesTest extends WCSTestSupport {
 
@@ -44,6 +47,10 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         CoverageStoreInfo csi = cat.getCoverageStoreByName(SystemTestData.WORLD.getLocalPart());       
         csi.setEnabled(false);
         cat.save(csi);
+
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
+        getGeoServer().save(global);
     }
 
     // @Override
@@ -57,10 +64,18 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     // return "/GEOTOOLS_DEVELOPER_LOGGING.properties";
     // }
 
+    @Before
+    public void revertTasmaniaDem() throws IOException {
+        getTestData().addDefaultRasterLayer(TASMANIA_DEM, getCatalog());
+    }
+
     @Test
     public void testGetBasic() throws Exception {
-        Document dom = getAsDOM(BASEPATH
+        MockHttpServletResponse response = getAsServletResponse(BASEPATH
                 + "?request=GetCapabilities&service=WCS&acceptversions=1.1.1");
+        assertEquals("text/xml", response.getContentType());
+
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         // print(dom);
         checkValidationErrors(dom, WCS11_SCHEMA);
 
@@ -300,6 +315,13 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("1", "count(//ows:OperationsMetadata)", dom);
         assertXpathEvaluatesTo("1", "count(//wcs:Contents)", dom);
     }
+    
+    @Test
+    public void testSchemaLocation() throws Exception {
+        Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS");
+        checkValidationErrors(dom, WCS11_SCHEMA);        
+        assertXpathEvaluatesTo("1", "count(//wcs:Capabilities[contains(@xsi:schemaLocation,'http://www.opengis.net/wcs/1.1.1 ')])", dom);
+    }
 
     @Test
     public void testOneSection() throws Exception {
@@ -379,11 +401,48 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         Document dom = getAsDOM("wcs?request=GetCapabilities");
         // print(dom);
         checkValidationErrors(dom, WCS11_SCHEMA);
-        String xpathBase = "//wcs:CoverageSummary[wcs:Identifier = '" + TASMANIA_DEM.getLocalPart()
-                + "']/ows:Metadata";
+        String xpathBase = "//wcs:CoverageSummary[wcs:Identifier = '" + TASMANIA_DEM.getPrefix() 
+                + ":" + TASMANIA_DEM.getLocalPart() + "']/ows:Metadata";
         assertXpathEvaluatesTo("http://www.geoserver.org", xpathBase + "/@about", dom);
         assertXpathEvaluatesTo("simple", xpathBase + "/@xlink:type", dom);
         assertXpathEvaluatesTo("http://www.geoserver.org/tasmania/dem.xml", xpathBase
                 + "/@xlink:href", dom);
+    }
+
+    @Test
+    public void testMetadataLinksTransormToProxyBaseURL() throws Exception {
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
+        MetadataLinkInfo ml = catalog.getFactory().createMetadataLink();
+        ml.setContent("/metadata?key=value");
+        ml.setAbout("http://www.geoserver.org");
+        ci.getMetadataLinks().add(ml);
+        catalog.save(ci);
+
+        String proxyBaseUrl = getGeoServer().getGlobal().getSettings().getProxyBaseUrl();
+        Document dom = getAsDOM("wcs?request=GetCapabilities");
+        checkValidationErrors(dom, WCS11_SCHEMA);
+        String xpathBase = "//wcs:CoverageSummary[wcs:Identifier = '" + TASMANIA_DEM.getPrefix() 
+                + ":" + TASMANIA_DEM.getLocalPart() + "']/ows:Metadata";
+        assertXpathEvaluatesTo("http://www.geoserver.org", xpathBase + "/@about", dom);
+        assertXpathEvaluatesTo("simple", xpathBase + "/@xlink:type", dom);
+        assertXpathEvaluatesTo(proxyBaseUrl + "/metadata?key=value", xpathBase + "/@xlink:href", dom);
+    }
+
+    @Test
+    public void testNoMetadataTypeAttribute() throws Exception {
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
+        MetadataLinkInfo ml = catalog.getFactory().createMetadataLink();
+        ml.setContent("http://www.geoserver.org/tasmania/dem.xml");
+        ml.setAbout("http://www.geoserver.org");
+        ci.getMetadataLinks().add(ml);
+        catalog.save(ci);
+
+        Document dom = getAsDOM("wcs?request=GetCapabilities");
+        checkValidationErrors(dom, WCS11_SCHEMA);
+        String xpathBase = "//wcs:CoverageSummary[wcs:Identifier = '" + TASMANIA_DEM.getLocalPart()
+                + "']/ows:Metadata";
+        assertXpathNotExists(xpathBase + "/@metadataType", dom);
     }
 }

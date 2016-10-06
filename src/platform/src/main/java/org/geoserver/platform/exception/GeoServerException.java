@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,7 +9,7 @@ package org.geoserver.platform.exception;
  * Base class for exceptions whose messages can be localized.
  * <p>
  * This class overrides the {{@link #getMessage()} function and uses {@link #getId()} to 
- * locate a localized version of the message via a {@link GeoServerExceptions#localize(GeoServerException)}.
+ * locate a localized version of the message via a {@link GeoServerExceptions#localize(IGeoServerException)}.
  * </p>
  * @author Justin Deoliveira, OpenGeo
  *

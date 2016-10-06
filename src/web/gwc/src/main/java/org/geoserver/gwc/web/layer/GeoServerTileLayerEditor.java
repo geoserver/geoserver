@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,8 +8,8 @@ package org.geoserver.gwc.web.layer;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.geoserver.gwc.GWC.tileLayerName;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -24,34 +25,41 @@ import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
 import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
+import org.geoserver.gwc.ConfigurableBlobStore;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.CatalogLayerEventListener;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geowebcache.config.BlobStoreConfig;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.diskquota.storage.Quota;
-import org.geowebcache.filter.parameters.FloatParameterFilter;
 import org.geowebcache.filter.parameters.ParameterFilter;
-import org.geowebcache.filter.parameters.RegexParameterFilter;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
+import org.geowebcache.storage.blobstore.memory.CacheProvider;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 
 /**
  * Edit panel for a {@link GeoServerTileLayerInfo} (used to edit caching options for both
@@ -94,6 +102,11 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
      * Whether the cached layer is enabled (like in {@link TileLayer#isEnabled()}
      */
     private final FormComponent<Boolean> enabled;
+    
+    /**
+     * The blobstoreId
+     */
+    private final DropDownChoice<String> blobStoreId;
 
     /**
      * Container for {@link #configs}
@@ -112,18 +125,19 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
     private final FormComponent<Integer> gutter;
 
     private final CheckGroup<String> cacheFormats;
-
-    private final FormComponent<Boolean> cacheExtraStyles;
-
-    private final FormComponent<Boolean> createTimeParameterFilter;
-
-    private final FormComponent<Boolean> createElevationParameterFilter;
+    
+    private final FormComponent<Integer> expireCache;
+    
+    private final FormComponent<Integer> expireClients;
 
     private final GridSubsetsEditor gridSubsets;
+    private final ParameterFilterEditor parameterFilters;
 
     private final String originalLayerName;
 
     private IModel<? extends CatalogInfo> layerModel;
+
+    private CheckBox enableInMemoryCaching;
 
     /**
      * @param id
@@ -131,7 +145,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
      * @param tileLayerModel must be a {@link GeoServerTileLayerInfoModel}
      */
     public GeoServerTileLayerEditor(final String id,
-            final IModel<? extends CatalogInfo> layerModel,
+            final IModel<? extends PublishedInfo> layerModel,
             final IModel<GeoServerTileLayerInfo> tileLayerModel) {
         super(id);
         checkArgument(tileLayerModel instanceof GeoServerTileLayerInfoModel);
@@ -141,7 +155,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         final GWC mediator = GWC.get();
         final IModel<String> createTileLayerLabelModel;
 
-        final CatalogInfo info = layerModel.getObject();
+        final PublishedInfo info = layerModel.getObject();
         final GeoServerTileLayerInfo tileLayerInfo = tileLayerModel.getObject();
 
         if (info instanceof LayerInfo) {
@@ -177,6 +191,11 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
         add(new Label("createTileLayerLabel", createTileLayerLabelModel));
 
+        // Get the model and check if the Enabled parameter has been defined
+        GeoServerTileLayerInfoModel model = ((GeoServerTileLayerInfoModel)tileLayerModel);
+
+        boolean undefined = model.getEnabled() == null;
+        
         boolean doCreateTileLayer;
         if (tileLayerInfo.getId() != null) {
             doCreateTileLayer = true;
@@ -185,8 +204,12 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         } else {
             doCreateTileLayer = false;
         }
+        // Add the enabled/disabled parameter depending on the doCreateTileLayer variable if not already set
+        if (undefined) {
+            model.setEnabled(doCreateTileLayer);
+        }
         add(createLayer = new CheckBox("createTileLayer", new Model<Boolean>(doCreateTileLayer)));
-        createLayer.add(new AttributeModifier("title", true, new ResourceModel(
+        createLayer.add(new AttributeModifier("title", new ResourceModel(
                 "createTileLayer.title")));
 
         container = new WebMarkupContainer("container");
@@ -198,8 +221,59 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         container.add(configs);
 
         add(enabled = new CheckBox("enabled", new PropertyModel<Boolean>(getModel(), "enabled")));
-        enabled.add(new AttributeModifier("title", true, new ResourceModel("enabled.title")));
+        enabled.add(new AttributeModifier("title", new ResourceModel("enabled.title")));
         configs.add(enabled);
+        
+        ChoiceRenderer<String> blobStoreRenderer = new ChoiceRenderer<String>() {
+            private static final long serialVersionUID = 1L;
+
+            final String defaultStore = getDefaultBlobStoreId();
+            
+            @Override
+            public String getIdValue(String object, int index) {
+                return object;
+            }
+            
+            @Override
+            public Object getDisplayValue(String object) {
+                String value = object;
+                if(object.equals(defaultStore)){
+                    value += " (*)";
+                }
+                return value;
+            }
+        };
+        PropertyModel<String> blobStoreModel = new PropertyModel<String>(getModel(), "blobStoreId");
+        List<String> blobStoreChoices = getBlobStoreIds();
+        configs.add(blobStoreId = new DropDownChoice<String>("blobStoreId", blobStoreModel,
+                blobStoreChoices, blobStoreRenderer));
+        blobStoreId.setNullValid(true);
+        blobStoreId.add(new AttributeModifier("title", new ResourceModel("blobStoreId.title")));
+
+        add(new IValidator<GeoServerTileLayerInfo>() {
+            private static final long serialVersionUID = 5240602030478856537L;
+
+            @Override
+            public void validate(IValidatable<GeoServerTileLayerInfo> validatable) {
+                final Boolean createVal = createLayer.getConvertedInput();
+                final Boolean enabledVal = enabled.getConvertedInput();
+                final String blobStoreIdVal = blobStoreId.getConvertedInput();
+                
+                if (createVal && enabledVal && !isBlobStoreEnabled(blobStoreIdVal)) {
+                    error(new ParamResourceModel("enabledError", GeoServerTileLayerEditor.this).getString());
+                }
+            }
+        });
+                
+        // CheckBox for enabling/disabling inner caching for the layer
+        enableInMemoryCaching = new CheckBox("inMemoryCached", new PropertyModel<Boolean>(getModel(), "inMemoryCached"));
+        ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
+        if(store != null && store.getCache() != null){
+            enableInMemoryCaching.setEnabled(mediator.getConfig().isInnerCachingEnabled()
+                    && !store.getCache().isImmutable());
+        }
+
+        configs.add(enableInMemoryCaching);
 
         List<Integer> metaTilingChoices = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
                 14, 15, 16, 17, 18, 19, 20);
@@ -226,8 +300,8 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         cacheFormats.setLabel(new ResourceModel("cacheFormats"));
         configs.add(cacheFormats);
 
-        final List<String> formats = Arrays.asList("image/png", "image/png8", "image/jpeg",
-                "image/gif");
+        final List<String> formats;
+        formats = Lists.newArrayList(GWC.getAdvertisedCachedFormats(info.getType()));
 
         ListView<String> cacheFormatsList = new ListView<String>("cacheFormats", formats) {
             private static final long serialVersionUID = 1L;
@@ -242,14 +316,23 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
                                              // submits
         cacheFormats.add(cacheFormatsList);
 
-        cacheExtraStyles = cacheExtraStylesParameterFilter(info, getModel());
-        createTimeParameterFilter = createTimeParameterFilter(info, getModel());
-        createElevationParameterFilter = createElevationParameterFilter(info, getModel());
-
+        IModel<Integer> expireCacheModel = new PropertyModel<Integer>(getModel(), "expireCache");
+        expireCache = new TextField<Integer>("expireCache", expireCacheModel);
+        configs.add(expireCache);
+        
+        IModel<Integer> expireClientsModel = new PropertyModel<Integer>(getModel(), "expireClients");
+        expireClients = new TextField<Integer>("expireClients", expireClientsModel);
+        configs.add(expireClients);
+        
         IModel<Set<XMLGridSubset>> gridSubsetsModel;
         gridSubsetsModel = new PropertyModel<Set<XMLGridSubset>>(getModel(), "gridSubsets");
         gridSubsets = new GridSubsetsEditor("cachedGridsets", gridSubsetsModel);
         configs.add(gridSubsets);
+        
+        IModel<Set<ParameterFilter>> parameterFilterModel;
+        parameterFilterModel = new PropertyModel<Set<ParameterFilter>>(getModel(), "parameterFilters");
+        parameterFilters = new ParameterFilterEditor("parameterFilters", parameterFilterModel, layerModel);
+        configs.add(parameterFilters);
 
         // behavior phase
         configs.setVisible(createLayer.getModelObject());
@@ -272,9 +355,34 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         });
     }
 
+    private List<String> getBlobStoreIds() {
+        List<String> blobStoreIds = new ArrayList<String>();
+        for (BlobStoreConfig blobStore : GWC.get().getBlobStores()) {
+            blobStoreIds.add(blobStore.getId());
+        }
+        return blobStoreIds;
+    }
+    
+    private boolean isBlobStoreEnabled(String blobStoreId) {
+        if (blobStoreId == null) {
+            return true;
+        }
+        for (BlobStoreConfig blobStore : GWC.get().getBlobStores()) {
+            if(blobStore.getId().equals(blobStoreId)) {
+                return blobStore.isEnabled();
+            }
+        }
+        return false;
+    }
+
     private boolean isNew() {
         GeoServerTileLayerInfoModel model = (GeoServerTileLayerInfoModel) super.getModel();
         return model.isNew();
+    }
+    
+    private String getDefaultBlobStoreId(){
+        BlobStoreConfig defaultBlobStore = GWC.get().getDefaultBlobStore();
+        return defaultBlobStore == null? null : defaultBlobStore.getId();
     }
 
     public void save() {
@@ -283,7 +391,9 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         final CatalogInfo layer = layerModel.getObject();
         final GeoServerTileLayerInfo tileLayerInfo = getModelObject();
         final boolean tileLayerExists = gwc.hasTileLayer(layer);
-        final boolean createLayer = this.createLayer.getModelObject().booleanValue();
+        GeoServerTileLayerInfoModel model = (GeoServerTileLayerInfoModel) getModel();
+        final boolean createLayer = model.getEnabled() == null ? GWC.get().getConfig()
+                .isCacheLayersByDefault() : model.getEnabled();
 
         if (!createLayer) {
             if (tileLayerExists) {
@@ -297,7 +407,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         // has an id
         Preconditions.checkState(layer.getId() != null);
         tileLayerInfo.setId(layer.getId());
-
+        
         final String name;
         final GridSetBroker gridsets = gwc.getGridSetBroker();
         GeoServerTileLayer tileLayer;
@@ -312,137 +422,34 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         }
 
         tileLayerInfo.setName(name);
-
-        if (tileLayerExists) {
+        
+        // Remove the Layer from the cache if it is present
+        ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
+        if(store != null){
+            CacheProvider cache = store.getCache();
+            if (cache != null) {
+                if (enableInMemoryCaching.getModelObject()) {
+                    cache.removeUncachedLayer(name);
+                } else {
+                    cache.addUncachedLayer(name);
+                }
+            } 
+        }
+        
+        if (tileLayerExists) {          
             gwc.save(tileLayer);
         } else {
             gwc.add(tileLayer);
         }
     }
 
-    private FormComponent<Boolean> createElevationParameterFilter(CatalogInfo info,
-            IModel<GeoServerTileLayerInfo> model) {
 
-        boolean hasElevationDimension = false;
-        if (info instanceof LayerInfo) {
-            LayerInfo layerInfo = (LayerInfo) info;
-            ResourceInfo resource = layerInfo.getResource();
-            MetadataMap resourceMetadata = resource.getMetadata();
-            DimensionInfo elevationDimension = resourceMetadata.get(ResourceInfo.ELEVATION,
-                    DimensionInfo.class);
-            if (elevationDimension != null && elevationDimension.isEnabled()) {
-                hasElevationDimension = true;
-            }
-        }
-
-        GeoServerTileLayerInfo layerInfo = model.getObject();
-        Set<? extends ParameterFilter> parameterFilters = layerInfo.getParameterFilters();
-        boolean hasElevationParameterFilter = false;
-        if (hasElevationDimension) {
-            for (ParameterFilter p : parameterFilters) {
-                if ("ELEVATION".equalsIgnoreCase(p.getKey())) {
-                    hasElevationParameterFilter = true;
-                    break;
-                }
-            }
-        }
-
-        Label elevationParameterFilterLabel = new Label("elevationParameterFilterLabel",
-                new ResourceModel("elevationParameterFilter"));
-        configs.add(elevationParameterFilterLabel);
-
-        IModel<Boolean> elevationParameterFilterModel = new Model<Boolean>(
-                Boolean.valueOf(hasElevationParameterFilter));
-
-        CheckBox elevationParameterFilter = new CheckBox("elevationParameterFilter",
-                elevationParameterFilterModel);
-        elevationParameterFilter.setEnabled(hasElevationDimension);
-        if (!hasElevationDimension) {
-            elevationParameterFilter.add(new AttributeModifier("title", true, new ResourceModel(
-                    "elevationParameterFilterDisabled")));
-        }
-        configs.add(elevationParameterFilter);
-
-        // only visible for LayerInfos, non sense for LayerGroups
-        elevationParameterFilterLabel.setVisible(info instanceof LayerInfo);
-        elevationParameterFilter.setVisible(info instanceof LayerInfo);
-
-        return elevationParameterFilter;
-    }
-
-    private FormComponent<Boolean> createTimeParameterFilter(CatalogInfo info,
-            IModel<GeoServerTileLayerInfo> model) {
-
-        boolean hasTimeDimension = false;
-        if (info instanceof LayerInfo) {
-            LayerInfo layerInfo = (LayerInfo) info;
-            ResourceInfo resource = layerInfo.getResource();
-            MetadataMap resourceMetadata = resource.getMetadata();
-            DimensionInfo elevationDimension = resourceMetadata.get(ResourceInfo.TIME,
-                    DimensionInfo.class);
-            if (elevationDimension != null && elevationDimension.isEnabled()) {
-                hasTimeDimension = true;
-            }
-        }
-
-        GeoServerTileLayerInfo layerInfo = model.getObject();
-        Set<? extends ParameterFilter> parameterFilters = layerInfo.getParameterFilters();
-        boolean hasTimeParameterFilter = false;
-        if (hasTimeDimension) {
-            for (ParameterFilter p : parameterFilters) {
-                if ("TIME".equalsIgnoreCase(p.getKey())) {
-                    hasTimeParameterFilter = true;
-                    break;
-                }
-            }
-        }
-
-        Label timeParameterFilterLabel = new Label("timeParameterFilterLabel", new ResourceModel(
-                "timeParameterFilter"));
-        configs.add(timeParameterFilterLabel);
-
-        IModel<Boolean> timeParameterFilterModel = new Model<Boolean>(
-                Boolean.valueOf(hasTimeParameterFilter));
-
-        CheckBox timeParameterFilter = new CheckBox("timeParameterFilter", timeParameterFilterModel);
-        timeParameterFilter.setEnabled(hasTimeDimension);
-        if (!hasTimeDimension) {
-            timeParameterFilter.add(new AttributeModifier("title", true, new ResourceModel(
-                    "timeParameterFilterDisabled")));
-        }
-
-        configs.add(timeParameterFilter);
-
-        // only visible for LayerInfos, non sense for LayerGroups
-        timeParameterFilterLabel.setVisible(info instanceof LayerInfo);
-        timeParameterFilter.setVisible(info instanceof LayerInfo);
-
-        return timeParameterFilter;
-    }
-
-    private FormComponent<Boolean> cacheExtraStylesParameterFilter(CatalogInfo info,
-            IModel<GeoServerTileLayerInfo> model) {
-
-        Label cacheNonDefaultStylesLabel = new Label("cacheNonDefaultStylesLabel",
-                new ResourceModel("cacheNonDefaultStyles"));
-        configs.add(cacheNonDefaultStylesLabel);
-
-        CheckBox cacheExtraStyles = new CheckBox("cacheNonDefaultStyles",
-                new PropertyModel<Boolean>(model, "autoCacheStyles"));
-        configs.add(cacheExtraStyles);
-
-        // only visible for LayerInfos, non sense for LayerGroups
-        cacheNonDefaultStylesLabel.setVisible(info instanceof LayerInfo);
-        cacheExtraStyles.setVisible(info instanceof LayerInfo);
-
-        return cacheExtraStyles;
-    }
 
     private void updateConfigsVisibility(AjaxRequestTarget target) {
         final boolean createTileLayer = createLayer.getModelObject().booleanValue();
         setValidating(createTileLayer);
         configs.setVisible(createTileLayer);
-        target.addComponent(container);
+        target.add(container);
     }
 
     private void confirmRemovalOfExistingTileLayer(final AjaxRequestTarget origTarget) {
@@ -474,7 +481,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
             @Override
             public void onClose(final AjaxRequestTarget target) {
-                target.addComponent(createLayer);
+                target.add(createLayer);
                 updateConfigsVisibility(target);
             }
 
@@ -497,31 +504,38 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
      * @see org.apache.wicket.markup.html.form.FormComponent#convertInput()
      */
     @Override
-    protected void convertInput() {
+    public void convertInput() {
         createLayer.processInput();
         final boolean createTileLayer = createLayer.getModelObject().booleanValue();
-
+        GeoServerTileLayerInfoModel model = ((GeoServerTileLayerInfoModel)getModel());
+        model.setEnabled(createTileLayer);
         GeoServerTileLayerInfo tileLayerInfo = getModelObject();
 
         if (createTileLayer) {
             enabled.processInput();
+            expireCache.processInput();
+            expireClients.processInput();
             metaTilingX.processInput();
             metaTilingY.processInput();
             gutter.processInput();
             cacheFormats.processInput();
-            // process the cacheExtraStyles flag and let the CatalogLayerEventListener update the
-            // allowed values when saved
-            cacheExtraStyles.processInput();
-            createTimeParameterFilter.processInput();
-            createElevationParameterFilter.processInput();
+            parameterFilters.processInput();
             gridSubsets.processInput();
+            
+//            // Remove add the Layer to the cache if it is present
+//            ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
+//            if(store != null){
+//                CacheProvider cache = store.getCache();
+//                if (cache != null) {
+//                    if (enableInMemoryCaching.getModelObject()) {
+//                        cache.removeUncachedLayer(getModel().getObject().getName());
+//                    } else {
+//                        cache.addUncachedLayer(getModel().getObject().getName());
+//                    }
+//                } 
+//            }
 
             tileLayerInfo.setId(layerModel.getObject().getId());
-            updateAcceptAllRegExParameterFilter(tileLayerInfo, "TIME", createTimeParameterFilter
-                    .getModelObject().booleanValue());
-
-            updateAcceptAllFloatParameterFilter(tileLayerInfo, "ELEVATION",
-                    createElevationParameterFilter.getModelObject().booleanValue());
             setConvertedInput(tileLayerInfo);
         } else {
             tileLayerInfo.setId(null);
@@ -530,49 +544,13 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         setModelObject(tileLayerInfo);
     }
 
-    private void updateAcceptAllRegExParameterFilter(GeoServerTileLayerInfo tileLayerInfo,
-            String paramKey, boolean createParam) {
-
-        Set<ParameterFilter> parameterFilters = tileLayerInfo.getParameterFilters();
-        for (Iterator<? extends ParameterFilter> it = parameterFilters.iterator(); it.hasNext();) {
-            if (paramKey.equalsIgnoreCase(it.next().getKey())) {
-                it.remove();
-                break;
-            }
-        }
-        if (createParam) {
-            RegexParameterFilter filter = new RegexParameterFilter();
-            filter.setKey(paramKey);
-            filter.setDefaultValue("");
-            filter.setRegex(".*");
-            tileLayerInfo.getParameterFilters().add(filter);
-        }
-    }
-
-    private void updateAcceptAllFloatParameterFilter(GeoServerTileLayerInfo tileLayerInfo,
-            String paramKey, boolean createParam) {
-
-        Set<ParameterFilter> parameterFilters = tileLayerInfo.getParameterFilters();
-        for (Iterator<? extends ParameterFilter> it = parameterFilters.iterator(); it.hasNext();) {
-            if (paramKey.equalsIgnoreCase(it.next().getKey())) {
-                it.remove();
-                break;
-            }
-        }
-        if (createParam) {
-            FloatParameterFilter filter = new FloatParameterFilter();
-            filter.setKey(paramKey);
-            filter.setDefaultValue("");
-            tileLayerInfo.getParameterFilters().add(filter);
-        }
-    }
-
     /**
      * @see org.apache.wicket.Component#onBeforeRender()
      */
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();
+        
     }
 
 }

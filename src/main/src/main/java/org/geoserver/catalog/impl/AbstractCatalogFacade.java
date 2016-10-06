@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -141,7 +142,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
                 resolved = unwrap(ResolvingProxy.resolve(getCatalog(), (LayerInfo) l));
             }
             
-            lg.getLayers().set(i, resolved);
+            lg.getLayers().set(i, resolved != null ? resolved : l);
         }
 
         for (int i = 0; i < lg.getStyles().size(); i++) {

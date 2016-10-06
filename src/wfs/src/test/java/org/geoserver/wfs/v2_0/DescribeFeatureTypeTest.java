@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,6 +12,11 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.xml.namespace.QName;
 
@@ -32,10 +38,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DescribeFeatureTypeTest extends WFS20TestSupport {
 	
+//    @Override
+//    protected String getLogConfiguration() {
+//        return "/DEFAULT_LOGGING.properties";
+//    }
+    
 	@Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
     	DataStoreInfo di = getCatalog().getDataStoreByName(CiteTestData.CITE_PREFIX);
@@ -55,6 +66,27 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         Document doc = getAsDOM(
             "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=" + typeName);
         assertSchema(doc, CiteTestData.PRIMITIVEGEOFEATURE);
+    }
+    
+    @Test
+    public void testConcurrentGet() throws Exception {
+        String typeName = getLayerId(CiteTestData.PRIMITIVEGEOFEATURE);
+        ExecutorCompletionService<Object> es = new ExecutorCompletionService<>(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        final int REQUESTS =  200;
+        for (int i = 0; i < REQUESTS; i++) {
+            es.submit(() -> {
+                Document doc = getAsDOM(
+                        "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName="
+                                + typeName);
+                assertSchema(doc, CiteTestData.PRIMITIVEGEOFEATURE);
+                return null;
+            });
+        }
+        // just check there are no exceptions
+        for (int i = 0; i < REQUESTS; i++) {
+            es.take().get();
+        }
+        
     }
 
     @Test
@@ -154,9 +186,8 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-3306
+     * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
-     * @throws Exception
      */
     @Test
     public void testUserSuppliedTypeNameNamespace() throws Exception {
@@ -170,9 +201,8 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-3306
+     * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
-     * @throws Exception
      */
     @Test
     public void testUserSuppliedTypeNameDefaultNamespace() throws Exception {
@@ -200,7 +230,6 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
      * addresses the typeName either by qualifying it as declared in the getcaps document, or
      * providing an alternate prefix with its corresponding prefix to namespace mapping.
      * 
-     * @throws Exception
      */
     @Test
     public void testCiteCompliance() throws Exception {
@@ -248,9 +277,8 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
     }
     
     /**
-     * See http://jira.codehaus.org/browse/GEOS-3306
+     * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
-     * @throws Exception
      */
     @Test
     public void testPrefixedGetStrictCite() throws Exception {
@@ -316,7 +344,7 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/soap+xml");
         assertEquals("application/soap+xml", resp.getContentType());
         
-        Document dom = dom(new ByteArrayInputStream(resp.getOutputStreamContent().getBytes()));
+        Document dom = dom(new ByteArrayInputStream(resp.getContentAsString().getBytes()));
         assertEquals("soap:Envelope", dom.getDocumentElement().getNodeName());
         print(dom);
         XMLAssert.assertXpathEvaluatesTo("xsd:base64", "//soap:Body/@type", dom);

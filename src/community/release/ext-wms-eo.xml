@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>wms-eo*</include>
+        <include>gs-wms-eo*</include>
       </includes>
     </fileSet>
   </fileSets>

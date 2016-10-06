@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,6 +11,7 @@ import java.util.Map;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -73,7 +75,8 @@ public class WMSStoreResource extends AbstractCatalogResource {
              wms.setWorkspace( catalog.getWorkspaceByName( workspace ) );
         } 
         wms.setEnabled(true);
-
+        
+        catalog.validate(wms, false).throwIfInvalid();
         catalog.add( wms );
         
         LOGGER.info( "POST WSM store " + wms.getName() );
@@ -103,6 +106,7 @@ public class WMSStoreResource extends AbstractCatalogResource {
         
         new CatalogBuilder( catalog ).updateWMSStore( original, wms );
         
+        catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         
         LOGGER.info( "PUT wms store " + workspace + "," + wmsstore );
@@ -138,6 +142,16 @@ public class WMSStoreResource extends AbstractCatalogResource {
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setCallback( 
             new XStreamPersister.Callback() {
+                @Override
+                protected CatalogInfo getCatalogObject() {
+                    String workspace = getAttribute("workspace");
+                    String wmsstore = getAttribute("wmsstore");
+                    
+                    if (workspace == null || wmsstore == null) {
+                        return null;
+                    }
+                    return catalog.getStoreByName(workspace, wmsstore, WMSStoreInfo.class);
+                }
                 @Override
                 protected void postEncodeWMSStore(WMSStoreInfo ds,
                         HierarchicalStreamWriter writer,

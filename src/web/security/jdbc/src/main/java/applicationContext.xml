@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-web-sec-jdbc"/>
+    <constructor-arg index="1" value="GeoServer Web UI Security JDBC"/>
+  </bean>
+  <!-- ui user group service panel info-->
+  <bean id="jdbcUserGroupPanelInfo" class="org.geoserver.security.web.jdbc.JDBCUserGroupServicePanelInfo">
+    <property name="id" value="security.jdbcUserGroupService" />
+    <property name="shortTitleKey" value="JDBCUserGroupServicePanel.short"/>
+    <property name="titleKey" value="JDBCUserGroupServicePanel.title"/>
+    <property name="descriptionKey" value="JDBCUserGroupServicePanel.description"/>
+  </bean>
+
+  <!-- ui role service panel info-->
+  <bean id="jdbcRolePanelInfo" class="org.geoserver.security.web.jdbc.JDBCRoleServicePanelInfo">
+    <property name="id" value="security.jdbcRoleService" />
+    <property name="shortTitleKey" value="JDBCRoleServicePanel.short"/>
+    <property name="titleKey" value="JDBCRoleServicePanel.title"/>
+    <property name="descriptionKey" value="JDBCRoleServicePanel.description"/>
+  </bean>
+
+  <!-- ui auth provider panel info-->
+  <bean id="jdbcAuthProviderPanelInfo" class="org.geoserver.security.web.jdbc.JDBCAuthProviderPanelInfo">
+    <property name="id" value="security.jdbcAuthProvider" />
+    <property name="shortTitleKey" value="JDBCAuthProviderPanel.short"/>
+    <property name="titleKey" value="JDBCAuthProviderPanel.title"/>
+    <property name="descriptionKey" value="JDBCAuthProviderPanel.description"/>
+  </bean>
+  
+  <!--import resource="applicationContext-old.xml"/-->
+</beans>

@@ -5,7 +5,7 @@ Seeding and refreshing
 
 The primary benefit to GeoWebCache is that it allows for the acceleration of normal WMS tile request processing by eliminating the need for the tiles to be regenerated for every request.  This page discusses tile generation.
 
-You can configure seeding processes via the :ref:`web_admin`.  See the :ref:`webadmin_tilecaching_layers` page for more information.
+You can configure seeding processes via the :ref:`web_admin`.  See the :ref:`gwc_webadmin_layers` page for more information.
 
 Generating tiles
 ----------------

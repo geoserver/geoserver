@@ -1,0 +1,25 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+  <ul class="rightwise" style="width:50%;">
+    <li>
+      <!--span wicket:id="strongEncryptionMsg"></span-->
+    </li>
+  </ul>
+  <ul>
+    
+    <li class="choiceItem">
+      <input id="encryptingUrlParams" wicket:id="encryptingUrlParams" type="checkbox"/>
+      <label for="encryptingUrlParams">
+        <wicket:message key="encryptingUrlParams"></wicket:message>
+      </label>
+    </li>
+    <li>
+      <label for="passwordEncryption"><wicket:message key="passwordEncryption"></wicket:message></label>
+      <select id="passwordEncryption" wicket:id="configPasswordEncrypterName"></select>
+      <span wicket:id="strongEncryptionMsg" style="margin-left: 5%;"></span>
+    </li>
+  </ul>
+</wicket:panel>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<wfs:Transaction service="WFS" version="1.1.0" xmlns:wfs="http://www.opengis.net/wfs"
+  xmlns:gml="http://www.opengis.net/gml" xmlns:cite="http://www.opengis.net/cite"
+  xmlns:ogc="http://www.opengis.net/ogc">
+  <wfs:Update typeName="cite:full3d" srsName="EPSG:7415">
+    <wfs:Property>
+      <wfs:Name>cite:geom</wfs:Name>
+      <wfs:Value>
+        <gml:Point>
+          <gml:pos>204330 491816 16</gml:pos>
+        </gml:Point>
+      </wfs:Value>
+    </wfs:Property>
+    <ogc:Filter>
+      <ogc:FeatureId fid="full3d.point" />
+    </ogc:Filter>
+  </wfs:Update>
+</wfs:Transaction>

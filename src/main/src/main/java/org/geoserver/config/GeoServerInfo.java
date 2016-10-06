@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,7 @@ import java.util.Map;
 
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.platform.resource.LockProvider;
 
 /**
  * Global GeoServer configuration.
@@ -191,9 +193,10 @@ public interface GeoServerInfo extends Info {
     void setSchemaBaseUrl(String schemaBaseUrl);
 
     /**
-     * Verbosity flag.
+     * Sets indent level for XML output, causing output to be more verbose.
      * <p>
-     * When set GeoServer will log extra information it normally would not.
+     * Then set to false GeoServer will also take step so to strip out some formating and produce more condensed output.
+     *
      * </p>
      * @uml.property name="verbose"
      * @deprecated use {@link #getSettings()}
@@ -201,7 +204,10 @@ public interface GeoServerInfo extends Info {
     boolean isVerbose();
 
     /**
-     * Sets verbosity flag.
+     * Sets indent level for XML output, causing output to be more verbose.
+     * <p>
+     * Then set to false GeoServer will also take step so to strip out some formating and produce more condensed output.
+
      * @uml.property name="verbose"
      * @deprecated use {@link #getSettings()}
      */
@@ -293,6 +299,26 @@ public interface GeoServerInfo extends Info {
      * Enabling this feature is a security risk.
      */
     Boolean isXmlExternalEntitiesEnabled();
+
+    /**
+     * Name of lock provider used for resource access.
+     * 
+     * @return name of spring bean to use as lock provider
+     */
+    public String getLockProviderName();
+    
+    /**
+     * Sets the name of the {@link LockProvider} to use for resoruce access.
+     * 
+     * The following spring bean names are initially provided with the application:
+     * <ul>
+     * <li>nullLockProvider
+     * <li>memoryLockProvider
+     * <li>fileLockProvider
+     * </ul>
+     * @param lockProviderName Name of lock provider used for resource access.
+     */
+    public void setLockProviderName(String lockProviderName);
     
     /**
      * A map of metadata for services.
@@ -313,4 +339,38 @@ public interface GeoServerInfo extends Info {
      * Disposes the global configuration object.
      */
     void dispose();
+    
+
+    /**
+     * WebUIMode choices
+     */
+    public enum WebUIMode {
+        /**
+         * Let GeoServer determine the best mode.
+         */
+        DEFAULT,
+        /**
+         * Always redirect to persist page state (prevent double submit problem but doesn't support clustering)
+         */
+        REDIRECT,
+        /**
+         * Never redirect to persist page state (supports clustering but doesn't prevent double submit problem)
+         */
+        DO_NOT_REDIRECT
+    };
+
+    /**
+     * Get the WebUIMode
+     *
+     * @return the WebUIMode
+     */
+    public WebUIMode getWebUIMode();
+
+    /**
+     * Set the WebUIMode
+     *
+     * @param mode
+     */
+    public void setWebUIMode(WebUIMode mode);
+
 }

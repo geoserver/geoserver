@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -41,7 +42,7 @@ public class GetCapabilitiesResponse extends Response {
     }
 
     public String getMimeType(Object value, Operation operation) {
-        GetCapabilitiesType request = (GetCapabilitiesType) OwsUtils.parameter(operation
+        GetCapabilitiesType request = OwsUtils.parameter(operation
                 .getParameters(), GetCapabilitiesType.class);
 
         if ((request != null) && (request.getAcceptFormats() != null)) {
@@ -57,8 +58,8 @@ public class GetCapabilitiesResponse extends Response {
             }
         }
 
-        //default
-        return "application/xml";
+        // default
+        return "text/xml";
     }
 
     public void write(Object value, OutputStream output, Operation operation)

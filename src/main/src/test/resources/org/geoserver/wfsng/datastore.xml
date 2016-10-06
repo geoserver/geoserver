@@ -1,0 +1,26 @@
+<dataStore>
+  <id>DataStoreInfoImpl--26446fc6:155fd437873:-8000</id>
+  <name>mywfs</name>
+  <type>Web Feature Server</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id></id>
+  </workspace>
+  <connectionParameters>
+    <entry key="WFSDataStoreFactory:TRY_GZIP">true</entry>
+    <entry key="WFSDataStoreFactory:LENIENT">false</entry>
+    <entry key="usedefaultsrs">false</entry>
+    <entry key="WFSDataStoreFactory:AXIS_ORDER">Compliant</entry>
+    <entry key="WFSDataStoreFactory:PROTOCOL">false</entry>
+    <entry key="WFSDataStoreFactory:GET_CAPABILITIES_URL">http://localhost:8080/geoserver/ows?service=wfs&amp;version=1.1.0&amp;request=GetCapabilities</entry>
+    <entry key="WFSDataStoreFactory:MAXFEATURES">0</entry>
+    <entry key="WFSDataStoreFactory:FILTER_COMPLIANCE">0</entry>
+    <entry key="WFSDataStoreFactory:TIMEOUT">3000</entry>
+    <entry key="WFSDataStoreFactory:BUFFER_SIZE">10</entry>
+    <entry key="namespace">http://www.openplans.org/topp</entry>
+    <entry key="WFSDataStoreFactory:WFS_STRATEGY">arcgis</entry>
+    <entry key="WFSDataStoreFactory:AXIS_ORDER_FILTER">Compliant</entry>
+    <entry key="WFSDataStoreFactory:ENCODING">UTF-8</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

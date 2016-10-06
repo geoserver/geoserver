@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,6 +15,7 @@ import java.util.List;
 
 import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.Repository;
+import org.xml.sax.EntityResolver;
 
 /**
  * A serializable view of a {@link Param}
@@ -35,6 +37,8 @@ public class ParamInfo implements Serializable {
     private Class<?> binding;
 
     private boolean required;
+    
+    private boolean deprecated;
 
     private Serializable value;
     
@@ -43,20 +47,25 @@ public class ParamInfo implements Serializable {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public ParamInfo(Param param) {
         this.name = param.key;
-        this.title = param.title == null ? null : param.title.toString();
+        this.deprecated = param.isDeprecated();
+        // the "short" Param constructor sets the title equal to the key, that's not
+        // very useful, use the description in that case instead
+        this.title = param.title != null && !param.title.toString().equals(param.key) ? param.title
+                .toString() : param.getDescription().toString();
         this.password = param.isPassword();
         this.largeText = param.metadata != null && Boolean.TRUE.equals(param.metadata.get(Param.IS_LARGE_TEXT));
+        Object defaultValue = this.deprecated ? null : param.sample;
         if (Serializable.class.isAssignableFrom(param.type)) {
             this.binding = param.type;
-            this.value = (Serializable) param.sample;
-        } else if (Repository.class.equals(param.type)) {
-                this.binding = param.type;
-                this.value = null;
+            this.value = (Serializable) defaultValue;
+        } else if (Repository.class.equals(param.type) || EntityResolver.class.isAssignableFrom(param.type)) {
+            this.binding = param.type;
+            this.value = null;
         } else {
             // handle the parameter as a string and let the DataStoreFactory
             // convert it to the appropriate type
             this.binding = String.class;
-            this.value = param.sample == null ? null : String.valueOf(param.sample);
+            this.value = defaultValue == null ? null : String.valueOf(defaultValue);
         }
         this.required = param.required;
         if (param.metadata != null) {
@@ -107,5 +116,13 @@ public class ParamInfo implements Serializable {
 
     public boolean isRequired() {
         return required;
+    }
+    
+    public boolean isDeprecated() {
+        return deprecated;
+    }
+    
+    public void setDeprecated(boolean deprecated) {
+        this.deprecated = deprecated;
     }
 }

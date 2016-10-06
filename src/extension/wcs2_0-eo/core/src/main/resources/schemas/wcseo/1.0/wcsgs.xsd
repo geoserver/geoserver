@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.geoserver.org/wcsgs/2.0"
+  xmlns:wcsgs="http://www.geoserver.org/wcsgs/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+  version="1.0.0" xml:lang="en">
+  <annotation>
+    <appinfo>wcsgs.xsd</appinfo>
+    <documentation>GeoServer specific metadata extensions
+    </documentation>
+  </annotation>
+
+  <!-- =========================================================== -->
+  <!-- includes and imports -->
+  <!-- =========================================================== -->
+  <import namespace="http://www.opengis.net/gml/3.2"
+    schemaLocation="http://schemas.opengis.net/gml/3.2.1/temporal.xsd" />
+
+  <!-- =========================================================== -->
+  <!-- elements and types -->
+  <!-- =========================================================== -->
+  <element name="TimeDomain" type="wcsgs:TimeDomainType">
+    <annotation>
+      <documentation>A description of the time domain for this coverage
+      </documentation>
+    </annotation>
+  </element>
+  <complexType name="TimeDomainType">
+    <sequence minOccurs="0" maxOccurs="unbounded">
+      <element ref="gml:AbstractTimeObject" />
+    </sequence>
+  </complexType>
+</schema>

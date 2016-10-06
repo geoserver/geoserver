@@ -1,13 +1,14 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.xslt.config;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.SoftValueHashMap;
 
 /**
@@ -36,7 +37,7 @@ abstract class FileItemCache<T> {
         cache.clear();
     }
 
-    public T getItem(File file) throws IOException {
+    public T getItem(Resource file) throws IOException {
         // see if we have an up to date version of the item in the cache
         String key = getFileKey(file);
         CacheItem<T> ci = cache.get(key);
@@ -55,7 +56,7 @@ abstract class FileItemCache<T> {
         return item;
     }
     
-    public boolean removeItem(File file) {
+    public boolean removeItem(Resource file) {
         String key = getFileKey(file);
         return cache.remove(key) != null;
     }
@@ -66,19 +67,19 @@ abstract class FileItemCache<T> {
      * different behavior
      * 
      * @param file
-     * @return
+     *
      */
-    protected String getFileKey(File file) {
-        return file.getName();
+    protected String getFileKey(Resource file) {
+        return file.name();
     }
 
     /**
      * Loads an item from the file
      * 
      * @param file
-     * @return
+     *
      */
-    protected abstract T loadItem(File file) throws IOException;
+    protected abstract T loadItem(Resource file) throws IOException;
 
     /**
      * Manually updates the contents of the cache
@@ -86,7 +87,7 @@ abstract class FileItemCache<T> {
      * @param item
      * @param file
      */
-    public void put(T item, File file) {
+    public void put(T item, Resource file) {
         CacheItem ci = new CacheItem<T>(item, file);
         String key = getFileKey(file);
         cache.put(key, ci);

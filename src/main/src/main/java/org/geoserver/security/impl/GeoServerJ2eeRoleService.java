@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -21,7 +22,7 @@ import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -175,7 +176,7 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
     
     protected Set<RoleLoadedListener> listeners = 
         Collections.synchronizedSet(new HashSet<RoleLoadedListener>());
-
+    
     protected GeoServerJ2eeRoleService() throws IOException{
         emptySet=Collections.unmodifiableSortedSet(new TreeSet<GeoServerRole>());
         emptyStringSet=Collections.unmodifiableSortedSet(new TreeSet<String>());      
@@ -183,7 +184,6 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
         load();
     }
 
-    
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {        
         super.initializeFromConfig(config);
@@ -260,11 +260,11 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
                 
         
         LOGGER.info("Start reloading roles for service named "+getName());
-        GeoServerResourceLoader loader = (GeoServerResourceLoader) GeoServerExtensions.bean("resourceLoader");
-        File webXML = loader.find( "web.xml" );
+        File webXML = GeoServerExtensions.file( "WEB-INF/web.xml" );
         
-        if (webXML==null)
+        if (webXML==null){
             throw new IOException("Cannot open /WEB-INF/web.xml");
+        }
         
         LOGGER.info("Extracting roles from: "+webXML.getCanonicalPath());
         
@@ -409,8 +409,8 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
     /**
      * The root configuration for the role service.
      */
-    public File getConfigRoot() throws IOException {
-        return new File(getSecurityManager().getRoleRoot(), getName());
+    public Resource getConfigRoot() throws IOException {
+        return getSecurityManager().role().get(getName());
     }
     
     public int getRoleCount() throws IOException {

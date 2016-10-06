@@ -1,5 +1,0 @@
-<logging>
-  <level>GSS_DEBUG_LOGGING.properties</level>
-  <location>logs/geoserver.log</location>
-  <stdOutLogging>true</stdOutLogging>
-</logging>

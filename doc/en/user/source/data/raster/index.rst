@@ -1,7 +1,7 @@
 .. _data_raster:
 
-Working with Raster Data
-========================
+Raster data
+===========
 
 This section discusses the raster (coverage) data sources that GeoServer can access.
 
@@ -13,11 +13,11 @@ The standard GeoServer installation supports the loading and serving of the foll
    geotiff
    gtopo30
    worldimage
-   imagemosaic
+   imagemosaic/index
 
 Other data sources are supplied as GeoServer extensions.  
 Extensions are downloadable modules that add functionality to GeoServer.  
-Extensions are available at the `GeoServer download page <http://geoserver.org/display/GEOS/Download>`_.
+Extensions are available at the `GeoServer download page <http://geoserver.org/download>`_.
 
 .. warning:: The extension version must match the version of the GeoServer instance.
 
@@ -32,6 +32,12 @@ Extensions are available at the `GeoServer download page <http://geoserver.org/d
    imagemosaicjdbc
    customjdbcaccess
 
+GeoServer provides extensive facilities for controlling how rasters are accessed.
+These are covered in the following sections.
 
+.. toctree::
+   :maxdepth: 1
+
+   coverageview
 
    

@@ -1,21 +1,20 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.config;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A spring placeholder configurer that loads properties from the data directory.
@@ -56,8 +55,8 @@ public class GeoServerPropertyConfigurer extends PropertyPlaceholderConfigurer {
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.config");
     
-    GeoServerDataDirectory data;
-    Resource location;
+    org.geoserver.platform.resource.Resource configFile;    
+    protected GeoServerDataDirectory data;
     boolean copyOutTemplate = true;
     String comments;
     
@@ -73,15 +72,19 @@ public class GeoServerPropertyConfigurer extends PropertyPlaceholderConfigurer {
         this.comments = comments;
     }
     
+    /**
+     * @return the configLocation
+     */
+    public org.geoserver.platform.resource.Resource getConfigFile() {
+        return configFile;
+    }
+    
     @Override
     public void setLocation(Resource location) {
         try {
-            File f = location.getFile();
-            if (f != null && !f.isAbsolute()) {
-                //make relative to data directory
-                f = new File(data.root(), f.getPath());
-                location = new UrlResource(f.toURI());
-                this.location = location;
+            location = SpringResourceAdaptor.relative(location, data.getResourceStore());
+            if (location instanceof SpringResourceAdaptor) {
+                configFile = ((SpringResourceAdaptor) location).getResource();
             }
         }
         catch(IOException e) {
@@ -103,14 +106,25 @@ public class GeoServerPropertyConfigurer extends PropertyPlaceholderConfigurer {
         }
         catch(FileNotFoundException e) {
             //location was not found, create 
-            if (this.location != null && copyOutTemplate) {
-                File f = location.getFile();
-                f.getParentFile().mkdirs();
-                f.createNewFile();
-                FileOutputStream fout = new FileOutputStream(f);
-                props.store(fout, comments);
-                fout.flush();
-                fout.close();
+            if (configFile != null && copyOutTemplate) {
+                try (OutputStream fout = configFile.out()) {
+                    props.store(fout, comments);                
+                    fout.flush();
+                }
+            }
+        }
+    }
+    
+    /**
+     * Force reloading the properties which may have been updated in the meanwhile;
+     * after a restore as an instance.
+     * 
+     * @throws IOException
+     */
+    public void reload() throws IOException {
+        if (localProperties != null) {
+            for (Properties props : localProperties) {
+                loadProperties(props);
             }
         }
     }

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<wfs:Transaction service="WFS" version="2.0.0"
+  xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:cite="http://www.opengis.net/cite" xmlns:fes="http://www.opengis.net/fes/2.0">
+  <wfs:Update typeName="cite:curvelines">
+    <wfs:Property>
+      <wfs:ValueReference>cite:geom</wfs:ValueReference>
+      <wfs:Value><gml:Curve srsName="urn:x-ogc:def:crs:EPSG:4326" srsDimension="2">
+          <gml:segments>
+            <gml:LineStringSegment interpolation="linear">
+              <gml:posList>45 10 45 20</gml:posList>
+            </gml:LineStringSegment>
+            <gml:ArcString interpolation="circularArc3Points">
+              <gml:posList>45 20 48 23 51 20</gml:posList>
+            </gml:ArcString>
+            <gml:LineStringSegment interpolation="linear">
+              <gml:posList>51 20 51 10</gml:posList>
+            </gml:LineStringSegment>
+          </gml:segments>
+        </gml:Curve></wfs:Value>
+    </wfs:Property>
+    <fes:Filter>
+      <fes:PropertyIsEqualTo>
+        <fes:ValueReference>name</fes:ValueReference>
+        <fes:Literal>Compound</fes:Literal>
+      </fes:PropertyIsEqualTo>
+    </fes:Filter>
+  </wfs:Update>
+</wfs:Transaction>

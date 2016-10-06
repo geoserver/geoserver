@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,7 +16,7 @@ import org.geotools.styling.StyledLayerDescriptor;
  * Web Map Service implementation.
  * <p>
  * Each of the methods on this class corresponds to an operation as defined by the Web Map
- * Specification. See {@link http://www.opengeospatial.org/standards/wms} for more details.
+ * Specification. See {@link "http://www.opengeospatial.org/standards/wms"} for more details.
  * </p>
  * 
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org

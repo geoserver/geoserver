@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -711,6 +712,8 @@ public interface CatalogFacade {
     /**
      * Loads a style from persistent storage by specifying its name.
      * 
+     * This only checks the global styles directory.
+     * 
      * @param name The name of the style.
      * 
      * @return The style, or <code>null</code> if no such style exists
@@ -777,8 +780,17 @@ public interface CatalogFacade {
     /**
      * @return an iterator over the catalog objects of the requested type that match the given
      *         filter
+     * @deprecated use {@link #list(Class, Filter, Integer, Integer, SortBy...)}
      */
     public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
             final Filter filter, @Nullable Integer offset, @Nullable Integer count,
             @Nullable SortBy sortOrder);
+    
+    /**
+     * @return an iterator over the catalog objects of the requested type that match the given
+     *         filter
+     */
+    public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
+            final Filter filter, @Nullable Integer offset, @Nullable Integer count,
+            @Nullable SortBy... sortOrder);
 }

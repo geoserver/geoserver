@@ -1,16 +1,17 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.event.UserGroupLoadedEvent;
@@ -145,7 +146,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
      * @see org.geoserver.security.GeoserverUserGroupService#load()
      */
     public void load() throws IOException{
-        LOGGER.info("Start reloading user/grous for service named "+getName());
+        LOGGER.info("Start reloading user/groups for service named "+getName());
         // prevent concurrent write from store and
         // read from service
         synchronized (this) { 
@@ -176,8 +177,8 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     /**
      * The root configuration for the user group service.
      */
-    public File getConfigRoot() throws IOException {
-        return new File(getSecurityManager().getUserGroupRoot(), getName());
+    public Resource getConfigRoot() throws IOException {
+        return getSecurityManager().userGroup().get(getName());
     }
 
     /* (non-Javadoc)

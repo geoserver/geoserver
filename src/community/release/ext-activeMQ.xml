@@ -1,0 +1,16 @@
+<assembly>
+  <id>activeMQ-broker-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>jms-cluster/activemqBroker/target</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>activemqBroker-*.war</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

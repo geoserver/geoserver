@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -39,15 +40,13 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * <p>
  * This class is intended to be used as a library of XML relevant operation for
- * the XMLConfigReader class.
+ * the  GeoTools XMLConfigDigester class.
  * </p>
  *
  * <p></p>
  *
  * @author dzwiers, Refractions Research, Inc.
  * @version $Id$
- *
- * @see XMLConfigReader
  */
 public class ReaderUtils {
     /** Used internally to create log information to detect errors. */
@@ -102,13 +101,11 @@ public class ReaderUtils {
      * </p>
      *
      * @param file A file Handle to test.
-     * @param isDir true when the File passed in is expected to be a directory,
-     *        false when the handle is expected to be a file.
+     * @param isDir true when the File passed in is expected to be a directory, false when the handle is expected to be a file.
      *
      * @return the File handle passed in
      *
-     * @throws Exception When the file does not exist or is not
-     *         the type specified.
+     * @throws FileNotFoundException When the file does not exist or is not the type specified.
      */
     public static File checkFile(File file, boolean isDir)
         throws FileNotFoundException {
@@ -146,7 +143,7 @@ public class ReaderUtils {
      *
      * @return The child element found, null if not found.
      *
-     * @see getChildElement(Element,String,boolean)
+     * @see #getChildElement(Element,String,boolean)
      */
     public static Element[] getChildElements(Element root, String name) {
         try {
@@ -252,7 +249,7 @@ public class ReaderUtils {
      *
      * @return The child element found, null if not found.
      *
-     * @see getChildElement(Element,String,boolean)
+     * @see #getChildElement(Element,String,boolean)
      */
     public static Element getChildElement(Element root, String name) {
         try {
@@ -713,7 +710,7 @@ public class ReaderUtils {
      * Unescapes the provided text with XML entities, 
      * see (http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references#Character_entities_in_XML)
      * @param text
-     * @return
+     *
      */
     private static String unescape(String text) {
     	String s = text;

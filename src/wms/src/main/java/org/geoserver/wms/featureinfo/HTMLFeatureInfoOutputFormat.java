@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,33 +11,30 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.List;
 
-
 import net.opengis.wfs.FeatureCollectionType;
+
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
-import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 
 import freemarker.template.Configuration;
+import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
 
 /**
  * Produces a FeatureInfo response in HTML. Relies on {@link AbstractFeatureInfoResponse} and the
  * feature delegate to do most of the work, just implements an HTML based writeTo method.
- * 
- * <p>
- * In the future James suggested that we allow some sort of template system, so that one can control
- * the formatting of the html output, since now we just hard code some minimal header stuff. See
- * http://jira.codehaus.org/browse/GEOS-196
- * </p>
  * 
  * @author James Macgill, PSU
  * @author Andrea Aime, TOPP
@@ -54,7 +52,20 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         // initialize the template engine, this is static to maintain a cache
         // over instantiations of kml writer
         templateConfig = new Configuration();
-        templateConfig.setObjectWrapper(new FeatureWrapper(tfcFactory));
+        templateConfig.setObjectWrapper(new FeatureWrapper(tfcFactory) {
+    
+            @Override
+            public TemplateModel wrap(Object object) throws TemplateModelException {
+                if (object instanceof FeatureCollection) {
+                    SimpleHash map = (SimpleHash) super.wrap(object);                    
+                    map.put("request", Dispatcher.REQUEST.get().getKvp());
+                    map.put("environment", new EnvironmentVariablesTemplateModel());
+                    return map;
+                }
+                return super.wrap(object);
+            }
+    
+        });
     }
 
     GeoServerTemplateLoader templateLoader;
@@ -123,7 +134,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                         content.process(fc, osw);
                     } catch (TemplateException e) {
                         String msg = "Error occured processing content template " + content.getName()
-                                + " for " + request.getQueryLayers().get(i);
+                                + " for " + request.getQueryLayers().get(i).getName();
                         throw (IOException) new IOException(msg).initCause(e);
                     }
                 }
@@ -164,26 +175,27 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      */
     Template getTemplate(Name name, String templateFileName, Charset charset)
             throws IOException {
-        // setup template subsystem
-        if (templateLoader == null) {
-            templateLoader = new GeoServerTemplateLoader(getClass());
-        }
-
+        ResourceInfo ri = null;
         if (name != null) {
-            ResourceInfo ri = wms.getResourceInfo(name);
-            if (ri != null) {
-                templateLoader.setResource(ri);
-            } else {
-                throw new IllegalArgumentException("Can't find neither a FeatureType nor "
-                        + "a CoverageInfo or WMSLayerInfo named " + name);
-            }                        
+            ri = wms.getResourceInfo(name);
+            // ri can be null if the type is the result of a rendering transformation
         }
 
         synchronized (templateConfig) {
+            // setup template subsystem
+            if (templateLoader == null) {
+                templateLoader = new GeoServerTemplateLoader(getClass());
+            }
+            templateLoader.setResource(ri);
             templateConfig.setTemplateLoader(templateLoader);
             Template t = templateConfig.getTemplate(templateFileName);
             t.setEncoding(charset.name());
             return t;
         }
+    }
+    
+    @Override
+    public String getCharset(){ 
+        return wms.getGeoServer().getSettings().getCharset();
     }
 }

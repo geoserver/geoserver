@@ -1,13 +1,20 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
 
@@ -20,14 +27,16 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.MockData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CoverageStoreTest extends CatalogRESTTestSupport {
 
@@ -82,12 +91,12 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAllUnauthorized() throws Exception {
-        assertEquals( 405, putAsServletResponse("/rest/workspaces/wcs/coveragestores").getStatusCode() );
+        assertEquals( 405, putAsServletResponse("/rest/workspaces/wcs/coveragestores").getStatus() );
     }
 
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
-        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores").getStatusCode() );
+        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores").getStatus() );
     }
 
     @Test
@@ -109,11 +118,33 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         assertEquals( coverages.size(), links.getLength() );
         
         for ( int i = 0; i < coverages.size(); i++ ){
-            CoverageInfo ft = coverages.get( i );
+            CoverageInfo cov = coverages.get( i );
             Element link = (Element) links.item( i );
-            
-            assertTrue( link.getAttribute("href").endsWith( ft.getName() + ".html") );
+            assertTrue( link.getAttribute("href").endsWith("coverages/" + cov.getName() + ".html") );
         }
+    }
+    
+    @Test
+    public void testGetWrongCoverageStore() throws Exception {
+        // Parameters for the request
+        String ws = "wcs";
+        String cs = "BlueMarblesssss";
+        // Request path
+        String requestPath = "/rest/workspaces/" + ws + "/coveragestores/" + cs + ".html";
+        // Exception path
+        String exception = "No such coverage store: " + ws + "," + cs;
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
+                exception));
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getContentAsString().isEmpty());
     }
 
     File setupNewCoverageStore() throws Exception {
@@ -161,7 +192,7 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/wcs/coveragestores", xml, "text/xml" );
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/wcs/coveragestores/newCoverageStore" ) );
 
@@ -199,7 +230,7 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/wcs/coveragestores", json, "text/json" );
         
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/wcs/coveragestores/newCoverageStore" ) );
         
@@ -218,7 +249,7 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/workspaces/wcs/coveragestores/BlueMarble", xml, "text/xml");
-        assertEquals( 405, response.getStatusCode() );
+        assertEquals( 405, response.getStatus() );
     }
     
     @Test
@@ -234,12 +265,129 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse( "/rest/workspaces/wcs/coveragestores/BlueMarble", xml, "text/xml");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
 
         dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/BlueMarble.xml");
         assertXpathEvaluatesTo("false", "/coverageStore/enabled", dom );
         
         assertFalse( catalog.getCoverageStoreByName( "wcs", "BlueMarble").isEnabled() );
+    }
+    
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        CoverageStoreInfo cs = catalog.getCoverageStoreByName( "wcs", "BlueMarble");
+        
+        assertTrue(cs.isEnabled());
+        
+        String xml = 
+        "<coverageStore>" + 
+         "<name>BlueMarble</name>" + 
+        "</coverageStore>";
+        
+        MockHttpServletResponse response = 
+            putAsServletResponse( "/rest/workspaces/wcs/coveragestores/BlueMarble", xml, "text/xml");
+        assertEquals( 200, response.getStatus() );
+        
+        cs = catalog.getCoverageStoreByName( "wcs", "BlueMarble");
+        assertTrue(cs.isEnabled());
+    }
+
+    @Test
+    public void testPutEmptyAndHarvest() throws Exception {
+        File dir = new File( "./target/empty" );
+        dir.mkdir();
+        dir.deleteOnExit();
+
+        // Creating the coverageStore
+        File f = new File( dir, "empty.zip");
+        f.deleteOnExit();
+        FileOutputStream fout = new FileOutputStream( f );
+        IOUtils.copy( getClass().getResourceAsStream("test-data/empty.zip"), fout );
+        fout.flush();
+        fout.close();
+
+        final int length = (int) f.length();
+        byte[] zipData = new byte[length];
+        FileInputStream fis = new FileInputStream(f);
+        fis.read(zipData);
+
+        MockHttpServletResponse response = 
+            putAsServletResponse( "/rest/workspaces/wcs/coveragestores/empty/file.imagemosaic?configure=none", zipData, "application/zip");
+        // Store is created
+        assertEquals( 201, response.getStatus() );
+
+        Document dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/empty.xml");
+        assertXpathEvaluatesTo("true", "/coverageStore/enabled", dom );
+
+        // Harvesting
+        f = new File( dir, "NCOM_wattemp_020_20081031T0000000_12.tiff");
+        f.deleteOnExit();
+        fout = new FileOutputStream( f );
+        IOUtils.copy( getClass().getResourceAsStream("test-data/NCOM_wattemp_020_20081031T0000000_12.tiff"), fout );
+        fout.flush();
+        fout.close();
+        
+        final String path = "file://"+ f.getCanonicalPath();
+        response =  postAsServletResponse( "/rest/workspaces/wcs/coveragestores/empty/external.imagemosaic", path, "text/plain");
+        assertEquals(202, response.getStatus() );
+
+        // Getting the list of available coverages
+        dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/empty/coverages.xml?list=all");
+        assertXpathEvaluatesTo("index", "/list/coverageName", dom );
+        assertEquals( 200, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/empty?recurse=true&purge=all").getStatus());
+
+    }
+
+    private void purgeRequest(final String purge, final int expectedFiles) throws Exception {
+        File dir = new File( "./target/mosaicfordelete" );
+        dir.mkdir();
+        dir.deleteOnExit();
+
+        // Creating the coverageStore
+        File f = new File( dir, "mosaic.zip");
+        f.deleteOnExit();
+        FileOutputStream fout = new FileOutputStream( f );
+        IOUtils.copy( getClass().getResourceAsStream("test-data/mosaic.zip"), fout );
+        fout.flush();
+        fout.close();
+
+        final int length = (int) f.length();
+        byte[] zipData = new byte[length];
+        FileInputStream fis = new FileInputStream(f);
+        fis.read(zipData);
+
+        MockHttpServletResponse response = 
+            putAsServletResponse( "/rest/workspaces/wcs/coveragestores/mosaicfordelete/file.imagemosaic", zipData, "application/zip");
+        // Store is created
+        assertEquals( 201, response.getStatus() );
+
+        Document dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/mosaicfordelete.xml");
+        assertXpathEvaluatesTo("true", "/coverageStore/enabled", dom );
+
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        
+        final File storeDir = loader.url("data/wcs/mosaicfordelete");
+        File[] content = storeDir.listFiles();
+        assertEquals(11, content.length);
+
+        assertEquals( 200, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/mosaicfordelete?recurse=true&purge="
+        +purge).getStatus());
+        content = storeDir.listFiles();
+        
+        //purge all: no files remaining; purge metadata: only 1 Granule remaining; purge none: all files (11) remaining
+        assertEquals(expectedFiles, content.length);
+        
+        assertNull( catalog.getCoverageStoreByName("wcs", "mosaicfordelete"));
+    }
+
+    @Test
+    public void testDeletePurgeMetadataAfterConfigure() throws Exception {
+        purgeRequest("metadata", 1);
+    }
+
+    @Test
+    public void testDeletePurgeAllAfterConfigure() throws Exception {
+        purgeRequest("all", 0);
     }
 
     @Test
@@ -255,7 +403,7 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse( "/rest/workspaces/wcs/coveragestores/BlueMarble", xml, "text/xml");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         CoverageStoreInfo cs = catalog.getCoverageStoreByName( "wcs", "BlueMarble" );
         assertEquals( "WorldImage", cs.getType() );
@@ -270,12 +418,12 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/workspaces/wcs/coveragestores/nonExistant", xml, "text/xml" );
-        assertEquals( 404, response.getStatusCode() );
+        assertEquals( 404, response.getStatus() );
     }
 
     @Test
     public void testDeleteNonExistant() throws Exception {
-        assertEquals( 404, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/nonExistant").getStatusCode() );
+        assertEquals( 404, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/nonExistant").getStatus() );
     }
 
     @Test
@@ -289,13 +437,13 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
             catalog.remove( c );
         }
         
-        assertEquals( 200, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble").getStatusCode());
+        assertEquals( 200, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble").getStatus());
         assertNull( catalog.getCoverageStoreByName("wcs", "BlueMarble"));
     }
 
     @Test
     public void testDeleteNonEmpty() throws Exception {
-        assertEquals( 401, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble").getStatusCode());
+        assertEquals( 401, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble").getStatus());
     }
 
     @Test
@@ -303,7 +451,7 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getCoverageStoreByName("wcs", "BlueMarble"));
         MockHttpServletResponse response =
             deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble?recurse=true");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         assertNull(catalog.getCoverageStoreByName("wcs", "BlueMarble"));
         

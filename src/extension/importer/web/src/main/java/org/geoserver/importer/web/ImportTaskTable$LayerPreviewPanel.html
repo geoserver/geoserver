@@ -1,0 +1,19 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+  <script type="text/javascript">
+  function go(select) {
+    var selected = select.options[select.selectedIndex];
+    window.open(selected.value);
+  }
+  </script>
+</wicket:head>
+<body>
+<wicket:panel>
+  <wicket:message key="viewIn">View in</wicket:message>
+  <select id="links" wicket:id="links">
+  </select>
+  <a href="#" wicket:id="go"><wicket:message key="go"></wicket:message></a>
+
+</wicket:panel>
+</body>
+</html>

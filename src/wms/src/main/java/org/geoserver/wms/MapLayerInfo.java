@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,6 +16,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.GeoTools;
@@ -36,13 +38,13 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Gabriel Roldan
  */
 public final class MapLayerInfo {
-    public static int TYPE_VECTOR = LayerInfo.Type.VECTOR.getCode();
+    public static int TYPE_VECTOR = PublishedType.VECTOR.getCode();
 
-    public static int TYPE_RASTER = LayerInfo.Type.RASTER.getCode();
+    public static int TYPE_RASTER = PublishedType.RASTER.getCode();
 
-    public static int TYPE_REMOTE_VECTOR = LayerInfo.Type.REMOTE.getCode();
+    public static int TYPE_REMOTE_VECTOR = PublishedType.REMOTE.getCode();
 
-    public static int TYPE_WMS = LayerInfo.Type.WMS.getCode();
+    public static int TYPE_WMS = PublishedType.WMS.getCode();
 
     /**
      * The feature source for the remote WFS layer (see REMOVE_OWS_TYPE/URL in the SLD spec)
@@ -119,7 +121,6 @@ public final class MapLayerInfo {
      * </p>
      * 
      * @return Envelope the feature source bounds.
-     * @throws Exception
      */
     public ReferencedEnvelope getBoundingBox() throws Exception {
         if (layerInfo != null) {
@@ -224,7 +225,7 @@ public final class MapLayerInfo {
     /**
      * Returns the remote feature source in case this layer is a remote WFS layer
      * 
-     * @return
+     *
      */
     public SimpleFeatureSource getRemoteFeatureSource() {
         return remoteFeatureSource;
@@ -272,7 +273,7 @@ public final class MapLayerInfo {
             return false;
         }
         ResourceInfo resource = layerInfo.getResource();
-        Boolean cachingEnabled = resource.getMetadata().get("cachingEnabled", Boolean.class);
+        Boolean cachingEnabled = resource.getMetadata().get(ResourceInfo.CACHING_ENABLED, Boolean.class);
         return cachingEnabled == null ? false : cachingEnabled.booleanValue();
     }
 
@@ -289,7 +290,7 @@ public final class MapLayerInfo {
             return 0;
         }
         ResourceInfo resource = layerInfo.getResource();
-        Integer val = resource.getMetadata().get("cacheAgeMax", Integer.class);
+        Integer val = resource.getMetadata().get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
         return val == null ? 0 : val;
     }
 

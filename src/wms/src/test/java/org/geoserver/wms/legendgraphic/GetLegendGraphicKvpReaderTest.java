@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,11 +8,13 @@ package org.geoserver.wms.legendgraphic;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.geoserver.platform.ServiceException;
@@ -23,7 +26,7 @@ import org.geotools.styling.Style;
 import org.junit.Before;
 import org.opengis.feature.type.Name;
 
-import com.mockrunner.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 
 public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
@@ -65,6 +68,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
      * <li>SLD_BODY/Optional
      * <li>WIDTH/Optional
      * <li>HEIGHT/Optional
+     * <li>LANGUAGE/Optional
      * <li>EXCEPTIONS/Optional
      * </ul>
      */
@@ -83,6 +87,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         optionalParameters.put("SCALE", "1000");
         optionalParameters.put("WIDTH", "120");
         optionalParameters.put("HEIGHT", "90");
+        optionalParameters.put("LANGUAGE", "en");
         // ??optionalParameters.put("EXCEPTIONS", "");
         allParameters = new HashMap<String, String>(requiredParameters);
         allParameters.putAll(optionalParameters);
@@ -100,7 +105,6 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
      * This is the case where a remote SLD document is used in "library" mode.
      * </p>
      * 
-     * @throws Exception
      */
     
     @org.junit.Test
@@ -177,6 +181,17 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         requiredParameters.put("LAYER", NATURE_GROUP);
         request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertTrue(request.getLayers().size() > 1);
+    }
+    
+    @org.junit.Test
+    public void testLanguage() throws Exception {
+        GetLegendGraphicRequest request;
+        
+        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        assertNull(request.getLocale());
+        
+        request = requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
+        assertEquals(Locale.ENGLISH, request.getLocale());
     }
     
     @org.junit.Test

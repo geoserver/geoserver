@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -27,7 +28,7 @@ public class Triangle {
 	 * Verifies if the given point is internal for this
 	 * triangle.
 	 * @param point
-	 * @return
+	 *
 	 */
 	public boolean ContainsPoint(Vertex point)
 	{
@@ -52,7 +53,7 @@ public class Triangle {
 	 * triangle build from (a,b,c).
 	 * 
 	 * @param point
-	 * @return
+	 *
 	 */
 	public static boolean ContainsPoint(Vertex a, Vertex b, Vertex c, Vertex point)
 	{

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,6 +20,17 @@ public interface LoggingInfo extends Info {
      * The name of the level is specific to GeoServer, and independent of the 
      * actual logging framework.
      * </p>
+     * GeoServer include the following levels internally:
+     * <ul>
+     * <li>DEFAULT_LOGGING.properties</li>
+     * <li>GEOSERVER_DEVELOPER_LOGGING.properties</li>
+     * <li>GEOTOOLS_DEVELOPER_LOGGING.properties</li>
+     * <li>PRODUCTION_LOGGING.properties</li>
+     * <li>QUIET_LOGGING.properties</li>
+     * <li>TEST_LOGGING.properties</li>
+     * <li>VERBOSE_LOGGING.properties</li>
+     * </ul>
+     * Additional levels can be defined in the data directory <code>log</code> folder.
      */
     String getLevel();
     

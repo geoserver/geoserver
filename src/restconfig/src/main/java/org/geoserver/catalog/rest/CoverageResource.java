@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,7 @@ import java.util.List;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -74,10 +76,20 @@ public class CoverageResource extends AbstractCatalogResource {
             CoverageStoreInfo ds = catalog.getCoverageStoreByName( workspace, coveragestore );
             coverage.setStore( ds );
         }
-
+        final boolean isNew = isNewCoverage(coverage);
+        String name = coverage.getNativeCoverageName();
         CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.setStore(coverage.getStore());
-        builder.initCoverage(coverage);
+        CoverageStoreInfo store = coverage.getStore();
+        builder.setStore(store);
+
+        // We handle 2 different cases here
+        if (!isNew) {
+            // Configuring a partially defined coverage
+            builder.initCoverage(coverage, name);
+        } else {
+            // Configuring a brand new coverage (only name has been specified)
+            coverage = builder.buildCoverage(name);
+        }
 
         NamespaceInfo ns = coverage.getNamespace();
         if ( ns != null && !ns.getPrefix().equals( workspace ) ) {
@@ -94,6 +106,7 @@ public class CoverageResource extends AbstractCatalogResource {
         }
         
         coverage.setEnabled(true);
+        catalog.validate(coverage, true).throwIfInvalid();
         catalog.add( coverage );
         
         //create a layer for the coverage
@@ -101,6 +114,26 @@ public class CoverageResource extends AbstractCatalogResource {
         
         LOGGER.info( "POST coverage " + coveragestore + "," + coverage.getName() );
         return coverage.getName();
+    }
+
+    /**
+     * This method returns {@code true} in case we have POSTed a Coverage object with the name only, as an instance
+     * when configuring a new coverage which has just been harvested. 
+     * 
+     * @param coverage
+     *
+     */
+    private boolean isNewCoverage(CoverageInfo coverage) {
+        return coverage.getName() != null && (coverage.isAdvertised()) && (!coverage.isEnabled())
+                && (coverage.getAlias() == null) && (coverage.getCRS() == null)
+                && (coverage.getDefaultInterpolationMethod() == null)
+                && (coverage.getDescription() == null) && (coverage.getDimensions() == null)
+                && (coverage.getGrid() == null) && (coverage.getInterpolationMethods() == null)
+                && (coverage.getKeywords() == null) && (coverage.getLatLonBoundingBox() == null)
+                && (coverage.getMetadata() == null) && (coverage.getNativeBoundingBox() == null)
+                && (coverage.getNativeCRS() == null) && (coverage.getNativeFormat() == null)
+                && (coverage.getProjectionPolicy() == null) && (coverage.getSRS() == null)
+                && (coverage.getResponseSRS() == null) && (coverage.getRequestSRS() == null);
     }
 
     @Override
@@ -118,8 +151,10 @@ public class CoverageResource extends AbstractCatalogResource {
         
         CoverageStoreInfo cs = catalog.getCoverageStoreByName(workspace, coveragestore);
         CoverageInfo original = catalog.getCoverageByCoverageStore( cs,  coverage );
-        new CatalogBuilder(catalog).updateCoverage(original,c);
         calculateOptionalFields(c, original);
+        
+        new CatalogBuilder(catalog).updateCoverage(original,c);
+        catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         
         clear(original);
@@ -169,6 +204,21 @@ public class CoverageResource extends AbstractCatalogResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setCallback( new XStreamPersister.Callback() {
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                String workspace = getAttribute("workspace");
+                String coveragestore = getAttribute("coveragestore");
+                String coverage = getAttribute("coverage");
+                
+                if (workspace == null || coveragestore == null || coverage == null) {
+                    return null;
+                }
+                CoverageStoreInfo cs = catalog.getCoverageStoreByName(workspace, coveragestore);
+                if (cs == null) {
+                    return null;
+                }
+                return catalog.getCoverageByCoverageStore( cs,  coverage );
+            }
             @Override
             protected void postEncodeReference(Object obj, String ref, String prefix, 
                     HierarchicalStreamWriter writer, MarshallingContext context) {

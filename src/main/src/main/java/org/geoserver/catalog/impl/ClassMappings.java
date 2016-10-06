@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,6 +15,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -158,7 +160,22 @@ public enum ClassMappings {
             return new Class[] { CoverageInfo.class, FeatureTypeInfo.class, WMSLayerInfo.class };
         }
     },
+    PUBLISHED {
+        @Override
+        public Class getInterface() {
+            return PublishedInfo.class;
+        }
 
+        @Override
+        public Class getImpl() {
+            return null;
+        };
+
+        @Override
+        public Class<? extends CatalogInfo>[] concreteInterfaces() {
+            return new Class[] { LayerInfo.class, LayerGroupInfo.class };
+        }
+    },
     LAYER {
         @Override
         public Class getInterface() {

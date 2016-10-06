@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,28 +7,22 @@ package org.geoserver.security.ldap;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
-
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.security.GeoServerAuthenticationProvider;
+import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerSecurityProvider;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geotools.util.logging.Logging;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.core.support.DefaultTlsDirContextAuthenticationStrategy;
+import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
-import org.springframework.security.ldap.authentication.SpringSecurityAuthenticationSource;
 import org.springframework.security.ldap.authentication.UserDetailsServiceLdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
@@ -58,108 +53,111 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
     }
     
     @Override
+    public Class<? extends GeoServerUserGroupService> getUserGroupServiceClass() {
+        return LDAPUserGroupService.class;
+    }
+    
+    @Override
     public GeoServerAuthenticationProvider createAuthenticationProvider(SecurityNamedServiceConfig config) {
-		LDAPSecurityServiceConfig ldapConfig = (LDAPSecurityServiceConfig) config;
+        LDAPSecurityServiceConfig ldapConfig = (LDAPSecurityServiceConfig) config;
 
-		DefaultSpringSecurityContextSource ldapContext = new DefaultSpringSecurityContextSource(
-				ldapConfig.getServerURL());
-		ldapContext.setCacheEnvironmentProperties(false);
-		ldapContext
-				.setAuthenticationSource(new SpringSecurityAuthenticationSource());
+        LdapContextSource ldapContext = LDAPUtils.createLdapContext(ldapConfig);
 
-		if (ldapConfig.isUseTLS()) {
-			// TLS does not play nicely with pooled connections
-			ldapContext.setPooled(false);
+        GeoserverLdapBindAuthenticator authenticator = new GeoserverLdapBindAuthenticator(
+                ldapContext);
 
-			DefaultTlsDirContextAuthenticationStrategy tls = new DefaultTlsDirContextAuthenticationStrategy();
-			tls.setHostnameVerifier(new HostnameVerifier() {
-				@Override
-				public boolean verify(String hostname, SSLSession session) {
-					return true;
-				}
-			});
+        // authenticate and extract user using a filter and an optional username
+        // format
+        authenticator.setUserFilter(ldapConfig.getUserFilter());
+        authenticator.setUserFormat(ldapConfig.getUserFormat());
 
-			ldapContext.setAuthenticationStrategy(tls);
-		}
+        // authenticate and extract user using a distinguished name
+        if (ldapConfig.getUserDnPattern() != null) {
+            authenticator.setUserDnPatterns(new String[] { ldapConfig
+                    .getUserDnPattern() });
+        }
 
-		GeoserverLdapBindAuthenticator authenticator = new GeoserverLdapBindAuthenticator(
-				ldapContext);
+        LdapAuthoritiesPopulator authPopulator = null;
+        LdapAuthenticationProvider provider = null;
+        String ugServiceName = ldapConfig.getUserGroupServiceName();
+        if (ugServiceName != null) {
+            // use local user group service for loading authorities
+            GeoServerUserGroupService ugService;
+            try {
+                ugService = securityManager.loadUserGroupService(ugServiceName);
+                authPopulator = new UserDetailsServiceLdapAuthoritiesPopulator(
+                        ugService);
+                provider = new LdapAuthenticationProvider(authenticator,
+                        authPopulator);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, String.format(
+                        "Unable to load user group service '%s', "
+                                + "will use LDAP server for calculating roles",
+                        ugServiceName), e);
+            }
+        }
 
-		// authenticate and extract user using a filter and an optional username
-		// format
-		authenticator.setUserFilter(ldapConfig.getUserFilter());
-		authenticator.setUserFormat(ldapConfig.getUserFormat());
+        if (authPopulator == null) {
+            // fall back to looking up roles via LDAP server, choosing
+            // between default and binding populator
+            if (ldapConfig.isBindBeforeGroupSearch()) {
+                authPopulator = new BindingLdapAuthoritiesPopulator(
+                        ldapContext, ldapConfig.getGroupSearchBase());
+                if (ldapConfig.getGroupSearchFilter() != null) {
+                    ((BindingLdapAuthoritiesPopulator) authPopulator)
+                            .setGroupSearchFilter(ldapConfig
+                                    .getGroupSearchFilter());
+                }
+                provider = new LdapAuthenticationProvider(authenticator,
+                        authPopulator) {
+                    /**
+                     * We need to give authoritiesPopulator both username and
+                     * password, so it can bind to the LDAP server. 
+                     */
+                    @Override
+                    protected Collection<? extends GrantedAuthority> loadUserAuthorities(
+                            DirContextOperations userData, String username,
+                            String password) {
+                        return ((BindingLdapAuthoritiesPopulator) getAuthoritiesPopulator())
+                                .getGrantedAuthorities(userData, username, password);
+                    }
+                };
+            } else {
+                ldapContext.setAnonymousReadOnly(true);
+                authPopulator = new DefaultLdapAuthoritiesPopulator(
+                        ldapContext, ldapConfig.getGroupSearchBase());
 
-		// authenticate and extract user using a distinguished name
-		if (ldapConfig.getUserDnPattern() != null) {
-			authenticator.setUserDnPatterns(new String[] { ldapConfig
-					.getUserDnPattern() });
-		}
+                if (ldapConfig.getGroupSearchFilter() != null) {
+                    ((DefaultLdapAuthoritiesPopulator) authPopulator)
+                            .setGroupSearchFilter(ldapConfig
+                                    .getGroupSearchFilter());
+                }
+                provider = new LdapAuthenticationProvider(authenticator,
+                        authPopulator);
+            }
 
-		LdapAuthoritiesPopulator authPopulator = null;
-		LdapAuthenticationProvider provider = null;
-		String ugServiceName = ldapConfig.getUserGroupServiceName();
-		if (ugServiceName != null) {
-			// use local user group service for loading authorities
-			GeoServerUserGroupService ugService;
-			try {
-				ugService = securityManager.loadUserGroupService(ugServiceName);
-				authPopulator = new UserDetailsServiceLdapAuthoritiesPopulator(
-						ugService);
-				provider = new LdapAuthenticationProvider(authenticator,
-						authPopulator);
-			} catch (IOException e) {
-				LOGGER.log(Level.SEVERE, String.format(
-						"Unable to load user group service '%s', "
-								+ "will use LDAP server for calculating roles",
-						ugServiceName), e);
-			}
-		}
-
-		if (authPopulator == null) {
-			// fall back to looking up roles via LDAP server, choosing
-			// between default and binding populator
-			if (ldapConfig.isBindBeforeGroupSearch()) {
-				authPopulator = new BindingLdapAuthoritiesPopulator(
-						ldapContext, ldapConfig.getGroupSearchBase());
-				if (ldapConfig.getGroupSearchFilter() != null) {
-					((BindingLdapAuthoritiesPopulator) authPopulator)
-							.setGroupSearchFilter(ldapConfig
-									.getGroupSearchFilter());
-				}
-				provider = new LdapAuthenticationProvider(authenticator,
-						authPopulator) {
-					/**
-					 * We need to give authoritiesPopulator both username and
-					 * password, so it can bind to the LDAP server. We encode
-					 * them in the username:password format.
-					 */
-					@Override
-					protected Collection<? extends GrantedAuthority> loadUserAuthorities(
-							DirContextOperations userData, String username,
-							String password) {
-						return getAuthoritiesPopulator().getGrantedAuthorities(
-								userData, username + ":" + password);
-					}
-				};
-			} else {
-				authPopulator = new DefaultLdapAuthoritiesPopulator(
-						ldapContext, ldapConfig.getGroupSearchBase());
-
-				if (ldapConfig.getGroupSearchFilter() != null) {
-					((DefaultLdapAuthoritiesPopulator) authPopulator)
-							.setGroupSearchFilter(ldapConfig
-									.getGroupSearchFilter());
-				}
-				provider = new LdapAuthenticationProvider(authenticator,
-						authPopulator);
-			}
-
-		}
+        }
 
         
         
-		return new LDAPAuthenticationProvider(provider,
-				ldapConfig.getAdminGroup(), ldapConfig.getGroupAdminGroup());
+        return new LDAPAuthenticationProvider(provider,
+                ldapConfig.getAdminGroup(), ldapConfig.getGroupAdminGroup());
+    }
+
+    @Override
+    public Class<? extends GeoServerRoleService> getRoleServiceClass() {
+        return LDAPRoleService.class; 
+    }
+
+    @Override
+    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config)
+            throws IOException {
+        return new LDAPRoleService();
+    }
+    
+    @Override
+    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config)
+            throws IOException {
+            return new LDAPUserGroupService(config);
     }
 }

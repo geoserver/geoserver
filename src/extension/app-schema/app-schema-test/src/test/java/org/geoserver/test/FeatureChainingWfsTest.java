@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -525,7 +525,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 + "']/gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue/@uom",
                 doc);
         // shape
-        assertXpathEvaluatesTo("-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326", "//gsml:MappedFeature[@gml:id='" + id
+                + "']/gsml:shape/gml:Polygon/@srsName", doc);
+        assertXpathEvaluatesTo("52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
                 "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:shape//gml:posList", doc);
         // specification gu.25699
         assertXpathEvaluatesTo("gu.25699", "//gsml:MappedFeature[@gml:id='" + id
@@ -631,7 +633,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 + "']/gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue/@uom",
                 doc);
         // shape
-        assertXpathEvaluatesTo("-1.3 52.5 -1.3 52.6 -1.2 52.6 -1.2 52.5 -1.3 52.5",
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326", "//gsml:MappedFeature[@gml:id='" + id
+                + "']/gsml:shape/gml:Polygon/@srsName", doc);
+        assertXpathEvaluatesTo("52.5 -1.3 52.6 -1.3 52.6 -1.2 52.5 -1.2 52.5 -1.3",
                 "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:shape//gml:posList", doc);
         // gu.25678
         assertXpathEvaluatesTo("gu.25678", "//gsml:MappedFeature[@gml:id='" + id
@@ -769,7 +773,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 + "']/gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue/@uom",
                 doc);
         // shape
-        assertXpathEvaluatesTo("-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326", "//gsml:MappedFeature[@gml:id='" + id
+                + "']/gsml:shape/gml:Polygon/@srsName", doc);
+        assertXpathEvaluatesTo("52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
                 "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:shape//gml:posList", doc);
         // gu.25678
         assertXpathEvaluatesTo("#gu.25678", "//gsml:MappedFeature[@gml:id='" + id
@@ -794,7 +800,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 + "']/gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue/@uom",
                 doc);
         // shape
-        assertXpathEvaluatesTo("-1.3 52.5 -1.3 52.6 -1.2 52.6 -1.2 52.5 -1.3 52.5",
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326", "//gsml:MappedFeature[@gml:id='" + id
+                + "']/gsml:shape/gml:Polygon/@srsName", doc);
+        assertXpathEvaluatesTo("52.5 -1.3 52.6 -1.3 52.6 -1.2 52.5 -1.2 52.5 -1.3",
                 "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:shape//gml:posList", doc);
         // gu.25682
         assertXpathEvaluatesTo("gu.25682", "//gsml:MappedFeature[@gml:id='" + id
@@ -1198,15 +1206,13 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 + "            <ogc:PropertyIsEqualTo>"
                 + "                <ogc:Literal>significant</ogc:Literal>"
                 + "                <ogc:PropertyName>gsml:specification/gsml:GeologicUnit/gsml:composition/gsml:CompositionPart/gsml:proportion/gsml:CGI_TermValue/gsml:value</ogc:PropertyName>"
-                + "            </ogc:PropertyIsEqualTo>"
-                + "                <ogc:Not>"
-                + "                    <ogc:PropertyIsEqualTo>"
-                + "                        <ogc:Literal>Yaugher Volcanic Group 1</ogc:Literal>"
-                + "                        <ogc:PropertyName>gsml:specification/gsml:GeologicUnit/gml:name</ogc:PropertyName>"
-                + "                    </ogc:PropertyIsEqualTo>"
-                + "                </ogc:Not>"
-                + "            </ogc:And>"
-                + "        </ogc:Filter>"
+                + "            </ogc:PropertyIsEqualTo>"                
+                + "            <ogc:PropertyIsEqualTo>"
+                + "                 <ogc:Literal>New Group</ogc:Literal>"
+                + "                 <ogc:PropertyName>gsml:specification/gsml:GeologicUnit/gml:name</ogc:PropertyName>"
+                + "            </ogc:PropertyIsEqualTo>"                
+                + "        </ogc:And>"
+                + "    </ogc:Filter>"
                 + "</wfs:Query> "
                 + "</wfs:GetFeature>";
         validate(xml);
@@ -1241,7 +1247,6 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
 
     /**
      * Test FeatureCollection is encoded with multiple featureMember elements
-     * @throws Exception
      */
     @Test
     public void testEncodeFeatureMember() throws Exception {
@@ -1305,7 +1310,6 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
 
     /**
      * Test FeatureCollection is encoded with one featureMembers element
-     * @throws Exception
      */
     @Test
     public void testEncodeFeatureMembers() throws Exception {

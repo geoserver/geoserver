@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,7 +23,7 @@ public abstract class WfsTxHookTest extends ScriptIntTestSupport {
     public abstract String getExtension();
 
     File copyOverFile(String basename) throws Exception {
-        File wfsTx = scriptMgr.getWfsTxRoot();
+        File wfsTx = scriptMgr.wfsTx().dir();
         File f = new File(wfsTx, basename + "." + getExtension());
 
         FileUtils.copyURLToFile(getClass().getResource(f.getName()), f);

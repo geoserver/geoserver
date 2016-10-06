@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -173,11 +174,10 @@ public class ServiceException extends RuntimeException {
     /**
      * Chaining method for setting code.
      * <p>
-     * This allows code to:
-     * <code><pre>
+     * This allows code to:</p>
+     * <pre><code>
      * throw new ServiceException(...).code("someCode");
-     * </pre></code> 
-     * </p>
+     * </code></pre> 
      */
     public ServiceException code(String code) {
         setCode(code);
@@ -193,8 +193,6 @@ public class ServiceException extends RuntimeException {
 
     /**
      * Sets the locator for the exception.
-     *
-     * @return The application specific locator.
      */
     public void setLocator(String locator) {
         this.locator = locator;
@@ -203,11 +201,10 @@ public class ServiceException extends RuntimeException {
     /**
      * Chaining method for setting locator.
      * <p>
-     * This allows code to:
-     * <code><pre>
+     * This allows code to:</p>
+     * <pre><code>
      * throw new ServiceException(...).locator("someLocator");
-     * </pre></code> 
-     * </p>
+     * </code></pre> 
      */
     public ServiceException locator(String locator) {
         setLocator(locator);

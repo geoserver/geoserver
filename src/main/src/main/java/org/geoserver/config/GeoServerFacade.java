@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -98,10 +99,10 @@ public interface GeoServerFacade {
     Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace);
 
     /**
-     * GeoServer services filtered by class.
+     * GeoServer global service filtered by class.
      * 
      * @param clazz
-     *                The class of the services to return.
+     *                The class of the service to return.
      */
     <T extends ServiceInfo> T getService(Class<T> clazz);
 

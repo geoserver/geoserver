@@ -16,22 +16,17 @@
 		<constructor-arg ref="wms" />
 	</bean>
  
-   	<bean id="wmsEoWebMenuCategory" class="org.geoserver.web.Category">
-		<property name="nameKey" value="category.wmseo" />
-    	<property name="order" value="210" />
-	</bean>
- 
   	<bean id="wmsEoLayerGroupMenuPage" class="org.geoserver.web.MenuPageInfo">
     	<property name="id" value="wmsEoLayerGroupMenuPage" />
     	<property name="titleKey" value="wmsEoLayerGroupMenuPage.title" />
     	<property name="descriptionKey" value="wmsEoLayerGroupMenuPage.description" />
     	<property name="componentClass" value="org.geoserver.wms.eo.web.EoLayerGroupPage" />
-    	<property name="category" ref="wmsEoWebMenuCategory" />
+    	<property name="category" ref="dataCategory"/>
     	<property name="icon" value="../../../web/img/icons/silk/layers.png" />
     	<property name="order" value="26" />
     	<property name="authorizer" ref="workspaceAdminAuthorizer"/>
   	</bean>
-
+    
 	<!-- GetMap callback -->
 	<bean id="getMapCallback" class="org.geoserver.wms.eo.EOGetMapChecker">
 	   <constructor-arg ref="catalog"/>  

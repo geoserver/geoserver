@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -27,8 +28,7 @@ public abstract class CDataPPIO extends ComplexPPIO {
     /**
      * Decodes a String into the internal object (used for CDATA inputs) 
      * @param input
-     * @return
-     * @throws Exception
+     *
      */
     public abstract Object decode(String input) throws Exception;
     

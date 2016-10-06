@@ -45,15 +45,12 @@ Inner tiling sets up the image layout so that it's organized in tiles instead of
 
    gdal_translate -of GTiff -projwin -180 90 -50 -10 -co "TILED=YES" bigDataSet.ecw myTiff.tiff
 
-Overviews are downsampled version of the same image, that is, a zoomed out version, which is usually much smaller. When Geoserver needs to render the Geotiff, it'll look for the most appropriate overview as a starting point, thus reading and converting way less data. Overviews can be added using 
+An overview is a downsampled version of the same image, that is, a zoomed out version, which is usually much smaller. When Geoserver needs to render the Geotiff, it'll look for the most appropriate overview as a starting point, thus reading and converting way less data. Overviews can be added using 
 `gdaladdo <http://www.gdal.org/gdaladdo.html>`_, or the the OverviewsEmbedded command included in Geotools. Here is a sample of using gdaladdo to add overviews that are downsampled 2, 4, 8 and 16 times compared to the original:
 
 .. code-block:: xml
 
    gdaladdo -r average mytiff.tif 2 4 8 16
-
-For more hands on information on how to use GDAL utilites along with Geoserver, have a look at the 
-`BlueMarble data loading tutorial <http://geoserver.org/display/GEOSDOC/Load+NASA+Blue+Marble+Data>`_. 
 
 As a final note, Geotiff supports various kinds of compression, but we do suggest to not use it. Whilst it allows for much smaller files, the decompression process is expensive and will be performed on each data access, significantly slowing down rendering. In our experience, the decompression time is higher than the pure disk data reading.
 
@@ -64,7 +61,7 @@ If you have really huge data sets (several gigabytes), odds are that simply addi
 
 So, what you need is a way to have tiling on intermediate levels as well. This is supported by the ImagePyramid plugin.
 
-This plugin assumes you have create various seamless image mosaics, each for a different resolution level of the original image. In the mosaic, tiles are actual files (for more info about mosaics, see the :ref:`tutorial_imagemosaic_extension`). The whole pyramid structures looks like the following:
+This plugin assumes you have create various seamless image mosaics, each for a different resolution level of the original image. In the mosaic, tiles are actual files (for more info about mosaics, see the :ref:`data_imagemosaic`). The whole pyramid structures looks like the following:
 
 
 .. code-block:: xml

@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -79,8 +79,6 @@ public class SRSWfsTest extends AbstractAppSchemaTestSupport {
 
     /**
      * Test content of GetFeature response.
-     * @throws FactoryException 
-     * @throws NoSuchAuthorityCodeException 
      */
     @Test
     public void testGetFeatureContent() throws NoSuchAuthorityCodeException, FactoryException {
@@ -226,11 +224,6 @@ public class SRSWfsTest extends AbstractAppSchemaTestSupport {
 
     /**
      * Test SRS reprojection. Ensure both geometry values and SRS information are encoded correctly.
-     * 
-     * @throws NoSuchAuthorityCodeException
-     * @throws FactoryException
-     * @throws MismatchedDimensionException
-     * @throws TransformException
      */
     @Test
     public void testReproject() throws NoSuchAuthorityCodeException, FactoryException,

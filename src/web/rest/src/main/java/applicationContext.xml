@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-web-rest"/>
+    <constructor-arg index="1" value="GeoServer Web REST"/>
+  </bean>
+  <bean id="restSettingsPanel" class="org.geoserver.web.data.settings.SettingsPluginPanelInfo">
+      <description>This bean adds the necessary form fields to REST Settings</description>
+    <property name="id" value="restSettingsPanel"/>
+    <property name="titleKey" value="restsettings"/>
+    <property name="componentClass" value="org.geoserver.web.RESTSettingsPanel"/>
+    <property name="priority" value="0"/>
+  </bean>
+</beans>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,7 +30,6 @@ public class PolygonExtractionProcessTest extends BaseRasterToVectorTest {
     /**
      * Test basic capabilities for the contour process. It works on the DEM tiff and produces a shapefile.
      * Nothing more nothing less.
-     * @throws Exception
      */
     @Test
     public void testProcessStandaloneBasic() throws Exception {

@@ -1,10 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
 
 import java.util.List;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 
@@ -86,6 +88,24 @@ public interface LayerGroupInfo extends PublishedInfo {
     void setMode( Mode mode );    
 
     /**
+     * Get whether the layer group is forced to be not queryable and hence can not be subject of a GetFeatureInfo request.
+     * <p>
+     * In order to preserve current default behavior (A LayerGroup is queryable when at least a
+     * child layer is queryable), this flag allows explicitly indicate that it is not queryable 
+     * independently how the child layers are configured.
+     * </p>
+     * <p>
+     * Default is {@code false}
+     * </p>
+     */
+    boolean isQueryDisabled();
+    
+    /**
+     * Set the layer group to be not queryable and hence can not be subject of a GetFeatureInfo request.
+     */
+    void setQueryDisabled(boolean queryDisabled);
+    
+    /**
      * Returns a workspace or <code>null</code> if global.
      */
     WorkspaceInfo getWorkspace();    
@@ -125,14 +145,14 @@ public interface LayerGroupInfo extends PublishedInfo {
     
     /**
      * 
-     * @return
+     *
      */
     List<LayerInfo> layers();
 
     /**
      * 
      * 
-     * @return
+     *
      */
     List<StyleInfo> styles();  
         
@@ -150,5 +170,14 @@ public interface LayerGroupInfo extends PublishedInfo {
      * Sets the workspace.
      */
     void setWorkspace(WorkspaceInfo workspace);
+    
+
+    /**
+     * A collection of metadata links for the resource.
+     * 
+     * @uml.property name="metadataLinks"
+     * @see MetadataLinkInfo
+     */
+    List<MetadataLinkInfo> getMetadataLinks();
     
 }

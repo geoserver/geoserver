@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -24,7 +25,7 @@ public interface AuthenticationCachingFilter {
      * Tries to extract a unique key for the principal
      * If this is not possible, return <code>null</code>
      * 
-     * if the principal equals {@link GeoServerUser#ROOT_USERNAME) 
+     * if the principal equals {@link GeoServerUser#ROOT_USERNAME} 
      * <code>null</code> must be returned. (Never cache this user)
      * 
      * For pre-authentication filters, the name of the
@@ -43,7 +44,7 @@ public interface AuthenticationCachingFilter {
      * is true, this method should return <code>null</code>
      * 
      * @param request
-     * @return
+     *
      */
     public String getCacheKey(HttpServletRequest request);
 }

@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -24,7 +24,6 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.TestData;
 import org.geotools.data.SampleDataAccess;
 import org.geotools.data.SampleDataAccessData;
 import org.junit.Test;
@@ -60,7 +59,6 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
     /**
      * Test whether GetCapabilities returns wfs:WFS_Capabilities.
      * 
-     * @throws Exception
      */
     @Test
     public void testGetCapabilities() throws Exception {
@@ -72,7 +70,6 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
     /**
      * Test whether DescribeFeatureType returns xsd:schema.
      * 
-     * @throws Exception
      */
     @Test
     public void testDescribeFeatureType() throws Exception {
@@ -84,7 +81,6 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
     /**
      * Test whether GetFeature returns wfs:FeatureCollection.
      * 
-     * @throws Exception
      */
     @Test
     public void testGetFeature() throws Exception {
@@ -96,7 +92,6 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
     /**
      * Test content of GetFeature response.
      * 
-     * @throws Exception
      */
     @Test
     public void testGetFeatureContent() throws Exception {
@@ -139,7 +134,6 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
      *            xpath expression
      * @param doc
      *            document under test
-     * @throws Exception
      */
     public void assertXpathCount(int count, String xpath, Document doc) throws Exception {
         XpathEngine engine = XMLUnit.newXpathEngine();
@@ -151,8 +145,7 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
      * Return {@link Document} as a pretty-printed string.
      * 
      * @param doc
-     * @return
-     * @throws Exception
+     *
      */
     public String prettyString(Document doc) throws Exception {
         OutputStream out = new ByteArrayOutputStream();
@@ -165,7 +158,6 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
      * 
      * @param doc
      * @param out
-     * @throws Exception
      */
     public void prettyPrint(Document doc, OutputStream out) throws Exception {
         Transformer tx = TransformerFactory.newInstance().newTransformer();
@@ -175,8 +167,7 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
-        // TODO Auto-generated method stub
-        
+        testData.setUpSecurity();
     }
 
 }

@@ -1,20 +1,20 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.file;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.IOUtils;
-
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.impl.Util;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,38 +31,45 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class LockFile  {
     
     protected long lockFileLastModified;
-    protected File lockFileTarget,lockFile;
+    protected Resource lockFileTarget,lockFile;
     
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
     
-    public LockFile(File file) throws IOException{
-        lockFileTarget=file;
-        if (file.exists()==false) {
-            throw new IOException("Cannot lock a not existing file: "+file.getCanonicalPath());
+    public LockFile(Resource file) throws IOException{
+        lockFileTarget = file;
+        if (!Resources.exists(file)) {
+            throw new IOException("Cannot lock a not existing file: " + file.path());
         }              
-        lockFile = new File (lockFileTarget.getCanonicalPath()+".lock");
-        lockFile.deleteOnExit(); 
+        lockFile = file.parent().get(lockFileTarget.name() + ".lock");
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {  // remove on shutdown
+
+            @Override
+            public void run() {
+                lockFile.delete();
+            }
+            
+        }));
     }
 
     
     /**
      * return true if a write lock is hold by this file watcher 
      * 
-     * @return
+     *
      * @throws IOException
      */
     public boolean hasWriteLock() throws IOException{        
-        return lockFile.exists() && lockFile.lastModified()==lockFileLastModified;
+        return Resources.exists(lockFile) && lockFile.lastmodified() == lockFileLastModified;
     }
 
     /**
      * return true if a write lock is hold by another file watcher 
      * 
-     * @return
+     *
      * @throws IOException
      */
     public boolean hasForeignWriteLock() throws IOException{        
-        return lockFile.exists() && lockFile.lastModified()!=lockFileLastModified;
+        return Resources.exists(lockFile) && lockFile.lastmodified() != lockFileLastModified;
     }
     
     /**
@@ -70,15 +77,15 @@ public class LockFile  {
      * 
      */
     public void writeUnLock() {        
-        if (lockFile.exists()) {
-            if (lockFile.lastModified()==lockFileLastModified) {
+        if (Resources.exists(lockFile)) {
+            if (lockFile.lastmodified() == lockFileLastModified) {
                 lockFileLastModified=0;
                 lockFile.delete();
             } else {
-                LOGGER.warning("Tried to unlock foreign lock: " + lockFile.getAbsolutePath());
+                LOGGER.warning("Tried to unlock foreign lock: " + lockFile.path());
             }
         } else {
-            LOGGER.warning("Tried to unlock not exisiting lock: " + lockFile.getAbsolutePath());
+            LOGGER.warning("Tried to unlock not exisiting lock: " + lockFile.path());
         }
     }
     
@@ -92,23 +99,19 @@ public class LockFile  {
         
         if (hasWriteLock()) return; // already locked
                         
-        if (lockFile.exists()) {             
-            LOGGER.warning("Cannot obtain  lock: " + lockFile.getCanonicalPath());
-            FileInputStream in = new FileInputStream(lockFile);
+        if (Resources.exists(lockFile)) {             
+            LOGGER.warning("Cannot obtain  lock: " + lockFile.path());
             Properties props = new Properties();
 
-            try {
+            try (InputStream in = lockFile.in()) {
                 props.load(in);
-            } finally {
-                IOUtils.closeQuietly(in);
             }
 
             throw new IOException(Util.convertPropsToString(props,"Already locked" ));
         } else { // success             
             writeLockFileContent(lockFile);
-            lockFileLastModified =lockFile.lastModified();
-            lockFile.deleteOnExit(); // remove on shutdown
-            LOGGER.info("Successful lock: " + lockFile.getCanonicalPath());
+            lockFileLastModified = lockFile.lastmodified();
+            LOGGER.info("Successful lock: " + lockFile.path());
         }
     }
     
@@ -120,12 +123,10 @@ public class LockFile  {
      * @param lockFile
      * @throws IOException
      */
-    protected void writeLockFileContent(File lockFile) throws IOException {
+    protected void writeLockFileContent(Resource lockFile) throws IOException {
         
-        FileOutputStream out = new FileOutputStream(lockFile); 
         Properties props = new Properties();
-
-        try {
+        try (OutputStream out = lockFile.out()) {
             props.store(out, "Locking info");
 
             String hostname="UNKNOWN";
@@ -144,27 +145,12 @@ public class LockFile  {
 
             props.put("hostname", hostname);
             props.put("ip", ip);
-            props.put("location", lockFile.getCanonicalPath());
+            props.put("location", lockFile.path());
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             props.put("principal", auth==null ? "UNKNOWN" :auth.getName());
 
             props.store(out, "Locking info");
-        } finally {
-            IOUtils.closeQuietly(out);
-        }
-    }
-        
-    /**
-     * remove the lock file if the garbage
-     * collector removes this object
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        // check for left locks
-        if (lockFile!=null && hasWriteLock()) {
-            writeUnLock();
-            LOGGER.warning("Unlocking due to garbage collection for "+lockFile.getCanonicalPath());
         }
     }
 

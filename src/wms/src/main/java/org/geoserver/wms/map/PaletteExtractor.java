@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -96,7 +97,7 @@ public class PaletteExtractor extends FilterAttributeExtractor implements StyleV
     
     /**
      * Returns the palette, or null if it wasn't possible to devise one
-     * @return
+     *
      */
     public IndexColorModel getPalette() {
         if(!canComputePalette())

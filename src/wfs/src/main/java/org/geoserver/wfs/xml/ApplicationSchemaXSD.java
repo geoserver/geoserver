@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -41,6 +42,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.gml2.GML;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.WFS;
@@ -201,7 +204,9 @@ public class ApplicationSchemaXSD extends XSD {
             schema.getQNamePrefixToNamespaceMap().put("gml", GML.NAMESPACE);
             
             //import wfs schema
-            Schemas.importSchema( schema ,wfs.getSchema() );
+            synchronized(Schemas.class) {
+                Schemas.importSchema( schema ,wfs.getSchema() );
+            }
             schema.resolveElementDeclaration( WFS.NAMESPACE, "FeatureCollection" );
             /*
             XSDImport imprt = factory.createXSDImport();
@@ -246,7 +251,9 @@ public class ApplicationSchemaXSD extends XSD {
             params.put("namespace", namespace.getPrefix());
             imprt.setSchemaLocation(buildURL(baseURL, "wfs", params, URLType.SERVICE));
 
-            schema.getContents().add(imprt);
+            synchronized (Schemas.class) {
+                schema.getContents().add(imprt);                
+            }
         }
     }
     
@@ -258,14 +265,10 @@ public class ApplicationSchemaXSD extends XSD {
         String store = featureTypeInfo.getStore().getName();
         String name = featureTypeInfo.getName();
 
-        File schemaFile = null;
-        try {
-            schemaFile = catalog.getResourceLoader().find("workspaces" + "/" + prefix + "/" + store + 
+        Resource schemaFile = catalog.getResourceLoader().get("workspaces" + "/" + prefix + "/" + store + 
                     "/" + name + "/schema.xsd");
-        } catch (IOException e1) {
-        }
        
-        if (schemaFile != null) {
+        if (schemaFile.getType() == Type.RESOURCE) {
             //schema file found, parse it and lookup the complex type
             List locators = new ArrayList();
             for ( XSD xsd : wfs.getAllDependencies() ) {
@@ -274,10 +277,10 @@ public class ApplicationSchemaXSD extends XSD {
             XSDSchema ftSchema = null;
 
             try {
-                ftSchema = Schemas.parse(schemaFile.getAbsolutePath(), locators, null);
+                ftSchema = Schemas.parse(schemaFile.file().getAbsolutePath(), locators, null);
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING,
-                    "Unable to parse schema: " + schemaFile.getAbsolutePath(), e);
+                    "Unable to parse schema: " + schemaFile.file().getAbsolutePath(), e);
             }
 
             if (ftSchema != null) {

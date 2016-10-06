@@ -1,18 +1,19 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
-import java.io.File;
+import org.geoserver.platform.resource.Resource;
 
 
 public class FreemarkerTemplateInfo {
 
     private String name;
 
-    public FreemarkerTemplateInfo(File file) {
-        name = file.getName();
+    public FreemarkerTemplateInfo(Resource file) {
+        name = file.name();
     }
 
     public String getName() {

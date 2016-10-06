@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -40,7 +41,7 @@ public class PythonPlugin extends ScriptPlugin {
     public void init(ScriptManager scriptMgr) throws Exception {
         //add lib to python.path
         Properties props = new Properties();
-        props.put("python.path", scriptMgr.getLibRoot("py").getAbsolutePath());
+        props.put("python.path", scriptMgr.script("lib/" + "py").dir().getAbsolutePath());
         PythonInterpreter.initialize(null, props, null);
 
 //        codecs.register(new PyObject() {

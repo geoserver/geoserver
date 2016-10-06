@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -33,7 +34,7 @@ public class NamespaceKvpParser extends KvpParser {
      * @param value
      *            a list of namespace declarations of the form {@code
      *            <xmlns(foo=http://name.space1)[,xmlns(bar=http://name.space2)]+> }
-     * @return
+     *
      */
     @SuppressWarnings("unchecked")
     @Override

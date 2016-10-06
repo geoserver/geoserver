@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -242,7 +243,7 @@ public class EncodeHTMLImageMap extends WebMap{
      * Filter given rules, to consider only the rules compatible
      * with the current scale.
      * @param rules
-     * @return
+     *
      */
     private Rule[] filterRules(Rule[] rules) {
     	List<Rule> result=new ArrayList<Rule>();

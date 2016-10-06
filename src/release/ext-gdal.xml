@@ -19,9 +19,11 @@
         <include>*gt-imageio-ext-gdal*.jar</include>
 				<include>*imageio-ext-gdal*.jar</include>
 				<include>*imageio-ext-geocore*.jar</include>
-				<include>gdal-*.jar</include>
+				<include>*imageio-ext-imagereadmt*.jar</include>
+				<include>gs-gdal-*.jar</include>
 			</includes>
 			<excludes>
+				<exclude>*imageio-ext-gdal-bindings*.jar</exclude>
         <exclude>*arcgrid*.jar</exclude>
         <exclude>*customstreams*.jar</exclude>
       </excludes>

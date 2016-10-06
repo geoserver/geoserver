@@ -1,6 +1,0 @@
-<gss:GetDiff xmlns:gss="http://geoserver.org/gss"
-   xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc"
-   xmlns:sf="http://www.openplans.org/spearfish"
-   xmlns:wfs="http://www.opengis.net/wfs"
-   service="gss" version="1.0.0" 
-   fromVersion="123456789" typeName="sf:restricted"/>

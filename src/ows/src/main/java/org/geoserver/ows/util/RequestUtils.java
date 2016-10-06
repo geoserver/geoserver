@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,11 +13,9 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
-import org.geoserver.platform.OWS20Exception;
 
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
@@ -36,7 +35,7 @@ public class RequestUtils {
      * Pulls out the base url ( from the client point of view ), from the
      * given request object.
      *
-     * @return A String of the form "<scheme>://<server>:<port>/<context>/"
+     * @return A String of the form "&lt;scheme&gt;://&lt;server&gt;:&lt;port&gt;/&lt;context&gt;/"
      * @deprecated Use {@link ResponseUtils#baseURL(HttpServletRequest)} instead
      */
     public static String baseURL(HttpServletRequest req) {
@@ -181,7 +180,7 @@ public class RequestUtils {
      * separated integers between 0 and 99). Throws a ServiceException if the version number
      * is not valid.
      * @param v the version number (in string format)
-     * @param the locator for the service exception (may be null)
+     * @param locator The locator for the service exception (may be null)
      */
     public static void checkVersionNumber(String v, String locator) throws ServiceException {
         if (!v.matches("[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}")) {
@@ -200,7 +199,6 @@ public class RequestUtils {
      *   bytes are preparsed the stream can not be properly reset.
      *     
      * @return The buffered reader.
-     * @throws IOException
      */
     public static BufferedReader getBufferedXMLReader(InputStream stream, int xmlLookahead) 
         throws IOException {
@@ -234,7 +232,6 @@ public class RequestUtils {
      *   bytes are preparsed the stream can not be properly reset.
      *     
      * @return The buffered reader.
-     * @throws IOException
      */
     public static BufferedReader getBufferedXMLReader(Reader reader, int xmlLookahead) 
         throws IOException {

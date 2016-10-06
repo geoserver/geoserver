@@ -16,7 +16,7 @@
 			<directory>release/target/dependency</directory>
 			<outputDirectory></outputDirectory>
 			<includes>
-				<include>arcsde*.jar</include>
+				<include>gs-arcsde*.jar</include>
 				<include>gt-arcsde*.jar</include>
 				<include>commons-pool*.jar</include>
 				<include>jsqlparser*.jar</include>

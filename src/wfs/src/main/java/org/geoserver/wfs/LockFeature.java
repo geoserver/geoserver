@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -32,6 +33,7 @@ import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.wfs.v2_0.WFS;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
@@ -350,8 +352,6 @@ public class LockFeature {
      * This is the implementation for the Admin "free lock" action, transaction
      * locks are not released.
      * </p>
-     *
-     * @return Number of locks released
      */
     public void releaseAll() throws WFSException {
         try {
@@ -516,7 +516,11 @@ public class LockFeature {
             return FeatureLockFactory.generate(handle, 0);
         }
 
-        // FeatureLock is specified in minutes
-        return FeatureLockFactory.generate(handle, lockExpiry * 60 * 1000);
+        // FeatureLock is specified in minutes or seconds depending on the version
+        if(request.getAdaptee() instanceof net.opengis.wfs20.LockFeatureType) {
+            return FeatureLockFactory.generate(handle, lockExpiry * 1000);
+        } else {
+            return FeatureLockFactory.generate(handle, lockExpiry * 60 * 1000);
+        }
     }
 }

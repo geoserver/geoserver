@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -20,7 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.geoserver.data.util.IOUtils;
+import org.geoserver.util.IOUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.Transaction;
@@ -49,7 +50,7 @@ public class LiveDbmsData extends LiveSystemTestData {
      * The property file containing the token -> value pairs used for filtering
      * and to grab a JDBC datastore connection.
      * 
-     * @return
+     *
      */
     protected File fixture;
 
@@ -101,7 +102,7 @@ public class LiveDbmsData extends LiveSystemTestData {
     /**
      * Looks up the fixture file in the home directory provided that the 
      * @param fixtureId
-     * @return
+     *
      */
     private File lookupFixture(String fixtureId) {
         // first of all, make sure the fixture was not disabled using a system
@@ -220,7 +221,7 @@ public class LiveDbmsData extends LiveSystemTestData {
      * override to use other methods
      * 
      * @param ds
-     * @return
+     *
      * @throws IOException
      */
     protected Connection getDatabaseConnection(DataStore ds) throws IOException {
@@ -233,7 +234,7 @@ public class LiveDbmsData extends LiveSystemTestData {
 
     /**
      * Returns the filtered paths list as a live list (can be modified directly)
-     * @return
+     *
      */
     public List<String> getFilteredPaths() {
         return filteredPaths;

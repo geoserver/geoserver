@@ -1,23 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/" xml:lang="en" lang="en">
-
-<wicket:head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<wicket:link>
-      <link href="../favicon.ico" rel="shortcut icon"/>
-      <link rel="stylesheet" href="../css/blueprint/screen.css" type="text/css" media="screen, projection" />
-      <link rel="stylesheet" href="../css/blueprint/print.css" type="text/css" media="print" /> 
-	  <link rel="stylesheet" href="../css/geoserver.css" type="text/css" media="screen, projection" />
-      <!--[if IE]>
-        <link rel="stylesheet" href="../css/blueprint/ie.css" type="text/css" media="screen, projection" />
-      <![endif]-->
-      <script type="text/javascript" src="../js/jquery-1.2.6.min.js"></script>
-      <script type="text/javascript" src="../js/jquery.inline-info.js"></script>
-	</wicket:link>
-</wicket:head>
-
 <body>
+<wicket:panel>
     <!-- The ok/cancel form -->
     <form wicket:id="form" style="padding: 0.2em">
 	<div class=".clearBoth" wicket:id="userPanel"></div>
@@ -26,6 +9,7 @@
 		<a href="#" wicket:id="cancel"><wicket:message key="cancel"/></a>
     </div>
 	</form>
+</wicket:panel>
 </body>
 
 </html>

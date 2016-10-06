@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,21 +7,27 @@ package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
 import java.util.List;
+import java.util.Properties;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.StyleInfo;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.*;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
+import org.geoserver.platform.resource.Resource;
+import org.geotools.data.DataUtilities;
 import org.geotools.styling.Style;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +35,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class StyleTest extends CatalogRESTTestSupport {
 
@@ -122,23 +129,68 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertEquals( "Ponds", style.get( "name") );
         assertEquals( "Ponds.sld", style.get( "filename") );
     }
+
+    @Test
+    public void testGetWrongStyle() throws Exception {
+        // Parameters for the request
+        String ws = "gs";
+        String style = "foooooo";
+        // Request path
+        String requestPath = "/rest/styles/" + style + ".html";
+        String requestPath2 = "/rest/workspaces/" + ws + "/styles/" + style + ".html";
+        // Exception path
+        String exception = "No such style: " + style;
+        String exception2 = "No such style "+ style +" in workspace " + ws;
+        
+        // CASE 1: No workspace set
+        
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
+                exception));
+        
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getContentAsString().isEmpty());
+        
+        // CASE 2: workspace set
+        
+        // First request should thrown an exception
+        response = getAsServletResponse(requestPath2);
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
+                exception2));
+        
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatus());
+        assertFalse(response.getContentAsString().contains(
+                exception2));
+        // No exception thrown
+        assertTrue(response.getContentAsString().isEmpty());
+    }
     
     @Test
     public void testGetAsSLD() throws Exception {
         Document dom = getAsDOM( "/rest/styles/Ponds.sld");
-        
-        assertEquals( "sld:StyledLayerDescriptor", dom.getDocumentElement().getNodeName() );
+
+        assertEquals( "StyledLayerDescriptor", dom.getDocumentElement().getNodeName() );
     }
 
     @Test
     public void testGetFromWorkspace() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/rest/workspaces/gs/styles/foo.xml"); 
-        assertEquals(404, resp.getStatusCode());
+        assertEquals(404, resp.getStatus());
 
         addStyleToWorkspace("foo");
 
         resp = getAsServletResponse("/rest/workspaces/gs/styles/foo.xml");
-        assertEquals(200, resp.getStatusCode());
+        assertEquals(200, resp.getStatus());
 
         Document dom = getAsDOM("/rest/workspaces/gs/styles/foo.xml");
         assertXpathEvaluatesTo("foo", "/style/name", dom);
@@ -165,12 +217,24 @@ public class StyleTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response = 
-            postAsServletResponse( "/rest/styles", xml, StyleResource.MEDIATYPE_SLD.toString());
-        assertEquals( 201, response.getStatusCode() );
+            postAsServletResponse( "/rest/styles", xml, SLDHandler.MIMETYPE_10);
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/styles/foo" ) );
         
         assertNotNull( catalog.getStyleByName( "foo" ) );
+    }
+    
+    @Test
+    public void testPostExternalEntityAsSLD() throws Exception {
+        String xml = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), "UTF-8");
+
+        MockHttpServletResponse response = 
+            postAsServletResponse( "/rest/styles", xml, SLDHandler.MIMETYPE_10);
+        assertEquals( 500, response.getStatus() );
+        String message = response.getContentAsString();
+        assertThat(message, containsString("Entity resolution disallowed"));
+        assertThat(message, containsString("/this/file/does/not/exist"));
     }
     
     @Test
@@ -180,8 +244,8 @@ public class StyleTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response = 
-            postAsServletResponse( "/rest/workspaces/gs/styles", xml, StyleResource.MEDIATYPE_SLD.toString());
-        assertEquals( 201, response.getStatusCode() );
+            postAsServletResponse( "/rest/workspaces/gs/styles", xml, SLDHandler.MIMETYPE_10);
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/styles/foo" ) );
         
@@ -196,8 +260,8 @@ public class StyleTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response = 
-            postAsServletResponse( "/rest/styles?name=bar", xml, StyleResource.MEDIATYPE_SLD.toString());
-        assertEquals( 201, response.getStatusCode() );
+            postAsServletResponse( "/rest/styles?name=bar", xml, SLDHandler.MIMETYPE_10);
+        assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/styles/bar" ) );
         
@@ -216,7 +280,7 @@ public class StyleTest extends CatalogRESTTestSupport {
             "</style>";
         MockHttpServletResponse response =
             postAsServletResponse("/rest/workspaces/gs/styles", xml);
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         assertNotNull(cat.getStyleByName("gs", "foo"));
     }
 
@@ -233,7 +297,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/styles/Ponds", xml.getBytes(), "text/xml");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         style = catalog.getStyleByName( "Ponds");
         assertEquals( "Forests.sld", style.getFilename() );
@@ -244,12 +308,13 @@ public class StyleTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response = 
-            putAsServletResponse( "/rest/styles/Ponds", xml, StyleResource.MEDIATYPE_SLD.toString());
-        assertEquals( 200, response.getStatusCode() );
+            putAsServletResponse( "/rest/styles/Ponds", xml, SLDHandler.MIMETYPE_10);
+        assertEquals( 200, response.getStatus() );
         
         Style s = catalog.getStyleByName( "Ponds" ).getStyle();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        new SLDFormat().write(s, out);
+
+        new StyleFormat(SLDHandler.MIMETYPE_10, SLDHandler.VERSION_10, false, new SLDHandler(), null, getCatalog().getResourcePool().getEntityResolver()).write(s, out);
         
         xml = new String(out.toByteArray());
         assertTrue(xml.contains("<sld:Name>foo</sld:Name>"));
@@ -269,7 +334,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response =
             putAsServletResponse("/rest/workspaces/gs/styles/foo", xml, "application/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         assertEquals("bar.sld", cat.getStyleByName("gs","foo").getFilename());
     }
 
@@ -284,9 +349,26 @@ public class StyleTest extends CatalogRESTTestSupport {
             
         MockHttpServletResponse response =
             putAsServletResponse("/rest/workspaces/gs/styles/foo", xml, "application/xml");
-        assertEquals(403, response.getStatusCode());
+        assertEquals(403, response.getStatus());
     }
+    @Test
+    public void testStyleNotFoundGloballyWhenInWorkspace() throws Exception {
+        testPostToWorkspace();
 
+        Catalog cat = getCatalog();
+        assertEquals("foo.sld", cat.getStyleByName("gs","foo").getFilename());
+
+        String xml = 
+            "<style>" +
+              "<filename>bar.sld</filename>" +
+            "</style>";
+        
+        MockHttpServletResponse response =
+            putAsServletResponse("/rest/workspaces/gs/styles/foo", xml, "application/xml");
+        assertEquals(200, response.getStatus());
+        response = putAsServletResponse("/rest/styles/gs:foo", xml, "application/xml");
+        assertEquals(404, response.getStatus());
+    }
     @Test
     public void testDelete() throws Exception {
         String xml = 
@@ -299,7 +381,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             deleteAsServletResponse("/rest/styles/dummy");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         assertNull( catalog.getStyleByName( "dummy" ) );
     }
@@ -310,9 +392,20 @@ public class StyleTest extends CatalogRESTTestSupport {
         
         MockHttpServletResponse response = 
             deleteAsServletResponse("/rest/styles/Ponds");
-        assertEquals( 403, response.getStatusCode() );
+        assertEquals( 403, response.getStatus() );
          
         assertNotNull( catalog.getStyleByName( "Ponds" ) );
+    }
+
+    @Test
+    public void testDeleteWithLayerReferenceAndRecurse() throws Exception {
+        assertNotNull( catalog.getStyleByName( "Ponds" ) );
+
+        MockHttpServletResponse response =
+                deleteAsServletResponse("/rest/styles/Ponds?recurse=true");
+        assertEquals( 200, response.getStatus() );
+
+        assertNull( catalog.getStyleByName( "Ponds" ) );
     }
 
     @Test
@@ -320,14 +413,14 @@ public class StyleTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response = 
-            postAsServletResponse( "/rest/styles", xml, StyleResource.MEDIATYPE_SLD.toString());
+            postAsServletResponse( "/rest/styles", xml, SLDHandler.MIMETYPE_10);
         assertNotNull( catalog.getStyleByName( "foo" ) );
         
         //ensure the style not deleted on disk
         assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
         
         response = deleteAsServletResponse("/rest/styles/foo");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         //ensure the style not deleted on disk
         assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
@@ -338,14 +431,14 @@ public class StyleTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response = 
-            postAsServletResponse( "/rest/styles", xml, StyleResource.MEDIATYPE_SLD.toString());
+            postAsServletResponse( "/rest/styles", xml, SLDHandler.MIMETYPE_10);
         assertNotNull( catalog.getStyleByName( "foo" ) );
         
         //ensure the style not deleted on disk
         assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
         
         response = deleteAsServletResponse("/rest/styles/foo?purge=true");
-        assertEquals( 200, response.getStatusCode() );
+        assertEquals( 200, response.getStatus() );
         
         //ensure the style not deleted on disk
         assertFalse(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
@@ -359,7 +452,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNotNull(cat.getStyleByName("gs", "foo"));
         
         MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/gs/styles/foo");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         assertNull(cat.getStyleByName("gs", "foo"));
     }
@@ -375,7 +468,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         assertNotNull(rl.find("workspaces", "gs", "styles", "foo.sld"));
         
         MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/gs/styles/foo?purge=true");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         assertNull(cat.getStyleByName("gs", "foo"));
         assertNull(rl.find("workspaces", "gs", "styles", "foo.sld"));
@@ -401,7 +494,7 @@ public class StyleTest extends CatalogRESTTestSupport {
             "</style>";
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/layers/cite:BasicPolygons/styles", xml, "text/xml");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         
         LayerInfo l2 = catalog.getLayerByName( "cite:BasicPolygons" );
         assertEquals( nstyles+1, l2.getStyles().size() );
@@ -421,7 +514,7 @@ public class StyleTest extends CatalogRESTTestSupport {
             "</style>";
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/layers/cite:BasicPolygons/styles?default=true", xml, "text/xml");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         
         LayerInfo l2 = catalog.getLayerByName( "cite:BasicPolygons" );
         assertEquals( nstyles+1, l2.getStyles().size() );
@@ -442,10 +535,313 @@ public class StyleTest extends CatalogRESTTestSupport {
             "</style>";
         MockHttpServletResponse response = 
             postAsServletResponse( "/rest/layers/cite:BasicPolygons/styles?default=true", xml, "text/xml");
-        assertEquals( 201, response.getStatusCode() );
+        assertEquals( 201, response.getStatus() );
         
         LayerInfo l2 = catalog.getLayerByName("cite:BasicPolygons");
         assertEquals( nstyles, l2.getStyles().size() );
         assertEquals( catalog.getStyleByName( "Ponds"), l2.getDefaultStyle() );
+    }
+
+    @Test
+    public void testPostAsPSL() throws Exception {
+        Properties props = new Properties();
+        props.put("type", "point");
+        props.put("color", "ff0000");
+
+        StringWriter out = new StringWriter();
+        props.store(out, "comment!");
+
+        MockHttpServletResponse response =
+                postAsServletResponse( "/rest/styles?name=foo", out.toString(), PropertyStyleHandler.MIMETYPE);
+        assertEquals( 201, response.getStatus() );
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/styles/foo" ) );
+
+        assertNotNull( catalog.getStyleByName( "foo" ) );
+
+        Resource style = getDataDirectory().style(getCatalog().getStyleByName("foo"));
+        InputStream in = style.in();
+
+        props = new Properties();
+        try {
+            props.load(in);
+            assertEquals("point", props.getProperty("type"));
+        }
+        finally {
+            in.close();
+        }
+
+        in = style.in();
+        try {
+            out = new StringWriter();
+            IOUtils.copy(in, out);
+            assertFalse(out.toString().startsWith("#comment!"));
+        }
+        finally {
+            in.close();
+        }
+    }
+
+    @Test
+    public void testPostAsPSLRaw() throws Exception {
+        Properties props = new Properties();
+        props.put("type", "point");
+        props.put("color", "ff0000");
+
+        StringWriter out = new StringWriter();
+        props.store(out, "comment!");
+
+        MockHttpServletResponse response =
+            postAsServletResponse( "/rest/styles?name=foo&raw=true", out.toString(), PropertyStyleHandler.MIMETYPE);
+        assertEquals( 201, response.getStatus() );
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/styles/foo" ) );
+
+        // check style on disk to ensure the exact contents was preserved
+        Resource style = getDataDirectory().style(getCatalog().getStyleByName("foo"));
+        InputStream in = style.in();
+        try {
+            out = new StringWriter();
+            IOUtils.copy(in, out);
+            assertTrue(out.toString().startsWith("#comment!"));
+        }
+        finally {
+            in.close();
+        }
+    }
+
+    @Test
+    public void testGetAsPSL() throws Exception {
+        Properties props = new Properties();
+        props.load(get("/rest/styles/Ponds.properties"));
+
+        assertEquals("polygon", props.getProperty("type"));
+    }
+
+    @Test
+    public void testPutAsPSL() throws Exception {
+        testPostAsPSL();
+
+        Properties props = new Properties();
+        props.put("type", "line");
+        props.put("color", "00ff00");
+
+        StringWriter out = new StringWriter();
+        props.store(out, "comment!");
+
+        MockHttpServletResponse response =
+            putAsServletResponse( "/rest/styles/foo", out.toString(), PropertyStyleHandler.MIMETYPE);
+        assertEquals( 200, response.getStatus() );
+
+        Resource style = getDataDirectory().style(getCatalog().getStyleByName("foo"));
+        InputStream in = style.in();
+        try {
+            props = new Properties();
+            props.load(in);
+            assertEquals("line", props.getProperty("type"));
+        }
+        finally {
+            in.close();
+        }
+
+        in = style.in();
+        try {
+            out = new StringWriter();
+            IOUtils.copy(in, out);
+            assertFalse(out.toString().startsWith("#comment!"));
+        }
+        finally {
+            in.close();
+        }
+    }
+
+    @Test
+    public void testPutAsPSLRaw() throws Exception {
+        testPostAsPSL();
+
+        Properties props = new Properties();
+        props.put("type", "line");
+        props.put("color", "00ff00");
+
+        StringWriter out = new StringWriter();
+        props.store(out, "comment!");
+
+        MockHttpServletResponse response =
+            putAsServletResponse( "/rest/styles/foo?raw=true", out.toString(), PropertyStyleHandler.MIMETYPE);
+        assertEquals( 200, response.getStatus() );
+
+        Resource style = getDataDirectory().style(getCatalog().getStyleByName("foo"));
+        InputStream in = style.in();
+        try {
+            props = new Properties();
+            props.load(in);
+            assertEquals("line", props.getProperty("type"));
+        }
+        finally {
+            in.close();
+        }
+
+        in = style.in();
+        try {
+            out = new StringWriter();
+            IOUtils.copy(in, out);
+            assertTrue(out.toString().startsWith("#comment!"));
+        }
+        finally {
+            in.close();
+        }
+    }
+
+    @Test
+    public void testPostAsSE() throws Exception {
+        String xml =
+            "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" " +
+            "       xmlns:se=\"http://www.opengis.net/se\" version=\"1.1.0\"> "+
+            " <NamedLayer> "+
+            "  <UserStyle> "+
+            "   <se:Name>UserSelection</se:Name> "+
+            "   <se:FeatureTypeStyle> "+
+            "    <se:Rule> "+
+            "     <se:PolygonSymbolizer> "+
+            "      <se:Fill> "+
+            "       <se:SvgParameter name=\"fill\">#FF0000</se:SvgParameter> "+
+            "      </se:Fill> "+
+            "     </se:PolygonSymbolizer> "+
+            "    </se:Rule> "+
+            "   </se:FeatureTypeStyle> "+
+            "  </UserStyle> "+
+            " </NamedLayer> "+
+            "</StyledLayerDescriptor>";
+
+        MockHttpServletResponse response =
+                postAsServletResponse( "/rest/styles?name=foo", xml, SLDHandler.MIMETYPE_11);
+        assertEquals( 201, response.getStatus() );
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/styles/foo" ) );
+
+        StyleInfo style = catalog.getStyleByName("foo");
+        assertNotNull(style);
+
+        assertEquals("sld", style.getFormat());
+        assertEquals(SLDHandler.VERSION_11, style.getFormatVersion());
+    }
+
+    @Test
+    public void testPostToWorkspaceSLDPackage() throws Exception {
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("gs", "foo"));
+
+        URL zip = getClass().getResource( "test-data/foo.zip" );
+        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+
+        MockHttpServletResponse response =
+                postAsServletResponse( "/rest/workspaces/gs/styles", bytes, "application/zip");
+        assertEquals( 201, response.getStatus() );
+        assertNotNull(cat.getStyleByName("gs", "foo"));
+
+        Document d = getAsDOM("/rest/workspaces/gs/styles/foo.sld");
+
+        assertEquals( "StyledLayerDescriptor", d.getDocumentElement().getNodeName());
+        XpathEngine engine = XMLUnit.newXpathEngine();
+        NodeList list = engine.getMatchingNodes("//sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic/sld:OnlineResource", d);
+        assertEquals(1, list.getLength());
+        Element onlineResource = (Element)list.item(0);
+        assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
+        assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/gear.png"));
+        assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/foo.sld"));
+    }
+    
+    @Test
+    public void testPostWithExternalEntities() throws Exception {
+        URL zip = getClass().getResource( "test-data/externalEntities.zip" );
+        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+
+        MockHttpServletResponse response =
+                postAsServletResponse( "/rest/workspaces/gs/styles", bytes, "application/zip");
+        // expecting a failure with explanation
+        assertEquals(400, response.getStatus() );
+        final String content = response.getContentAsString();
+        assertThat(content, containsString("Entity resolution disallowed"));
+        assertThat(content, containsString("/this/file/does/not/exist"));
+    }
+
+
+    @Test
+    public void testPutToWorkspaceSLDPackage() throws Exception {
+        testPostAsSLDToWorkspace();
+
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getStyleByName("gs", "foo"));
+
+        URL zip = getClass().getResource( "test-data/foo.zip" );
+        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+
+        MockHttpServletResponse response =
+                putAsServletResponse( "/rest/workspaces/gs/styles/foo.zip", bytes, "application/zip");
+        assertEquals( 200, response.getStatus() );
+        assertNotNull(cat.getStyleByName("gs", "foo"));
+
+        Document d = getAsDOM("/rest/workspaces/gs/styles/foo.sld");
+
+        assertEquals( "StyledLayerDescriptor", d.getDocumentElement().getNodeName());
+        XpathEngine engine = XMLUnit.newXpathEngine();
+        NodeList list = engine.getMatchingNodes("//sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic/sld:OnlineResource", d);
+        assertEquals(1, list.getLength());
+        Element onlineResource = (Element)list.item(0);
+        assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
+        assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/gear.png"));
+        assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/foo.sld"));
+    }
+
+    @Test
+    public void testPostSLDPackage() throws Exception {
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("foo"));
+
+        URL zip = getClass().getResource( "test-data/foo.zip" );
+        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+
+        MockHttpServletResponse response =
+                postAsServletResponse( "/rest/styles", bytes, "application/zip");
+        assertEquals( 201, response.getStatus() );
+        assertNotNull(cat.getStyleByName("foo"));
+
+        Document d = getAsDOM("/rest/styles/foo.sld");
+
+        assertEquals( "StyledLayerDescriptor", d.getDocumentElement().getNodeName());
+        XpathEngine engine = XMLUnit.newXpathEngine();
+        NodeList list = engine.getMatchingNodes("//sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic/sld:OnlineResource", d);
+        assertEquals(1, list.getLength());
+        Element onlineResource = (Element)list.item(0);
+        assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
+        assertNotNull(getCatalog().getResourceLoader().find("styles/gear.png"));
+        assertNotNull(getCatalog().getResourceLoader().find("styles/foo.sld"));
+    }
+
+    @Test
+    public void testPutSLDPackage() throws Exception {
+        testPostAsSLD();
+
+        Catalog cat = getCatalog();
+        assertNotNull(cat.getStyleByName("foo"));
+
+        URL zip = getClass().getResource( "test-data/foo.zip" );
+        byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
+
+        MockHttpServletResponse response =
+                putAsServletResponse( "/rest/styles/foo.zip", bytes, "application/zip");
+        assertEquals( 200, response.getStatus() );
+        assertNotNull(cat.getStyleByName("foo"));
+
+        Document d = getAsDOM("/rest/styles/foo.sld");
+
+        assertEquals( "StyledLayerDescriptor", d.getDocumentElement().getNodeName());
+        XpathEngine engine = XMLUnit.newXpathEngine();
+        NodeList list = engine.getMatchingNodes("//sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic/sld:OnlineResource", d);
+        assertEquals(1, list.getLength());
+        Element onlineResource = (Element)list.item(0);
+        assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
+        assertNotNull(getCatalog().getResourceLoader().find("styles/gear.png"));
+        assertNotNull(getCatalog().getResourceLoader().find("styles/foo.sld"));
     }
 }

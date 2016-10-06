@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,15 +8,18 @@ package org.geoserver.catalog.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
@@ -25,6 +29,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected String id;
     protected String name;
     protected Mode mode = Mode.SINGLE;
+    protected Boolean queryDisabled;
     
     /**
      * This property in 2.2.x series is stored under the metadata map with key 'title'.
@@ -48,9 +53,12 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     
     protected List<PublishedInfo> publishables = new ArrayList<PublishedInfo>();
     protected List<StyleInfo> styles = new ArrayList<StyleInfo>();
+    protected List<MetadataLinkInfo> metadataLinks = new ArrayList<MetadataLinkInfo>();
     
     protected ReferencedEnvelope bounds;
     protected MetadataMap metadata = new MetadataMap();
+
+    protected AttributionInfo attribution;
 
     /**
      * This property is transient in 2.1.x series and stored under the metadata map with key
@@ -68,6 +76,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
      */
     protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(2);
     
+        
     
     public LayerGroupInfoImpl() {
         mode = Mode.SINGLE;
@@ -106,6 +115,16 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         this.mode = mode;
     }
        
+    @Override
+    public boolean isQueryDisabled() {
+        return queryDisabled != null ? queryDisabled.booleanValue() : false;
+    }
+    
+    @Override
+    public void setQueryDisabled(boolean queryDisabled) {
+        this.queryDisabled = queryDisabled ? Boolean.TRUE : null;
+    }
+    
     @Override
     public String getTitle() {
         if(title == null && metadata != null) {
@@ -262,6 +281,9 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         result = prime * result + ((rootLayerStyle == null) ? 0 : rootLayerStyle.hashCode());        
         result = prime * result + ((authorityURLs == null) ? 0 : authorityURLs.hashCode());
         result = prime * result + ((identifiers == null) ? 0 : identifiers.hashCode());
+        result = prime * result + ((attribution == null) ? 0 : attribution.hashCode());
+        result = prime * result + ((metadataLinks == null) ? 0 : metadataLinks.hashCode());
+        result = prime * result + ((queryDisabled == null) ? 0 : queryDisabled.hashCode());
         return result;
     }
 
@@ -350,6 +372,24 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         } else if (!rootLayerStyle.equals(other.getRootLayerStyle()))
             return false;
         
+        if(attribution == null){
+            if (other.getAttribution() != null)
+                return false;
+        } else if (!attribution.equals(other.getAttribution()))
+            return false;
+        
+        if(metadataLinks == null){
+            if (other.getMetadataLinks() != null)
+                return false;
+        } else if (!metadataLinks.equals(other.getMetadataLinks()))
+            return false;
+        
+        if (queryDisabled == null) {
+            if (other.isQueryDisabled())
+                return false;
+        } else if (!queryDisabled.equals(other.isQueryDisabled()))
+            return false;
+        
         return true;
     }
 
@@ -375,5 +415,34 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).append('[').append(name).append(']')
                 .toString();
+    }
+
+    @Override
+    public String getPrefixedName() {
+        return prefixedName();
+    }
+
+    @Override
+    public PublishedType getType() {
+        return PublishedType.GROUP;
+    }
+
+    @Override
+    public AttributionInfo getAttribution() {
+        return attribution;
+    }
+
+    @Override
+    public void setAttribution(AttributionInfo attribution) {
+        this.attribution = attribution;
+    }
+
+    @Override
+    public List<MetadataLinkInfo> getMetadataLinks() {
+        return metadataLinks;
+    }
+    
+    public void setMetadataLinks(List<MetadataLinkInfo> metadataLinks) {
+        this.metadataLinks = metadataLinks;
     }
 }

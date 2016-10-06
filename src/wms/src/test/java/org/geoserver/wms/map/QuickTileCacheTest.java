@@ -1,10 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -56,5 +57,14 @@ public class QuickTileCacheTest {
         env = new Envelope(-30, 0, -30, 0);
         tc = cache.getTileCoordinates(env, origin);
         assertEquals(new Point(-1, -1), tc);
+    }
+    
+    @Test
+    public void testInnerTileOffsets() {
+        Envelope meta = new Envelope(1215736.8585492, 1215744.0245205, 5455471.361398601, 5455478.5273699);
+        Envelope box1 = new Envelope(1215736.8585492 , 1215739.2472063, 5455476.1387128 , 5455478.5273699);
+        Envelope box2 = new Envelope(1215739.2472063 , 1215741.6358635, 5455476.1387128 , 5455478.5273699);
+        assertEquals(new Point(0, 2), cache.getTileOffsetsInMeta(box1, meta));
+        assertEquals(new Point(1, 2), cache.getTileOffsetsInMeta(box2, meta));
     }
 }

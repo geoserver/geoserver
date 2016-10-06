@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -49,7 +50,7 @@ public class PDFMaxSizeEnforcer {
 
     /**
      * True if the memory used by the PDF buffer exceeds the max memory settings
-     * @return
+     *
      */
     public boolean exceedsMaxSize() {
         return maxSize > 0 && pdfBytes.size() >  maxSize;
@@ -57,7 +58,7 @@ public class PDFMaxSizeEnforcer {
     
     /**
      * Returns the amount of memory currently used by the 
-     * @return
+     *
      */
     public long memoryUsed() {
         return pdfBytes.size();

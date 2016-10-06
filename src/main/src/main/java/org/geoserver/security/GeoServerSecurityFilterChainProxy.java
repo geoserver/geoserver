@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -24,38 +26,52 @@ import javax.servlet.http.HttpServletRequest;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerSecurityContextPersistenceFilter;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.AntPathRequestMatcher;
-import org.springframework.security.web.util.RequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
-public class GeoServerSecurityFilterChainProxy extends FilterChainProxy 
-    implements SecurityManagerListener, ApplicationContextAware {
+public class GeoServerSecurityFilterChainProxy implements SecurityManagerListener, ApplicationContextAware, InitializingBean, Filter {
     
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
     static ThreadLocal<HttpServletRequest> REQUEST = new ThreadLocal<HttpServletRequest>();
+    
+    /**
+     * Request header attribute indicating if the request was running through
+     * a Geoserver security filter chain. The default is <code>false</code>.
+     * 
+     * The mandatory {@link GeoServerSecurityContextPersistenceFilter} object
+     * sets this attribute to <code>true</code>
+     */
+    public final static String SECURITY_ENABLED_ATTRIBUTE="org.geoserver.security.enabled";
 
     private boolean chainsInitialized;
 
     //security manager
     GeoServerSecurityManager securityManager;
 
+    FilterChainProxy proxy;
+
     //app context
     ApplicationContext appContext;
 
+    
     public GeoServerSecurityFilterChainProxy(GeoServerSecurityManager securityManager) {
         this.securityManager = securityManager;
         this.securityManager.addListener(this);
         chainsInitialized=false;
        
     }
-
+    
 /*    
     Map<String,List<String>> createDefaultFilterChain() {
         Map<String,List<String>> filterChain = new LinkedHashMap<String, List<String>>();
@@ -87,7 +103,25 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
 
         return filterChain;
     }
-*/    
+*/   
+    
+    /**
+     * Returns <code>true</code> if the current {@link HttpServletRequest}
+     * has traveled through a security filter chain. 
+     * 
+     *
+     */
+    static public boolean isSecurityEnabledForCurrentRequest() {
+        
+        if (REQUEST.get()==null) {
+            return true;
+        }
+        
+        if (Boolean.TRUE.equals(REQUEST.get().getAttribute(SECURITY_ENABLED_ATTRIBUTE)))
+                return true;
+        
+        return false;
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -95,12 +129,27 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
     }
 
     @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        if (proxy != null) {
+            proxy.init(filterConfig);
+        }
+        else {
+            // FilterChainProxy doesn't to anything in it's init() method so i believe it's ok
+            // if it doesn't get called
+            LOGGER.warning("init() called but proxy not yet configured");
+        }
+    }
+
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+        
+        // assume security is disabled
+        request.setAttribute(SECURITY_ENABLED_ATTRIBUTE, Boolean.FALSE);
         //set the request thread local
         REQUEST.set((HttpServletRequest) request);
         try {
-            super.doFilter(request, response, chain);
+            proxy.doFilter(request, response, chain);
         }
         finally {
             REQUEST.remove();
@@ -114,7 +163,6 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
 
     public void afterPropertiesSet() {
         createFilterChain();
-        super.afterPropertiesSet();
     };
 
     void createFilterChain() {
@@ -132,9 +180,10 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
         // adding required providers like GeoServerRootAuthenticationProvider
         filterChain.postConfigure(securityManager);
 
-        Map<RequestMatcher,List<Filter>> filterChainMap = 
-                new LinkedHashMap<RequestMatcher,List<Filter>>();
+//        Map<RequestMatcher,List<Filter>> filterChainMap = 
+//                new LinkedHashMap<RequestMatcher,List<Filter>>();
 
+        List<SecurityFilterChain> filterChains = new ArrayList<>();
         for (RequestFilterChain chain : filterChain.getRequestChains()) {
             RequestMatcher matcher = matcherForChain(chain);
             List<Filter> filters = new ArrayList<Filter>();
@@ -151,14 +200,13 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
                     LOGGER.log(Level.SEVERE, "Error loading filter: " + filterName, ex);
                 }
             }
-            filterChainMap.put(matcher, filters);
+            filterChains.add(new DefaultSecurityFilterChain(matcher, filters));
         }
-        
 
         synchronized (this) {
             // first, call destroy of all current filters        
             if (chainsInitialized) {
-                for (SecurityFilterChain chain : getFilterChains()) {
+                for (SecurityFilterChain chain : proxy.getFilterChains()) {
                     for (Filter filter: chain.getFilters()) {
                         filter.destroy();
                     }
@@ -167,9 +215,8 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
             // empty cache since filter config  will change
             securityManager.getAuthenticationCache().removeAll();
 
-            // TODO Justin, this method is deprecated without replacement, I fear 
-            // this is a show stopper for the next spring security version, any idea
-            setFilterChainMap(filterChainMap);
+            proxy = new FilterChainProxy(filterChains);
+            proxy.afterPropertiesSet();
             chainsInitialized=true;
         }
     }
@@ -179,7 +226,7 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
      * the specified {@link RequestFilterChain}
      * 
      * @param chain
-     * @return
+     *
      */
     public GeoServerRequestMatcher matcherForChain(RequestFilterChain chain) {
         
@@ -200,9 +247,9 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
                 patterns.add(singlePattern);
         }
         
-        AntPathRequestMatcher[] matchers=new AntPathRequestMatcher[patterns.size()];
+        RequestMatcher[] matchers=new RequestMatcher[patterns.size()];
         for (int i = 0;i<matchers.length;i++) {
-            matchers[i]=new AntPathRequestMatcher(patterns.get(i));
+            matchers[i] = new IncludeQueryStringAntPathRequestMatcher(patterns.get(i));
         }
         return new GeoServerRequestMatcher(methods,matchers); 
     }
@@ -227,17 +274,13 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
 
     @Override
     public void destroy() {
-        super.destroy();
+        proxy.destroy();
 
         //do some cleanup
         securityManager.removeListener(this);
     }
     
-    /**
-     * Add constant filter chains
-     * 
-     * @param filterChainMap
-     */
-    protected final void addConstantFilterChains(GeoServerSecurityFilterChain chain) {
+    public List<SecurityFilterChain> getFilterChains() {
+        return proxy.getFilterChains();
     }
 }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -23,6 +24,7 @@ import org.geoserver.data.DataAccessFactoryProducer;
 import org.geoserver.feature.FeatureSourceUtils;
 import org.geoserver.feature.retype.RetypingDataStore;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFinder;
@@ -34,7 +36,6 @@ import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -54,30 +55,11 @@ public abstract class DataStoreUtils {
     static Logger LOGGER = Logging.getLogger("org.geoserver.data");
     
     /**
-     * Uses the standard datastore factory mechanism, but first manipulates the
-     * specified parameters so that data dir relative paths gets turned into
-     * absolute ones
-     * @param params
-     * @param sc
-     * @return
-     * @throws IOException
-     * @deprecated as for 2.0.x
-     */
-    public static DataStore acquireDataStore(Map params, ServletContext sc)
-        throws IOException {
-        //DJB: changed this for geoserver_data_dir   	
-        //String baseDir = sc.getRealPath("/");
-        File baseDir = GeoserverDataDirectory.getGeoserverDataDirectory();
-
-        return getDataStore(ResourcePool.getParams(params, baseDir.getAbsolutePath()));
-    }
-    
-    /**
      * Looks up the datastore using the given params, verbatim, and then
      * eventually wraps it into a renaming wrapper so that feature type
      * names are good ones from the wfs point of view (that is, no ":" in the type names)
      * @param params
-     * @return
+     *
      * @deprecated use {@link #getDataAccess(Map)}
      */
     public static DataStore getDataStore(Map params) throws IOException {
@@ -95,7 +77,7 @@ public abstract class DataStoreUtils {
      * view (that is, no ":" in the type names)
      * 
      * @param params
-     * @return
+     *
      */
     public static DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(Map params)
             throws IOException {
@@ -111,24 +93,49 @@ public abstract class DataStoreUtils {
         }
 
         if (store instanceof DataStore) {
-            String[] names = ((DataStore) store).getTypeNames();
-            for (int i = 0; i < names.length; i++) {
-                if (names[i].indexOf(":") >= 0)
-                    return new RetypingDataStore((DataStore) store);
+            try {
+                String[] names = ((DataStore) store).getTypeNames();
+                for (int i = 0; i < names.length; i++) {
+                    if (names[i].indexOf(":") >= 0)
+                        return new RetypingDataStore((DataStore) store);
+                }
+            } catch(IOException | RuntimeException e) {
+                // in case of exception computing the feature types make sure we clean up the store
+                store.dispose();
+                throw e;
             }
         }
         return store;
     }
 
-    public static Map getParams(Map m) {
+    /**
+     * processed parameters with relative URLs resolved against data directory.
+     * @param m
+     * @return processed parameters with relative URLs resolved against data directory
+     * @deprecated Unused, call {@link ResourcePool#getParams(Map, GeoServerResourceLoader)} directly.
+     */
+    public static<K,V> Map<K,V> getParams(Map<K,V> m) {
         return getParams(m,null);
     }
     
-    public static Map getParams(Map m, ServletContext sc) {
-        File data_dir = GeoserverDataDirectory.getGeoserverDataDirectory();
-        String baseDir = data_dir.getPath();
-
-        return ResourcePool.getParams(m, baseDir);
+    /**
+     * processed parameters with relative URLs resolved against data directory.
+     * @param m
+     * @param sc Context used to create GeoServerResourceLoader if required
+     * @return processed parameters with relative URLs resolved against data directory
+     * @deprecated Unused, call {@link ResourcePool#getParams(Map, GeoServerResourceLoader)} directly.
+     */
+    public static<K,V> Map<K,V> getParams(Map<K,V> m, ServletContext sc) {
+        GeoServerResourceLoader loader;
+        if( sc != null ){
+            String basePath = GeoServerResourceLoader.lookupGeoServerDataDirectory(sc);
+            File baseDir = new File(basePath);
+            loader = new GeoServerResourceLoader( baseDir );
+        }
+        else {
+            loader = GeoServerExtensions.bean( GeoServerResourceLoader.class);
+        }
+        return ResourcePool.getParams(m, loader );
     }
 
     /**
@@ -140,7 +147,7 @@ public abstract class DataStoreUtils {
      *
      * @param params
      *
-     * @return
+     *
      */
     public static DataAccessFactory aquireFactory(Map params) {
         for (Iterator i = getAvailableDataStoreFactories().iterator(); i.hasNext();) {
@@ -175,7 +182,7 @@ public abstract class DataStoreUtils {
      *
      * @param diplayName
      *
-     * @return
+     *
      */
     public static DataAccessFactory aquireFactory(String displayName) {
         if(displayName == null) {
@@ -202,21 +209,21 @@ public abstract class DataStoreUtils {
      * extension point.
      *
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     static DataAccessFactory initializeDataStoreFactory( DataAccessFactory factory ) {
-        List initializers = GeoServerExtensions.extensions( DataStoreFactoryInitializer.class );
-        for ( Iterator i = initializers.iterator(); i.hasNext(); ) {
-            DataStoreFactoryInitializer initer = (DataStoreFactoryInitializer) i.next();
+        List<DataStoreFactoryInitializer> initializers = GeoServerExtensions.extensions( DataStoreFactoryInitializer.class );
+        for ( DataStoreFactoryInitializer initer : initializers ) {
             if ( initer.getFactoryClass().isAssignableFrom( factory.getClass() ) ) {
                 try {
                     initer.initialize( factory );
                 }
                 catch( Throwable t ) {
+                    final Logger LOGGER2 = Logging.getLogger( "org.geoserver.platform" );
                     String msg = "Error occured processing extension: " + initer.getClass().getName();
-                    GeoServerExtensions.LOGGER.log( Level.WARNING, msg, t );
+                    LOGGER2.log( Level.WARNING, msg, t );
                 }
             }
-        }
-        
+        }        
         return factory;
     }
     
@@ -330,7 +337,7 @@ public abstract class DataStoreUtils {
     }
 
     /**
-     * @deprecated use {@link org.geoserver.feature.FeatureSourceUtils#
+     * @deprecated use {@link org.geoserver.feature.FeatureSourceUtils#getBoundingBoxEnvelope(FeatureSource)}
      */
     public static Envelope getBoundingBoxEnvelope(FeatureSource<? extends FeatureType, ? extends Feature> fs)
         throws IOException {

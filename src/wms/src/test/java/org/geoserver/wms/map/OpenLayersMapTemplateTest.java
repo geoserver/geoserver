@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -42,7 +43,7 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
         cfg.setClassForTemplateLoading(OpenLayersMapOutputFormat.class, "");
         cfg.setObjectWrapper(new BeansWrapper());
 
-        Template template = cfg.getTemplate("OpenLayersMapTemplate.ftl");
+        Template template = cfg.getTemplate("OpenLayers2MapTemplate.ftl");
         assertNotNull(template);
 
         GetMapRequest request = createGetMapRequest(MockData.BASIC_POLYGONS);

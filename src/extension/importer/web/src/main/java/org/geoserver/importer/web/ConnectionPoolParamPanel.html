@@ -1,0 +1,35 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<ul>
+  <wicket:panel>
+    <li class="primary"><label for="minConnection"><wicket:message key="minConnection">minConnection</wicket:message></label>
+    <input
+      type="text" class="text"
+      wicket:id="minConnection"
+      size="6" /></li>
+    <li class="secondary"><label for="maxConnection"><wicket:message key="maxConnection">maxConnection</wicket:message></label>
+    <input
+      type="text" class="text"
+      wicket:id="maxConnection"
+      size="6" /></li>
+    <li class="clearBoth"><label for="fetchSize"><wicket:message key="fetchSize">fetchSize</wicket:message></label>
+    <input
+      type="text" class="text"
+      wicket:id="fetchSize"
+      size="6" /></li>
+    <li><label for="timeout"><wicket:message key="timeout">timeout</wicket:message></label> <input
+      type="text" class="text"
+      wicket:id="timeout"
+      size="6" /></li>
+    <li class="choiceItem"><input
+      type="checkbox"
+      wicket:id="validate" /> <label
+      for="validate"><wicket:message key="validate">validate</wicket:message></label></li>
+    <li class="choiceItem" wicket:id="psContainer"><input
+      type="checkbox"
+      wicket:id="preparedStatements" /> <label
+      for="preparedStatements"><wicket:message key="preparedStatements">preparedStatements</wicket:message></label></li>
+  </wicket:panel>
+</ul>
+</body>
+</html>

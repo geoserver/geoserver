@@ -68,6 +68,10 @@ for the application would be::
 
   http://localhost:8080/geoserver/script/apps/hello
 
+.. warning::
+
+   Because of security risks the path will not be accessible if the default admin password has not been changed.
+
 
 Web Processing Service
 ----------------------
@@ -84,6 +88,20 @@ located in a file named for the process. For example::
     scripts/
       wps/
         buffer.bsh
+        
+The process will be exposed using the extension as the namespace prefix, and the file name as 
+the process name, for example, the above process will show up as ``bsh:buffer``. 
+It is also possible to put scripts in subdirectories of ``script/wps``, in this case the directory name
+will be used as the process namespace, for example::
+
+  GEOSERVER_DATA_DIR/
+    ...
+    scripts/
+      wps/
+        foo/
+          buffer.bsh
+
+will expose the process as ``foo:buffer``. 
 
 A process script must define two things:
 
@@ -184,4 +202,103 @@ assuming a local GeoServer the url to execute the process would be::
 
 (Substitue ``XX:buffer`` for the script name followed by the extension.  E.g. 
 ``py:buffer`` for Python or ``js:buffer`` for JavaScript.)
+
+
+Filter Functions
+----------------
+
+The Filter Functions hook provides a way to create new Filter Function. These functions 
+may be used, for example, in WFS/WMS filtering or in SLD expressions, for more information about 
+Filter Functions see :ref:`filter_function`. GeoServer already provides many 
+built in functions, for a complete list see :ref:`filter_function_reference`.
+
+All created functions are located under the ``scripts/function`` directory. For creating
+new functions use :ref:`scripting_ui` or place directly function file in ``scripts/function`` 
+directory, for example, to create a function named ``camelcase`` using the python language create file
+``scripts/function/camelcase.py``.
+
+The contains of the function file differ depending on the language. The default for all 
+languages is simply that the function file contains a function named "run". For example, in python:
+
+.. code-block:: python
+
+  def run(value, args):
+    return ''.join(x for x in args[0].title() if not x.isspace())
+
+The filter function name equals the function file name, for example, if there is ``scripts/function/camelcase.py``
+file then it can be used in SLD like this:
+
+.. code-block:: xml
+
+     ...
+     <TextSymbolizer>
+            <Label>
+               <ogc:Function name="camelcase">
+                 <ogc:PropertyName>STATE_NAME</ogc:PropertyName>
+               </ogc:Function>
+            </Label>
+       ...
+     </TextSymbolizer>
+     ...
+
+
+WFS Transactions
+----------------
+
+WFS Transactions hook provides a way one can intercept WFS Transactions. It could be used, for example, 
+to add validation or fill some attributes based on other ones.
+
+All created WFS Transactions hooks are located under the ``scripts/wfs/tx`` directory. For creating
+new functions use :ref:`scripting_ui` or place file directly in ``scripts/wfs/tx`` directory. The file name 
+does not matter in WFS Transaction hook.
+
+To intercept transaction one should declare a method with name specific to transaction phase, for example,
+to manipulate data before update use ``preUpdate``. Available methods in python are:
+
+.. code-block:: python
+
+   from geoserver.wfs import tx 
+
+   def before(req, context):
+     context['before'] = True
+   
+   def preInsert(inserted, req, context):
+     context['preInsert'] = True
+   
+   def postInsert(inserted, req, context):
+     context['postInsert'] = True
+   
+   def preUpdate(updated, props, req, context):
+     context['preUpdate'] = True
+   
+   def postUpdate(updated, props, req, context):
+     context['postUpdate'] = True
+   
+   def preDelete(deleted, req, context):
+     context['preDelete'] = True
+   
+   def postDelete(deleted, req, context):
+     context['postDelete'] = True
+   
+   def preCommit(req, context):
+     context['preCommit'] = True
+    
+   def postCommit(req, res, context):
+     context['postCommit'] = True
+   
+   def abort(req, res, context):
+     context['abort'] = True
+
+For example, to disallow feature deleting in python, create script:
+
+.. code-block:: python
+
+   from org.geoserver.wfs import WFSException
+
+   def preDelete(deleted, req, context):
+     raise WFSException("It is not allowed to delete Features in this layer!")
+
+
+
+
             

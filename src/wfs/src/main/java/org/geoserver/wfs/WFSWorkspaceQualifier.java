@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,6 +16,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.WorkspaceQualifyingCallback;
@@ -28,6 +30,7 @@ import org.geoserver.wfs.request.Insert;
 import org.geoserver.wfs.request.Lock;
 import org.geoserver.wfs.request.LockFeatureRequest;
 import org.geoserver.wfs.request.Query;
+import org.geoserver.wfs.request.Replace;
 import org.geoserver.wfs.request.TransactionElement;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.opengis.feature.Feature;
@@ -40,7 +43,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     }
 
     @Override
-    protected void qualifyRequest(WorkspaceInfo workspace, LayerInfo layer, Service service, Request request) {
+    protected void qualifyRequest(WorkspaceInfo workspace, PublishedInfo layer, Service service, Request request) {
         if (request.getContext() != null) {
             // if a qualifying workspace exist, try to qualify the request typename
             // parameter, if present
@@ -85,7 +88,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
      * @param request
      * @param ns
      * @param typeName
-     * @return
+     *
      */
     private QName checkDefaultNamespace(Request request, NamespaceInfo ns,
             QName typeName) {
@@ -109,7 +112,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     }
     
     @Override
-    protected void qualifyRequest(WorkspaceInfo workspace, LayerInfo layer, Operation operation, Request request) {
+    protected void qualifyRequest(WorkspaceInfo workspace, PublishedInfo layer, Operation operation, Request request) {
         NamespaceInfo ns = catalog.getNamespaceByPrefix(workspace.getName());
         
         GetCapabilitiesRequest caps = GetCapabilitiesRequest.adapt(
@@ -152,19 +155,38 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
                     Insert in = (Insert) el;
                     //in the insert case the objects are gt feature types which are not mutable
                     // so we just check them and throw an exception if a name does not match
-                    for (Iterator j = in.getFeatures().iterator(); j.hasNext(); ) {
-                        Feature f = (Feature) j.next();
-                        Name n = f.getType().getName();
-                        if (n.getNamespaceURI() != null && !ns.getURI().equals(n.getNamespaceURI())) {
-                            throw new WFSException(t, "No such feature type " + n);
-                        }
-                    }
+                    List features = in.getFeatures();
+                    ensureFeatureNamespaceUriMatches(features, ns, t);
+                }
+                else if(el instanceof Replace){
+                    Replace rep = (Replace) el;
+                    //in the replace case the objects are gt feature types which are not mutable
+                    // so we just check them and throw an exception if a name does not match
+                    List features = rep.getFeatures();
+                    ensureFeatureNamespaceUriMatches(features, ns, t);                	
                 }
                 else {
                     el.setTypeName(qualifyTypeName(el.getTypeName(), workspace, ns));
                 }
             }
         }
+    }
+
+    /**
+     * Iterates the given features and ensures their namespaceURI matches the given namespace
+     * @param features
+     * @param ns
+     * @param t
+     */
+	private void ensureFeatureNamespaceUriMatches(List features,
+            NamespaceInfo ns, TransactionRequest t) {
+	    for (Iterator j = features.iterator(); j.hasNext(); ) {
+	        Feature f = (Feature) j.next();
+	        Name n = f.getType().getName();
+	        if (n.getNamespaceURI() != null && !ns.getURI().equals(n.getNamespaceURI())) {
+	            throw new WFSException(t, "No such feature type " + n);
+	        }
+	    }
     }
     
     void qualifyTypeNames(List names, WorkspaceInfo ws, NamespaceInfo ns) {

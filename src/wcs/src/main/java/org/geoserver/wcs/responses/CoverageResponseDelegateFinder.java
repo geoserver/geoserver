@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -46,7 +47,7 @@ public class CoverageResponseDelegateFinder implements ApplicationContextAware {
     
     /**
      * Returns the list of all the supported output formats
-     * @return
+     *
      */
     public List<String> getOutputFormats() {
         Set<String> formats = new HashSet<String>();

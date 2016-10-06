@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="400px" height="174px" viewBox="0 0 400 174" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.2 (12043) - http://www.bohemiancoding.com/sketch -->
+    <title>style_example</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="style_example" sketch:type="MSArtboardGroup">
+            <g id="style" sketch:type="MSLayerGroup" transform="translate(12.000000, 15.000000)">
+                <rect id="Rectangle-1" stroke="#4A4A4A" fill="#D8D8D8" sketch:type="MSShapeGroup" x="0" y="0" width="139" height="55" rx="4"></rect>
+                <g id="style_icon" transform="translate(5.000000, 5.000000)" sketch:type="MSShapeGroup">
+                    <path d="M1.1015625,3.15234384 C0.0933394533,4.58832168 -0.205078125,8.77636719 -0.205078125,8.77636719 L3.5078125,9.02636719 L5.47167969,12.341797 L8.05517578,12.341797 L13.4116211,9.02636728 L13.4116211,2.50878916 C13.4116211,2.50878916 11.7007698,0.610949042 10.5810547,-0.0849609375 C9.33651193,-0.858451873 5.47167969,-0.0849609343 5.47167969,-0.0849609343 C5.47167969,-0.0849609343 2.16723277,1.63454569 1.1015625,3.15234384 Z" id="Path-228" stroke="#B1792C" fill="#F4D7BD"></path>
+                    <path d="M2.5,7 C3.32842717,7 4,6.32842717 4,5.5 C4,4.67157283 3.32842717,4 2.5,4 C1.67157283,4 1,4.67157283 1,5.5 C1,6.32842717 1.67157283,7 2.5,7 Z" id="Oval-55-copy" fill="#F86660"></path>
+                    <path d="M8.5,4 C9.32842717,4 10,3.32842717 10,2.5 C10,1.67157283 9.32842717,1 8.5,1 C7.67157283,1 7,1.67157283 7,2.5 C7,3.32842717 7.67157283,4 8.5,4 Z" id="Oval-55-copy-2" fill="#FFDB4E"></path>
+                    <path d="M5.5,4 C6.32842717,4 7,3.32842717 7,2.5 C7,1.67157283 6.32842717,1 5.5,1 C4.67157283,1 4,1.67157283 4,2.5 C4,3.32842717 4.67157283,4 5.5,4 Z" id="Oval-55-copy-3" stroke="#FFB545" fill="#FFCC84"></path>
+                    <path d="M10.5,7 C11.3284272,7 12,6.32842717 12,5.5 C12,4.67157283 11.3284272,4 10.5,4 C9.67157283,4 9,4.67157283 9,5.5 C9,6.32842717 9.67157283,7 10.5,7 Z" id="Oval-55-copy-4" stroke="#8EC357" fill="#A7D17A"></path>
+                    <path d="M9.5,10 C10.3284272,10 11,9.32842717 11,8.5 C11,7.67157283 10.3284272,7 9.5,7 C8.67157283,7 8,7.67157283 8,8.5 C8,9.32842717 8.67157283,10 9.5,10 Z" id="Oval-55-copy-5" stroke="#31A8BA" fill="#6BC2CF"></path>
+                    <path d="M7.5,12 C8.32842717,12 9,11.3284272 9,10.5 C9,9.67157283 8.32842717,9 7.5,9 C6.67157283,9 6,9.67157283 6,10.5 C6,11.3284272 6.67157283,12 7.5,12 Z" id="Oval-55-copy-6" stroke="#EAA97C" fill="#E9A36E"></path>
+                    <path d="M5.5,8 C6.32842717,8 7,7.32842717 7,6.5 C7,5.67157283 6.32842717,5 5.5,5 C4.67157283,5 4,5.67157283 4,6.5 C4,7.32842717 4.67157283,8 5.5,8 Z" id="Oval-55" stroke="#B27A2F" fill="#FFFFFF"></path>
+                </g>
+                <text id="style:-style_example" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260" fill="#000000">
+                    <tspan x="23" y="12">style: style_example</tspan>
+                </text>
+            </g>
+            <g id="feature-style" sketch:type="MSLayerGroup" transform="translate(34.000000, 42.000000)">
+                <rect id="box" stroke="#4A4A4A" fill="#F2F2F2" sketch:type="MSShapeGroup" x="0" y="0" width="127" height="53" rx="4"></rect>
+                <text id="feature-style:-all" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260" fill="#000000">
+                    <tspan x="26" y="10">feature-style: all</tspan>
+                </text>
+                <g id="feature_style" transform="translate(4.000000, 4.000000)" sketch:type="MSShapeGroup">
+                    <path d="M0.754882812,7.75488281 L5.75488281,0.504882812 L16.5048828,0.504882812 L11.5048828,7.75488281 L0.754882812,7.75488281 Z" id="border" stroke="#FFFFFF" fill="#F4D7BD"></path>
+                    <path d="M0.754882812,7.75488281 L5.75488281,0.504882812 L16.5048828,0.504882812 L11.5048828,7.75488281 L0.754882812,7.75488281 Z" id="edge" stroke="#B1792C"></path>
+                </g>
+            </g>
+            <rect id="Rectangle-3" stroke="#979797" fill="#FFFFFF" sketch:type="MSShapeGroup" x="75" y="60" width="101" height="93" rx="9"></rect>
+            <g id="rule" sketch:type="MSLayerGroup" transform="translate(59.000000, 60.000000)">
+                <rect id="Rectangle-3-Copy" stroke="#000000" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="119" height="107" rx="5"></rect>
+                <text id="rule:-(unnamed)" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260">
+                    <tspan x="27" y="13" fill="#000000">rule: </tspan>
+                    <tspan x="48.16" y="13" fill="#9B9B9B">(unnamed)</tspan>
+                </text>
+                <g id="rule-copy" transform="translate(6.000000, 5.000000)" sketch:type="MSShapeGroup">
+                    <path d="M7.5,0.0048828125 C7.5,0.0048828125 0.745117188,3.7069664 0.745117188,5.87154961 C0.745117187,8.03613281 7.5,12.0048828 7.5,12.0048828 L14.2451172,5.87154961 L7.5,0.0048828125 Z" id="interior" stroke="#FFFFFF" fill="#F4D7BD"></path>
+                    <path d="M7.5,0.0048828125 C7.5,0.0048828125 0.745117188,3.7069664 0.745117188,5.87154961 C0.745117187,8.03613281 7.5,12.0048828 7.5,12.0048828 L14.2451172,5.87154961 L7.5,0.0048828125 Z" id="edge" stroke="#B1792C"></path>
+                </g>
+                <text id="filer:-INCLUDES" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260">
+                    <tspan x="27" y="28" fill="#000000">filer: </tspan>
+                    <tspan x="47.54" y="28" fill="#9B9B9B">INCLUDES</tspan>
+                </text>
+            </g>
+            <g id="symbolizer" sketch:type="MSLayerGroup" transform="translate(86.000000, 95.000000)">
+                <rect id="symbolizer_box" stroke="#4A4A4A" fill="#FFFFFF" sketch:type="MSShapeGroup" x="0" y="0" width="163" height="64"></rect>
+                <text id="symbolizer:-(unnamed" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260">
+                    <tspan x="21" y="12" fill="#000000">symbolizer: </tspan>
+                    <tspan x="72.3" y="12" fill="#9B9B9B">(unnamed)</tspan>
+                </text>
+                <text id="fill:" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260" fill="#000000">
+                    <tspan x="4" y="34">fill:</tspan>
+                </text>
+                <text id="stroke:" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="10" font-weight="260" fill="#000000">
+                    <tspan x="73" y="34">stroke:</tspan>
+                </text>
+                <g id="fill" transform="translate(22.000000, 26.000000)">
+                    <rect id="preview" fill="#D8D8D8" sketch:type="MSShapeGroup" x="0" y="0" width="46" height="27"></rect>
+                    <text id="#808080" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="9" font-weight="260" fill="#333333">
+                        <tspan x="3" y="11">#808080</tspan>
+                        <tspan x="3" y="22">0.5</tspan>
+                    </text>
+                </g>
+                <g id="stroke" transform="translate(110.000000, 26.000000)">
+                    <rect id="preview" stroke-opacity="0.75" stroke="#000000" sketch:type="MSShapeGroup" x="0" y="0" width="46" height="27"></rect>
+                    <text id="#000000" sketch:type="MSTextLayer" font-family="Proxima Nova" font-size="9" font-weight="260" fill="#333333">
+                        <tspan x="4" y="11">#000000</tspan>
+                        <tspan x="4" y="22">0.75</tspan>
+                    </text>
+                </g>
+                <g id="polygon_icon" transform="translate(4.000000, 5.000000)" stroke="#000000" sketch:type="MSShapeGroup" fill-opacity="0.5" fill="#808080" stroke-opacity="0.75">
+                    <rect id="Rectangle-49" stroke-width="1.5" x="1" y="1" width="12" height="10"></rect>
+                    <circle id="Oval-1-copy-3" cx="12.5" cy="10.5" r="1.5"></circle>
+                    <circle id="Oval-1-copy-4" cx="12.5" cy="1.5" r="1.5"></circle>
+                    <circle id="Oval-1-copy-5" cx="1.5" cy="1.5" r="1.5"></circle>
+                    <circle id="Oval-1-copy-6" cx="1.5" cy="10.5" r="1.5"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

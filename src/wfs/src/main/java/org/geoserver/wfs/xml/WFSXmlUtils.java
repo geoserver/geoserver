@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,6 +19,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
+import org.geoserver.wfs.CatalogNamespaceSupport;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.gml3.AbstractGeometryTypeBinding;
@@ -60,18 +61,12 @@ public class WFSXmlUtils {
             strict = Boolean.TRUE;
         }
         parser.setValidating(strict.booleanValue());
-        parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));
+        WFSURIHandler.addToParser(geoServer, parser);
 
         Catalog catalog = geoServer.getCatalog();
+
         //"inject" namespace mappings
-        List<NamespaceInfo> namespaces = catalog.getNamespaces();
-        for ( NamespaceInfo ns : namespaces ) {
-            if ( ns.equals( catalog.getDefaultNamespace() ) )  
-                continue;
-            
-            parser.getNamespaces().declarePrefix( 
-                ns.getPrefix(), ns.getURI());
-        }
+        parser.getNamespaces().add(new CatalogNamespaceSupport(catalog));
     }
     
     public static Object parseRequest(Parser parser, Reader reader, WFSInfo wfs) throws Exception {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE GetRecordById [
+  <!ELEMENT GetRecordById (Id*)>
+  <!ATTLIST GetRecordById
+            service CDATA #FIXED "CSW"
+            version CDATA #FIXED "2.0.2"
+            xmlns CDATA #FIXED "http://www.opengis.net/cat/csw/2.0.2">
+  <!ELEMENT Id (#PCDATA)>
+  <!ENTITY xxe SYSTEM "file:///file/not/there.txt" >]>
+<GetRecordById service="CSW" version="2.0.2" xmlns="http://www.opengis.net/cat/csw/2.0.2">
+  <Id>&xxe;</Id>
+  <Id>REC-11</Id>
+  <Id>REC-12</Id>
+  <ElementSetName>summary</ElementSetName>
+</GetRecordById>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -55,7 +56,17 @@ public class AuthenticationKeyFilterConfigValidator extends FilterConfigValidato
                     config.getAuthKeyMapperName());
         }
         
+        // validates mapper parameters
         AuthenticationKeyMapper mapper = (AuthenticationKeyMapper) lookupBean(config.getAuthKeyMapperName());
+        for(String paramName : config.getMapperParameters().keySet()) {
+            if(!mapper.getAvailableParameters().contains(paramName)) {
+                throw createFilterException(AuthenticationKeyFilterConfigException.INVALID_AUTH_KEY_MAPPER_PARAMETER_$3,
+                        paramName);
+            }
+            mapper.validateParameter(paramName, config.getMapperParameters().get(paramName));
+        }
+        mapper.configureMapper(config.getMapperParameters());
+        
         GeoServerUserGroupService service=null;
         try {
             service = manager.loadUserGroupService(config.getUserGroupServiceName());

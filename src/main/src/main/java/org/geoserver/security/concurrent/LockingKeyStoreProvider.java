@@ -1,11 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.security.concurrent;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.Key;
 import java.security.PrivateKey;
@@ -15,6 +15,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.crypto.SecretKey;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.KeyStoreProvider;
 
@@ -69,8 +70,8 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
     }
 
     @Override
-    public File getFile() {
-        return provider.getFile();
+    public Resource getResource() {
+        return provider.getResource();
     }
 
     public void reloadKeyStore() throws IOException {

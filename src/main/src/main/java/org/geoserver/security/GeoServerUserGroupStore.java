@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -37,7 +38,7 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
 
     
     /**
-     * Adds a user, the {@link GeoServerUser#getPassword()
+     * Adds a user, the {@link GeoServerUser#getPassword()}
      * returns the raw password
      * 
      * The method must use #getPasswordValidatorName() to
@@ -54,7 +55,7 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
      * Updates a user
      * 
      * The method must be able to determine if
-     * {@link GeoServerUser#getPassword() has changed
+     * {@link GeoServerUser#getPassword()} has changed
      * (reread from backend, check for a prefix, ...)
      * 
      * if the password has changed, it is a raw password
@@ -71,7 +72,7 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
     /**
      * Removes the specified user 
      * @param user
-     * @return
+     *
      */
     boolean removeUser(GeoServerUser user)  throws IOException;
     
@@ -91,7 +92,7 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
      * Removes the specified group. 
      * 
      * @param group
-     * @return
+     *
      */
     boolean removeGroup(GeoServerUserGroup group)  throws IOException;
 

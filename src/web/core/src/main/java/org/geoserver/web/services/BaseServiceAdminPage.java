@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,8 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -30,11 +29,13 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.web.GeoServerHomePage;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
@@ -54,16 +55,16 @@ import org.geoserver.web.wicket.LiveCollectionModel;
  *   &lt;li>
  *       &lt;span>
  *         &lt;label><wicket:message key="maxFeatures.title">Maximum Features</wicket:message></label>
- *         &lt;input wicket:id="maxFeatures" class="field text" type="text"></input>
+ *         &lt;input wicket:id="maxFeatures" class="field text" type="text">
  *       &lt;/span>
  *       &lt;p class="instruct">
  *       &lt;/p>
  *     &lt;/li>
- *   
+ *
  * </wicket:extend>
  *   </pre>
  * </p>
- * 
+ *
  *@author Justin Deoliveira, The Open Planning Project
  *
  */
@@ -74,16 +75,16 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     public BaseServiceAdminPage() {
         this(new PageParameters());
     }
-    
+
     public BaseServiceAdminPage(PageParameters pageParams) {
-        String wsName = pageParams.getString("workspace");
+        String wsName = pageParams.get("workspace").toString();
         init(new ServiceModel(getServiceClass(), wsName));
     }
 
     public BaseServiceAdminPage(T service) {
         init(new ServiceModel(service));
     }
-    
+
     void init(final IModel<T> infoModel) {
         T service = infoModel.getObject();
 
@@ -104,12 +105,17 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
         form.add(new HelpLink("workspaceHelp").setDialog(dialog));
 
-        form.add(new Label("service.enabled", new StringResourceModel("service.enabled", this, null, new Object[]{
-            getServiceName()
-        })));
+        form.add(new Label("service.enabled", new StringResourceModel("service.enabled", this).setParameters(getServiceName())));
         form.add(new TextField("maintainer"));
         TextField onlineResource = new TextField("onlineResource");
-        onlineResource.add(new UrlValidator());
+        
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+        
+        // AF: Disable Binding if GeoServer Env Parametrization is enabled!
+        if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            onlineResource.add(new UrlValidator());
+        }
+        
         form.add(onlineResource);
         form.add(new CheckBox("enabled"));
         form.add(new CheckBox("citeCompliant"));
@@ -118,14 +124,14 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         form.add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel(infoModel, "keywords"))));
         form.add(new TextField("fees"));
         form.add(new TextField("accessConstraints"));
-        
+
         build(infoModel, form);
-        
+
         //add the extension panels
         ListView extensionPanels = createExtensionPanelList("extensions", infoModel);
         extensionPanels.setReuseItems(true);
         form.add(extensionPanels);
-        
+
         SubmitLink submit = new SubmitLink("submit",new StringResourceModel( "save", (Component)null, null) ) {
             @Override
             public void onSubmit() {
@@ -139,7 +145,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
         };
         form.add(submit);
-        
+
         Button cancel = new Button( "cancel", new StringResourceModel( "cancel", (Component)null, null) ) {
             public void onSubmit() {
                 doReturn();
@@ -150,7 +156,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
     }
 
    protected ListView createExtensionPanelList(String id, final IModel infoModel) {
-        List<AdminPagePanelInfo> panels = 
+        List<AdminPagePanelInfo> panels =
             getGeoServerApplication().getBeansOfType(AdminPagePanelInfo.class);
         for (Iterator<AdminPagePanelInfo> it = panels.iterator(); it.hasNext();) {
             AdminPagePanelInfo panel = it.next();
@@ -158,7 +164,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                 it.remove();
             }
         }
-        
+
         return new ListView<AdminPagePanelInfo>(id, panels) {
 
             @Override
@@ -168,7 +174,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                     AdminPagePanel panel = info.getComponentClass().getConstructor(
                             String.class, IModel.class).newInstance("content", infoModel);
                     item.add(panel);
-                } 
+                }
                 catch (Exception e) {
                     throw new WicketRuntimeException("Failed to create admin extension panel of " +
                         "type " + info.getComponentClass().getSimpleName(), e);
@@ -176,35 +182,35 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
             }
         };
     }
-    
+
     /**
      * The class of the service.
      * <p>
-     * This value is used to obtain a reference to the service info 
-     * object via {@link GeoServer#getService(Class)}. 
+     * This value is used to obtain a reference to the service info
+     * object via {@link GeoServer#getService(Class)}.
      * </p>
      */
     protected abstract Class<T> getServiceClass();
-    
+
     /**
      * Builds the form for the page.
      * <p>
      * The form uses a {@link CompoundPropertyModel} so in the normal
      * case components do not need a model as its inherited from the parent.
-     * This means that component id's should match the info bean property 
+     * This means that component id's should match the info bean property
      * they correspond to.
      * </p>
      * @param info The service info object.
      * @param form The page form.
      */
     protected abstract void build(IModel info, Form form ); // {
-        
+
     // }
-    
+
     /**
      * Callback for submit.
      * <p>
-     * This implementation simply saves the service. Subclasses may 
+     * This implementation simply saves the service. Subclasses may
      * extend / override if need be.
      * </p>
      * @param info
@@ -259,7 +265,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
                     WorkspaceInfo ws = getCatalog().getWorkspaceByName(workspaceName);
                     return (T) getGeoServer().getService(ws, getServiceClass());
                 }
-                
+
                 return (T) getGeoServer().getService(getServiceClass());
             }
             return service;
@@ -304,17 +310,17 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         public GlobalWorkspacePanel(String id) {
             super(id);
 
-            final DropDownChoice<WorkspaceInfo> wsChoice = new DropDownChoice<WorkspaceInfo>("workspace", 
+            final DropDownChoice<WorkspaceInfo> wsChoice = new DropDownChoice<WorkspaceInfo>("workspace",
                 new ServiceFilteredWorkspacesModel(new WorkspacesModel()), new WorkspaceChoiceRenderer());
             wsChoice.setNullValid(true);
-            wsChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            wsChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {
                     WorkspaceInfo ws = wsChoice.getModelObject();
                     PageParameters pp = new PageParameters();
 
                     if (ws != null) {
-                        pp.put("workspace", ws.getName());
+                        pp.add("workspace", ws.getName());
                     }
 
                     setResponsePage(BaseServiceAdminPage.this.getClass(), pp);

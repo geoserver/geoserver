@@ -20,7 +20,7 @@ GeoServer files
 ```````````````
 
 #. Download the DB2 extension from the `GeoServer download page 
-   <http://geoserver.org/display/GEOS/Download>`_.
+   <http://geoserver.org/download>`_.
 
    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 

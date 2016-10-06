@@ -1,4 +1,5 @@
-/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -27,9 +28,7 @@ public class UniqueResourceIdentifiersProvider extends
         return Arrays.asList(
                 new BeanProperty<UniqueResourceIdentifier>("code", "code"),
                 new BeanProperty<UniqueResourceIdentifier>("namespace", "namespace"),
-                // for the moment we leave this one out, while it's in the XSD no example
-                // ever shows how to use it, it's most likely used somewhere else in INSPIRE, not in DLS
-                // new BeanProperty<UniqueResourceIdentifier>("metadataURL", "metadataURL"),
+                new BeanProperty<UniqueResourceIdentifier>("metadataURL", "metadataURL"),
                 new PropertyPlaceholder<UniqueResourceIdentifier>("remove")
                 );
     }

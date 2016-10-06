@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,19 +12,14 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.security.KeyStore;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.servlet.http.HttpServletResponse;
 
 import org.geoserver.data.test.LiveSystemTestData;
@@ -50,12 +46,11 @@ public class LiveCasData extends LiveSystemTestData {
      * The property file containing the token -> value pairs used to get
      * a CAS server Url
      * 
-     * @return
+     *
      */
     protected File fixture;
     protected URL serverURLPrefix, serviceURL,loginURL, proxyCallbackURLPrefix;    
-    protected File keyStoreFile; 
-    protected X509TrustManager trustManager;
+    protected File keyStoreFile;     
     
 
 
@@ -112,7 +107,7 @@ public class LiveCasData extends LiveSystemTestData {
     /**
      * Looks up the fixture file in the home directory provided that the 
      * @param fixtureId
-     * @return
+     *
      */
     private File lookupFixture(String fixtureId) {
         // first of all, make sure the fixture was not disabled using a system
@@ -160,7 +155,7 @@ public class LiveCasData extends LiveSystemTestData {
         }
                 
         // check connection
-        try {            
+        try {
             HttpURLConnection huc =  (HttpURLConnection)  loginURL.openConnection(); 
             huc.setRequestMethod("GET"); 
             huc.connect(); 
@@ -170,45 +165,15 @@ public class LiveCasData extends LiveSystemTestData {
             }
         } catch (Exception ex) {
             disableTest("problem with cas connection: "+ex.getMessage());
-            return null;            
+            return null;
         }
-                
+
         keyStoreFile = new File(base,"keystore.jks");
         if (keyStoreFile.exists()==false) {
             disableTest("Keystore not found: "+ keyStoreFile.getAbsolutePath());
             return null;
         }
 
-
-        trustManager = new  X509TrustManager() {
-            
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-                //return new java.security.cert.X509Certificate[0];
-                return null;
-            }
-            
-            @Override
-            public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-            }
-            
-            @Override
-            public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-            }
-        }; 
-
-//        HttpsServer httpsServer=null;
-//        try {
-//            httpsServer=createSSLServer();
-//            httpsServer.start();
-//            checkSSLServer();
-//        } catch (Exception ex) {
-//            disableTest("problem simulating ssl server: "+ex.getMessage());
-//            return null;                        
-//        } finally {
-//            if (httpsServer!=null)
-//                httpsServer.stop(0);
-//        }
         
         return fixtureFile;
     }
@@ -267,11 +232,11 @@ public class LiveCasData extends LiveSystemTestData {
     
     
             // setup the trust manager factory
-            //TrustManagerFactory tmf = TrustManagerFactory.getInstance ( TrustManagerFactory.getDefaultAlgorithm() );
-            //tmf.init ( ks );
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance ( TrustManagerFactory.getDefaultAlgorithm() );
+            tmf.init ( ks );
     
             // setup the HTTPS context and parameters
-            sslContext.init ( kmf.getKeyManagers (), new TrustManager[]{trustManager}, null );
+            sslContext.init ( kmf.getKeyManagers (), tmf.getTrustManagers(), null );
             httpsServer.setHttpsConfigurator(  new HttpsConfigurator( sslContext )
             {
                 public void configure ( HttpsParameters params )
@@ -313,16 +278,11 @@ public class LiveCasData extends LiveSystemTestData {
 
     protected void checkSSLServer() throws Exception {
         
-        SSLContext sc = SSLContext.getInstance("SSL");
-        sc.init(null, new TrustManager[] { trustManager} , null);
-        SSLSocketFactory fac = HttpsURLConnection.getDefaultSSLSocketFactory();
-        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         
         URL testSSLURL = new URL(getProxyCallbackURLPrefix().getProtocol(),
                 getProxyCallbackURLPrefix().getHost(),getProxyCallbackURLPrefix().getPort(),"/test");
         HttpURLConnection con = (HttpURLConnection) testSSLURL.openConnection();
         con.getInputStream().close();
-        HttpsURLConnection.setDefaultSSLSocketFactory(fac);        
     }
 
 }

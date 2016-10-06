@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+    <style type="text/css">
+       #processAccessMode {
+         display:block;
+         padding-top: 0.5em;
+       }
+       #processAccessMode input {
+          display: block;
+          float: left;
+          clear:left;
+          padding-top:0.5em;
+          margin-bottom: 0.5em;
+       }
+       #processAccessMode label {
+          clear:right;
+          margin-bottom: 0.5em;
+       }
+     </style>
+     <title><wicket:message key="title">WPS security</wicket:message></title>
+</wicket:head>
+<body>
+<wicket:extend>
+    <form wicket:id="form" style="padding-top: 1em;">
+    	<ul>
+   			<li>
+				<div wicket:id="processFilterTable"></div>
+			</li>
+            <li style="padding-top: 20px;">
+            <fieldset>
+              <legend>
+                <span><wicket:message key="globalLimits">globalLimits</wicket:message></span>
+              </legend>
+                <ul>
+                    <li><label><wicket:message key="maxInputSizeMB">"maxInputSizeMB"</wicket:message></label>
+                        <input type="text" wicket:id="maxComplexInputSize" class="field text" />
+                    </li>
+                </ul>
+            </fieldset>
+            <fieldset>
+              <legend>
+                <span><wicket:message key="processAccessMode">Process access mode</wicket:message></span>
+                <a href="#" wicket:id="processAccessModeHelp" class="help-link"></a>
+              </legend>
+              <span id="processAccessMode" wicket:id="processAccessMode">
+                <input type="radio">mode 1</input>
+              </span>
+            </fieldset>
+            </li>
+		    <li class="button-group selfclear">
+		      <button wicket:id="submit" type="submit"><wicket:message key="submit"/></button>
+		      <button wicket:id="cancel" type="submit"><wicket:message key="cancel"/></button> 
+		    </li>
+		  </ul> 
+	</form>
+	
+    <wicket:fragment wicket:id="enabledFragment">
+        <input type="checkbox" wicket:id="enabled"/>
+    </wicket:fragment>
+    
+    <wicket:fragment wicket:id="rolesFragment">
+       <textarea wicket:id="roles" autocomplete="off" style="width:390px;height:50px;padding:5px;"></textarea>
+    </wicket:fragment>
+    
+    <wicket:fragment wicket:id="linkFragment">
+        <a href="#" wicket:id="link"><wicket:message key="edit">edit...</wicket:message></a>
+    </wicket:fragment>
+    
+</wicket:extend>
+</body>
+</html>

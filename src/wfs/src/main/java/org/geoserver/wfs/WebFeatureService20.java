@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -31,7 +32,7 @@ import org.geotools.xml.transform.TransformerBase;
  * Web Feature Service implementation version 2.0.
  * <p>
  * Each of the methods on this class corresponds to an operation as defined
- * by the Web Feature Specification. See {@link http://www.opengeospatial.org/standards/wfs}
+ * by the Web Feature Specification. See {@link "http://www.opengeospatial.org/standards/wfs"}
  * for more details.
  * </p>
  * @author Justin Deoliveira, OpenGeo

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean class="org.geoserver.map.turbojpeg.TurboJpegStatus"/>   
+
+  <bean id="TurboJPEGMapOutputExclusionFilter" class="org.geoserver.platform.NameExclusionFilter">
+    <property name="beanId" value="JPEGMapResponse" />
+  </bean>
+   <bean id="TurboJPEGMapResponse" class="org.geoserver.map.turbojpeg.TurboJPEGMapResponse">
+      <constructor-arg ref="wms" />
+    </bean>
+</beans>

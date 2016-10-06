@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean class="org.geoserver.platform.ModuleStatusImpl">
+      <constructor-arg index="0" value="gs-wps-cluster-hazelcast"/>
+      <constructor-arg index="1" value="GeoServer Web Processing Service Hazelcast Cluster"/>
+    </bean>
+	<bean id="hazelcastLoader" class="org.geoserver.wps.hz.HazelcastLoader">
+       <constructor-arg ref="resourceLoader"/>
+    </bean>
+    
+    <bean id="hazelcastProcessStatusStore" class="org.geoserver.wps.hz.HazelcastStatusStore">
+       <constructor-arg ref="hazelcastLoader"/>
+    </bean>
+
+</beans>

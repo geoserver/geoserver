@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,7 +20,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.util.IOUtils;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
@@ -119,9 +120,8 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-3306
+     * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
-     * @throws Exception
      */
     @Test
     public void testUerSuppliedTypeNameNamespace() throws Exception {
@@ -135,9 +135,8 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
     }
 
     /**
-     * See http://jira.codehaus.org/browse/GEOS-3306
+     * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
-     * @throws Exception
      */
     @Test
     public void testUerSuppliedTypeNameDefaultNamespace() throws Exception {
@@ -166,7 +165,6 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
      * addresses the typeName either by qualifying it as declared in the getcaps document, or
      * providing an alternate prefix with its corresponding prefix to namespace mapping.
      * 
-     * @throws Exception
      */
     @Test
     public void testCiteCompliance() throws Exception {
@@ -212,9 +210,8 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
     }
     
     /**
-     * See http://jira.codehaus.org/browse/GEOS-3306
+     * See https://osgeo-org.atlassian.net/browse/GEOS-3306
      * 
-     * @throws Exception
      */
     @Test
     public void testPrefixedGetStrictCite() throws Exception {
@@ -255,7 +252,13 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
         XMLAssert.assertXpathNotExists("//xsd:element[@name = 'name']", dom);
         XMLAssert.assertXpathNotExists("//xsd:element[@name = 'description']", dom);
         
+        wfs = getWFS();
+        gml = wfs.getGML().get(WFSInfo.Version.V_11);
         gml.setOverrideGMLAttributes(true);
+        getGeoServer().save(wfs);
+        wfs = getWFS();
+        gml = wfs.getGML().get(WFSInfo.Version.V_11);
+        assertTrue(gml.getOverrideGMLAttributes());
         dom = getAsDOM("ows?service=WFS&version=1.1.0&request=DescribeFeatureType" +
                 "&typename=" + getLayerId(CiteTestData.PRIMITIVEGEOFEATURE));
         XMLAssert.assertXpathExists("//xsd:element[@name = 'name']", dom);

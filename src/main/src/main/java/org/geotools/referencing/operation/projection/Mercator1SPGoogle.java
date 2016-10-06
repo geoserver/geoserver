@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -18,7 +19,7 @@ import org.opengis.referencing.operation.MathTransform;
  * as spherical coordinates, that is, avoiding to do any conversion from ellipsoid to the sphere.
  * @author Andrea Aime
  * @deprecated Since GeoTools 2.4.0 there is no need to use this custom projection anymore, use 
- *             the WKT definition suggested in {@link http://jira.codehaus.org/browse/GEOT-1511}
+ *             the WKT definition suggested in {@link "https://osgeo-org.atlassian.net/browse/GEOT-1511"}
  *             instead
  */
 public class Mercator1SPGoogle extends Mercator {

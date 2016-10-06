@@ -2,7 +2,7 @@
 
 ; Define your application name
 !define APPNAME "GeoServer"
-!define VERSION "2.4-SNAPSHOT"
+!define VERSION "2.10-SNAPSHOT"
 ;!define LONGVERSION "2.0.0.0"
 !define APPNAMEANDVERSION "${APPNAME} ${VERSION}"
 
@@ -53,7 +53,7 @@ Var PortHWND
 ;Version Information (Version tab for EXE properties)
 ;VIProductVersion ${LONGVERSION}
 ;VIAddVersionKey ProductName "${APPNAME}"
-;VIAddVersionKey LegalCopyright "Copyright (c) 1999 - 2011 The Open Planning Project"
+;VIAddVersionKey LegalCopyright "Copyright (c) 1999-2016 Open Source Geospatial Foundation"
 ;VIAddVersionKey FileDescription "GeoServer Installer"
 ;VIAddVersionKey ProductVersion "${VERSION}"
 ;VIAddVersionKey FileVersion "${VERSION}"
@@ -755,12 +755,14 @@ Section "Main" SectionMain
   CreateDirectory "$INSTDIR"
   SetOutPath "$INSTDIR"
   File /a start.jar
+  File /a start.ini
   File /a GPL.txt
   File /a LICENSE.txt
   File /a README.txt
   File /a RUNNING.txt
   File /r data_dir
   File /r etc
+  File /r modules
   File /r lib
   File /r logs
   File /r resources
@@ -794,6 +796,8 @@ Section "Main" SectionMain
     SetOutPath "$INSTDIR\wrapper\lib"
     File /a wrapper.jar
     File /a wrapper.dll
+
+    CreateDirectory "$INSTDIR\work"
 	
     ; Install the service (and start it)
     nsExec::Exec "$INSTDIR\wrapper.exe -it ./wrapper/wrapper.conf wrapper.java.additional.4=-Djetty.port=$Port"
@@ -802,7 +806,8 @@ Section "Main" SectionMain
 
   ; Security (of sorts)
   ${If} $IsManual == 1 ; manual
-    AccessControl::GrantOnFile "$INSTDIR\" "(BU)" "FullAccess"
+    AccessControl::GrantOnFile "$INSTDIR\logs" "(S-1-5-32-545)" "FullAccess"
+    AccessControl::GrantOnFile "$INSTDIR\data_dir" "(S-1-5-32-545)" "FullAccess"
   ${ElseIf} $IsManual == 0 ; service
     AccessControl::GrantOnFile "$INSTDIR\logs" "NT AUTHORITY\Network Service" "FullAccess"
     AccessControl::GrantOnFile "$DataDir" "NT AUTHORITY\Network Service" "FullAccess"
@@ -850,7 +855,7 @@ Section -FinishSection
   ${ElseIf} $IsManual == 1 ; manual
 
     FileOpen $9 startup.bat w ; Opens a Empty File and fills it
-    FileWrite $9 'call "$JavaHome\bin\java.exe" -DGEOSERVER_DATA_DIR="$DataDir" -Xmx512m -XX:MaxPermSize=128m -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Djetty.port=$Port -Djetty.logs="$INSTDIR\logs" -jar "$INSTDIR\start.jar"'
+    FileWrite $9 'call "$JavaHome\bin\java.exe" -DGEOSERVER_DATA_DIR="$DataDir" -Xmx512m -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Djetty.base="$INSTDIR" -Djetty.port=$Port -Djetty.logs="$INSTDIR\logs" -jar "$INSTDIR\start.jar"'
     FileClose $9 ; Closes the file
 
     FileOpen $9 shutdown.bat w ; Opens a Empty File and fills it
@@ -859,6 +864,7 @@ Section -FinishSection
 
   ${EndIf}
 
+  SetOutPath "$INSTDIR"
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Start GeoServer.lnk" "$INSTDIR\bin\startup.bat" \
                  "" "$INSTDIR\gs.ico" 0
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Stop GeoServer.lnk" "$INSTDIR\bin\shutdown.bat" \
@@ -919,6 +925,7 @@ Section Uninstall
   RMDir /r "$INSTDIR\data_dir"
   RMDir /r "$INSTDIR\bin"
   RMDir /r "$INSTDIR\etc"
+  RMDir /r "$INSTDIR\modules"
   RMDir /r "$INSTDIR\lib"
   RMDir /r "$INSTDIR\logs"
   RMDir /r "$INSTDIR\resources"

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -35,15 +36,15 @@ import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.xml.NoExternalEntityResolver;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.vfny.geoserver.wcs.WcsException;
 import org.w3c.dom.Document;
-
-import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetCoverageTest extends AbstractGetCoverageTest {
 
@@ -51,13 +52,15 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
             MockData.SF_PREFIX);
 
     private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
+    
+    private static final QName SPATIO_TEMPORAL = new QName(MockData.SF_URI, "spatio-temporal", MockData.SF_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, getCatalog());
         testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
-
+        testData.addRasterLayer(SPATIO_TEMPORAL, "spatio-temporal.zip", null, null, SystemTestData.class, getCatalog());
     }
 
     @Test
@@ -268,6 +271,16 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
     }
 
     @Test
+    public void testNotExistent() throws Exception {
+        String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
+                + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326";
+        Document dom = getAsDOM("wcs?identifier=NotThere" + queryString);
+        // print(dom);
+        checkOws11Exception(dom, "InvalidParameterValue", "identifier");
+    }
+
+    
+    @Test
     public void testLayerQualified() throws Exception {
         String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
                 + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326";
@@ -456,11 +469,51 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         RenderedImage image = reader.read(0);
     }
     
+    @Test
+    public void testEntityExpansion() throws Exception {
+        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE wcs:GetCoverage [<!ELEMENT wcs:GetCoverage (ows:Identifier) >\n"
+                + "  <!ATTLIST wcs:GetCoverage\n"
+                + "    service CDATA #FIXED \"WCS\"\n"
+                + "            version CDATA #FIXED \"1.1.1\"\n"
+                + "            xmlns:ows CDATA #FIXED \"http://www.opengis.net/ows/1.1\"\n"
+                + "            xmlns:wcs CDATA #FIXED \"http://www.opengis.net/wcs/1.1.1\">\n"
+                + "  <!ELEMENT ows:Identifier (#PCDATA) >\n"
+                + "  <!ENTITY xxe SYSTEM \"FILE:///file/not/there?.XSD\" >]>\n"
+                + "  <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\" "
+                + "                   xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n"
+                + "                   xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\">\n"
+                + "   <ows:Identifier>&xxe;</ows:Identifier>\n" + "  </wcs:GetCoverage>";
+
+        Document dom = postAsDOM("wcs", request);
+        // print(dom);
+        String error = xpath.evaluate("//ows:ExceptionText", dom);
+        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        
+        request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE wcs:GetCoverage [<!ELEMENT wcs:GetCoverage (ows:Identifier) >\n"
+                + "  <!ATTLIST wcs:GetCoverage\n"
+                + "    service CDATA #FIXED \"WCS\"\n"
+                + "            version CDATA #FIXED \"1.1.1\"\n"
+                + "            xmlns:ows CDATA #FIXED \"http://www.opengis.net/ows/1.1\"\n"
+                + "            xmlns:wcs CDATA #FIXED \"http://www.opengis.net/wcs/1.1.1\">\n"
+                + "  <!ELEMENT ows:Identifier (#PCDATA) >\n"
+                + "  <!ENTITY xxe SYSTEM \"jar:file:///file/not/there?.xsd\" >]>\n"
+                + "  <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\" "
+                + "                   xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n"
+                + "                   xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\">\n"
+                + "   <ows:Identifier>&xxe;</ows:Identifier>\n" + "  </wcs:GetCoverage>";
+
+        dom = postAsDOM("wcs", request);
+        // print(dom);
+        error = xpath.evaluate("//ows:ExceptionText", dom);
+        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+    }
+
     /**
      * This tests just ended up throwing an exception as the coverage being encoded
      * was too large due to a bug in the scales estimation
      * 
-     * @throws Exception
      */
     @Test
     public void testRotatedPost() throws Exception {
@@ -506,7 +559,6 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
      * This tests just ended up throwing an exception as the coverage being encoded
      * was too large due to a bug in the scales estimation
      * 
-     * @throws Exception
      */
     @Test
     public void testRotatedGet() throws Exception {
@@ -528,6 +580,61 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         // check the image is suitably small (without requiring an exact size)
         assertTrue(image.getWidth() < 1000);
         assertTrue(image.getHeight() < 1000);
+    }
+
+    @Test
+    public void testBicubicInterpolation() throws Exception {
+        this.testInterpolationMethods("cubic");
+    }
+
+    @Test
+    public void testBilinearInterpolation() throws Exception {
+        this.testInterpolationMethods("linear");
+    }
+
+    @Test
+    public void testNearestNeighborInterpolation() throws Exception {
+        this.testInterpolationMethods("nearest");
+    }
+
+    @Test
+    public void testUnknownInterpolation() throws Exception {
+        this.testInterpolationMethods("unknown");
+    }
+
+    @Test
+    public void testEmptyInterpolation() throws Exception {
+        this.testInterpolationMethods("");
+    }
+    
+    @Test
+    public void testDeferredLoading() throws Exception {
+        Map<String, Object> raw = baseMap();
+        final String getLayerId = getLayerId(SPATIO_TEMPORAL);
+        raw.put("identifier", getLayerId);
+        raw.put("format", "image/tiff");
+        raw.put("BoundingBox", "-90,-180,90,180,urn:ogc:def:crs:EPSG:6.6:4326");
+        raw.put("store", "false");
+        raw.put("GridBaseCRS", "urn:ogc:def:crs:EPSG:6.6:4326");
+
+        GridCoverage[] coverages = executeGetCoverageKvp(raw);
+        assertEquals(1, coverages.length);
+        assertDeferredLoading(coverages[0].getRenderedImage());
+    }
+
+    private void testInterpolationMethods(String method) throws Exception {
+        String queryString = "wcs?identifier=" + getLayerId(MOSAIC) + "&request=getcoverage"
+                + "&service=wcs&version=1.1.1&&format=image/tiff"
+                + "&BoundingBox=0,0,1,1,urn:ogc:def:crs:EPSG:6.6:4326"
+                + "&RangeSubset=contents:" + method;
+
+        MockHttpServletResponse response = getAsServletResponse(queryString);
+        try {
+            this.getMultipart(response);
+            assertEquals(response.getStatus(), 200);
+        } catch (ClassCastException e) {
+            assertEquals("application/xml", response.getContentType());
+        }
     }
 
 }

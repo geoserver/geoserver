@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -206,6 +207,10 @@ public class StoredQuery {
             
             //parse
             Parser p = new Parser(new WFSConfiguration());
+            //"inject" namespace mappings
+            if (catalog != null) {
+                p.getNamespaces().add(new CatalogNamespaceSupport(catalog));
+            }
             try {
                 QueryType compiled = 
                     (QueryType) p.parse(new ByteArrayInputStream(sb.toString().getBytes()));

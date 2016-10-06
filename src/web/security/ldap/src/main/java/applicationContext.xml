@@ -1,0 +1,35 @@
+<!-- 
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-web-sec-ldap"/>
+    <constructor-arg index="1" value="GeoServer Web UI Security LDAP"/>
+  </bean>
+  <!-- ui auth provider panel info-->
+  <bean id="ldapAuthPanelInfo" class="org.geoserver.web.security.ldap.LDAPAuthProviderPanelInfo">
+        <property name="id" value="security.ldapAuthProvider" />
+        <property name="shortTitleKey" value="LDAPAuthProviderPanel.short"/>
+        <property name="titleKey" value="LDAPAuthProviderPanel.title"/>
+        <property name="descriptionKey" value="LDAPAuthProviderPanel.description"/>
+    </bean>
+  
+  <!-- ui user group service panel info-->
+  <bean id="ldapUserGroupPanelInfo" class="org.geoserver.web.security.ldap.LDAPUserGroupServicePanelInfo">
+    <property name="id" value="security.ldapUserGroupService" />
+    <property name="shortTitleKey" value="LDAPUserGroupServicePanel.short"/>
+    <property name="titleKey" value="LDAPUserGroupServicePanel.title"/>
+    <property name="descriptionKey" value="LDAPUserGroupServicePanel.description"/>
+  </bean>
+  
+  <!-- LDAP role service panel infos -->
+    <bean id="ldapRoleServicePanelInfo" class="org.geoserver.web.security.ldap.LDAPRoleServicePanelInfo">
+        <property name="id" value="security.ldapRoleService" />
+        <property name="shortTitleKey" value="LDAPRoleServicePanel.short"/>
+        <property name="titleKey" value="LDAPRoleServicePanel.title"/>
+        <property name="descriptionKey" value="LDAPRoleServicePanel.description"/>
+    </bean>
+</beans>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -111,7 +112,7 @@ public class LegacyConfigurationImporter {
         info.setVerboseExceptions( get( global, "verboseExceptions", boolean.class ) );
         info.setNumDecimals( get( global, "numDecimals", int.class, 4 ) );
         info.setCharset( (String) global.get( "charSet" ) );
-        info.setUpdateSequence( get( global, "updateSequence", int.class ) );
+        info.setUpdateSequence( get( global, "updateSequence", int.class ).longValue() );
         info.setOnlineResource( get( global, "onlineResource", String.class ) );
         info.setProxyBaseUrl( get( global, "ProxyBaseUrl", String.class ) );
         

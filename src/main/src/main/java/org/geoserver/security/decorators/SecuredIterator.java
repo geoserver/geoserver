@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -20,7 +21,7 @@ import org.opengis.filter.Filter;
  * @author Andrea Aime - GeoSolutions
  *
  * @deprecated This class is not longer used, {@link SecuredFeatureIterator} and 
- *      {@ SecuredSimpleFeatureIterator} are used instead.
+ *      {@link SecuredSimpleFeatureIterator} are used instead.
  */
 public class SecuredIterator extends AbstractDecorator<Iterator> implements Iterator,FeatureIterator {
     WrapperPolicy policy;

@@ -1,44 +1,51 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.xml;
 
-import static org.geoserver.security.xml.XMLSecurityConfigException.*;
-import static org.junit.Assert.*;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.createNiceMock;
+import static org.easymock.classextension.EasyMock.replay;
+import static org.geoserver.security.xml.XMLSecurityConfigException.CHECK_INTERVAL_INVALID;
+import static org.geoserver.security.xml.XMLSecurityConfigException.FILENAME_CHANGE_INVALID_$2;
+import static org.geoserver.security.xml.XMLSecurityConfigException.FILENAME_REQUIRED;
+import static org.geoserver.security.xml.XMLSecurityConfigException.FILE_CREATE_FAILED_$1;
+import static org.geoserver.security.xml.XMLSecurityConfigException.ROLE_SERVICE_NOT_EMPTY_$1;
+import static org.geoserver.security.xml.XMLSecurityConfigException.USERGROUP_SERVICE_NOT_EMPTY_$1;
+import static org.geoserver.security.xml.XMLSecurityConfigException.USERGROUP_SERVICE_REQUIRED;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import junit.framework.Assert;
-
+import org.geoserver.platform.resource.Files;
 import org.geoserver.security.GeoServerRoleService;
-import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
-import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
-import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.security.validation.SecurityConfigValidatorTest;
 import org.geotools.util.logging.Logging;
+import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest {
-
+    
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
     
     static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
@@ -147,6 +154,8 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         expect(activeRoleService.getName()).andReturn("foo").anyTimes();
         expect(secMgr.getActiveRoleService()).andReturn(activeRoleService).anyTimes();
         
+        expect(secMgr.role()).andReturn(Files.asResource(tempFolder.getRoot())).anyTimes();
+        
         expect(secMgr.listRoleServices()).andReturn(new TreeSet<String>(
             Arrays.asList("test1", "test2", "test3", "test4"))).anyTimes();
         
@@ -178,7 +187,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
 
         xmlConfig = (XMLRoleServiceConfig) 
                 createRoleConfig("test3",XMLRoleService.class,XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,                        
-                        new File(getSecurityManager().getRoleRoot(),"test3.xml").getAbsolutePath());
+                        new File(getSecurityManager().role().dir(),"test3.xml").getAbsolutePath());
         try {
             validator.validateRemoveRoleService(xmlConfig);
             
@@ -324,6 +333,8 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         
         expect(secMgr.listUserGroupServices()).andReturn(new TreeSet<String>(
                 Arrays.asList("test1", "test2", "testModify"))).anyTimes();
+        
+        expect(secMgr.userGroup()).andReturn(Files.asResource(tempFolder.getRoot())).anyTimes();
 
         expect(secMgr.loadPasswordEncoder(getPlainTextPasswordEncoder().getName()))
             .andReturn(getPlainTextPasswordEncoder()).anyTimes();
@@ -359,7 +370,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         xmlConfig = (XMLUserGroupServiceConfig) 
                 createUGConfig("test3", XMLUserGroupService.class, 
                 getPlainTextPasswordEncoder().getName(),PasswordValidator.DEFAULT_NAME,
-                new File(getSecurityManager().getUserGroupRoot(),"test3.xml").getAbsolutePath());
+                new File(getSecurityManager().userGroup().dir(),"test3.xml").getAbsolutePath());
 
         try {
             validator.validateRemoveUserGroupService(xmlConfig);

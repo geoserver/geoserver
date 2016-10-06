@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+  <ul>
+    <li>
+      <div wicket:id="feedback"></div>
+    </li>
+    <li class="choiceList">
+      <input id="jndi" wicket:id="jndi" type="checkbox"></input>
+      <label for="jndi">
+        <wicket:message key="jndi"></wicket:message>
+      </label>
+    </li>
+    <li>
+      <div wicket:id="cxPanelContainer">
+       <div wicket:id="cxPanel">
+       </div>
+    </div>
+    </li>
+    <li>
+      <div class="button-group selfclear">
+        <a wicket:id="cxTest"><span><wicket:message key="testConnection"></wicket:message></span></a>
+      </div>
+    </li>
+  </ul>
+</wicket:panel>
+</body>
+</html>

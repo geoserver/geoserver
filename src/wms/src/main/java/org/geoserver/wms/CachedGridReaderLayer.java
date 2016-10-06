@@ -1,10 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
 
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.styling.Style;
 import org.opengis.parameter.GeneralParameterValue;
@@ -17,20 +18,20 @@ import org.opengis.parameter.GeneralParameterValue;
  */
 public class CachedGridReaderLayer extends GridReaderLayer {
 
-    public CachedGridReaderLayer(AbstractGridCoverage2DReader reader, Style style) {
+    public CachedGridReaderLayer(GridCoverage2DReader reader, Style style) {
         super(reader, style);
     }
 
-    public CachedGridReaderLayer(AbstractGridCoverage2DReader reader, Style style, String title) {
+    public CachedGridReaderLayer(GridCoverage2DReader reader, Style style, String title) {
         super(reader, style, title);
     }
 
-    public CachedGridReaderLayer(AbstractGridCoverage2DReader reader, Style style,
+    public CachedGridReaderLayer(GridCoverage2DReader reader, Style style,
             GeneralParameterValue[] params) {
         super(reader, style, params);
     }
 
-    public CachedGridReaderLayer(AbstractGridCoverage2DReader reader, Style style, String title,
+    public CachedGridReaderLayer(GridCoverage2DReader reader, Style style, String title,
             GeneralParameterValue[] params) {
         super(reader, style, title, params);
     }

@@ -12,3 +12,4 @@ This section provides an overview of how RESTful services work in GeoServer.
    implementing/
    implementing-map/
    implementing-reflection/
+   implementing-mapper/

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.platform.ServiceException;
@@ -35,6 +37,67 @@ import org.geotools.util.Version;
  */
 public class GetFeatureInfoKvpReader extends KvpRequestReader {
 
+    /**
+     * Overrides GetMapKvpRequestReader to filter not queryable objects.
+     */
+    class GetFeatureInfoKvpRequestReader extends GetMapKvpRequestReader {
+        public GetFeatureInfoKvpRequestReader(WMS wms) {
+            super(wms);
+        }
+        @Override
+        protected boolean skipResource(Object theResource) {
+            if (theResource instanceof LayerGroupInfo) {
+                LayerGroupInfo groupInfo = (LayerGroupInfo)theResource;
+                if (groupInfo.isQueryDisabled()) {
+                    return true;
+                }
+            }
+            else if (theResource instanceof LayerInfo) {
+                LayerInfo layerInfo = (LayerInfo)theResource;
+                if (!wms.isQueryable(layerInfo)) {
+                    return true;
+                }
+            }
+            else if (theResource instanceof MapLayerInfo) {
+                LayerInfo layerInfo = ((MapLayerInfo)theResource).getLayerInfo();
+                if (!wms.isQueryable(layerInfo)) {
+                    return true;
+                }
+            }
+            return super.skipResource(theResource);
+        }
+    }
+    /**
+     * Overrides MapLayerInfoKvpParser to filter not queryable objects.
+     */
+    class GetFeatureInfoKvpParser extends MapLayerInfoKvpParser {
+        public GetFeatureInfoKvpParser(String key, WMS wms) {
+            super(key, wms);
+        }
+        @Override
+        protected boolean skipResource(Object theResource) {
+            if (theResource instanceof LayerGroupInfo) {
+                LayerGroupInfo groupInfo = (LayerGroupInfo)theResource;
+                if (groupInfo.isQueryDisabled()) {
+                    return true;
+                }
+            }
+            else if (theResource instanceof LayerInfo) {
+                LayerInfo layerInfo = (LayerInfo)theResource;
+                if (!wms.isQueryable(layerInfo)) {
+                    return true;
+                }
+            }
+            else if (theResource instanceof MapLayerInfo) {
+                LayerInfo layerInfo = ((MapLayerInfo)theResource).getLayerInfo();
+                if (!wms.isQueryable(layerInfo)) {
+                    return true;
+                }
+            }            
+            return super.skipResource(theResource);
+        }
+    }
+    
     /** GetMap request reader used to parse the map context parameters needed. */
     private GetMapKvpRequestReader getMapReader;
 
@@ -42,7 +105,7 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
 
     public GetFeatureInfoKvpReader(WMS wms) {
         super(GetFeatureInfoRequest.class);
-        getMapReader = new GetMapKvpRequestReader(wms);
+        getMapReader = new GetFeatureInfoKvpRequestReader(wms);
         setWMS(wms);
     }
 
@@ -78,13 +141,13 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
             // in this case we assume all layers in SLD body are to be queried (GS own extension)(
             request.setQueryLayers(getMapLayers);
         } else {
-            request.setQueryLayers(new MapLayerInfoKvpParser("QUERY_LAYERS", wms).parse((String) rawKvp
+            request.setQueryLayers(new GetFeatureInfoKvpParser("QUERY_LAYERS", wms).parse((String) rawKvp
                     .get("QUERY_LAYERS")));
         }
         
         if (request.getQueryLayers().isEmpty()) {
-            throw new ServiceException("No QUERY_LAYERS has been requested, or no "
-                    + "queriable layer in the request anyways");
+            throw new ServiceException("Either no layer was queryable, or no layers were specified using QUERY_LAYERS",
+                    WMSErrorCode.LAYER_NOT_QUERYABLE.get(request.getVersion()), "QUERY_LAYERS");
         }
         
         if(kvp.containsKey("propertyName")) {
@@ -113,14 +176,6 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
                     + "It should be a proper subset of those instead");
         }
 
-        for (MapLayerInfo l : request.getQueryLayers()) {
-            LayerInfo layerInfo = l.getLayerInfo();
-            if (!wms.isQueryable(layerInfo)) {
-                throw new ServiceException("Layer " + l.getName() + " is not queryable",
-                    WMSErrorCode.LAYER_NOT_QUERYABLE.get(request.getVersion()), "QUERY_LAYERS");
-            }
-        }
-
         String format = (String) (kvp.containsKey("INFO_FORMAT") ? kvp.get("INFO_FORMAT") : null);
 
         if (format == null) {
@@ -131,6 +186,8 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
                 throw new ServiceException("Invalid format '" + format
                         + "', supported formats are " + infoFormats, "InvalidFormat", "info_format");
             }
+            if (wms.getAllowedFeatureInfoFormats().contains(format)==false)
+                throw wms.unallowedGetFeatureInfoFormatException(format);
         }
 
         request.setInfoFormat(format);

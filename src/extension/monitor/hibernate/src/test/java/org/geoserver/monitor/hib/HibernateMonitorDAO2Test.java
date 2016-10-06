@@ -1,25 +1,30 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.monitor.hib;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.geoserver.monitor.MonitorTestData.assertCovered;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.hibernate.HibUtil;
 import org.geoserver.monitor.Filter;
+import org.geoserver.monitor.MonitorConfig.Mode;
 import org.geoserver.monitor.MonitorDAOTestSupport;
 import org.geoserver.monitor.Query;
-import org.geoserver.monitor.RequestData;
-import org.geoserver.monitor.RequestDataVisitor;
-import org.geoserver.monitor.MonitorConfig.Mode;
 import org.geoserver.monitor.Query.Comparison;
 import org.geoserver.monitor.Query.SortOrder;
+import org.geoserver.monitor.RequestData;
+import org.geoserver.monitor.RequestDataVisitor;
 import org.geoserver.monitor.hib.HibernateMonitorDAO2.Sync;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
@@ -37,6 +42,23 @@ public class HibernateMonitorDAO2Test extends MonitorDAOTestSupport {
 
 	@BeforeClass
     public static void initHibernate() throws Exception {
+	    
+	    // setup in memory h2 db
+	    Properties p = new Properties();
+	    p.put("driver", "org.h2.Driver");
+	    p.put("url", "jdbc:h2:mem:monitoring");
+	    File file = new File("./target/monitoring/db.properties");
+	    FileOutputStream fos = null;
+	    try {
+	        if(!file.getParentFile().exists()) {
+	            assertTrue(file.getParentFile().mkdirs());
+	        }
+	        fos = new FileOutputStream(file);
+	        p.store(fos, null);
+	    } finally {
+	        IOUtils.closeQuietly(fos);
+	    }
+	    
         ctx = new XmlWebApplicationContext() {
             public String[] getConfigLocations() {
                 return new String[]{
@@ -48,7 +70,7 @@ public class HibernateMonitorDAO2Test extends MonitorDAOTestSupport {
         HibernateMonitorDAO2 hibdao = (HibernateMonitorDAO2) ctx.getBean("hibMonitorDAO"); 
         hibdao.setSync(Sync.SYNC);
         hibdao.setMode(Mode.HYBRID);
-        dao = hibdao; 
+        dao = hibdao;
         
         setUpData();
     }

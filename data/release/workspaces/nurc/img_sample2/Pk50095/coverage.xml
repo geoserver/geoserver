@@ -5,8 +5,9 @@
   <namespace>
     <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ff8</id>
   </namespace>
-  <title>Pk50095 is a A raster file accompanied by a spatial data file</title>
+  <title>Pk50095</title>
   <description>Generated from img_sample2</description>
+  <abstract>Pk50095 is a raster file accompanied by a spatial data file.</abstract>
   <keywords>
     <string>WCS</string>
     <string>img_sample2</string>
@@ -22,7 +23,7 @@
     AXIS[&quot;Geodetic longitude&quot;, EAST], 
     AXIS[&quot;Geodetic latitude&quot;, NORTH], 
     AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]], 
-  PROJECTION[&quot;Transverse_Mercator&quot;], 
+  PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]], 
   PARAMETER[&quot;central_meridian&quot;, 15.0], 
   PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
   PARAMETER[&quot;scale_factor&quot;, 0.9996], 
@@ -47,7 +48,7 @@
     <maxy>46.91359611878293</maxy>
     <crs>EPSG:4326</crs>
   </latLonBoundingBox>
-  <enabled>false</enabled>
+  <enabled>true</enabled>
   <metadata>
     <entry key="dirName">img_sample</entry>
   </metadata>
@@ -64,7 +65,7 @@
       <scaleX>42.34136799999989</scaleX>
       <scaleY>-42.34136800000026</scaleY>
       <shearX>0.0</shearX>
-      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
       <translateX>347671.1015525911</translateX>
       <translateY>5196940.182175256</translateY>
     </transform>
@@ -122,7 +123,7 @@
   <parameters>
     <entry>
       <string>ReadGridGeometry2D</string>
-      <string></string>
+      <null/>
     </entry>
   </parameters>
 </coverage>

@@ -3,7 +3,16 @@ target
 .settings
 .classpath
 .project
+.metadata
+.DS_Store
 *.class
 *.pyc
 
 /.metadata/
+
+# Intellij
+.idea/
+*.iml
+
+# Cucumber Testing artifacts
+cucumber-report

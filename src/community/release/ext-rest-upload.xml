@@ -1,0 +1,23 @@
+<assembly>
+  <id>rest-upload-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>*rest-upload*</include>
+	<include>*zoo*</include>
+	<include>*http*</include>
+	<include>*noggit*</include>
+	<include>*wstx*</include>
+      </includes>
+      <excludes>
+        <exclude>*commons-httpclient*</exclude>
+      </excludes>	  
+    </fileSet>
+  </fileSets>
+</assembly>

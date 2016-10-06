@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -59,14 +60,6 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
 
     public void setMaxOutputMemory(long maxOutputSize) {
         this.maxOutputMemory = maxOutputSize;
-    }
-
-    public boolean isGmlPrefixing() {
-        return gmlPrefixing;
-    }
-
-    public void setGmlPrefixing(boolean gmlPrefixing) {
-        this.gmlPrefixing = gmlPrefixing;
     }
 
     public boolean isSubsamplingEnabled() {

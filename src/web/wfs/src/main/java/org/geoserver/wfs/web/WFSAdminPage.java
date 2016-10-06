@@ -1,22 +1,24 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.web;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.RadioGroup;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -24,14 +26,21 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
+import org.geoserver.web.wicket.LiveCollectionModel;
+import org.geoserver.web.wicket.SRSListTextArea;
 import org.geoserver.wfs.GMLInfo;
-import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.GMLInfo.SrsNameStyle;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.response.ShapeZipOutputFormat;
 
 @SuppressWarnings("serial")
@@ -57,7 +66,8 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void build(final IModel info, Form form) {
         // max features
-        form.add( new TextField<Integer>( "maxFeatures" ).add(new MinimumValidator<Integer>(0)) );
+        form.add( new TextField<Integer>( "maxFeatures" ).add(RangeValidator.minimum(0)) );
+        form.add( new TextField<Integer>("maxNumberOfFeaturesForPreview") );
         form.add( new CheckBox("featureBounding") );
         form.add( new CheckBox("hitsIgnoreMaxFeatures"));
         
@@ -110,11 +120,11 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
             // See discussion in GEOS-4503
             GeoServerResourceLoader resourceLoader = GeoServerExtensions
                     .bean(GeoServerResourceLoader.class);
-            File esriProjs = resourceLoader.find("user_projections", "esri.properties");
-            if (null == esriProjs) {
+            Resource esriProjs = resourceLoader.get(Paths.path("user_projections", "esri.properties"));
+            if (esriProjs.getType() != Type.RESOURCE) {
                 defaultPrjFormat.setEnabled(false);
                 defaultPrjFormat.getModel().setObject(Boolean.FALSE);
-                defaultPrjFormat.add(new AttributeModifier("title", true, new Model(
+                defaultPrjFormat.add(new AttributeModifier("title", new Model(
                         "No esri.properties file "
                                 + "found in the data directory's user_projections folder. "
                                 + "This option is not available")));
@@ -123,6 +133,18 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
             LOGGER.log(Level.INFO, e.getMessage(), e);
         }
         
+        // other srs list
+        TextArea srsList = new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel(info, "sRS")));
+        form.add(srsList);
+        form.add(new AjaxLink("otherSRSHelp") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                dialog.showInfo(target, 
+                    new StringResourceModel("otherSRS", WFSAdminPage.this, null), 
+                    new StringResourceModel("otherSRS.message",WFSAdminPage.this, null));
+            }
+        });
+
     }
     
     static class GMLPanel extends Panel {

@@ -1,0 +1,20 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <wicket:panel>         
+      <h3><wicket:message key="titleUpload"></wicket:message></h3>
+      <div wicket:id="feedback"></div>
+  
+      <form enctype="multipart/form-data" method="post">
+          <ul>          
+            <li>
+              <label><wicket:message key="directory"></wicket:message></label>
+              <input wicket:id="directory" size="40" type="text">
+              <br/><small><wicket:message key="createDirectory"></wicket:message></small>
+            </li>
+            <li>
+              <label><wicket:message key="fileLocal"></wicket:message></label>
+              <input wicket:id="file" size="40" type="file">
+            </li>
+          </ul>
+      </form>
+ </wicket:panel>
+</html>

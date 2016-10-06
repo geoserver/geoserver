@@ -16,5 +16,6 @@
     <entry key="database">cite</entry>
     <entry key="dbtype">postgisng</entry>
     <entry key="Estimated extends">false</entry>
+    <entry key="validate connections">true</entry> 
   </connectionParameters>
 </dataStore>

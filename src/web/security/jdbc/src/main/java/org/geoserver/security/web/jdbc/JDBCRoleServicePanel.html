@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+    <ul>
+      <li>
+        <fieldset>
+          <legend>
+            <span><wicket:message key="connection"></wicket:message></span>
+          </legend>
+          <div wicket:id="cx"></div>
+        </fieldset>
+      </li>
+      <li>
+        <fieldset>
+          <legend>
+            <span><wicket:message key="databaseInit"></wicket:message></span>
+          </legend>
+          <ul>
+          <li class="choiceItem">
+            <input id="createTables" wicket:id="creatingTables" type="checkbox"></input>
+            <label for="creatingTables">
+              <wicket:message key="createTables"></wicket:message>
+            </label>
+          </li>
+          <li>
+            <label for="propertyFileNameDDL"><wicket:message key="propertyFileNameDDL"></wicket:message></label>
+            <input id="propertyFileNameDDL" wicket:id="propertyFileNameDDL" type="text" class="text"></input>
+          </li>
+          <li>
+            <label for="propertyFileNameDML"><wicket:message key="propertyFileNameDML"></wicket:message></label>
+            <input id="propertyFileNameDML" wicket:id="propertyFileNameDML" type="text" class="text"></input>
+          </li>
+          </ul>
+        </fieldset>
+      </li>
+    </ul>
+</wicket:extend>
+</body>
+</html>

@@ -9,8 +9,8 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>script-core*</include>
-        <include>script-groovy*</include>
+        <include>gs-script-core*</include>
+        <include>gs-script-groovy*</include>
         <include>geoscript-groovy*</include>
         <include>groovy*</include>
         <include>gt-brewer*</include>
@@ -33,6 +33,7 @@
         <include>mysql-connector-java*</include>
         <include>opencsv*</include>
         <include>scala-library*</include>
+        <include>spatialite-jdbc-*</include>
         <include>xmlgraphics-commons*</include>
       </includes>
     </fileSet>

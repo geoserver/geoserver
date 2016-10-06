@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<wfs:Transaction service="WFS" version="2.0.0"
+  xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:cite="http://www.opengis.net/cite">
+  <wfs:Insert>
+    <cite:curvepolygons fid="cp.4">
+      <cite:geom>
+       <gml:Polygon srsName="urn:x-ogc:def:crs:EPSG:4326"
+          srsDimension="2">
+          <gml:exterior>
+            <gml:Ring>
+              <gml:curveMember>
+                <gml:Curve>
+                  <gml:segments>
+                    <gml:ArcString interpolation="circularArc3Points">
+                      <gml:posList>50 10 45 15 50 20 55 15 50 10</gml:posList>
+                    </gml:ArcString>
+                  </gml:segments>
+                </gml:Curve>
+              </gml:curveMember>
+            </gml:Ring>
+          </gml:exterior>
+        </gml:Polygon>
+      </cite:geom>
+      <name>Circle2</name>
+    </cite:curvepolygons>
+  </wfs:Insert>
+</wfs:Transaction>

@@ -1,10 +1,16 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
 
+import java.io.IOException;
+
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.factory.Hints;
+import org.opengis.coverage.grid.GridCoverageReader;
+import org.opengis.util.ProgressListener;
 
 /**
  * A raster or coverage based store.
@@ -32,6 +38,8 @@ public interface CoverageStoreInfo extends StoreInfo {
      */
     AbstractGridFormat getFormat();
 
+    GridCoverageReader getGridCoverageReader( ProgressListener listener, Hints hints ) 
+            throws IOException;
     
     /**
      * Returns the coverage resource from the store with the given name.

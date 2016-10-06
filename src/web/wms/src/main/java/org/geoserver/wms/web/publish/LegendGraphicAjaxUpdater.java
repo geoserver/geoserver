@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -26,15 +27,18 @@ class LegendGraphicAjaxUpdater implements Serializable {
 
     private Image image;
 
-    private IModel styleInfoModel;
+    private IModel<StyleInfo> styleInfoModel;
+    private IModel<String> urlModel;
 
     private String wmsURL;
 
     public LegendGraphicAjaxUpdater(final String wmsURL, final Image image,
-            final IModel styleInfoModel) {
+            final IModel<StyleInfo> styleInfoModel) {
         this.wmsURL = wmsURL;
         this.image = image;
         this.styleInfoModel = styleInfoModel;
+        this.urlModel = new Model<String>(wmsURL);
+        this.image.add(new AttributeModifier("src", urlModel));
         updateStyleImage(null);
     }
 
@@ -43,11 +47,11 @@ class LegendGraphicAjaxUpdater implements Serializable {
                 + "REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&STRICT=false&style=";
         StyleInfo styleInfo = (StyleInfo) styleInfoModel.getObject();
         if (styleInfo != null) {
-            String style = styleInfo.getName();
+            String style = styleInfo.prefixedName();
             url += style;
-            image.add(new AttributeModifier("src", new Model(url)));
+            urlModel.setObject(url);
             if (target != null) {
-                target.addComponent(image);
+                target.add(image);
             }
         }
     }

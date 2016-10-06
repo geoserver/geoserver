@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,7 +23,7 @@ import org.geotools.util.logging.Logging;
 import org.junit.Test;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 import static org.junit.Assert.*;
 
 public class RestConcurrencyTest extends CatalogRESTTestSupport {
@@ -144,7 +145,7 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
                 LOGGER.info(threadId + "Adding " + typeName);
                 MockHttpServletResponse response = postAsServletResponse(base, xml, "text/xml");
 
-                assertEquals(201, response.getStatusCode());
+                assertEquals(201, response.getStatus());
                 assertNotNull(response.getHeader("Location"));
                 assertTrue(response.getHeader("Location").endsWith(base + typeName));
 
@@ -152,16 +153,16 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
                 LOGGER.info(threadId + "Checking " + typeName);
                 String resourcePath = "/rest/layers/" + workspace + ":" + typeName;
                 response = getAsServletResponse(resourcePath + ".xml");
-                assertEquals(200, response.getStatusCode());
+                assertEquals(200, response.getStatus());
 
                 // reload
                 LOGGER.info(threadId + "Reloading catalog");
-                assertEquals(200, postAsServletResponse("/rest/reload", "").getStatusCode());
+                assertEquals(200, postAsServletResponse("/rest/reload", "").getStatus());
 
                 // remove it
                 LOGGER.info(threadId + "Removing layer");
                 String deletePath = resourcePath + "?recurse=true";
-                assertEquals(200, deleteAsServletResponse(deletePath).getStatusCode());
+                assertEquals(200, deleteAsServletResponse(deletePath).getStatus());
             }
         }
     }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -69,7 +70,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         mpConfig.setClassName(URLMasterPasswordProvider.class.getCanonicalName());
         mpConfig.setReadOnly(false);
 
-        File tmp = new File(getSecurityManager().getSecurityRoot(),"mpw1.properties");
+        File tmp = new File(getSecurityManager().get("security").dir(),"mpw1.properties");
         mpConfig.setURL(DataUtilities.fileToURL(tmp));
         getSecurityManager().saveMasterPasswordProviderConfig(mpConfig);
         
@@ -87,7 +88,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         mpConfig.setClassName(URLMasterPasswordProvider.class.getCanonicalName());
         mpConfig.setReadOnly(true);
         
-        tmp = new File(getSecurityManager().getSecurityRoot(),"mpw2.properties");
+        tmp = new File(getSecurityManager().get("security").dir(),"mpw2.properties");
         mpConfig.setURL(DataUtilities.fileToURL(tmp));
         
         FileUtils.writeStringToFile(tmp, "geoserver2");

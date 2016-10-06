@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,13 +13,18 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
-import java.io.File;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.GetLegendGraphicRequest;
+import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
 import org.geoserver.wms.legendgraphic.ColorMapLegendCreator.Builder;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.styling.ChannelSelection;
@@ -29,8 +35,6 @@ import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
-
 /**
  * Helper class to create legends for raster styles by parsing the rastersymbolizer element.
  * 
@@ -40,16 +44,17 @@ import org.vfny.geoserver.global.GeoserverDataDirectory;
 public class RasterLayerLegendHelper {
 
     /**
-     * The default legend is a simpe image with an R within it which stands for Raster.
+     * The default legend is a simple image with an R within it which stands for Raster.
      */
     private final static BufferedImage defaultLegend;
     static {
         BufferedImage imgShape = null;
         try {
-            final File stylesDirectory = GeoserverDataDirectory.findCreateConfigDir("styles");
-            final File rasterLegend = new File(stylesDirectory, "rasterLegend.png");
-            if (rasterLegend.exists())
-                imgShape = ImageIO.read(rasterLegend);
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            Resource rasterLegend = loader.get( Paths.path("styles","rasterLegend.png"));
+            if (rasterLegend.getType() == Type.RESOURCE ){
+                imgShape = ImageIO.read(rasterLegend.file());
+            }
         } catch (Throwable e) {
             imgShape = null;
         }
@@ -171,20 +176,43 @@ public class RasterLayerLegendHelper {
             // Setting label font and font bkgColor
             cmapLegendBuilder.setLabelFont(LegendUtils.getLabelFont(request));
             cmapLegendBuilder.setLabelFontColor(LegendUtils.getLabelFontColor(request));
+            
+            // Setting layout parameters
+            cmapLegendBuilder.setLayout(LegendUtils.getLayout(request));
+            cmapLegendBuilder.setColumnHeight(LegendUtils.getColumnHeight(request));
+            cmapLegendBuilder.setRowWidth(LegendUtils.getRowWidth(request));
+            cmapLegendBuilder.setColumns(LegendUtils.getColumns(request));
+            cmapLegendBuilder.setRows(LegendUtils.getRows(request));
+            
+            cmapLegendBuilder.setLabelFontColor(LegendUtils.getLabelFontColor(request));
+
 
             // set band
             final ChannelSelection channelSelection = rasterSymbolizer.getChannelSelection();
             cmapLegendBuilder.setBand(channelSelection != null ? channelSelection.getGrayChannel()
                     : null);
 
-            // adding the colormap entries
-            final ColorMapEntry[] colorMapEntries = cmap.getColorMapEntries();
-            for (ColorMapEntry ce : colorMapEntries)
-                if (ce != null)
-                    cmapLegendBuilder.addColorMapEntry(ce);
-
             // check the additional options before proceeding
             cmapLegendBuilder.checkAdditionalOptions();
+
+            // adding the colormap entries
+            final ColorMapEntry[] colorMapEntries = cmap.getColorMapEntries();
+            ColorMapEntryLegendBuilder lastEntry = null;
+            boolean first = true;
+            for (ColorMapEntry ce : colorMapEntries) {
+                if(ce == null) {
+                    continue;
+                }
+                final Double qty = ce.getQuantity().evaluate(null, Double.class);
+                if(cmap.getType() == ColorMap.TYPE_INTERVALS && first && qty < 0 && Double.isInfinite(qty)) {
+                    continue;
+                }
+                lastEntry = cmapLegendBuilder.addColorMapEntry(ce);
+                first = false;
+            }
+            if(lastEntry != null) {
+                lastEntry.setLastRow();
+            }
 
             // instantiate the creator
             cMapLegendCreator = cmapLegendBuilder.create();
@@ -262,6 +290,10 @@ public class RasterLayerLegendHelper {
         // blue border
         graphics.setColor(Color.BLUE);
         graphics.drawRect(0, 0, width - 1, height -1 );
+    }
+    
+    protected ColorMapLegendCreator getcMapLegendCreator() {
+        return cMapLegendCreator;
     }
 
 }

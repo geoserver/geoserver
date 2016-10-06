@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -132,7 +133,7 @@ public class ReaderUtils {
      *
      * @return The child element found, null if not found.
      *
-     * @see getChildElement(Element,String,boolean)
+     * @see #getChildElement(Element,String,boolean)
      */
     public static Element[] getChildElements(Element root, String name) {
         try {
@@ -239,7 +240,7 @@ public class ReaderUtils {
      *
      * @return The child element found, null if not found.
      *
-     * @see getChildElement(Element,String,boolean)
+     * @see #getChildElement(Element,String,boolean)
      */
     public static Element getChildElement(Element root, String name) {
         try {

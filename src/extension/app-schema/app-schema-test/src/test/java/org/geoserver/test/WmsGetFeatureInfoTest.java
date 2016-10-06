@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -53,6 +54,21 @@ public class WmsGetFeatureInfoTest extends AbstractAppSchemaTestSupport {
         assertXpathCount(1, "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature", doc);
         assertXpathEvaluatesTo("mf2", "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature/@gml:id", doc);
         assertXpathEvaluatesTo("gu.25678", "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/@gml:id", doc);
+        validateGet(request);
+    }
+    
+    @Test
+    public void testGetFeatureInfoGMLReprojection() throws Exception {
+        String request = "wms?request=GetFeatureInfo&SRS=EPSG:3857&BBOX=-144715.338031256,6800125.45439731,0,6891041.72389159&LAYERS=gsml:MappedFeature&QUERY_LAYERS=gsml:MappedFeature&X=0&Y=0&width=100&height=100&INFO_FORMAT=application/vnd.ogc.gml/3.1.1";
+        Document doc = getAsDOM(request);
+        LOGGER.info("WMS =GetFeatureInfo GML response:\n" + prettyString(doc));
+        assertXpathCount(1, "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature", doc);
+        assertXpathEvaluatesTo("mf2",
+                "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature/@gml:id", doc);
+        assertXpathEvaluatesTo(
+                "gu.25678",
+                "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/@gml:id",
+                doc);
         validateGet(request);
     }
     

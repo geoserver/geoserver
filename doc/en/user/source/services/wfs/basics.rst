@@ -14,7 +14,7 @@ The major differences between the WFS versions are:
 
 * WFS 1.1.0 and 2.0.0 return GML3 as the default GML, whereas in WFS 1.0.0, the default is GML2. GML3 adopts marginally different ways of specifying a geometry. GeoServer supports requests in both GML3 and GML2 formats.
 
-* In WFS 1.1.0 and 2.0.0, the SRS (Spatial Reference System, or projection) is specified with ``urn:x-ogc:def:crs:EPSG:XXXX``, whereas in WFS 1.0.0 the specification was ``http://www.opengis.net/gml/srs/epsg.xml#XXXX``. This change has implications for the `axis order <wfs_basics_axis>`_ of the returned data. 
+* In WFS 1.1.0 and 2.0.0, the SRS (Spatial Reference System, or projection) is specified with ``urn:x-ogc:def:crs:EPSG:XXXX``, whereas in WFS 1.0.0 the specification was ``http://www.opengis.net/gml/srs/epsg.xml#XXXX``. This change has implications for the :ref:`axis order <wfs_basics_axis>` of the returned data. 
 
 * WFS 1.1.0 and 2.0.0 support on-the-fly reprojection of data, which supports returning the data in a SRS other than the native SRS. 
 
@@ -22,12 +22,13 @@ The major differences between the WFS versions are:
 
 * WFS 2.0.0 supports joins via a GetFeature request.
 
-* WFS 2.0.0 adds the ability to page results of a GetFeature request via the ``startIndex`` and ``maxFeatures`` parameters. GeoServer now supports this functionality in WFS 1.0.0 and 1.1.0. 
+* WFS 2.0.0 adds the ability to page results of a GetFeature request via the ``startIndex`` and ``count`` parameters. GeoServer now supports this functionality in WFS 1.0.0 and 1.1.0. 
 
 * WFS 2.0.0 supports stored queries, which are regular WFS queries stored on the server such that they may be invoked by passing the appropriate identifier with a WFS request.
 
 * WFS 2.0.0 supports SOAP (Simple Object Access Protocol) as an alternative to the OGC interface.
 
+.. note:: There are also two changes to parameter names which can cause confusion. WFS 2.0.0 uses the ``count`` parameter to limit the number of features returned rather than the ``maxFeatures`` parameter used in previous versions. It also changed ``typeName`` to ``typeNames`` although GeoServer will accept either.
 
 .. _wfs_basics_axis:
 
@@ -39,7 +40,7 @@ WFS 1.0.0 servers return geographic coordinates in longitude/latitude (x/y) orde
 However, the traditional axis order for geographic and cartographic systems is the opposite—latitude/longitude (y/x)—and the later WFS specifications respect this. The default axis ordering support is: 
 
 * Latitude/longitude—WFS 1.1.0 and WFS 2.0.0
-* Longitude/latitude—WMS 1.0.0 
+* Longitude/latitude—WFS 1.0.0 
 
 This may cause difficulties when switching between servers with different WFS versions, or when upgrading your WFS. To minimize confusion and increase interoperability, GeoServer has adopted the following assumptions when specifying projections in the following formats: 
 

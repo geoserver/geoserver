@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -24,7 +25,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
  * for reporting the objects that will be affected by the removal
  */
 @SuppressWarnings("serial")
-public class SelectionRemovalLink extends AjaxLink {
+public class SelectionRemovalLink extends AjaxLink<Void> {
     
     GeoServerTablePanel<? extends CatalogInfo> catalogObjects;
     GeoServerDialog dialog;
@@ -77,8 +78,8 @@ public class SelectionRemovalLink extends AjaxLink {
                 // occurred, so refresh the table
                 if(catalogObjects.getSelection().size() == 0) {
                     setEnabled(false);
-                    target.addComponent(SelectionRemovalLink.this);
-                    target.addComponent(catalogObjects);
+                    target.add(SelectionRemovalLink.this);
+                    target.add(catalogObjects);
                 }
             }
             

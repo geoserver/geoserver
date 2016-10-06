@@ -1,0 +1,9 @@
+/* @title ${colorName} point */
+* {
+    mark: symbol(square);
+    mark-size: 6px;
+    :mark {
+        fill: ${colorCode};
+    }
+}
+

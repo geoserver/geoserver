@@ -1,11 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.logging;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +23,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.vfny.geoserver.global.ConfigurationException;
 
 public class LoggingUtils {
@@ -37,7 +40,7 @@ public class LoggingUtils {
          * Returns the enum value corresponding to the name (using case insensitive comparison)
          * or Log4j if no match is found 
          * @param name
-         * @return
+         *
          */
         public static GeoToolsLoggingRedirection findValue(String name) {
             for (GeoToolsLoggingRedirection value : values()) {
@@ -73,9 +76,9 @@ public class LoggingUtils {
             // configuring the log4j file logger
             if(!suppressFileLogging) {
                     Appender gslf = org.apache.log4j.Logger.getRootLogger().getAppender("geoserverlogfile");
-                    if (gslf instanceof org.apache.log4j.RollingFileAppender) {
+                    if (gslf instanceof org.apache.log4j.FileAppender) {
                         if (logFileName == null ) {
-                            logFileName = new File(loader.findOrCreateDirectory("logs"),  "geoserver.log").getAbsolutePath();
+                            logFileName = loader.get("logs").get("geoserver.log").file().getAbsolutePath();
                         } else { 
                             if (!new File(logFileName).isAbsolute()) {
                                 logFileName = new File(loader.getBaseDirectory(), logFileName).getAbsolutePath();
@@ -86,7 +89,7 @@ public class LoggingUtils {
                         PropertyConfigurator.configure(lprops);
                         LoggingInitializer.LOGGER.fine("Logging output to file '" + logFileName + "'");
                     } else if (gslf != null) {
-                        LoggingInitializer.LOGGER.warning("'log4j.appender.geoserverlogfile' appender is defined, but isn't a RollingFileAppender.  GeoServer won't control the file-based logging.");
+                        LoggingInitializer.LOGGER.warning("'log4j.appender.geoserverlogfile' appender is defined, but isn't a FileAppender.  GeoServer won't control the file-based logging.");
                     } else {
                         LoggingInitializer.LOGGER.warning("'log4j.appender.geoserverlogfile' appender isn't defined.  GeoServer won't control the file-based logging.");
                     }
@@ -94,7 +97,7 @@ public class LoggingUtils {
             
             // ... and the std output logging too
             if (suppressStdOutLogging) {
-                LoggingInitializer.LOGGER.warning("Suppressing StdOut logging.  If you want to see GeoServer logs, be sure to look in '" + logFileName + "'");
+                LoggingInitializer.LOGGER.info("Suppressing StdOut logging.  If you want to see GeoServer logs, be sure to look in '" + logFileName + "'");
                 Enumeration allAppenders = org.apache.log4j.Logger.getRootLogger().getAllAppenders();
                 Appender curApp;
                 while (allAppenders.hasMoreElements()) {
@@ -126,9 +129,8 @@ public class LoggingUtils {
             configFileName = "DEFAULT_LOGGING.properties";
             LoggingInitializer.LOGGER.warning("No log4jConfigFile defined in services.xml:  using 'DEFAULT_LOGGING.properties'");
         }
-        
-        File log4jConfigFile = resourceLoader.find( "logs", configFileName );
-        if (log4jConfigFile == null) {
+        Resource resource = resourceLoader.get( Paths.path("logs", configFileName) );
+        if( resource == null || resource.getType() == Type.UNDEFINED ){
             //hmm, well, we don't have a log4j config file and this could be due to the fact
             //that this is a data-dir upgrade.  We can count on the DEFAULT_LOGGING.properties file
             //being present on the classpath, so we'll upgrade their data_dir and then use the
@@ -136,15 +138,19 @@ public class LoggingUtils {
             LoggingInitializer.LOGGER.warning("log4jConfigFile '" + configFileName + "' couldn't be found in the data dir, so GeoServer will " +
             "install the various logging config file into the data dir, and then try to find it again.");
             
-            //this forces the data_dir/logs directory to be present (if it wasn't already)
-            File lcdir = resourceLoader.findOrCreateDirectory( "logs" );
+            Resource logs = resourceLoader.get( "logs" );            
+            File lcdir = logs.dir();
             
             //now we copy in the various logging config files from the base repo location on the classpath
-            final String[] lcfiles = new String[] { "DEFAULT_LOGGING.properties",
-                    "VERBOSE_LOGGING.properties",
-                    "PRODUCTION_LOGGING.properties",
+            final String[] lcfiles = new String[] {
+                    "DEFAULT_LOGGING.properties",
+                    "GEOSERVER_DEVELOPER_LOGGING.properties",
                     "GEOTOOLS_DEVELOPER_LOGGING.properties",
-                    "GEOSERVER_DEVELOPER_LOGGING.properties" };
+                    "PRODUCTION_LOGGING.properties",
+                    "QUIET_LOGGING.properties",
+                    "TEST_LOGGING.properties",
+                    "VERBOSE_LOGGING.properties"
+                    };
             
             for (int i = 0; i < lcfiles.length; i++) {
                 File target = new File(lcdir.getAbsolutePath(), lcfiles[i]);
@@ -155,33 +161,30 @@ public class LoggingUtils {
             
             //ok, the possibly-new 'logs' directory is in-place, with all the various configs there.
             // Is the originally configured log4jconfigfile there now?
-            log4jConfigFile = resourceLoader.find( "logs", configFileName );
-            if (log4jConfigFile == null) {
+            if (resource.getType() != Type.RESOURCE) {
                 LoggingInitializer.LOGGER.warning("Still couldn't find log4jConfigFile '" + configFileName + "'.  Using DEFAULT_LOGGING.properties instead.");
             }
             
-            log4jConfigFile = resourceLoader.find( "logs", "DEFAULT_LOGGING.properties" );
+            resource = resourceLoader.get( Paths.path("logs", "DEFAULT_LOGGING.properties") );
         }
     
-        if (log4jConfigFile == null || !log4jConfigFile.exists()) {
+        if (resource == null || resource.getType() != Type.RESOURCE) {
             throw new ConfigurationException("Unable to load logging configuration '" + configFileName + "'.  In addition, an attempt " +
                     "was made to create the 'logs' directory in your data dir, and to use the DEFAULT_LOGGING configuration, but" +
                     "this failed as well.  Is your data dir writeable?");
         }
         
-                // reconfiguring log4j logger levels by resetting and loading a new set of configuration properties
-        InputStream loggingConfigStream = new FileInputStream(log4jConfigFile);
-        if (loggingConfigStream == null) {
-            LoggingInitializer.LOGGER.warning("Couldn't open Log4J configuration file '" + log4jConfigFile.getAbsolutePath());
-            return;
-        } else {
-            LoggingInitializer.LOGGER.fine("GeoServer logging profile '" + log4jConfigFile.getName() + "' enabled.");
+        // reconfiguring log4j logger levels by resetting and loading a new set of configuration properties
+        try(InputStream loggingConfigStream = resource.in()) {
+            if (loggingConfigStream == null) {
+                LoggingInitializer.LOGGER.warning("Couldn't open Log4J configuration file '" + resource);
+                return;
+            } else {
+                LoggingInitializer.LOGGER.fine("GeoServer logging profile '" + resource.name() + "' enabled.");
+            }
+        
+            configureGeoServerLogging(resourceLoader, loggingConfigStream, suppressStdOutLogging, false, logFileName);
         }
-    
-        configureGeoServerLogging(resourceLoader, loggingConfigStream, suppressStdOutLogging, false, 
-                                logFileName);
-        
-        
     }
 
     /**

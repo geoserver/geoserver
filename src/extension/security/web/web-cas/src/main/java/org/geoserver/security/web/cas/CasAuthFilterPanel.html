@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:head>
+<style type="text/css">
+  ul.horizontal div {
+    display:inline;
+  }
+</style>
+</wicket:head>
+  <wicket:extend>
+      <ul>
+      <li>
+          <fieldset>
+          <legend>
+                  <span><wicket:message key="connectionParameters"></wicket:message></span>
+                  <a href="#" wicket:id="connectionParametersHelp" class="help-link"></a>
+          </legend>
+              <ul>      
+                  <li>                    
+                     <label for="casServerUrlPrefix"><wicket:message key="casServerUrlPrefix"></wicket:message></label>
+                     <input id="casServerUrlPrefix" wicket:id="casServerUrlPrefix" type="text" class="text"></input>
+                         
+                  </li>
+                  <li>
+                      <div class="button-group selfclear">
+                    <a wicket:id="casServerTest"><span><wicket:message key="casServerTest"></wicket:message></span></a>
+                      </div>
+                  </li>                    
+              </ul>            
+          </fieldset>
+      </li>
+      <li>
+      <fieldset>
+         <legend>
+                  <span><wicket:message key="singleSignOnParameters"></wicket:message></span>
+                  <a href="#" wicket:id="singleSignOnParametersHelp" class="help-link"></a>
+         </legend>
+          <ul class="choiceList">      
+          <li>                                        
+            <input id="sendRenew" wicket:id="sendRenew" type="checkbox"></input>
+            <label for="sendRenew"><wicket:message key="sendRenew"></wicket:message></label>            
+          </li>                    
+          </ul>            
+      </fieldset>            
+      </li>
+       <li>
+          <fieldset>
+          <legend>
+                  <span><wicket:message key="singleSignOutParameters"></wicket:message></span>
+                  <a href="#" wicket:id="singleSignOutParametersHelp" class="help-link"></a>
+          </legend>              
+             <ul>            
+              <li class="choiceItem">                    
+                    <input id="singleSignOut" wicket:id="singleSignOut" type="checkbox"></input>
+                    <label for="singleSignOut"><wicket:message key="singleSignOut"></wicket:message></label>
+                    
+              </li>
+              <li>
+                <label for="urlInCasLogoutPage"><wicket:message key="urlInCasLogoutPage"></wicket:message></label>
+                <input id="urlInCasLogout" wicket:id="urlInCasLogoutPage" type="text" class="text"></input>                
+              </li>
+              <li>
+                  <div class="button-group selfclear">
+                    <a wicket:id="urlInCasLogoutPageTest"><span><wicket:message key="urlInCasLogoutPageTest"></wicket:message></span></a>
+                  </div>
+              </li>
+              </ul>            
+          </fieldset>
+      </li>
+      <li>
+         <fieldset>
+          <legend><span><wicket:message key="proxyTicketParameters"></wicket:message></span>
+          <a href="#" wicket:id="proxyTicketParametersHelp" class="help-link"></a>
+          </legend>              
+             <ul>                                                  
+              <li>
+                <label for="proxyCallbackUrlPrefix"><wicket:message key="proxyCallbackUrlPrefix"></wicket:message></label>
+                <input id="proxyCallbackUrlPrefix" wicket:id="proxyCallbackUrlPrefix" type="text" class="text"></input>                
+              </li>
+              <li>
+                  <div class="button-group selfclear">
+                    <a wicket:id="proxyCallbackTest"><span><wicket:message key="proxyCallbackTest"></wicket:message></span></a>
+                  </div>
+              </li>
+              </ul>            
+          </fieldset>
+      </li>                  
+     </ul>    
+  </wicket:extend>
+</body>
+</html>

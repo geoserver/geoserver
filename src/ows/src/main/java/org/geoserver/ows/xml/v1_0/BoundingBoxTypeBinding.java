@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -16,7 +17,6 @@ import org.geotools.xml.Node;
 /**
  * Binding object for the type http://www.opengis.net/ows:BoundingBoxType.
  *
- * <p>
  *        <pre>
  *         <code>
  *  &lt;complexType name="BoundingBoxType"&gt;
@@ -52,7 +52,6 @@ import org.geotools.xml.Node;
  *
  *          </code>
  *         </pre>
- * </p>
  *
  * @generated
  */

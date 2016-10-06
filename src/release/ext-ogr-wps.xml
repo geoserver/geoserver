@@ -1,0 +1,30 @@
+<assembly>
+  <id>ogr-wps-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-ogr-wps-*.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+       <directory>release/extensions</directory>
+       <outputDirectory></outputDirectory>
+       <includes>
+         <include>LICENSE.txt</include>
+       </includes>
+    </fileSet>
+    <fileSet>
+       <directory>release/extensions/ogr</directory>
+       <outputDirectory></outputDirectory>
+       <includes>
+         <include>README.txt</include>
+       </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

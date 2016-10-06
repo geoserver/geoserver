@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -213,6 +213,14 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             }
         }
         setUpCatalog();
+    }
+    
+    public boolean isOracleOnlineTest() {
+        return "oracle".equals(onlineTestId); 
+    }
+    
+    public boolean isPostgisOnlineTest() {
+        return "postgis".equals(onlineTestId);
     }
 
     /**
@@ -461,7 +469,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *            feature types base directory
      * @param dataStoreName
      *            data store name
-     * @return
+     *
      */
     @SuppressWarnings("serial")
     private static Map<String, Serializable> buildAppSchemaDatastoreParams(
@@ -533,20 +541,20 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     /**
      * Determine which setup class to use based on the fixture id specified in the vm arg.
      * 
-     * @throws Exception
      */
     private void createTablesInTestDatabase() throws Exception {
-        if (onlineTestId != null) {
-            AbstractReferenceDataSetup setup = null;
-            if (onlineTestId.equals("oracle")) {            	
-            	if (is3D) {
-            		setup = AppSchemaTestOracleSetup.get3DInstance(propertiesFiles);
-            	} else {
-                    setup = AppSchemaTestOracleSetup.getInstance(propertiesFiles);
-            	}
-            } else if (onlineTestId.equals("postgis")) {
-                setup = AppSchemaTestPostgisSetup.getInstance(propertiesFiles);
+        AbstractReferenceDataSetup setup = null;
+        if (isOracleOnlineTest()) {
+            if (is3D) {
+                setup = AppSchemaTestOracleSetup.get3DInstance(propertiesFiles);
+            } else {
+                setup = AppSchemaTestOracleSetup.getInstance(propertiesFiles);
             }
+            // Run the sql script through setup
+            setup.setUp();
+            setup.tearDown();
+        } else if (isPostgisOnlineTest()) {
+            setup = AppSchemaTestPostgisSetup.getInstance(propertiesFiles);
             // Run the sql script through setup
             setup.setUp();
             setup.tearDown();
@@ -556,8 +564,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     /**
      * Adds the specified style to the data directory
      * @param styleId the style id
-     * @param filename filename of SLD file in test-data to be copied into the data directory
-     * @throws IOException
+     * @param fileName filename of SLD file in test-data to be copied into the data directory
      */
     public void addStyle(String styleId, String fileName) {
         layerStyles.put(styleId, styleId + ".sld");

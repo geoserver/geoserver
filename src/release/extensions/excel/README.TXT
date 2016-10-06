@@ -17,6 +17,8 @@ of Microsoft Office, but can store up to 1,048,576 rows and 16,384 columns.
 
 Both formats should be compatible with all versions of OpenOffice. 
 
+For more information http://docs.geoserver.org/latest/en/user/extensions/excel.html
+
 Installation
 -----------------------
 1. Stop GeoServer

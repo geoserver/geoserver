@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd" -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jms="http://www.springframework.org/schema/jms" xmlns:amq="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/jms
+                           http://www.springframework.org/schema/jms/spring-jms.xsd
+                           http://activemq.apache.org/schema/core
+                           http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+	<context:component-scan base-package="it.geosoutions.geoserver.jms" />
+	<context:annotation-config />
+
+	<!-- CONFIGURATION EXTENSIONS -->
+
+	<bean id="JMSReadOnlyConfiguration"
+		class="org.geoserver.cluster.configuration.ReadOnlyConfiguration">
+	</bean>
+
+	<bean id="JMSTopicConfiguration"
+		class="org.geoserver.cluster.configuration.TopicConfiguration">
+	</bean>
+
+	<bean id="JMSBrokerConfiguration"
+		class="org.geoserver.cluster.configuration.BrokerConfiguration">
+	</bean>
+
+	<bean id="JMSEmbeddedBrokerConfiguration"
+		class="org.geoserver.cluster.configuration.EmbeddedBrokerConfiguration">
+	</bean>
+
+
+	<bean id="JMSConnectionConfiguration"
+		class="org.geoserver.cluster.configuration.ConnectionConfiguration">
+	</bean>
+
+	<bean id="JMSToggleConfiguration"
+		class="org.geoserver.cluster.configuration.ToggleConfiguration" />
+
+	<bean id="JMSConfiguration"
+		class="org.geoserver.cluster.configuration.JMSConfiguration" />
+
+	<!-- COMMONS -->
+
+	<bean id="JMSContainer" class="org.geoserver.cluster.client.JMSContainer"
+		destroy-method="shutdown" depends-on="JMSActiveMQFactory">
+		<constructor-arg index="0" ref="JMSConfiguration" />
+		<constructor-arg index="1" ref="JMSQueueListener" />
+	</bean>
+
+	<bean id="JMSManager" class="org.geoserver.cluster.JMSManager"
+		lazy-init="false" />
+
+
+
+	<bean id="JMSToggleProducer" class="org.geoserver.cluster.events.ToggleSwitch">
+		<constructor-arg index="0" value="MASTER" />
+	</bean>
+
+	<bean id="JMSToggleConsumer" class="org.geoserver.cluster.events.ToggleSwitch">
+		<constructor-arg index="0" value="SLAVE" />
+	</bean>
+
+	<!-- SERVER -->
+
+	<bean id="JMSPublisher" class="org.geoserver.cluster.JMSPublisher">
+		<constructor-arg index="0" ref="JMSManager" />
+	</bean>
+
+	<!-- CLIENT -->
+
+	<bean id="JMSQueueListener" class="org.geoserver.cluster.client.JMSQueueListener">
+		<constructor-arg index="0" ref="JMSManager" />
+	</bean>
+
+    <!-- turn of default webui redirect -->
+    <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer" >
+        <property name="properties"> 
+            <props>
+                <prop key="webApplication.defaultIsRedirect">false</prop>
+            </props>
+        </property>
+    </bean>   
+
+
+</beans>

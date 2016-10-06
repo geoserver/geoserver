@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -111,6 +112,8 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
         if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
             rendererParams.put(StreamingRenderer.LINE_WIDTH_OPTIMIZATION_KEY, true);
         }
+        rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
+                mapContent.getRendererScaleMethod());
         renderer.setRendererHints(rendererParams);
         renderer.setMapContent(mapContent);
         return renderer;

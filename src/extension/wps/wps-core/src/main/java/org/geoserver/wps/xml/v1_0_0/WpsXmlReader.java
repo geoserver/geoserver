@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,6 +14,7 @@ import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 
 import org.geoserver.ows.XmlRequestReader;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wps.WPSException;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
@@ -29,15 +31,20 @@ public class WpsXmlReader extends XmlRequestReader {
 
     private WPSConfiguration configuration;
 
-    public WpsXmlReader(String element, String version, WPSConfiguration configuration) {
+    private EntityResolverProvider resolverProvider;
+
+    public WpsXmlReader(String element, String version, WPSConfiguration configuration,
+            EntityResolverProvider resolverProvider) {
         super(new QName(org.geotools.wps.WPS.NAMESPACE, element), new Version("1.0.0"), "wps");
         this.configuration = configuration;
+        this.resolverProvider = resolverProvider;
     }
 
     @SuppressWarnings("unchecked")
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         Parser parser = new Parser(configuration);
         parser.setValidating(true);
+        parser.setEntityResolver(resolverProvider.getEntityResolver());
 
         Object parsed;
         try {

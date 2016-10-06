@@ -1,9 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.geoserver.config.GeoServer;
@@ -11,7 +13,8 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.GMLInfo.SrsNameStyle;
-import org.geotools.util.Version;
+
+import com.thoughtworks.xstream.XStream;
 
 /**
  * Loads and persist the {@link WFSInfo} object to and from xstream 
@@ -27,11 +30,22 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
     }
 
     @Override
-    protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
+    public void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
         super.initXStreamPersister(xp, gs);
-        xp.getXStream().alias( "wfs", WFSInfo.class, WFSInfoImpl.class );
-        xp.getXStream().alias( "version", WFSInfo.Version.class);
-        xp.getXStream().alias( "gml", GMLInfo.class, GMLInfoImpl.class );
+        initXStreamPersister(xp);
+    }
+
+    /**
+     * Sets up aliases and allowed types for the xstream persister
+     * @param xs
+     */
+    public static void initXStreamPersister(XStreamPersister xp) {
+        XStream xs = xp.getXStream();
+        xs.alias( "wfs", WFSInfo.class, WFSInfoImpl.class );
+        xs.alias( "version", WFSInfo.Version.class);
+        xs.alias( "gml", GMLInfo.class, GMLInfoImpl.class );
+        // modify the WFSSettingsResource when 
+        xs.allowTypes(new Class[] { WFSInfo.Version.class, GMLInfo.class, GMLInfoImpl.class });
     }
     
     protected WFSInfo createServiceFromScratch(GeoServer gs) {
@@ -85,6 +99,9 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
         gml = service.getGML().get(WFSInfo.Version.V_20);
         if (gml == null) {
             addGml(service, WFSInfo.Version.V_20, SrsNameStyle.URN2, false);
+        }
+        if (service.getSRS() == null) {
+            ((WFSInfoImpl) service).setSRS(new ArrayList<String>());
         }
         return service;
     }

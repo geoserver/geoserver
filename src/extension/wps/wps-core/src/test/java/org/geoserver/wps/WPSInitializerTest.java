@@ -1,5 +1,6 @@
 package org.geoserver.wps;
 
+import static org.easymock.EasyMock.*;
 import static org.easymock.classextension.EasyMock.*;
 import static org.junit.Assert.*;
 
@@ -10,8 +11,11 @@ import org.easymock.IArgumentMatcher;
 import org.easymock.internal.LastControl;
 import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.GeoServer;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wps.executor.DefaultProcessManager;
 import org.geoserver.wps.executor.WPSExecutionManager;
+import org.geoserver.wps.resource.ProcessArtifactsStore;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,10 +28,15 @@ public class WPSInitializerTest {
         WPSExecutionManager execMgr = createNiceMock(WPSExecutionManager.class);
         DefaultProcessManager procMgr = createNiceMock(DefaultProcessManager.class);
         WPSStorageCleaner cleaner = createNiceMock(WPSStorageCleaner.class);
+        WPSResourceManager resources = createNiceMock(WPSResourceManager.class);
+        expect(resources.getArtifactsStore())
+                .andReturn(createNiceMock(ProcessArtifactsStore.class)).anyTimes();
+        replay(resources);
+        GeoServerResourceLoader loader = createNiceMock(GeoServerResourceLoader.class);
 
         replay(execMgr, procMgr, cleaner);
 
-        initer = new WPSInitializer(execMgr, procMgr, cleaner);
+        initer = new WPSInitializer(execMgr, procMgr, cleaner, resources, loader);
     }
 
     @Test

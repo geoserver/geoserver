@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,9 +18,7 @@ import org.geotools.xml.Node;
 /**
  * Binding object for the type http://www.opengis.net/ows:AcceptVersionsType.
  *
- * <p>
- *        <pre>
- *         <code>
+ * <pre><code>
  *  &lt;complexType name="AcceptVersionsType"&gt;
  *      &lt;annotation&gt;
  *          &lt;documentation&gt;Prioritized sequence of one or more specification versions accepted by client, with preferred versions listed first. See Version negotiation subclause for more information. &lt;/documentation&gt;
@@ -29,9 +28,7 @@ import org.geotools.xml.Node;
  *      &lt;/sequence&gt;
  *  &lt;/complexType&gt;
  *
- *          </code>
- *         </pre>
- * </p>
+ * </code></pre>
  *
  * @generated
  */

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,7 +15,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.json.JSONType;
 import org.junit.Test;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WFSServiceExceptionTest extends WFSTestSupport {
 
@@ -42,7 +43,7 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         assertEquals(JSONType.jsonp, response.getContentType());
 
         // Content
-        String content = response.getOutputStreamContent();
+        String content = response.getContentAsString();
         testJson(testJsonP(content));
 
         // JSON
@@ -52,7 +53,7 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         assertEquals(JSONType.json, response.getContentType());
 
         // Content
-        content = response.getOutputStreamContent();
+        content = response.getContentAsString();
         testJson(content);
 
     }
@@ -71,7 +72,6 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
 
     /**
      * @param path
-     * @throws Exception
      * 
      */
     private static void testJson(String content) {

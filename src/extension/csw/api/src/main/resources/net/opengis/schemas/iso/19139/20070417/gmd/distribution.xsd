@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" targetNamespace="http://www.isotc211.org/2005/gmd" elementFormDefault="qualified" version="2012-07-13">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>Geographic MetaData (GMD) extensible markup language is a component of the XML Schema Implementation of Geographic Information Metadata documented in ISO/TS 19139:2007. GMD includes all the definitions of http://www.isotc211.org/2005/gmd namespace. The root document of this namespace is the file gmd.xsd. This distribution.xsd schema implements the UML conceptual schema defined in A.2.10 of ISO 19115:2003. It contains the implementation of the following classes: MD_Medium, MD_DigitalTransferOptions, MD_StandardOrderProcess, MD_Distributor, MD_Distribution, MD_Format, MD_MediumFormatCode, MD_MediumNameCode.</xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd"/>
+	<xs:include schemaLocation="gmd.xsd"/>
+	<xs:include schemaLocation="citation.xsd"/>
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- ================================== Classes ================================= -->
+	<xs:complexType name="MD_Medium_Type">
+		<xs:annotation>
+			<xs:documentation>Information about the media on which the data can be distributed</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="name" type="gmd:MD_MediumNameCode_PropertyType" minOccurs="0"/>
+					<xs:element name="density" type="gco:Real_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="densityUnits" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="volumes" type="gco:Integer_PropertyType" minOccurs="0"/>
+					<xs:element name="mediumFormat" type="gmd:MD_MediumFormatCode_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="mediumNote" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="MD_Medium" type="gmd:MD_Medium_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_Medium_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_Medium"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="MD_DigitalTransferOptions_Type">
+		<xs:annotation>
+			<xs:documentation>Technical means and media by which a dataset is obtained from the distributor</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="unitsOfDistribution" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="transferSize" type="gco:Real_PropertyType" minOccurs="0"/>
+					<xs:element name="onLine" type="gmd:CI_OnlineResource_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="offLine" type="gmd:MD_Medium_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="MD_DigitalTransferOptions" type="gmd:MD_DigitalTransferOptions_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_DigitalTransferOptions_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_DigitalTransferOptions"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="MD_StandardOrderProcess_Type">
+		<xs:annotation>
+			<xs:documentation>Common ways in which the dataset may be obtained or received, and related instructions and fee information</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="fees" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="plannedAvailableDateTime" type="gco:DateTime_PropertyType" minOccurs="0"/>
+					<xs:element name="orderingInstructions" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="turnaround" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="MD_StandardOrderProcess" type="gmd:MD_StandardOrderProcess_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_StandardOrderProcess_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_StandardOrderProcess"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="MD_Distributor_Type">
+		<xs:annotation>
+			<xs:documentation>Information about the distributor</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="distributorContact" type="gmd:CI_ResponsibleParty_PropertyType"/>
+					<xs:element name="distributionOrderProcess" type="gmd:MD_StandardOrderProcess_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="distributorFormat" type="gmd:MD_Format_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="distributorTransferOptions" type="gmd:MD_DigitalTransferOptions_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="MD_Distributor" type="gmd:MD_Distributor_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_Distributor_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_Distributor"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="MD_Distribution_Type">
+		<xs:annotation>
+			<xs:documentation>Information about the distributor of and options for obtaining the dataset</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="distributionFormat" type="gmd:MD_Format_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="distributor" type="gmd:MD_Distributor_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="transferOptions" type="gmd:MD_DigitalTransferOptions_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="MD_Distribution" type="gmd:MD_Distribution_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_Distribution_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_Distribution"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="MD_Format_Type">
+		<xs:annotation>
+			<xs:documentation>Description of the form of the data to be distributed</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="name" type="gco:CharacterString_PropertyType"/>
+					<xs:element name="version" type="gco:CharacterString_PropertyType"/>
+					<xs:element name="amendmentNumber" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="specification" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="fileDecompressionTechnique" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="formatDistributor" type="gmd:MD_Distributor_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="MD_Format" type="gmd:MD_Format_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_Format_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_Format"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<xs:element name="MD_DistributionUnits" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_DistributionUnits_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_DistributionUnits"/>
+		</xs:sequence>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<xs:element name="MD_MediumFormatCode" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_MediumFormatCode_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_MediumFormatCode"/>
+		</xs:sequence>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<xs:element name="MD_MediumNameCode" type="gco:CodeListValue_Type" substitutionGroup="gco:CharacterString"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_MediumNameCode_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_MediumNameCode"/>
+		</xs:sequence>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+</xs:schema>

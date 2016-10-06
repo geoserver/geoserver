@@ -16,7 +16,7 @@ GML 3.2.1
 ---------
 
 * GML 3.2.1 application schemas are supported for WFS 1.1.0 and (incomplete) WFS 2.0.0.
-* WFS 2.0.0 features not in WFS 1.1.0 such as paging (STARTINDEX) are not yet supported.
+* Some WFS 2.0.0 features not in WFS 1.1.0 such as GetFeatureById are not yet supported.
 * Clients using WFS 1.1.0 must specify WFS 1.1.0 in requests and select the ``gml32`` output format for GML 3.2.1.
 * To use WFS 1.1.0 for GML 3.2.1, GET URLs must contain ``version=1.1.0`` to set the WFS version to 1.1.0 and ``outputFormat=gml32`` to set the output format to GML 3.2.1.
 * The default WFS version is 2.0.0, for which the default output format is GML 3.2.1.

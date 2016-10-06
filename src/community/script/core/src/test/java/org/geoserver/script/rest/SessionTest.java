@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,35 +8,36 @@ package org.geoserver.script.rest;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.test.GeoServerTestSupport;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
-public class SessionTest extends GeoServerTestSupport {
+public class SessionTest extends ScriptIntTestSupport {
 
     public void testPost() throws Exception {
         MockHttpServletResponse response = postAsServletResponse("/script/sessions/js", "");
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         assertNotNull(response.getHeader("Location"));
 
-        long sessionId = Long.valueOf(response.getOutputStreamContent());
+        long sessionId = Long.valueOf(response.getContentAsString());
         assertTrue(response.getHeader("Location").endsWith("sessions/js/" + sessionId));
     }
 
     public void testPut() throws Exception {
         MockHttpServletResponse response = postAsServletResponse("/script/sessions/js", "");
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
 
-        long sid = Long.valueOf(response.getOutputStreamContent());
+        long sid = Long.valueOf(response.getContentAsString());
         response = 
             putAsServletResponse("/script/sessions/js/" + sid, "print('Hello World!');", "text/plain");
 
-        assertEquals("Hello World!", response.getOutputStreamContent());
+        assertEquals("Hello World!", response.getContentAsString().trim()); // print is a Rhino-specific function
 
         putAsServletResponse("/script/sessions/js/" + sid, "var x = 3;", "text/plain");
         response = 
             putAsServletResponse("/script/sessions/js/" + sid, "print(x);", "text/plain");
-        assertEquals("3", response.getOutputStreamContent());
+        assertEquals("3", response.getContentAsString().trim());
     }
 
     public void testGet() throws Exception {

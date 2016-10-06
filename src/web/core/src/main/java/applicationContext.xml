@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-web-core"/>
+    <constructor-arg index="1" value="GeoServer Web UI Core"/>
+  </bean>
   <!-- Core web app setup -->
   <bean id="webApplication" class="org.geoserver.web.GeoServerApplication">
   </bean>
-
+  
   <bean id="wicket"
     class="org.springframework.web.servlet.mvc.ServletWrappingController"
-    lazy-init="true">
+    lazy-init="true" depends-on="webApplication">
     <property name="servletClass">
-      <value>org.apache.wicket.protocol.http.WicketServlet</value>
+      <value>org.geoserver.web.GeoServerWicketServlet</value>
     </property>
     <property name="servletName">
       <value>wicket</value>
@@ -26,11 +29,19 @@
         <!-- either development on deployment, make sure you set it to deployment 
           before releasing! -->
         <prop key="configuration">development</prop>
-        <!--prop key="configuration">deployment</prop -->
-        <prop key="applicationClassName">org.geoserver.web.GeoServerApplication</prop>
-        <prop key="applicationFactoryClassName">org.apache.wicket.spring.SpringWebApplicationFactory</prop>
       </props>
     </property>
+  </bean>
+
+  <!-- disable the geoserver web console if server started with -DGEOSERVER_CONSOLE_DISABLED=true -->
+  <bean id="geoserverConsoleDisabled" class="java.lang.Boolean">
+    <constructor-arg value="#{ systemProperties['GEOSERVER_CONSOLE_DISABLED'] ?: false }" />
+  </bean>
+
+  <!-- choose between wicket UI or filePublisher depending if the console is diabled or not.
+  FilePublisher will give a 404 for all web console requests -->
+  <bean id="webDispatcherMappingSystem" class="java.lang.String">
+    <constructor-arg value="#{ geoserverConsoleDisabled ? 'filePublisher' : 'wicket' }" />
   </bean>
 
   <bean id="webDispatcherMapping"
@@ -39,9 +50,9 @@
     <property name="alwaysUseFullPath" value="true" />
     <property name="mappings">
       <props>
-        <prop key="/web">wicket</prop>
-        <prop key="/web/**">wicket</prop>
-        <prop key="/web/resources/**">wicket</prop>
+        <prop key="/web">#{webDispatcherMappingSystem}</prop>
+        <prop key="/web/**">#{webDispatcherMappingSystem}</prop>
+        <prop key="/web/resources/**">#{webDispatcherMappingSystem}</prop>
         <prop key="/">filePublisher</prop>
         <prop key="/index.html">filePublisher</prop>
       </props>
@@ -256,6 +267,18 @@
       </list>
     </property>
   </bean>
+  <bean id="coverageBandsConfigPanel"
+    class="org.geoserver.web.data.resource.ResourceConfigurationPanelInfo">
+    <property name="id" value="coverage" />
+    <property name="titleKey" value="data.resource.config.coverage" />
+    <property name="componentClass"
+      value="org.geoserver.web.data.resource.CoverageBandsConfigurationPanel" />
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.CoverageInfo</value>
+      </list>
+    </property>
+  </bean>
 
   <!-- Layer configuration panels -->
   <bean id="httpLayerConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
@@ -303,7 +326,7 @@
     <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
     <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
     <property name="componentClass"
-      value="org.geoserver.web.data.store.raster.ImageMosaicRasterEditPanel" />
+      value="org.geoserver.web.data.store.raster.DirectoryRasterEditPanel" />
   </bean>
 
   <bean id="arcGridStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
@@ -317,7 +340,7 @@
 
   <bean id="gtopo30StorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="gtopo30Raster" />
-    <property name="factoryClass" value="org.geotools.gce.arcgrid.ArcGridFormat" />
+    <property name="factoryClass" value="org.geotools.gce.gtopo30.GTopo30Format" />
     <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
     <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
     <property name="componentClass"
@@ -397,7 +420,7 @@
     <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/> 
     <property name="icon" value="img/icons/geosilk/database_raster.png"/> </bean> -->
 
-  <bean id="ndLayerEditTabPanelInfo" class="org.geoserver.web.data.resource.LayerEditTabPanelInfo">
+  <bean id="ndLayerEditTabPanelInfo" class="org.geoserver.web.publish.LayerEditTabPanelInfo">
     <property name="id" value="ndLayerEditTabPanelInfo" />
     <property name="titleKey" value="NDLayerEditTabPanelInfo.title" />
     <property name="descriptionKey" value="NDLayerEditTabPanelInfo.shortDescription" />

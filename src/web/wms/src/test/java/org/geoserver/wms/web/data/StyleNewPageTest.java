@@ -1,13 +1,14 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.web.data;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.io.FileReader;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -15,6 +16,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +27,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     public void setUp() throws Exception {
         login();
         tester.startPage(StyleNewPage.class);
-        // org.geoserver.web.wicket.WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, false);
+        // org.geoserver.web.wicket.WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
     }
 
     @Test
@@ -33,32 +35,120 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(StyleNewPage.class);
         tester.assertNoErrorMessage();
         
-        tester.assertComponent("form:name", TextField.class);
-        tester.assertComponent("form:SLD:editorContainer:editor", TextArea.class);
-        tester.assertComponent("uploadForm:filename", FileUploadField.class);
+        tester.assertComponent("styleForm:context:panel:name", TextField.class);
+        tester.assertComponent("styleForm:styleEditor:editorContainer:editorParent:editor", TextArea.class);
+        tester.assertComponent("styleForm:context:panel:filename", FileUploadField.class);
         
-        tester.assertModelValue("form:name", null);
+        //Load the legend
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
+        
+        tester.assertComponent("styleForm:context:panel:legendPanel", ExternalGraphicPanel.class);
+        
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
+        
+        tester.assertModelValue("styleForm:context:panel:name", "");
     }
     
     @Test
     public void testUpload() throws Exception {
-        FormTester upload = tester.newFormTester("uploadForm");
+        FormTester upload = tester.newFormTester("styleForm");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
         
         
-        upload.setFile("filename", styleFile, "application/xml");
-        upload.submit();
+        upload.setFile("context:panel:filename", styleFile, "application/xml");
+        tester.clickLink("styleForm:context:panel:upload", true);
         
         tester.assertRenderedPage(StyleNewPage.class);
-        tester.assertModelValue("form:SLD", sld);
+        tester.assertModelValue("styleForm:styleEditor", sld);
     }
     
-    public void testMissingName() throws Exception {
-        FormTester form = tester.newFormTester("form");
+    @Test
+    public void testNoLegend() throws Exception {
+        FormTester form = tester.newFormTester("styleForm");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
-        form.setValue("SLD:editorContainer:editor", sld);
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("context:panel:name", "nolegendtest");
+        form.submit();
+        
+        tester.assertRenderedPage(StyleNewPage.class);
+        tester.executeAjaxEvent("submit", "click");
+        tester.assertRenderedPage(StylePage.class);
+        
+        StyleInfo style = getCatalog().getStyleByName("nolegendtest");
+        assertNotNull(style);
+        assertNull(style.getLegend());
+    }
+    
+    @Test
+    public void testLegend() throws Exception {
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
+        //Make sure the fields we are editing actually exist
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
+        
+        //Publish the legend.png so we can see it
+        java.io.File file = getResourceLoader().createFile("styles","legend.png");
+        getResourceLoader().copyFromClassPath( "legend.png", file,  getClass());
+        
+        FormTester form = tester.newFormTester("styleForm", false);
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("context:panel:name", "legendtest");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "legend.png");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:width", "100");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:height", "100");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:format", "image/png");
+        form.setValue("context:panel:format", "sld");
+        form.submit();
+        tester.assertNoErrorMessage();
+        tester.assertRenderedPage(StyleNewPage.class);
+        tester.executeAjaxEvent("submit", "click");
+        tester.assertRenderedPage(StylePage.class);
+        
+        StyleInfo style = getCatalog().getStyleByName("legendtest");
+        assertNotNull(style);
+        assertNotNull(style.getLegend());
+    }
+    
+    @Test
+    public void testLegendWrongValues() throws Exception{
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
+        //Make sure the fields we are editing actually exist
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
+        
+        FormTester form = tester.newFormTester("styleForm", false);
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("context:panel:name", "legendwrongvaluestest");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "thisisnotavalidurl");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:width", "-1");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:height", "-1");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:format", "image/png");        
+        form.submit();
+        tester.assertErrorMessages("Graphic resource must be a png, gif or jpeg",
+                                   "The value of 'Width' must be at least 0.", 
+                                   "The value of 'Height' must be at least 0.");       
+        
+    }
+    
+    @Test
+    public void testMissingName() throws Exception {
+        FormTester form = tester.newFormTester("styleForm");
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.submit();
        
         
@@ -68,34 +158,85 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testMissingStyle() throws Exception {
-        FormTester form = tester.newFormTester("form");
-        form.setValue("name", "test");
+        FormTester form = tester.newFormTester("styleForm");
+        form.setValue("context:panel:name", "test");
         form.submit();
        
         
         tester.assertRenderedPage(StyleNewPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'SLD' is required."});
+        tester.assertErrorMessages(new String[] {"Field 'styleEditor' is required."});
+    }
+    
+    @Test
+    public void testNewStyleRepeatedName() throws Exception {
+        FormTester form = tester.newFormTester("styleForm");
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("context:panel:name", "repeatedname");
+        form.submit();               
+        tester.assertRenderedPage(StyleNewPage.class);
+        
+        tester.executeAjaxEvent("submit", "click");
+        tester.assertRenderedPage(StylePage.class);
+        
+        tester.startPage(StyleNewPage.class);
+        form = tester.newFormTester("styleForm");                
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("context:panel:name", "repeatedname");
+        form.submit();               
+        tester.assertRenderedPage(StyleNewPage.class);
+        
+        tester.assertErrorMessages("Style named 'repeatedname' already exists");
     }
 
     @Test
-    public void testNewStyle() throws Exception {
-        
-        FormTester form = tester.newFormTester("form");
+    public void testNewStyle() throws Exception {        
+        FormTester form = tester.newFormTester("styleForm");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
-        form.setValue("SLD:editorContainer:editor", sld);
-        form.setValue("name", "test");
-        form.submit();
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("context:panel:name", "test");
+        form.submit(); 
         
+        tester.assertRenderedPage(StyleNewPage.class);
+        assertNotNull(getCatalog().getStyleByName("test"));
+        
+        tester.executeAjaxEvent("submit", "click");
         tester.assertRenderedPage(StylePage.class);
+    }
+    
+    @Test
+    public void testNewStyleApply() throws Exception {        
+        FormTester form = tester.newFormTester("styleForm");
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("context:panel:name", "test");
+        tester.executeAjaxEvent("apply", "click");
+        tester.assertRenderedPage(StyleEditPage.class);
+        
+        assertNotNull(getCatalog().getStyleByName("test"));
+    }
+    
+    @Test
+    public void testNewStyleSubmit() throws Exception {        
+        FormTester form = tester.newFormTester("styleForm");
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("context:panel:name", "test");
+        tester.executeAjaxEvent("submit", "click");
+        tester.assertRenderedPage(StylePage.class);
+        
         assertNotNull(getCatalog().getStyleByName("test"));
     }
     
     @Test
     public void testNewStyleNoSLD() throws Exception {
         
-        FormTester form = tester.newFormTester("form");
-        form.setValue("name", "test");
+        FormTester form = tester.newFormTester("styleForm");
+        form.setValue("context:panel:name", "test");
         form.submit();
         
         tester.assertRenderedPage(StyleNewPage.class);

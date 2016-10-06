@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -65,7 +66,7 @@ public class XMLXpathFactory extends XMLXpath {
      * Get XPath provider for roles, depending on the version
      * 
      * @param version
-     * @return
+     *
      */
     public RoleXMLXpath getRoleXMLXpath(String version) {
         if (VERSION_RR_1_0.equals(version))
@@ -78,7 +79,7 @@ public class XMLXpathFactory extends XMLXpath {
      * Get XPath provider for user/groups, depending on the version
      * 
      * @param version
-     * @return
+     *
      */
     public UserGroupXMLXpath getUserGroupXMLXpath(String version) {
         if (VERSION_RR_1_0.equals(version))

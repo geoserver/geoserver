@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsd:schema id="csw-publication"
+   targetNamespace="http://www.opengis.net/cat/csw/2.0.2"
+   xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+   version="2.0.2.2">
+   <xsd:annotation>
+      <xsd:appinfo>
+         <dc:identifier xmlns:dc="http://purl.org/dc/elements/1.1/">http://schemas.opengis.net/csw/2.0.2/CSW-publication.xsd</dc:identifier>
+      </xsd:appinfo>
+      <xsd:documentation xml:lang="en">
+         This schema defines the request and response messages for the 
+         CSW-Publication operations specified in clause 10 of OGC-07-066.
+         
+         CSW is an OGC Standard.
+         Copyright (c) 2004, 2010 Open Geospatial Consortium.
+         To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+      </xsd:documentation>
+   </xsd:annotation>
+   
+   <xsd:include schemaLocation="csw.xsd"/>
+   <xsd:include schemaLocation="CSW-discovery.xsd"/>
+   
+   <xsd:element name="Transaction" type="csw:TransactionType" id="Transaction"/>
+   <xsd:complexType name="TransactionType" id="TransactionType">
+      <xsd:annotation>
+         <xsd:documentation xml:lang="en">
+            Users may insert, update, or delete catalogue entries. If the 
+            verboseResponse attribute has the value "true", then one or more 
+            csw:InsertResult elements must be included in the response.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexContent>
+         <xsd:extension base="csw:RequestBaseType">
+            <xsd:sequence>
+               <xsd:choice minOccurs="1" maxOccurs="unbounded">
+                  <xsd:element name="Insert" type="csw:InsertType"/>
+                  <xsd:element name="Update" type="csw:UpdateType"/>
+                  <xsd:element name="Delete" type="csw:DeleteType"/>
+               </xsd:choice>
+            </xsd:sequence>
+            <xsd:attribute name="verboseResponse" type="xsd:boolean"
+               use="optional" default="false"/>
+            <xsd:attribute name="requestId" type="xsd:anyURI" use="optional"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="InsertType" id="InsertType">
+      <xsd:annotation>
+         <xsd:documentation xml:lang="en">
+            Submits one or more records to the catalogue. The representation
+            is defined by the application profile. The handle attribute
+            may be included to specify a local identifier for the action 
+            (it must be unique within the context of the transaction).
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:any processContents="strict" namespace="##other"
+            maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="typeName" type="xsd:anyURI" use="optional"/>
+      <xsd:attribute name="handle" type="xsd:ID" use="optional"/>
+   </xsd:complexType>
+   <xsd:complexType name="UpdateType" id="UpdateType">
+      <xsd:annotation>
+         <xsd:documentation xml:lang="en">
+            Update statements may replace an entire record or only update part 
+            of a record:
+            1) To replace an existing record, include a new instance of the 
+               record;
+            2) To update selected properties of an existing record, include
+               a set of RecordProperty elements. The scope of the update
+               statement  is determined by the Constraint element.
+               The 'handle' is a local identifier for the action.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:choice>
+            <xsd:any processContents="strict" namespace="##other"/>
+            <xsd:sequence>
+               <xsd:element ref="csw:RecordProperty" maxOccurs="unbounded"/>
+               <xsd:element ref="csw:Constraint"/>
+            </xsd:sequence>
+         </xsd:choice>
+      </xsd:sequence>
+      <xsd:attribute name="handle" type="xsd:ID" use="optional"/>
+   </xsd:complexType>
+   <xsd:complexType name="DeleteType" id="DeleteType">
+      <xsd:annotation>
+         <xsd:documentation xml:lang="en">
+            Deletes one or more catalogue items that satisfy some set of 
+            conditions.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element ref="csw:Constraint" minOccurs="1" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attribute name="typeName" type="xsd:anyURI" use="optional"/>
+      <xsd:attribute name="handle" type="xsd:ID" use="optional"/>
+   </xsd:complexType>
+   <xsd:element name="RecordProperty" type="csw:RecordPropertyType">
+      <xsd:annotation>
+         <xsd:documentation>
+            The RecordProperty element is used to specify the new
+            value of a record property in an update statement.
+         </xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="RecordPropertyType">
+      <xsd:sequence>
+         <xsd:element name="Name" type="xsd:string">
+            <xsd:annotation>
+               <xsd:documentation>
+                  The Name element contains the name of a property
+                  to be updated.  The name may be a path expression.
+               </xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+         <xsd:element name="Value" type="xsd:anyType" minOccurs="0">
+            <xsd:annotation>
+               <xsd:documentation>
+                  The Value element contains the replacement value for the
+                  named property.
+               </xsd:documentation>
+            </xsd:annotation>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="TransactionResponse" type="csw:TransactionResponseType"
+      id="TransactionResponse"/>
+   <xsd:complexType name="TransactionResponseType">
+      <xsd:annotation>
+         <xsd:documentation xml:lang="en">
+            The response for a transaction request that was successfully
+            completed. If the transaction failed for any reason, a service 
+            exception report indicating a TransactionFailure is returned
+            instead.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="TransactionSummary"
+            type="csw:TransactionSummaryType"/>
+         <xsd:element name="InsertResult" type="csw:InsertResultType"
+            minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="version" type="xsd:string" use="optional"/>
+   </xsd:complexType>
+   <xsd:complexType name="TransactionSummaryType" id="TransactionSummaryType">
+      <xsd:annotation>
+         <xsd:documentation xml:lang="en">
+         Reports the total number of catalogue items modified by a transaction 
+         request (i.e, inserted, updated, deleted). If the client did not 
+         specify a requestId, the server may assign one (a URI value).
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element name="totalInserted" type="xsd:nonNegativeInteger"
+            minOccurs="0"/>
+         <xsd:element name="totalUpdated" type="xsd:nonNegativeInteger"
+            minOccurs="0"/>
+         <xsd:element name="totalDeleted" type="xsd:nonNegativeInteger"
+            minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="requestId" type="xsd:anyURI" use="optional"/>
+   </xsd:complexType>
+   <xsd:complexType name="InsertResultType" id="InsertResultType">
+      <xsd:annotation>
+         <xsd:documentation xml:lang="en">
+            Returns a "brief" view of any newly created catalogue records.
+            The handle attribute may reference a particular statement in
+            the corresponding transaction request.
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+         <xsd:element ref="csw:BriefRecord" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="handleRef" type="xsd:anyURI" use="optional"/>
+   </xsd:complexType>
+   <xsd:element name="Harvest" type="csw:HarvestType" id="Harvest"/>
+   <xsd:complexType name="HarvestType">
+      <xsd:annotation>
+         <xsd:documentation xml:lang="en">
+         Requests that the catalogue attempt to harvest a resource from some 
+         network location identified by the source URL.
+
+         Source          - a URL from which the resource is retrieved
+         ResourceType    - normally a URI that specifies the type of the resource
+                           (DCMES v1.1) being harvested if it is known.
+         ResourceFormat  - a media type indicating the format of the 
+                           resource being harvested.  The default is 
+                           "application/xml".
+         ResponseHandler - a reference to some endpoint to which the 
+                           response shall be forwarded when the
+                           harvest operation has been completed
+         HarvestInterval - an interval expressed using the ISO 8601 syntax; 
+                           it specifies the interval between harvest 
+                           attempts (e.g., P6M indicates an interval of 
+                           six months).
+         </xsd:documentation>
+      </xsd:annotation>
+      <xsd:complexContent>
+         <xsd:extension base="csw:RequestBaseType">
+            <xsd:sequence>
+               <xsd:element name="Source" type="xsd:anyURI"/>
+               <xsd:element name="ResourceType" type="xsd:string"/>
+               <xsd:element name="ResourceFormat" type="xsd:string"
+                  minOccurs="0" default="application/xml"/>
+               <xsd:element name="HarvestInterval" type="xsd:duration"
+                  minOccurs="0"/>
+               <xsd:element name="ResponseHandler" type="xsd:anyURI"
+                  minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="HarvestResponse" type="csw:HarvestResponseType"
+      id="HarvestResponse">
+      <xsd:annotation>
+         <xsd:documentation xml:lang="en">
+         The content of the response varies depending on the presence of the 
+         ResponseHandler element. If present, then the catalogue should 
+         verify the request and respond immediately with an csw:Acknowledgement 
+         element in the response. The catalogue must then attempt to harvest 
+         the resource at some later time and send the response message to the 
+         location specified by the value of the ResponseHandler element using 
+         the indicated protocol (e.g. ftp, mailto, http).
+         
+         If the ResponseHandler element is absent, then the catalogue 
+         must attempt to harvest the resource immediately and include a 
+         TransactionResponse element in the response.
+        
+         In any case, if the harvest attempt is successful the response 
+         shall include summary representations of the newly created 
+         catalogue item(s).
+         </xsd:documentation>
+      </xsd:annotation>
+   </xsd:element>
+   <xsd:complexType name="HarvestResponseType" id="HarvestResponseType">
+      <xsd:choice>
+         <xsd:element ref="csw:Acknowledgement"/>
+         <xsd:element ref="csw:TransactionResponse"/>
+      </xsd:choice>
+   </xsd:complexType>
+</xsd:schema>

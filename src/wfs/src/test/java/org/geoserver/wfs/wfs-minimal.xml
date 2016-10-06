@@ -1,0 +1,50 @@
+<wfs>
+  <id>wfs</id>
+  <enabled>true</enabled>
+  <name>My GeoServer WFS</name>
+  <title>My GeoServer WFS</title>
+  <maintainer>http://geoserver.org/comm</maintainer>
+  <abstrct>
+This is a description of your Web Feature Server.
+
+The GeoServer is a full transactional Web Feature Server, you may wish to limit
+GeoServer to a Basic service level to prevent modification of your geographic
+data.
+     </abstrct>
+  <accessConstraints>NONE</accessConstraints>
+  <fees>NONE</fees>
+  <versions>
+    <org.geotools.util.Version>
+      <version>1.0.0</version>
+    </org.geotools.util.Version>
+    <org.geotools.util.Version>
+      <version>1.1.0</version>
+    </org.geotools.util.Version>
+  </versions>
+  <keywords>
+    <string>WFS</string>
+    <string>WMS</string>
+    <string>GEOSERVER</string>
+  </keywords>
+  <citeCompliant>false</citeCompliant>
+  <onlineResource>http://geoserver.org</onlineResource>
+  <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+  <verbose>false</verbose>
+  <gml>
+    <entry>
+      <org.geoserver.wfs.WFSInfo_-Version>V_11</org.geoserver.wfs.WFSInfo_-Version>
+      <org.geoserver.wfs.GMLInfoImpl>
+        <srsNameStyle>URN</srsNameStyle>
+      </org.geoserver.wfs.GMLInfoImpl>
+    </entry>
+    <entry>
+      <org.geoserver.wfs.WFSInfo_-Version>V_10</org.geoserver.wfs.WFSInfo_-Version>
+      <org.geoserver.wfs.GMLInfoImpl>
+        <srsNameStyle>XML</srsNameStyle>
+      </org.geoserver.wfs.GMLInfoImpl>
+    </entry>
+  </gml>
+  <serviceLevel>COMPLETE</serviceLevel>
+  <maxFeatures>1000000</maxFeatures>
+  <featureBounding>false</featureBounding>
+</wfs>

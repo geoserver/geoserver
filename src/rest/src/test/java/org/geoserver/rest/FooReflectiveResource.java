@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,6 +8,8 @@ package org.geoserver.rest;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+
+import com.thoughtworks.xstream.XStream;
 
 public class FooReflectiveResource extends ReflectiveResource {
 
@@ -31,6 +34,12 @@ public class FooReflectiveResource extends ReflectiveResource {
     @Override
     protected void handleObjectPut(Object object) {
         puted = (Foo) object;
+    }
+
+    @Override
+    protected void configureXStream(XStream xstream) {
+        super.configureXStream(xstream);
+        xstream.allowTypes(new Class[] { Foo.class });
     }
 
 }

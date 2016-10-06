@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+(c) 2016 Open Source Geospatial Foundation - all rights reserved
+This code is licensed under the GPL 2.0 license, available at the root
+application directory.
+-->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="fileSystemResourceStore" class="org.geoserver.platform.resource.FileSystemResourceStore">
+        <constructor-arg value="#{ systemProperties['java.io.tmpdir'] }/params-extractor-data-directory"/>
+    </bean>
+    <bean id="geoServerResourceLoader" class="org.geoserver.platform.GeoServerResourceLoader">
+        <constructor-arg ref="fileSystemResourceStore"/>
+    </bean>
+    <bean id="dataDirectory" class="org.geoserver.config.GeoServerDataDirectory">
+        <constructor-arg ref="geoServerResourceLoader"/>
+    </bean>
+    <bean id="geoServerExtensions" class="org.geoserver.platform.GeoServerExtensions"/>
+</beans>

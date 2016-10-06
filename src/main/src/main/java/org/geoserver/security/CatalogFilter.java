@@ -1,15 +1,19 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.ows.Dispatcher;
+import org.opengis.filter.Filter;
 
 /**
  * A pluggable extension point that can filter out catalog items you don't want the user to see, so
@@ -30,7 +34,7 @@ public interface CatalogFilter {
      * Return true to hide the specified layer from the catalog
      * 
      * @param layer
-     * @return
+     *
      */
     boolean hideLayer(LayerInfo layer);
 
@@ -51,16 +55,20 @@ public interface CatalogFilter {
     /**
      * Return true to hide the specified workspace from the catalog
      * 
-     * @param layer
-     * @return
+     * @param workspace Workspace to hide
      */
     boolean hideWorkspace(WorkspaceInfo workspace);
 
     /**
      * Return true to hide the specified resource from the catalog
      * 
-     * @param layer
-     * @return
+     * @param resource Resource (layer) to hide
      */
     boolean hideResource(ResourceInfo resource);
+    
+    /**
+     * Returns a Filter equivalent to this CatalogFilter when applied to an object of the specified type.
+     * @param clazz CatalogInfo type to check against security filters
+     */
+    Filter getSecurityFilter(final Class<? extends CatalogInfo> clazz);
 }

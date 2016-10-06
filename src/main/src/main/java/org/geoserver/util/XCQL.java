@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -50,7 +51,7 @@ public class XCQL {
      * </p>
      * @param filter The ecql/cql string.
      * 
-     * @see ECQL#toFiter(String)
+     * @see ECQL#toFilter(String)
      */
     public static Filter toFilter(String filter) throws CQLException {
         try {

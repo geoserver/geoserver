@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -23,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class LocalSettingsTest extends CatalogRESTTestSupport {
 
@@ -80,7 +81,7 @@ public class LocalSettingsTest extends CatalogRESTTestSupport {
                 + "'proxyBaseUrl':'http://proxy.url','verbose':false,'verboseExceptions':'true'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/sf/settings",
                 json, "text/json");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON("/rest/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
@@ -118,7 +119,7 @@ public class LocalSettingsTest extends CatalogRESTTestSupport {
                 + "</settings>";
         MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/sf/settings",
                 xml, "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
 
         Document dom = getAsDOM("/rest/workspaces/sf/settings.xml");
         assertEquals("settings", dom.getDocumentElement().getLocalName());
@@ -145,7 +146,7 @@ public class LocalSettingsTest extends CatalogRESTTestSupport {
 
         MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/sf/settings",
                 inputJson, "text/json");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON("/rest/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
@@ -181,7 +182,7 @@ public class LocalSettingsTest extends CatalogRESTTestSupport {
                 + "</settings>";
         MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/sf/settings",
                 xml, "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         Document dom = getAsDOM("/rest/workspaces/sf/settings.xml");
         assertEquals("settings", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("sf", "/settings/workspace/name", dom);
@@ -201,7 +202,7 @@ public class LocalSettingsTest extends CatalogRESTTestSupport {
         JSON json = getAsJSON("/rest/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
-        assertEquals(200, deleteAsServletResponse("/rest/workspaces/sf/settings").getStatusCode());
+        assertEquals(200, deleteAsServletResponse("/rest/workspaces/sf/settings").getStatus());
         json = getAsJSON("/rest/workspaces/sf/settings.json");
         JSONObject deletedJson = (JSONObject) json;
         assertNull(deletedJson.get("workspace"));

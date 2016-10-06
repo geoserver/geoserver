@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -45,11 +46,11 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         tester.assertComponent( "form", Form.class );
         tester.assertComponent( "form:crs", CRSPanel.class );
         
-        FormTester ft = tester.newFormTester( "form");
+        FormTester ft = tester.newFormTester("form", false);
         ft.submit();
         
         CRSPanel crsPanel = (CRSPanel) tester.getComponentFromLastRenderedPage( "form:crs");
-        assertEquals( DefaultGeographicCRS.WGS84, crsPanel.getCRS() );
+        assertTrue(CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, crsPanel.getCRS()));
     }
     
     @Test
@@ -86,11 +87,22 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         TextField srs = (TextField) tester.getComponentFromLastRenderedPage( "form:crs:srs");
         srs.setModelObject( "EPSG:3005");
         
-        FormTester ft = tester.newFormTester( "form");
+        FormTester ft = tester.newFormTester("form", false);
         ft.submit();
         
         CRSPanel crsPanel = (CRSPanel) tester.getComponentFromLastRenderedPage( "form:crs");
-        assertEquals( CRS.decode("EPSG:3005"), crsPanel.getCRS() );
+        assertTrue(CRS.equalsIgnoreMetadata(CRS.decode("EPSG:3005"), crsPanel.getCRS()));
+    }
+    
+    public void testStandaloneChanged2() throws Exception {
+        CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
+        tester.startPage(new CRSPanelTestPage(crs));
+        // write down the text, submit the form
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("form:crs:srs", "EPSG:3005");
+        ft.submit();
+        CRSPanel crsPanel = (CRSPanel) tester.getComponentFromLastRenderedPage("form:crs");
+        assertEquals(CRS.decode("EPSG:3005"), crsPanel.getCRS());
     }
     
     @Test
@@ -102,7 +114,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         FormTester ft = tester.newFormTester( "form");
         ft.submit();
         
-        assertEquals(1, Session.get().getFeedbackMessages().size());
+        assertEquals(1, panel.getFeedbackMessages().size());
         // System.out.println(Session.get().getFeedbackMessages().messageForComponent(panel));
     }
     

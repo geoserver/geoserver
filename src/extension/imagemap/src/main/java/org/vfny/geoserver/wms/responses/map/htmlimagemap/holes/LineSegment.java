@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -34,7 +35,7 @@ public class LineSegment {
 	 * 
 	 * @param origin
 	 * @param direction
-	 * @return
+	 *
 	 */
 	public Float intersectsWithRay(Coordinate origin, Coordinate direction)
 	{
@@ -62,7 +63,7 @@ public class LineSegment {
 	 * (null if they don't intersect).
 	 * @param a
 	 * @param b
-	 * @return
+	 *
 	 */
 	public static Coordinate findIntersection(LineSegment a, LineSegment b)
 	{
@@ -98,7 +99,7 @@ public class LineSegment {
 	 * @param value
 	 * @param min
 	 * @param max
-	 * @return
+	 *
 	 */
 	public static double clamp(double value,double min,double max) {
 		if(value>max)

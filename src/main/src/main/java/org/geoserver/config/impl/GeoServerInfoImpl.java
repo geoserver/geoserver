@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -44,6 +45,10 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     protected Integer xmlPostRequestLogBufferSize = 1024;
 
     protected Boolean xmlExternalEntitiesEnabled = Boolean.FALSE;
+    
+    protected String lockProviderName;
+
+    protected WebUIMode webUIMode = WebUIMode.DEFAULT;
     
     //deprecated members, kept around to maintain xstream persistence backward compatability
     @Deprecated
@@ -268,6 +273,14 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         this.clientProperties = properties;
     }
     
+    public String getLockProviderName() {
+        return this.lockProviderName;
+    }
+    
+    public void setLockProviderName(String lockProviderName) {
+        this.lockProviderName = lockProviderName;
+    }
+    
     public void dispose() {
         if (coverageAccess != null){
             coverageAccess.dispose();
@@ -294,6 +307,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         result = prime * result + xmlPostRequestLogBufferSize;
         result = prime * result + 
                 ((resourceErrorHandling == null) ? 0 : resourceErrorHandling.hashCode());
+        result = prime * result + ((lockProviderName == null) ? 0 : lockProviderName.hashCode());
         return result;
     }
 
@@ -346,6 +360,12 @@ public class GeoServerInfoImpl implements GeoServerInfo {
             if (!resourceErrorHandling.equals(other.getResourceErrorHandling())) return false;
         }
         
+        if (lockProviderName == null) {
+            if (other.getLockProviderName() != null) return false;
+        } else {
+            if (!lockProviderName.equals(other.getLockProviderName())) return false;
+        }
+
         return true;
     }
 
@@ -417,6 +437,16 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     public ResourceErrorHandling getResourceErrorHandling() {
         return this.resourceErrorHandling;
+    }
+
+    @Override
+    public WebUIMode getWebUIMode() {
+        return webUIMode;
+    }
+
+    @Override
+    public void setWebUIMode(WebUIMode webUIMode) {
+        this.webUIMode = webUIMode;
     }
 
 }

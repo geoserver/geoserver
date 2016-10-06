@@ -1,38 +1,35 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.map;
 
-import java.awt.Transparency;
-import java.awt.image.IndexColorModel;
+import it.geosolutions.jaiext.range.NoDataContainer;
+
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.stream.ImageOutputStream;
+import javax.media.jai.PlanarImage;
 
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
-import org.geoserver.wms.kvp.PaletteManager;
-import org.geoserver.wms.map.PNGMapResponse.QuantizeMethod;
-import org.geoserver.wms.map.quantize.CachingColorIndexer;
-import org.geoserver.wms.map.quantize.ColorIndexer;
-import org.geoserver.wms.map.quantize.ColorIndexerDescriptor;
-import org.geoserver.wms.map.quantize.LRUColorIndexer;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.image.io.ImageIOExt;
-import org.geotools.image.palette.InverseColorMapOp;
+import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -90,8 +87,21 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
         image = applyPalette(image, mapContent, IMAGE_GEOTIFF8, false);
         
         // crating a grid coverage
-        final GridCoverage2D gc = factory.create("geotiff", image,
+        GridCoverage2D gc = factory.create("geotiff", image,
                 new GeneralEnvelope(mapContent.getRenderingArea()));
+        
+        // NoData stuff
+        if(image instanceof PlanarImage){
+            Map properties = gc.getProperties();
+            if(properties == null){
+                properties = new HashMap();
+            }
+            Object property = ((PlanarImage)image).getProperty(NoDataContainer.GC_NODATA);
+            if(property != null){
+                CoverageUtilities.setNoDataProperty(properties, property);
+                gc = factory.create(gc.getName(), gc.getRenderedImage(), gc.getEnvelope(), gc.getSampleDimensions(), null, properties);
+            }
+        }
 
         // writing it out
         final ImageOutputStream imageOutStream = ImageIOExt.createImageOutputStream(image, outStream);

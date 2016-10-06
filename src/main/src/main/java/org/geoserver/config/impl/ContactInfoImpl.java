@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,6 +16,11 @@ public class ContactInfoImpl implements ContactInfo {
     String addressCity;
 
     String addressCountry;
+
+    String addressDeliveryPoint;
+
+    @Deprecated
+    String addressElectronicMailAddress;
 
     String addressPostalCode;
 
@@ -66,6 +72,34 @@ public class ContactInfoImpl implements ContactInfo {
 
     public void setAddressCountry(String addressCountry) {
         this.addressCountry = addressCountry;
+    }
+
+    @Override
+    public String getAddressDeliveryPoint() {
+        return addressDeliveryPoint;
+    }
+
+    @Override
+    public void setAddressDeliveryPoint(String addressDeliveryPoint) {
+        this.addressDeliveryPoint = addressDeliveryPoint;
+    }
+
+    @Override
+    public String getAddressElectronicMailAddress() {
+        if( this.contactEmail != null && !this.contactEmail.isEmpty() ){
+            // this field is deprecate use contactEmail if available
+            return contactEmail;
+        }
+        return addressElectronicMailAddress;
+    }
+
+    @Override
+    public void setAddressElectronicMailAddress(String addressElectronicMailAddress) {
+        if( this.contactEmail == null || this.contactEmail.isEmpty() ){
+         // this field is deprecate - migrate value to contactEmail if available
+            this.contactEmail = addressElectronicMailAddress;
+        }
+        this.addressElectronicMailAddress = addressElectronicMailAddress;
     }
 
     public String getAddressPostalCode() {
@@ -166,6 +200,7 @@ public class ContactInfoImpl implements ContactInfo {
         result = PRIME * result + ((contactPosition == null) ? 0 : contactPosition.hashCode());
         result = PRIME * result + ((contactVoice == null) ? 0 : contactVoice.hashCode());
         result = PRIME * result + ((onlineResource == null) ? 0 : onlineResource.hashCode());
+        result = PRIME * result + ((addressDeliveryPoint == null) ? 0 : addressDeliveryPoint.hashCode());
         return result;
     }
 
@@ -242,6 +277,11 @@ public class ContactInfoImpl implements ContactInfo {
             if (other.getOnlineResource() != null)
                 return false;
         } else if (!onlineResource.equals(other.getOnlineResource()))
+            return false;
+        if (addressDeliveryPoint == null) {
+            if (other.getAddressDeliveryPoint() != null)
+                return false;
+        } else if (!addressDeliveryPoint.equals(other.getAddressDeliveryPoint()))
             return false;
         return true;
     }

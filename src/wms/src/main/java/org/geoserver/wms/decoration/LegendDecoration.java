@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -73,11 +74,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
     }
 
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContext) {
-        double scaleDenominator = RendererUtilities.calculateOGCScale(
-            mapContext.getViewport().getBounds(),
-            mapContext.getRequest().getWidth(),
-            mapContext.getRequest().getFormatOptions()
-        );
+        double scaleDenominator = mapContext.getScaleDenominator(true);
         double dpi = RendererUtilities.getDpi(mapContext.getRequest().getFormatOptions());
         double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
         double scaleFactor = dpi / standardDpi;
@@ -111,6 +108,14 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
                 Font oldFont = g2d.getFont();
                 g2d.setFont(newFont);
+                if (LegendUtils.isFontAntiAliasing(legend.request)) {
+                    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                } else {
+                    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                            RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+                }
+
                 BufferedImage titleImage = LegendUtils.renderLabel(title, g2d, request);
                 g2d.setFont(oldFont);
 
@@ -198,14 +203,6 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                     finalLegend,
                     new HashMap<RenderingHints.Key, Object>()
                 );
-
-            if (LegendUtils.isFontAntiAliasing(legend.request)) {
-                finalGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            } else {
-                finalGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                        RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-            }
 
             // title
             int titleHeightOffset = 0;

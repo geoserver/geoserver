@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.geoserver.security.AccessMode;
+import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -20,7 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
  * @author Andrea Aime - TOPP
  * 
  */
-class SecureTreeNode {
+public class SecureTreeNode {
 
     /**
      * Special role set used to mean every possible role in the system
@@ -30,7 +32,7 @@ class SecureTreeNode {
     /**
      * The role given to the administrators
      */
-    static final String ROOT_ROLE = "ROLE_ADMINISTRATOR";
+    static final String ROOT_ROLE = GeoServerRole.ADMIN_ROLE.getAuthority();
 
     Map<String, SecureTreeNode> children = new HashMap<String, SecureTreeNode>();
 
@@ -64,7 +66,7 @@ class SecureTreeNode {
     /**
      * Builds the root of a security tree
      */
-    SecureTreeNode() {
+    public SecureTreeNode() {
         // by default we allow access for everybody in all modes for the root
         // node, since we have no parent to fall back onto
         // -> except for admin access, default is administrator
@@ -83,9 +85,9 @@ class SecureTreeNode {
      * Returns a child with the specified name, or null
      * 
      * @param name
-     * @return
+     *
      */
-    SecureTreeNode getChild(String name) {
+    public SecureTreeNode getChild(String name) {
         return children.get(name);
     }
 
@@ -93,9 +95,9 @@ class SecureTreeNode {
      * Adds a child to this path element
      * 
      * @param name
-     * @return
+     *
      */
-    SecureTreeNode addChild(String name) {
+    public SecureTreeNode addChild(String name) {
         if (getChild(name) != null)
             throw new IllegalArgumentException("This pathElement " + name
                     + " is already among my children");
@@ -116,11 +118,14 @@ class SecureTreeNode {
      * 
      * @param user
      * @param mode
-     * @return
+     *
      */
-    boolean canAccess(Authentication user, AccessMode mode) {
+    public boolean canAccess(Authentication user, AccessMode mode) {
         Set<String> roles = getAuthorizedRoles(mode);
 
+        if (GeoServerSecurityFilterChainProxy.isSecurityEnabledForCurrentRequest()==false)
+            return true;
+        
         // if we don't know, we ask the parent, otherwise we assume
         // the object is unsecured
         if (roles == null) {
@@ -149,14 +154,14 @@ class SecureTreeNode {
      * collection can be null if we don't have a rule, meaning the rule will
      * have to searched in the parent node
      */
-    Set<String> getAuthorizedRoles(AccessMode mode) {
+    public Set<String> getAuthorizedRoles(AccessMode mode) {
         return authorizedRoles.get(mode);
     }
 
     /**
      * Sets the authorized roles for the specified access mode
      */
-    void setAuthorizedRoles(AccessMode mode, Set<String> roles) {
+    public void setAuthorizedRoles(AccessMode mode, Set<String> roles) {
         authorizedRoles.put(mode, roles);
     }
 
@@ -168,9 +173,9 @@ class SecureTreeNode {
      * children as well)
      * 
      * @param pathElements
-     * @return
+     *
      */
-    SecureTreeNode getDeepestNode(String[] pathElements) {
+    public SecureTreeNode getDeepestNode(String[] pathElements) {
         SecureTreeNode curr = this;
         for (int i = 0; i < pathElements.length; i++) {
             final SecureTreeNode next = curr.getChild(pathElements[i]);
@@ -181,4 +186,14 @@ class SecureTreeNode {
         }
         return curr;
     }
+
+    /**
+     * The children of this secure tree node
+     * 
+     *
+     */
+    Map<String, SecureTreeNode> getChildren() {
+        return children;
+    }
+
 }

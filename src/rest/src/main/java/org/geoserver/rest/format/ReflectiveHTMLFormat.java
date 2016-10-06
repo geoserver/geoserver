@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -97,13 +98,25 @@ public class ReflectiveHTMLFormat extends DataFormat {
     /**
      * The class used for reflection
      */
-    protected Class clazz;
+    protected Class<?> clazz;
+
+    /**
+     * Encoding (null for default)
+     */
+    protected String encoding;
 
     /**
      * Creates a new instance of the format.
      */
     public ReflectiveHTMLFormat(Request request,Response response,Resource resource) {
-        this(null,request,response,resource);
+        this(null, null, request, response, resource);
+    }
+
+    /**
+     * Creates a new instance of the format.
+     */
+    public ReflectiveHTMLFormat(String encoding, Request request, Response response, Resource resource) {
+        this(null, encoding, request, response, resource);
     }
 
     /**
@@ -113,8 +126,20 @@ public class ReflectiveHTMLFormat extends DataFormat {
      * to the concrete class of object being serialized. 
      * </p>
      */
-    public ReflectiveHTMLFormat( Class clazz, Request request,Response response, Resource resource ) {
+    public ReflectiveHTMLFormat(Class<?> clazz, Request request, Response response, Resource resource) {
+        this(clazz, null, request, response, resource);
+    }
+
+    /**
+     * Creates a new instance of the format specifying the type of object being serialized.
+     * <p>
+     * This constructor is useful when reflection should be executed against an interface as opposed
+     * to the concrete class of object being serialized. 
+     * </p>
+     */
+    public ReflectiveHTMLFormat(Class<?> clazz, String encoding, Request request, Response response, Resource resource) {
         super( MediaType.TEXT_HTML );
+        this.encoding = encoding;
         this.clazz = clazz;
         this.request = request;
         this.resource = resource;
@@ -123,7 +148,7 @@ public class ReflectiveHTMLFormat extends DataFormat {
     @Override
     public Representation toRepresentation(Object object) {
    
-        Class clazz = this.clazz != null ? this.clazz : object.getClass();
+        Class<?> clazz = this.clazz != null ? this.clazz : object.getClass();
         Configuration configuration = createConfiguration(object, clazz);
         final ObjectWrapper wrapper = configuration.getObjectWrapper();
         configuration.setObjectWrapper(new ObjectWrapper() {
@@ -171,7 +196,7 @@ public class ReflectiveHTMLFormat extends DataFormat {
         while( template == null && clazz != null ) {
             template = tryLoadTemplate(configuration, clazz.getSimpleName() + ".ftl");
             if(template == null) {
-                for ( Class interfaze : clazz.getInterfaces() ) {
+                for (Class<?> interfaze : clazz.getInterfaces()) {
                     template = tryLoadTemplate(configuration, interfaze.getSimpleName() + ".ftl" );
                     if(template != null)
                         break;
@@ -214,11 +239,14 @@ public class ReflectiveHTMLFormat extends DataFormat {
         }
     }
 
-    protected Configuration createConfiguration(Object data, Class clazz) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected Configuration createConfiguration(Object data, Class<?> clazz) {
         Configuration cfg = new Configuration( );
         cfg.setObjectWrapper( new ObjectToMapWrapper( clazz ));
         cfg.setClassForTemplateLoading(ReflectiveHTMLFormat.class,"");
-        
+        if (encoding != null) {
+            cfg.setDefaultEncoding(encoding);
+        }
         return cfg;
     }
 
@@ -259,10 +287,11 @@ public class ReflectiveHTMLFormat extends DataFormat {
             this.clazz = clazz;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public TemplateModel wrap(Object object) throws TemplateModelException {
             if ( object instanceof Collection ) {
-                Collection c = (Collection) object;
+                Collection<?> c = (Collection<?>) object;
                 if (c.isEmpty()) {
                     SimpleHash hash = new SimpleHash();
                     hash.put( "values", new CollectionModel( c, this ) );
@@ -279,12 +308,18 @@ public class ReflectiveHTMLFormat extends DataFormat {
             }
             
             if ( object != null && clazz.isAssignableFrom( object.getClass() ) ) {
-                HashMap map = new HashMap();
+                HashMap<String, Object> map = new HashMap<String, Object>();
                 
                 ClassProperties cp = OwsUtils.getClassProperties(clazz); 
                 for ( String p : cp.properties() ) {
                     if ( "Class".equals( p ) ) continue;
-                    Object value = OwsUtils.get(object, p);
+                    Object value = null;
+                    try {
+                        value = OwsUtils.get(object, p);
+                    } catch(Exception e) {
+                        LOGGER.log(Level.WARNING, "Could not resolve property " + p + " of bean " + object, e);
+                        value = "** Failed to retrieve value of property " + p + ". Error message is: " + e.getMessage() + "**";
+                    }
                     if ( value == null ) {
                         value = "null";
                     }
@@ -312,7 +347,7 @@ public class ReflectiveHTMLFormat extends DataFormat {
          * @param model The resulting template model.
          * @param object The object being serialized.
          */
-        protected void wrapInternal(Map properties, SimpleHash model, T object ) {
+        protected void wrapInternal(Map<String, Object> properties, SimpleHash model, T object ) {
         }
 
     }

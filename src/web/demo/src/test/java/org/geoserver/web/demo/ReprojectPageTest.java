@@ -1,18 +1,16 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.demo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.io.Serializable;
-
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -23,6 +21,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         // we don't need data configured in the catalog
+        testData.setUpSecurity();
     }
 
     @Test
@@ -53,7 +52,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
-        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage();
+        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage().toString();
         String expected = new ParamResourceModel("GeometryTextArea.parseError", null).getString();
         assertEquals(expected, message);
     }
@@ -86,14 +85,14 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
-        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage();
+        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage().toString();
         String expected = new ParamResourceModel("GeometryTextArea.parseError", null).getString();
         assertEquals(expected, message);
     }
     
     @Test
     public void testPageParams() {
-        tester.startPage(ReprojectPage.class, new PageParameters("fromSRS=EPSG:4326,toSRS=EPSG:32632"));
+        tester.startPage(ReprojectPage.class, new PageParameters().add("fromSRS", "EPSG:4326").add("toSRS", "EPSG:32632"));
         String source = tester.getComponentFromLastRenderedPage("form:sourceCRS:srs").getDefaultModelObjectAsString();
         String target = tester.getComponentFromLastRenderedPage("form:targetCRS:srs").getDefaultModelObjectAsString();
         assertEquals("EPSG:4326", source);

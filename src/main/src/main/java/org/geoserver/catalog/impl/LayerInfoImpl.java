@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -18,6 +19,7 @@ import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.util.logging.Logging;
@@ -36,13 +38,11 @@ public class LayerInfoImpl implements LayerInfo {
     // TODO: revert to normal property when the resource/publishing split is done
     transient protected String name;
 
-    private String title;
-    
     private String abstractTxt;
     
     protected String path;
 
-    protected LayerInfo.Type type;
+    protected PublishedType type;
 
     protected StyleInfo defaultStyle;
 
@@ -63,6 +63,8 @@ public class LayerInfoImpl implements LayerInfo {
     transient protected Boolean advertised;
 
     protected Boolean queryable;
+
+    protected Boolean opaque;
 
     protected MetadataMap metadata = new MetadataMap();
 
@@ -98,11 +100,9 @@ public class LayerInfoImpl implements LayerInfo {
     @Override    
     public String getName() {
         if (resource == null) {
-            throw new NullPointerException("Unable to get Layer name without an underlying resource");
+            return name;
         }
         return resource.getName();
-        // TODO: uncomment back when resource/publish split is complete
-        // return name;
     }
 
     @Override    
@@ -123,12 +123,12 @@ public class LayerInfoImpl implements LayerInfo {
     }
 
     @Override    
-    public Type getType() {
+    public PublishedType getType() {
         return type;
     }
     
     @Override
-    public void setType(Type type) {
+    public void setType(PublishedType type) {
         this.type = type;
     }
 
@@ -345,6 +345,16 @@ public class LayerInfoImpl implements LayerInfo {
     }
 
     @Override
+    public void setOpaque(boolean opaque) {
+        this.opaque = opaque;
+    }
+
+    @Override
+    public boolean isOpaque() {
+        return this.opaque == null? false : this.opaque.booleanValue();
+    }
+
+    @Override
     public boolean isAdvertised() {
         if (resource == null) {
             throw new NullPointerException("Unable to get Layer advertised flag without an underlying resource");
@@ -386,12 +396,12 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public String getTitle() {
-        return title;
+        return resource.getTitle();
     }
 
     @Override
     public void setTitle(String title) {
-        this.title = title;
+        this.resource.setTitle(title);
     }
 
     @Override
@@ -402,5 +412,10 @@ public class LayerInfoImpl implements LayerInfo {
     @Override
     public void setAbstract(String abstractTxt) {
         this.abstractTxt = abstractTxt;
+    }
+
+    @Override
+    public String getPrefixedName() {
+        return prefixedName();
     }
 }

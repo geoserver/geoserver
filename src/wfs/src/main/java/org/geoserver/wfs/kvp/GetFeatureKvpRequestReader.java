@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -162,17 +163,16 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
             kvp.put("typeName", list);
             querySet(eObject, "typeName", list);
         } else {
-            //check for featureId and infer typeName
+            // check for featureId and infer typeName
             // in WFS 2.0 it is resourceId
             if (kvp.containsKey("featureId") || kvp.containsKey("resourceId")) {
                 //use featureId to infer type Names
                 List featureId = (List) kvp.get("featureId");
                 featureId = featureId != null ? featureId : (List) kvp.get("resourceId");
                 
-                ArrayList typeNames = new ArrayList();
-
                 QNameKvpParser parser = new QNameKvpParser("typeName", catalog);
 
+                Set<List> hTypeNames = new HashSet<>();
                 for (int i = 0; i < featureId.size(); i++) {
                     String fid = (String) featureId.get(i);
                     int pos = fid.indexOf(".");
@@ -181,11 +181,13 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                         String typeName = fid.substring(0, fid.lastIndexOf("."));
 
                         //add to a list to set on the query
-                        List parsed = (List) parser.parse(typeName);
-                        typeNames.add(parsed);
+                        List<QName> parsed = (List) parser.parse(typeName);
+                        hTypeNames.add(parsed);
                     }
                 }
-
+                
+                //remove duplicate typeNames from the list
+                List typeNames = new ArrayList<>(hTypeNames);
                 querySet(eObject, "typeName", typeNames);
             } else {
                 //check for stored query id, i have seen both storedQueryId and storedQuery_Id used
@@ -393,14 +395,8 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
     }
     
     BBOX bboxFilter(QName typeName, Envelope bbox) throws Exception {
-        FeatureTypeInfo featureTypeInfo = 
-            catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
-        
-        //JD: should this be applied to all geometries?
-        //String name = featureType.getDefaultGeometry().getLocalName();
-        //JD: changing to "" so it is
+        //JD: use "" so that it applies to all geometries
         String name = "";
-        
 
         if ( bbox instanceof ReferencedEnvelope3D ) {
         	return filterFactory.bbox(name, (ReferencedEnvelope3D) bbox);        
@@ -409,10 +405,13 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
         //get the epsg code
         String epsgCode = null;
         
-        if ( bbox instanceof ReferencedEnvelope ) {
+        if(bbox instanceof SRSEnvelope) {
+            SRSEnvelope se = (SRSEnvelope) bbox;
+            epsgCode = se.getSrs();
+        } else if ( bbox instanceof ReferencedEnvelope ) {
             CoordinateReferenceSystem crs = ((ReferencedEnvelope)bbox).getCoordinateReferenceSystem();
             if ( crs != null ) {
-                epsgCode = GML2EncodingUtils.crs(crs);
+                epsgCode = GML2EncodingUtils.toURI(crs);
             }
         }
             
@@ -473,6 +472,15 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                 String msg = "Specified " + m + " " + property + " for " + n + " queries.";
                 throw new WFSException(request, msg);
             }
+        }
+        if(m < n) {
+            // fill the rest with nulls
+            List newValues = new ArrayList<>();
+            newValues.addAll(values);
+            for (int i = 0; i < n - m; i++) {
+                newValues.add(null);
+            }
+            values = newValues;
         }
 
         EMFUtils.set(query, property, values);

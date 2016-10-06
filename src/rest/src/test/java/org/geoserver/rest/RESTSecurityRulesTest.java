@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,9 +10,11 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.RESTfulDefinitionSource;
 import org.geoserver.security.impl.RESTAccessRuleDAO;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -30,11 +33,13 @@ public class RESTSecurityRulesTest extends GeoServerSystemTestSupport {
         dao = (RESTAccessRuleDAO) applicationContext.getBean("restRulesDao");
         
         // reset the security file
-        File restProperties = new File(getDataDirectory().findSecurityRoot(), "rest.properties");
+        Resource restProperties = getDataDirectory().getSecurity("rest.properties");
         restProperties.delete();
         String defaultRules = "/**;GET=ROLE_ADMINISTRATOR\n" + 
         		"/**;POST,DELETE,PUT=ROLE_ADMINISTRATOR";
-        FileUtils.writeStringToFile(restProperties, defaultRules);
+        OutputStream os = restProperties.out();
+        os.write(defaultRules.getBytes());
+        os.close();
     }
     
 

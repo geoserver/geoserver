@@ -1,10 +1,12 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.geoserver.catalog.AuthorityURLInfo;
@@ -51,8 +53,19 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
     @Override
     protected void initXStreamPersister(XStreamPersister xp, GeoServer gs) {
         super.initXStreamPersister(xp, gs);
-        xp.getXStream().alias("wms", WMSInfo.class, WMSInfoImpl.class);
-        xp.getXStream().registerConverter(new WMSInfoConverter(xp.getXStream()));
+        initXStreamPersister(xp);
+    }
+
+    /**
+     * Sets up aliases and allowed types for the xstream persister
+     * @param xs
+     */
+    public static void initXStreamPersister(XStreamPersister xp) {
+        XStream xs = xp.getXStream();
+        xs.alias("wms", WMSInfo.class, WMSInfoImpl.class);
+        xs.registerConverter(new WMSInfoConverter(xs));
+        xs.addDefaultImplementation(WatermarkInfoImpl.class, WatermarkInfo.class);
+        xs.allowTypes(new Class[] { WatermarkInfo.class, WatermarkInfoImpl.class });
     }
 
     @Override
@@ -70,7 +83,13 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
         }
         if (service.getSRS() == null) {
             ((WMSInfoImpl) service).setSRS(new ArrayList<String>());
+        }        
+        if (service.getGetFeatureInfoMimeTypes() == null) {
+            ((WMSInfoImpl) service).setGetFeatureInfoMimeTypes(new HashSet<String>());
         }
+        if (service.getGetMapMimeTypes() == null) {
+            ((WMSInfoImpl) service).setGetMapMimeTypes(new HashSet<String>());
+        }        
         if (service.getInterpolation() == null) {
             service.setInterpolation(WMSInterpolation.Nearest);
         }
@@ -84,7 +103,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
      * 
      * @since 2.1.3
      */
-    class WMSInfoConverter extends ReflectionConverter {
+    static class WMSInfoConverter extends ReflectionConverter {
 
         public WMSInfoConverter(XStream xs) {
             super(xs.getMapper(), xs.getReflectionProvider());

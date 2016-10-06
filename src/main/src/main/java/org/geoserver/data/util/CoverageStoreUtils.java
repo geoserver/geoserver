@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -24,7 +25,6 @@ import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 
@@ -118,7 +118,7 @@ public final class CoverageStoreUtils {
      * bleck
      * </p>
      *
-     * @return
+     *
      */
     public static Format aquireFactoryByType(String type) {
         final Format[] formats = GridFormatFinder.getFormatArray();
@@ -142,7 +142,7 @@ public final class CoverageStoreUtils {
      *
      * @param description
      *
-     * @return
+     *
      */
     public static Format aquireFactory(String description) {
         Format[] formats = GridFormatFinder.getFormatArray();
@@ -277,7 +277,7 @@ public final class CoverageStoreUtils {
      *
      * @param sourceCRS
      * @param targetEnvelope
-     * @return
+     *
      * @throws IndexOutOfBoundsException
      * @throws FactoryException
      * @throws TransformException
@@ -301,11 +301,9 @@ public final class CoverageStoreUtils {
         //
         ////
         final CoordinateReferenceSystem targetCRS = DefaultGeographicCRS.WGS84;
-        final MathTransform mathTransform = CRS.findMathTransform(sourceCRS, targetCRS, true);
         final GeneralEnvelope targetEnvelope;
-
-        if (!mathTransform.isIdentity()) {
-            targetEnvelope = CRS.transform(mathTransform, envelope);
+        if (!CRS.equalsIgnoreMetadata(sourceCRS, targetCRS)) {
+            targetEnvelope = CRS.transform(envelope, targetCRS);
         } else {
             targetEnvelope = new GeneralEnvelope(envelope);
         }

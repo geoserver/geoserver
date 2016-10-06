@@ -16,26 +16,37 @@ for each scripting hook::
     ...
     scripts/
       apps/
+      function/
       lib/
+      wfs/
+        tx/
       wps/
         
 The ``apps`` directory provides an "application" hook allowing for one to 
 provide a script invokable over http.
 
-The ``wps`` directory provides a Web Processing Service (WPS) process 
-hook to contribute a process invokable via WPS.
+The ``function`` directory provides a Filter Function hook allowing to 
+create new custom functions to be used for example in WFS/WMS filtering or in SLD 
+expressions, see :ref:`filter_function`.
 
 The ``lib`` directory is not a hook but is meant to be a location where 
-common scripts may be placed. For instance this directory may be used as 
+common scripts/libraries may be placed. For instance this directory may be used as 
 a common location for data structures and utility functions that may  be 
-utilized across many different scripts. 
+utilized across many different scripts.
 
 .. note:: How the ``lib`` directory (or if it is utilized at all) is 
           language specific.
 
+The ``wfs/tx`` directory provides a WFS Transactions hook allowing to intercept
+WFS transaction.
+
+The ``wps`` directory provides a Web Processing Service (WPS) process 
+hook to contribute a process invokable via WPS.
+
 See :ref:`scripting_hooks` for more details.
 
-Creating scripts involves creating a script in one of these hook directories.
+Creating scripts involves either creating a script in one of these hook directories or
+creating it with web user interface.
 New scripts are picked up automatically by GeoServer without a need to ever
 restart the server as is the case with a pure Java GeoServer extension.
 

@@ -1,25 +1,21 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.SubmitLink;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.panel.Fragment;
+import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.web.data.store.panel.DirectoryParamPanel;
 import org.geoserver.web.services.BaseServiceAdminPage;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
-import org.geoserver.web.wicket.GeoServerTablePanel;
-import org.geoserver.wps.ProcessGroupInfo;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wps.WPSInfo;
 
 /**
@@ -30,14 +26,16 @@ import org.geoserver.wps.WPSInfo;
  */
 public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
 
-    private List<ProcessGroupInfo> processFactories;
-
     public WPSAdminPage() {
         super();
     }
     
     public WPSAdminPage(WPSInfo service) {
         super(service);
+    }
+
+    public WPSAdminPage(PageParameters pageParams) {
+        super(pageParams);
     }
 
     protected Class<WPSInfo> getServiceClass() {
@@ -50,84 +48,84 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
 
     @Override
     protected void build(IModel info, final Form form) {
-        TextField connectionTimeout = new TextField("connectionTimeout", Integer.class);
-        connectionTimeout.add(new MinimumValidator<Integer>(-1));
+        TextField<Integer> connectionTimeout = new TextField<Integer>("connectionTimeout", Integer.class);
+        connectionTimeout.add(RangeValidator.minimum(-1));
         form.add(connectionTimeout);
         
-        TextField maxSynchProcesses = new TextField("maxSynchronousProcesses", Integer.class);
-        maxSynchProcesses.add(new MinimumValidator<Integer>(1));
+        TextField<Integer> maxSynchProcesses = new TextField<Integer>("maxSynchronousProcesses", Integer.class);
+        maxSynchProcesses.add(RangeValidator.minimum(1));
         form.add(maxSynchProcesses);
         
-        TextField maxAsynchProcesses = new TextField("maxAsynchronousProcesses", Integer.class);
-        maxAsynchProcesses.add(new MinimumValidator<Integer>(1));
+        TextField<Integer> maxSynchExecutionTime = new TextField<Integer>("maxSynchronousExecutionTime", Integer.class);
+        maxSynchExecutionTime.add(RangeValidator.minimum(-1));
+        form.add(maxSynchExecutionTime);
+
+        TextField<Integer> maxSynchTotalTime = new TextField<Integer>("maxSynchronousTotalTime", Integer.class);
+        maxSynchTotalTime.add(RangeValidator.minimum(-1));
+        form.add(maxSynchTotalTime);
+
+        TextField<Integer> maxAsynchProcesses = new TextField<Integer>("maxAsynchronousProcesses", Integer.class);
+        maxAsynchProcesses.add(RangeValidator.minimum(1));
         form.add(maxAsynchProcesses);
         
-        TextField resourceExpirationTimeout = new TextField("resourceExpirationTimeout", Integer.class);
-        resourceExpirationTimeout.add(new MinimumValidator<Integer>(1));
+        TextField<Integer> maxAsynchExecutionTime = new TextField<Integer>("maxAsynchronousExecutionTime", Integer.class);
+        maxAsynchExecutionTime.add(RangeValidator.minimum(-1));
+        form.add(maxAsynchExecutionTime);
+
+        TextField<Integer> maxAsynchTotalTime = new TextField<Integer>("maxAsynchronousTotalTime", Integer.class);
+        maxAsynchTotalTime.add(RangeValidator.minimum(-1));
+        form.add(maxAsynchTotalTime);
+
+        TextField<Integer> resourceExpirationTimeout = new TextField<Integer>("resourceExpirationTimeout", Integer.class);
+        resourceExpirationTimeout.add(RangeValidator.minimum(0));
         form.add(resourceExpirationTimeout);
         
-        WPSInfo wpsInfo = (WPSInfo) info.getObject();
-        processFactories = cloneFactoryInfos(wpsInfo.getProcessGroups());
-        ProcessFactoryInfoProvider provider = new ProcessFactoryInfoProvider(processFactories, getLocale());
-        GeoServerTablePanel<ProcessGroupInfo> processFilterEditor = new GeoServerTablePanel<ProcessGroupInfo>("processFilterTable", provider) {
+        // GeoServerFileChooser chooser = new GeoServerFileChooser("storageDirectory",
+        // new PropertyModel<String>(info, "storageDirectory"));
+        DirectoryParamPanel chooser = new DirectoryParamPanel("storageDirectory",
+                new PropertyModel<String>(
+                info, "storageDirectory"), new ParamResourceModel("storageDirectory", this), false);
+        form.add(chooser);
 
-            @Override
-            protected Component getComponentForProperty(String id, final IModel itemModel,
-                    Property<ProcessGroupInfo> property) {
-                
-                if(property.getName().equals("enabled")) {
-                    Fragment fragment = new Fragment(id, "enabledFragment", WPSAdminPage.this);
-                    CheckBox enabled = new CheckBox("enabled", property.getModel(itemModel));
-                    enabled.setOutputMarkupId(true);
-                    fragment.add(enabled);
-                    return fragment;
-                } else if(property.getName().equals("prefix")) {
-                    return new Label(id, property.getModel(itemModel));
-                } else if(property.getName().equals("title")) {
-                    return new Label(id, property.getModel(itemModel));
-                } else if(property.getName().equals("summary")) {
-                    return new Label(id, property.getModel(itemModel));
-                } else if(property.getName().equals("edit")) {
-                    Fragment fragment = new Fragment(id, "linkFragment", WPSAdminPage.this);
-                    // we use a submit link to avoid losing the other edits in the form
-                    SubmitLink link = new SubmitLink("link") {
-
-                        @Override
-                        public void onSubmit() {
-                            ProcessGroupInfo pfi = (ProcessGroupInfo) itemModel.getObject();
-                            setResponsePage(new ProcessSelectionPage(WPSAdminPage.this, pfi));
-                        }
-                    };   
-                    fragment.add(link);
-                    
-                    return fragment;
-                }
-                
-                return null;
-            }
-        };
-        processFilterEditor.setFilterable(false);
-        processFilterEditor.setPageable(false);
-        processFilterEditor.setOutputMarkupId( true );
-        form.add(processFilterEditor);
-    }
-    
-    private List<ProcessGroupInfo> cloneFactoryInfos(List<ProcessGroupInfo> processFactories) {
-        List<ProcessGroupInfo> result = new ArrayList<ProcessGroupInfo>();
-        for (ProcessGroupInfo pfi : processFactories) {
-            result.add(pfi.clone());
-        }
-        
-        return result;
+        form.add(new TotalTimeValidator(maxSynchTotalTime, maxSynchExecutionTime));
+        form.add(new TotalTimeValidator(maxAsynchTotalTime, maxAsynchExecutionTime));
     }
 
     @Override
     protected void handleSubmit(WPSInfo info) {
-        // overwrite the process factories that we did clone to achieve isolation
-        List<ProcessGroupInfo> factories = info.getProcessGroups();
-        factories.clear();
-        factories.addAll(processFactories);
         super.handleSubmit(info);
     }
 
+    /**
+     * Validator that checks that the total time is greater than the execution time
+     */
+    class TotalTimeValidator extends AbstractFormValidator {
+
+        private static final long serialVersionUID = 1L;
+
+        private FormComponent<Integer> totalTime;
+        private FormComponent<Integer> executionTime;
+
+        public TotalTimeValidator(FormComponent<Integer> totalTime,
+                FormComponent<Integer> executionTime) {
+            this.totalTime = totalTime;
+            this.executionTime = executionTime;
+        }
+
+        @Override
+        public FormComponent<?>[] getDependentFormComponents() {
+            return new FormComponent[] {totalTime, executionTime};
+        }
+
+        @Override
+        public void validate(Form<?> form) {
+            if (executionTime.getConvertedInput() != null 
+             && totalTime.getConvertedInput() != null
+             && totalTime.getConvertedInput() != 0
+             && totalTime.getConvertedInput() < executionTime.getConvertedInput()) {
+                form.error(new ParamResourceModel("totalTimeError", getPage())
+                .getString());
+            }
+        }
+    }
 }

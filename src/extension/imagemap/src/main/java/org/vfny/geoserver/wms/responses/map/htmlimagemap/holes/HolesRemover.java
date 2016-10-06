@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -77,7 +78,7 @@ public class HolesRemover {
 	 * Gets a new polygon without holes from the given
 	 * polygon.
 	 * @param poly
-	 * @return
+	 *
 	 */
 	public static Polygon removeHoles(Polygon poly,double scale) {
 		GeometryFactory gFac=new GeometryFactory(poly.getPrecisionModel(),poly.getSRID());
@@ -113,7 +114,7 @@ public class HolesRemover {
 
 	/**
 	 * Cuts the configured polygon with the hole. 
-	 * @return
+	 *
 	 */
 	private LineString cutHole() {
 		// boundary must be counterclockwise

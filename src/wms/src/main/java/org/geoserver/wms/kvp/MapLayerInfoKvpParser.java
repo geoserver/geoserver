@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -32,6 +33,13 @@ public class MapLayerInfoKvpParser extends KvpParser {
         rawNamesParser = new FlatKvpParser(key, String.class);
     }
 
+    /**
+     * Returns whether the specified resource must be skipped in the context of the current request.
+     */
+    protected boolean skipResource(Object theResource) {
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public List<MapLayerInfo> parse(final String paramValue) throws Exception {
@@ -51,12 +59,23 @@ public class MapLayerInfoKvpParser extends KvpParser {
                     throw new ServiceException(layerName + ": no such layer on this server",
                             "LayerNotDefined", getClass().getSimpleName());
                 } else {
+                    if (skipResource(groupInfo))
+                        continue;
+
                     for (LayerInfo li : groupInfo.layers()) {
+                        
+                        if (skipResource(li))
+                            continue;
+
                         layer = new MapLayerInfo(li);
                         layers.add(layer);
                     }
                 }
             } else {
+                
+                if (skipResource(layerInfo))
+                    continue;
+                
                 layer = new MapLayerInfo(layerInfo);
                 layers.add(layer);
             }

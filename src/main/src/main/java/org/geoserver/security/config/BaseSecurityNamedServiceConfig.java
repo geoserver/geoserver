@@ -1,9 +1,14 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.security.config;
+
+import org.apache.commons.lang.SerializationUtils;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 
 /**
  * Base class for named security service configuration objects.
@@ -71,4 +76,28 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
     @Override
     public void initBeforeSave() {
     }
+
+    @Override
+    public String toString() {
+        return "BaseSecurityNamedServiceConfig [name=" + name + ", className="
+                + className + ", id=" + id + "]";
+    }
+
+    @Override
+    public SecurityConfig clone(boolean allowEnvParametrization) {
+        
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+        
+        BaseSecurityNamedServiceConfig target = (BaseSecurityNamedServiceConfig) SerializationUtils.clone(this);
+        
+        if (target != null) {
+            if (allowEnvParametrization && gsEnvironment != null
+                    && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                target.setName((String) gsEnvironment.resolveValue(name));
+            }
+        }
+        
+        return target;
+    }
+    
 }

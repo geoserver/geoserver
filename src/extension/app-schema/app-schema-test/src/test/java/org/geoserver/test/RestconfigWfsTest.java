@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -44,7 +44,7 @@ import org.geotools.xml.resolver.SchemaCache;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Test REST configuration of app-schema. Note that the mapping and properties file are still copied
@@ -181,19 +181,19 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response;
         // create workspace
         response = postAsServletResponse("/rest/workspaces", WORKSPACE, "text/xml");
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         WorkspaceInfo ws = getCatalog().getWorkspaceByName("gsml");
         assertNotNull(ws);
         // set namespace uri (response is 200 as update not create)
         // (default http://gsml was created when workspace was created)
         response = putAsServletResponse("/rest/namespaces/gsml", NAMESPACE, "text/xml");
-        assertEquals(200, response.getStatusCode());
+        assertEquals(200, response.getStatus());
         NamespaceInfo ns = getCatalog().getNamespaceByPrefix("gsml");
         assertNotNull(ns);
         assertEquals("urn:cgi:xmlns:CGI:GeoSciML:2.0", ns.getURI());
         // create datastore
         response = postAsServletResponse("/rest/workspaces/gsml/datastores", DATASTORE, "text/xml");
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         DataStoreInfo ds = getCatalog().getDataStoreByName("gsml", "MappedFeature");
         assertNotNull(ds);
         // copy the mapping and properties files
@@ -202,7 +202,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         response = postAsServletResponse(
                 "/rest/workspaces/gsml/datastores/MappedFeature/featuretypes", FEATURETYPE,
                 "text/xml");
-        assertEquals(201, response.getStatusCode());
+        assertEquals(201, response.getStatus());
         FeatureTypeInfo ft = getCatalog().getFeatureTypeByName("gsml", "MappedFeature");
         assertNotNull(ft);
         // test that features can be obtained via WFS

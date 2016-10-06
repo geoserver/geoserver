@@ -55,6 +55,9 @@ public class PropertyType implements Comparable<PropertyType> {
     public PropertyType(final Integer oid, @Nullable final Integer targetPropertyOid,
             final Integer objectTypeOid, final String propertyName, boolean collectionProperty,
             final boolean isText) {
+        if (targetPropertyOid != null && targetPropertyOid == 0) {
+            throw new IllegalArgumentException("oid cannot be zero");
+        }
         this.oid = oid;
         this.targetPropertyOid = targetPropertyOid;
         this.objectTypeOid = objectTypeOid;

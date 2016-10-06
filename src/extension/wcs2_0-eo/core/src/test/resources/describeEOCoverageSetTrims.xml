@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wcseo:DescribeEOCoverageSet
+    xmlns:wcseo="http://www.opengis.net/wcseo/1.0"
+    xmlns:wcs="http://www.opengis.net/wcs/2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/wcseo/1.0 http://schemas.opengis.net/wcseo/1.0/wcsEOAll.xsd"
+    service="WCS" version="2.0.0" count="100">
+    <wcseo:eoId>sf__spatio-temporal_dss</wcseo:eoId>
+    <wcseo:containment>OVERLAPS</wcseo:containment>
+    <wcseo:Sections>
+        <wcseo:Section>CoverageDescriptions</wcseo:Section>
+        <wcseo:Section>DatasetSeriesDescriptions</wcseo:Section>
+    </wcseo:Sections>
+    <wcs:DimensionTrim>
+        <wcs:Dimension>Long</wcs:Dimension>
+        <wcs:TrimLow>1</wcs:TrimLow>
+        <wcs:TrimHigh>5</wcs:TrimHigh>
+    </wcs:DimensionTrim>
+    <wcs:DimensionTrim>
+        <wcs:Dimension>Lat</wcs:Dimension>
+        <wcs:TrimLow>40</wcs:TrimLow>
+        <wcs:TrimHigh>41</wcs:TrimHigh>
+    </wcs:DimensionTrim>
+    <wcs:DimensionTrim>
+        <wcs:Dimension>phenomenonTime</wcs:Dimension>
+        <wcs:TrimLow>2008-10-31T00:00:00.000Z</wcs:TrimLow>
+        <wcs:TrimHigh>2008-10-31T23:59:00.000Z</wcs:TrimHigh>
+    </wcs:DimensionTrim>
+</wcseo:DescribeEOCoverageSet>

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,6 +12,7 @@ import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
 import org.geoserver.security.config.ExceptionTranslationFilterConfig;
+import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
 import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
@@ -18,6 +20,7 @@ import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityInterceptorFilterConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
 import org.geoserver.security.config.X509CertificateAuthenticationFilterConfig;
+import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
 import org.geoserver.security.filter.GeoServerDigestAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerExceptionTranslationFilter;
 import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
@@ -140,7 +143,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         config.setClassName(GeoServerX509CertificateAuthenticationFilter.class.getName());
         config.setName("testX509");
 
-        check((PreAuthenticatedUserNameFilterConfig) config);
+        check((J2eeAuthenticationBaseFilterConfig) config);
     }
 
     @Test
@@ -177,21 +180,8 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         J2eeAuthenticationFilterConfig config = new J2eeAuthenticationFilterConfig();
         config.setClassName(GeoServerJ2eeAuthenticationFilter.class.getName());
         config.setName("testJ2ee");
-
-        config.setRoleServiceName("blabla");
-
-        FilterConfigValidator validator = new FilterConfigValidator(getSecurityManager());
-        try {
-            validator.validateFilterConfig(config);
-            fail("unknown role service should fail");
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.UNKNOWN_ROLE_SERVICE,ex.getId());
-            assertEquals(1,ex.getArgs().length);
-            assertEquals("blabla",ex.getArgs()[0]);
-        }
         
-        config.setRoleServiceName(XMLRoleService.DEFAULT_NAME);
-        validator.validateFilterConfig(config);
+        check((J2eeAuthenticationBaseFilterConfig) config);
 
     }
 
@@ -202,27 +192,6 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         config.setName("testEx");
 
         FilterConfigValidator validator = new FilterConfigValidator(getSecurityManager());
-        try {
-            validator.validateFilterConfig(config);
-            fail("no access denied page should fail");
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.ACCESS_DENIED_PAGE_NEEDED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-        }
-        
-        config.setAccessDeniedErrorPage("blabla");
-        config.setAuthenticationFilterName("unknown");
-        
-        try {
-            validator.validateFilterConfig(config);
-            fail("no access denied page prefix should fail");
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.ACCESS_DENIED_PAGE_PREFIX,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-        
-        }
-
-        config.setAccessDeniedErrorPage("/denied.jsp");
         config.setAuthenticationFilterName("unknown");
 
         try {
@@ -260,7 +229,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
             assertEquals(0,ex.getArgs().length);
         }
         
-        config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.UserGroupService);
+        config.setRoleSource(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.UserGroupService);
         try {
             validator.validateFilterConfig(config);
             fail("no user group service should fail");
@@ -281,7 +250,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         
         config.setUserGroupServiceName(XMLUserGroupService.DEFAULT_NAME);
         
-        config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.RoleService);                
+        config.setRoleSource(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.RoleService);                
         config.setRoleServiceName("blabla");
         try {
             validator.validateFilterConfig(config);
@@ -293,7 +262,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         }
         
         config.setRoleServiceName(XMLRoleService.DEFAULT_NAME);
-        config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.Header);
+        config.setRoleSource(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header);
 
         try {
             validator.validateFilterConfig(config);
@@ -317,7 +286,26 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
 
         config.setRoleConverterName(null);
         validator.validateFilterConfig(config);
-
+        
+    }
+    
+    public void check(J2eeAuthenticationBaseFilterConfig config) throws Exception {
+        check((PreAuthenticatedUserNameFilterConfig) config);
+        FilterConfigValidator validator = new FilterConfigValidator(getSecurityManager());
+        
+        config.setRoleSource(J2EERoleSource.J2EE);
+        config.setRoleServiceName("blabla");
+        try {
+            validator.validateFilterConfig(config);
+            fail("unknown role service should fail");
+        } catch (FilterConfigException ex){
+            assertEquals(FilterConfigException.UNKNOWN_ROLE_SERVICE,ex.getId());
+            assertEquals(1,ex.getArgs().length);
+            assertEquals("blabla",ex.getArgs()[0]);
+        }
+        
+        config.setRoleServiceName(XMLRoleService.DEFAULT_NAME);
+        
     }
 
     @Test

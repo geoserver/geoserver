@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,8 +18,8 @@ import java.util.zip.ZipInputStream;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.io.FileUtils;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.response.ShapeZipOutputFormat;
 import org.geoserver.wps.resource.ShapefileResource;
 import org.geoserver.wps.resource.WPSResourceManager;

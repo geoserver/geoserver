@@ -1,12 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.geoserver.platform.GeoServerExtensions;
 
 /**
  * Access limits to a workspace (the write flag controls also direct access to data stores, though
@@ -28,22 +27,9 @@ public class WorkspaceAccessLimits extends AccessLimits {
     }
 
     private static boolean isAuthenticatedAsAdmin() {
-        //TODO: change this to SecurityUtil.isAuthenticatedAsAdmin() once the security patch lands
-        if (SecurityContextHolder.getContext() == null) {
-            return false;
-        }
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            return false;
-        }
-
-        for (GrantedAuthority ga : auth.getAuthorities()) {
-            if ("ROLE_ADMINISTRATOR".equals(ga.getAuthority())) {
-                return true;
-            }
-        }
-        return false;
+        
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class).
+                checkAuthenticationForAdminRole();
     }
 
     public WorkspaceAccessLimits(CatalogMode mode, boolean readable, boolean writable, boolean adminable) {
@@ -67,7 +53,7 @@ public class WorkspaceAccessLimits extends AccessLimits {
 
     @Override
     public String toString() {
-        return "WorkspaceAccessLimits [readable=" + readable + ", writable=" + writable + ", mode="
+        return "WorkspaceAccessLimits [readable=" + readable + ", writable=" + writable + ", adminable = " + adminable + ", mode="
                 + mode + "]";
     }
 

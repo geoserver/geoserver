@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,9 +23,11 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.data.DataUtilities;
 import org.geotools.util.SoftValueHashMap;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 public class WatermarkDecoration implements MapDecoration {
     /** A logger for this class. */
@@ -59,7 +62,7 @@ public class WatermarkDecoration implements MapDecoration {
 
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
         try{
-            BufferedImage logo = getLogo(mapContent);
+            BufferedImage logo = getLogo();
             return new Dimension(logo.getWidth(), logo.getHeight());
         } catch (Exception e) {
             return new Dimension(20, 20);
@@ -77,7 +80,7 @@ public class WatermarkDecoration implements MapDecoration {
      */
     public void paint(Graphics2D g2D, Rectangle paintArea, WMSMapContent mapContent) 
     throws MalformedURLException, ClassCastException, IOException {
-        BufferedImage logo = getLogo(mapContent);
+        BufferedImage logo = getLogo();
 
         if (logo != null) {
             Composite oldComposite = g2D.getComposite();
@@ -99,19 +102,20 @@ public class WatermarkDecoration implements MapDecoration {
         }
     }
 
-    protected BufferedImage getLogo(WMSMapContent mapContent) throws IOException {
+    protected BufferedImage getLogo() throws IOException {
         BufferedImage logo = null;
 
         // fully resolve the url (consider data dir)
         URL url = null;
 
         try {
-            url = new URL(GeoserverDataDirectory.getGeoserverDataDirectory().toURL(), imageURL);
-
+            url = new URL(imageURL);
             if (url.getProtocol() == null || url.getProtocol().equals("file")) {
-                File file = GeoserverDataDirectory.findDataFile(imageURL);
-                if (file.exists())
-                    url = file.toURL();
+                GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+                File file = loader.url(imageURL);
+                if (file.exists()){
+                    url = DataUtilities.fileToURL(file);
+                }
             }
         } catch (MalformedURLException e) {
             url = null;

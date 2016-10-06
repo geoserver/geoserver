@@ -1,20 +1,31 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.v2_0;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+
+import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.DataStore;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.feature.DefaultFeatureCollection;
@@ -26,14 +37,17 @@ import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 
+import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.io.WKTReader;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 public class GetFeatureJoinTest extends WFS20TestSupport {
     
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
         
-    	//setup an H2 datastore for the purpose of doing joins
+        //setup an H2 datastore for the purpose of doing joins
         //run all the tests against a store that can do native paging (h2) and one that 
         // can't (property)
         Catalog cat = getCatalog();
@@ -121,6 +135,31 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
         
         fs = (FeatureStore) store.getFeatureSource("TimeFeature");
         fs.addFeatures(features);
+        ft = cb.buildFeatureType(fs);
+        cat.add(ft);
+
+        // add three joinable types with same code, but different type names
+        SimpleFeatureType ft1 = DataUtilities.createType(SystemTestData.CITE_URI, "t1",
+                "g1:Point:srid=4326,code1:int,name1:String");
+        store.createSchema(ft1);
+        fs = (FeatureStore) store.getFeatureSource("t1");
+        addFeature(fs, "POINT(1 1)", Integer.valueOf(1), "First");
+        ft = cb.buildFeatureType(fs);
+        cat.add(ft);
+
+        SimpleFeatureType ft2 = DataUtilities.createType(SystemTestData.CITE_URI, "t2",
+                "g2:Point:srid=4326,code2:int,name2:String");
+        store.createSchema(ft2);
+        fs = (FeatureStore) store.getFeatureSource("t2");
+        addFeature(fs, "POINT(2 2)", Integer.valueOf(1), "Second");
+        ft = cb.buildFeatureType(fs);
+        cat.add(ft);
+
+        SimpleFeatureType ft3 = DataUtilities.createType(SystemTestData.CITE_URI, "t3",
+                "g3:Point:srid=4326,code3:int,name3:String");
+        store.createSchema(ft3);
+        fs = (FeatureStore) store.getFeatureSource("t3");
+        addFeature(fs, "POINT(3 3)", Integer.valueOf(1), "Third");
         ft = cb.buildFeatureType(fs);
         cat.add(ft);
     }
@@ -289,6 +328,107 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
            XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
            XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
+    
+    @Test
+    public void testJoinAliasConflictProperty() throws Exception {
+        String xml = 
+            "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
+               "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a NAME'>" +
+                "<fes:Filter> " +
+                    "<PropertyIsEqualTo>" +
+                      "<ValueReference>a/FID</ValueReference>" +
+                      "<ValueReference>NAME/FID</ValueReference>" + 
+                    "</PropertyIsEqualTo>" +
+                "</fes:Filter> " + 
+               "</wfs:Query>" + 
+             "</wfs:GetFeature>";
+
+           Document dom = postAsDOM("wfs", xml);
+        // print(dom);
+           XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
+           
+           XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+           XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+    }
+
+    @Test
+    public void testStandardJoinThreeWays() throws Exception {
+        String xml = 
+            "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
+               "<wfs:Query typeNames='gs:Forests gs:Lakes gs:Lakes' aliases='a b c'>" +
+                "<fes:Filter> " +
+                    "<And>" +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>a/FID</ValueReference>" +
+                          "<ValueReference>b/FID</ValueReference>" + 
+                        "</PropertyIsEqualTo>" +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>b/FID</ValueReference>" +
+                          "<ValueReference>c/FID</ValueReference>" + 
+                        "</PropertyIsEqualTo>" +
+                    "</And>" + 
+                "</fes:Filter> " + 
+               "</wfs:Query>" + 
+             "</wfs:GetFeature>";
+
+        Document dom = postAsDOM("wfs", xml);
+        // print(dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
+
+        XMLAssert.assertXpathExists(
+                "//wfs:Tuple/wfs:member[1]/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists(
+                "//wfs:Tuple/wfs:member[2]/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+        XMLAssert.assertXpathExists(
+                "//wfs:Tuple/wfs:member[3]/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+    }
+    
+    @Test
+    public void testStandardJoinThreeWaysLocalFilters() throws Exception {
+        String xml = 
+            "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
+               "<wfs:Query typeNames='gs:t1 gs:t2 gs:t3' aliases='a b c'>" +
+                "<fes:Filter> " +
+                    "<And>" +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>a/name1</ValueReference>" +
+                          "<Literal>First</Literal>" + 
+                        "</PropertyIsEqualTo>" +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>a/code1</ValueReference>" +
+                          "<ValueReference>b/code2</ValueReference>" + 
+                        "</PropertyIsEqualTo>" +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>b/name2</ValueReference>" +
+                          "<Literal>Second</Literal>" + 
+                        "</PropertyIsEqualTo>" +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>c/name3</ValueReference>" +
+                          "<Literal>Third</Literal>" + 
+                        "</PropertyIsEqualTo>" +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>b/code2</ValueReference>" +
+                          "<ValueReference>c/code3</ValueReference>" + 
+                        "</PropertyIsEqualTo>" +
+                    "</And>" + 
+                "</fes:Filter> " + 
+               "</wfs:Query>" + 
+             "</wfs:GetFeature>";
+
+        Document dom = postAsDOM("wfs", xml);
+        // print(dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
+
+        XMLAssert.assertXpathExists(
+                "//wfs:Tuple/wfs:member[1]/gs:t2[gs:name2 = 'Second']", dom);
+        XMLAssert.assertXpathExists(
+                "//wfs:Tuple/wfs:member[2]/gs:t1[gs:name1 = 'First']", dom);
+        XMLAssert.assertXpathExists(
+                "//wfs:Tuple/wfs:member[3]/gs:t3[gs:name3 = 'Third']", dom);
+    }
 
     @Test
     public void testStandardJoin2() throws Exception {
@@ -376,5 +516,373 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
                  "</wfs:GetFeature>";
         Document dom = postAsDOM("wfs", xml);
         XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:Tuple)", dom);
+    }
+    
+    @Test
+    public void testStandardJoinLocalFilterNot() throws Exception {
+        String xml = 
+            "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
+               "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>" +
+                "<fes:Filter> " +
+                  "<And>" +
+                    "<PropertyIsEqualTo>" +
+                      "<ValueReference>c/FID</ValueReference>" +
+                      "<ValueReference>d/FID</ValueReference>" + 
+                    "</PropertyIsEqualTo>" +
+                    "<Not>" +
+                      "<PropertyIsEqualTo>" +
+                         "<ValueReference>d/NAME</ValueReference>" +
+                         "<Literal>foo</Literal>" +
+                      "</PropertyIsEqualTo>" + 
+                    "</Not>"+
+                  "</And>" +
+                "</fes:Filter> " + 
+               "</wfs:Query>" + 
+             "</wfs:GetFeature>";
+
+       Document dom = postAsDOM("wfs", xml);
+       XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
+       
+       XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+       XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+    }
+    
+    @Test
+    public void testStandardJoinLocalFilterOr() throws Exception {
+        String xml = 
+            "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
+               "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>" +
+                "<fes:Filter> " +
+                  "<And>" +
+                    "<PropertyIsEqualTo>" +
+                      "<ValueReference>c/FID</ValueReference>" +
+                      "<ValueReference>d/FID</ValueReference>" + 
+                    "</PropertyIsEqualTo>" +
+                    "<Or>" +
+                      "<PropertyIsEqualTo>" +
+                         "<ValueReference>d/NAME</ValueReference>" +
+                         "<Literal>foo</Literal>" +
+                      "</PropertyIsEqualTo>" +
+                      "<PropertyIsEqualTo>" +
+                        "<ValueReference>d/NAME</ValueReference>" +
+                        "<Literal>Black Lake</Literal>" +
+                     "</PropertyIsEqualTo>" +
+                    "</Or>"+
+                  "</And>" +
+                "</fes:Filter> " + 
+               "</wfs:Query>" + 
+             "</wfs:GetFeature>";
+
+       Document dom = postAsDOM("wfs", xml);
+       XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
+       
+       XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+       XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+    }
+    
+    @Test
+    public void testOredJoinCondition() throws Exception {
+        String xml = 
+            "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
+               "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='c d'>" +
+                "<fes:Filter> " +
+                    "<Or>" +
+                      "<PropertyIsEqualTo>" +
+                        "<ValueReference>c/FID</ValueReference>" +
+                        "<ValueReference>d/FID</ValueReference>" + 
+                      "</PropertyIsEqualTo>" +
+                      "<And>" + 
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>c/NAME</ValueReference>" +
+                          "<Literal>Bar Forest</Literal>" +
+                        "</PropertyIsEqualTo>" +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>d/NAME</ValueReference>" +
+                          "<Literal>Green Lake</Literal>" +
+                        "</PropertyIsEqualTo>" +
+                     "</And>" +
+                   "</Or>" +
+                "</fes:Filter> " + 
+               "</wfs:Query>" + 
+             "</wfs:GetFeature>";
+
+        Document dom = postAsDOM("wfs", xml);
+        // print(dom);
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//wfs:Tuple)", dom);
+       
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member/gs:Forests/gs:NAME = 'Foo Forest' "
+                + "and wfs:member/gs:Lakes/gs:NAME = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists("//wfs:Tuple[wfs:member/gs:Forests/gs:NAME = 'Bar Forest' "
+                + "and wfs:member/gs:Lakes/gs:NAME = 'Green Lake']", dom);
+    }
+    
+    @Test
+    public void testStandardJoinCSV() throws Exception {
+        String xml = "<?xml version='1.0' encoding='UTF-8'?>"
+                + "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='"
+                + FES.NAMESPACE + "'" + " xmlns:gs='" + SystemTestData.DEFAULT_URI
+                + "' outputFormat='csv' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
+                + "<fes:Filter> " + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/FID</ValueReference>"
+                + "<ValueReference>b/FID</ValueReference>" + "</PropertyIsEqualTo>"
+                + "</fes:Filter> " + "</wfs:Query>" + "</wfs:GetFeature>";
+    
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/xml", "UTF-8");
+    
+        // check the mime type
+        assertEquals("text/csv", resp.getContentType());
+    
+        // check the charset encoding
+        assertEquals("UTF-8", resp.getCharacterEncoding());
+    
+        // check the content disposition
+        assertEquals("attachment; filename=Forests.csv",
+                resp.getHeader("Content-Disposition"));
+    
+        // read the response back with a parser that can handle escaping, newlines
+        // and what not
+        List<String[]> lines = readLines(resp.getContentAsString());
+    
+        FeatureSource fs1 = getFeatureSource(MockData.FORESTS);
+        FeatureSource fs2 = getFeatureSource(MockData.LAKES);
+    
+        for (String[] line : lines) {
+            // check each line has the expected number of elements (num of att1 +
+            // num of att2+1 for the id)
+            assertEquals(
+                    fs1.getSchema().getDescriptors().size()
+                            + fs2.getSchema().getDescriptors().size() + 1,
+                    line.length);
+        }
+    }
+    
+    @Test
+    public void testJoinAliasConflictingPropertyCSV() throws Exception {
+        String xml = "<?xml version='1.0' encoding='UTF-8'?>"
+                + "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='"
+                + FES.NAMESPACE + "'" + " xmlns:gs='" + SystemTestData.DEFAULT_URI
+                + "' outputFormat='csv' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a NAME'>"
+                + "<fes:Filter> " + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/FID</ValueReference>"
+                + "<ValueReference>NAME/FID</ValueReference>"
+                + "</PropertyIsEqualTo>" + "</fes:Filter> " + "</wfs:Query>"
+                + "</wfs:GetFeature>";
+    
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/xml", "UTF-8");
+    
+        // check the mime type
+        assertEquals("text/csv", resp.getContentType());
+    
+        // check the charset encoding
+        assertEquals("UTF-8", resp.getCharacterEncoding());
+    
+        // check the content disposition
+        assertEquals("attachment; filename=Forests.csv",
+                resp.getHeader("Content-Disposition"));
+    
+        // read the response back with a parser that can handle escaping, newlines
+        // and what not
+        List<String[]> lines = readLines(resp.getContentAsString());
+    
+        FeatureSource fs1 = getFeatureSource(MockData.FORESTS);
+        FeatureSource fs2 = getFeatureSource(MockData.LAKES);
+    
+        for (String[] line : lines) {
+            // check each line has the expected number of elements (num of att1 +
+            // num of att2+1 for the id)
+            assertEquals(
+                    fs1.getSchema().getDescriptors().size()
+                            + fs2.getSchema().getDescriptors().size() + 1,
+                    line.length);
+        }
+    }
+    
+    @Test
+    public void testStandardJoinNoAliasesCSV() throws Exception {
+        String xml = "<?xml version='1.0' encoding='UTF-8'?>"
+                + "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='"
+                + FES.NAMESPACE + "'" + " xmlns:gs='" + SystemTestData.DEFAULT_URI
+                + "' outputFormat='csv' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes'>" + "<fes:Filter> "
+                + "<PropertyIsEqualTo>"
+                + "<ValueReference>Forests/FID</ValueReference>"
+                + "<ValueReference>Lakes/FID</ValueReference>"
+                + "</PropertyIsEqualTo>" + "</fes:Filter> " + "</wfs:Query>"
+                + "</wfs:GetFeature>";
+    
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/xml", "UTF-8");
+    
+        // check the mime type
+        assertEquals("text/csv", resp.getContentType());
+    
+        // check the charset encoding
+        assertEquals("UTF-8", resp.getCharacterEncoding());
+    
+        // check the content disposition
+        assertEquals("attachment; filename=Forests.csv",
+                resp.getHeader("Content-Disposition"));
+    
+        // read the response back with a parser that can handle escaping, newlines
+        // and what not
+        List<String[]> lines = readLines(resp.getContentAsString());
+    
+        FeatureSource fs1 = getFeatureSource(MockData.FORESTS);
+        FeatureSource fs2 = getFeatureSource(MockData.LAKES);
+    
+        for (String[] line : lines) {
+            assertEquals(
+                    fs1.getSchema().getDescriptors().size()
+                            + fs2.getSchema().getDescriptors().size() + 1,
+                    line.length);
+        }
+    }
+    
+    @Test
+    public void testSelfJoinCSV() throws Exception {
+        String xml = "<?xml version='1.0' encoding='UTF-8'?>"
+                + "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='"
+                + FES.NAMESPACE + "'" + " xmlns:gs='" + SystemTestData.DEFAULT_URI
+                + "' outputFormat='csv' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests Forests' aliases='a b'>"
+                + "<fes:Filter> " + "<Disjoint>"
+                + "<ValueReference>a/the_geom</ValueReference>"
+                + "<ValueReference>b/the_geom</ValueReference>" + "</Disjoint>"
+                + "</fes:Filter> " + "</wfs:Query>" + "</wfs:GetFeature>";
+    
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/xml", "UTF-8");
+
+        // check the mime type
+        assertEquals("text/csv", resp.getContentType());
+    
+        // check the charset encoding
+        assertEquals("UTF-8", resp.getCharacterEncoding());
+    
+        // check the content disposition
+        assertEquals("attachment; filename=Forests.csv",
+                resp.getHeader("Content-Disposition"));
+    
+        // read the response back with a parser that can handle escaping, newlines
+        // and what not
+        List<String[]> lines = readLines(resp.getContentAsString());
+    
+        FeatureSource fs = getFeatureSource(MockData.FORESTS);
+    
+        for (String[] line : lines) {
+            assertEquals(2 * fs.getSchema().getDescriptors().size() + 1,
+                    line.length);
+        }
+    }
+    
+    @Test
+    public void testSpatialJoinPOST_CSV() throws Exception {
+        String xml = "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='"
+                + FES.NAMESPACE + "'" + " xmlns:gs='" + SystemTestData.DEFAULT_URI
+                + "' outputFormat='csv' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:Forests gs:Lakes' aliases='a b'>"
+                + "<fes:Filter> " + "<fes:Intersects> "
+                + "<fes:ValueReference>a/the_geom</fes:ValueReference> "
+                + "<fes:ValueReference>b/the_geom</fes:ValueReference>"
+                + "</fes:Intersects> " + "</fes:Filter> " + "</wfs:Query>"
+                + "</wfs:GetFeature>";
+    
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/xml", "UTF-8");
+    
+        // check the mime type
+        assertEquals("text/csv", resp.getContentType());
+    
+        // check the charset encoding
+        assertEquals("UTF-8", resp.getCharacterEncoding());
+    
+        // check the content disposition
+        assertEquals("attachment; filename=Forests.csv",
+                resp.getHeader("Content-Disposition"));
+    
+        // read the response back with a parser that can handle escaping, newlines
+        // and what not
+        List<String[]> lines = readLines(resp.getContentAsString());
+    
+        FeatureSource fs1 = getFeatureSource(MockData.FORESTS);
+        FeatureSource fs2 = getFeatureSource(MockData.LAKES);
+    
+        for (String[] line : lines) {
+            assertEquals(
+                    fs1.getSchema().getDescriptors().size()
+                            + fs2.getSchema().getDescriptors().size() + 1,
+                    line.length);
+        }
+    }
+    
+    @Test
+    public void testStandardJoinThreeWaysLocalFiltersCSV() throws Exception {
+        String xml = "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='"
+                + FES.NAMESPACE + "'" + " xmlns:gs='" + SystemTestData.DEFAULT_URI
+                + "' outputFormat='csv' version='2.0.0'>"
+                + "<wfs:Query typeNames='gs:t1 gs:t2 gs:t3' aliases='a b c'>"
+                + "<fes:Filter> " + "<And>" + "<PropertyIsEqualTo>"
+                + "<ValueReference>a/name1</ValueReference>"
+                + "<Literal>First</Literal>" + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>" + "<ValueReference>a/code1</ValueReference>"
+                + "<ValueReference>b/code2</ValueReference>"
+                + "</PropertyIsEqualTo>" + "<PropertyIsEqualTo>"
+                + "<ValueReference>b/name2</ValueReference>"
+                + "<Literal>Second</Literal>" + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>" + "<ValueReference>c/name3</ValueReference>"
+                + "<Literal>Third</Literal>" + "</PropertyIsEqualTo>"
+                + "<PropertyIsEqualTo>" + "<ValueReference>b/code2</ValueReference>"
+                + "<ValueReference>c/code3</ValueReference>"
+                + "</PropertyIsEqualTo>" + "</And>" + "</fes:Filter> "
+                + "</wfs:Query>" + "</wfs:GetFeature>";
+    
+        MockHttpServletResponse resp = postAsServletResponse("wfs", xml, "application/xml", "UTF-8");
+    
+        // check the mime type
+        assertEquals("text/csv", resp.getContentType());
+    
+        // check the charset encoding
+        assertEquals("UTF-8", resp.getCharacterEncoding());
+    
+        // check the content disposition
+        assertEquals("attachment; filename=t1.csv",
+                resp.getHeader("Content-Disposition"));
+    
+        // read the response back with a parser that can handle escaping, newlines
+        // and what not
+        List<String[]> lines = readLines(resp.getContentAsString());
+    
+        FeatureSource fs1 = getFeatureSource(new QName("t1"));
+        FeatureSource fs2 = getFeatureSource(new QName("t2"));
+        FeatureSource fs3 = getFeatureSource(new QName("t3"));
+    
+        for (String[] line : lines) {
+            assertEquals(
+                    fs1.getSchema().getDescriptors().size()
+                            + fs2.getSchema().getDescriptors().size()
+                            + fs3.getSchema().getDescriptors().size() + 1,
+                    line.length);
+        }
+    }
+    
+    /**
+     * Convenience to read the csv content and
+     * 
+     * @param csvContent
+     *
+     * @throws IOException
+     */
+    private List<String[]> readLines(String csvContent) throws IOException {
+        // System.out.println(csvContent);
+        CSVReader reader = new CSVReader(new StringReader(csvContent));
+    
+        List<String[]> result = new ArrayList<String[]>();
+        String[] nextLine;
+        while ((nextLine = reader.readNext()) != null) {
+            result.add(nextLine);
+        }
+        return result;
     }
 }

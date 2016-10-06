@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,7 +7,6 @@
 package org.geoserver.security.impl;
 
 import static org.junit.Assert.*;
-import junit.framework.Assert;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AbstractSecurityServiceTest;
@@ -37,10 +37,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
     abstract protected SecurityUserGroupServiceConfig createConfigObject( String name );
 
     @Test
-    public void testInsert() {
-        try {
-            
-            
+    public void testInsert() throws Exception {
             // all is empty
             checkEmpty(service);
             checkEmpty(store);
@@ -61,17 +58,10 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
             store.store();
             checkValuesInserted(store);
             checkValuesInserted(service);
-            
-            
-        } catch ( Exception ex) {
-            Assert.fail(ex.getMessage());
-        }        
     }
 
     @Test
-    public void testModify() {
-        try {
-            
+    public void testModify() throws Exception {
             // all is empty
             checkEmpty(service);
             checkEmpty(store);
@@ -94,18 +84,10 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
             store.store();
             checkValuesModified(store);
             checkValuesModified(service);
-            
-                        
-        } catch ( Exception ex) {
-            Assert.fail(ex.getMessage());
-        }        
     }
 
     @Test
-    public void testRemove() {
-        try {
-
-            
+    public void testRemove() throws Exception {
             // all is empty
             checkEmpty(service);
             checkEmpty(store);
@@ -128,17 +110,10 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
             store.store();
             checkValuesRemoved(store);
             checkValuesRemoved(service);
-            
-                        
-        } catch ( Exception ex) {
-            Assert.fail(ex.getMessage());
-        }        
     }
 
     @Test
-    public void testIsModified() {
-        try {
-                        
+    public void testIsModified() throws Exception {
             assertFalse(store.isModified());
             
             insertValues(store);
@@ -203,11 +178,6 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
             store.clear();
             assertTrue(store.isModified());
             store.load();
-
-            
-        } catch ( Exception ex) {
-            Assert.fail(ex.getMessage());
-        }        
     }
 
     @Test

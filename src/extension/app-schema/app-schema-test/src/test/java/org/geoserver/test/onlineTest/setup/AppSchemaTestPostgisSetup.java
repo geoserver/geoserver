@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-16 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,8 +15,8 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.property.PropertyFeatureReader;
-import org.geotools.feature.IllegalAttributeException;
 import org.geotools.resources.Classes;
+import org.opengis.feature.IllegalAttributeException;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -32,7 +33,6 @@ import com.vividsolutions.jts.io.WKTWriter;
  * 
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
-@SuppressWarnings("deprecation")
 public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {   
     /**
      * Database schema to be used for postgis test database so they are isolated.
@@ -89,7 +89,6 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
      * 
      * @param propertyFiles
      *            Property file name and its feature type directory map
-     * @throws Exception
      */
     public static AppSchemaTestPostgisSetup getInstance(Map<String, File> propertyFiles) throws Exception {
         return new AppSchemaTestPostgisSetup(propertyFiles);
@@ -100,8 +99,6 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
      * 
      * @param propertyFiles
      *            Property file name and its parent directory map
-     * @return This class instance.
-     * @throws Exception
      */
     public AppSchemaTestPostgisSetup(Map<String, File> propertyFiles) throws Exception {
         configureFixture();
@@ -124,111 +121,111 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
         buf.append("DROP SCHEMA IF EXISTS ").append(ONLINE_DB_SCHEMA).append(" CASCADE;\n");
         buf.append("CREATE SCHEMA ").append(ONLINE_DB_SCHEMA).append(";\n");
         for (String fileName : propertyFiles.keySet()) {
-            PropertyFeatureReader reader = new PropertyFeatureReader(propertyFiles.get(fileName),
-            // remove .properties as it will be added in PropertyFeatureReader constructor
-                    fileName.substring(0, fileName.lastIndexOf(".properties")));
-            SimpleFeatureType schema = reader.getFeatureType();
-            String tableName = schema.getName().getLocalPart().toUpperCase();
-            // create the table
-            buf.append("CREATE TABLE ").append(ONLINE_DB_SCHEMA).append(".\"").append(tableName)
-                    .append("\"(");
-            List<GeometryDescriptor> geoms = new ArrayList<GeometryDescriptor>();
-            // +pkey
-            int size = schema.getAttributeCount() + 1;
-            String[] fieldNames = new String[size];
-            List<String> createParams = new ArrayList<String>();
-            int j = 0;
-            String field;
-            String type;
-            for (PropertyDescriptor desc : schema.getDescriptors()) {
-                if (desc instanceof GeometryDescriptor) {
-                    geoms.add((GeometryDescriptor) desc);
-                } else {
-                    field = "\"" + desc.getName() + "\" ";
-                    type = Classes.getShortName(desc.getType().getBinding());
-                    if (type.equalsIgnoreCase("String")) {
-                        type = "TEXT";
-                    } else if (type.equalsIgnoreCase("Double")) {
-                        type = "DOUBLE PRECISION";
-                    }
-                    field += type;
-                    createParams.add(field);
-                }
-                fieldNames[j] = desc.getName().toString();
-                j++;
-            }
-            // Add numeric PK for sorting
-            fieldNames[j] = "PKEY";
-            createParams.add("\"PKEY\" TEXT");
-            buf.append(StringUtils.join(createParams.iterator(), ", "));
-            buf.append(");\n");
-            buf.append("ALTER TABLE " + ONLINE_DB_SCHEMA + ".\"" + tableName + "\" ADD CONSTRAINT " + tableName + "_PK PRIMARY KEY (\"PKEY\")\n");
-
-            // add geometry columns
-            for (GeometryDescriptor geom : geoms) {
-                buf.append("SELECT AddGeometryColumn ('").append(ONLINE_DB_SCHEMA).append("', ");
-                buf.append("'").append(tableName).append("', ");
-                buf.append("'").append(geom.getName().toString()).append("', ");
-                int srid = getSrid(geom.getType());
-                buf.append(srid).append(", ");
-                // TODO: should read the properties file header to see if they're more specific
-                buf.append("'GEOMETRY'").append(", ");
-                // TODO: how to work this out properly?
-                buf.append(geom.getType().getCoordinateReferenceSystem()==null? 2: geom.getType().getCoordinateReferenceSystem().getCoordinateSystem().getDimension());
-                buf.append(");\n");
-            }
-
-            // then insert rows
-            SimpleFeature feature;
-            FeatureId id;
-            while (reader.hasNext()) {
-                buf.append("INSERT INTO ").append(ONLINE_DB_SCHEMA).append(".\"").append(tableName)
-                        .append("\"(\"");
-                feature = reader.next();
-                buf.append(StringUtils.join(fieldNames, "\", \""));
-                buf.append("\") ");
-                buf.append("VALUES (");
-                Collection<Property> properties = feature.getProperties();
-                String[] values = new String[size];
-                int valueIndex = 0;
-                for (Property prop : properties) {
-                    Object value = prop.getValue();
-                    if (value instanceof Geometry) {
-                    	//use wkt writer to convert geometry to string, so third dimension can be supported if present.
-                    	Geometry geom = (Geometry) value;
-                    	value = new WKTWriter(geom.getCoordinate().z == Double.NaN? 2 : 3).write(geom);
-                    }
-                    if (value == null || value.toString().equalsIgnoreCase("null")) {
-                        values[valueIndex] = "null";
-                    } else if (prop.getType() instanceof GeometryType) {
-                        int srid = getSrid(((GeometryType) prop.getType()));
-                        if (srid > -1) {
-                            // attach srid
-                            values[valueIndex] = "ST_GeomFromText('" + value + "', " + srid + ")";
-                        } else {
-                            values[valueIndex] = "ST_GeomFromText('" + value + "')";
-                        }
+            File file = new File(propertyFiles.get(fileName), fileName);
+            
+            try (PropertyFeatureReader reader = new PropertyFeatureReader("test", file ) ){
+                SimpleFeatureType schema = reader.getFeatureType();
+                String tableName = schema.getName().getLocalPart().toUpperCase();
+                // create the table
+                buf.append("CREATE TABLE ").append(ONLINE_DB_SCHEMA).append(".\"").append(tableName)
+                        .append("\"(");
+                List<GeometryDescriptor> geoms = new ArrayList<GeometryDescriptor>();
+                // +pkey
+                int size = schema.getAttributeCount() + 1;
+                String[] fieldNames = new String[size];
+                List<String> createParams = new ArrayList<String>();
+                int j = 0;
+                String field;
+                String type;
+                for (PropertyDescriptor desc : schema.getDescriptors()) {
+                    if (desc instanceof GeometryDescriptor) {
+                        geoms.add((GeometryDescriptor) desc);
                     } else {
-                        values[valueIndex] = "'" + value + "'";
+                        field = "\"" + desc.getName() + "\" ";
+                        type = Classes.getShortName(desc.getType().getBinding());
+                        if (type.equalsIgnoreCase("String")) {
+                            type = "TEXT";
+                        } else if (type.equalsIgnoreCase("Double")) {
+                            type = "DOUBLE PRECISION";
+                        }
+                        field += type;
+                        createParams.add(field);
                     }
-                    valueIndex++;
+                    fieldNames[j] = desc.getName().toString();
+                    j++;
                 }
-
-                id = feature.getIdentifier();
-                // insert primary key
-                values[valueIndex] = "'" + id.toString() + "'";
-                buf.append(StringUtils.join(values, ","));
+                // Add numeric PK for sorting
+                fieldNames[j] = "PKEY";
+                createParams.add("\"PKEY\" TEXT");
+                buf.append(StringUtils.join(createParams.iterator(), ", "));
                 buf.append(");\n");
+                buf.append("ALTER TABLE " + ONLINE_DB_SCHEMA + ".\"" + tableName + "\" ADD CONSTRAINT " + tableName + "_PK PRIMARY KEY (\"PKEY\")\n");
+    
+                // add geometry columns
+                for (GeometryDescriptor geom : geoms) {
+                    buf.append("SELECT AddGeometryColumn ('").append(ONLINE_DB_SCHEMA).append("', ");
+                    buf.append("'").append(tableName).append("', ");
+                    buf.append("'").append(geom.getName().toString()).append("', ");
+                    int srid = getSrid(geom.getType());
+                    buf.append(srid).append(", ");
+                    // TODO: should read the properties file header to see if they're more specific
+                    buf.append("'GEOMETRY'").append(", ");
+                    // TODO: how to work this out properly?
+                    buf.append(geom.getType().getCoordinateReferenceSystem()==null? 2: geom.getType().getCoordinateReferenceSystem().getCoordinateSystem().getDimension());
+                    buf.append(");\n");
+                }
+    
+                // then insert rows
+                SimpleFeature feature;
+                FeatureId id;
+                while (reader.hasNext()) {
+                    buf.append("INSERT INTO ").append(ONLINE_DB_SCHEMA).append(".\"").append(tableName)
+                            .append("\"(\"");
+                    feature = reader.next();
+                    buf.append(StringUtils.join(fieldNames, "\", \""));
+                    buf.append("\") ");
+                    buf.append("VALUES (");
+                    Collection<Property> properties = feature.getProperties();
+                    String[] values = new String[size];
+                    int valueIndex = 0;
+                    for (Property prop : properties) {
+                        Object value = prop.getValue();
+                        if (value instanceof Geometry) {
+                        	//use wkt writer to convert geometry to string, so third dimension can be supported if present.
+                        	Geometry geom = (Geometry) value;
+                        	value = new WKTWriter(geom.getCoordinate().z == Double.NaN? 2 : 3).write(geom);
+                        }
+                        if (value == null || value.toString().equalsIgnoreCase("null")) {
+                            values[valueIndex] = "null";
+                        } else if (prop.getType() instanceof GeometryType) {
+                            int srid = getSrid(((GeometryType) prop.getType()));
+                            if (srid > -1) {
+                                // attach srid
+                                values[valueIndex] = "ST_GeomFromText('" + value + "', " + srid + ")";
+                            } else {
+                                values[valueIndex] = "ST_GeomFromText('" + value + "')";
+                            }
+                        } else {
+                            values[valueIndex] = "'" + value + "'";
+                        }
+                        valueIndex++;
+                    }
+    
+                    id = feature.getIdentifier();
+                    // insert primary key
+                    values[valueIndex] = "'" + id.toString() + "'";
+                    buf.append(StringUtils.join(values, ","));
+                    buf.append(");\n");
+                }
             }
-        }
-        if (buf.length() > 0) {
-            this.sql = buf.toString();
+            if (buf.length() > 0) {
+                this.sql = buf.toString();
+            }
         }
     }
 
     @Override
     protected void runSqlInsertScript() throws Exception {
-        System.out.println(sql);
         this.run(sql, false);
     }
 }

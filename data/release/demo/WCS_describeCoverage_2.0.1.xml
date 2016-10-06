@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wcs:DescribeCoverage service="WCS" version="2.0.1"
+  xmlns:wcs="http://www.opengis.net/wcs/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsAll.xsd">
+
+  <wcs:CoverageId>nurc__mosaic</wcs:CoverageId>
+</wcs:DescribeCoverage>
+

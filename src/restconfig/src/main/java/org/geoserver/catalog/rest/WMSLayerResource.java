@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,7 @@ import java.util.List;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -111,6 +113,7 @@ public class WMSLayerResource extends AbstractCatalogResource {
         cb.initWMSLayer( wml );
         
         wml.setEnabled(true);
+        catalog.validate(wml, true).throwIfInvalid();
         catalog.add( wml );
         
         // create a layer for the feature type
@@ -136,6 +139,7 @@ public class WMSLayerResource extends AbstractCatalogResource {
         WMSStoreInfo wms = catalog.getStoreByName(workspace, wmsstore, WMSStoreInfo.class);
         WMSLayerInfo original = catalog.getResourceByStore( wms,  wmslayer, WMSLayerInfo.class );
         new CatalogBuilder(catalog).updateWMSLayer(original,wml);
+        catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         
         LOGGER.info( "PUT wms layer " + wmsstore + "," + wmslayer );
@@ -179,6 +183,21 @@ public class WMSLayerResource extends AbstractCatalogResource {
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setHideFeatureTypeAttributes();
         persister.setCallback( new XStreamPersister.Callback() {
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                String workspace = getAttribute("workspace");
+                String wmsstore = getAttribute("wmsstore");
+                String wmslayer = getAttribute("wmslayer");
+                
+                if (workspace == null || wmsstore == null || wmslayer == null) {
+                    return null;
+                }
+                WMSStoreInfo wms = catalog.getStoreByName(workspace, wmsstore, WMSStoreInfo.class);
+                if (wms == null) {
+                    return null;
+                }
+                return catalog.getResourceByStore( wms,  wmslayer, WMSLayerInfo.class );
+            }
             @Override
             protected void postEncodeReference(Object obj, String ref, String prefix, 
                     HierarchicalStreamWriter writer, MarshallingContext context) {

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -80,7 +81,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
      * <code>null</code> if no principal was authenticated 
      * 
      * @param request
-     * @return
+     *
      */
     abstract protected String getPreAuthenticatedPrincipal(HttpServletRequest request);
     
@@ -90,7 +91,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
      * 
      * @param request
      * @param principal
-     * @return
+     *
      */
     abstract protected Collection<GeoServerRole> getRoles(HttpServletRequest request, String principal) throws IOException;
     
@@ -153,10 +154,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
 
     @Override
     public String getCacheKey(HttpServletRequest request) {
-        
-        if (Boolean.TRUE.equals(request.getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR)))
-            return null;
-        
+                
         if (request.getSession(false)!=null) // no caching if there is an HTTP session
             return null;
         

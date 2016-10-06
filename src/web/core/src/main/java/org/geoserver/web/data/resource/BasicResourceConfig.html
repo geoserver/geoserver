@@ -1,11 +1,9 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <head></head>
 <body>
-  <h3><wicket:message key="title">Basic Settings</wicket:message></h3>
-  <form>
-    <wicket:panel>
-  <!-- Once things are working well we can remove the word 'default' from the default
-       messages.  Leaving them in now so we can tell if i18n is being picked up   -->
+<form>
+  <wicket:panel>
+    <h3><wicket:message key="title">Basic Settings</wicket:message></h3>
     <ul>
       <li>
         <fieldset>
@@ -13,19 +11,19 @@
           <ul>
             <li>
               <label for="name"><wicket:message key="name">Name</wicket:message></label>
-              <input id="name" class="text" type="text" wicket:id="name"></input>
+              <input id="name" class="text" type="text" wicket:id="name"/>
             </li>
-            <li>
-              <input id="basic-enabled" class="field checkbox" wicket:id="enabled" type="checkbox"></input>
-              <label for="basic-enabled" class="choice"><wicket:message key="enabled">Enabled</wicket:message></label>
+            <li class="choiceItem">
+              <input id="basic-enabled" wicket:id="enabled" type="checkbox"/>
+              <label for="basic-enabled"><wicket:message key="enabled">Enabled</wicket:message></label>
             </li>
-	        <li>
-	          <input id="basic-advertised" class="field checkbox" wicket:id="advertised" type="checkbox"></input>
-	          <label for="basic-advertised" class="choice"><wicket:message key="advertised">Advertised</wicket:message></label>
+	        <li class="choiceItem">
+	          <input id="basic-advertised" wicket:id="advertised" type="checkbox"/>
+	          <label for="basic-advertised"><wicket:message key="advertised">Advertised</wicket:message></label>
 	        </li>
             <li>
               <label for="title"><wicket:message key="titleMsg">Title</wicket:message></label>
-              <input id="title" class="text" type="text" wicket:id="title"></input>
+              <input id="title" class="text" type="text" wicket:id="title"/>
             </li>
             <li>
               <label for="abstract"><wicket:message key="abstract">Abstract</wicket:message></label>
@@ -46,7 +44,17 @@
           <ul>
             <li>
               <div wicket:id="metadataLinks"></div>
-            </li>   
+            </li>
+          </ul>
+        </fieldset>
+      </li>
+      <li>
+        <fieldset>
+          <legend><span><wicket:message key="dataLinks">Data links</wicket:message></span></legend>
+          <ul>
+            <li>
+              <div wicket:id="dataLinks"></div>
+            </li>
           </ul>
         </fieldset>
       </li>
@@ -66,7 +74,7 @@
             <li>
               <label for="srsHandling"><wicket:message key="srsHandling">SRS handling</wicket:message></label>
               <select id="srsHandling" wicket:id="srsHandling"></select>
-            </li>            
+            </li>
           </ul>
         </fieldset>
       </li>
@@ -77,7 +85,15 @@
             <li>
               <label for="nativeBoundingBox"><wicket:message key="nativeBbox">Native BBox</wicket:message></label>
               <div id="nativeBoundingBox" wicket:id="nativeBoundingBox"></div>
-              <a href="#" wicket:id="computeNative" class="computeLink"><wicket:message key="computeFromData">Compute from data</wicket:message></a>
+              <div id="nativeBBoxControls" class="bounding-box-controls">
+                <a href="#" wicket:id="computeNative">
+                    <wicket:message key="computeFromData">Compute from data</wicket:message>
+                </a>
+                <a href="#" wicket:id="computeLatLonFromNativeSRS">
+                    <wicket:message key="computeFromSRS">Compute from SRS bounds</wicket:message>
+                </a>
+              </div>
+
             </li>
             <li>
               <label for="latLonBoundingBox"><wicket:message key="latLonBbox">Lat/Lon BBOX</wicket:message></label>
@@ -92,8 +108,8 @@
     </wicket:panel>
     <ul>
       <li class="button-group selfclear">
-        <input class="btnTxt" wicket:id="submit" type="submit"><wicket:message key="submit"/></input>
-        <input class="btnTxt" wicket:id="cancel" type="submit"><wicket:message key="cancel"/></input> 
+        <input class="btnTxt" wicket:id="submit" type="submit"/><wicket:message key="submit"/>
+        <input class="btnTxt" wicket:id="cancel" type="submit"/><wicket:message key="cancel"/>
       </li>
     </ul>
   </form>

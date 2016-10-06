@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2015 Open Source Geospatial Foundation. All rights reserved.
+    This code is licensed under the GPL 2.0 license, available at the root application
+    directory. -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+    <bean class="org.geoserver.config.GeoServerPropertyConfigurer">
+        <constructor-arg ref="dataDirectory" />
+        <property name="location"
+            value="file:resumableUpload.properties" />
+            
+        <property name="ignoreUnresolvablePlaceholders" value="true" />
+        <property name="properties">
+            <props>
+                <prop key="resumable.tempPath">tmp/upload</prop>
+                <prop key="resumable.expirationDelay">300000</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="resumableUploadMapping" class="org.geoserver.rest.RESTMapping">
+        <property name="routes">
+            <map>
+                <entry>
+                    <key>
+                        <value>/resumableupload</value>
+                    </key>
+                    <value>resumableUploadFinder</value>
+                </entry>
+                <entry>
+                    <key>
+                        <value>/resumableupload/{uploadId}</value>
+                    </key>
+                    <value>resumableUploadFinder</value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="resumableUploadResourceManager"
+        class="org.geoserver.restupload.ResumableUploadResourceManager">
+        <constructor-arg index="0" value="${resumable.tempPath}" />
+    </bean>
+
+    <bean id="resumableUploadFinder"
+        class="org.geoserver.restupload.ResumableUploadCatalogFinder"
+        parent="abstractCatalogFinder">
+        <property name="resumableUploadResourceManager" ref="resumableUploadResourceManager" />
+    </bean>
+
+    <bean id="resumableUploadPathMapper" class="org.geoserver.restupload.ResumableUploadPathMapper">
+        <constructor-arg ref="catalog" />
+        <property name="sourcePath" value="${resumable.tempPath}" />
+    </bean>
+
+    <!-- Temp storage cleanup -->
+    <bean id="resumableUploadStorageCleaner"
+        class="org.geoserver.restupload.ResumableUploadResourceCleaner">
+        <constructor-arg index="0"
+            ref="resumableUploadResourceManager" />
+        <constructor-arg index="1"
+            value="${resumable.expirationDelay}" />
+    </bean>
+
+    <!-- Definition of how often the scheduled task runs -->
+    <bean id="resumableUploadStorageCleanerTask"
+        class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
+        <!-- wait 10 seconds before starting repeated execution -->
+        <property name="delay" value="10000" />
+        <!-- run every 60 seconds -->
+        <property name="period" value="60000" />
+        <property name="runnable" ref="resumableUploadStorageCleaner" />
+    </bean>
+
+    <!-- And finally the class that instantiates the scheduled tasks and
+        makes them run -->
+    <bean id="resumableUploadTimerFactory"
+        class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean"
+        lazy-init="false">
+        <property name="scheduledExecutorTasks">
+            <list>
+                <ref bean="resumableUploadStorageCleanerTask" />
+            </list>
+        </property>
+        <property name="daemon" value="true" />
+    </bean>
+    
+</beans>

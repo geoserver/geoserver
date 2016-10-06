@@ -1,0 +1,49 @@
+# This is a sample configuration file for running the GeoServer Catalog against a H2 database.
+# Adapt the url, user, password, and other configuration options to your set up and rename this
+# file as jdbcstore.properties
+#
+# Note the initialization DDL script for H2 will be automatically run at startup.
+# The initialization script is located in the jdbcstore_scripts directory, named initdb.h2.sql
+# The importCatalog configuration option tells GeoServer whether to import the current catalog from the file system
+# to the database or not. If set to true, it will be imported and the config option will be set the value 'false'
+# for the next start up to avoid trying to re-import the catalog configuration.
+
+enabled=true
+
+initdb=true
+initScript=jdbcstore/scripts/init.h2.sql
+import=true
+
+jdbcUrl=jdbc:h2:file:${GEOSERVER_DATA_DIR}/jdbcstore/store;AUTO_SERVER=TRUE
+driverClassName=org.h2.Driver
+username=sa
+password=
+
+#
+# connection pooling/management parameters
+#
+
+# minimum connections in pool  
+pool.minIdle=4
+
+# maximum connections in pool
+pool.maxActive=10
+
+# whether to pool prepared statements
+pool.poolPreparedStatements=true
+
+# size of prepared statement cache, only used if pool.poolPreparedStatements = true 
+pool.maxOpenPreparedStatements=50
+
+# whether to validate connections when obtaining from the pool
+pool.testOnBorrow=true
+
+# validation query for connections from pool, must be set when pool.testOnBorrow = true
+pool.validationQuery=SELECT now()
+
+
+# when renaming, delete destination if file exists (linux style)
+deleteDestinationOnRename=true
+
+# leave the following directories on the filesystem -- no spaces!
+ignoreDirs=data,jdbcstore,jdbcconfig,temp,tmp,logs

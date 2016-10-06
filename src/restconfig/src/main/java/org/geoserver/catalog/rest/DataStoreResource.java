@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,6 +12,7 @@ import java.util.logging.Level;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -80,7 +82,6 @@ public class DataStoreResource extends AbstractCatalogResource {
         
         //if no namespace parameter set, set it
         //TODO: we should really move this sort of thing to be something central
-        Map params = ds.getConnectionParameters();
         if (!ds.getConnectionParameters().containsKey("namespace")) {
             WorkspaceInfo ws = ds.getWorkspace();
             NamespaceInfo ns = catalog.getNamespaceByPrefix(ws.getName());
@@ -105,6 +106,7 @@ public class DataStoreResource extends AbstractCatalogResource {
             }
         }
         
+        catalog.validate((DataStoreInfo)object, false).throwIfInvalid();
         catalog.add( (DataStoreInfo) object );
         
         LOGGER.info( "POST data store " + ds.getName() );
@@ -134,6 +136,7 @@ public class DataStoreResource extends AbstractCatalogResource {
         
         new CatalogBuilder( catalog ).updateDataStore( original, ds );
         
+        catalog.validate(original, false).throwIfInvalid();
         catalog.save( original );
         
         clear(original);
@@ -176,6 +179,16 @@ public class DataStoreResource extends AbstractCatalogResource {
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setCallback( 
             new XStreamPersister.Callback() {
+                @Override
+                protected CatalogInfo getCatalogObject() {
+                    String workspace = getAttribute("workspace");
+                    String datastore = getAttribute("datastore");
+                    
+                    if (workspace == null || datastore == null) {
+                        return null;
+                    }
+                    return catalog.getDataStoreByName(workspace, datastore);
+                }
                 @Override
                 protected void postEncodeDataStore(DataStoreInfo ds,
                         HierarchicalStreamWriter writer,

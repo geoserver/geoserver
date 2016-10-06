@@ -6,12 +6,12 @@
   <configPasswordEncrypterName>pbePasswordEncoder</configPasswordEncrypterName>
   <encryptingUrlParams>false</encryptingUrlParams>
   <filterChain>
-    <filters name="web" class="org.geoserver.security.HtmlLoginFilterChain" interceptorName="interceptor" exceptionTranslationName="exception" path="/web/**,/gwc/rest/web/**" disabled="false" allowSessionCreation="true" ssl="false" matchHTTPMethod="false">
+    <filters name="web" class="org.geoserver.security.HtmlLoginFilterChain" interceptorName="interceptor" exceptionTranslationName="exception" path="/web/**,/gwc/rest/web/**,/" disabled="false" allowSessionCreation="true" ssl="false" matchHTTPMethod="false">
       <filter>rememberme</filter>
       <filter>form</filter>
       <filter>anonymous</filter>
     </filters>
-    <filters name="webLogin" class="org.geoserver.security.ConstantFilterChain" path="/j_spring_security_check,/j_spring_security_check/" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
+    <filters name="webLogin" class="org.geoserver.security.ConstantFilterChain" path="/j_spring_security_check,/j_spring_security_check/" disabled="false" allowSessionCreation="true" ssl="false" matchHTTPMethod="false">
       <filter>form</filter>
     </filters>
     <filters name="webLogout" class="org.geoserver.security.LogoutFilterChain" path="/j_spring_security_logout,/j_spring_security_logout/" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">

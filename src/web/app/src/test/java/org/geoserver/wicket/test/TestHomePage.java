@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,6 +14,8 @@ import org.apache.wicket.markup.html.WebPage;
  */
 public class TestHomePage extends WebPage {
 
+    private static final long serialVersionUID = 2340501554860062526L;
+	
     static IComponentFactory componentFactory;
 
     /**

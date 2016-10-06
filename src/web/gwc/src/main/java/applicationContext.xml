@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-web-gwc"/>
+    <constructor-arg index="1" value="GeoServer Web UI GeoWebCache"/>
+  </bean>
   <bean id="GWCCapabilitiesHomePageProvider" class="org.geoserver.gwc.web.GWCCapabilitiesHomePageProvider">
     <constructor-arg ref="gwcFacade"/>
+    <constructor-arg ref="geoServer"/>
   </bean>
 
   <bean id="gwcCategory" class="org.geoserver.web.Category">
@@ -26,7 +30,7 @@
     <property name="icon" value="../tilelayer.png"/>
     <property name="order" value="1"/>
   </bean>
-  
+    
   <bean id="gwcSettingsMenuPage" class="org.geoserver.web.MenuPageInfo">
     <property name="id" value="gwc.settings"/>
     <property name="titleKey" value="GWCSettingsPage.menuTitle"/>
@@ -56,6 +60,16 @@
     <property name="icon" value="../diskquota.png"/>
     <property name="order" value="4"/>
   </bean>
+    
+  <bean id="blobStoresMenuPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="gwc.blobStores"/>
+    <property name="titleKey" value="BlobStoresPage.title"/>
+    <property name="descriptionKey" value="BlobStoresPage.description"/>
+    <property name="componentClass" value="org.geoserver.gwc.web.blob.BlobStoresPage"/>
+    <property name="category" ref="gwcCategory"/>
+    <property name="icon" value="../blobstores.png"/>
+    <property name="order" value="5"/>
+  </bean>
   
   <bean id="layerCacheEditTabPanelInfo" class="org.geoserver.gwc.web.layer.LayerEditCacheOptionsTabPanelInfo">
     <property name="id" value="layerCacheEditTabPanelInfo"/>
@@ -64,13 +78,18 @@
     <property name="componentClass" value="org.geoserver.gwc.web.layer.LayerCacheOptionsTabPanel"/>
     <property name="order" value="200"/>
   </bean>
-    
-  <bean id="layerGroupCacheEditPanelInfo" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
-    <property name="id" value="layerGroupCacheEditTabPanelInfo"/>
-    <property name="titleKey" value="LayerGroupCacheOptionsPanel.title"/>
-    <property name="descriptionKey" value="LayerGroupCacheOptionsPanel.shortDescription"/>
-    <property name="componentClass" value="org.geoserver.gwc.web.layer.LayerGroupCacheOptionsPanel"/>
-  </bean>
-  
+
   <bean id="diskQuotaWarningProvider" class="org.geoserver.gwc.web.diskquota.DiskQuotaWarningProvider"/>
+  
+  <bean class="org.geoserver.gwc.web.blob.FileBlobStoreType" />
+
+  <bean id="wmtsServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
+    <property name="id" value="wmts"/>
+    <property name="titleKey" value="wmts.title"/>
+    <property name="descriptionKey" value="wmts.description"/>
+    <property name="componentClass" value="org.geoserver.gwc.web.wmts.WMTSAdminPage"/>
+    <property name="icon" value="server_tile_map.png"/>
+    <property name="category" ref="servicesCategory"/>
+    <property name="serviceClass" value="org.geoserver.gwc.wmts.WMTSInfo"/>
+  </bean>
 </beans>

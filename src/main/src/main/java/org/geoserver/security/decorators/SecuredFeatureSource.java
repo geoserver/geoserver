@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -134,7 +135,7 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
      * and preserves all of the other properties in userQuery (hints, crs handling, sorting)
      * @param userQuery
      * @param securityQuery
-     * @return
+     *
      */
     protected Query mixQueries(Query userQuery, Query securityQuery) {
         // first rough mix

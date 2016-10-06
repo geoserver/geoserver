@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" targetNamespace="http://www.isotc211.org/2005/gmd" elementFormDefault="qualified" version="2012-07-13">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>Geographic MetaData (GMD) extensible markup language is a component of the XML Schema Implementation of Geographic Information Metadata documented in ISO/TS 19139:2007. GMD includes all the definitions of http://www.isotc211.org/2005/gmd namespace. The root document of this namespace is the file gmd.xsd. This referenceSystem.xsd schema implements the UML conceptual schema defined in A.2.7 of ISO 19115:2003 and ISO 19115:2003/Cor. 1:2006. It contains the implementation of the following classes: RS_Identifier, MD_ReferenceSystem, MD_Identifier and RS_Reference System.</xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd"/>
+	<xs:include schemaLocation="gmd.xsd"/>
+	<xs:include schemaLocation="citation.xsd"/>
+	<xs:include schemaLocation="extent.xsd"/>
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- ================================== Classes ================================= -->
+	<xs:complexType name="RS_Identifier_Type">
+		<xs:complexContent>
+			<xs:extension base="gmd:MD_Identifier_Type">
+				<xs:sequence>
+					<xs:element name="codeSpace" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+					<xs:element name="version" type="gco:CharacterString_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="RS_Identifier" type="gmd:RS_Identifier_Type" substitutionGroup="gmd:MD_Identifier"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="RS_Identifier_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:RS_Identifier"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="MD_ReferenceSystem_Type">
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="referenceSystemIdentifier" type="gmd:RS_Identifier_PropertyType" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="MD_ReferenceSystem" type="gmd:MD_ReferenceSystem_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_ReferenceSystem_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_ReferenceSystem"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="MD_Identifier_Type">
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="authority" type="gmd:CI_Citation_PropertyType" minOccurs="0"/>
+					<xs:element name="code" type="gco:CharacterString_PropertyType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="MD_Identifier" type="gmd:MD_Identifier_Type"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="MD_Identifier_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:MD_Identifier"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<xs:complexType name="AbstractRS_ReferenceSystem_Type" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Description of the spatial and temporal reference systems used in the dataset</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="gco:AbstractObject_Type">
+				<xs:sequence>
+					<xs:element name="name" type="gmd:RS_Identifier_PropertyType"/>
+					<xs:element name="domainOfValidity" type="gmd:EX_Extent_PropertyType" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- ........................................................................ -->
+	<xs:element name="AbstractRS_ReferenceSystem" type="gmd:AbstractRS_ReferenceSystem_Type" abstract="true"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="RS_ReferenceSystem_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gmd:AbstractRS_ReferenceSystem"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+</xs:schema>

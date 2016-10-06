@@ -1,9 +1,13 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.password;
 
+import org.apache.commons.lang.SerializationUtils;
+import org.geoserver.platform.GeoServerEnvironment;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.SecurityConfig;
 
 /**
@@ -38,6 +42,23 @@ public class MasterPasswordConfig implements SecurityConfig {
      */
     public void setProviderName(String providerName) {
         this.providerName = providerName;
+    }
+
+    @Override
+    public SecurityConfig clone(boolean allowEnvParametrization) {
+        
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+        
+        MasterPasswordConfig target = (MasterPasswordConfig) SerializationUtils.clone(this);
+        
+        if (target != null) {
+            if (allowEnvParametrization && gsEnvironment != null
+                    && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                target.setProviderName((String) gsEnvironment.resolveValue(providerName));
+            }
+        }
+        
+        return target;
     }
     
 }

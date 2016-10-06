@@ -1,17 +1,19 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.format.DataFormat;
 import org.restlet.Context;
 import org.restlet.data.Request;
@@ -56,16 +58,12 @@ public class FreemarkerTemplateListResource extends AbstractCatalogListResource 
         
     @Override
     protected Collection<FreemarkerTemplateInfo> handleListGet() throws Exception {
-        File directory = catalog.getResourceLoader().find(FreemarkerTemplateResource.getDirectoryPath(getRequest()));        
-        File[] files = directory.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".ftl");
-            }            
-        });
+        Resource directory = catalog.getResourceLoader().get(
+                Paths.path(FreemarkerTemplateResource.getDirectoryPath(getRequest())));        
+        List<Resource> files = Resources.list(directory, new Resources.ExtensionFilter("FTL"), false);
         
         List<FreemarkerTemplateInfo> list = new ArrayList<FreemarkerTemplateInfo>();
-        for (File file : files) {
+        for (Resource file : files) {
             list.add(new FreemarkerTemplateInfo(file));
         }
         return list;

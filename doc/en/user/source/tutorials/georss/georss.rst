@@ -13,6 +13,18 @@ If you are using a web browser which can render rss feeds simply visit the url `
 
    *topp:states rss feed*
 
+Templating
+----------
+Geoserver uses freemarker templates to customize the returned GeoRSS feed. If you are not familiar with freemarker templates you may wish to read the :ref:`tutorial_freemarkertemplate` tutorial, and the :ref:`getutorial_kmlplacemark` page, which has simple examples.
+
+Three template files are currently supported:
+
+* ``title.ftl``
+* ``description.ftl``
+* ``link.ftl``
+
+Each of these files may be used to customize the assocated field in the GeoRSS feed.
+
 Ajax Map Mashups
 ----------------
 .. note::

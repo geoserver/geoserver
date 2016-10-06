@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,6 +16,7 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.WCSInfoImpl;
+import org.geoserver.wcs.WCSXStreamLoader;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -43,7 +45,7 @@ public class WCSSettingsResource extends ServiceSettingsResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setHideFeatureTypeAttributes();
-        persister.getXStream().alias("wcs", WCSInfoImpl.class);
+        WCSXStreamLoader.initXStreamPersister(persister);
     }
 
     static class WCSSettingsHTMLFormat extends CatalogFreemarkerHTMLFormat {

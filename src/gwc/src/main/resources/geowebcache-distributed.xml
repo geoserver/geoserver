@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  <description>
+   Bean configuration file for the gwc-web module
+  </description>
+
+   <bean id="HazelCastCacheProvider" class="org.geowebcache.storage.blobstore.memory.distributed.HazelcastCacheProvider">
+       <constructor-arg ref="HazelCastLoader" />
+  </bean>
+  
+      <bean id="HazelCastLoader" class="org.geowebcache.storage.blobstore.memory.distributed.HazelcastLoader"/>
+  
+</beans>

@@ -1,0 +1,33 @@
+<featureType>
+  <id>FeatureTypeInfoImpl-2bc80f29:12cef718474:-7fba</id>
+  <name>layer1</name>
+  <nativeName>shape</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ffe</id>
+  </namespace>
+  <title>Layer1</title>
+  <srs>EPSG:3003</srs>
+  <nativeBoundingBox>
+    <minx>1663524.25</minx>
+    <maxx>1672274.923</maxx>
+    <miny>4854820.302</miny>
+    <maxy>4865479.16</maxy>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>11.031</minx>
+    <maxx>11.149</maxx>
+    <miny>43.816</miny>
+    <maxy>43.934</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="cachingEnabled">false</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--2c671c92:13f101e60a5:-7fff</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

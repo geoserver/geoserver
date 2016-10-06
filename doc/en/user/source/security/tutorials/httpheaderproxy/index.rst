@@ -1,4 +1,4 @@
-.. _sec_tutorials_httpheaderproxy:
+.. _security_tutorials_httpheaderproxy:
 
 Configuring HTTP Header Proxy Authentication
 ============================================
@@ -51,7 +51,7 @@ Configure the HTTP header filter
    * Set ``Role source`` to "User group service"
    * Set the name of the user group service to "default"
 
-Additional information about role services is here :ref:`sec_rolesystem_rolesource`
+Additional information about role services is here :ref:`security_rolesystem_rolesource`
       
    .. figure:: images/digest4.jpg
       :align: center

@@ -1,0 +1,38 @@
+dn: ou=People,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: People
+description: Container for user entries
+
+dn: ou=Groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: Groups
+
+dn: cn=admin,ou=Groups,dc=example,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: admin
+member: cn=admin
+member: cn=colon
+
+dn: uid=admin,ou=People,dc=example,dc=com
+objectClass: top
+objectClass: inetOrgPerson
+givenName: admin
+sn: admin
+uid: admin
+cn: uid=admin,ou=People,dc=example,dc=com
+userPassword: {SHA}0DPiKuNIrrVmD8IUCuw1hQxNqZc=
+telephoneNumber: 1
+
+dn: uid=colon,ou=People,dc=example,dc=com
+objectClass: top
+objectClass: inetOrgPerson
+givenName: colon
+sn: colon
+uid: colon
+cn: uid=colon,ou=People,dc=example,dc=com
+userPassword: da:da
+telephoneNumber: 2
+

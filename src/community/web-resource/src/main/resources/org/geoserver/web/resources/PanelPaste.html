@@ -1,0 +1,21 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <wicket:panel>         
+      <h3><wicket:message key="titlePaste"></wicket:message></h3>
+      <div wicket:id="feedback"></div>
+  
+      <ul>            
+        <li>
+          <label><wicket:message key="source"></wicket:message></label>
+          <input wicket:id="source" size="40" type="text" readonly>
+          <br/>
+          <span wicket:id="labelMove"><wicket:message key="moveMessage"></wicket:message></span>
+          <span wicket:id="labelCopy"><wicket:message key="copyMessage"></wicket:message></span>
+        </li>        
+        <li>
+          <label><wicket:message key="directory"></wicket:message></label>
+          <input wicket:id="directory" size="40" type="text">
+          <br/><small><wicket:message key="createDirectory"></wicket:message></small>
+        </li>
+      </ul>
+ </wicket:panel>
+</html>

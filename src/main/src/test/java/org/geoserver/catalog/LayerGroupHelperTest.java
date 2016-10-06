@@ -1,3 +1,7 @@
+/* (c) 2015 -2016 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.catalog;
 
 import static org.junit.Assert.assertEquals;
@@ -21,6 +25,8 @@ import org.geotools.referencing.CRS;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class LayerGroupHelperTest extends GeoServerMockTestSupport {
@@ -88,7 +94,7 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         layer.setResource(ri);
         layer.setName(ri.getName());
         layer.setEnabled(true);
-        layer.setType(LayerInfo.Type.VECTOR);
+        layer.setType(PublishedType.VECTOR);
 
         return layer;
     }
@@ -187,9 +193,19 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         // a nested container
         assertExpectedLayers(Arrays.asList(forestLayer), containerParent);        
     }
+    
+    @Test
+    public void testAllGroups() {
+        assertExpectedGroups(Arrays.asList(nested, lakesNeatline, ponds), nested);
+    }
 
     private void assertExpectedLayers(List<LayerInfo> expected, LayerGroupInfo group) {
         List<LayerInfo> layers = new LayerGroupHelper(group).allLayers();
+        assertEquals(expected, layers);
+    }
+    
+    private void assertExpectedGroups(List<LayerGroupInfo> expected, LayerGroupInfo group) {
+        List<LayerGroupInfo> layers = new LayerGroupHelper(group).allGroups();
         assertEquals(expected, layers);
     }
 
@@ -289,6 +305,21 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         nestedExpected = nestedExpected.transform(targetCRS, true);
         new LayerGroupHelper(nested).calculateBounds(targetCRS);
         assertEquals(nestedExpected, nested.getBounds());
+    }
+    
+    @Test
+    public void testUseCRSBounds() throws NoSuchAuthorityCodeException, FactoryException {
+        //this test is almost trivial since the code itself is trivial
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326");
+        LayerGroupHelper helper = new LayerGroupHelper(nested);
+        helper.calculateBoundsFromCRS(targetCRS);
+        
+        //layer group bounds should now match target CRS bounds
+        assertEquals(nested.getBounds(), new ReferencedEnvelope(CRS.getEnvelope(targetCRS)));
+        
+        //null CRS should get null bounds
+        helper.calculateBoundsFromCRS(null);
+        assertEquals(nested.getBounds(), null);
     }
 
     private ReferencedEnvelope aggregateEnvelopes(LayerInfo... layers) {

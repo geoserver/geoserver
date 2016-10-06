@@ -1,19 +1,22 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.monitor.hib;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -41,15 +44,16 @@ public class EntityManagerFactoryPostProcessor implements BeanPostProcessor {
     
     void init(AbstractEntityManagerFactoryBean factory) {
         try {
-            File f = data.findDataFile("monitoring", "hibernate.properties");
-            if (f == null) {
+            Resource f = data.get(Paths.path("monitoring", "hibernate.properties"));
+            if (!Resources.exists(f)) {
                 //copy one out from 
                 Properties props = new Properties();
                 props.putAll(factory.getJpaVendorAdapter().getJpaPropertyMap());
                 props.putAll(factory.getJpaPropertyMap());
                 
-                FileOutputStream fout = new FileOutputStream(
-                    data.findOrCreateDataDir("monitoring", "hibernate.properties"));
+                Resource monitoring = data.get("monitoring");
+                Resource file =  monitoring.get("hibernate.properties");
+                OutputStream fout = file.out();
                 
                 props.store(fout, "hibernate configuration");
                 fout.flush();
@@ -58,7 +62,7 @@ public class EntityManagerFactoryPostProcessor implements BeanPostProcessor {
             else {
                 //use config to overide
                 Properties props = new Properties();
-                FileInputStream fin = new FileInputStream(f);
+                InputStream fin = f.in();
                 props.load(fin);
                 fin.close();
 

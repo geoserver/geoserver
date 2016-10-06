@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,7 +8,7 @@ package org.geoserver.ows;
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
@@ -16,7 +17,7 @@ import org.geoserver.platform.ServiceException;
 
 /**
  * A dispatcher callback used to "qualify" requests based on the presence of {@link LocalWorkspace}
- * and {@link LocalLayer}.
+ * and {@link LocalPublished}.
  * <p>
  * The term "qualifying" in this sense means fill in any information that can be derived from the 
  * the local workspace or layer. For example, if a client specifies a local workspace then they 
@@ -40,14 +41,14 @@ public abstract class WorkspaceQualifyingCallback implements DispatcherCallback 
 
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
         if (LocalWorkspace.get() != null) {
-            qualifyRequest(LocalWorkspace.get(), LocalLayer.get(), service, request);
+            qualifyRequest(LocalWorkspace.get(), LocalPublished.get(), service, request);
         }
         return service;
     }
     
     public Operation operationDispatched(Request request, Operation operation) {
         if (LocalWorkspace.get() != null) {
-            qualifyRequest(LocalWorkspace.get(), LocalLayer.get(), operation, request);
+            qualifyRequest(LocalWorkspace.get(), LocalPublished.get(), operation, request);
         }
         
         return operation;
@@ -71,8 +72,8 @@ public abstract class WorkspaceQualifyingCallback implements DispatcherCallback 
         return (T) OwsUtils.parameter(op.getParameters(), clazz);
     }
     
-    protected abstract void qualifyRequest(WorkspaceInfo workspace, LayerInfo layer, Service service, Request request);
-    protected abstract void qualifyRequest(WorkspaceInfo workspace, LayerInfo layer, Operation operation, Request request);
+    protected abstract void qualifyRequest(WorkspaceInfo workspace, PublishedInfo layer, Service service, Request request);
+    protected abstract void qualifyRequest(WorkspaceInfo workspace, PublishedInfo layer, Operation operation, Request request);
     
 
     protected String qualifyName(String name, WorkspaceInfo ws) {
@@ -90,7 +91,7 @@ public abstract class WorkspaceQualifyingCallback implements DispatcherCallback 
         return name;
     }
     
-    protected void qualifyNames(List<String> names, WorkspaceInfo ws) {
+    protected void qualifyLayerNames(List<String> names, WorkspaceInfo ws) {
         for (int i = 0; i < names.size(); i++) {
             names.set(i, qualifyName(names.get(i), ws));
         }

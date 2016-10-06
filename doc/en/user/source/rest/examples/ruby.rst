@@ -3,7 +3,7 @@
 Ruby
 ====
 
-The examples in this section use `rest-client <http://github.com/archiloque/rest-client>`_, a REST client for Ruby. There is also a project to create a GeoServer-specific REST client in Ruby: `RGeoServer <https://github.com/rnz0/rgeoserver>`_.
+The examples in this section use `rest-client <http://github.com/archiloque/rest-client>`_, a REST client for Ruby. There is also a GeoServer-specific REST client in Ruby: `RGeoServer <https://github.com/sul-dlss/rgeoserver>`_.
 
 Once installed on a system, ``rest-client`` can be included in a Ruby script by adding ``require 'rest-client'``.
 

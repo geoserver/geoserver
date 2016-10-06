@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -210,7 +211,7 @@ public final class Requests {
      *
      * @param request HttpServletRequest providing current Session
      *
-     * @return
+     *
      */
     public static boolean isLoggedIn(HttpServletRequest request) {
         // check the user is not the anonymous one

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,6 +14,7 @@ import java.io.StringReader;
 import java.io.Writer;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 
@@ -41,7 +43,11 @@ public class WKTPPIO extends CDataPPIO {
     public void encode(Object value, OutputStream os) throws IOException {
         Writer w = new OutputStreamWriter(os);
         try {
-            new WKTWriter().write((Geometry) value, w);
+            Geometry g = (Geometry) value;
+            if (g instanceof LinearRing) {
+                g = g.getFactory().createLineString(((LinearRing)g).getCoordinateSequence());
+            }
+            new WKTWriter().write(g, w);
         } finally {
             w.flush();
         }

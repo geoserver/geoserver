@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -23,7 +24,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 public class AdminRequestTest extends CatalogRESTTestSupport {
 
@@ -93,7 +94,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
 
     @Test
     public void testWorkspaces() throws Exception {
-        assertEquals(200, getAsServletResponse("/rest/workspaces.xml").getStatusCode());
+        assertEquals(200, getAsServletResponse("/rest/workspaces.xml").getStatus());
         Document dom = getAsDOM("/rest/workspaces.xml");
         assertEquals(0, dom.getElementsByTagName("workspace").getLength());
         
@@ -103,7 +104,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
                 dom.getElementsByTagName("workspace").getLength());
 
         loginAsCite();
-        assertEquals(200, getAsServletResponse("/rest/workspaces.xml").getStatusCode());
+        assertEquals(200, getAsServletResponse("/rest/workspaces.xml").getStatus());
         dom = getAsDOM("/rest/workspaces.xml");
         assertEquals(1, dom.getElementsByTagName("workspace").getLength());
         
@@ -111,12 +112,12 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
 
     @Test
     public void testWorkspace() throws Exception {
-        assertEquals(404, getAsServletResponse("/rest/workspaces/sf.xml").getStatusCode());
-        assertEquals(404, getAsServletResponse("/rest/workspaces/cite.xml").getStatusCode());
+        assertEquals(404, getAsServletResponse("/rest/workspaces/sf.xml").getStatus());
+        assertEquals(404, getAsServletResponse("/rest/workspaces/cite.xml").getStatus());
 
         loginAsCite();
-        assertEquals(404, getAsServletResponse("/rest/workspaces/sf.xml").getStatusCode());
-        assertEquals(200, getAsServletResponse("/rest/workspaces/cite.xml").getStatusCode());
+        assertEquals(404, getAsServletResponse("/rest/workspaces/sf.xml").getStatus());
+        assertEquals(200, getAsServletResponse("/rest/workspaces/cite.xml").getStatus());
     }
 
     @Test
@@ -140,7 +141,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
             
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/layergroups/global", xml, "text/xml" );
-        assertEquals(405, response.getStatusCode());
+        assertEquals(405, response.getStatus());
 
         xml = 
             "<layerGroup>" + 
@@ -155,7 +156,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
                 "</styles>" +
               "</layerGroup>"; 
         response = postAsServletResponse("/rest/layergroups", xml, "text/xml" );
-        assertEquals(405, response.getStatusCode());
+        assertEquals(405, response.getStatus());
     }
 
     @Test
@@ -167,10 +168,10 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("global", "//layerGroup/name", dom);
 
         MockHttpServletResponse response = getAsServletResponse("/rest/workspaces/cite/layergroups.xml");
-        assertEquals(404, response.getStatusCode());
+        assertEquals(404, response.getStatus());
 
         response = getAsServletResponse("/rest/workspaces/cite/layergroups.xml");
-        assertEquals(404, response.getStatusCode());
+        assertEquals(404, response.getStatus());
 
 
         dom = getAsDOM( "/rest/layergroups.xml");
@@ -202,7 +203,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
             
         MockHttpServletResponse response = 
             putAsServletResponse("/rest/styles/point", xml, "text/xml" );
-        assertEquals(405, response.getStatusCode());
+        assertEquals(405, response.getStatus());
 
         xml = 
             "<style>" + 
@@ -210,7 +211,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
                 "<filename>foo.sld</filename>" + 
               "</style>"; 
         response = postAsServletResponse("/rest/styles", xml, "text/xml" );
-        assertEquals(405, response.getStatusCode());
+        assertEquals(405, response.getStatus());
     }
    
     @Test
@@ -222,7 +223,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         assertXpathNotExists("//style/name[text() = 'sf_style']", dom);
 
         MockHttpServletResponse response = getAsServletResponse("/rest/workspaces/sf/styles.xml");
-        assertEquals(404, response.getStatusCode());
+        assertEquals(404, response.getStatus());
 
         loginAsSf();
 

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014-2015 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,8 +26,8 @@ import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.DecimationPolicy;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.coverage.processing.operation.Interpolate;
@@ -40,9 +41,11 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.NumberRange;
 import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.processing.Operation;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
+import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterDescriptor;
+import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -66,35 +69,8 @@ public class WCSUtils {
     public final static Hints LENIENT_HINT = new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
     
     private static final CoverageProcessor PROCESSOR = CoverageProcessor.getInstance();
-    
-    private static final Operation CROP = PROCESSOR.getOperation("CoverageCrop");
-
-    private final static SelectSampleDimension bandSelectFactory = new SelectSampleDimension();
-
-    private final static Interpolate interpolateFactory = new Interpolate();
-
-    private final static Resample resampleFactory = new Resample();
-
-    private final static ParameterValueGroup bandSelectParams;
-
-    private final static ParameterValueGroup interpolateParams;
-
-    private final static ParameterValueGroup resampleParams;
 
     private final static Hints hints = new Hints();
-
-    static {
-        hints.add(LENIENT_HINT);
-        // ///////////////////////////////////////////////////////////////////
-        //
-        // Static Processors
-        //
-        // ///////////////////////////////////////////////////////////////////
-        final CoverageProcessor processor = CoverageProcessor.getInstance((LENIENT_HINT));
-        bandSelectParams = processor.getOperation("SelectSampleDimension").getParameters();
-        interpolateParams = processor.getOperation("Interpolate").getParameters();
-        resampleParams = processor.getOperation("Resample").getParameters();        
-    }
 
     /**
      * <strong>Reprojecting</strong><br>
@@ -120,13 +96,13 @@ public class WCSUtils {
             final Interpolation interpolation) throws WcsException {
 
 
-        final ParameterValueGroup param = (ParameterValueGroup) resampleParams.clone();
+        final ParameterValueGroup param = (ParameterValueGroup) PROCESSOR.getOperation("Resample").getParameters();
         param.parameter("Source").setValue(coverage);
         param.parameter("CoordinateReferenceSystem").setValue(targetCRS);
         param.parameter("GridGeometry").setValue(gridGeometry);
         param.parameter("InterpolationType").setValue(interpolation);
 
-        return (GridCoverage2D) resampleFactory.doOperation(param, hints);
+        return (GridCoverage2D) ((Resample)PROCESSOR.getOperation("Resample")).doOperation(param, hints);
 
     }
     
@@ -135,7 +111,7 @@ public class WCSUtils {
      * 
      * @param coverage
      * @param bounds
-     * @return
+     *
      */
     public static GridCoverage2D crop(
             final GridCoverage2D coverage,
@@ -151,7 +127,7 @@ public class WCSUtils {
         Geometry roi = polygon.getFactory().createMultiPolygon(new Polygon[] {polygon});
 
         // perform the crops
-        final ParameterValueGroup param = CROP.getParameters();
+        final ParameterValueGroup param = PROCESSOR.getOperation("CoverageCrop").getParameters();
         param.parameter("Source").setValue(coverage);
         param.parameter("Envelope").setValue(bounds);
         param.parameter("ROI").setValue(roi);
@@ -185,11 +161,11 @@ public class WCSUtils {
         // ///////////////////////////////////////////////////////////////////
         if (interpolation != null) {
             /* Operations.DEFAULT.interpolate(coverage, interpolation) */
-            final ParameterValueGroup param = (ParameterValueGroup) interpolateParams.clone();
+            final ParameterValueGroup param = (ParameterValueGroup) PROCESSOR.getOperation("Interpolate").getParameters();
             param.parameter("Source").setValue(coverage);
             param.parameter("Type").setValue(interpolation);
 
-            return (GridCoverage2D) interpolateFactory.doOperation(param, hints);
+            return (GridCoverage2D) ((Interpolate)PROCESSOR.getOperation("Interpolate")).doOperation(param, hints);
         }
 
         return coverage;
@@ -288,11 +264,11 @@ public class WCSUtils {
 
         if ((bands != null) && (bands.length > 0)) {
             /* Operations.DEFAULT.selectSampleDimension(coverage, bands) */
-            final ParameterValueGroup param = (ParameterValueGroup) bandSelectParams.clone();
+            final ParameterValueGroup param = (ParameterValueGroup) PROCESSOR.getOperation("SelectSampleDimension").getParameters();
             param.parameter("Source").setValue(coverage);
             param.parameter("SampleDimensions").setValue(bands);
             // param.parameter("VisibleSampleDimension").setValue(bands);
-            bandSelectedCoverage = bandSelectFactory.doOperation(param, hints);
+            bandSelectedCoverage = ((SelectSampleDimension)PROCESSOR.getOperation("SelectSampleDimension")).doOperation(param, hints);
         } else {
             bandSelectedCoverage = coverage;
         }
@@ -326,7 +302,7 @@ public class WCSUtils {
     /**
      * Checks the coverage read is below the input limits. Mind, at this point the reader might have
      * have subsampled the original image in some way so it is expected the coverage is actually
-     * smaller than what computed but {@link #checkInputLimits(CoverageInfo, AbstractGridCoverage2DReader, GeneralEnvelope)},
+     * smaller than what computed but {@link #checkInputLimits(CoverageInfo, GridCoverage2DReader, GeneralEnvelope)},
      * however that method might have failed the computation due to lack of metadata (or wrong metadata)
      * so it's safe to double check the actual coverage wit this one.
      * Mind, this method might cause the coverage to be fully read in memory (if that is the case,
@@ -355,7 +331,7 @@ public class WCSUtils {
      * Computes the size of a grid coverage in bytes given its grid envelope and the target sample model
      * @param envelope
      * @param sm
-     * @return
+     *
      */
     static long getCoverageSize(GridEnvelope2D envelope, SampleModel sm) {
         // === compute the coverage memory usage and compare with limit
@@ -381,7 +357,7 @@ public class WCSUtils {
      * @throws WcsException if the coverage size exceeds the configured limits
      */
     public static void checkInputLimits(WCSInfo info, CoverageInfo meta, 
-            AbstractGridCoverage2DReader reader, GridGeometry2D gridGeometry) throws WcsException {
+            GridCoverage2DReader reader, GridGeometry2D gridGeometry) throws WcsException {
         // do we have to check a limit at all?
         long limit = info.getMaxInputMemory() * 1024;
         if(limit <= 0) {
@@ -394,9 +370,9 @@ public class WCSUtils {
             // if necessary reproject back to the original CRS
             GeneralEnvelope requestedEnvelope = new GeneralEnvelope(gridGeometry.getEnvelope());
             final CoordinateReferenceSystem requestCRS = requestedEnvelope.getCoordinateReferenceSystem();
-            final CoordinateReferenceSystem nativeCRS = reader.getCrs();
+            final CoordinateReferenceSystem nativeCRS = reader.getCoordinateReferenceSystem();
             if(!CRS.equalsIgnoreMetadata(requestCRS, nativeCRS)) {
-                requestedEnvelope = CRS.transform(CRS.findMathTransform(requestCRS, nativeCRS, true), requestedEnvelope);
+                requestedEnvelope = CRS.transform(requestedEnvelope, nativeCRS);
             }
             // intersect with the native envelope, we cannot read outside of it
             requestedEnvelope.intersect(reader.getOriginalEnvelope());
@@ -467,7 +443,7 @@ public class WCSUtils {
     /**
      * Guesses the size of the sample able to contain the range fully
      * @param range
-     * @return
+     *
      */
     static int guessSizeFromRange(NumberRange range) {
         double min = range.getMinimum();
@@ -490,7 +466,7 @@ public class WCSUtils {
     /**
      * Utility function to format a byte amount into a human readable string
      * @param bytes
-     * @return
+     *
      */
     static String formatBytes(long bytes) {
         if(bytes < 1024) {
@@ -505,7 +481,7 @@ public class WCSUtils {
     /**
      * Returns the reader hints based on the current WCS configuration
      * @param wcs
-     * @return
+     *
      */
     public static Hints getReaderHints(WCSInfo wcs) {
         Hints hints = new Hints();
@@ -523,7 +499,7 @@ public class WCSUtils {
     /**
      * Returns an eventual filter included among the parsed kvp map of the current
      * request. Will work for CQL_FILTER, FILTER and FEATURE_ID
-     * @return
+     *
      */
     public static Filter getRequestFilter() {
         Request request = Dispatcher.REQUEST.get();
@@ -599,5 +575,31 @@ public class WCSUtils {
             pixelsNumber *= rasterEnvelope.getSpan(i);
         }
         return pixelsNumber;
+    }
+
+    /**
+    * Replace or add the provided parameter in the read parameters
+    */
+    public static <T> GeneralParameterValue[] replaceParameter(
+            GeneralParameterValue[] readParameters, Object value, ParameterDescriptor<T> pd) {
+    
+        // scan all the params looking for the one we want to add
+        for (GeneralParameterValue gpv : readParameters) {
+            // in case of match of any alias add a param value to the lot
+            if (gpv.getDescriptor().getName().equals(pd.getName())) {
+                ((ParameterValue) gpv).setValue(value);
+                // leave
+                return readParameters;
+            }
+        }
+    
+        // add it to the array
+        // add to the list
+        GeneralParameterValue[] readParametersClone = new GeneralParameterValue[readParameters.length + 1];
+        System.arraycopy(readParameters, 0, readParametersClone, 0, readParameters.length);
+        final ParameterValue<T> pv = pd.createValue();
+        pv.setValue(value);
+        readParametersClone[readParameters.length] = pv;
+        return readParametersClone;
     }
 }

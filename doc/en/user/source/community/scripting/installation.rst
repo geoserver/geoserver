@@ -3,16 +3,14 @@
 Installing the Scripting Extension
 ==================================
 
-.. note:: The various language runtime libraries increase GeoServer's memory footprint, specifically the "PermGen" (Permanent Generation) space. When installing the scripting extension we recommended that you increase PermGen capacity to 256m. This is done with the option ``-XX:MaxPermSize=256m``. If installing multiple language extensions this size may need to be increased even further.
-
 Python
 ------
 
-Currently, the only scripting language that is distributed as a package for download is Python. This extension is a community extension, in that it is not included with the list of extensions on the standard `GeoServer download page <http://geoserver.org/display/GEOS/Download>`_. Instead, the community extensions are built each night on the `nightly build server <http://gridlock.opengeo.org/geoserver/>`_.
+Currently, the only scripting language that is distributed as a package for download is Python. This extension is a community extension, in that it is not included with the list of extensions on the standard `GeoServer download page <http://geoserver.org/download>`_. Instead, the community extensions are built each night on the `nightly build server <http://ares.boundlessgeo.com/geoserver/>`_.
 
 To access the Python scripting extension:
 
-#. Navigate to the `nightly build server <http://gridlock.opengeo.org/geoserver/>`_.
+#. Navigate to the `nightly build server <http://ares.boundlessgeo.com/geoserver/>`_.
 
 #. Click the folder that contains the correct branch of GeoServer for your version (for example: for 2.2.2, click on :guilabel:`2.2.x`):
 

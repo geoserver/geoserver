@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE wcs:DescribeCoverage [
+  <!ELEMENT wcs:DescribeCoverage (wcs:CoverageId*)>
+  <!ATTLIST wcs:DescribeCoverage
+            service CDATA #FIXED "WCS"
+            version CDATA #FIXED "2.0.1"
+            xmlns:wcs CDATA #FIXED "http://www.opengis.net/wcs/2.0">
+  <!ELEMENT wcs:CoverageId (#PCDATA)>
+  <!ENTITY xxe SYSTEM "file:///file/not/there?.xsd" >]>
+<wcs:DescribeCoverage 
+	xmlns:wcs='http://www.opengis.net/wcs/2.0' 
+	service="WCS" 
+	version="2.0.1">
+	<wcs:CoverageId>&xxe;</wcs:CoverageId>
+</wcs:DescribeCoverage>

@@ -47,6 +47,7 @@ JAI Configuration:
   <li>Memory Capacity:  "${properties.memoryCapacity}"</li>
   <li>Memory Threshold:  "${properties.memoryThreshold}"</li>
   <li>ImageIO Cache:  "${properties.imageIOCache}"</li>
+  <li>PNG Encoder:  "${properties.pngEncoderType}"</li>
   <li>PNG Acceleration:  "${properties.pngAcceleration}"</li>
   <li>JPEG Acceleration:  "${properties.jpegAcceleration}"</li>
   <li>Allow Native Mosaic:  "${properties.allowNativeMosaic}"</li>

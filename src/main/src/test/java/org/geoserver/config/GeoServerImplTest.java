@@ -1,12 +1,15 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.config;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -192,5 +195,47 @@ public class GeoServerImplTest {
         finally {
             LocalWorkspace.remove();
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testServiceWithWorkspace() throws Exception {
+        // Make a workspace
+        WorkspaceInfo ws1 = geoServer.getCatalog().getFactory().createWorkspace();
+        ws1.setName("TEST-WORKSPACE-1");
+        geoServer.getCatalog().add(ws1);
+        
+        // Make a service for that workspace
+        ServiceInfo newService1 = geoServer.getFactory().createService();
+        newService1.setWorkspace(ws1);
+        newService1.setName("SERVICE-1-WS-1");
+        newService1.setTitle("Service for WS1");
+        geoServer.add(newService1);
+
+        // Make sure we have a global service
+        ServiceInfo globalService = geoServer.getFactory().createService();
+        globalService.setName("SERVICE-2-GLOBAL");
+        globalService.setTitle("Global Service");
+        geoServer.add(globalService);
+        
+        // Make another workspace
+        WorkspaceInfo ws2 = geoServer.getCatalog().getFactory().createWorkspace();
+        ws2.setName("TEST-WORKSPACE-2");
+        geoServer.getCatalog().add(ws2);
+        
+        // Make a service for that workspace
+        ServiceInfo newService2 = geoServer.getFactory().createService();
+        newService2.setWorkspace(ws2);
+        newService2.setName("SERVICE-3-WS-2");
+        newService2.setTitle("Service for WS2");
+        geoServer.add(newService2);
+        
+        // Check that we get the services we expect to
+        assertThat(geoServer.getService(ServiceInfo.class), equalTo(globalService));
+        assertThat(geoServer.getService(ws1, ServiceInfo.class), equalTo(newService1));
+        assertThat(geoServer.getService(ws2, ServiceInfo.class), equalTo(newService2));
+        assertThat((Collection<ServiceInfo>)geoServer.getServices(), allOf(hasItem(globalService), not(hasItems(newService1, newService2))));
+        assertThat((Collection<ServiceInfo>)geoServer.getServices(ws1), allOf(hasItem(newService1), not(hasItems(globalService, newService2))));
+        assertThat((Collection<ServiceInfo>)geoServer.getServices(ws2), allOf(hasItem(newService2), not(hasItems(newService1, globalService))));
     }
 }

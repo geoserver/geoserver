@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="dynamicDefaultValueStrategyFactory"
+    class="org.geoserver.wms.dimension.DynamicDefaultValueSelectionFactory" />
+
+  <bean id="dynamicDefaultValueXStreamInitializer"
+    class="org.geoserver.wms.dimension.DynamicDefaultXStreamInitializer" />
+
+  <bean id="layerDynamicDimensionsTabPanelInfo" class="org.geoserver.web.publish.LayerEditTabPanelInfo">
+    <property name="id" value="layerDynamicDimensionsTabPanelInfo"/>
+    <property name="titleKey" value="DynamicDimensionsTabPanel.title"/>
+    <property name="descriptionKey" value="DynamicDimensionsTabPanel.shortDescription"/>
+    <property name="componentClass" value="org.geoserver.web.data.resource.DynamicDimensionsTabPanel"/>
+    <property name="order" value="150"/>
+  </bean>
+
+</beans>

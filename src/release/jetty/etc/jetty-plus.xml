@@ -1,101 +1,25 @@
 <?xml version="1.0"?>
-<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
-
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd">
 
 <!-- =============================================================== -->
-<!-- Configure the Jetty PLUS Server                                 -->
-<!--                                                                 -->
-<!-- This is an example of the extra items that can be configured    -->
-<!-- for jetty6 such as JNDI resources, and gives an example of      -->
-<!-- how to plug in a transaction manager.                           -->
-<!-- NOTE 1: in order to run jetty with these examples, you will     -->
-<!--        need to download and install:                            -->
-<!--        Atomikos  http://www.atomikos.com                        -->
-<!--        Derby     http://db.apache.org/derby                     -->
-<!-- NOTE 2: don't forget to copy the atomikos.war to webapps-plus   -->
+<!-- Configure extended support for webapps                          -->
 <!-- =============================================================== -->
-<Configure id="Server" class="org.mortbay.jetty.Server">
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
 
   <!-- =========================================================== -->
-  <!-- JNDI java:comp/env                                          -->
-  <!-- To use JNDI with Jetty, you will need to tell your          -->
-  <!-- WebAppContext to process the naming related items in        -->
-  <!-- web.xml. For an example of how to do that, see the test     -->
-  <!-- webapp below. More information can be found at              -->
-  <!-- http://docs.codehaus.org/display/JETTY/Jetty+Wiki           -->
+  <!-- Add plus Configuring classes to all webapps for this Server -->
   <!-- =========================================================== -->
-
-
-  <!-- Configuring <resource-ref> and <resource-env-ref>s          -->
-  <!--                                                             -->
-  <!-- The following are examples of setting up a resource that   -->
-  <!-- can be referenced in a web.xml file as a <resource-ref> or  -->
-  <!-- a <resource-env-ref>. The first argument is the name of the -->
-  <!-- resource relative to java:comp/env and must be the SAME as  -->
-  <!-- the <res-ref-name> or <resource-env-ref-name> in web.xml.   -->
-  <!-- The second argument is the construction of the resource     -->
-  <!-- object. Any object at all can be configured.                -->
-
-
-  <!-- These examples set up a javax.sql.DataSource around an      -->
-  <!-- XADataSource that is provided by the Derby relational db.   -->
-  <!-- The DataSource wrapper that is registered in JNDI is        -->
-  <!--  provided by Atomikos, and works with the Atomikos          -->
-  <!-- transaction manager configured further below. To use these  -->
-  <!-- examples, download Atomikos http://www.atomikos.com and     -->
-  <!-- Derby http://db.apache.org/derby                            -->
-
-
-  <!-- Configuring Transactions                                    -->
-  <!--                                                             -->
-  <!-- The following is a example of a setting up a JTA            -->
-  <!-- transaction manager that can be referenced by looking up    -->
-  <!-- java:comp/UserTransaction. Note that this is just an        -->
-  <!-- example and if you uncomment it, you will need to download  -->
-  <!-- the atomikos jar (see http://www.atomikos.com/download.html)-->
-  <!-- You can configure any transaction manager that implements   -->
-  <!-- javax.transaction.UserTransaction.                          -->
-
-
-
-  <!-- =========================================================== -->
-  <!-- Example JAAS realm setup.                                   -->
-  <!-- The LoginModuleName must be exactly the same as in the      -->
-  <!-- login.conf file, and the realm Name must be the same as in  -->
-  <!-- the web.xml file.                                           -->
-  <!-- =========================================================== -->
-  <Call name="addUserRealm">
-    <Arg>
-      <New class="org.mortbay.jetty.plus.jaas.JAASUserRealm">
-	      <Set name="name">xyzrealm</Set>
-	      <Set name="LoginModuleName">xyz</Set>
-	    </New>
-    </Arg>
-  </Call>
-
-
-  <!-- =========================================================== -->
-  <!-- Configurations for WebAppContexts                           -->
-  <!-- Sequence of configurations to be applied to a webapp.       -->
-  <!-- =========================================================== -->
-  <Array id="plusConfig" type="java.lang.String">
-    <Item>org.mortbay.jetty.webapp.WebInfConfiguration</Item>
-    <Item>org.mortbay.jetty.plus.webapp.EnvConfiguration</Item>
-    <Item>org.mortbay.jetty.plus.webapp.Configuration</Item>
-    <Item>org.mortbay.jetty.webapp.JettyWebXmlConfiguration</Item>
-    <Item>org.mortbay.jetty.webapp.TagLibConfiguration</Item>
-  </Array>
-
-  <!-- =========================================================== -->
-  <!-- Deploy all webapps in webapps-plus                          -->
-  <!-- =========================================================== -->
-  <Call class="org.mortbay.jetty.webapp.WebAppContext" name="addWebApplications">
-    <Arg><Ref id="Server"/></Arg>
-    <Arg>./webapps-plus</Arg>
-    <Arg>org/mortbay/jetty/webapp/webdefault.xml</Arg>
-    <Arg><Ref id="plusConfig"/></Arg>
-    <Arg type="boolean">True</Arg>
-    <Arg type="boolean">False</Arg>
+  <Call class="org.eclipse.jetty.webapp.Configuration$ClassList" name="setServerDefault">
+    <Arg><Ref refid="Server" /></Arg>
+    <Call name="addAfter">
+      <Arg name="afterClass">org.eclipse.jetty.webapp.FragmentConfiguration</Arg>
+      <Arg>
+        <Array type="String">
+          <Item>org.eclipse.jetty.plus.webapp.EnvConfiguration</Item>
+          <Item>org.eclipse.jetty.plus.webapp.PlusConfiguration</Item>
+        </Array>
+      </Arg>
+    </Call>
   </Call>
 
 </Configure>

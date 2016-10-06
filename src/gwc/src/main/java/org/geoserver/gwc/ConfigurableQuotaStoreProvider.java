@@ -1,27 +1,31 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc;
 
-import static org.geowebcache.diskquota.DiskQuotaMonitor.*;
+import static org.geowebcache.diskquota.DiskQuotaMonitor.GWC_DISKQUOTA_DISABLED;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.GeoWebCacheExtensions;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.diskquota.ConfigLoader;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.QuotaStore;
+import org.geowebcache.diskquota.QuotaStoreFactory;
 import org.geowebcache.diskquota.QuotaStoreProvider;
+import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
 import org.geowebcache.diskquota.jdbc.JDBCQuotaStoreFactory;
 import org.geowebcache.diskquota.storage.TilePageCalculator;
 import org.geowebcache.layer.TileLayer;
-
-import sun.reflect.generics.scope.DummyScope;
+import org.springframework.context.ApplicationContext;
 
 /**
  * A quota store whose store is a {@link ConfigurableQuotaStore} whose delegate can be reloaded by
@@ -38,10 +42,13 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
     TilePageCalculator calculator;
 
     boolean diskQuotaEnabled;
+
+    private JDBCConfigurationStorage jdbcConfigManager;
     
-    public ConfigurableQuotaStoreProvider(ConfigLoader loader, TilePageCalculator calculator) {
+    public ConfigurableQuotaStoreProvider(ConfigLoader loader, TilePageCalculator calculator, JDBCConfigurationStorage jdbcConfigManager) {
         super(loader);
         this.calculator = calculator;
+        this.jdbcConfigManager = jdbcConfigManager;
         
         boolean disabled = Boolean.valueOf(GeoServerExtensions.getProperty(GWC_DISKQUOTA_DISABLED)).booleanValue();
         if (disabled) {
@@ -113,10 +120,29 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
 
     /**
      * The exception occurred during the last attempt to load the quota store, if any
-     * @return
+     *
      */
     public Exception getException() {
         return exception;
     }
 
+    @Override
+    protected QuotaStore getQuotaStoreByName(String quotaStoreName) throws ConfigurationException,
+            IOException {
+        if("JDBC".equals(quotaStoreName)) {
+            return loadJDBCQuotaStore(applicationContext, quotaStoreName);
+        } else {
+            return super.getQuotaStoreByName(quotaStoreName);
+        }
+    }
+
+    private QuotaStore loadJDBCQuotaStore(ApplicationContext applicationContext,
+            String quotaStoreName) throws ConfigurationException, IOException {
+        // special case for the JDBC quota store, allows us to unencrypt passwords before
+        // creating the GUI
+        JDBCConfiguration config = jdbcConfigManager.getJDBCDiskQuotaConfig();
+        JDBCQuotaStoreFactory factory = new JDBCQuotaStoreFactory();
+        factory.setApplicationContext(applicationContext);
+        return factory.getJDBCStore(applicationContext, config);
+    }
 }

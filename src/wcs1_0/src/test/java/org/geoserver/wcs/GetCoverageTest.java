@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,10 +7,9 @@ package org.geoserver.wcs;
 
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,22 +24,23 @@ import javax.imageio.ImageReader;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
-import net.opengis.wcs10.GetCoverageType;
-
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wcs.kvp.Wcs10GetCoverageRequestReader;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.processing.operation.MultiplyConst;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
@@ -48,15 +49,18 @@ import org.geotools.metadata.iso.spatial.PixelTranslation;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.wcs.WCSConfiguration;
+import org.geotools.xml.NoExternalEntityResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
+import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import com.mockrunner.mock.web.MockHttpServletResponse;
+import net.opengis.wcs10.GetCoverageType;
 
 /**
  * Tests for GetCoverage operation on WCS.
@@ -76,6 +80,8 @@ public class GetCoverageTest extends WCSTestSupport {
     private Catalog catalog;
     
     private static final QName MOSAIC = new QName(MockData.SF_URI, "rasterFilter", MockData.SF_PREFIX);
+    
+    private static final QName SPATIO_TEMPORAL = new QName(MockData.SF_URI, "spatio-temporal", MockData.SF_PREFIX);
 
     @Before
     public void setUp() {
@@ -83,13 +89,16 @@ public class GetCoverageTest extends WCSTestSupport {
         service = (WebCoverageService100) applicationContext.getBean("wcs100ServiceTarget");
         configuration = new WCSConfiguration();
         catalog=(Catalog)applicationContext.getBean("catalog");
-        xmlReader = new WcsXmlReader("GetCoverage", "1.0.0", configuration);
+        xmlReader = new WcsXmlReader("GetCoverage", "1.0.0", configuration,
+                EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
     }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, getCatalog());
+        testData.addRasterLayer(SPATIO_TEMPORAL, "spatio-temporal.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(new QName(MockData.WCS_URI, "category", MockData.WCS_PREFIX), "category.tiff", null, getCatalog());
         // enable dimensions on the water temperature layer
         setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null);
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
@@ -152,21 +161,23 @@ public class GetCoverageTest extends WCSTestSupport {
         CoverageCleanerCallback.disposeCoverage(coverages[0]);
     }
     
-    /**
-	 * Compare two grid to world transformations
-	 * @param expectedTx
-	 * @param tx
-	 */
-	private static void compareGrid2World(AffineTransform2D expectedTx,
-			AffineTransform2D tx) {
-		assertEquals("scalex",tx.getScaleX(), expectedTx.getScaleX(), 1E-6);
-        assertEquals("scaley",tx.getScaleY(), expectedTx.getScaleY(), 1E-6);
-        assertEquals("shearx",tx.getShearX(), expectedTx.getShearX(), 1E-6);
-        assertEquals("sheary",tx.getShearY(), expectedTx.getShearY(), 1E-6);
-        assertEquals("translatex",tx.getTranslateX(), expectedTx.getTranslateX(), 1E-6);
-        assertEquals("translatey",tx.getTranslateY(), expectedTx.getTranslateY(), 1E-6);
-	}
+    @Test
+    public void testDeferredLoading() throws Exception {
+        Map<String, Object> raw = baseMap();
+        final String getLayerId = getLayerId(SPATIO_TEMPORAL);
+        raw.put("sourcecoverage", getLayerId);
+        raw.put("format", "image/tiff");
+        raw.put("BBox", "-90,-180,90,180");
+        raw.put("crs", "EPSG:4326");
+        raw.put("resx", "0.001");
+        raw.put("resy", "0.001");
 
+
+        GridCoverage[] coverages = executeGetCoverageKvp(raw);
+        assertEquals(1, coverages.length);
+        assertDeferredLoading(coverages[0].getRenderedImage());
+    }
+    
     @Test
     public void testWorkspaceQualified() throws Exception {
         String queryString ="&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff&bbox=146,-45,147,-42"+
@@ -180,6 +191,42 @@ public class GetCoverageTest extends WCSTestSupport {
             "cdf/wcs?sourcecoverage="+TASMANIA_BM.getLocalPart()+queryString);
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
     }
+    
+    @Test
+    public void testNonExistentCoverage() throws Exception {
+        String queryString ="&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff&bbox=146,-45,147,-42"+
+            "&crs=EPSG:4326&width=150&height=150";
+
+        Document dom = getAsDOM( 
+            "wcs?sourcecoverage=NotThere" + queryString);
+        // print(dom);
+        XMLAssert.assertXpathEvaluatesTo("InvalidParameterValue", "/ServiceExceptionReport/ServiceException/@code", dom);
+        XMLAssert.assertXpathEvaluatesTo("sourcecoverage", "/ServiceExceptionReport/ServiceException/@locator", dom);
+    }
+
+    @Test
+    public void testRequestDisabledResource() throws Exception {
+        Catalog catalog = getCatalog();
+        ResourceInfo tazbm = catalog.getResourceByName(getLayerId(MockData.TASMANIA_BM),
+                ResourceInfo.class);
+        try {
+
+            tazbm.setEnabled(false);
+            catalog.save(tazbm);
+
+            String queryString = "&request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff&bbox=146,-45,147,-42"
+                    + "&crs=EPSG:4326&width=150&height=150";
+
+            Document dom = getAsDOM("wcs?sourcecoverage=" + TASMANIA_BM.getLocalPart()
+                    + queryString);
+            // print(dom);
+            assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
+        } finally {
+            tazbm.setEnabled(true);
+            catalog.save(tazbm);
+        }
+    }
+
 
     @Test
     public void testLayerQualified() throws Exception {
@@ -293,11 +340,48 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals("image/tiff", response.getContentType());
         
         GeoTiffFormat format = new GeoTiffFormat();
-        AbstractGridCoverage2DReader reader = format.getReader(getBinaryInputStream(response));
+        GridCoverage2DReader reader = format.getReader(getBinaryInputStream(response));
         
         assertEquals(CRS.decode("EPSG:3857"), reader.getOriginalEnvelope().getCoordinateReferenceSystem());
     }
     
+    @Test
+    public void testEntityExpansion() throws Exception {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE GetCoverage [<!ELEMENT GetCoverage (sourceCoverage) >\n"
+                + "  <!ATTLIST GetCoverage\n" 
+                + "            service CDATA #FIXED \"WCS\"\n" 
+                + "            version CDATA #FIXED \"1.0.0\"\n" 
+                + "            xmlns CDATA #FIXED \"http://www.opengis.net/wcs\">\n"
+                + "  <!ELEMENT sourceCoverage (#PCDATA) >\n"
+                + "  <!ENTITY xxe SYSTEM \"FILE:///file/not/there?.XSD\" >]>\n"
+                + "<GetCoverage version=\"1.0.0\" service=\"WCS\""
+                + " xmlns=\"http://www.opengis.net/wcs\" >\n"
+                + "  <sourceCoverage>&xxe;</sourceCoverage>\n" 
+                + "</GetCoverage>";
+
+        Document dom = postAsDOM("wcs", xml);
+        String error = xpath.evaluate("//ServiceException", dom);
+        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        
+        xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<!DOCTYPE GetCoverage [<!ELEMENT GetCoverage (sourceCoverage) >\n"
+                + "  <!ATTLIST GetCoverage\n" 
+                + "            service CDATA #FIXED \"WCS\"\n" 
+                + "            version CDATA #FIXED \"1.0.0\"\n" 
+                + "            xmlns CDATA #FIXED \"http://www.opengis.net/wcs\">\n"
+                + "  <!ELEMENT sourceCoverage (#PCDATA) >\n"
+                + "  <!ENTITY xxe SYSTEM \"jar:file:///file/not/there?.XSD\" >]>\n"
+                + "<GetCoverage version=\"1.0.0\" service=\"WCS\""
+                + " xmlns=\"http://www.opengis.net/wcs\" >\n"
+                + "  <sourceCoverage>&xxe;</sourceCoverage>\n" 
+                + "</GetCoverage>";
+
+        dom = postAsDOM("wcs", xml);
+        error = xpath.evaluate("//ServiceException", dom);
+        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+    }
+
     @Test
     public void testRasterFilterGreen() throws Exception {
         String queryString = "wcs?sourcecoverage=" + getLayerId(MOSAIC) + "&request=getcoverage" +
@@ -320,7 +404,7 @@ public class GetCoverageTest extends WCSTestSupport {
     /**
      * Parses teh TIFF contained in the response as a {@link RenderedImage}
      * @param response
-     * @return
+     *
      * @throws IOException
      */
     RenderedImage readTiff(MockHttpServletResponse response) throws IOException {
@@ -546,6 +630,24 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals(255, pixel[0]);
         assertEquals(0, pixel[1]);
         assertEquals(0, pixel[2]);
+    }
+
+    @Test
+    public void testCategoriesToArray() throws Exception {
+        CoverageInfo myCoverage = getCatalog().getCoverageByName("category");
+        GridCoverage gridCoverage = myCoverage.getGridCoverage(null, null);
+        MultiplyConst op = new MultiplyConst();
+        final ParameterValueGroup param = op.getParameters();
+
+        param.parameter("Source").setValue(gridCoverage);
+        param.parameter("constants").setValue(new double[] { 0.1 });
+        boolean exception = false;
+        try {
+            op.doOperation(param, null);
+        } catch (Exception e) {
+            exception = true;
+        }
+        assertFalse(exception);
     }
 
     private void setInputLimit(int kbytes) {

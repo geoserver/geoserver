@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-web-sec-core"/>
+    <constructor-arg index="1" value="GeoServer Web UI Security Core"/>
+  </bean>
+  <bean id="securityHomePageContentProvider"
+    class="org.geoserver.security.web.SecurityHomePageContentProvider"/>
+
+  <!-- 
+   Menu category for security work
+   -->
+	<bean id="securityCategory" class="org.geoserver.web.Category">
+		<property name="nameKey" value="category.security" />
+		<property name="order" value="200" />
+	</bean>
+	
+	<bean id="securitySettingsPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="security.settings" />
+        <property name="titleKey" value="security.settings.title" />
+        <property name="descriptionKey" value="security.settings.description" />
+        <property name="componentClass" value="org.geoserver.security.web.SecuritySettingsPage" />
+        <!--property name="icon" value="../web/img/icons/silk/wrench.png" /-->
+        <property name="category" ref="securityCategory" />
+        <property name="order" value="90" />
+    </bean>
+
+	<bean id="authPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="security.auth" />
+        <property name="titleKey" value="security.auth.title" />
+        <property name="descriptionKey" value="security.auth.description" />
+        <property name="componentClass" value="org.geoserver.security.web.auth.AuthenticationPage" />
+        <property name="icon" value="../img/icons/silk/shield.png" />
+        <property name="category" ref="securityCategory" />
+        <property name="order" value="100" />
+	</bean>
+
+    <bean id="passwdPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="security.passwd" />
+        <property name="titleKey" value="security.passwd.title" />
+        <property name="descriptionKey" value="security.passwd.description" />
+        <property name="componentClass" value="org.geoserver.security.web.passwd.PasswordPage" />
+        <property name="icon" value="../img/icons/silk/lock.png" />
+        <property name="category" ref="securityCategory" />
+        <property name="order" value="110" />
+    </bean>
+    
+    <bean id="userGroupRolePage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="security.userGroupRole" />
+        <property name="titleKey" value="security.userGroupRole.title" />
+        <property name="descriptionKey" value="security.userGroupRole.description" />
+        <property name="componentClass" value="org.geoserver.security.web.UserGroupRoleServicesPage" />
+        <property name="icon" value="img/icons/silk/group.png" />
+        <property name="category" ref="securityCategory"/>
+        <property name="order" value="120" />
+        <property name="authorizer">
+          <bean class="org.geoserver.security.web.GroupAdminComponentAuthorizer"/>
+        </property>
+    </bean>
+    
+	<!--
+	The data list page 
+	 -->
+	<bean id="dataSecurityPage" class="org.geoserver.web.MenuPageInfo">
+		<property name="id" value="security.data" />
+		<property name="titleKey" value="security.data.title" />
+		<property name="descriptionKey" value="security.data.description" />
+		<property name="componentClass"
+			value="org.geoserver.security.web.data.DataSecurityPage" />
+		<property name="icon" value="../img/icons/silk/database_key.png" />
+		<property name="category" ref="securityCategory" />
+		<property name="order" value="200" />
+	</bean>
+
+	<!--
+	The service list page 
+	 -->
+
+	<bean id="serviceSecurityPage" class="org.geoserver.web.MenuPageInfo">
+		<property name="id" value="security.service" />
+		<property name="titleKey" value="security.service.title" />
+		<property name="descriptionKey" value="security.service.description" />
+		<property name="componentClass"
+			value="org.geoserver.security.web.service.ServiceAccessRulePage" />
+		<property name="icon" value="../img/icons/silk/shape_square_key.png" />
+		<property name="category" ref="securityCategory" />
+		<property name="order" value="300" />
+	</bean>
+
+    <!-- password policy panel infos -->
+    <bean id="passwordPolicyPanelInfo" class="org.geoserver.security.web.passwd.PasswordPolicyPanelInfo">
+        <property name="id" value="security.passwordPolicy" />
+        <property name="shortTitleKey" value="PasswordPolicyPanel.short"/>
+        <property name="titleKey" value="PasswordPolicyPanel.title"/>
+        <property name="descriptionKey" value="PasswordPolicyPanel.description"/>
+    </bean>
+    
+    <!-- auth scheme panel infos -->
+    <bean id="anonymousAuthPanelInfo" class="org.geoserver.security.web.auth.AnonymousAuthFilterPanelInfo">
+        <property name="id" value="security.anonymousAuthFilter" />
+        <property name="shortTitleKey" value="AnonymousAuthFilterPanel.short"/>
+        <property name="titleKey" value="AnonymousAuthFilterPanel.title"/>
+        <property name="descriptionKey" value="AnonymousAuthFilterPanel.description"/>
+    </bean>
+    <bean id="rememberMeAuthPanelInfo" class="org.geoserver.security.web.auth.RememberMeAuthFilterPanelInfo">
+        <property name="id" value="security.rememberMeAuthFilter" />
+        <property name="shortTitleKey" value="RememberMeAuthFilterPanel.short"/>
+        <property name="titleKey" value="RememberMeAuthFilterPanel.title"/>
+        <property name="descriptionKey" value="RememberMeAuthFilterPanel.description"/>
+    </bean>
+    <bean id="formAuthPanelInfo" class="org.geoserver.security.web.auth.FormAuthFilterPanelInfo">
+        <property name="id" value="security.formAuthFilter" />
+        <property name="shortTitleKey" value="FormAuthFilterPanel.short"/>
+        <property name="titleKey" value="FormAuthFilterPanel.title"/>
+        <property name="descriptionKey" value="FormAuthFilterPanel.description"/>
+    </bean>
+    <bean id="usernamePasswordAuthPanelInfo" class="org.geoserver.security.web.auth.UsernamePasswordAuthProviderPanelInfo">
+        <property name="id" value="security.usernamePasswordAuthProvider" />
+        <property name="shortTitleKey" value="UsernamePasswordAuthProviderPanel.short"/>
+        <property name="titleKey" value="UsernamePasswordAuthProviderPanel.title"/>
+        <property name="descriptionKey" value="UsernamePasswordAuthProviderPanel.description"/>
+    </bean>
+    <bean id="j2eeAuthPanelInfo" class="org.geoserver.security.web.auth.J2eeAuthFilterPanelInfo">
+        <property name="id" value="security.j2eeAuthFilter" />
+        <property name="shortTitleKey" value="J2eeAuthFilterPanel.short"/>
+        <property name="titleKey" value="J2eeAuthFilterPanel.title"/>
+        <property name="descriptionKey" value="J2eeAuthFilterPanel.description"/>
+    </bean>
+    <bean id="x509AuthPanelInfo" class="org.geoserver.security.web.auth.X509AuthFilterPanelInfo">
+        <property name="id" value="security.x509AuthFilter" />
+        <property name="shortTitleKey" value="X509AuthFilterPanel.short"/>
+        <property name="titleKey" value="X509AuthFilterPanel.title"/>
+        <property name="descriptionKey" value="X509AuthFilterPanel.description"/>
+    </bean>
+
+    <bean id="headerAuthPanelInfo" class="org.geoserver.security.web.auth.HeaderAuthFilterPanelInfo">
+        <property name="id" value="security.headerAuthFilter" />
+        <property name="shortTitleKey" value="HeaderAuthFilterPanel.short"/>
+        <property name="titleKey" value="HeaderAuthFilterPanel.title"/>
+        <property name="descriptionKey" value="HeaderAuthFilterPanel.description"/>
+    </bean>
+    <bean id="basicAuthPanelInfo" class="org.geoserver.security.web.auth.BasicAuthFilterPanelInfo">
+        <property name="id" value="security.basicAuthFilter" />
+        <property name="shortTitleKey" value="BasicAuthFilterPanel.short"/>
+        <property name="titleKey" value="BasicAuthFilterPanel.title"/>
+        <property name="descriptionKey" value="BasicAuthFilterPanel.description"/>
+    </bean>
+    <bean id="digestAuthPanelInfo" class="org.geoserver.security.web.auth.DigestAuthFilterPanelInfo">
+        <property name="id" value="security.digestAuthFilter" />
+        <property name="shortTitleKey" value="DigestAuthFilterPanel.short"/>
+        <property name="titleKey" value="DigestAuthFilterPanel.title"/>
+        <property name="descriptionKey" value="DigestAuthFilterPanel.description"/>
+    </bean>
+    
+    <bean id="credentialsHeaderPanelInfo" class="org.geoserver.security.web.auth.CredentialsFromRequestHeaderFilterPanelInfo">
+        <property name="id" value="org.geoserver.security.GeoServerCredentialsFromRequestHeaderFilter" />
+        <property name="shortTitleKey" value="CredentialsFromRequestHeaderFilterPanel.short"/>
+        <property name="titleKey" value="CredentialsFromRequestHeaderFilterPanel.title"/>
+        <property name="descriptionKey" value="CredentialsFromRequestHeaderFilterPanel.description"/>
+   </bean>
+    
+    <!-- user group service panel infos -->
+    <bean id="xmlUserGroupServicePanelInfo" class="org.geoserver.security.web.usergroup.XMLUserGroupServicePanelInfo">
+        <property name="id" value="security.xmlUserGroupService" />
+        <property name="shortTitleKey" value="XMLUserGroupServicePanel.short"/>
+        <property name="titleKey" value="XMLUserGroupServicePanel.title"/>
+        <property name="descriptionKey" value="XMLUserGroupServicePanel.description"/>
+    </bean>
+
+    <!-- role service panel infos -->
+    <bean id="xmlRoleServicePanelInfo" class="org.geoserver.security.web.role.XMLRoleServicePanelInfo">
+        <property name="id" value="security.xmlRoleService" />
+        <property name="shortTitleKey" value="XMLRoleServicePanel.short"/>
+        <property name="titleKey" value="XMLRoleServicePanel.title"/>
+        <property name="descriptionKey" value="XMLRoleServicePanel.description"/>
+    </bean>
+    
+    <!-- J2EE role service panel infos -->
+    <bean id="j2eeRoleServicePanelInfo" class="org.geoserver.security.web.role.J2eeRoleServicePanelInfo">
+        <property name="id" value="security.j2eeRoleService" />
+        <property name="shortTitleKey" value="J2eeRoleServicePanel.short"/>
+        <property name="titleKey" value="J2eeRoleServicePanel.title"/>
+        <property name="descriptionKey" value="J2eeRoleServicePanel.description"/>
+    </bean>
+    
+    
+    <!-- master password provider panel infos -->
+    <bean id="urlMasterPasswordProviderPanelInfo" class="org.geoserver.security.web.passwd.URLMasterPasswordProviderPanelInfo">
+        <property name="id" value="security.urlMasterPasswordProvider" />
+        <property name="shortTitleKey" value="URLMasterPasswordProviderPanel.short"/>
+        <property name="titleKey" value="URLMasterPasswordProviderPanel.title"/>
+        <property name="descriptionKey" value="URLMasterPasswordProviderPanel.description"/>
+    </bean>
+
+</beans> 

@@ -436,5 +436,28 @@
   <bean id="wicketEnvVariableInjector" class="org.geoserver.web.WicketEnvironmentVariableCallback"/>
   
   <bean id="adminRequestCallback" class="org.geoserver.web.AdminRequestWicketCallback"/>
+
+	<!-- login button -->
+	<bean id="geoserverFormLoginButton" class="org.geoserver.web.LoginFormInfo">
+		<property name="id" value="geoserverFormLoginButton" />
+		<property name="titleKey" value="login" />
+		<property name="descriptionKey" value="GeoServerBasePage.description" />
+		<property name="componentClass" value="org.geoserver.web.GeoServerBasePage" />
+		<property name="name" value="form" />
+		<property name="icon" value="img/icons/silk/door-in.png" />
+		<property name="include" value="include_login_form.html" />
+		<property name="loginPath" value="j_spring_security_check" />
+	</bean>
+	
+	<!-- logout button -->
+	<bean id="geoserverFormLogoutButton" class="org.geoserver.web.LogoutFormInfo">
+		<property name="id" value="geoserverFormLogoutButton" />
+		<property name="titleKey" value="logout" />
+		<property name="descriptionKey" value="GeoServerBasePage.description" />
+		<property name="componentClass" value="org.geoserver.web.GeoServerBasePage" />
+		<property name="name" value="form" />
+		<property name="icon" value="img/icons/silk/door-out.png" />
+		<property name="logoutPath" value="j_spring_security_logout" />
+	</bean>
  
 </beans>

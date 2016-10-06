@@ -36,7 +36,7 @@ import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.geotools.xml.NoExternalEntityResolver;
+import org.geotools.xml.PreventLocalEntityResolver;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
@@ -488,7 +488,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         Document dom = postAsDOM("wcs", request);
         // print(dom);
         String error = xpath.evaluate("//ows:ExceptionText", dom);
-        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue(error.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
         
         request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<!DOCTYPE wcs:GetCoverage [<!ELEMENT wcs:GetCoverage (ows:Identifier) >\n"
@@ -507,7 +507,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         dom = postAsDOM("wcs", request);
         // print(dom);
         error = xpath.evaluate("//ows:ExceptionText", dom);
-        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue(error.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
     }
 
     /**

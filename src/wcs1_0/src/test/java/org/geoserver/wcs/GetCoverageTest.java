@@ -49,7 +49,7 @@ import org.geotools.metadata.iso.spatial.PixelTranslation;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.wcs.WCSConfiguration;
-import org.geotools.xml.NoExternalEntityResolver;
+import org.geotools.xml.PreventLocalEntityResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
@@ -362,7 +362,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
         Document dom = postAsDOM("wcs", xml);
         String error = xpath.evaluate("//ServiceException", dom);
-        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue(error.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
         
         xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<!DOCTYPE GetCoverage [<!ELEMENT GetCoverage (sourceCoverage) >\n"
@@ -379,7 +379,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
         dom = postAsDOM("wcs", xml);
         error = xpath.evaluate("//ServiceException", dom);
-        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue(error.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
     }
 
     @Test

@@ -29,22 +29,26 @@
     <div class="wrap">
       <h2><a wicket:id="home" class="pngfix" href="#"><span wicket:id="label">GeoServer 2.0</span></a></h2>
       <div class="button-group selfclear">
-      <form wicket:id="loginform" method="post" action="../j_spring_security_check">
-        <label class="noshow" for="username"><wicket:message key="username">Username</wicket:message></label>
-        <input id="username" type="text" name="username" value="" title="username" placeholder="username" wicket:message="title:username,placeholder:username"/>
-        <label class="noshow" for="password"><wicket:message key="password">Password</wicket:message></label>
-        <input id="password" type="password" name="password" value="" title="password" placeholder="password" wicket:message="title:password,placeholder:passwordGeoServer"/>
-        <label class="shown" for="_spring_security_remember_me"><wicket:message key="rememberMe">Remember me</wicket:message></label>
-        <input id="_spring_security_remember_me" type="checkbox" name="_spring_security_remember_me" />
-        <button class="button-login positive icon" type="submit"><div><wicket:message key="login">Login</wicket:message></div></button>
-        <script type="text/javascript">
-            $('input, textarea').placeholder();
-        </script>
-      </form>
-      <div wicket:id="logoutform">
-        <a class="button-logout icon" href="j_spring_security_logout"><span><wicket:message key="logout">Logout</wicket:message></span></a>
-        <span class="username"><wicket:message key="loggedInAs">Logged in as</wicket:message> <span wicket:id="username">User von Testenheimer</span></span>.
-      </div>
+	      <span wicket:id="loginforms">
+	      	<form style="display: inline-block;" wicket:id="loginform" method="post" action="../j_spring_security_check">
+	      		<span wicket:id="login.include"></span>
+	      		<button class="positive icon" type="submit">
+	      			<div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
+	      		</button>
+		        <script type="text/javascript">
+		            $('input, textarea').placeholder();
+		        </script>	      		
+	      	</form>
+	      </span>
+	      
+	      <span wicket:id="loggedinasform" class="username"><wicket:message key="loggedInAs">Logged in as</wicket:message> <span wicket:id="loggedInUsername">User von Testenheimer</span>.</span>
+	      <span wicket:id="logoutforms">
+	      	<form style="display: inline-block;" wicket:id="logoutform" method="post" action="j_spring_security_logout">
+	      		<button class="positive icon" type="submit">
+	      			<div><img src="#" wicket:id="link.icon"/><span wicket:id="link.label"></span></div>
+	      		</button>
+	      	</form>		      
+	      </span>
       </div>
     </div><!-- /.wrap -->
   </div><!-- /#header -->

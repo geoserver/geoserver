@@ -25,6 +25,8 @@ public class LogoutFilterConfig extends SecurityFilterConfig {
      * {@link GeoServerLogoutFilter#URL_AFTER_LOGOUT}
      */
     private String redirectURL;
+    
+    private String formLogoutChain = "/j_spring_security_logout,/j_spring_security_logout/,/logout";
 
     public String getRedirectURL() {
         return redirectURL;
@@ -32,6 +34,20 @@ public class LogoutFilterConfig extends SecurityFilterConfig {
 
     public void setRedirectURL(String redirectURL) {
         this.redirectURL = redirectURL;
+    }
+
+    /**
+     * @return the formLogoutChain
+     */
+    public String getFormLogoutChain() {
+        return formLogoutChain;
+    }
+
+    /**
+     * @param formLogoutChain the formLogoutChain to set
+     */
+    public void setFormLogoutChain(String formLogoutChain) {
+        this.formLogoutChain = formLogoutChain;
     }
 
 }

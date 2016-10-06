@@ -25,11 +25,6 @@ public class GoogleOAuth2FilterConfig extends PreAuthenticatedUserNameFilterConf
     /** serialVersionUID */
     private static final long serialVersionUID = -3551428051398501603L;
 
-    /**
-     * **THIS MUST** be different for every OAuth2 Plugin
-     */
-    public static final String FILTER_LOGIN_ENDPOINT = "/j_spring_outh2_google_login";
-
     // DEFAULT VALUES - BEGIN -
     protected String cliendId;
 
@@ -52,6 +47,10 @@ public class GoogleOAuth2FilterConfig extends PreAuthenticatedUserNameFilterConf
     protected Boolean forceAccessTokenUriHttps = true;
     
     protected Boolean forceUserAuthorizationUriHttps = true;
+    
+    protected String loginEndpoint = "/j_spring_oauth2_google_login";
+    
+    protected String logoutEndpoint = "/j_spring_oauth2_google_logout";
     // DEFAULT VALUES - END -
 
     @Override
@@ -200,7 +199,7 @@ public class GoogleOAuth2FilterConfig extends PreAuthenticatedUserNameFilterConf
                         .append(getRedirectUri());
 
                 if (getEnableRedirectAuthenticationEntryPoint()
-                        || request.getRequestURI().endsWith(FILTER_LOGIN_ENDPOINT)) {
+                        || request.getRequestURI().endsWith(getLoginEndpoint())) {
                     response.sendRedirect(loginUri.toString());
                 }
             }
@@ -225,6 +224,26 @@ public class GoogleOAuth2FilterConfig extends PreAuthenticatedUserNameFilterConf
     @Override
     public void setForceUserAuthorizationUriHttps(Boolean forceUserAuthorizationUriHttps) {
         this.forceUserAuthorizationUriHttps = forceUserAuthorizationUriHttps;
+    }
+
+    @Override
+    public String getLoginEndpoint() {
+        return loginEndpoint;
+    }
+
+    @Override
+    public String getLogoutEndpoint() {
+        return logoutEndpoint;
+    }
+
+    @Override
+    public void setLoginEndpoint(String loginEndpoint) {
+        this.loginEndpoint = loginEndpoint;
+    }
+
+    @Override
+    public void setLogoutEndpoint(String logoutEndpoint) {
+        this.logoutEndpoint = logoutEndpoint;
     }
 
 }

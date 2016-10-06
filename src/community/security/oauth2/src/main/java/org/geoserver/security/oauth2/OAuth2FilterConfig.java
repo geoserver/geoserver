@@ -114,6 +114,32 @@ public interface OAuth2FilterConfig {
     public void setScopes(String scopes);
 
     /**
+     * **THIS MUST** be different for every OAuth2 Plugin
+     * 
+     * @return
+     */
+    public String getLoginEndpoint();
+    
+    /**
+     * **THIS MUST** be different for every OAuth2 Plugin
+     * 
+     * @return
+     */
+    public String getLogoutEndpoint();
+
+    /**
+     * 
+     * @param loginEndpoint
+     */
+    public void setLoginEndpoint(String loginEndpoint);
+    
+    /**
+     * 
+     * @param logoutEndpoint
+     */
+    public void setLogoutEndpoint(String logoutEndpoint);
+
+    /**
      * @return the enableRedirectAuthenticationEntryPoint
      */
     public Boolean getEnableRedirectAuthenticationEntryPoint();

@@ -50,6 +50,8 @@ public class GoogleOAuth2AuthProviderPanel
         add(new HelpLink("clientSecretHelp", this).setDialog(dialog));
 
         add(new CheckBox("enableRedirectAuthenticationEntryPoint"));
+        add(new TextField<String>("loginEndpoint"));
+        add(new TextField<String>("logoutEndpoint"));
         add(new CheckBox("forceAccessTokenUriHttps"));
         add(new CheckBox("forceUserAuthorizationUriHttps"));
         add(new TextField<String>("accessTokenUri"));

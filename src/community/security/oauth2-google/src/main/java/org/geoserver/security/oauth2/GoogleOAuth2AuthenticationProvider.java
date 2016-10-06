@@ -13,17 +13,6 @@ import org.geoserver.security.GeoServerSecurityManager;
  */
 public class GoogleOAuth2AuthenticationProvider extends GeoServerOAuthAuthenticationProvider {
 
-    // Default values
-    protected String accessTokenUri = "https://accounts.google.com/o/oauth2/token";
-
-    protected String userAuthorizationUri = "https://accounts.google.com/o/oauth2/auth";
-
-    protected String redirectUri = "http://localhost:8080/geoserver";
-
-    protected String checkTokenEndpointUrl = "https://www.googleapis.com/oauth2/v1/tokeninfo";
-
-    protected String logoutUri = "https://accounts.google.com/logout";
-
     public GoogleOAuth2AuthenticationProvider(GeoServerSecurityManager securityManager) {
         super(securityManager);
     }

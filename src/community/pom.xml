@@ -80,7 +80,8 @@
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
           <descriptor>release/ext-geogig.xml</descriptor>
-		      <descriptor>release/ext-backup-restore.xml</descriptor>
+          <descriptor>release/ext-oauth2-google.xml</descriptor>
+          <descriptor>release/ext-backup-restore.xml</descriptor>
           <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
         </descriptors>
       </configuration>
@@ -203,15 +204,16 @@
         <module>wps-jdbc</module>
         <module>release</module>
         <module>geogig</module>
-		<module>gwc-distributed</module>
-		<module>jdbcstore</module>
-		<module>gdal</module>
-		<module>gwc-s3</module>
-		<module>ysld</module>
+        <module>gwc-distributed</module>
+        <module>jdbcstore</module>
+        <module>gdal</module>
+        <module>gwc-s3</module>
+        <module>ysld</module>
         <module>backup-restore</module>
-		<module>ncwms</module>
+        <module>ncwms</module>
         <module>web-resource</module>
         <module>gwc-sqlite</module>
+        <module>security</module>
         <module>wmts-multi-dimensional</module>
       </modules>
     </profile>
@@ -467,6 +469,12 @@
       <id>geogig</id>
       <modules>
         <module>geogig</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>oauth2-google</id>
+      <modules>
+        <module>security</module>
       </modules>
     </profile>
     <profile>

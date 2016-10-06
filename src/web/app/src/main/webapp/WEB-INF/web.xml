@@ -226,6 +226,11 @@
     <listener>
       <listener-class>org.geoserver.platform.GeoServerHttpSessionListenerProxy</listener-class>
     </listener>
+
+	<!-- request context listener for session-scoped beans -->
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
     
     <!-- spring dispatcher servlet, dispatches all incoming requests -->
     <servlet>

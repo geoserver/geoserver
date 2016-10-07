@@ -59,7 +59,7 @@ import org.geotools.ows.v1_1.OWSConfiguration;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.xml.NoExternalEntityResolver;
+import org.geotools.xml.PreventLocalEntityResolver;
 import org.geotools.xml.Parser;
 import org.junit.Assert;
 import org.junit.Before;
@@ -147,7 +147,7 @@ public class ExecuteTest extends WPSTestSupport {
         // print(d);
         
         String text = xp.evaluate("//ows:ExceptionText", d);
-        assertTrue(text.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue(text.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
     }
     
     

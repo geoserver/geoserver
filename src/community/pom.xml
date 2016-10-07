@@ -213,7 +213,8 @@
         <module>ncwms</module>
         <module>web-resource</module>
         <module>gwc-sqlite</module>
-        <module>security</module>
+        <module>security/oauth2</module>
+        <module>security/oauth2-google</module>
         <module>wmts-multi-dimensional</module>
       </modules>
     </profile>

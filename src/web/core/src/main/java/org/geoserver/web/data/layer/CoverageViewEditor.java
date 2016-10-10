@@ -138,7 +138,7 @@ public class CoverageViewEditor extends FormComponentPanel {
                     }
                     CoverageBand band = new CoverageBand(
                             Collections.singletonList(new InputCoverageBand(coverageName, bandIndex)),
-                            coverageName, i++, compositionType);
+                            coverage, i++, compositionType);
                     bandsList.add(band);
 
                 }

@@ -56,7 +56,7 @@
   <bean id="wmsMapBoxMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
     <constructor-arg ref="wms"/>
     <constructor-arg ref="wmsMapBoxBuilderFactory"/>
-    <property name="clipToMapBounds" value="true" />
+    <property name="clipToMapBounds" value="false" />
     <property name="transformToScreenCoordinates" value="true" />
      <property name="overSamplingFactor" value="2.0">
       <description>Sub-pixel accuracy - higher value means less generalization (higher resolution results)</description>

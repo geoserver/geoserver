@@ -21,10 +21,11 @@
   <bean id="wmsTopoJSONMapOutputFormat" class="org.geoserver.wms.vector.VectorTileMapOutputFormat">
     <constructor-arg ref="wms"/>
     <constructor-arg ref="wmsTopoJSONBuilderFactory"/>
-    <property name="clipToMapBounds" value="true">
+    <property name="clipToMapBounds" value="false">
       <description>Use geometries clipped to tile bounds
-      Clipping is set to false since OL3 does not yet have a way to deal with clipped geometries.
-      It should be set to true once OL3 knows what to do with clipped geometries.
+      Clipping is set to false since clip lines would be visible when rendering tiles that are
+      clipped exactly at the tile boundary.
+      It should be set to true once we are able to apply the clipping with a buffer around the tile.
       </description>
     </property>
     <property name="transformToScreenCoordinates" value="true">

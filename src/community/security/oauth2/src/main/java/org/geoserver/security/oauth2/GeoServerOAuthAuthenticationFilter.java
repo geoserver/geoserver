@@ -151,7 +151,7 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
             Authentication authentication) {
 
         OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
-        if ((token != null && token.getTokenType().equals(OAuth2AccessToken.BEARER_TYPE)) || 
+        if ((token != null && token.getTokenType().equalsIgnoreCase(OAuth2AccessToken.BEARER_TYPE)) || 
                 request.getRequestURI().endsWith(filterConfig.getLogoutEndpoint())) {
 
             restTemplate.getOAuth2ClientContext().setAccessToken(null);

@@ -37,14 +37,28 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSInfo;
+import org.geotools.data.DataAccess;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.DataAccessRegistry;
+import org.geotools.data.complex.FeatureTypeMapping;
+import org.geotools.data.complex.config.AppSchemaDataAccessConfigurator;
+import org.geotools.data.jdbc.FilterToSQL;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.jdbc.BasicSQLDialect;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.NestedFilterToSQL;
+import org.geotools.jdbc.PreparedFilterToSQL;
+import org.geotools.jdbc.PreparedStatementSQLDialect;
+import org.geotools.jdbc.SQLDialect;
 import org.geotools.xml.AppSchemaValidator;
 import org.geotools.xml.AppSchemaXSDRegistry;
 import org.geotools.xml.resolver.SchemaCache;
 import org.geotools.xml.resolver.SchemaCatalog;
 import org.geotools.xml.resolver.SchemaResolver;
+import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -609,4 +623,93 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
         return actual;
     }
 
+    /**
+     * Checks that the identifiers of the features in the provided collection match the specified ids.
+     * 
+     * <p>
+     * Note that:
+     * <ul>
+     * <li>The method considers that feature identifiers follow the convention <code>[type name].[ID]</code> and only matches the ID part.</li>
+     * <li>If the feature collection contains a feature whose identifier does not match any of the passed ids, the check will fail</li>
+     * </ul>
+     * </p>
+     * 
+     * @param featureSet the feature collection to check
+     * @param fids the feature identifiers that must be present in the collection
+     */
+    protected void assertContainsFeatures(FeatureCollection featureSet, String... fids) {
+        List<String> fidList = Arrays.asList(fids);
+
+        try (FeatureIterator it = featureSet.features()) {
+            int count = 0;
+            while (it.hasNext()) {
+                Feature f = it.next();
+                String[] parts = f.getIdentifier().getID().split("\\.");
+                String fid = parts[parts.length - 1];
+                assertTrue(fidList.contains(fid));
+                count++;
+            }
+            assertEquals(fidList.size(), count);
+        }
+    }
+
+    /**
+     * Checks that all the pre-conditions for SQL encoding filters on nested attributes are met:
+     * 
+     * <ol>
+     * <li>Source datastore is backed by a RDBMS</li>
+     * <li>Joining support is enabled</li>
+     * <li>Nested filters encoding is enabled</li>
+     * </ol>
+     * 
+     * <p>
+     * If the method returns <code>false</code> the test should be skipped.
+     * </p>
+     * 
+     * @param rootMapping the feature type being queried
+     * @return <code>true</code> if nested filters encoding can be tested, <code>false</code> otherwise.
+     */
+    protected boolean shouldTestNestedFiltersEncoding(FeatureTypeMapping rootMapping) {
+        if (!(rootMapping.getSource().getDataStore() instanceof JDBCDataStore))
+            return false;
+        if (!AppSchemaDataAccessConfigurator.isJoining())
+            return false;
+        if (!AppSchemaDataAccessConfigurator.shouldEncodeNestedFilters())
+            return false;
+        return true;
+    }
+
+    /**
+     * Creates a properly configured {@link NestedFilterToSQL} instance to enable testing the SQL encoding of filters on nested attributes.
+     * 
+     * <p>
+     * Note: before calling this method, clients should verify that nested filters encoding is enabled by calling
+     * {@link #shouldTestNestedFiltersEncoding(FeatureTypeMapping)}.
+     * </p>
+     * 
+     * @param mapping the feature type being queried
+     * @return nested filter encoder
+     */
+    protected NestedFilterToSQL createNestedFilterEncoder(FeatureTypeMapping mapping) {
+        DataAccess<?, ?> source = mapping.getSource().getDataStore();
+        if (!(source instanceof JDBCDataStore)) {
+            throw new IllegalArgumentException(
+                    "nested filters encoding requires the source datastore be a JDBCDataStore");
+        }
+        JDBCDataStore store = (JDBCDataStore) source;
+        SQLDialect dialect = store.getSQLDialect();
+        FilterToSQL original = null;
+        if (dialect instanceof BasicSQLDialect) {
+            original = ((BasicSQLDialect) dialect).createFilterToSQL();
+        } else if (dialect instanceof PreparedStatementSQLDialect) {
+            original = ((PreparedStatementSQLDialect) dialect).createPreparedFilterToSQL();
+            // disable prepared statements to have literals actually encoded in the SQL
+            ((PreparedFilterToSQL)original).setPrepareEnabled(false);
+        }
+        original.setFeatureType((SimpleFeatureType) mapping.getSource().getSchema());
+
+        NestedFilterToSQL nestedFilterToSQL = new NestedFilterToSQL(mapping, original);
+        nestedFilterToSQL.setInline(true);
+        return nestedFilterToSQL;
+    }
 }

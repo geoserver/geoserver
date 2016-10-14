@@ -6,7 +6,25 @@
 
 package org.geoserver.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
+
+import java.io.IOException;
+
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.complex.AppSchemaDataAccess;
+import org.geotools.data.complex.FeatureTypeMapping;
+import org.geotools.data.complex.filter.ComplexFilterSplitter;
+import org.geotools.data.jdbc.FilterToSQLException;
+import org.geotools.filter.FilterFactoryImplNamespaceAware;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.NestedFilterToSQL;
+import org.geotools.util.NullProgressListener;
 import org.junit.Test;
+import org.opengis.filter.Filter;
+import org.opengis.filter.PropertyIsEqualTo;
 import org.w3c.dom.Document;
 
 /**
@@ -86,4 +104,56 @@ public class NestedIdSupportTest extends AbstractAppSchemaTestSupport {
                 "wfs:FeatureCollection/gml:featureMember/gsml:Borehole/@gml:id", doc);
     }
 
+    @Test
+    public void testNestedFiltersEncoding() throws IOException, FilterToSQLException {
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName("gsml", "MappedFeature");
+        FeatureSource fs = ftInfo.getFeatureSource(new NullProgressListener(), null);
+        AppSchemaDataAccess da = (AppSchemaDataAccess) fs.getDataStore();
+        FeatureTypeMapping rootMapping = da.getMappingByNameOrElement(ftInfo.getQualifiedName());
+
+        // make sure nested filters encoding is enabled, otherwise skip test
+        assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
+
+        JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
+        NestedFilterToSQL nestedFilterToSQL = createNestedFilterEncoder(rootMapping);
+
+        FilterFactoryImplNamespaceAware ff = new FilterFactoryImplNamespaceAware();
+        ff.setNamepaceContext(rootMapping.getNamespaces());
+        
+        /*
+         * test filter on nested ID
+         */
+        PropertyIsEqualTo nestedIdFilter = ff
+                .equals(ff
+                        .property("gsml:specification/gsml:GeologicUnit/gsml:composition/gsml:CompositionPart/gsml:lithology/gsml:ControlledConcept/@gml:id"),
+                        ff.literal("cc.1"));
+
+        // Filter involves a single nested attribute --> can be encoded
+        ComplexFilterSplitter splitter = new ComplexFilterSplitter(store.getFilterCapabilities(),
+                rootMapping);
+        splitter.visit(nestedIdFilter, null);
+        Filter preFilter = splitter.getFilterPre();
+        Filter postFilter = splitter.getFilterPost();
+
+        assertEquals(nestedIdFilter, preFilter);
+        assertEquals(Filter.INCLUDE, postFilter);
+
+        // filter must be "unrolled" (i.e. reverse mapped) first
+        Filter unrolled = AppSchemaDataAccess.unrollFilter(nestedIdFilter, rootMapping);
+
+        // Filter is nested
+        assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
+
+        String encodedFilter = nestedFilterToSQL.encodeToString(unrolled);
+
+        // this is the generated query in PostGIS, but the test limits to check the presence of the
+        // a few keywords, as the actual SQL is dependent on the underlying database
+        // EXISTS (SELECT "chain_link_3"."PKEY" 
+        //      FROM "appschematest"."CONTROLLEDCONCEPT" "chain_link_3" 
+        //           INNER JOIN "appschematest"."COMPOSITIONPART" "chain_link_2" ON "chain_link_2"."ROW_ID" = "chain_link_3"."COMPOSITION_ID" 
+        //           INNER JOIN "appschematest"."GEOLOGICUNIT" "chain_link_1" ON "chain_link_1"."COMPONENTPART_ID" = "chain_link_2"."ROW_ID" 
+        //      WHERE "chain_link_3"."GML_ID" = 'cc.1' AND "appschematest"."MAPPEDFEATUREPROPERTYFILE"."GEOLOGIC_UNIT_ID" = "chain_link_1"."GML_ID")
+        assertTrue(encodedFilter.matches("^EXISTS.*SELECT.*FROM.*INNER JOIN.*INNER JOIN.*WHERE.*$"));
+        assertContainsFeatures(fs.getFeatures(nestedIdFilter), "mf4");
+    }
 }

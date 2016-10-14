@@ -6,8 +6,28 @@
 
 package org.geoserver.test;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
+import java.io.IOException;
+
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.complex.AppSchemaDataAccess;
+import org.geotools.data.complex.FeatureTypeMapping;
+import org.geotools.data.complex.filter.ComplexFilterSplitter;
+import org.geotools.data.jdbc.FilterToSQLException;
+import org.geotools.filter.FilterFactoryImplNamespaceAware;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.NestedFilterToSQL;
+import org.geotools.util.NullProgressListener;
+import org.junit.Test;
+import org.opengis.filter.Filter;
+import org.opengis.filter.Or;
+import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.PropertyIsNotEqualTo;
 import org.w3c.dom.Document;
 
 /**
@@ -383,6 +403,168 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
                 "http://www.opengis.net/gml/srs/epsg.xml#4283",
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf3']/gsml:shape/gml:Polygon/@srsName",
                 doc);
+    }
+
+    @Test
+    public void testNestedFilterEncoding() throws IOException, FilterToSQLException {
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName("gsml", "MappedFeature");
+        FeatureSource fs = ftInfo.getFeatureSource(new NullProgressListener(), null);
+        AppSchemaDataAccess da = (AppSchemaDataAccess) fs.getDataStore();
+        FeatureTypeMapping rootMapping = da.getMappingByNameOrElement(ftInfo.getQualifiedName());
+
+        // make sure nested filters encoding is enabled, otherwise skip test
+        assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
+
+        JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
+        NestedFilterToSQL nestedFilterToSQL = createNestedFilterEncoder(rootMapping);
+
+        FilterFactoryImplNamespaceAware ff = new FilterFactoryImplNamespaceAware();
+        ff.setNamepaceContext(rootMapping.getNamespaces());
+
+        /*
+         * test filter by name coming from child table
+         */
+        PropertyIsEqualTo propertyIsEqualTo = ff.equals(ff.property("gml:name[2]"),
+                ff.literal("nameone 4"));
+
+        // Filter involving single nested attribute --> can be encoded
+        ComplexFilterSplitter splitter = new ComplexFilterSplitter(store.getFilterCapabilities(),
+                rootMapping);
+        splitter.visit(propertyIsEqualTo, null);
+        Filter preFilter = splitter.getFilterPre();
+        Filter postFilter = splitter.getFilterPost();
+
+        assertEquals(propertyIsEqualTo, preFilter);
+        assertEquals(Filter.INCLUDE, postFilter);
+
+        // filter must be "unrolled" (i.e. reverse mapped) first
+        Filter unrolled = AppSchemaDataAccess.unrollFilter(propertyIsEqualTo, rootMapping);
+
+        // Filter is nested
+        assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
+
+        String encodedFilter = nestedFilterToSQL.encodeToString(unrolled);
+
+        // this is the generated query in PostGIS, but the test limits to check the presence of the
+        // EXISTS keyword, as the actual SQL is dependent on the underlying database
+        // EXISTS (SELECT "chain_link_1"."PKEY" 
+        //      FROM "appschematest"."MAPPEDFEATURENAMEONE" "chain_link_1" 
+        //      WHERE "chain_link_1"."NAME" = 'nameone 4' AND
+        //            "appschematest"."MAPPEDFEATUREWITHNESTEDNAME"."ID" = "chain_link_1"."MF_ID")
+        assertTrue(encodedFilter.contains("EXISTS"));
+        assertContainsFeatures(fs.getFeatures(propertyIsEqualTo), "mf3");
+
+        /*
+         * test filter on attribute of root feature type
+         */
+        PropertyIsEqualTo ordinaryFilter = ff.equals(ff.property("gml:name[1]"),
+                ff.literal("GUNTHORPE FORMATION"));
+
+        // Filter involving direct attribute of root feature type --> can be encoded
+        ComplexFilterSplitter splitter2 = new ComplexFilterSplitter(store.getFilterCapabilities(),
+                rootMapping);
+        splitter2.visit(ordinaryFilter, null);
+        preFilter = splitter2.getFilterPre();
+        postFilter = splitter2.getFilterPost();
+
+        assertEquals(ordinaryFilter, preFilter);
+        assertEquals(Filter.INCLUDE, postFilter);
+
+        // Filter must be "unrolled" (i.e. reverse mapped) prior to being encoded
+        unrolled = AppSchemaDataAccess.unrollFilter(ordinaryFilter, rootMapping);
+
+        // Filter is NOT nested
+        assertFalse(NestedFilterToSQL.isNestedFilter(unrolled));
+        // IS THIS A BUG?!?
+        String ordinaryEncoded = nestedFilterToSQL.encodeToString(unrolled);
+
+        assertFalse(ordinaryEncoded.contains("EXISTS"));
+        assertContainsFeatures(fs.getFeatures(ordinaryFilter), "mf1");
+
+        /*
+         * test filter matching multiple mappings
+         */
+        PropertyIsEqualTo multipleFilter = ff.equals(ff.property("gml:name"),
+                ff.literal("GUNTHORPE FORMATION"));
+
+        // Filter involves multiple nested attributes --> CANNOT be encoded
+        ComplexFilterSplitter splitter3 = new ComplexFilterSplitter(store.getFilterCapabilities(),
+                rootMapping);
+        splitter3.visit(multipleFilter, null);
+        preFilter = splitter3.getFilterPre();
+        postFilter = splitter3.getFilterPost();
+
+        assertEquals(Filter.INCLUDE, preFilter);
+        assertEquals(multipleFilter, postFilter);
+
+        // Filter must be "unrolled" (i.e. reverse mapped) first
+        unrolled = AppSchemaDataAccess.unrollFilter(multipleFilter, rootMapping);
+
+        // Filter is nested
+        assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
+
+        assertContainsFeatures(fs.getFeatures(multipleFilter), "mf1");
+
+        /*
+         * test combined filter, i.e. a filter composed of a "regular" filter, and a nested filter
+         */
+        PropertyIsEqualTo regularFilter = ff.equals(ff.property("gml:name[1]"),
+                ff.literal("GUNTHORPE FORMATION"));
+        PropertyIsEqualTo nestedFilter = ff.equals(ff.property("gml:name[2]"),
+                ff.literal("nameone 4"));
+        Or combined = ff.or(regularFilter, nestedFilter);
+
+        // Filter can be encoded!
+        ComplexFilterSplitter splitterCombined = new ComplexFilterSplitter(
+                store.getFilterCapabilities(), rootMapping);
+        splitterCombined.visit(combined, null);
+        preFilter = splitterCombined.getFilterPre();
+        postFilter = splitterCombined.getFilterPost();
+
+        assertEquals(combined, preFilter);
+        assertEquals(Filter.INCLUDE, postFilter);
+
+        // Filter must be "unrolled" (i.e. reverse mapped) first
+        unrolled = AppSchemaDataAccess.unrollFilter(combined, rootMapping);
+
+        // Filter is nested
+        assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
+
+        String encodedCombined = nestedFilterToSQL.encodeToString(unrolled);
+
+        // this is the generated query in PostGIS, but the test limits to check the presence of the
+        // EXISTS keyword, as the actual SQL is dependent on the underlying database
+        // (LEX_D = 'GUNTHORPE FORMATION' OR EXISTS 
+        //      (SELECT "chain_link_1"."PKEY" 
+        //      FROM "appschematest"."MAPPEDFEATURENAMEONE" "chain_link_1" 
+        //      WHERE "chain_link_1"."NAME" = 'nameone 4' AND 
+        //            "appschematest"."MAPPEDFEATUREWITHNESTEDNAME"."ID" = "chain_link_1"."MF_ID"))
+        assertTrue(encodedCombined.matches("^\\(.*GUNTHORPE FORMATION.*OR.*EXISTS.*\\)$"));
+        assertContainsFeatures(fs.getFeatures(combined), "mf1", "mf3");
+
+        /*
+         * test filter comparing multiple nested attributes
+         */
+        PropertyIsNotEqualTo notEquals = ff.notEqual(ff.property("gml:name[2]"),
+                ff.property("gml:name[3]"));
+
+        // Filter involves multiple nested attributes --> CANNOT be encoded
+        ComplexFilterSplitter splitterNotEquals = new ComplexFilterSplitter(
+                store.getFilterCapabilities(), rootMapping);
+        splitterNotEquals.visit(notEquals, null);
+        preFilter = splitterNotEquals.getFilterPre();
+        postFilter = splitterNotEquals.getFilterPost();
+
+        assertEquals(Filter.INCLUDE, preFilter);
+        assertEquals(notEquals, postFilter);
+
+        // Filter must be "unrolled" (i.e. reverse mapped) first
+        unrolled = AppSchemaDataAccess.unrollFilter(notEquals, rootMapping);
+
+        // Filter is nested
+        assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
+
+        assertContainsFeatures(fs.getFeatures(notEquals), "mf1", "mf2", "mf3", "mf4");
     }
 
     private void checkMf1(Document doc) {

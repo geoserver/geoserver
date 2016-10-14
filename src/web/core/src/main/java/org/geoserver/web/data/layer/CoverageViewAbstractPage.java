@@ -91,8 +91,13 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
             ImageLayout layout = reader.getImageLayout(coverage);
             SampleModel sampleModel = layout.getSampleModel(null);
             final int numBands = sampleModel.getNumBands();
-            for (int i = 0; i < numBands; i++) {
-                availableCoverages.add(coverage + CoverageView.BAND_SEPARATOR + i);
+            if(numBands == 1) {
+                // simple syntax for simple case
+                availableCoverages.add(coverage);
+            } else {
+                for (int i = 0; i < numBands; i++) {
+                    availableCoverages.add(coverage + CoverageView.BAND_SEPARATOR + i);
+                }
             }
         }
         Collections.sort(availableCoverages);

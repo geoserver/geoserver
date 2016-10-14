@@ -6,8 +6,25 @@
 
 package org.geoserver.test;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
+import java.io.IOException;
+
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.complex.AppSchemaDataAccess;
+import org.geotools.data.complex.FeatureTypeMapping;
+import org.geotools.data.complex.filter.ComplexFilterSplitter;
+import org.geotools.data.jdbc.FilterToSQLException;
+import org.geotools.filter.FilterFactoryImplNamespaceAware;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.NestedFilterToSQL;
+import org.geotools.util.NullProgressListener;
+import org.junit.Test;
+import org.opengis.filter.Filter;
+import org.opengis.filter.PropertyIsEqualTo;
 import org.w3c.dom.Document;
 
 /**
@@ -702,4 +719,107 @@ public class PolymorphismWfsTest extends AbstractAppSchemaTestSupport {
         // f6: make sure nothing is encoded
         assertXpathCount(0, "//ex:PolymorphicFeature[@gml:id='f6']/ex:anyValue", doc);
     }
+
+    @Test
+    public void testNestedFilterEncoding() throws FilterToSQLException, IOException {
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName("ex", "PolymorphicFeature");
+        FeatureSource fs = ftInfo.getFeatureSource(new NullProgressListener(), null);
+        AppSchemaDataAccess da = (AppSchemaDataAccess) fs.getDataStore();
+        FeatureTypeMapping rootMapping = da.getMappingByNameOrElement(ftInfo.getQualifiedName());
+
+        // make sure nested filters encoding is enabled, otherwise skip test
+        assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
+
+        JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
+
+        FilterFactoryImplNamespaceAware ff = new FilterFactoryImplNamespaceAware();
+        ff.setNamepaceContext(rootMapping.getNamespaces());
+
+        /*
+         * test equals filter on first nested attribute
+         */
+        PropertyIsEqualTo equalsFirstValue = ff.equals(
+                ff.property("ex:firstValue/gsml:CGI_NumericValue/gsml:principalValue"),
+                ff.literal(1.0));
+
+        // Filter involving conditional polymorphism --> CANNOT be encoded
+        ComplexFilterSplitter splitterFirstValueFilter = new ComplexFilterSplitter(
+                store.getFilterCapabilities(), rootMapping);
+        splitterFirstValueFilter.visit(equalsFirstValue, null);
+        Filter preFilter = splitterFirstValueFilter.getFilterPre();
+        Filter postFilter = splitterFirstValueFilter.getFilterPost();
+
+        assertEquals(Filter.INCLUDE, preFilter);
+        assertEquals(equalsFirstValue, postFilter);
+
+        // filter must be "unrolled" (i.e. reverse mapped) first
+        Filter unrolled = AppSchemaDataAccess.unrollFilter(equalsFirstValue, rootMapping);
+
+        // Filter is nested
+        assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
+
+        assertContainsFeatures(fs.getFeatures(equalsFirstValue), "f1");
+
+        /*
+         * test equals filter on second nested attribute
+         */
+        PropertyIsEqualTo equalsSecondValue = ff.equals(
+                ff.property("ex:secondValue/gsml:CGI_NumericValue/gsml:principalValue/@uom"),
+                ff.literal("m"));
+
+        // Filter involving conditional polymorphism --> CANNOT be encoded
+        ComplexFilterSplitter splitterSecondValue = new ComplexFilterSplitter(
+                store.getFilterCapabilities(), rootMapping);
+        splitterSecondValue.visit(equalsSecondValue, null);
+        preFilter = splitterSecondValue.getFilterPre();
+        postFilter = splitterSecondValue.getFilterPost();
+
+        assertEquals(Filter.INCLUDE, preFilter);
+        assertEquals(equalsSecondValue, postFilter);
+
+        // filter must be "unrolled" (i.e. reverse mapped) first
+        unrolled = AppSchemaDataAccess.unrollFilter(equalsSecondValue, rootMapping);
+
+        // Filter is nested
+        assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
+
+        assertContainsFeatures(fs.getFeatures(equalsSecondValue), "f1", "f3");
+
+        /*
+         * test equals filter on third nested attribute
+         */
+        PropertyIsEqualTo equalsThirdValue = ff.equals(
+                ff.property("ex:thirdValue/gsml:CGI_NumericValue/gsml:principalValue"),
+                ff.literal(1.0));
+
+        // Filter involving non-conditional polymorphism --> can be encoded, because target attribute mapping can be unequivocally determined a-priori
+        ComplexFilterSplitter splitterThirdValueFilter = new ComplexFilterSplitter(
+                store.getFilterCapabilities(), rootMapping);
+        splitterThirdValueFilter.visit(equalsThirdValue, null);
+        preFilter = splitterThirdValueFilter.getFilterPre();
+        postFilter = splitterThirdValueFilter.getFilterPost();
+
+        assertEquals(equalsThirdValue, preFilter);
+        assertEquals(Filter.INCLUDE, postFilter);
+
+        // filter must be "unrolled" (i.e. reverse mapped) first
+        unrolled = AppSchemaDataAccess.unrollFilter(equalsThirdValue, rootMapping);
+
+        // Filter is nested
+        assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
+
+        NestedFilterToSQL nestedFilterEncoder = createNestedFilterEncoder(rootMapping);
+        String encodedFilter = nestedFilterEncoder.encodeToString(unrolled);
+
+        // this is the generated query in PostGIS, but the test limits to check the presence of the
+        // EXISTS keyword, as the actual SQL is dependent on the underlying database
+        // EXISTS (SELECT "chain_link_1"."PKEY" 
+        //      FROM "appschematest"."POLYMORPHICFEATURE" "chain_link_1" 
+        //      WHERE "chain_link_1"."NUMERIC_VALUE" = 1.0 AND 
+        //            "appschematest"."POLYMORPHICFEATURE"."VALUE_ID" = "chain_link_1"."ID"
+        assertTrue(encodedFilter.contains("EXISTS"));
+
+        assertContainsFeatures(fs.getFeatures(equalsThirdValue), "f1", "f4");
+    }
+
 }

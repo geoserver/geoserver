@@ -62,3 +62,24 @@ Using joining is strongly recommended when a large number of features need to be
 when producing maps with WMS (see :ref:`app-schema.wms-support`).
 
 Optimising the performance of the database will maximise the benefit of using joining, including for small queries.
+
+Native Encoding of Filters on Nested Attributes
+-----------------------------------------------
+
+When App-Schema Joining is active, filters operating on nested attributes (i.e. attributes of features that are joined to the queried type via :ref:`app-schema.feature-chaining`) are translated to SQL and executed directly in the database backend, rather than being evaluated in memory after all features have been loaded (which was standard behavior in earlier versions of GeoServer). Native encoding can yield significant performance improvements, especially when the total number of features in the database is high (several thousands or more), but only a few of them would satisfy the filter.
+
+There are, however, a few limitations in the current implementation:
+
+1. Joining support must not have been explicitly disabled and all its pre-conditions must be met (see above)
+2. Only binary comparison operators (e.g. ``PropertyIsEqualTo``, ``PropertyIsGreaterThan``, etc...), ``PropertyIsLike`` and ``PropertyIsNull`` filters are translated to SQL
+3. Filters involving conditional polymorphic mappings are evaluated in memory
+4. Filters comparing two or more different nested attributes are evaluated in memory
+5. Filters matching multiple nested attribute mappings are evaluated in memory
+
+Much like joining support, native encoding of nested filters is turned on by default, and it is disabled by adding to your app-schema.properties file the line ::
+
+     app-schema.encodeNestedFilters = false
+
+Or, alternatively, by setting the value of the Java System Property "app-schema.encodeNestedFilters" to "false", for example ::
+
+     java -DGEOSERVER_DATA_DIR=... -Dapp-schema.encodeNestedFilters=false Start

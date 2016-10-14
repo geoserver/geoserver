@@ -37,7 +37,7 @@ public class PaletteStyleHandler extends StyleHandler {
     protected PaletteStyleHandler() {
         super("Dynamic palette", FORMAT);
     }
-    
+
     @Override
     public String getFileExtension() {
         return ".pal";
@@ -50,13 +50,12 @@ public class PaletteStyleHandler extends StyleHandler {
             StyledLayerDescriptor sld = new PaletteParser().parseStyle(reader);
             if (LOGGER.isLoggable(Level.FINE)) {
                 try {
-                    LOGGER.fine(
-                            "Palette has been parsed to " + toSLD(sld));
+                    LOGGER.fine("Palette has been parsed to " + toSLD(sld));
                 } catch (TransformerException e) {
                     LOGGER.log(Level.FINE, "Failed to transform in memory style to SLD", e);
                 }
             }
-            
+
             return sld;
         }
 

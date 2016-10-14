@@ -31,9 +31,9 @@ import org.opengis.filter.expression.Function;
 public class PaletteParserTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
-    
+
     PaletteParser parser = new PaletteParser();
-    
+
     @Before
     public void resetEnvFunction() {
         EnvFunction.clearLocalValues();
@@ -44,63 +44,64 @@ public class PaletteParserTest {
     public void testParseBlackAndWhiteHash() throws IOException {
         assertBlackAndWhite("#000000\n#FFFFFF");
     }
-    
+
     @Test
     public void testParseBlackAndWhiteHashAlpha() throws IOException {
         assertBlackAndWhite("#FF000000\n#FFFFFFFF");
     }
-    
+
     @Test
     public void testParseBlackAndWhiteSimpleHex() throws IOException {
         assertBlackAndWhite("0x000000\n0xFFFFFF");
     }
-    
+
     @Test
     public void testParseBlackAndWhiteHexAlpha() throws IOException {
         assertBlackAndWhite("0xFF000000\n0xFFFFFFFF");
     }
-    
+
     @Test
     public void assertBlackAndWhiteTranslucent() throws IOException {
         assertBlackAndWhiteTranslucent("#64000000\n#64FFFFFF");
     }
-    
+
     @Test
     public void assertBlackAndWhiteHexTranslucent() throws IOException {
         assertBlackAndWhiteTranslucent("0x64000000\n0x64FFFFFF");
     }
 
-
     @Test
     public void testParseBlackAndWhiteSimpleHexComments() throws IOException {
         assertBlackAndWhite("%one\n0x000000\n%two\n0xFFFFFF\n%three\n%four");
     }
-    
+
     @Test
     public void testErrorMessage() throws IOException {
         // we expect to get a error message pointing at the invalid color
         exception.expect(PaletteParser.InvalidColorException.class);
-        exception.expectMessage("Invalid color 'abcde', supported syntaxes are #RRGGBB, 0xRRGGBB, #AARRGGBB and 0xAARRGGBB");
+        exception.expectMessage(
+                "Invalid color 'abcde', supported syntaxes are #RRGGBB, 0xRRGGBB, #AARRGGBB and 0xAARRGGBB");
         parser.parseColorMap(toReader("#FF0000\nabcde\n#000000"));
     }
-    
+
     @Test
     public void testParseBlackWhiteToStyle() throws IOException, TransformerException {
         StyledLayerDescriptor sld = parser.parseStyle(toReader("#000000\n#FFFFFF"));
         Function cm = assertDynamicColorColormap(sld);
         assertEquals("rgb(0,0,0);rgb(255,255,255)", cm.getParameters().get(0).evaluate(null));
     }
-    
+
     @Test
     public void testParseBlackWhiteTranslucentToStyle() throws IOException, TransformerException {
         StyledLayerDescriptor sld = parser.parseStyle(toReader("#64000000\n#64FFFFFF"));
         Function cm = assertDynamicColorColormap(sld);
-        assertEquals("rgba(0,0,0,0.39);rgba(255,255,255,0.39)", cm.getParameters().get(0).evaluate(null));
+        assertEquals("rgba(0,0,0,0.39);rgba(255,255,255,0.39)",
+                cm.getParameters().get(0).evaluate(null));
     }
 
     static Function assertDynamicColorColormap(StyledLayerDescriptor sld)
             throws TransformerException {
-        // logStyle(sld); 
+        // logStyle(sld);
         NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
         Style style = layer.getStyles()[0];
         assertEquals(1, style.featureTypeStyles().size());
@@ -134,7 +135,7 @@ public class PaletteParserTest {
         Function p1 = (Function) e;
         assertEquals("parameter", p1.getName());
         assertEquals(key, p1.getParameters().get(0).evaluate(null));
-        if("data".equals(key)) {
+        if ("data".equals(key)) {
             assertEquals(1, p1.getParameters().size());
             return null;
         } else {
@@ -142,24 +143,23 @@ public class PaletteParserTest {
             return p1.getParameters().get(1);
         }
     }
-    
-    
+
     private void assertBlackAndWhite(String palette) throws IOException {
         List<Color> colors = parser.parseColorMap(toReader(palette));
         assertEquals(2, colors.size());
         assertEquals(Color.BLACK, colors.get(0));
         assertEquals(Color.WHITE, colors.get(1));
     }
-    
+
     private void assertBlackAndWhiteTranslucent(String palette) throws IOException {
         List<Color> colors = parser.parseColorMap(toReader(palette));
         assertEquals(2, colors.size());
-        assertEquals(new Color(0,0,0,100), colors.get(0));
-        assertEquals(new Color(255,255,255,100), colors.get(1));
+        assertEquals(new Color(0, 0, 0, 100), colors.get(0));
+        assertEquals(new Color(255, 255, 255, 100), colors.get(1));
     }
 
     private Reader toReader(String palette) {
         return new StringReader(palette);
     }
-    
+
 }

@@ -130,7 +130,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
                     final int bandIndexChar = coverage.indexOf(CoverageView.BAND_SEPARATOR);
                     String coverageName = coverage;
-                    String bandIndex = "-1";
+                    String bandIndex = null;
                     if (bandIndexChar != -1) {
                         coverageName = coverage.substring(0, bandIndexChar);
                         bandIndex = coverage.substring(bandIndexChar + 1, coverage.length());

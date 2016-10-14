@@ -346,8 +346,13 @@ public class CoverageViewReader implements GridCoverage2DReader {
             
             // Get band indices for band selection
             ArrayList<Integer> bandIndices = new ArrayList<Integer>(selectedBands.size());
-            for (InputCoverageBand icb:selectedBands){
-                bandIndices.add(Integer.parseInt(icb.getBand()));
+            for (InputCoverageBand icb:selectedBands) {
+                int bandIdx = 0;
+                final String bandString = icb.getBand();
+                if(bandString != null && !bandString.isEmpty()) {
+                    bandIdx = Integer.parseInt(bandString);
+                }
+                bandIndices.add(bandIdx);
             }
             
             GridCoverage2D coverage = inputCoverages.get(coverageName);

@@ -55,6 +55,21 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         // setup the coverage view
         final Catalog cat = getCatalog();
         final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("ir-rgb");
+        final CoverageView coverageView = buildRgbIRView();
+        final CatalogBuilder builder = new CatalogBuilder(cat);
+        builder.setStore(storeInfo);
+
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo,
+                builder);
+        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getDimensions().get(0).setName("Red");
+        coverageInfo.getDimensions().get(1).setName("Green");
+        coverageInfo.getDimensions().get(2).setName("Blue");
+        coverageInfo.getDimensions().get(3).setName("Infrared");
+        cat.add(coverageInfo);
+    }
+
+    private CoverageView buildRgbIRView() {
         final CoverageBand rBand = new CoverageBand(
                 Arrays.asList(new InputCoverageBand("rgb", "0")), "rband", 0,
                 CompositionType.BAND_SELECT);
@@ -69,17 +84,24 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
                 CompositionType.BAND_SELECT);
         final CoverageView coverageView = new CoverageView(RGB_IR_VIEW,
                 Arrays.asList(rBand, gBand, bBand, irBand));
+        return coverageView;
+    }
+    
+    @Test
+    public void testPreserveCoverageBandNames() throws Exception {
+        final Catalog cat = getCatalog();
+        final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("ir-rgb");
+        final CoverageView coverageView = buildRgbIRView();
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
         final CoverageInfo coverageInfo = coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo,
                 builder);
-        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
-        coverageInfo.getDimensions().get(0).setName("Red");
-        coverageInfo.getDimensions().get(1).setName("Green");
-        coverageInfo.getDimensions().get(2).setName("Blue");
-        coverageInfo.getDimensions().get(3).setName("Infrared");
-        cat.add(coverageInfo);
+        List<CoverageDimensionInfo> dimensions = coverageInfo.getDimensions();
+        assertEquals("rband", dimensions.get(0).getName());
+        assertEquals("gband", dimensions.get(1).getName());
+        assertEquals("bband", dimensions.get(2).getName());
+        assertEquals("irband", dimensions.get(3).getName());
     }
 
     /**

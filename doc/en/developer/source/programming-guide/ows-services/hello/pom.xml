@@ -8,7 +8,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
 <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.10-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+    <version>2.11-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
 </parent>  
 
 <groupId>org.geoserver</groupId>
@@ -22,7 +22,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/ma
     <dependency>
         <groupId>org.geoserver</groupId>
         <artifactId>gs-main</artifactId>
-        <version>2.10-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
+        <version>2.11-SNAPSHOT</version> <!-- change this to the proper GeoServer version -->
     </dependency>
 </dependencies>
 

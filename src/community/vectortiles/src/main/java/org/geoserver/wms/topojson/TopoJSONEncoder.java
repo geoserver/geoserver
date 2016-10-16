@@ -38,8 +38,8 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 
 public class TopoJSONEncoder {
 
-    private static class TopologyAdapter implements JsonSerializer<Topology>,
-            JsonDeserializer<Topology> {
+    private static class TopologyAdapter
+            implements JsonSerializer<Topology>, JsonDeserializer<Topology> {
 
         @Override
         public JsonElement serialize(Topology topology, Type typeOfSrc,
@@ -99,8 +99,8 @@ public class TopoJSONEncoder {
                 if (topology.getScreenToWorldTransform().isIdentity()) {
                     jsonArc = TopoJSONEncoder.serialize(arc.getCoordinateSequence());
                 } else {
-                    jsonArc = TopoJSONEncoder.quantize(arc.getCoordinateSequence(), arc
-                            .getFactory().getPrecisionModel());
+                    jsonArc = TopoJSONEncoder.quantize(arc.getCoordinateSequence(),
+                            arc.getFactory().getPrecisionModel());
                 }
                 arcs.add(jsonArc);
             }
@@ -118,6 +118,7 @@ public class TopoJSONEncoder {
     private static final TopologyAdapter TOPOLOGY_ADAPTER = new TopologyAdapter();
 
     private static final GsonBuilder gsonBuilder = new GsonBuilder();
+
     static {
         gsonBuilder.registerTypeAdapter(Topology.class, TOPOLOGY_ADAPTER);
     }
@@ -133,6 +134,7 @@ public class TopoJSONEncoder {
 
     private static abstract class TopologyEncoder {
         private static Map<String, TopologyEncoder> encoders = new HashMap<>();
+
         static {
             encoders.put("Point", new PointEncoder());
             encoders.put("MultiPoint", new MultiPointEncoder());
@@ -324,7 +326,8 @@ public class TopoJSONEncoder {
         return arc;
     }
 
-    public static JsonArray quantize(final CoordinateSequence coords, PrecisionModel precisionModel) {
+    public static JsonArray quantize(final CoordinateSequence coords,
+            PrecisionModel precisionModel) {
         JsonArray arc = new JsonArray();
         final int size = coords.size();
 
@@ -351,7 +354,7 @@ public class TopoJSONEncoder {
                 buff.x = deltaX;
                 buff.y = deltaY;
                 precisionModel.makePrecise(buff);
-                if(buff.x == 0d && buff.y == 0d){
+                if (buff.x == 0d && buff.y == 0d) {
                     continue;
                 }
                 addCoordinate(arc, buff);

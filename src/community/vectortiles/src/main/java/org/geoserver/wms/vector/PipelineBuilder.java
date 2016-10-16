@@ -45,27 +45,27 @@ class PipelineBuilder {
 
         MathTransform sourceToScreen;
 
-        ReferencedEnvelope renderingArea; //WMS request; bounding box - in final map (target) CRS (BBOX from WMS)
+        ReferencedEnvelope renderingArea; // WMS request; bounding box - in final map (target) CRS (BBOX from WMS)
 
-        Rectangle paintArea;  // WMS request; rectangle of the image (width and height from WMS)
+        Rectangle paintArea; // WMS request; rectangle of the image (width and height from WMS)
 
         public ScreenMap screenMap;
 
-        public CoordinateReferenceSystem sourceCrs; //data's CRS
+        public CoordinateReferenceSystem sourceCrs; // data's CRS
 
         public AffineTransform worldToScreen;
 
-        public double targetCRSSimplificationDistance; 
+        public double targetCRSSimplificationDistance;
 
         public double screenSimplificationDistance;
-        
-        public double pixelSizeInTargetCRS; // approximate size of a pixel in the Target CRS  
+
+        public double pixelSizeInTargetCRS; // approximate size of a pixel in the Target CRS
 
     }
 
     Context context;
-    
-    // When clipping, we want to expand the clipping box by a bit so that 
+
+    // When clipping, we want to expand the clipping box by a bit so that
     // the client (i.e. OpenLayers) doesn't draw the clip lines created when
     // the polygon is clipped to the request BBOX.
     // 12 is what the current streaming renderer (for WMS images) uses
@@ -106,26 +106,29 @@ class PipelineBuilder {
         double[] spans_targetCRS;
         try {
             MathTransform screenToWorld = context.sourceToScreen.inverse();
-            
-            //0.8px is used to make sure the generalization isn't too much (doesn't make visible changes)
-            spans_sourceCRS = Decimator.computeGeneralizationDistances(screenToWorld, context.paintArea, 0.8);        
-            
-            spans_targetCRS = Decimator.computeGeneralizationDistances(context.targetToScreen.inverse(), context.paintArea,1.0);
-               //this is used for clipping the data to A pixels around request BBOX, so we want this to be the larger of the two spans
-               // so we are getting at least A pixels around. 
-            context.pixelSizeInTargetCRS = Math.max(spans_targetCRS[0], spans_targetCRS[1]);  
-            
+
+            // 0.8px is used to make sure the generalization isn't too much (doesn't make visible changes)
+            spans_sourceCRS = Decimator.computeGeneralizationDistances(screenToWorld,
+                    context.paintArea, 0.8);
+
+            spans_targetCRS = Decimator.computeGeneralizationDistances(
+                    context.targetToScreen.inverse(), context.paintArea, 1.0);
+            // this is used for clipping the data to A pixels around request BBOX, so we want this to be the larger of the two spans
+            // so we are getting at least A pixels around.
+            context.pixelSizeInTargetCRS = Math.max(spans_targetCRS[0], spans_targetCRS[1]);
+
         } catch (TransformException e) {
             throw Throwables.propagate(e);
         }
-        
-        context.screenSimplificationDistance = 0.25/overSampleFactor;
-         //use min so generalize "less" (if pixel is different size in X and Y)
-        context.targetCRSSimplificationDistance = Math.min(spans_targetCRS[0], spans_targetCRS[1])/overSampleFactor; 
-        
-        
+
+        context.screenSimplificationDistance = 0.25 / overSampleFactor;
+        // use min so generalize "less" (if pixel is different size in X and Y)
+        context.targetCRSSimplificationDistance = Math.min(spans_targetCRS[0], spans_targetCRS[1])
+                / overSampleFactor;
+
         context.screenMap = new ScreenMap(0, 0, paintArea.width, paintArea.height);
-        context.screenMap.setSpans(spans_sourceCRS[0]/overSampleFactor, spans_sourceCRS[1]/overSampleFactor);
+        context.screenMap.setSpans(spans_sourceCRS[0] / overSampleFactor,
+                spans_sourceCRS[1] / overSampleFactor);
         context.screenMap.setTransform(context.sourceToScreen);
 
         return context;
@@ -232,18 +235,18 @@ class PipelineBuilder {
     public PipelineBuilder clip(boolean clipToMapBounds, boolean transformToScreenCoordinates) {
         if (clipToMapBounds) {
 
-            Envelope clippingEnvelope;          
+            Envelope clippingEnvelope;
 
             if (transformToScreenCoordinates) {
                 Rectangle screen = context.paintArea;
-                
+
                 Envelope paintArea = new Envelope(0, screen.getWidth(), 0, screen.getHeight());
-                paintArea.expandBy( clipBBOXSizeIncreasePixels);
-                
+                paintArea.expandBy(clipBBOXSizeIncreasePixels);
+
                 clippingEnvelope = paintArea;
             } else {
                 ReferencedEnvelope renderingArea = context.renderingArea;
-                renderingArea.expandBy( clipBBOXSizeIncreasePixels * context.pixelSizeInTargetCRS);
+                renderingArea.expandBy(clipBBOXSizeIncreasePixels * context.pixelSizeInTargetCRS);
                 clippingEnvelope = renderingArea;
             }
 
@@ -281,8 +284,8 @@ class PipelineBuilder {
             if (geom.getDimension() == 0) {
                 return geom;
             }
-            //DJB: Use this instead of com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier because
-            //     DPS does NOT do a good job with polygons.
+            // DJB: Use this instead of com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier because
+            // DPS does NOT do a good job with polygons.
             TopologyPreservingSimplifier simplifier = new TopologyPreservingSimplifier(geom);
             simplifier.setDistanceTolerance(this.distanceTolerance);
             Geometry simplified = simplifier.getResultGeometry();
@@ -302,11 +305,11 @@ class PipelineBuilder {
         protected Geometry _run(Geometry geom) throws Exception {
             GeometryClipper clipper = new GeometryClipper(clippingEnvelope);
             try {
-                return clipper.clip(geom, true);        
+                return clipper.clip(geom, true);
             } catch (Exception e) {
-                return clipper.clip(geom, false);    // use non-robust clipper
+                return clipper.clip(geom, false); // use non-robust clipper
             }
-            
+
         }
     }
 

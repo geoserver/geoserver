@@ -76,13 +76,12 @@ public class VectorMapRenderUtils {
                 schema, mapScale, screenSize);
         Query styleQuery;
         try {
-            styleQuery = VectorMapRenderUtils.getStyleQuery(featureSource, styleList,
-                    renderingArea, screenSize, geometryDescriptor);
+            styleQuery = VectorMapRenderUtils.getStyleQuery(featureSource, styleList, renderingArea,
+                    screenSize, geometryDescriptor);
         } catch (IllegalFilterException | FactoryException e1) {
             throw Throwables.propagate(e1);
         }
         Query query = styleQuery;
-        // query.setProperties(ImmutableList.of(FF.property(geometryDescriptor.getName())));
         query.setProperties(Query.ALL_PROPERTIES);
 
         Hints hints = query.getHints();
@@ -91,13 +90,10 @@ public class VectorMapRenderUtils {
         return query;
     }
 
-    private static Query getStyleQuery(//
-            FeatureSource<?, ?> source, //
-            List<LiteFeatureTypeStyle> styleList, //
-            ReferencedEnvelope mapArea,//
-            Rectangle screenSize, //
-            GeometryDescriptor geometryAttribute//
-    ) throws IllegalFilterException, IOException, FactoryException {
+    private static Query getStyleQuery(FeatureSource<?, ?> source,
+            List<LiteFeatureTypeStyle> styleList, ReferencedEnvelope mapArea, Rectangle screenSize,
+            GeometryDescriptor geometryAttribute)
+                    throws IllegalFilterException, IOException, FactoryException {
 
         final FeatureType schema = source.getSchema();
         Query query = new Query(schema.getName().getLocalPart());
@@ -114,26 +110,7 @@ public class VectorMapRenderUtils {
             processRuleForQuery(styles, query);
         } catch (Exception e) {
             throw Throwables.propagate(e);
-            // final Exception txException = new Exception("Error transforming bbox", e);
-            // query = new Query(schema.getName().getLocalPart());
-            // query.setProperties(Query.ALL_PROPERTIES);
-            // Envelope bounds = source.getBounds();
-            // if (bounds != null && mapArea.intersects(bounds)) {
-            // filter = null;
-            // filter = createBBoxFilters(schema, Collections.singletonList(mapArea));
-            // query.setFilter(filter);
-            // } else {
-            // // LOGGER.log(Level.WARNING,
-            // // "Got a tranform exception while trying to de-project the current "
-            // // + "envelope, falling back on full data loading (no bbox query)", e);
-            // query.setFilter(Filter.INCLUDE);
-            // }
-            // processRuleForQuery(styles, query);
-
         }
-
-        // Hints hints = new Hints();
-        // query.getHints().putAll(hints);
 
         // simplify the filter
         SimplifyingFilterVisitor simplifier = new SimplifyingFilterVisitor();
@@ -146,16 +123,13 @@ public class VectorMapRenderUtils {
     /**
      * Builds the transform from sourceCRS to destCRS/
      * <p>
-     * Although we ask for 2D content (via {@link Hints#FEATURE_2D} ) not all DataStore
-     * implementations are capable. With that in mind if the provided soruceCRS is not 2D we are
-     * going to manually post-process the Geomtries into {@link DefaultGeographicCRS#WGS84} - and
-     * the {@link MathTransform2D} returned here will transition from WGS84 to the requested
-     * destCRS.
+     * Although we ask for 2D content (via {@link Hints#FEATURE_2D} ) not all DataStore implementations are capable. With that in mind if the provided
+     * soruceCRS is not 2D we are going to manually post-process the Geomtries into {@link DefaultGeographicCRS#WGS84} - and the
+     * {@link MathTransform2D} returned here will transition from WGS84 to the requested destCRS.
      * 
      * @param sourceCRS
      * @param destCRS
-     * @return the transform from {@code sourceCRS} to {@code destCRS}, will be an identity
-     *         transform if the the two crs are equal
+     * @return the transform from {@code sourceCRS} to {@code destCRS}, will be an identity transform if the the two crs are equal
      * @throws FactoryException If no transform is available to the destCRS
      */
     public static MathTransform buildTransform(CoordinateReferenceSystem sourceCRS,
@@ -189,18 +163,15 @@ public class VectorMapRenderUtils {
     }
 
     /**
-     * JE: If there is a single rule "and" its filter together with the query's filter and send it
-     * off to datastore. This will allow as more processing to be done on the back end... Very
-     * useful if DataStore is a database. Problem is that worst case each filter is ran twice. Next
-     * we will modify it to find a "Common" filter between all rules and send that to the datastore.
+     * JE: If there is a single rule "and" its filter together with the query's filter and send it off to datastore. This will allow as more
+     * processing to be done on the back end... Very useful if DataStore is a database. Problem is that worst case each filter is ran twice. Next we
+     * will modify it to find a "Common" filter between all rules and send that to the datastore.
      * 
-     * DJB: trying to be smarter. If there are no "elseRules" and no rules w/o a filter, then it
-     * makes sense to send them off to the Datastore We limit the number of Filters sent off to the
-     * datastore, just because it could get a bit rediculous. In general, for a database, if you can
-     * limit 10% of the rows being returned you're probably doing quite well. The main problem is
-     * when your filters really mean you're secretly asking for all the data in which case sending
-     * the filters to the Datastore actually costs you. But, databases are *much* faster at
-     * processing the Filters than JAVA is and can use statistical analysis to do it.
+     * DJB: trying to be smarter. If there are no "elseRules" and no rules w/o a filter, then it makes sense to send them off to the Datastore We
+     * limit the number of Filters sent off to the datastore, just because it could get a bit rediculous. In general, for a database, if you can limit
+     * 10% of the rows being returned you're probably doing quite well. The main problem is when your filters really mean you're secretly asking for
+     * all the data in which case sending the filters to the Datastore actually costs you. But, databases are *much* faster at processing the Filters
+     * than JAVA is and can use statistical analysis to do it.
      * 
      * @param styles
      * @param query
@@ -290,11 +261,11 @@ public class VectorMapRenderUtils {
                 result.add(lfts);
             }
         }
-
         return result;
     }
 
-    private static List<Rule>[] splitRules(final FeatureTypeStyle fts, final double scaleDenominator) {
+    private static List<Rule>[] splitRules(final FeatureTypeStyle fts,
+            final double scaleDenominator) {
 
         List<Rule> ruleList = new ArrayList<Rule>();
         List<Rule> elseRuleList = new ArrayList<Rule>();
@@ -331,10 +302,9 @@ public class VectorMapRenderUtils {
 
     private static boolean isFeatureTypeStyleActive(FeatureType ftype, FeatureTypeStyle fts) {
         // TODO: find a complex feature equivalent for this check
-        return fts.featureTypeNames().isEmpty()
-                || ((ftype.getName().getLocalPart() != null) && (ftype.getName().getLocalPart()
-                        .equalsIgnoreCase(fts.getFeatureTypeName()) || FeatureTypes.isDecendedFrom(
-                        ftype, null, fts.getFeatureTypeName())));
+        return fts.featureTypeNames().isEmpty() || ((ftype.getName().getLocalPart() != null)
+                && (ftype.getName().getLocalPart().equalsIgnoreCase(fts.getFeatureTypeName())
+                        || FeatureTypes.isDecendedFrom(ftype, null, fts.getFeatureTypeName())));
     }
 
 }

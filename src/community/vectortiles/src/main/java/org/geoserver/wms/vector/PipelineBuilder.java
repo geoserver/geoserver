@@ -8,6 +8,8 @@ import static org.geotools.renderer.lite.VectorMapRenderUtils.buildTransform;
 
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -30,6 +32,12 @@ import com.google.common.base.Throwables;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 
 class PipelineBuilder {
@@ -250,7 +258,7 @@ class PipelineBuilder {
                 clippingEnvelope = renderingArea;
             }
 
-            addLast(new Clip(clippingEnvelope));
+            addLast(new ClipRemoveDegenerateGeometries(clippingEnvelope));
         }
         return this;
     }
@@ -293,7 +301,7 @@ class PipelineBuilder {
         }
     }
 
-    private static final class Clip extends Pipeline {
+    public static class Clip extends Pipeline {
 
         private final Envelope clippingEnvelope;
 
@@ -310,6 +318,135 @@ class PipelineBuilder {
                 return clipper.clip(geom, false); // use non-robust clipper
             }
 
+        }
+    }
+
+    /*
+     * Does the normal clipping, but removes degenerative geometries. For example, a polygon-polygon intersection can result in polygons (normal), but
+     * also points and line (degenerative).
+     * 
+     * This will remove the degenerative geometries from the result. ie. input is polygon(s), only polygons are returned input is line(s), only lines
+     * are returned input is point(s), only points returned
+     * 
+     * For mixed input (GeometryCollection), we do the above for each component in the GeometryCollection. i.e. for GeometryCollection( POLYGON(...),
+     * LINESTRING(...) ) it would ensure that the POLYGON(...) only adds Polygons and that the LINESTRING() only adds Lines
+     * 
+     */
+    public static final class ClipRemoveDegenerateGeometries extends Clip {
+
+        ClipRemoveDegenerateGeometries(Envelope clippingEnvelope) {
+            super(clippingEnvelope);
+        }
+
+        @Override
+        protected Geometry _run(Geometry geom) throws Exception {
+            // protect against empty input geometry
+            if ((geom == null) || (geom.isEmpty())) {
+                return null;
+            }
+
+            // if its a geometrycollection we do each piece individually
+            if (geom.getGeometryType() == "GeometryCollection") {
+                return collectionClip((GeometryCollection) geom);
+            }
+
+            // normal clipping done here
+            Geometry result = super._run(geom);
+
+            // if there's no resulting geometry, don't need to deal with it
+            if ((result == null) || (result.isEmpty())) {
+                return null;
+            }
+
+            // make sure the resulting geometry matches the input geometry
+
+            if ((geom instanceof Point) || (geom instanceof MultiPoint)) {
+                return onlyPoints(result);
+            } else if ((geom instanceof LineString) || (geom instanceof MultiLineString)) {
+                return onlyLines(result);
+            } else if ((geom instanceof Polygon) || (geom instanceof MultiPolygon)) {
+                return onlyPolygon(result);
+            }
+            return result;
+        }
+
+        /*
+         * We do each geometry in sequence, and remove degenerative geometries generated at each step. For example, if the input is a
+         * GeometryCollection(POLYGON(...), LINESTRING(...)) the POLYGON(...) will be clipped (and only polygons preserved) the LINESTRING(..) will be
+         * clipped (and only lines preserved)
+         * 
+         * There are some edge cases unhandled here - if the input contains multiple polygons, the result might be better reduced to a multipolygon
+         * instead of a GeometryCollect with multiple polygons in it. However, this would be computationally expensive and unlikely to make any
+         * difference.
+         */
+        private Geometry collectionClip(GeometryCollection geom) throws Exception {
+            ArrayList<Geometry> result = new ArrayList<Geometry>();
+            for (int t = 0; t < geom.getNumGeometries(); t++) {
+                Geometry g = geom.getGeometryN(0);
+                Geometry clipped = _run(g); // gets the non-degenerative of the result
+                if ((clipped != null) && (!clipped.isEmpty())) {
+                    result.add(clipped);
+                }
+            }
+            if (result.size() == 0) {
+                return null;
+            }
+            return new GeometryCollection((Geometry[]) result.toArray(new Geometry[result.size()]),
+                    geom.getFactory());
+        }
+
+        /*
+         * For a geometry, return only polygons. For example, for a GeometryCollection containing points, lines, and polygons only the polygons would
+         * be return - the others are removed.
+         */
+        private Geometry onlyPolygon(Geometry result) {
+            if ((result instanceof Polygon) || (result instanceof MultiPolygon)) {
+                return result;
+            }
+            List polys = com.vividsolutions.jts.geom.util.PolygonExtracter.getPolygons(result);
+            if (polys.size() == 0) {
+                return null;
+            }
+            if (polys.size() == 1) {
+                return (Polygon) polys.get(0);
+            }
+            // this could, theoretically, produce invalid MULTIPOLYGONS since polygons cannot share edges. Taking
+            // 2 polygons and putting them in a multipolygon is not always valid. However, many systems will not correctly
+            // deal with a GeometryCollection with multiple polygons in them.
+            // The best strategy is to just create a (potentially) invalid multipolygon.
+            return new MultiPolygon((Polygon[]) polys.toArray(new Polygon[polys.size()]),
+                    result.getFactory());
+
+        }
+
+        private Geometry onlyLines(Geometry result) {
+            if ((result instanceof LineString) || (result instanceof MultiLineString)) {
+                return result;
+            }
+            List lines = com.vividsolutions.jts.geom.util.LineStringExtracter.getLines(result);
+            if (lines.size() == 0) {
+                return null;
+            }
+            if (lines.size() == 1) {
+                return (LineString) lines.get(0);
+            }
+            return new MultiLineString((LineString[]) lines.toArray(new LineString[lines.size()]),
+                    result.getFactory());
+        }
+
+        private Geometry onlyPoints(Geometry result) {
+            if ((result instanceof Point) || (result instanceof MultiPoint)) {
+                return result;
+            }
+            List pts = com.vividsolutions.jts.geom.util.PointExtracter.getPoints(result);
+            if (pts.size() == 0) {
+                return null;
+            }
+            if (pts.size() == 1) {
+                return (Point) pts.get(0);
+            }
+            return new MultiPoint((Point[]) pts.toArray(new Point[pts.size()]),
+                    result.getFactory());
         }
     }
 

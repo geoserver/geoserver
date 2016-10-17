@@ -800,7 +800,7 @@ Section "Main" SectionMain
     CreateDirectory "$INSTDIR\work"
 	
     ; Install the service (and start it)
-    nsExec::Exec "$INSTDIR\wrapper.exe -it ./wrapper/wrapper.conf wrapper.java.additional.4=-Djetty.port=$Port"
+    nsExec::Exec "$INSTDIR\wrapper.exe -it ./wrapper/wrapper.conf wrapper.java.additional.4=-Djetty.http.port=$Port"
 
   ${EndIf}
 

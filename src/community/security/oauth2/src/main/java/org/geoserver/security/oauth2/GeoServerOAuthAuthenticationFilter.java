@@ -30,6 +30,7 @@ import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
@@ -94,12 +95,24 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
 
         String cacheKey = authenticateFromCache(this, (HttpServletRequest) request, (HttpServletResponse) response);
 
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        // Search for an access_token on the request (simulating SSO)
+        String accessToken = request.getParameter("access_token");
+        
+        OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
+
+        if (accessToken != null && token != null && !token.getValue().equals(accessToken)) {
+            restTemplate.getOAuth2ClientContext().setAccessToken(null);
+        }
+        
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final Collection<? extends GrantedAuthority> authorities = (authentication != null ? authentication.getAuthorities() : null);
+        
+        if (accessToken != null || authentication == null ||
+            (authentication != null && authorities.size() == 1 && authorities.contains(GeoServerRole.ANONYMOUS_ROLE))) {
 
             doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response);
 
-            Authentication postAuthentication = SecurityContextHolder.getContext()
-                    .getAuthentication();
+            Authentication postAuthentication = authentication;
             if (postAuthentication != null && cacheKey != null) {
                 if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
                     getSecurityManager().getAuthenticationCache().put(getName(), cacheKey,
@@ -162,7 +175,13 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
                 restTemplate.getOAuth2ClientContext()
                         .removePreservedState(accessTokenRequest.getStateKey());
             }
-
+            
+            try {
+                accessTokenRequest.remove("access_token");
+            } finally {
+                LOGGER.fine("Cleaned out Session Access Token Request!");
+            }
+            
             request.getSession().invalidate();
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             Cookie[] allCookies = request.getCookies();
@@ -198,30 +217,32 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
             principal = null;
         }
 
-        if (principal == null || principal.trim().length() == 0) {
-            return;
-        }
-
         LOGGER.log(Level.FINE,
                 "preAuthenticatedPrincipal = " + principal + ", trying to authenticate");
 
         PreAuthenticatedAuthenticationToken result = null;
-        if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
+
+        if (principal == null || principal.trim().length() == 0) {
             result = new PreAuthenticatedAuthenticationToken(principal, null,
-                    Collections.singleton(GeoServerRole.ADMIN_ROLE));
+                    Collections.singleton(GeoServerRole.ANONYMOUS_ROLE));
         } else {
-            Collection<GeoServerRole> roles = null;
-            try {
-                roles = getRoles(request, principal);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
+                result = new PreAuthenticatedAuthenticationToken(principal, null,
+                        Collections.singleton(GeoServerRole.ADMIN_ROLE));
+            } else {
+                Collection<GeoServerRole> roles = null;
+                try {
+                    roles = getRoles(request, principal);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false)
+                    roles.add(GeoServerRole.AUTHENTICATED_ROLE);
+                result = new PreAuthenticatedAuthenticationToken(principal, null, roles);
+    
             }
-            if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false)
-                roles.add(GeoServerRole.AUTHENTICATED_ROLE);
-            result = new PreAuthenticatedAuthenticationToken(principal, null, roles);
-
         }
-
+        
         result.setDetails(getAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(result);
     }
@@ -250,7 +271,7 @@ public class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticate
         // Search for an access_token on the request (simulating SSO)
         String accessToken = req.getParameter("access_token");
 
-        if (accessToken != null && restTemplate.getOAuth2ClientContext().getAccessToken() == null) {
+        if (accessToken != null) {
             restTemplate.getOAuth2ClientContext()
                     .setAccessToken(new DefaultOAuth2AccessToken(accessToken));
         }

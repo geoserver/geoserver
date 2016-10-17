@@ -1,14 +1,18 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015-2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.geofence.rest;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.rest.xml.JaxbRule;
 import org.geoserver.geofence.rest.xml.JaxbRuleList;
 import org.geoserver.geofence.services.RuleAdminService;
@@ -210,5 +214,57 @@ public class RulesRestController {
         }
     }
 
+    /**
+     * Move the provided rules to the target priority. Rules will be sorted by their priority,
+     * first rule will be updated with a priority equal to the target priority and the next ones
+     * will get an incremented priority value.
+     */
+    @RequestMapping(value = "/rest/rules/move", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
+    public
+    @ResponseBody
+    ResponseEntity<JaxbRuleList> move(
+            @RequestParam(value = "targetPriority", required = true) int targetPriority,
+            @RequestParam(value = "rulesIds", required = true) String rulesIds
+    ) {
+        // let's find the rules that need to be moved
+        List<Rule> rules = findRules(rulesIds);
+        if (rules.isEmpty()) {
+            return ResponseEntity.ok(null);
+        }
+        // shift priorities of rules with a priority equal or lower than the target priority
+        adminService.shift(targetPriority, rules.size());
+        // update moved rules priority
+        long priority = targetPriority;
+        for (Rule rule : rules) {
+            rule.setPriority(priority);
+            adminService.update(rule);
+            priority++;
+        }
+        // return moved rules with their priority updated
+        return ResponseEntity.ok(new JaxbRuleList(rules));
+    }
 
+    /**
+     * Helper method that will parse and retrieve the provided rules sorted by their priority.
+     */
+    private List<Rule> findRules(String rulesIds) {
+        return Arrays.stream(rulesIds.split(",")).map(ruleId -> {
+            try {
+                // parsing the rule id
+                return Long.parseLong(ruleId);
+            } catch (NumberFormatException exception) {
+                // error parsing the rule id
+                throw new InvalidRulesIds();
+            }
+        }).map(ruleId -> {
+            // search the rule by id
+            return adminService.get(ruleId);
+        }).filter(rule -> rule != null)
+                .sorted((ruleA, ruleB) -> Long.compare(ruleA.getPriority(), ruleB.getPriority()))
+                .collect(Collectors.toList());
+    }
+
+    @ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Invalid rules ids")
+    private class InvalidRulesIds extends RuntimeException {
+    }
 }

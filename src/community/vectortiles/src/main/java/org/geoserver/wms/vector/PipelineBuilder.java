@@ -301,7 +301,7 @@ class PipelineBuilder {
         }
     }
 
-    public static class Clip extends Pipeline {
+    protected static class Clip extends Pipeline {
 
         private final Envelope clippingEnvelope;
 
@@ -321,7 +321,7 @@ class PipelineBuilder {
         }
     }
 
-    /*
+    /**
      * Does the normal clipping, but removes degenerative geometries. For example, a polygon-polygon intersection can result in polygons (normal), but
      * also points and line (degenerative).
      * 

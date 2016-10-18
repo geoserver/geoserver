@@ -32,9 +32,11 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
+
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerExtensions;
@@ -57,27 +59,26 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Before
     public void setUp() throws Exception {
+        Catalog catalog = getCatalog();
         login();
-        buildingsStyle = getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart());
+        
+        buildingsStyle = catalog.getStyleByName(MockData.BUILDINGS.getLocalPart());
         if(buildingsStyle == null) {
             // undo the rename performed in one of the test methods
-            StyleInfo si = getCatalog().getStyleByName("BuildingsNew");
+            StyleInfo si = catalog.getStyleByName("BuildingsNew");
             if(si != null) {
                 si.setName(MockData.BUILDINGS.getLocalPart());
-                getCatalog().save(si);
+                catalog.save(si);
             }
-            buildingsStyle = getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart());
+            buildingsStyle = catalog.getStyleByName(MockData.BUILDINGS.getLocalPart());
         }
         //Cleanup 'Deletes' layer
-        LayerInfo layer0 = getCatalog().getLayers().get(0);
-        StyleInfo defaultStyle = getCatalog().getStyleByName("Default");
+        LayerInfo layer0 = catalog.getLayers().get(0);
+        StyleInfo defaultStyle = catalog.getStyleByName("Default");
         layer0.setDefaultStyle(defaultStyle);
-        getCatalog().save(layer0);
-
+        catalog.save(layer0);
         
         //Create an inaccesible layer
-        Catalog catalog = getCatalog();
-        
         DataStoreInfo  ds = catalog.getStoreByName("sf", "unstore", DataStoreInfo.class);
         if (ds == null) {
             CatalogBuilder cb = new CatalogBuilder(catalog);
@@ -104,6 +105,37 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             ftl.setDefaultStyle(getCatalog().getStyleByName("Default"));
             
             catalog.add(ftl);
+        }
+        
+        //Create a cascaded WMS Layer
+        WMSStoreInfo wms = catalog.getStoreByName("sf", "wmsstore", WMSStoreInfo.class);
+        if (wms == null) {
+            CatalogBuilder cb = new CatalogBuilder(catalog);
+            cb.setWorkspace(catalog.getWorkspaceByName("sf"));
+            wms = cb.buildWMSStore("wmsstore");
+            wms.setCapabilitiesURL("http://demo.opengeo.org/geoserver/wms?");
+            catalog.add(wms);
+            
+            WMSLayerInfo wmr = catalog.getFactory().createWMSLayer();
+            wmr.setName("states");
+            wmr.setNativeName("topp:states");
+            wmr.setStore(catalog.getStoreByName("wmsstore", WMSStoreInfo.class));
+            wmr.setCatalog(catalog);
+            wmr.setNamespace(catalog.getNamespaceByPrefix("sf"));
+            wmr.setSRS("EPSG:4326");
+            CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326");
+            wmr.setNativeCRS(wgs84);
+            wmr.setLatLonBoundingBox(new ReferencedEnvelope(-110, 0, -60, 50, wgs84));
+            wmr.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+            
+            catalog.add(wmr);
+            
+            LayerInfo wml = catalog.getFactory().createLayer();
+            wml.setResource(wmr);
+            wml.setName("states");
+            wml.setDefaultStyle(getCatalog().getStyleByName("Default"));
+            
+            catalog.add(wml);
         }
         
         edit = new StyleEditPage(buildingsStyle);
@@ -204,6 +236,18 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertLabel("styleForm:popup:content:layer.table:listContainer:items:30:itemProperties:2:component:link:layer.name", "unlayer");
         tester.executeAjaxEvent("styleForm:popup:content:layer.table:listContainer:items:30:itemProperties:2:component:link", "click");
         tester.assertContains("Failed to load attribute list, internal error is:");
+    }
+    
+    @Test
+    public void testLayerAttributesTabWMS() {
+        tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:3:link", "click");
+        tester.executeAjaxEvent("styleForm:context:panel:changeLayer:link", "click");
+        tester.assertComponent("styleForm:popup:content:layer.table", GeoServerTablePanel.class);
+        
+        //31 layers total, 25 layers per page; foo should not appear on page 1 or 2.
+        tester.assertContainsNot("wmsstore");
+        tester.executeAjaxEvent("styleForm:popup:content:layer.table:navigatorBottom:navigator:last", "click");
+        tester.assertContainsNot("wmsstore");
     }
     
     @Test

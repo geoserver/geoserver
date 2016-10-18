@@ -28,6 +28,12 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTesterHelper;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.TestData;
@@ -37,8 +43,11 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
 public class StyleEditPageTest extends GeoServerWicketTestSupport {
@@ -64,6 +73,38 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         StyleInfo defaultStyle = getCatalog().getStyleByName("Default");
         layer0.setDefaultStyle(defaultStyle);
         getCatalog().save(layer0);
+
+        
+        //Create an inaccesible layer
+        Catalog catalog = getCatalog();
+        
+        DataStoreInfo  ds = catalog.getStoreByName("sf", "unstore", DataStoreInfo.class);
+        if (ds == null) {
+            CatalogBuilder cb = new CatalogBuilder(catalog);
+            cb.setWorkspace(catalog.getWorkspaceByName("sf"));
+            ds = cb.buildDataStore("unstore");
+            catalog.add(ds);
+            
+            FeatureTypeInfo ft = catalog.getFactory().createFeatureType();
+            ft.setName("unres");
+            ft.setStore(catalog.getStoreByName("unstore", DataStoreInfo.class));
+            ft.setCatalog(catalog);
+            ft.setNamespace(catalog.getNamespaceByPrefix("sf"));
+            ft.setSRS("EPSG:4326");
+            CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326");
+            ft.setNativeCRS(wgs84);
+            ft.setLatLonBoundingBox(new ReferencedEnvelope(-110, 0, -60, 50, wgs84));
+            ft.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+            
+            catalog.add(ft);
+            
+            LayerInfo ftl = catalog.getFactory().createLayer();
+            ftl.setResource(ft);
+            ftl.setName("unlayer");
+            ftl.setDefaultStyle(getCatalog().getStyleByName("Default"));
+            
+            catalog.add(ftl);
+        }
         
         edit = new StyleEditPage(buildingsStyle);
         tester.startPage(edit);
@@ -133,7 +174,6 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         
         l = getCatalog().getLayers().get(0);
         assertEquals(buildingsStyle, l.getDefaultStyle());
-
     }
     
     @Test
@@ -152,6 +192,18 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             l.setDefaultStyle(s);
             getCatalog().save(l);
         }
+    }
+    
+    @Test
+    public void testLayerAttributesUnreachableLayer() throws Exception {
+        tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:3:link", "click");
+        tester.executeAjaxEvent("styleForm:context:panel:changeLayer:link", "click");
+        tester.assertComponent("styleForm:popup:content:layer.table", GeoServerTablePanel.class);
+        
+        tester.executeAjaxEvent("styleForm:popup:content:layer.table:navigatorBottom:navigator:last", "click");
+        tester.assertLabel("styleForm:popup:content:layer.table:listContainer:items:30:itemProperties:2:component:link:layer.name", "unlayer");
+        tester.executeAjaxEvent("styleForm:popup:content:layer.table:listContainer:items:30:itemProperties:2:component:link", "click");
+        tester.assertContains("Failed to load attribute list, internal error is:");
     }
     
     @Test

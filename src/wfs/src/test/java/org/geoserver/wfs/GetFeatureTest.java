@@ -21,8 +21,10 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -375,7 +377,30 @@ public class GetFeatureTest extends WFSTestSupport {
                 doc);
         XMLAssert.assertXpathEvaluatesTo("typeName", "//ogc:ServiceException/@locator", doc);
     }
-    
+
+    /**
+     * Test that a request for a resource from a disabled store fails.
+     */
+    @Test
+    public void testRequestDisabledStore() throws Exception {
+        Catalog catalog = getCatalog();
+        StoreInfo store = catalog.getStoreByName("cdf", DataStoreInfo.class);
+        try {
+            store.setEnabled(false);
+            catalog.save(store);
+            Document doc = getAsDOM(
+                    "wfs?service=WFS&version=1.0.0&request=GetFeature&typename=cdf:Fifteen");
+            // print(doc);
+            XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", doc);
+            XMLAssert.assertXpathEvaluatesTo("InvalidParameterValue",
+                    "//ogc:ServiceException/@code", doc);
+            XMLAssert.assertXpathEvaluatesTo("typeName", "//ogc:ServiceException/@locator", doc);
+        } finally {
+            store.setEnabled(true);
+            catalog.save(store);
+        }
+    }
+
     /**
      * Tests CQL filter
      * 

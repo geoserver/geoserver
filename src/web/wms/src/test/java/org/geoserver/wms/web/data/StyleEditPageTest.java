@@ -20,10 +20,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.util.tester.WicketTesterHelper;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.TestData;
@@ -32,6 +36,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -54,6 +59,12 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             }
             buildingsStyle = getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart());
         }
+        //Cleanup 'Deletes' layer
+        LayerInfo layer0 = getCatalog().getLayers().get(0);
+        StyleInfo defaultStyle = getCatalog().getStyleByName("Default");
+        layer0.setDefaultStyle(defaultStyle);
+        getCatalog().save(layer0);
+        
         edit = new StyleEditPage(buildingsStyle);
         tester.startPage(edit);
     }
@@ -101,6 +112,46 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testLoadLegend() {
         
+    }
+    
+    @Test
+    public void testLayerAssociationsTab() {
+
+        LayerInfo l = getCatalog().getLayers().get(0);
+        assertFalse(l.getDefaultStyle() == buildingsStyle);
+        tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:1:link", "click");
+        tester.assertComponent("styleForm:context:panel:layer.table", GeoServerTablePanel.class);
+        
+        //Set the form value of the checkbox to true and force an ajax form update
+        FormTester form = tester.newFormTester("styleForm");
+        form.setValue("context:panel:layer.table:listContainer:items:1:itemProperties:2:component:default.selected", true);
+        AbstractAjaxBehavior behavior = (AbstractAjaxBehavior)WicketTesterHelper
+                .findBehavior(tester.getComponentFromLastRenderedPage(
+                        "styleForm:context:panel:layer.table:listContainer:items:1:itemProperties:2:component:default.selected"),
+                        AjaxFormComponentUpdatingBehavior.class);
+        tester.executeBehavior(behavior);
+        
+        l = getCatalog().getLayers().get(0);
+        assertEquals(buildingsStyle, l.getDefaultStyle());
+
+    }
+    
+    @Test
+    public void testLayerAssociationsMissingStyle() {
+        LayerInfo l = getCatalog().getLayers().get(0);
+        StyleInfo s = l.getDefaultStyle();
+        l.setDefaultStyle(null);
+        //Save against the facade to skip validation
+        getCatalog().getFacade().save(l);
+        try {
+            edit = new StyleEditPage(buildingsStyle);
+            tester.startPage(edit);
+            tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:1:link", "click");
+            tester.assertComponent("styleForm:context:panel:layer.table", GeoServerTablePanel.class);
+        } finally {
+            l.setDefaultStyle(s);
+            getCatalog().save(l);
+        }
     }
     
     @Test

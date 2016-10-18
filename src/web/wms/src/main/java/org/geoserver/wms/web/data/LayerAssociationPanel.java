@@ -89,7 +89,11 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
         return false;
     }
     protected Boolean defaultEditedStyle(LayerInfo l) {
-        return l.getDefaultStyle().getName().equals(getStylePage().getStyleInfo().getName());
+        StyleInfo s = l.getDefaultStyle();
+        if (s != null) {
+            return s.getName().equals(getStylePage().getStyleInfo().getName());
+        }
+        return false;
     }
 
     public LayerAssociationPanel(String id, AbstractStylePage parent) {

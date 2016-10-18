@@ -13,6 +13,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -23,8 +24,10 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
+import org.geotools.feature.FeatureBuilder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.util.Converters;
@@ -44,12 +47,9 @@ public class DataPanel extends Panel {
     
     String featureTypeId;
     
-    public DataPanel(String id, FeatureTypeInfo ft) throws IOException {
+    public DataPanel(String id, FeatureTypeInfo ft) {
         super(id, new Model<FeatureTypeInfo>(ft));
         this.featureTypeId = ft.getId();
-        
-        Feature sample = getSampleFeature(ft);
-        DataAttributesProvider summaries = new DataAttributesProvider(sample);
         
         add(new Label("summary-message",
             "For reference, here is a listing of the attributes in this data set."
@@ -57,6 +57,17 @@ public class DataPanel extends Panel {
         final WebMarkupContainer attsContainer = new WebMarkupContainer("attributes-container");
         attsContainer.setOutputMarkupId(true);
         add(attsContainer);
+        
+        Feature sample;
+        try {
+            sample = getSampleFeature(ft);
+        } catch (Exception e) {
+            attsContainer.error("Failed to load attribute list, internal error is: " + e.getMessage());
+            attsContainer.add(new EmptyPanel("attributes"));
+            return;
+        }
+        DataAttributesProvider summaries = new DataAttributesProvider(sample);
+        
         final GeoServerTablePanel<DataAttribute> attributes = new GeoServerTablePanel<DataAttribute>("attributes", summaries) {
 
             private static final long serialVersionUID = 7753093373969576568L;

@@ -73,6 +73,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.Id;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -587,7 +588,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     }
 
     Filter getFilter(List<Filter> filters, int index) {
-        if (filters.size() == 1 && filters.get(0) instanceof FeatureId) {
+        if (filters.size() == 1 && filters.get(0) instanceof Id) {
             // feature id filters must be expanded to all layers
             return filters.get(0);
         } else if (index < filters.size()) {

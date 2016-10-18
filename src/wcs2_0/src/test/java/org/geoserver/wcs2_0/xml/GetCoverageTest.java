@@ -48,7 +48,6 @@ import org.w3c.dom.Document;
 
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import it.geosolutions.rendered.viewer.RenderedImageBrowser;
 import net.opengis.wcs20.GetCoverageType;
 import net.opengis.wcs20.Wcs20Factory;
 /**

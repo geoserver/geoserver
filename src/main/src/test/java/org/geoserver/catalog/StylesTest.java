@@ -4,13 +4,16 @@
  */
 package org.geoserver.catalog;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.net.URL;
 import java.util.Properties;
 
 import org.geoserver.platform.resource.FileSystemResourceStore;
@@ -81,6 +84,19 @@ public class StylesTest extends GeoServerSystemTestSupport {
         Resource resource = getDataDirectory().style(style);
         Styles.handler(style.getFormat()).parse(resource, style.getFormatVersion(), new DefaultResourceLocator(), null);
         Styles.handler(style.getFormat()).parse(resource, style.getFormatVersion(), new DefaultResourceLocator(), null);
+    }
+    
+    @Test
+    public void testEntityExpansionOnValidation() throws Exception {
+        URL url = getClass().getResource("../data/test/externalEntities.sld");
+        try {
+            Styles.handler("SLD").validate(url, null, getCatalog().getResourcePool().getEntityResolver());
+            fail("Should have failed due to the entity resolution attempt");
+        } catch(Exception e) {
+            String message = e.getMessage();
+            assertThat(message, containsString("Entity resolution disallowed"));
+            assertThat(message, containsString("/this/file/does/not/exist"));
+        }
     }
 
 }

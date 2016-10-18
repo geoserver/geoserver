@@ -6,23 +6,27 @@
 package org.geoserver.wms.web.data;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.Serializable;
+import java.util.List;
 import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
@@ -136,6 +140,21 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
         tester.executeAjaxEvent("validate", "click");
         tester.assertNoErrorMessage();
+    }
+    
+    @Test
+    public void testValidateEntityExpansion() throws Exception {
+        String xml = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), "UTF-8");
+
+        // tester.debugComponentTrees();
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
+
+        tester.executeAjaxEvent("validate", "click");
+        List<Serializable> messages = tester.getMessages(FeedbackMessage.ERROR);
+        assertEquals(1, messages.size());
+        String message = messages.get(0).toString();
+        assertThat(message, containsString("Entity resolution disallowed"));
+        assertThat(message, containsString("/this/file/does/not/exist"));
     }
     
     @Test

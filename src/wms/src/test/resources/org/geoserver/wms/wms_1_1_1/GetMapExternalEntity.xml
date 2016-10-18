@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE StyledLayerDescriptor [
+<!ENTITY c SYSTEM "file:///this/file/does/not/exist">
+]>
+<ogc:GetMap xmlns:ogc="http://www.opengis.net/ows" 
+            xmlns:gml="http://www.opengis.net/gml" 
+            version="1.2.0"
+            service="WMS">
+<StyledLayerDescriptor version="1.0.0" 
+	xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+	xmlns="http://www.opengis.net/sld" 
+	xmlns:ogc="http://www.opengis.net/ogc" 
+	xmlns:xlink="http://www.w3.org/1999/xlink" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:gml="http://www.opengis.net/gml" >
+	<UserLayer>
+		<Name>&c;</Name>
+		<InlineFeature>
+			<gml:FeatureCollection>
+				<gml:featureMember>
+					<Dot1>
+						<Type>Red_Dot</Type>
+						<gml:pointProperty>
+							<gml:Point srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+								<gml:coordinates>115.741666667,-64.6583333333</gml:coordinates>
+							</gml:Point>
+						</gml:pointProperty>
+					</Dot1>		
+				</gml:featureMember>
+			</gml:FeatureCollection>
+		</InlineFeature>
+
+		<UserStyle>
+			<FeatureTypeStyle>
+				<Rule>
+					<PointSymbolizer>
+						<Graphic>
+							<Mark>
+								<WellKnownName>circle</WellKnownName>
+								<Fill>
+									<CssParameter name="fill">
+										<ogc:Literal>#aa0000</ogc:Literal>
+									</CssParameter>
+								</Fill>
+							</Mark>
+							<Opacity>1</Opacity>
+							<Size>4</Size>
+						</Graphic>
+					</PointSymbolizer>
+				</Rule>
+			</FeatureTypeStyle>
+		</UserStyle>
+	</UserLayer>
+
+</StyledLayerDescriptor>
+  <BoundingBox>
+      <gml:coord>
+          <gml:X>110</gml:X>
+          <gml:Y>-70</gml:Y>
+      </gml:coord>
+      <gml:coord>
+          <gml:X>120</gml:X>
+          <gml:Y>-60</gml:Y>
+      </gml:coord>
+  </BoundingBox>
+  <Output>
+      <Format>image/jpeg</Format>
+      <Transparent>false</Transparent>
+      <Size>
+          <Width>501</Width>
+          <Height>501</Height>
+      </Size>
+  </Output>
+
+<Exceptions>application/vnd.ogc.se+xml</Exceptions>
+
+</ogc:GetMap>

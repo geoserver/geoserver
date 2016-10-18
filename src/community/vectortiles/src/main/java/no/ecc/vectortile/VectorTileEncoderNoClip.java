@@ -13,11 +13,11 @@ import com.vividsolutions.jts.geom.Geometry;
 public class VectorTileEncoderNoClip extends VectorTileEncoder {
 
     public VectorTileEncoderNoClip(int extent, int polygonClipBuffer, boolean autoScale) {
-        super(extent,polygonClipBuffer,autoScale);
+        super(extent, polygonClipBuffer, autoScale);
     }
-    
+
     /*
-     *    returns original geometry - no clipping.  Assume upstream has already clipped!
+     * returns original geometry - no clipping. Assume upstream has already clipped!
      */
     protected Geometry clipGeometry(Geometry geometry) {
         return geometry;

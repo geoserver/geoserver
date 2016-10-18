@@ -24,8 +24,6 @@ import javax.imageio.ImageReader;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
-import net.opengis.wcs10.GetCoverageType;
-
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
@@ -36,7 +34,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.util.EntityResolverProvider;
-import org.geoserver.util.NoExternalEntityResolver;
 import org.geoserver.wcs.kvp.Wcs10GetCoverageRequestReader;
 import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
@@ -52,6 +49,7 @@ import org.geotools.metadata.iso.spatial.PixelTranslation;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.wcs.WCSConfiguration;
+import org.geotools.xml.PreventLocalEntityResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
@@ -59,9 +57,10 @@ import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
+import net.opengis.wcs10.GetCoverageType;
 
 /**
  * Tests for GetCoverage operation on WCS.
@@ -363,7 +362,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
         Document dom = postAsDOM("wcs", xml);
         String error = xpath.evaluate("//ServiceException", dom);
-        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue(error.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
         
         xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<!DOCTYPE GetCoverage [<!ELEMENT GetCoverage (sourceCoverage) >\n"
@@ -380,7 +379,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
         dom = postAsDOM("wcs", xml);
         error = xpath.evaluate("//ServiceException", dom);
-        assertTrue(error.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue(error.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
     }
 
     @Test

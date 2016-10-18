@@ -152,6 +152,19 @@ public abstract class GeoServerLoader {
         }
     }
     
+    protected void reloadInitializers(GeoServer geoServer) throws Exception {
+        //reload applicable initializer extensions
+        List<GeoServerReinitializer> initializers = GeoServerExtensions.extensions( GeoServerReinitializer.class );
+        for ( GeoServerReinitializer initer : initializers ) {
+            try {
+                initer.reinitialize( geoServer );
+            }
+            catch( Throwable t ) {
+                LOGGER.log(Level.SEVERE, "Failed to run initializer " + initer, t);
+            }
+        }
+    }
+    
     /**
      * Does some post processing on the catalog to ensure that the "well-known" styles
      * are always around.
@@ -206,6 +219,8 @@ public abstract class GeoServerLoader {
         
         loadCatalog( catalog, xp );
         loadGeoServer( geoserver, xp);
+        
+        reloadInitializers(geoserver);
     }
 
     protected void readCatalog(Catalog catalog, XStreamPersister xp) throws Exception {

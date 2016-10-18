@@ -6,19 +6,37 @@
 
 package org.geoserver.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.Test;
-
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.FeatureSource;
 import org.geotools.data.complex.AppSchemaDataAccess;
+import org.geotools.data.complex.AppSchemaDataAccessRegistry;
+import org.geotools.data.complex.FeatureTypeMapping;
+import org.geotools.data.complex.config.AppSchemaDataAccessConfigurator;
+import org.geotools.data.complex.filter.ComplexFilterSplitter;
+import org.geotools.data.jdbc.FilterToSQLException;
+import org.geotools.filter.FilterFactoryImplNamespaceAware;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.NestedFilterToSQL;
+import org.geotools.util.NullProgressListener;
+import org.junit.Test;
+import org.opengis.filter.And;
+import org.opengis.filter.Filter;
+import org.opengis.filter.PropertyIsLike;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -1372,6 +1390,136 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         wfs.setEncodeFeatureMember(encodeFeatureMember);
         getGeoServer().save(wfs);
     }
-    
-    
+
+    @Test
+    public void testNestedFilterEncoding() throws FilterToSQLException, IOException {
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName("gsml", "MappedFeature");
+        FeatureSource fs = ftInfo.getFeatureSource(new NullProgressListener(), null);
+        AppSchemaDataAccess da = (AppSchemaDataAccess) fs.getDataStore();
+        FeatureTypeMapping rootMapping = da.getMappingByNameOrElement(ftInfo.getQualifiedName());
+
+        // make sure nested filters encoding is enabled, otherwise skip test
+        assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
+
+        JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
+        NestedFilterToSQL nestedFilterToSQL = createNestedFilterEncoder(rootMapping);
+
+        FilterFactoryImplNamespaceAware ff = new FilterFactoryImplNamespaceAware();
+        ff.setNamepaceContext(rootMapping.getNamespaces());
+
+        /*
+         * test combined filters on nested attributes
+         */
+        And and = ff
+                .and(ff.equals(ff.property("gsml:specification/gsml:GeologicUnit/gml:name"),
+                        ff.literal("New Group")),
+                        ff.equals(
+                                ff.property("gsml:specification/gsml:GeologicUnit/gsml:composition/gsml:CompositionPart/gsml:proportion/gsml:CGI_TermValue/gsml:value"),
+                                ff.literal("significant")));
+
+        // Each filter involves a single nested attribute --> can be encoded
+        ComplexFilterSplitter splitter = new ComplexFilterSplitter(store.getFilterCapabilities(),
+                rootMapping);
+        splitter.visit(and, null);
+        Filter preFilter = splitter.getFilterPre();
+        Filter postFilter = splitter.getFilterPost();
+
+        assertEquals(and, preFilter);
+        assertEquals(Filter.INCLUDE, postFilter);
+
+        // filter must be "unrolled" (i.e. reverse mapped) first
+        Filter unrolled = AppSchemaDataAccess.unrollFilter(and, rootMapping);
+
+        // Filter is nested
+        assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
+
+        String encodedFilter = nestedFilterToSQL.encodeToString(unrolled);
+
+        assertTrue(encodedFilter.matches("^\\(EXISTS.*AND EXISTS.*\\)$"));
+        assertContainsFeatures(fs.getFeatures(and), "mf4");
+
+        /*
+         * test like filter on nested attribute
+         */
+         PropertyIsLike like = ff.like(ff.property("gsml:specification/gsml:GeologicUnit/gml:description"), "*sedimentary*");
+
+        // Filter involving single nested attribute --> can be encoded
+        ComplexFilterSplitter splitterLike = new ComplexFilterSplitter(store.getFilterCapabilities(),
+                rootMapping);
+        splitterLike.visit(like, null);
+        preFilter = splitterLike.getFilterPre();
+        postFilter = splitterLike.getFilterPost();
+
+        assertEquals(like, preFilter);
+        assertEquals(Filter.INCLUDE, postFilter);
+
+        // filter must be "unrolled" (i.e. reverse mapped) first
+        unrolled = AppSchemaDataAccess.unrollFilter(like, rootMapping);
+
+        // Filter is nested
+        assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
+
+        encodedFilter = nestedFilterToSQL.encodeToString(unrolled);
+
+        // this is the generated query in PostGIS, but the test limits to check the presence of the
+        // EXISTS keyword, as the actual SQL is dependent on the underlying database
+        // EXISTS (SELECT "chain_link_1"."PKEY" 
+        //      FROM "appschematest"."GEOLOGICUNIT" "chain_link_1" 
+        //      WHERE UPPER("chain_link_1"."TEXTDESCRIPTION") LIKE '%SEDIMENTARY%' AND 
+        //            "appschematest"."MAPPEDFEATUREPROPERTYFILE"."GEOLOGIC_UNIT_ID" = "chain_link_1"."GML_ID")
+        assertTrue(encodedFilter.contains("EXISTS"));
+        assertContainsFeatures(fs.getFeatures(like), "mf1", "mf2", "mf3");
+    }
+
+    @Test
+    public void testNestedFilterEncodingDisabled() throws IOException, FilterToSQLException {
+        // disable nested filters encoding during the test
+        AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty(
+                AppSchemaDataAccessConfigurator.PROPERTY_ENCODE_NESTED_FILTERS, "false");
+        try {
+            assertFalse(AppSchemaDataAccessConfigurator.shouldEncodeNestedFilters());
+
+            FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName("gsml", "MappedFeature");
+            FeatureSource fs = ftInfo.getFeatureSource(new NullProgressListener(), null);
+            AppSchemaDataAccess da = (AppSchemaDataAccess) fs.getDataStore();
+            FeatureTypeMapping rootMapping = da.getMappingByNameOrElement(ftInfo.getQualifiedName());
+
+            // skip test if it's not running against a database
+            assumeTrue(rootMapping.getSource().getDataStore() instanceof JDBCDataStore);
+
+            JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
+            NestedFilterToSQL nestedFilterToSQL = createNestedFilterEncoder(rootMapping);
+
+            FilterFactoryImplNamespaceAware ff = new FilterFactoryImplNamespaceAware();
+            ff.setNamepaceContext(rootMapping.getNamespaces());
+
+            /*
+             * test the same like filter tested in method testNestedFilterEncoding
+             */
+            PropertyIsLike like = ff.like(ff.property("gsml:specification/gsml:GeologicUnit/gml:description"), "*sedimentary*");
+
+            // Encoding of filters involving nested attributes is disabled --> CANNOT be encoded
+            ComplexFilterSplitter splitterLike = new ComplexFilterSplitter(store.getFilterCapabilities(),
+                    rootMapping);
+            splitterLike.visit(like, null);
+            Filter preFilter = splitterLike.getFilterPre();
+            Filter postFilter = splitterLike.getFilterPost();
+
+            assertEquals(Filter.INCLUDE, preFilter);
+            assertEquals(like, postFilter);
+
+            // filter must be "unrolled" (i.e. reverse mapped) first
+            Filter unrolled = AppSchemaDataAccess.unrollFilter(like, rootMapping);
+
+            // Filter is nested
+            assertTrue(NestedFilterToSQL.isNestedFilter(unrolled));
+
+            assertContainsFeatures(fs.getFeatures(like), "mf1", "mf2", "mf3");
+        } finally {
+            // reset default
+            AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty(
+                    AppSchemaDataAccessConfigurator.PROPERTY_ENCODE_NESTED_FILTERS, "true");
+        }
+    }
+
 }

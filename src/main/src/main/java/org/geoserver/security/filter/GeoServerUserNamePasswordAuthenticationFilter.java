@@ -36,8 +36,8 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
 
     //public static final String URL_FOR_LOGIN = "/j_spring_security_check";
     public static final String URL_LOGIN_SUCCCESS = "/web";
-    public static final String URL_LOGIN_FAILURE = "/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&error=true";
-    public static final String URL_LOGIN_FORM="/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&error=false";
+    public static final String URL_LOGIN_FAILURE = "/web/wicket/bookmarkable/org.geoserver.web.GeoServerLoginPage?error=true";
+    public static final String URL_LOGIN_FORM="/web/wicket/bookmarkable/org.geoserver.web.GeoServerLoginPage?error=false";
     //public static final String URL_LOGIN_FORM="/admin/login.do";
     
     

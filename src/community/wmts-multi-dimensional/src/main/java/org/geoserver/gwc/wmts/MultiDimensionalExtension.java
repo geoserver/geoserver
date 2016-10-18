@@ -20,9 +20,13 @@ import org.geoserver.wms.WMS;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.resources.CRSUtilities;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.conveyor.Conveyor;
+import org.geowebcache.grid.GridSubset;
+import org.geowebcache.grid.SRS;
 import org.geowebcache.io.XMLBuilder;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
@@ -145,6 +149,18 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         List<Dimension> dimensions = DimensionsUtils.extractDimensions(wms, layerInfo);
         // let's see if we have a spatial limitation
         ReferencedEnvelope boundingBox = (ReferencedEnvelope) conveyor.getParameter("bbox", false);
+        // if we have a bounding box we need to set the crs based on the tile matrix set
+        if (boundingBox != null) {
+            String providedTileMatrixSet = (String) conveyor.getParameter("tileMatrixSet", true);
+            // getting the layer grid set corresponding to the provided tile matrix set
+            GridSubset gridSubset = tileLayer.getGridSubset(providedTileMatrixSet);
+            if (gridSubset == null) {
+                // the provided tile matrix set is not supported by this layer
+                throw new RuntimeException(String.format("Unknown grid set '%s'.", providedTileMatrixSet));
+            }
+            // set bounding box crs base on tile matrix tile set srs
+            boundingBox = new ReferencedEnvelope(boundingBox, CRS.decode(gridSubset.getSRS().toString()));
+        }
         // add any domain provided restriction and set the bounding box
         Filter filter = Filter.INCLUDE;
         for (Dimension dimension : dimensions) {

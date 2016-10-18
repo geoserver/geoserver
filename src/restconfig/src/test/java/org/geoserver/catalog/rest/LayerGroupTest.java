@@ -14,8 +14,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -25,11 +29,14 @@ import org.w3c.dom.Document;
 
 import org.springframework.mock.web.MockHttpServletResponse;
 
+import java.util.List;
+
 public class LayerGroupTest extends CatalogRESTTestSupport {
 
     @Before
     public void revertChanges() throws Exception {
         removeLayerGroup(null, "sfLayerGroup");
+        removeLayerGroup(null, "citeLayerGroup");
         removeLayerGroup("sf", "foo");
         removeLayerGroup(null, "newLayerGroup");
         removeLayerGroup(null, "newLayerGroupWithTypeCONTAINER");
@@ -44,6 +51,27 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         lg.getStyles().add( catalog.getStyleByName( StyleInfo.DEFAULT_POINT ) );
         lg.setBounds( new ReferencedEnvelope( -180,-90,180,90, CRS.decode( "EPSG:4326") ) );
         catalog.add( lg );
+
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+        lg2.setName( "citeLayerGroup" );
+        List<PublishedInfo> layers = lg2.getLayers();
+        layers.add(catalog.getLayerByName( "cite:Bridges"));
+        layers.add(catalog.getLayerByName( "cite:Buildings"));
+        layers.add(catalog.getLayerByName( "cite:Forests"));
+        layers.add(catalog.getLayerByName( "cite:Lakes"));
+        layers.add(catalog.getLayerByName( "cite:Ponds"));
+        layers.add(catalog.getLayerByName( "cite:Streams"));
+
+        List<StyleInfo> styles = lg2.getStyles();
+        styles.add(null);
+        styles.add(null);
+        styles.add(null);
+        styles.add(null);
+        styles.add(null);
+        styles.add(null);
+
+        lg2.setBounds( new ReferencedEnvelope( -180,-90,180,90, CRS.decode( "EPSG:4326") ) );
+        catalog.add( lg2 );
     }
 
     @Test
@@ -92,7 +120,32 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("sfLayerGroup", "/layerGroup/name", dom );
         assertXpathEvaluatesTo( "2", "count(//published)", dom );
         assertXpathEvaluatesTo( "2", "count(//style)", dom );
+
+        print(get("/rest/layergroups/citeLayerGroup.xml"));
+        dom = getAsDOM( "/rest/layergroups/citeLayerGroup.xml");
+        assertEquals( "layerGroup", dom.getDocumentElement().getNodeName() );
+        assertXpathEvaluatesTo("citeLayerGroup", "/layerGroup/name", dom );
+        assertXpathEvaluatesTo( "6", "count(//published)", dom );
+        assertXpathEvaluatesTo( "6", "count(//style)", dom );
     }
+
+    @Test
+    public void testGetAsJSON() throws Exception {
+        print(get("/rest/layergroups/sfLayerGroup.json"));
+        JSON json = getAsJSON( "/rest/layergroups/sfLayerGroup.json");
+        JSONArray arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("publishables").getJSONArray("published");
+        assertEquals(2, arr.size());
+        arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("styles").getJSONArray("style");
+        assertEquals(2, arr.size());
+
+        print(get("/rest/layergroups/citeLayerGroup.json"));
+        json = getAsJSON( "/rest/layergroups/citeLayerGroup.json");
+        arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("publishables").getJSONArray("published");
+        assertEquals(6, arr.size());
+        arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("styles").getJSONArray("style");
+        assertEquals(6, arr.size());
+    }
+
 
     @Test
     public void testGetAsHTML() throws Exception {
@@ -433,6 +486,8 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
     @Test
     public void testDelete() throws Exception {
         MockHttpServletResponse response = deleteAsServletResponse( "/rest/layergroups/sfLayerGroup");
+        assertEquals( 200, response.getStatus() );
+        response = deleteAsServletResponse( "/rest/layergroups/citeLayerGroup");
         assertEquals( 200, response.getStatus() );
         
         assertEquals( 0, catalog.getLayerGroups().size() );

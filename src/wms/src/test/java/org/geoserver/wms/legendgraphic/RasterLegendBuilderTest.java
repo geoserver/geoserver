@@ -4,11 +4,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
 import org.geotools.styling.ColorMap;
+import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.junit.Before;
@@ -131,6 +134,59 @@ public class RasterLegendBuilderTest {
         assertEquals("50.0 <= x", midRow.getRuleManager().text);
     }
     
-    
-    
+    @Test
+    public void testLegendBorderColour() {
+        StyleBuilder sb = new StyleBuilder();
+        ColorMap cmap = sb.createColorMap(new String[] {null,  null, null}, new double[] {Double.NEGATIVE_INFINITY,  50, Double.POSITIVE_INFINITY}, new Color[] {Color.RED, Color.WHITE, Color.BLUE}, ColorMap.TYPE_INTERVALS);
+        Style style = sb.createStyle(sb.createRasterSymbolizer(cmap, 1));
+
+        
+        // Check default border colour 
+        Color colourToTest = LegendUtils.DEFAULT_BORDER_COLOR;
+
+        RasterLayerLegendHelper helper = new RasterLayerLegendHelper(request, style, null);
+        List<ColorMapEntryLegendBuilder> rows = new ArrayList<>(helper.getcMapLegendCreator().getBodyRows());
+        assertEquals(2, rows.size());
+        ColorMapEntryLegendBuilder firstRow = rows.get(0);
+		assertEquals(colourToTest, firstRow.getColorManager().borderColor);
+        assertEquals(colourToTest, firstRow.getRuleManager().borderColor);
+        ColorMapEntryLegendBuilder midRow = rows.get(1);
+        assertEquals(colourToTest, midRow.getColorManager().borderColor);
+        assertEquals(colourToTest, midRow.getRuleManager().borderColor);
+
+        // Change legend border colour to red
+        Map<String, Object> legendOptions = new HashMap<String, Object>();
+        
+        colourToTest = Color.red;
+        
+        legendOptions.put("BORDERCOLOR", SLD.toHTMLColor(colourToTest));
+
+        request.setLegendOptions(legendOptions);
+        helper = new RasterLayerLegendHelper(request, style, null);
+        rows = new ArrayList<>(helper.getcMapLegendCreator().getBodyRows());
+        assertEquals(2, rows.size());
+        firstRow = rows.get(0);
+		assertEquals(colourToTest, firstRow.getColorManager().borderColor);
+        assertEquals(colourToTest, firstRow.getRuleManager().borderColor);
+        midRow = rows.get(1);
+        assertEquals(colourToTest, midRow.getColorManager().borderColor);
+        assertEquals(colourToTest, midRow.getRuleManager().borderColor);
+
+        // Change legend border colour to blue        
+        colourToTest = Color.blue;
+        
+        legendOptions.clear();
+        legendOptions.put("borderColor", SLD.toHTMLColor(colourToTest));
+
+        request.setLegendOptions(legendOptions);
+        helper = new RasterLayerLegendHelper(request, style, null);
+        rows = new ArrayList<>(helper.getcMapLegendCreator().getBodyRows());
+        assertEquals(2, rows.size());
+        firstRow = rows.get(0);
+		assertEquals(colourToTest, firstRow.getColorManager().borderColor);
+        assertEquals(colourToTest, firstRow.getRuleManager().borderColor);
+        midRow = rows.get(1);
+        assertEquals(colourToTest, midRow.getColorManager().borderColor);
+        assertEquals(colourToTest, midRow.getRuleManager().borderColor);
+    }
 }

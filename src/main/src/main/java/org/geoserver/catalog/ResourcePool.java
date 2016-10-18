@@ -619,6 +619,19 @@ public class ResourcePool {
                             }
                         }
                         
+                        // see if the store has a entity resolver param, if so, pass it down
+                        EntityResolver resolver = getEntityResolver();
+                        if(resolver != null && params != null) {
+                            for ( Param p : params ) {
+                                if(EntityResolver.class.equals(p.getType())) {
+                                    if(!(resolver instanceof Serializable)) {
+                                        resolver = new SerializableEntityResolver(resolver);
+                                    }
+                                    connectionParameters.put(p.getName(), (Serializable) resolver);
+                                }
+                            }
+                        }
+                        
                         dataStore = DataStoreUtils.getDataAccess(connectionParameters);
                         if (dataStore == null) {
                             /*
@@ -1497,7 +1510,7 @@ public class ResourcePool {
             MetadataMap metadata = coverageInfo.getMetadata();
             if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
                 CoverageView coverageView = (CoverageView) metadata.get(CoverageView.COVERAGE_VIEW);
-                return CoverageViewReader.wrap((GridCoverage2DReader) reader, coverageView, coverageInfo, hints);
+                reader = CoverageViewReader.wrap((GridCoverage2DReader) reader, coverageView, coverageInfo, hints);
             }
         }
 
@@ -1684,10 +1697,7 @@ public class ResourcePool {
         WMSStoreInfo expandedStore = clone(info, true);
         
         try {
-            EntityResolver entityResolver = null;
-            if(entityResolverProvider != null) {
-                 entityResolver = entityResolverProvider.getEntityResolver();
-            }
+            EntityResolver entityResolver = getEntityResolver();
             
             String id = info.getId();
             WebMapServer wms = wmsCache.get(id);
@@ -1723,6 +1733,18 @@ public class ResourcePool {
         } catch (Exception e) {
             throw (IOException) new IOException().initCause(e);
         }
+    }
+
+    /**
+     * Returns the entity resolver from the {@link EntityResolverProvider}, or null if none is configured
+     * @return
+     */
+    public EntityResolver getEntityResolver() {
+        EntityResolver entityResolver = null;
+        if(entityResolverProvider != null) {
+             entityResolver = entityResolverProvider.getEntityResolver();
+        }
+        return entityResolver;
     }
     
     private HTTPClient getHTTPClient(WMSStoreInfo info) {

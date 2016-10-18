@@ -9,14 +9,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
-import org.junit.Assert;
-
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.util.NoExternalEntityResolver;
+import org.geotools.xml.PreventLocalEntityResolver;
+import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -187,7 +186,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
             System.out.println(output);
             Assert.assertTrue(output.indexOf("Request parsing failed") > -1);
             Assert.assertTrue(output
-                    .indexOf(NoExternalEntityResolver.ERROR_MESSAGE_BASE) > -1);
+                    .contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
             
             // set default (entity parsing disabled);
             cfg.setXmlExternalEntitiesEnabled(null);            
@@ -196,7 +195,7 @@ public class ExternalEntitiesTest extends WFSTestSupport {
             output = string(post("wfs", WFS_2_0_0_REQUEST));
             Assert.assertTrue(output.indexOf("Request parsing failed") > -1);
             Assert.assertTrue(output
-                    .indexOf(NoExternalEntityResolver.ERROR_MESSAGE_BASE) > -1);
+                    .contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
         } finally {
             cfg.setXmlExternalEntitiesEnabled(null);            
             getGeoServer().save(cfg);
@@ -220,6 +219,6 @@ public class ExternalEntitiesTest extends WFSTestSupport {
         XpathEngine xp = XMLUnit.newXpathEngine();
         String errorMessage = xp.evaluate("//ogc:ServiceException", doc);
         // print(doc);
-        assertTrue(errorMessage.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue(errorMessage.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
     }
 }

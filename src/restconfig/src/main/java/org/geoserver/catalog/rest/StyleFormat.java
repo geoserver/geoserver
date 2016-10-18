@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.xml.transform.TransformerException;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
@@ -18,21 +16,15 @@ import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.format.StreamDataFormat;
-import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.SLDParser;
-import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
-import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Converters;
 import org.geotools.util.Version;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
+import org.xml.sax.EntityResolver;
 
 public class StyleFormat extends StreamDataFormat {
 
@@ -40,13 +32,27 @@ public class StyleFormat extends StreamDataFormat {
     Version version;
     boolean prettyPrint;
     Request request;
+    EntityResolver entityResolver;
     
+    /**
+     * Please use the constructor providing a entity resolver instead
+     */
+    @Deprecated
     public StyleFormat(String mimeType, Version version, boolean prettyPrint, StyleHandler handler, Request request) {
         super(new MediaType(mimeType));
         this.version = version;
         this.prettyPrint = prettyPrint;
         this.handler = handler;
         this.request = request;
+    }
+    
+    public StyleFormat(String mimeType, Version version, boolean prettyPrint, StyleHandler handler, Request request, EntityResolver entityResolver) {
+        super(new MediaType(mimeType));
+        this.version = version;
+        this.prettyPrint = prettyPrint;
+        this.handler = handler;
+        this.request = request;
+        this.entityResolver = entityResolver;
     }
 
     public StyleHandler getHandler() {
@@ -92,7 +98,7 @@ public class StyleFormat extends StreamDataFormat {
         if (isRawUpload(request)) {
             return in;
         }
-        return Styles.style(handler.parse(in, version, null, null));
+        return Styles.style(handler.parse(in, version, null, entityResolver));
     }
 
     boolean isRawUpload(Request request) {

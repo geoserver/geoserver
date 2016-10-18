@@ -48,4 +48,7 @@
     <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
     <property name="serviceClass" value="org.geoserver.gwc.wmts.WMTSInfo"/>
   </bean>
+
+  <bean id="inspireGridSetLoader" class="org.geoserver.inspire.wmts.InspireGridSetLoader">
+  </bean>
 </beans>

@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.Repository;
+import org.xml.sax.EntityResolver;
 
 /**
  * A serializable view of a {@link Param}
@@ -57,9 +58,9 @@ public class ParamInfo implements Serializable {
         if (Serializable.class.isAssignableFrom(param.type)) {
             this.binding = param.type;
             this.value = (Serializable) defaultValue;
-        } else if (Repository.class.equals(param.type)) {
-                this.binding = param.type;
-                this.value = null;
+        } else if (Repository.class.equals(param.type) || EntityResolver.class.isAssignableFrom(param.type)) {
+            this.binding = param.type;
+            this.value = null;
         } else {
             // handle the parameter as a string and let the DataStoreFactory
             // convert it to the appropriate type

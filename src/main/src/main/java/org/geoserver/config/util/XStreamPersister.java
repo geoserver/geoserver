@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.thoughtworks.xstream.io.json.JettisonStaxWriter;
 import org.apache.commons.collections.MultiHashMap;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.AttributionInfo;
@@ -1155,8 +1156,9 @@ public class XStreamPersister {
                     String typeName = cam.serializedClass( theClass );
                     writer.addAttribute("type", typeName);
                 }
-                
                 context.convertAnother( item, new ReferenceConverter( clazz ) );
+            } else if (writer instanceof JettisonStaxWriter) {
+                writer.setValue("null");
             }
             writer.endNode();
         }

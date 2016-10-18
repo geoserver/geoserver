@@ -13,6 +13,7 @@ import java.util.logging.Level;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -33,6 +34,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
+import org.geoserver.web.wicket.FeedbackMessageCleaner;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.KeywordsEditor;
 import org.geoserver.web.wicket.LiveCollectionModel;
@@ -174,17 +176,17 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         };
     }
 
-    GeoServerAjaxFormLink computeLatLonBoundsLink(final Form refForm,
+    AjaxSubmitLink computeLatLonBoundsLink(final Form refForm,
             final EnvelopePanel nativeBBox, final EnvelopePanel latLonPanel) {
-        return new GeoServerAjaxFormLink("computeLatLon", refForm) {
+        return new AjaxSubmitLink("computeLatLon", refForm) {
 
             private static final long serialVersionUID = -5981662004745936762L;
 
             @Override
-            protected void onClick(AjaxRequestTarget target, Form form) {
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 // perform manual processing of the required fields
-                nativeBBox.processInput();
-                declaredCRS.processInput();
+                form.process(null);
+                form.visitFormComponents(new FeedbackMessageCleaner<>(FeedbackMessage.UNDEFINED));
                 
                 ReferencedEnvelope nativeBounds = (ReferencedEnvelope) nativeBBox.getModelObject();
                 try {
@@ -205,6 +207,13 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                     error("Error computing the geographic bounds:" + e.getMessage());
                 }
                 target.add(latLonPanel);
+            }
+            
+            @Override
+            public boolean getDefaultFormProcessing() {
+                // disable the default processing or the link won't trigger
+                // when any validation fails
+                return false;
             }
         };
     }

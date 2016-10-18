@@ -19,23 +19,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.wms.request.GetMapRequest;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
 
 
 public class GETMAPValidator {
+    
     public GETMAPValidator() {
     }
 
@@ -110,6 +105,7 @@ public class GETMAPValidator {
      * @return list of SAXExceptions (0 if the file's okay)
      */
     public List validateGETMAP(InputSource xml, URL SchemaUrl) {
-        return ResponseUtils.validate(xml, SchemaUrl, true);
+        EntityResolverProvider provider = GeoServerExtensions.bean(EntityResolverProvider.class);
+        return ResponseUtils.validate(xml, SchemaUrl, true, provider.getEntityResolver());
     }
 }

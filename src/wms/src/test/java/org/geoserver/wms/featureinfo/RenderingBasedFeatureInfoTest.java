@@ -66,7 +66,8 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         super.onSetUp(testData);
         
         testData.addStyle("box-offset", "box-offset.sld",this.getClass(), getCatalog());
-        File styles = getDataDirectory().findOrCreateStyleDir();
+        testData.addStyle("transparent-fill", "transparent-fill.sld",this.getClass(), getCatalog());
+        File styles = new File(testData.getDataDirectoryRoot(), "styles");
         File symbol = new File("./src/test/resources/org/geoserver/wms/featureinfo/box-offset.png");
         FileUtils.copyFileToDirectory(symbol, styles);
         
@@ -252,7 +253,21 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                 + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
                 + "&styles=polydash" + "&width=20&height=20&x=10&y=10&info_format=application/json";
 
-        System.out.println("The response iTESTs: " + getAsString(request));
+        // System.out.println("The response iTESTs: " + getAsString(request));
+        JSONObject result = (JSONObject) getAsJSON(request);
+        // we used to get two results when two rules matched the same feature
+        // print(result);
+        assertEquals(1, result.getJSONArray("features").size());
+    }
+    
+    @Test
+    public void testTransparentFill() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
+                + "&styles=transparent-fill" + "&width=20&height=20&x=10&y=10&info_format=application/json";
+
+        // System.out.println("The response iTESTs: " + getAsString(request));
         JSONObject result = (JSONObject) getAsJSON(request);
         // we used to get two results when two rules matched the same feature
         // print(result);
@@ -315,7 +330,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                 + layer
                 + "&WIDTH=11&HEIGHT=11&format=image%2Fpng&styles=line&srs=EPSG%3A32615&version=1.1.1&x=5&y=5";
         JSONObject result = (JSONObject) getAsJSON(request);
-        print(result);
+        //print(result);
         // we used to get two results
         assertEquals(2, result.getJSONArray("features").size());
     }

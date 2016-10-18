@@ -40,14 +40,14 @@ public class CoverageDimensionImpl implements CoverageDimensionInfo {
         this.id = id;
     }
     
-    public CoverageDimensionImpl(CoverageDimensionImpl other) {
-        this.id = other.id;
-        this.name = other.name;
-        this.description = other.description;
-        this.range = other.range;
-        this.nullValues = other.nullValues;
-        this.unit = other.unit;
-        this.dimensionType = other.dimensionType;
+    public CoverageDimensionImpl(CoverageDimensionInfo other) {
+        this.id = other.getId();
+        this.name = other.getName();
+        this.description = other.getDescription();
+        this.range = other.getRange();
+        this.nullValues = other.getNullValues();
+        this.unit = other.getUnit();
+        this.dimensionType = other.getDimensionType();
     }
 
 

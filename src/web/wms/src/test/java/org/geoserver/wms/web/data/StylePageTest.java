@@ -12,11 +12,9 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Predicates;
-import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geoserver.web.data.store.StoreProvider;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 

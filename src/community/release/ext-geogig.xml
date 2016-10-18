@@ -26,19 +26,10 @@
             <include>javax.inject-*.jar</include>
             <!-- LZW compression libs -->
             <include>compress-lzf-*.jar</include>
-            <!-- BerkleyDB JE libs. NOTE: this should be removed once BDB is purged -->
-            <include>je-*.jar</include>
-            <!-- MapDB libs. NOTE: this should be removed once MapDB is purged -->
-            <include>mapdb-*.jar</include>
+            <!-- Rocksdb JNI bindings. Used by default storage backend -->
+            <include>rocksdbjni*.jar</include>
             <!-- Eclipse annotations -->
             <include>org.eclipse.jdt.annotation-*.jar</include>
-            <!-- OSM libs -->
-            <include>osmosis-*.jar</include>
-            <include>xz-*.jar</include>
-            <include>protobuf-java-*.jar</include>
-            <include>commons-compress-*.jar</include>
-            <include>woodstox-core-asl-*.jar</include>
-            <include>stax2-api-*.jar</include>
             <!-- Google GSON libs -->
             <include>gson-*.jar</include>
             <!-- JCommander libs -->

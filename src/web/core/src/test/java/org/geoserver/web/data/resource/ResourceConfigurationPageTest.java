@@ -5,13 +5,23 @@
  */
 package org.geoserver.web.data.resource;
 
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geotools.feature.NameImpl;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
 
 public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
@@ -51,34 +61,29 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.assertContains("the_geom");
     }
     
-    // I can't make the last assertion work, my wicket-fu is not good enough or else the
-    // 
-//    public void testTabSwitch() {
-//        ResourceInfo info = getGeoServerApplication()
-//            .getCatalog()
-//            .getResources(ResourceInfo.class).get(0);
-//
-//        login();
-//        tester.startPage(new ResourceConfigurationPage(info, false));
-//        FormTester ft = tester.newFormTester("resource");
-//        ft.setValue("tabs:panel:theList:0:content:title", "Some other title");
-//        ft.submit();
-//        assertEquals("Some other title", ft.getTextComponentValue("tabs:panel:theList:0:content:title"));
-//        tester.assertModelValue("resource:tabs:panel:theList:0:content:title", "Some other title");
-//        
-//        // switch to the other page
-//        tester.clickLink("resource:tabs:tabs-container:tabs:1:link");
-//        tester.assertRenderedPage(ResourceConfigurationPage.class);
-//        tester.assertComponent("resource:tabs:panel:theList:0:content", BasicLayerConfig.class);
-//        
-//        // switch back
-//        tester.clickLink("resource:tabs:tabs-container:tabs:0:link");
-//        tester.assertRenderedPage(ResourceConfigurationPage.class);
-//        tester.assertComponent("resource:tabs:panel:theList:0:content", BasicResourceConfig.class);
-//        
-//        // check the title is still what we did set (switching tabs did not make us loose the value)
-//        tester.assertComponent("resource:tabs:panel:theList:0:content:title", TextField.class);
-//        ft = tester.newFormTester("resource");
-//        tester.assertModelValue("resource:tabs:panel:theList:0:content:title", "Some other title");
-//    }
+    @Test
+    public void testComputeLatLon() throws Exception {
+        final Catalog catalog = getCatalog();
+        
+        final CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.setStore(catalog.getStoreByName(MockData.POLYGONS.getPrefix(), DataStoreInfo.class));
+        FeatureTypeInfo ft = cb.buildFeatureType(new NameImpl(MockData.POLYGONS));
+        LayerInfo layer = cb.buildLayer(ft);
+
+        login();
+        ResourceConfigurationPage page = new ResourceConfigurationPage(layer, true);
+        tester.startPage(page);
+        // print(tester.getLastRenderedPage(), true, true, true);
+        tester.executeAjaxEvent("publishedinfo:tabs:panel:theList:0:content:referencingForm:computeLatLon", "onclick");
+        // print(tester.getLastRenderedPage(), true, true, true);
+        // we used to have error messages
+        tester.assertNoErrorMessage();
+        Component llbox = tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:theList:0:content:referencingForm:latLonBoundingBox");
+        ReferencedEnvelope re = (ReferencedEnvelope) llbox.getDefaultModelObject();
+        assertEquals(-93, re.getMinX(), 0.1);
+        assertEquals(4.5, re.getMinY(), 0.1);
+        assertEquals(-93, re.getMaxX(), 0.1);
+        assertEquals(4.5, re.getMaxY(), 0.1);
+    }
+    
 }

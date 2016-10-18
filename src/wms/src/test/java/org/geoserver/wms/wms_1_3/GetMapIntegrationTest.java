@@ -21,6 +21,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
@@ -352,7 +353,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     
     @Test
     public void testSldExternalEntities() throws Exception {
-        URL sldUrl = GetMapIntegrationTest.class.getResource("../externalEntities.sld");
+        URL sldUrl = TestData.class.getResource("externalEntities.sld");
         String url = "wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&sld=" + sldUrl.toString();

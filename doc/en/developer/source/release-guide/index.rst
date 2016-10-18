@@ -115,6 +115,11 @@ When creating the first release candidate of a series, there are some extra step
 
 * Announce on the developer mailing list that the new stable branch has been created and that the feature freeze on master is over
 
+* Switch to the new branch and update:
+   
+  * ``README.md`` documentation links
+  * ``doc/en/user/source/conf.py` documentation links
+
 Build the Release
 -----------------
 

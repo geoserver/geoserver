@@ -27,7 +27,6 @@ Vector tile formats
 
 GeoServer can also produce vector tiles in three formats: GeoJSON, TopoJSON, and MapBox Vector (MVT). These are also supported by OpenLayers 3 and other clients.
 
-* GeoJSON is the most human readable and the recommended format for people new to vector tiles.
 * MVT is the preferred format for production.
 
 .. list-table::
@@ -37,15 +36,15 @@ GeoServer can also produce vector tiles in three formats: GeoJSON, TopoJSON, and
    * - Format
      - MIME
      - Description
-   * - `GeoJSON <http://geojson.org/>`_
-     - ``application/json;type=geojson``
-     - Human readable, format (not tiles) widely supported
    * - `MapBox Vector (MVT) <https://github.com/mapbox/vector-tile-spec>`_
      - ``application/x-protobuf;type=mapbox-vector``
-     - Highly compressed, widely supported by applications, not human readable 
+     - **Recommended Format** This is an efficient binary format that is widely supported by almost all Vector Tile applications.
+   * - `GeoJSON <http://geojson.org/>`_
+     - ``application/json;type=geojson``
+     - This is a human readable JSON format.  Although many geo-spatial applications support GeoJSON datasets, few Vector Tile applications support tiles in this format.  Supported by Open Layers 3.
    * - `TopoJSON <https://github.com/mbostock/topojson/wiki>`_
      - ``application/json;type=topojson``
-     - Good for polygon coverages, human readable (but complex), not widely supported
+     - This is a very complex, but somewhat human readable JSON format that is good for polygon coverages.  It is not a widely supported and very few Vector Tile applications support it.  Suported by Open Layers 3.
 
 
 Publish vector tiles in GeoWebCache

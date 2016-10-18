@@ -52,6 +52,7 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         DataStoreInfo ds = cat.getFactory().createDataStore();
         ds.setName("foo");
         ds.setWorkspace(cat.getDefaultWorkspace());
+        ds.setEnabled(true);
         
         Map params = ds.getConnectionParameters(); 
         params.put("dbtype", "h2");

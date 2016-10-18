@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.web.data;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -68,7 +71,16 @@ public class LayerChooser extends Panel {
 
         @Override
         public List<LayerInfo> getItems() {
-            return parent.getCatalog().getLayers();
+            List<LayerInfo> items = new ArrayList<LayerInfo>();
+            for (LayerInfo l : parent.getCatalog().getLayers()) {
+                if (l.getResource() instanceof FeatureTypeInfo) {
+                    items.add(l);
+                }
+                if (l.getResource() instanceof CoverageInfo) {
+                    items.add(l);
+                }
+            }
+            return items;
         }
 
         @Override

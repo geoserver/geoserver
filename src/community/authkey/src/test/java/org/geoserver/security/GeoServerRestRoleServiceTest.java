@@ -4,6 +4,9 @@
  */
 package org.geoserver.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -13,13 +16,6 @@ import java.util.SortedSet;
 import org.geoserver.security.impl.GeoServerRole;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
@@ -51,15 +47,25 @@ public class GeoServerRestRoleServiceTest {
                 .andRespond(withSuccess(
                         "{\"users\": [{\"username\": \"test\", \"groups\": [\"test\"]}]}",
                         MediaType.APPLICATION_JSON));
+
+        mockServer.expect(requestTo(uri + "/api/adminRole"))
+                .andRespond(withSuccess("{\"adminRole\": \"admin\"}", MediaType.APPLICATION_JSON));
+
         mockServer.expect(requestTo(uri + "/api/users/test@geoserver.org"))
                 .andRespond(withSuccess(
                         "{\"users\": [{\"username\": \"test\", \"groups\": [\"test\"]}]}",
                         MediaType.APPLICATION_JSON));
 
+        mockServer.expect(requestTo(uri + "/api/adminRole"))
+                .andRespond(withSuccess("{\"adminRole\": \"admin\"}", MediaType.APPLICATION_JSON));
+
         mockServer.expect(requestTo(uri + "/api/users/admin"))
                 .andRespond(withSuccess(
                         "{\"users\": [{\"username\": \"admin\", \"groups\": [\"admin\"]}]}",
                         MediaType.APPLICATION_JSON));
+
+        mockServer.expect(requestTo(uri + "/api/adminRole"))
+                .andRespond(withSuccess("{\"adminRole\": \"admin\"}", MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -73,20 +79,21 @@ public class GeoServerRestRoleServiceTest {
         final SortedSet<GeoServerRole> roles = roleService.getRoles();
         final GeoServerRole adminRole = roleService.getAdminRole();
         final SortedSet<GeoServerRole> testUserRoles = roleService.getRolesForUser("test");
-        final SortedSet<GeoServerRole> testUserEmailRoles = roleService.getRolesForUser("test@geoserver.org");
+        final SortedSet<GeoServerRole> testUserEmailRoles = roleService
+                .getRolesForUser("test@geoserver.org");
         final SortedSet<GeoServerRole> adminUserRoles = roleService.getRolesForUser("admin");
-        
+
         assertNotNull(roles);
         assertNotNull(adminRole);
         assertNotNull(testUserRoles);
         assertNotNull(testUserEmailRoles);
         assertNotNull(adminUserRoles);
-        
+
         assertEquals(3, roles.size());
         assertEquals("ROLE_ADMIN", adminRole.getAuthority());
         assertEquals(testUserEmailRoles.size(), testUserRoles.size());
         assertTrue(!testUserRoles.contains(GeoServerRole.ADMIN_ROLE));
         assertTrue(!testUserRoles.contains(adminRole));
-        assertTrue(adminUserRoles.contains(adminRole));
+        assertTrue(adminUserRoles.contains(GeoServerRole.ADMIN_ROLE));
     }
 }

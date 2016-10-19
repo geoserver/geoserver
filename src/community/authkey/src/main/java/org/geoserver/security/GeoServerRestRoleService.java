@@ -196,7 +196,13 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                                 roles.add(GeoServerRole.AUTHENTICATED_ROLE);
                             }
 
-                            return Collections.unmodifiableSortedSet(roles);
+                            SortedSet<GeoServerRole> finalRoles = Collections.unmodifiableSortedSet(fixGeoServerRoles(roles));
+                            
+                            if(LOGGER.isLoggable(Level.FINE)) {
+                                LOGGER.fine("Setting ROLES for User [" + username + "] to " + finalRoles);
+                            }
+                            
+                            return finalRoles;
                         }
                     });
         } catch (Exception ex) {
@@ -204,6 +210,22 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
         }
 
         return Collections.unmodifiableSortedSet(roles);
+    }
+
+    protected SortedSet<GeoServerRole> fixGeoServerRoles(SortedSet<GeoServerRole> roles) {
+        // Check if is an ADMIN
+        GeoServerRole adminRole = getAdminRole();
+        if (roles.contains(GeoServerRole.ADMIN_ROLE) || roles.contains(adminRole)) {
+            roles.clear();
+            roles.add(GeoServerRole.ADMIN_ROLE);
+        }
+        
+        // Check if Role Anonymous is present other than other roles
+        if (roles.size() > 1 && roles.contains(GeoServerRole.ANONYMOUS_ROLE)) {
+            roles.remove(GeoServerRole.ANONYMOUS_ROLE);
+        }
+        
+        return roles;
     }
 
     @Override

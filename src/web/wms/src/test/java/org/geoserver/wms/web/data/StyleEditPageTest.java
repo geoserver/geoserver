@@ -24,7 +24,13 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerExtensions;
@@ -32,8 +38,12 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
 public class StyleEditPageTest extends GeoServerWicketTestSupport {
@@ -54,6 +64,39 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             }
             buildingsStyle = getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart());
         }
+        
+        //Create a cascaded WMS Layer
+        Catalog catalog = getCatalog();
+        WMSStoreInfo wms = catalog.getStoreByName("sf", "wmsstore", WMSStoreInfo.class);
+        if (wms == null) {
+            CatalogBuilder cb = new CatalogBuilder(catalog);
+            cb.setWorkspace(catalog.getWorkspaceByName("sf"));
+            wms = cb.buildWMSStore("wmsstore");
+            wms.setCapabilitiesURL("http://demo.opengeo.org/geoserver/wms?");
+            catalog.add(wms);
+            
+            WMSLayerInfo wmr = catalog.getFactory().createWMSLayer();
+            wmr.setName("states");
+            wmr.setNativeName("topp:states");
+            wmr.setStore(catalog.getStoreByName("wmsstore", WMSStoreInfo.class));
+            wmr.setCatalog(catalog);
+            wmr.setNamespace(catalog.getNamespaceByPrefix("sf"));
+            wmr.setSRS("EPSG:4326");
+            CoordinateReferenceSystem wgs84 = CRS.decode("EPSG:4326");
+            wmr.setNativeCRS(wgs84);
+            wmr.setLatLonBoundingBox(new ReferencedEnvelope(-110, 0, -60, 50, wgs84));
+            wmr.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+            
+            catalog.add(wmr);
+            
+            LayerInfo wml = catalog.getFactory().createLayer();
+            wml.setResource(wmr);
+            wml.setName("states");
+            wml.setDefaultStyle(getCatalog().getStyleByName("Default"));
+            
+            catalog.add(wml);
+        }
+        
         edit = new StyleEditPage(buildingsStyle);
         tester.startPage(edit);
     }
@@ -101,6 +144,18 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testLoadLegend() {
         
+    }
+    
+    @Test
+    public void testLayerAttributesTabWMS() {
+        tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:3:link", "click");
+        tester.executeAjaxEvent("styleForm:context:panel:changeLayer:link", "click");
+        tester.assertComponent("styleForm:popup:content:layer.table", GeoServerTablePanel.class);
+        
+        //30 layers total, 25 layers per page; foo should not appear on page 1 or 2.
+        tester.assertContainsNot("wmsstore");
+        tester.executeAjaxEvent("styleForm:popup:content:layer.table:navigatorBottom:navigator:last", "click");
+        tester.assertContainsNot("wmsstore");
     }
     
     @Test

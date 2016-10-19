@@ -33,6 +33,7 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
         mockData.addStyle("Default", "styles/Default.sld");
         mockData.addStyle("outcropcharacter", "styles/outcropcharacter.sld");
         mockData.addStyle("positionalaccuracy", "styles/positionalaccuracy.sld");
+        mockData.addStyle("occurrencecount", "styles/attributeCountTest.sld");
         return mockData;
     }
 
@@ -77,6 +78,19 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
         ImageAssert.assertEquals(
                 DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.png")),
                 imageBuffer, 10);
+    }
+    
+    @Test
+    public void testGetMapWithCount() throws Exception {
+        Document doc = getAsDOM("wfs?version=1.1.0&request=getFeature&typeName=gsml:MappedFeature");
+        LOGGER.info(prettyString(doc));
+        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=occurrencecount&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/png");
+        BufferedImage imageBuffer = ImageIO.read(is);
+        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
+        ImageAssert.assertEquals(
+                DataUtilities.urlToFile(getClass().getResource("/test-data/img/occurrence.png")),
+                imageBuffer, 10);
+        
     }
 
 }

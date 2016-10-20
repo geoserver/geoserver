@@ -103,6 +103,7 @@ import org.geotools.measure.Measure;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.util.SoftValueHashMap;
+import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.DocumentFactory;
 import org.geotools.xml.Schemas;
@@ -1506,6 +1507,10 @@ public class ResourcePool {
             }
         }
 
+        if(coverageInfo == null && coverageName != null) {
+            coverageInfo = getCoverageInfo(coverageName, info);
+        }
+        
         if (coverageInfo != null) {
             MetadataMap metadata = coverageInfo.getMetadata();
             if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
@@ -1520,7 +1525,7 @@ public class ResourcePool {
             // GeoServer does not need to be updated to the multicoverage stuff
             // (we might want to introduce a hint later for code that really wants to get the
             // multi-coverage reader)
-            return CoverageDimensionCustomizerReader.wrap((GridCoverage2DReader) reader, coverageName, info);
+            return CoverageDimensionCustomizerReader.wrap((GridCoverage2DReader) reader, coverageName, coverageInfo);
         } else {
             // In order to deal with Bands customization, we need to get a CoverageInfo.
             // Therefore we won't wrap the reader into a CoverageDimensionCustomizerReader in case 
@@ -1530,7 +1535,7 @@ public class ResourcePool {
             // that case so returning the simple reader.
             final int numCoverages = ((GridCoverage2DReader) reader).getGridCoverageCount();
             if (numCoverages == 1) {
-                return CoverageDimensionCustomizerReader.wrap((GridCoverage2DReader) reader, null, info);
+                return CoverageDimensionCustomizerReader.wrap((GridCoverage2DReader) reader, null, coverageInfo);
             }
             // Avoid dimensions wrapping since we have a multi-coverage reader 
             // but no coveragename have been specified
@@ -2541,5 +2546,40 @@ public class ResourcePool {
         target.setMaxConnections(source.getMaxConnections());
         target.setConnectTimeout(source.getConnectTimeout());
         target.setReadTimeout(source.getReadTimeout());
+    }
+
+    /**
+     * Retrieve the proper {@link CoverageInfo} object from the specified {@link CoverageStoreInfo} 
+     * using the specified coverageName (which may be the native one in some cases).
+     * In case of null coverageName being specified, we assume we are dealing with a 
+     * single coverageStore <-> single coverage relation so we will take the first coverage available
+     * on that store.
+     * 
+     * @param storeInfo the storeInfo to be used to access the catalog
+     *
+     */
+    static CoverageInfo getCoverageInfo(String coverageName, CoverageStoreInfo storeInfo) {
+        Utilities.ensureNonNull("storeInfo", storeInfo);
+        final Catalog catalog = storeInfo.getCatalog();
+        CoverageInfo info = null;
+        if (coverageName != null) {
+            info = catalog.getCoverageByName(coverageName);
+        }
+        if (info == null) {
+            final List<CoverageInfo> coverages = catalog.getCoveragesByStore(storeInfo);
+            if (coverageName != null) {
+                for (CoverageInfo coverage: coverages) {
+                    if (coverage.getNativeName().equalsIgnoreCase(coverageName)) {
+                        info = coverage;
+                        break;
+                    }
+                }
+            }
+            if (info == null && coverages != null && coverages.size() == 1) {
+                // Last resort
+                info = coverages.get(0);
+            }
+        }
+        return info;
     }
 }

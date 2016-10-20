@@ -25,6 +25,7 @@ import javax.media.jai.ImageLayout;
 import javax.media.jai.PropertySource;
 import javax.media.jai.PropertySourceImpl;
 
+import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
@@ -44,7 +45,6 @@ import org.geotools.resources.Classes;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
-import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.ColorInterpretation;
 import org.opengis.coverage.PaletteInterpretation;
@@ -143,7 +143,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             return structuredDelegate.getDimensionDescriptors(coverageName);
         }
     }
-
+    
     /**
      * Wrap a {@link GridCoverage2DReader} into a {@link CoverageDimensionCustomizerReader}.
      * @param delegate the reader to be wrapped.
@@ -163,52 +163,38 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             return new CoverageDimensionCustomizerReader(reader, coverageName, info);
         }
     }
+    
+    /**
+     * Wrap a {@link GridCoverage2DReader} into a {@link CoverageDimensionCustomizerReader}.
+     * @param delegate the reader to be wrapped.
+     * @param coverageName the specified coverageName. It may be null in case of {@link GridCoverage2DReader}s 
+     * with a single coverage, coming from an old catalog where no coverageName has been stored. 
+     * @param info the {@link CoverageInfo} instance used to look for {@link CoverageInfo} instances.
+     */
+    public static GridCoverageReader wrap(GridCoverage2DReader delegate, String coverageName,
+            CoverageInfo info) {
+        GridCoverage2DReader reader = delegate;
+        if (coverageName != null) {
+            reader = SingleGridCoverage2DReader.wrap(delegate, coverageName);
+        }
+        if (reader instanceof StructuredGridCoverage2DReader) {
+            return new CoverageDimensionCustomizerStructuredReader((StructuredGridCoverage2DReader) reader, coverageName, info);
+        } else {
+            return new CoverageDimensionCustomizerReader(reader, coverageName, info);
+        }
+    }
 
     public CoverageDimensionCustomizerReader(GridCoverage2DReader delegate,
             String coverageName, CoverageStoreInfo storeInfo) {
         this.delegate = delegate; 
         this.coverageName = coverageName;
-        this.info = getCoverageInfo(storeInfo);
+        this.info = ResourcePool.getCoverageInfo(coverageName, storeInfo);
     }
 
     public CoverageDimensionCustomizerReader(GridCoverage2DReader delegate, String coverageName, CoverageInfo info) {
         this.delegate = delegate; 
         this.coverageName = coverageName;
         this.info = info;
-    }
-
-    /**
-     * Retrieve the proper {@link CoverageInfo} object from the specified {@link CoverageStoreInfo} 
-     * using the specified coverageName (which may be the native one in some cases).
-     * In case of null coverageName being specified, we assume we are dealing with a 
-     * single coverageStore <-> single coverage relation so we will take the first coverage available
-     * on that store.
-     * 
-     * @param storeInfo the storeInfo to be used to access the catalog
-     *
-     */
-    private CoverageInfo getCoverageInfo(CoverageStoreInfo storeInfo) {
-        Utilities.ensureNonNull("storeInfo", storeInfo);
-        final Catalog catalog = storeInfo.getCatalog();
-        if (coverageName != null) {
-            info = catalog.getCoverageByName(coverageName);
-        }
-        if (info == null) {
-            final List<CoverageInfo> coverages = catalog.getCoveragesByStore(storeInfo);
-            if (coverageName != null) {
-                for (CoverageInfo coverage: coverages) {
-                    if (coverage.getNativeName().equalsIgnoreCase(coverageName)) {
-                        info = coverage;
-                        break;
-                    }
-                }
-            }
-            if (info == null && coverages != null && coverages.size() == 1) {
-                // Last resort
-                info = coverages.get(0);
-            }
-        }
-        return info;
     }
 
     public String getCoverageName() {
@@ -252,9 +238,23 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         
         GridSampleDimension[] wrappedDims = null;
         if (info != null) {
-            List<CoverageDimensionInfo> storedDimensions = info.getDimensions();
+            List<CoverageDimensionInfo> dimensions = info.getDimensions();
+            // if no dimensions found, see if there is a coverage view providing them
+            if(dimensions == null || dimensions.isEmpty()) {
+                MetadataMap map = info.getMetadata();
+                if (map.containsKey(CoverageView.COVERAGE_VIEW)) {
+                    CoverageView coverageView = (CoverageView) map.get(CoverageView.COVERAGE_VIEW);
+                    dimensions = new ArrayList<>();
+                    List<CoverageBand> coverageBands = coverageView.getCoverageBands();
+                    for (CoverageBand band : coverageBands) {
+                        CoverageDimensionInfo dimensionInfo = new CoverageDimensionImpl();
+                        dimensionInfo.setName(band.getDefinition());
+                        dimensions.add(dimensionInfo);
+                    }
+                }
+            }
             int[] selectedBandIndexes = getSelectedBandIndexes(parameters);
-            wrappedDims = wrapDimensions(dims, storedDimensions, selectedBandIndexes);
+            wrappedDims = wrapDimensions(dims, dimensions, selectedBandIndexes);
         } 
         // Wrapping sample dimensions
         NoDataContainer noDataProperty = CoverageUtilities.getNoDataProperty(coverage);

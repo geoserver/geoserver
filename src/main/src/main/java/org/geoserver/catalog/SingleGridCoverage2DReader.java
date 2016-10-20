@@ -62,7 +62,7 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
      */
     protected void checkCoverageName(String coverageName) {
         if (!this.coverageName.equals(coverageName)) {
-            throw new IllegalArgumentException("Unkonwn coverage named " + coverageName
+            throw new IllegalArgumentException("Unknown coverage named " + coverageName
                     + ", the only valid value is: " + this.coverageName);
         }
     }

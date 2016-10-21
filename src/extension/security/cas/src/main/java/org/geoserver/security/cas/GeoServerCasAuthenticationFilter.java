@@ -199,11 +199,11 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         // check for sign out request from cas server
         if (handler.isLogoutRequest(httpReq)) {
             if (singleSignOut) { // do we participate
-                LOGGER.info("Single Sign Out received from CAS server --> starting log out");
-                handler.destroySession(httpReq);                
+                LOGGER.info("Single Sign Out received from CAS server --> starting log out");                
                 LogoutFilterChain logOutChain = (LogoutFilterChain) 
                         getSecurityManager().getSecurityConfig().getFilterChain().getRequestChainByName("webLogout");
                 logOutChain.doLogout(getSecurityManager(), httpReq, httpRes,getName());
+                handler.destroySession(httpReq);                
             } else
                 LOGGER.info("Single Sign Out received from CAS server --> ignoring");
             return;

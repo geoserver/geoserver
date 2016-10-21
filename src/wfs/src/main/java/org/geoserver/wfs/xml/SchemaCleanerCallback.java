@@ -46,7 +46,9 @@ public class SchemaCleanerCallback extends AbstractDispatcherCallback {
         if(list != null) {
             schemas.remove();
             for (XSDSchema schema : list) {
-                Schemas.dispose(schema);
+                synchronized (Schemas.class) {
+                    Schemas.dispose(schema);
+                }
             }
         }
     }

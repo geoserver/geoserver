@@ -347,19 +347,14 @@ public abstract class FeatureTypeSchemaBuilder {
                     schema.getContents().add(imprt);
                     
                     if (resolved != null) {
-                        ((XSDSchemaImpl)resolved).imported(imprt);
+                        final XSDSchemaImpl rs = (XSDSchemaImpl)resolved;
+                        synchronized(rs.eAdapters()) {
+                            rs.imported(imprt);
+                        }
                     }
                 }
             }
         }
-
-//        for (Iterator i = schema.getContents().iterator(); i.hasNext();) {
-//            Object o = i.next();
-//            if (o instanceof XSDImport) {
-//                ((XSDSchemaImpl)((XSDImport)o).getResolvedSchema()).imported((XSDImport)o);
-//                
-//            }
-//        }
         return schema;
     }
 
@@ -409,7 +404,10 @@ public abstract class FeatureTypeSchemaBuilder {
                 wfsImport.setSchemaLocation(getWfsSchema().getSchemaLocation());
                 wfsImport.setResolvedSchema(getWfsSchema());
                 schema.getContents().add(wfsImport);
-                ((XSDSchemaImpl)getWfsSchema()).imported(wfsImport);
+                final XSDSchemaImpl wfsSchema = (XSDSchemaImpl)getWfsSchema();
+                synchronized(wfsSchema.eAdapters()) {
+                    wfsSchema.imported(wfsImport);
+                }
                 imports.put(getWfsSchema().getTargetNamespace(), getWfsSchema().getSchemaLocation());
             }
         }
@@ -1020,7 +1018,10 @@ public abstract class FeatureTypeSchemaBuilder {
                     
                     schema.getQNamePrefixToNamespaceMap().put("wfs", WFS.NAMESPACE);
                     //imprt = Schemas.importSchema(schema, WFS.getInstance().getSchema());
-                    ((XSDSchemaImpl)WFS.getInstance().getSchema()).imported(imprt);
+                    final XSDSchemaImpl xsdSchema = (XSDSchemaImpl)WFS.getInstance().getSchema();
+                    synchronized(xsdSchema.eAdapters()) {
+                        xsdSchema.imported(imprt);
+                    }
                     //((XSDSchemaImpl)schema).resolveSchema(WFS.NAMESPACE);
                     
                     

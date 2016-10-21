@@ -61,7 +61,6 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         GeoPackage geopkg = createGeoPackage(map);
 
         assertTrue(geopkg.features().isEmpty());
-        assertTrue(geopkg.rasters().isEmpty());
         assertEquals(1, geopkg.tiles().size());
         assertNotNull(geopkg.tile("World_Lakes"));
     }

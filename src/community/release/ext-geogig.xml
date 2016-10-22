@@ -40,6 +40,8 @@
             <include>org.restlet.ext.fileupload-*.jar</include>
             <!-- GeoTools Geopackage libs -->
             <include>gt-geopkg-*.jar</include>
+            <!-- JSONP (JSR-353) libs -->
+            <include>javax.json-*.jar</include>
         </includes>
         <excludes>
             <exclude>*test*</exclude>

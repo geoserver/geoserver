@@ -6,7 +6,7 @@
 Feature: Plugin list repositories
   Listing all repositories on the server is done by issuing a GET request to "/repos".
   The response should be a 200 OK and contain a list of repositories configured. For each repository
-  in the returned list, the NAME, ID a a link to the repository's info should be included.
+  in the returned list, the NAME, ID and a link to the repository's info should be included.
 
   Scenario: Get list of Repositories in JSON format
     Given There is a default multirepo server

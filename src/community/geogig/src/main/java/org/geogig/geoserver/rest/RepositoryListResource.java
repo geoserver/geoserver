@@ -6,21 +6,20 @@ package org.geogig.geoserver.rest;
 
 import static org.locationtech.geogig.rest.Variants.JSON;
 import static org.locationtech.geogig.rest.Variants.XML;
-import static org.locationtech.geogig.rest.repository.RESTUtils.repositoryProvider;
+import static org.locationtech.geogig.web.api.RESTUtils.repositoryProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.format.FreemarkerFormat;
-import org.locationtech.geogig.rest.JettisonRepresentation;
+import org.locationtech.geogig.rest.StreamingWriterRepresentation;
 import org.locationtech.geogig.rest.Variants;
 import org.locationtech.geogig.rest.repository.RepositoryProvider;
+import org.locationtech.geogig.web.api.StreamWriterException;
+import org.locationtech.geogig.web.api.StreamingWriter;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -115,7 +114,7 @@ public class RepositoryListResource extends Resource {
         return repos;
     }
 
-    private static class RepositoryListRepresentation extends JettisonRepresentation {
+    private static class RepositoryListRepresentation extends StreamingWriterRepresentation {
 
         private final List<RepositoryInfo> repos;
 
@@ -126,22 +125,24 @@ public class RepositoryListResource extends Resource {
         }
 
         @Override
-        protected void write(XMLStreamWriter w) throws XMLStreamException {
+        public void write(StreamingWriter w) throws StreamWriterException {
             w.writeStartElement("repos");
+            w.writeStartArray("repo");
             for (RepositoryInfo repo : repos) {
                 write(w, repo);
             }
+            w.writeEndArray();
             w.writeEndElement();
         }
 
-        private void write(XMLStreamWriter w, RepositoryInfo repo) throws XMLStreamException {
-            w.writeStartElement("repo");
-            element(w, "id", repo.getId());
+        private void write(StreamingWriter w, RepositoryInfo repo) throws StreamWriterException {
+            w.writeStartArrayElement("repo");
+            w.writeElement("id", repo.getId());
 
-            element(w, "name", repo.getRepoName());
+            w.writeElement("name", repo.getRepoName());
             encodeAlternateAtomLink(w, RepositoryProvider.BASE_REPOSITORY_ROUTE + "/" +
                     repo.getRepoName());
-            w.writeEndElement();
+            w.writeEndArrayElement();
         }
 
     }

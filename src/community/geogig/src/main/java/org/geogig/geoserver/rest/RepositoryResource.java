@@ -6,21 +6,20 @@ package org.geogig.geoserver.rest;
 
 import static org.locationtech.geogig.rest.Variants.JSON;
 import static org.locationtech.geogig.rest.Variants.XML;
-import static org.locationtech.geogig.rest.repository.RESTUtils.repositoryProvider;
+import static org.locationtech.geogig.web.api.RESTUtils.repositoryProvider;
 
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.format.FreemarkerFormat;
-import org.locationtech.geogig.rest.JettisonRepresentation;
+import org.locationtech.geogig.rest.StreamingWriterRepresentation;
 import org.locationtech.geogig.rest.RestletException;
 import org.locationtech.geogig.rest.Variants;
 import org.locationtech.geogig.rest.repository.DeleteRepository;
+import org.locationtech.geogig.web.api.StreamWriterException;
+import org.locationtech.geogig.web.api.StreamingWriter;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -117,7 +116,7 @@ public class RepositoryResource extends DeleteRepository {
         return (PageInfo) getRequest().getAttributes().get(PageInfo.KEY);
     }
 
-    private static class RepositorytRepresentation extends JettisonRepresentation {
+    private static class RepositorytRepresentation extends StreamingWriterRepresentation {
 
         private final RepositoryInfo repo;
 
@@ -127,11 +126,11 @@ public class RepositoryResource extends DeleteRepository {
         }
 
         @Override
-        protected void write(XMLStreamWriter w) throws XMLStreamException {
+        public void write(StreamingWriter w) throws StreamWriterException {
             w.writeStartElement("repository");
-            element(w, "id", repo.getId());
-            element(w, "name", repo.getRepoName());
-            element(w, "location", repo.getLocation());
+            w.writeElement("id", repo.getId());
+            w.writeElement("name", repo.getRepoName());
+            w.writeElement("location", repo.getLocation());
             w.writeEndElement();
         }
     }

@@ -4,7 +4,7 @@
  */
 package org.geogig.geoserver.rest;
 
-import static org.locationtech.geogig.rest.repository.RESTUtils.getStringAttribute;
+import static org.locationtech.geogig.web.api.RESTUtils.getStringAttribute;
 
 import java.io.IOException;
 import java.net.URI;

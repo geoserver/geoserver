@@ -7,32 +7,6 @@ This tutorial will show using CSS to style a layer, along with the equivalent SL
 
 To use this tutorial, you will need the :ref:`CSS extension <css_install>` as well as the ``states`` layer from the `default GeoServer configuration <https://github.com/geoserver/geoserver/tree/master/data/release/data/shapefiles>`_.
 
-CSS demo page
--------------
-
-The CSS extension adds a page to GeoServer, linked from the sidebar, called :guilabel:`CSS Styles`. This page is only visible to administrators since it can modify the styles in GeoServer. 
-
-.. figure:: images/css_demo_page.png
-
-   CSS demo page can be used to switch between layers and styles
-
-After loading the CSS page, you can view any of the layers and styles in GeoServer by clicking on one of the links at the top of the page:
-
-* :guilabel:`Edit a different style`
-* :guilabel:`Choose a different layer` to preview this style
-* :guilabel:`Create a new style` and preview with this layer
-* :guilabel:`Set style as default` for the current layer
-* :guilabel:`Change layer associations for this style`
-
-The main box on the page is for the CSS style. At the bottom of the page, you will see tabs, showing:
-
-* :guilabel:`Generated SLD`, showing the equivalent SLD to the CSS written above
-* :guilabel:`Map`, showing a layer preview with the current style
-* :guilabel:`Data`, a list of all the attributes for the given layer (useful for styling by a given attribute)
-* :guilabel:`CSS Reference`, showing the GeoServer documentation on CSS Styling
-
-You can overwrite any style by entering CSS into the form, but it is recommended that you avoid editing preexisting styles since existing SLD styles are not reflected in the CSS. In other words, **CSS can be automatically converted to SLD, but not the reverse.**
-
 Creating a style for the states layer
 -------------------------------------
 
@@ -146,17 +120,28 @@ The SLD file for the default ``states`` layer looks like this::
 
 Now, let's start on a CSS file that accomplishes the same thing. 
 
-First, make sure that the layer being styled is the ``states`` layer. If not, click :guilabel:`Choose a different layer`.
+First, got to the styles page and click on :guilabel:`Add a new style` link to start a new style. In the "New style" page, do the following:
 
-Next, click :guilabel:`Create a new style` link to start a new style. Name it anything you'd like, such as ``csstutorial``.
+* Name the new style anything you'd like, such as ``csstutorial``
+* Choose ``CSS`` as the format
+* In the :guilabel:`Generate a default style` dropdown choose ``Polygon`` and click on :guilabel:`Generate...`
+
+.. figure:: images/tutorial_new_style.png
+
+   Creating a new CSS style
+    
 
 .. highlight:: css
+    
+This creates an example style with a source similar to this one (the colors may differ)::
 
-This creates an example style with the following source::
-
+    /* @title cyan polygon */
     * {
-      fill: lightgrey;
+        stroke: #000000;
+        stroke-width: 0.5;
+        fill: #0099cc;
     }
+
 
 This demonstrates the basic elements of a CSS style:
 
@@ -164,14 +149,23 @@ A **selector** that identifies some part of the data to style. Here, the selecto
 
 **Properties** inside curly braces (``{}``) which specify how the affected features should be styled. Properties consist of name/value pairs separated by colons (``:``).
 
-We can also see the basics for styling a polygon (``fill``), line (``stroke``), or point marker (``mark``). Note that while the stroke and fill use colors, the marker
-simply identifies a Well-Known Mark with the ``symbol`` function.
+We can also see the basics for styling a polygon (``fill``), and its outline (``stroke``).
 
 .. seealso:: 
 
     The :ref:`css_filters` and :ref:`css_properties` pages provide more information about the options available in CSS styles.
 
 .. highlight:: xml
+
+Before moving on, let's save the style and preview it with the states layer:
+
+* Click on "Apply" to save the layer and enable the style preview
+* Now on the "Style Editor page", switch to the "layer preview" tab and click on the "previewing on layer" link, then choose the "states" layer in the dialog
+* The style editor should now show the states layer filled and stroked
+
+.. figure:: images/tutorial_preview.png
+
+   Previewing the CSS style with the state layer
 
 Let's use these basics to start translating the states style. The first rule in the SLD applies to states where the ``PERSONS`` field is less than two million::
 
@@ -315,7 +309,7 @@ Putting it all together, you should now have a style that looks like::
       font-size: 14;
     }
 
-Click the :guilabel:`Submit` button at the bottom of the form to save your changes. Then click the :guilabel:`Map` tab to see your style applied to the layer.
+Click the :guilabel:`Apply` button at the bottom of the form to save your changes.
 
 .. figure:: images/tutorial_noborder.png
 

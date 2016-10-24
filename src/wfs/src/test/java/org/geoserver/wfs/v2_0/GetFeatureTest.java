@@ -109,7 +109,7 @@ public class GetFeatureTest extends WFS20TestSupport {
             es.take().get();
             if(i % 100 == 0) {
                 long curr = System.currentTimeMillis();
-                System.out.println(i + " - " + (curr - start));
+                LOGGER.info(i + " - " + (curr - start));
                 start = curr;
             }
         }

@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -249,7 +251,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     @Override
                     public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         setSelectedTab(index);
-                        target.add(AbstractStylePage.this);
+                        target.add(tabbedPanel);
                     }
                 };
                 link.setDefaultFormProcessing(false);
@@ -282,11 +284,24 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
                     getRequestCycle().setResponsePage(StyleEditPage.class, parameters);
                 }
-                target.add(AbstractStylePage.this);
+                target.add(feedbackPanel);
+                //Update preview if we are on the preview tab
+                if (style != null && tabbedPanel.getSelectedTab() == 2) {
+                    tabbedPanel.visitChildren(StyleEditTabPanel.class, (component, visit) -> {
+                        if (component instanceof OpenLayersPreviewPanel) {
+                            OpenLayersPreviewPanel previewPanel = (OpenLayersPreviewPanel) component;
+                            try {
+                                target.appendJavaScript(previewPanel.getUpdateCommand());
+                            } catch (Exception e) {
+                                LOGGER.log(Level.FINER, e.getMessage(), e);
+                            }
+                        }
+                    });
+                }
             }
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(AbstractStylePage.this);
+                target.add(feedbackPanel);
             }
         });
         add(new AjaxSubmitLink("submit", styleForm) {
@@ -296,7 +311,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             }
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(AbstractStylePage.this);
+                target.add(feedbackPanel);
             }
         });
         Link<StylePage> cancelLink = new Link<StylePage>("cancel") {

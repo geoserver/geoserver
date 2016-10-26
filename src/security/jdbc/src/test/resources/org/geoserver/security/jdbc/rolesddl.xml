@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>  
+  <comment>DDL statements for role database</comment>
+  <entry key="check.table">role_props</entry>
+  <entry key="roles.create">
+	create table roles(name varchar(64) not null,parent varchar(64),  primary key(name))
+  </entry>
+  <entry key="roleprops.create">
+	create table role_props(id bigint auto_increment primary key, rolename varchar(64) not null,propname varchar(64), propvalue varchar(2048))
+  </entry>
+
+  <entry key="userroles.create">
+	create table user_roles(username varchar(128) not null, rolename varchar(64) not null,  primary key(username,rolename))
+  </entry>
+  <entry key="userroles.indexcreate">
+	create index user_roles_idx on user_roles(rolename,username)
+  </entry>
+  <entry key="grouproles.create">
+	create table group_roles(groupname varchar(128) not null, rolename varchar(64) not null,  primary key(groupname,rolename))
+  </entry>
+  <entry key="grouproles.indexcreate">
+	create index group_roles_idx on group_roles(rolename,groupname)
+  </entry>
+
+
+  
+  <entry key="roles.drop">drop table roles</entry>
+  <entry key="roleprops.drop">drop table role_props</entry>
+  <entry key="userroles.drop">drop table user_roles</entry>
+  <entry key="grouproles.drop">drop table group_roles</entry>
+	  
+</properties>

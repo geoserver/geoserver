@@ -95,8 +95,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
     protected FileUploadField fileUploadField;
     protected AjaxSubmitLink uploadLink;
     
-    
-    BufferedImage legendImage;
+    transient BufferedImage legendImage;
     
     public StyleAdminPanel(String id, AbstractStylePage parent) {
         super(id, parent);

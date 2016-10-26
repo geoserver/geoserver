@@ -10,6 +10,9 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-authkey*</include>
+        <include>json*</include>
+        <include>httpcore*</include>
+        <include>httpclient*</include>
       </includes>
     </fileSet>
   </fileSets>

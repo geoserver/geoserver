@@ -42,6 +42,13 @@ public class InternalUserResolver implements UserResolver {
                     return true;
                 }
             }
+            
+            for (String roleServiceName : securityManager.listRoleServices()) {
+                SortedSet<GeoServerRole> userRoles = securityManager.loadRoleService(roleServiceName).getRolesForUser(username);
+                if (userRoles != null && !userRoles.isEmpty()) {
+                    return true;
+                }
+            }
         } catch (IOException e) {
             logger.log(Level.WARNING, e.getMessage(), e);
         }

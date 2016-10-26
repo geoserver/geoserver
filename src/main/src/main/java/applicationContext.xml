@@ -280,7 +280,11 @@
   <bean id="cascadedStoredQueryCallback" class="org.geoserver.catalog.CascadedStoredQueryCallback"/>
   
   <!-- Entity resolver provider, to stop xml attacks via system entity resolution -->
-  <bean id="entityResolverProvider" class="org.geoserver.util.EntityResolverProvider">
+  <!-- The depends-on is important to avoid circularities, when a depends-on is setup a bean does not
+       start creation until the bean it depends onto is created. This ensures GeoServer post-processing
+       inside GeoServerLoader ends up causing the initialization of entityResolverProvider instead of the 
+       opposite, via the ResourcePoolInitializer, and breaks the circularity that would otherwise happen -->
+  <bean id="entityResolverProvider" class="org.geoserver.util.EntityResolverProvider" depends-on="geoServer">
     <constructor-arg ref="geoServer"/>
   </bean>
 </beans>

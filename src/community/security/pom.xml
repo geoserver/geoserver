@@ -29,6 +29,15 @@
         <module>oauth2-google</module>
       </modules>
     </profile>
+    
+    <profile>
+      <id>oauth2-geonode</id>
+      <modules>
+        <module>oauth2</module>
+        <module>oauth2-geonode</module>
+      </modules>
+    </profile>
+    
   </profiles>
 
   <modules>

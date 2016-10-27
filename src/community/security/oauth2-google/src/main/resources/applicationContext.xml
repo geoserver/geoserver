@@ -25,7 +25,7 @@
 		<constructor-arg ref="authenticationManager" />
 	</bean>
 	
-	<bean id="geoServerOAuth2TokenServices"
+	<bean id="googleOAuth2TokenServices"
 		class="org.geoserver.security.oauth2.services.GoogleTokenServices">
 		<property name="accessTokenConverter">
 			<bean

@@ -74,7 +74,7 @@
           <descriptor>release/ext-geogig.xml</descriptor>
           <descriptor>release/ext-jdbcstore.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor>
-		  <descriptor>release/ext-backup-restore.xml</descriptor>
+          <descriptor>release/ext-backup-restore.xml</descriptor>
           <descriptor>release/ext-oauth2-google.xml</descriptor>
           <descriptor>release/ext-oauth2-geonode.xml</descriptor>
         </descriptors>
@@ -454,13 +454,13 @@
     <profile>
       <id>oauth2-google</id>
       <modules>
-        <module>security</module>
+        <module>security/oauth2-google</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-geonode</id>
       <modules>
-        <module>security</module>
+        <module>security/oauth2-geonode</module>
       </modules>
     </profile>
   </profiles>

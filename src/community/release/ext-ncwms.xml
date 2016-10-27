@@ -12,6 +12,8 @@
         <include>gs-colormap*.jar</include>
         <include>gs-ncwms*.jar</include>
         <include>gt-brewer*.jar</include>
+        <include>jfreechart-*jar</include>
+        <include>jcommon-*jar</include>
       </includes>
     </fileSet>
   </fileSets>

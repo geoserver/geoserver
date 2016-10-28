@@ -1,6 +1,7 @@
 package org.geoserver.kml.decorator;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -55,6 +56,8 @@ public class PlacemarkTimeDecoratorFactory implements KmlDecoratorFactory {
         // contaminations between junit tests, and the factory is a singleton in the GS lifetime anyways 
 
         dtformats.add(DateFormat.getDateTimeInstance());
+        dtformats.add(DateFormat.getInstance());
+        
         dtformats.add(new SimpleDateFormat(FeatureTemplate.DATETIME_FORMAT_PATTERN));
         addFormats(dtformats, "dd%MM%yy hh:mm:ss");
         addFormats(dtformats, "MM%dd%yy hh:mm:ss");

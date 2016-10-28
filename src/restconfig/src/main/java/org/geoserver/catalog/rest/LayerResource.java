@@ -100,6 +100,10 @@ public class LayerResource extends AbstractCatalogResource {
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setCallback(new XStreamPersister.Callback() {
             @Override
+            protected Class<LayerInfo> getObjectClass() {
+                return LayerInfo.class;
+            }
+            @Override
             protected CatalogInfo getCatalogObject() {
                 String l = getAttribute( "layer" );
                 if (l == null) {

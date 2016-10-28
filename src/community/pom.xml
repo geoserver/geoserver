@@ -76,6 +76,7 @@
           <descriptor>release/ext-gwc-sqlite.xml</descriptor>
           <descriptor>release/ext-backup-restore.xml</descriptor>
           <descriptor>release/ext-oauth2-google.xml</descriptor>
+          <descriptor>release/ext-oauth2-github.xml</descriptor>
           <descriptor>release/ext-oauth2-geonode.xml</descriptor>
         </descriptors>
       </configuration>
@@ -207,6 +208,7 @@
         <module>backup-restore</module>
         <module>security/oauth2</module>
         <module>security/oauth2-google</module>
+        <module>security/oauth2-github</module>
         <module>security/oauth2-geonode</module>
       </modules>
     </profile>
@@ -455,6 +457,12 @@
       <id>oauth2-google</id>
       <modules>
         <module>security/oauth2-google</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>oauth2-github</id>
+      <modules>
+        <module>security/oauth2-github</module>
       </modules>
     </profile>
     <profile>

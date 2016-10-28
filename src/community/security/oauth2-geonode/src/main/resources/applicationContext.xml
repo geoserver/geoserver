@@ -21,11 +21,6 @@
 	</bean>
 
 	<!-- OAuth2 Security Extension -->
-		<bean id="geoNodeOAuth2AuthenticationProvider"
-			class="org.geoserver.security.oauth2.GeoNodeOAuth2AuthenticationProvider">
-			<constructor-arg ref="authenticationManager" />
-		</bean>
-		
 		<bean id="geoNodeOAuth2TokenServices" class="org.geoserver.security.oauth2.services.GeoNodeTokenServices">
 			<property name="accessTokenConverter">
 				<bean class="org.geoserver.security.oauth2.services.GeoNodeAccessTokenConverter">
@@ -36,7 +31,22 @@
 				</bean>
 			</property>
 		</bean>
-			
+
+		<bean id="geoNodeOAuth2AuthenticationProvider"
+			class="org.geoserver.security.oauth2.GeoNodeOAuth2AuthenticationProvider">
+			<constructor-arg ref="authenticationManager" />
+			<constructor-arg value="geoNodeOAuth2TokenServices" />
+			<constructor-arg value="geoNodeOAuth2SecurityConfiguration" />
+			<constructor-arg value="geoNodeOauth2RestTemplate" />
+		</bean>
+
+		<!-- OAuth2 URL Mangler -->
+		<bean id="geoServerOAuth2AccessTokenURLMangler" class="org.geoserver.security.oauth2.OAuth2AccessTokenURLMangler">
+			<constructor-arg ref="authenticationManager" />
+			<constructor-arg value="geoNodeOAuth2SecurityConfiguration" />
+			<constructor-arg value="geoNodeOauth2RestTemplate" />
+		</bean>
+
 		<!-- wicket ui stuff -->
 	
 		<!-- ui auth provider panel info -->

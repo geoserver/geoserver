@@ -34,6 +34,7 @@ import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
@@ -59,6 +60,8 @@ import org.w3c.dom.NodeList;
  * 
  */
 public class CapabilitiesIntegrationTest extends WMSTestSupport {
+    
+    static final String CONTAINER_GROUP = "containerGroup";
 
     public CapabilitiesIntegrationTest() {
         super();
@@ -91,17 +94,19 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         LayerInfo lakesLayer = catalog.getLayerByName(MockData.LAKES.getLocalPart());
         lakesLayer.setDefaultStyle(lakesStyle);
         catalog.save(lakesLayer);
+        
+        // create a group containing the other group
+        LayerGroupInfo containerGroup = catalog.getFactory().createLayerGroup();
+        LayerGroupInfo nature = catalog.getLayerGroupByName(NATURE_GROUP);
+        containerGroup.setName(CONTAINER_GROUP);
+        containerGroup.setMode(Mode.CONTAINER);
+        containerGroup.getLayers().add(nature);
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.calculateLayerGroupBounds(containerGroup);
+        catalog.add(containerGroup);
     }
     
     
-//    @Before
-//    public void setProxyURL() throws Exception {
-//
-//        GeoServerInfo global = getGeoServer().getGlobal();
-//        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
-//        getGeoServer().save(global);
-//    }
-
     @Override
     protected void registerNamespaces(Map<String, String> namespaces) {
         namespaces.put("wms", "http://www.opengis.net/wms");
@@ -159,7 +164,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         NodeList nodeLayers = xpath.getMatchingNodes(
                 "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer", dom);
 
-        assertEquals(layers.size() + groups.size(), nodeLayers.getLength());
+        assertEquals(layers.size() + groups.size() - 1 /* nested layer group */, nodeLayers.getLength());
     }
 
     @org.junit.Test 
@@ -601,6 +606,27 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         // check the style name got prefixed too
         assertXpathEvaluatesTo("cite:Lakes",
                 "//wms:Layer[wms:Name='cite:Lakes']/wms:Style[1]/wms:Name", doc);
+    }
+    
+    @Test
+    public void testDuplicateLayerGroup() throws Exception {
+        // see https://osgeo-org.atlassian.net/browse/GEOS-6154
+        Catalog catalog = getCatalog();
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        lakes.setAdvertised(false);
+        catalog.save(lakes);
+        
+        try {
+            Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+            // print(doc);
+            
+            // should show up just once
+            assertXpathEvaluatesTo("1", "count(//wms:Layer[wms:Name='nature'])", doc);
+            assertXpathEvaluatesTo("1", "count(//wms:Layer[wms:Title='containerGroup']/wms:Layer[wms:Name='nature'])", doc);
+        } finally {
+            lakes.setAdvertised(true);
+            catalog.save(lakes);
+        }
     }
 
 }

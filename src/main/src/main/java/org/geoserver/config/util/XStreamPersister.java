@@ -1542,24 +1542,8 @@ public class XStreamPersister {
             Object catalogObject = callback.getCatalogObject();
             
             if (catalogObject != null) {
-                Class i = null;
-                if (emptyObject instanceof CoverageInfo) {
-                    i = CoverageInfo.class;
-                } else if (emptyObject instanceof CoverageStoreInfo) {
-                    i = CoverageStoreInfo.class;
-                } else if (emptyObject instanceof DataStoreInfo) {
-                    i = DataStoreInfo.class;
-                } else if (emptyObject instanceof FeatureTypeInfo) {
-                    i = FeatureTypeInfo.class;
-                } else if (emptyObject instanceof LayerGroupInfo) {
-                    i = LayerGroupInfo.class;
-                } else if (emptyObject instanceof LayerInfo) {
-                    i = LayerInfo.class;
-                } else if (emptyObject instanceof WMSLayerInfo) {
-                    i = WMSLayerInfo.class;
-                } else if (emptyObject instanceof WMSStoreInfo) {
-                    i = WMSStoreInfo.class;
-                }
+                Class i = callback.getObjectClass();
+                
                 if (i != null) {
                     unsafeCopy(catalogObject, emptyObject, i);
                 }

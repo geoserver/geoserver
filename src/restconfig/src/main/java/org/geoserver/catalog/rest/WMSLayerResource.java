@@ -10,6 +10,7 @@ import java.util.List;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -183,6 +184,10 @@ public class WMSLayerResource extends AbstractCatalogResource {
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setHideFeatureTypeAttributes();
         persister.setCallback( new XStreamPersister.Callback() {
+            @Override
+            protected Class<WMSLayerInfo> getObjectClass() {
+                return WMSLayerInfo.class;
+            }
             @Override
             protected CatalogInfo getCatalogObject() {
                 String workspace = getAttribute("workspace");

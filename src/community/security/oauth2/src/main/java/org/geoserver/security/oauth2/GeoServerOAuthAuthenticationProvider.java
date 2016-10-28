@@ -14,7 +14,6 @@ import org.geoserver.security.filter.AbstractFilterProvider;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.validation.SecurityConfigValidator;
 import org.geotools.util.logging.Logging;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
@@ -31,17 +30,26 @@ public abstract class GeoServerOAuthAuthenticationProvider extends AbstractFilte
 
     RemoteTokenServices tokenServices;
 
-    @Autowired
     GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration;
 
-    @Autowired
     OAuth2RestTemplate geoServerOauth2RestTemplate;
 
     private ApplicationContext context;
 
-    public GeoServerOAuthAuthenticationProvider(GeoServerSecurityManager securityManager) {
+    public GeoServerOAuthAuthenticationProvider(
+            GeoServerSecurityManager securityManager, 
+            String tokenServices, String oauth2SecurityConfiguration, String geoServerOauth2RestTemplate) {
+        
+        assert securityManager != null;
+        
         context = securityManager.getApplicationContext();
-        tokenServices = context.getBean(GeoServerOAuthRemoteTokenServices.class);
+        
+        assert context != null;
+        
+        this.tokenServices = (RemoteTokenServices) context.getBean(tokenServices);
+        this.oauth2SecurityConfiguration = (GeoServerOAuth2SecurityConfiguration) context.getBean(oauth2SecurityConfiguration);
+        this.geoServerOauth2RestTemplate = (OAuth2RestTemplate) context.getBean(geoServerOauth2RestTemplate);
+        
         securityManager.addListener(this);
     }
 
@@ -49,15 +57,10 @@ public abstract class GeoServerOAuthAuthenticationProvider extends AbstractFilte
     public abstract void configure(XStreamPersister xp);
 
     @Override
-    public Class<? extends GeoServerSecurityFilter> getFilterClass() {
-        return GeoServerOAuthAuthenticationFilter.class;
-    }
+    public abstract Class<? extends GeoServerSecurityFilter> getFilterClass();
 
     @Override
-    public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
-        return new GeoServerOAuthAuthenticationFilter(config, tokenServices,
-                oauth2SecurityConfiguration, geoServerOauth2RestTemplate);
-    }
+    public abstract GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config);
 
     @Override
     public SecurityConfigValidator createConfigurationValidator(

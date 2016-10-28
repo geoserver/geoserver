@@ -390,6 +390,59 @@ public class ExecuteTest extends WPSTestSupport {
             "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/wfs:FeatureCollection", d);
     }
     
+    /** 
+     * Test GEOS-5663 https://osgeo-org.atlassian.net/browse/GEOS-5663
+     * Location is removed from collections
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testFeatureCollectionInlineWithLocation() throws Exception { 
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
+              "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
+              "<ows:Identifier>gs:Nearest</ows:Identifier>" + 
+               "<wps:DataInputs>" + 
+                  "<wps:Input>" + 
+                      "<ows:Identifier>features</ows:Identifier>" + 
+                      "<wps:Data>" +
+                        "<wps:ComplexData>" + 
+                             readFileIntoString("places-FeatureCollectionLocation.xml") + 
+                        "</wps:ComplexData>" + 
+                      "</wps:Data>" +     
+                  "</wps:Input>" + 
+                  "<wps:Input>"+    
+                      "<ows:Identifier>point</ows:Identifier>"+
+                      "<wps:Data>"+
+                         "<wps:ComplexData mimeType=\"text/xml; subtype=gml/3.1.1\"><![CDATA[POINT(-96 41)]]></wps:ComplexData>"+
+                      "</wps:Data>"+
+                  "</wps:Input>"+
+                  "<wps:Input>"+
+                      "<ows:Identifier>crs</ows:Identifier>"+
+                      "<wps:Data>"+
+                           "<wps:LiteralData>EPSG:4326</wps:LiteralData>"+
+                      "</wps:Data>"+
+                 "</wps:Input>"+ 
+                 "</wps:DataInputs>" +
+                 "<wps:ResponseForm>" +  
+                   "<wps:ResponseDocument storeExecuteResponse='false'>" + 
+                     "<wps:Output>" +
+                       "<ows:Identifier>result</ows:Identifier>" +
+                     "</wps:Output>" + 
+                   "</wps:ResponseDocument>" +
+                 "</wps:ResponseForm>" + 
+               "</wps:Execute>";
+        
+        Document d = postAsDOM( "wps", xml );
+        // print(d);
+        checkValidationErrors(d);
+        
+        assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
+        
+        assertXpathExists( "/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        assertXpathExists( 
+            "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/wfs:FeatureCollection", d);
+    }
+    
     @Test
     public void testFeatureCollectionInlineBoundedBy() throws Exception { // Standard Test A.4.4.2, A.4.4.4
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 

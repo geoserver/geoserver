@@ -608,7 +608,7 @@ Function Port
   Pop $PortHWND
   ${NSD_OnChange} $PortHWND PortCheck
 
-  ${NSD_CreateLabel} 110u 40u 120u 14u "Valid range is 1024-65535." 
+  ${NSD_CreateLabel} 110u 40u 120u 14u "Valid range is 80, 1024-65535." 
 
   nsDialogs::Show
 
@@ -623,15 +623,20 @@ Function PortCheck
 
 
   ; Check for illegal values of $Port
-  ${If} $Port < 1024        ; Too low
-  ${OrIf} $Port > 65535     ; Too high
-    GetDlgItem $0 $HWNDPARENT 1 ; Next
-    EnableWindow $0 0 ; Disable
-  ${Else}
+  ${If} $Port = 80
     GetDlgItem $0 $HWNDPARENT 1 ; Next
     EnableWindow $0 1 ; Enable
-  ${EndIf}
-
+  ${Else}  
+     ${If} $Port < 1024        ; Too low
+     ${OrIf} $Port > 65535     ; Too high
+      GetDlgItem $0 $HWNDPARENT 1 ; Next
+      EnableWindow $0 0 ; Disable
+     ${Else}
+      GetDlgItem $0 $HWNDPARENT 1 ; Next
+      EnableWindow $0 1 ; Enable
+     ${EndIf}
+   ${EndIf}
+   
 FunctionEnd
 
 ; Manual vs service selection

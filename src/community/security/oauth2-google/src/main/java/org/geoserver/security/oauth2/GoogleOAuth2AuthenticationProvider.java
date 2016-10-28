@@ -6,6 +6,8 @@ package org.geoserver.security.oauth2;
 
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.filter.GeoServerSecurityFilter;
 
 /**
  * @author Alessio Fabiani, GeoSolutions S.A.S.
@@ -13,10 +15,12 @@ import org.geoserver.security.GeoServerSecurityManager;
  */
 public class GoogleOAuth2AuthenticationProvider extends GeoServerOAuthAuthenticationProvider {
 
-    public GoogleOAuth2AuthenticationProvider(GeoServerSecurityManager securityManager) {
-        super(securityManager);
+    public GoogleOAuth2AuthenticationProvider(
+            GeoServerSecurityManager securityManager, 
+            String tokenServices, String oauth2SecurityConfiguration, String geoServerOauth2RestTemplate) {
+        super(securityManager, tokenServices, oauth2SecurityConfiguration, geoServerOauth2RestTemplate);
     }
-
+    
     @Override
     public void handlePostChanged(GeoServerSecurityManager securityManager) {
         // Nothing to do
@@ -27,4 +31,14 @@ public class GoogleOAuth2AuthenticationProvider extends GeoServerOAuthAuthentica
         xp.getXStream().alias("googleOauth2Authentication", GoogleOAuth2FilterConfig.class);
     }
 
+    @Override
+    public Class<? extends GeoServerSecurityFilter> getFilterClass() {
+        return GoogleOAuthAuthenticationFilter.class;
+    }
+    
+    @Override
+    public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
+        return new GoogleOAuthAuthenticationFilter(config, tokenServices,
+                oauth2SecurityConfiguration, geoServerOauth2RestTemplate);
+    }
 }

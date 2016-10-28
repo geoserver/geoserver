@@ -14,17 +14,12 @@
 	</parent>
 
 	<groupId>org.geoserver.community</groupId>
-	<artifactId>gs-sec-oauth2</artifactId>
+	<artifactId>gs-sec-oauth2-github</artifactId>
 	<packaging>jar</packaging>
 	<version>2.11-SNAPSHOT</version>
-	<name>GeoServer OAuth2 Connect Security Module</name>
-
-	<properties>
-		<spring.security.jwt.version>1.0.2.RELEASE</spring.security.jwt.version>
-	</properties>
+	<name>GeoServer OAuth2 Connect Security Module - GitHub Token Service</name>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>org.geoserver</groupId>
 			<artifactId>gs-main</artifactId>
@@ -32,8 +27,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.geoserver.web</groupId>
-			<artifactId>gs-web-sec-core</artifactId>
+			<groupId>org.geoserver.community</groupId>
+			<artifactId>gs-sec-oauth2</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -44,10 +39,10 @@
 		</dependency>
 
 		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<classifier>jdk15</classifier>
 		</dependency>
-
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
@@ -66,28 +61,12 @@
 		</dependency>
 
 		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<version>2.6.3</version>
-			<optional>true</optional>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>org.geoserver.community</groupId>
+			<artifactId>gs-sec-oauth2</artifactId>
+			<version>${project.version}</version>
+			<classifier>tests</classifier>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymockclassextension</artifactId>
-			<scope>test</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>org.geoserver</groupId>
 			<artifactId>gs-main</artifactId>
@@ -127,5 +106,35 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymockclassextension</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

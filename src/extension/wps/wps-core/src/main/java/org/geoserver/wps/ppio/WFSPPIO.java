@@ -130,7 +130,7 @@ public class WFSPPIO extends XMLPPIO {
     private SimpleFeatureCollection eliminateFeatureBounds(SimpleFeatureCollection fc) {
         final SimpleFeatureType original = fc.getSchema();
         List<String> names = new ArrayList<String>();
-        boolean alternateGeometry = true;
+        boolean alternateGeometry = false;
         for(AttributeDescriptor ad : original.getAttributeDescriptors()) {
             final String name = ad.getLocalName();
             if(!"boundedBy".equals(name) && !"metadataProperty".equals(name)) {

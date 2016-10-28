@@ -621,20 +621,17 @@ Function PortCheck
 
   ${NSD_GetText} $PortHWND $Port
 
+
   ; Check for illegal values of $Port
-  ${If} $Port = 80
+  ${If} $Port < 1024        ; Too low
+  ${OrIf} $Port > 65535     ; Too high
+    GetDlgItem $0 $HWNDPARENT 1 ; Next
+    EnableWindow $0 0 ; Disable
+  ${Else}
     GetDlgItem $0 $HWNDPARENT 1 ; Next
     EnableWindow $0 1 ; Enable
-  ${ElseIf} $Port < 1024      ; Too low
-  ${OrIf} $Port > 65535       ; Too high
-     GetDlgItem $0 $HWNDPARENT 1 ; Next
-     EnableWindow $0 0 ; Disable
-   ${Else}
-     GetDlgItem $0 $HWNDPARENT 1 ; Next
-     EnableWindow $0 1 ; Enable
-   ${EndIf}
   ${EndIf}
-  
+
 FunctionEnd
 
 ; Manual vs service selection

@@ -21,9 +21,4 @@
 	<!-- Scan for auto-wiring classes in spring saml packages -->
 	<context:component-scan base-package="org.geoserver.security.oauth2" />
 
-	<!-- OAuth2 URL Manglers -->
-	<bean id="geoServerOAuth2AccessTokenURLMangler" class="org.geoserver.security.oauth2.OAuth2AccessTokenURLMangler">
-		<constructor-arg ref="authenticationManager" />
-	</bean>
-
 </beans>

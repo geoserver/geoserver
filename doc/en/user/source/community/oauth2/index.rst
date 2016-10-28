@@ -254,6 +254,146 @@ Configure the GeoServer OAuth2 filter
    .. figure:: images/oauth2filter004.png
       :align: center
 
+SSL Trusted Certificates
+------------------------
+
+When using a custom ``Keystore`` or trying to access a non-trusted or self-signed SSL-protected OAuth2 Provider from a non-SSH connection, you will need to add the certificated to the JVM ``Keystore``.
+
+In order to do this you can follow the next steps:
+
+    In this example we are going to
+	
+	#. Retrieve SSL Certificates from Google domains:
+	
+		"Access Token URI" = https://accounts.google.com/o/oauth2/token therefore we need to trust ``https://accounts.google.com`` or (``accounts.google.com:443``)
+		"Check Token Endpoint URL" = https://www.googleapis.com/oauth2/v1/tokeninfo therefore we need to trust ``https://www.googleapis.com`` or (``www.googleapis.com:443``)
+		
+		.. note:: You will need to get and trust certificated from every different HTTPS URL used on OAuth2 Endpoints.
+	
+	#. Store SSL Certificates on local hard-disk
+
+	#. Add SSL Certificates to the Java Keystore
+	
+	#. Enable the JVM to check for SSL Certificates from the Keystore
+	
+1. Retrieve the SSL Certificates from Google domains
+
+	Use the ``openssl`` command in order to dump the certificate
+	
+	For ``https://accounts.google.com``
+	
+		.. code-block:: shell
+		
+			openssl s_client -connect accounts.google.com:443
+			
+		.. figure:: images/google_ssl_001.png
+		   :align: center
+
+	And for ``https://www.googleapis.com``
+	
+		.. code-block:: shell
+		
+			openssl s_client -connect www.googleapis.com:443
+			
+		.. figure:: images/google_ssl_002.png
+		   :align: center
+
+2. Store SSL Certificates on local hard-disk
+
+	Copy-and-paste the two sections ``-BEGIN CERTIFICATE-``, ``-END CERTIFICATE-`` and save them into two different ``.cert`` files
+	
+	.. note:: ``.cert`` file are plain text files containing the ASCII characters included on the ``-BEGIN CERTIFICATE-``, ``-END CERTIFICATE-`` sections
+	
+	``google.cert`` (or whatever name you want with ``.cert`` extension)
+	
+        .. figure:: images/google_ssl_003.png
+           :align: center
+	
+	``google-apis.cert`` (or whatever name you want with ``.cert`` extension)
+	
+        .. figure:: images/google_ssl_004.png
+           :align: center
+
+3. Add SSL Certificates to the Java Keystore
+
+	You can use the Java command ``keytool`` like this
+	
+	``google.cert`` (or whatever name you want with ``.cert`` extension)
+	
+		.. code-block:: shell
+		
+			keytool -import -noprompt -trustcacerts -alias google -file google.cert -keystore ${KEYSTOREFILE} -storepass ${KEYSTOREPASS}
+
+	``google-apis.cert`` (or whatever name you want with ``.cert`` extension)
+	
+		.. code-block:: shell
+		
+			keytool -import -noprompt -trustcacerts -alias google-apis -file google-apis.cert -keystore ${KEYSTOREFILE} -storepass ${KEYSTOREPASS}
+
+    or, alternatively, you can use some graphic tool which helps you managing the SSL Certificates and Keystores, like `Portecle <http://portecle.sourceforge.net/>`_
+	
+		.. code-block:: shell
+		
+			java -jar c:\apps\portecle-1.9\portecle.jar
+	
+        .. figure:: images/google_ssl_005.png
+           :align: center
+
+        .. figure:: images/google_ssl_006.png
+           :align: center
+
+        .. figure:: images/google_ssl_007.png
+           :align: center
+
+        .. figure:: images/google_ssl_008.png
+           :align: center
+
+        .. figure:: images/google_ssl_009.png
+           :align: center
+
+        .. figure:: images/google_ssl_010.png
+           :align: center
+
+        .. figure:: images/google_ssl_011.png
+           :align: center
+
+        .. figure:: images/google_ssl_012.png
+           :align: center
+
+        .. figure:: images/google_ssl_013.png
+           :align: center
+
+4. Enable the JVM to check for SSL Certificates from the Keystore
+
+	In order to do this, you need to pass a ``JAVA_OPTION`` to your JVM:
+	
+		.. code-block:: shell
+		
+			-Djavax.net.ssl.trustStore=F:\tmp\keystore.key
+
+5. Restart your server
+
+.. note:: Here below you can find a bash script which simplifies the Keystore SSL Certificates importing. Use it at your conveninece.
+
+	.. code-block:: shell
+
+		HOST=myhost.example.com
+		PORT=443
+		KEYSTOREFILE=dest_keystore
+		KEYSTOREPASS=changeme
+
+		# get the SSL certificate
+		openssl s_client -connect ${HOST}:${PORT} </dev/null \
+			| sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ${HOST}.cert
+
+		# create a keystore and import certificate
+		keytool -import -noprompt -trustcacerts \
+			-alias ${HOST} -file ${HOST}.cert \
+			-keystore ${KEYSTOREFILE} -storepass ${KEYSTOREPASS}
+
+		# verify we've got it.
+		keytool -list -v -keystore ${KEYSTOREFILE} -storepass ${KEYSTOREPASS} -alias ${HOST}
+
 Test the Google OAuth2 Provider Based Login
 -------------------------------------------
 

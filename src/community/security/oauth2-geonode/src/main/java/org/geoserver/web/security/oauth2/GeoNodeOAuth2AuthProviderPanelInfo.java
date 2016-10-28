@@ -4,8 +4,9 @@
  */
 package org.geoserver.web.security.oauth2;
 
-import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
 import org.geoserver.security.oauth2.GeoNodeOAuth2FilterConfig;
+import org.geoserver.security.oauth2.GeoNodeOAuthAuthenticationFilter;
+import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
 import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 
 /**
@@ -21,7 +22,7 @@ public class GeoNodeOAuth2AuthProviderPanelInfo
 
     public GeoNodeOAuth2AuthProviderPanelInfo() {
         setComponentClass(GeoNodeOAuth2AuthProviderPanel.class);
-        setServiceClass(GeoServerOAuthAuthenticationFilter.class);
+        setServiceClass(GeoNodeOAuthAuthenticationFilter.class);
         setServiceConfigClass(GeoNodeOAuth2FilterConfig.class);
     }
 }

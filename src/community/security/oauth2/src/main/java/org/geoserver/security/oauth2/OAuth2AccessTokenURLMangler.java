@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.geoserver.ows.URLMangler;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,18 +21,41 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
  */
 public class OAuth2AccessTokenURLMangler implements URLMangler {
 
-    @Autowired
     GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration;
 
-    @Autowired
     OAuth2RestTemplate geoServerOauth2RestTemplate;
 
     private ApplicationContext context;
 
-    public OAuth2AccessTokenURLMangler(GeoServerSecurityManager securityManager) {
+    public OAuth2AccessTokenURLMangler(
+            GeoServerSecurityManager securityManager,
+            String oauth2SecurityConfiguration, String geoServerOauth2RestTemplate) {
+        
+        assert securityManager != null;
+        
         context = securityManager.getApplicationContext();
+        
+        assert context != null;
+        
+        this.oauth2SecurityConfiguration = (GeoServerOAuth2SecurityConfiguration) context.getBean(oauth2SecurityConfiguration);
+        this.geoServerOauth2RestTemplate = (OAuth2RestTemplate) context.getBean(geoServerOauth2RestTemplate);
     }
 
+    public OAuth2AccessTokenURLMangler(
+            GeoServerSecurityManager securityManager,
+            GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration, 
+            OAuth2RestTemplate geoServerOauth2RestTemplate) {
+        
+        assert securityManager != null;
+        
+        context = securityManager.getApplicationContext();
+        
+        assert context != null;
+        
+        this.oauth2SecurityConfiguration = oauth2SecurityConfiguration;
+        this.geoServerOauth2RestTemplate = geoServerOauth2RestTemplate;
+    }
+    
     /**
      * @return the context
      */

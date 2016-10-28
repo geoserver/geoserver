@@ -6,6 +6,7 @@ package org.geoserver.web.security.oauth2;
 
 import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
 import org.geoserver.security.oauth2.GoogleOAuth2FilterConfig;
+import org.geoserver.security.oauth2.GoogleOAuthAuthenticationFilter;
 import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 
 /**
@@ -20,7 +21,7 @@ public class GoogleOAuth2AuthProviderPanelInfo
 
     public GoogleOAuth2AuthProviderPanelInfo() {
         setComponentClass(GoogleOAuth2AuthProviderPanel.class);
-        setServiceClass(GeoServerOAuthAuthenticationFilter.class);
+        setServiceClass(GoogleOAuthAuthenticationFilter.class);
         setServiceConfigClass(GoogleOAuth2FilterConfig.class);
     }
 }

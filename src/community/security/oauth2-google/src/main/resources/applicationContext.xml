@@ -20,11 +20,7 @@
 		<constructor-arg index="1" value="GeoServer Security OAuth2 Google" />
 	</bean>
 
-	<bean id="googleOAuth2AuthenticationProvider"
-		class="org.geoserver.security.oauth2.GoogleOAuth2AuthenticationProvider">
-		<constructor-arg ref="authenticationManager" />
-	</bean>
-	
+	<!-- OAuth2 Security Extension -->
 	<bean id="googleOAuth2TokenServices"
 		class="org.geoserver.security.oauth2.services.GoogleTokenServices">
 		<property name="accessTokenConverter">
@@ -40,6 +36,14 @@
 		</property>
 	</bean>
 
+	<bean id="googleOAuth2AuthenticationProvider"
+		class="org.geoserver.security.oauth2.GoogleOAuth2AuthenticationProvider">
+		<constructor-arg ref="authenticationManager" />
+		<constructor-arg value="googleOAuth2TokenServices" />
+		<constructor-arg value="googleOAuth2SecurityConfiguration" />
+		<constructor-arg value="googleOauth2RestTemplate" />
+	</bean>
+
 	<!-- ui auth provider panel info -->
 	<bean id="googleOAuth2AuthPanelInfo"
 		class="org.geoserver.web.security.oauth2.GoogleOAuth2AuthProviderPanelInfo">
@@ -48,5 +52,16 @@
 		<property name="titleKey" value="GoogleOAuth2AuthProviderPanel.title" />
 		<property name="descriptionKey" value="GoogleOAuth2AuthProviderPanel.description" />
 	</bean>
+
+	<!-- login button -->
+ 	<bean id="googleFormLoginButton" class="org.geoserver.web.LoginFormInfo">
+ 		<property name="id" value="googleFormLoginButton" />
+ 		<property name="titleKey" value="" />
+ 		<property name="descriptionKey" value="GoogleOAuth2AuthProviderPanel.description" />
+ 		<property name="componentClass" value="org.geoserver.web.security.oauth2.GoogleOAuth2AuthProviderPanel" />
+ 		<property name="name" value="google" />
+ 		<property name="icon" value="google.png" />
+ 		<property name="loginPath" value="web/j_spring_oauth2_google_login" />
+ 	</bean>
 
 </beans>

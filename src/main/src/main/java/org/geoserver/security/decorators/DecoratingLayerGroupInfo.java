@@ -17,8 +17,8 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -164,7 +164,7 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     
     @Override
     public void accept(CatalogVisitor visitor) {
-        delegate.accept(visitor);
+        visitor.visit(this);
     }
     
     @Override
@@ -206,5 +206,15 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     @Override
     public List<MetadataLinkInfo> getMetadataLinks() {
         return delegate.getMetadataLinks();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        return LayerGroupInfo.equals(this, obj);
+    }
+    
+    @Override
+    public int hashCode() {
+        return LayerGroupInfo.hashCode(this);
     }
 }

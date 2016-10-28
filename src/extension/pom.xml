@@ -314,6 +314,13 @@
       </modules>
     </profile>
 
+ <profile>
+      <id>vectortiles</id>
+        <modules>
+          <module>vectortiles</module>
+        </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -351,6 +358,7 @@
         <module>grib</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
+	<module>vectortiles</module>
       </modules>
     </profile>
 
@@ -391,6 +399,7 @@
         <module>grib</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
+        <module>vectortiles</module>
       </modules>
     </profile>
 

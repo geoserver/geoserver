@@ -5,13 +5,11 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +24,7 @@ import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -45,6 +44,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class CapabilitiesTest extends WMSTestSupport {
+    
+    static final String CONTAINER_GROUP = "containerGroup";
 
     public CapabilitiesTest() {
         super();
@@ -79,6 +80,16 @@ public class CapabilitiesTest extends WMSTestSupport {
         StyleInfo tigerRoadsStyle = catalog.getStyleByName(ws, "tiger_roads");
         lakesLayer.getStyles().add(tigerRoadsStyle);
         catalog.save(lakesLayer);
+        
+        // create a group containing the other group
+        LayerGroupInfo containerGroup = catalog.getFactory().createLayerGroup();
+        LayerGroupInfo nature = catalog.getLayerGroupByName(NATURE_GROUP);
+        containerGroup.setName(CONTAINER_GROUP);
+        containerGroup.setMode(Mode.CONTAINER);
+        containerGroup.getLayers().add(nature);
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.calculateLayerGroupBounds(containerGroup);
+        catalog.add(containerGroup);
     }
 
 
@@ -129,7 +140,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         NodeList nodeLayers = xpath.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/Layer",
                 dom);
 
-        assertEquals(layers.size() + groups.size(), nodeLayers.getLength());
+        assertEquals(layers.size() + groups.size() - 1 /* nested group */, nodeLayers.getLength());
     }
 
     @Test
@@ -287,7 +298,6 @@ public class CapabilitiesTest extends WMSTestSupport {
         getCatalog().add(lg);
         
         try {
-            System.out.println(getAsString("wms?service=WMS&request=getCapabilities&version=1.1.1"));
             Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
             //print(doc);
             assertXpathEvaluatesTo("1", "count(//Layer[Name='MyLayerGroup']/Attribution)", doc);
@@ -535,5 +545,27 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertXpathExists("//Layer[Name='cite:Lakes']/Style[2]/Name", doc);
         assertXpathExists("//Layer[Name='cite:Lakes']/Style[2]/Title", doc);
         assertXpathExists("//Layer[Name='cite:Lakes']/Style[2]/LegendURL", doc);
+    }
+    
+    @Test
+    public void testDuplicateLayerGroup() throws Exception {
+        // see https://osgeo-org.atlassian.net/browse/GEOS-6154
+        Catalog catalog = getCatalog();
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        lakes.setAdvertised(false);
+        catalog.save(lakes);
+        
+        try {
+            Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+            // print(doc);
+            
+            // nested
+            assertXpathEvaluatesTo("1", "count(//Layer[Title='containerGroup']/Layer[Name='nature'])", doc);
+            // no other instances
+            assertXpathEvaluatesTo("1", "count(//Layer[Name='nature'])", doc);
+        } finally {
+            lakes.setAdvertised(true);
+            catalog.save(lakes);
+        }
     }
 }

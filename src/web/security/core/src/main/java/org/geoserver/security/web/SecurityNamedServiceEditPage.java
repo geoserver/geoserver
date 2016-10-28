@@ -202,7 +202,10 @@ public class SecurityNamedServiceEditPage<T extends SecurityNamedServiceConfig>
             //filter by strict equals
             List<SecurityNamedServicePanelInfo> l = new ArrayList(panelInfos);
             for (Iterator<SecurityNamedServicePanelInfo> it = l.iterator(); it.hasNext();) {
-                if (!it.next().getServiceClass().equals(serviceClass)) {
+                final SecurityNamedServicePanelInfo targetPanelInfo = it.next();
+                if (!targetPanelInfo.getServiceClass().equals(serviceClass)) {
+                    it.remove();
+                } else if (!targetPanelInfo.getServiceConfigClass().equals(config.getClass())) {
                     it.remove();
                 }
             }

@@ -169,7 +169,12 @@ public class XStreamPersister {
      * Callback interface or xstream persister.
      */
     public static class Callback {
+        /** Return the CatalogInfo object being modified by the current request */
         protected CatalogInfo getCatalogObject() { return null; }
+        /** Return the ServiceInfo object being modified by the current request */
+        protected ServiceInfo getServiceObject() { return null; }
+        /** Return the class of the object being acted upon by the current request */
+        protected Class<? extends Info> getObjectClass() { return null; }
         protected void postEncodeWorkspace( WorkspaceInfo ws, HierarchicalStreamWriter writer, MarshallingContext context ) {
         }
         
@@ -442,6 +447,7 @@ public class XStreamPersister {
         xs.registerLocalConverter( GeneralEnvelope.class, "crs", new SRSConverter() );
         
         // ServiceInfo
+        xs.registerConverter(new ServiceInfoConverter());
         xs.omitField( impl(ServiceInfo.class), "geoServer" );
 
         // Converters
@@ -1516,7 +1522,8 @@ public class XStreamPersister {
      * reading in the XStream request, so that primitive objects are appropriately initialized.
      * 
      * Supported implementations of {@link AbstractCatalogResource} must implement 
-     * {@link XStreamPersister.Callback.getCatalogObject()} when providing an instance of 
+     * {@link XStreamPersister.Callback.getCatalogObject()} and 
+     * {@link XStreamPersister.Callback.getObjectClass()} when providing an instance of 
      * {@link XStreamPersister.Callback} to {@link XStreamPersister} in 
      * {@link AbstractCatalogResource.configurePersister(XStreamPersister, DataFormat)}
      */
@@ -1531,27 +1538,12 @@ public class XStreamPersister {
         protected Object instantiateNewInstance(HierarchicalStreamReader reader,
                 UnmarshallingContext context) {
             Object emptyObject = super.instantiateNewInstance(reader, context);
+            //Acquire the current CatalogInfo being acted upon object before unmarshaling the Xstream
             Object catalogObject = callback.getCatalogObject();
             
             if (catalogObject != null) {
-                Class i = null;
-                if (emptyObject instanceof CoverageInfo) {
-                    i = CoverageInfo.class;
-                } else if (emptyObject instanceof CoverageStoreInfo) {
-                    i = CoverageStoreInfo.class;
-                } else if (emptyObject instanceof DataStoreInfo) {
-                    i = DataStoreInfo.class;
-                } else if (emptyObject instanceof FeatureTypeInfo) {
-                    i = FeatureTypeInfo.class;
-                } else if (emptyObject instanceof LayerGroupInfo) {
-                    i = LayerGroupInfo.class;
-                } else if (emptyObject instanceof LayerInfo) {
-                    i = LayerInfo.class;
-                } else if (emptyObject instanceof WMSLayerInfo) {
-                    i = WMSLayerInfo.class;
-                } else if (emptyObject instanceof WMSStoreInfo) {
-                    i = WMSStoreInfo.class;
-                }
+                Class i = callback.getObjectClass();
+                
                 if (i != null) {
                     unsafeCopy(catalogObject, emptyObject, i);
                 }
@@ -2289,6 +2281,50 @@ public class XStreamPersister {
                 obj.setClientProperties(new HashMap<Object, Object>());
             }
             return obj;
+        }
+    }
+    
+    /**
+     * Converter for all {@link ServiceInfo} resources. Obtains the appropriate service object in 
+     * {@link #instantiateNewInstance(HierarchicalStreamReader, UnmarshallingContext)} prior to 
+     * reading in the XStream request, so that primitive objects are appropriately initialized.
+     * 
+     * Supported implementations of {@link ServiceSettingsResource} must implement 
+     * {@link XStreamPersister.Callback.getServiceObject()} and 
+     * {@link XStreamPersister.Callback.getObjectClass()} when providing an instance of 
+     * {@link XStreamPersister.Callback} to {@link XStreamPersister} in 
+     * {@link ServiceSettingsResource.configurePersister(XStreamPersister, DataFormat)}
+     */
+    public class ServiceInfoConverter extends AbstractReflectionConverter {
+    
+        public ServiceInfoConverter() {
+            super(ServiceInfo.class);
+        }
+        public ServiceInfoConverter(Class<? extends ServiceInfo> clazz) {
+            super(clazz);
+        }
+        
+        public Object doUnmarshal(Object result,
+                HierarchicalStreamReader reader, UnmarshallingContext context) {
+            ServiceInfoImpl obj = (ServiceInfoImpl) super.doUnmarshal(result, reader, context);
+            
+            return obj;
+        }
+        @Override
+        protected Object instantiateNewInstance(HierarchicalStreamReader reader,
+                UnmarshallingContext context) {
+            Object emptyObject = super.instantiateNewInstance(reader, context);
+            //Acquire the current CatalogInfo being acted upon object before unmarshaling the Xstream
+            Object serviceObject = callback.getServiceObject();
+            
+            if (serviceObject != null) {
+                Class i = callback.getObjectClass();
+                
+                if (i != null) {
+                    OwsUtils.copy(serviceObject, emptyObject, i);
+                }
+            }
+            return emptyObject;
         }
     }
 }

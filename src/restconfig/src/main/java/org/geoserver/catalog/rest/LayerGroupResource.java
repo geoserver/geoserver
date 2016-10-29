@@ -8,6 +8,7 @@ package org.geoserver.catalog.rest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -133,6 +134,10 @@ public class LayerGroupResource extends AbstractCatalogResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setCallback( new XStreamPersister.Callback() {
+            @Override
+            protected Class<LayerGroupInfo> getObjectClass() {
+                return LayerGroupInfo.class;
+            }
             @Override
             protected CatalogInfo getCatalogObject() {
                 String workspace = getAttribute("workspace");

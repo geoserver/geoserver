@@ -71,7 +71,6 @@
           <descriptor>release/ext-gdal-wcs.xml</descriptor>
           <descriptor>release/ext-gdal-wps.xml</descriptor>
           <descriptor>release/ext-wps-jdbc.xml</descriptor>
-          <descriptor>release/ext-vectortiles.xml</descriptor>
           <descriptor>release/ext-params-extractor.xml</descriptor>
           <descriptor>release/ext-wps-remote.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
@@ -207,7 +206,6 @@
         <module>geofence-server</module>
         <module>sldService</module>
         <module>params-extractor</module>
-        <module>vectortiles</module>
         <module>wps-remote</module>
         <module>wps-jdbc</module>
         <module>release</module>
@@ -396,12 +394,6 @@
         <module>gwc-distributed</module>
       </modules>
     </profile>
-    <profile>
-      <id>vectortiles</id>
-        <modules>
-          <module>vectortiles</module>
-        </modules>
-    </profile>    
     <profile>
       <id>jdbcstore</id>
       <modules>

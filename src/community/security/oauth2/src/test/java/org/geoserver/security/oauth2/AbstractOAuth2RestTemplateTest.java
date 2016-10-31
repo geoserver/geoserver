@@ -30,40 +30,21 @@ public abstract class AbstractOAuth2RestTemplateTest extends GeoServerMockTestSu
 
     static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
-    DefaultOAuth2RequestAuthenticator authenticator = new DefaultOAuth2RequestAuthenticator();
+    protected DefaultOAuth2RequestAuthenticator authenticator = new DefaultOAuth2RequestAuthenticator();
 
-    GeoNodeOAuth2SecurityConfiguration configuration;
+    protected GeoServerOAuth2SecurityConfiguration configuration;
 
-    AccessTokenRequest accessTokenRequest = mock(AccessTokenRequest.class);
+    protected AccessTokenRequest accessTokenRequest = mock(AccessTokenRequest.class);
 
-    AuthorizationCodeResourceDetails resource;
+    protected AuthorizationCodeResourceDetails resource;
 
-    OAuth2RestTemplate restTemplate;
+    protected OAuth2RestTemplate restTemplate;
 
-    ClientHttpRequest request;
+    protected ClientHttpRequest request;
 
-    HttpHeaders headers;
+    protected HttpHeaders headers;
 
     @Before
-    public void open() throws Exception {
-        configuration = new GeoNodeOAuth2SecurityConfiguration();
-        configuration.setAccessTokenRequest(accessTokenRequest);
-        resource = (AuthorizationCodeResourceDetails) configuration.geoServerOAuth2Resource();
-
-        assertNotNull(resource);
-
-        resource.setTokenName("bearer_token");
-        restTemplate = configuration.geoServerOauth2RestTemplate();
-
-        assertNotNull(restTemplate);
-
-        request = mock(ClientHttpRequest.class);
-        headers = new HttpHeaders();
-        when(request.getHeaders()).thenReturn(headers);
-        ClientHttpResponse response = mock(ClientHttpResponse.class);
-        HttpStatus statusCode = HttpStatus.OK;
-        when(response.getStatusCode()).thenReturn(statusCode);
-        when(request.execute()).thenReturn(response);
-    }
+    public abstract void open() throws Exception;
 
 }

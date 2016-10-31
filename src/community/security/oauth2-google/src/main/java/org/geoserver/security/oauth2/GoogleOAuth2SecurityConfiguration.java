@@ -63,11 +63,11 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  * 
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-@Configuration
+@Configuration(value="googleOAuth2SecurityConfiguration")
 @EnableOAuth2Client
 class GoogleOAuth2SecurityConfiguration extends GeoServerOAuth2SecurityConfiguration {
 
-    @Bean
+    @Bean(name="googleOAuth2Resource")
     public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
         AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
         details.setId("oauth2-client");
@@ -84,7 +84,7 @@ class GoogleOAuth2SecurityConfiguration extends GeoServerOAuth2SecurityConfigura
     /**
      * Must have "session" scope
      */
-    @Bean
+    @Bean(name="googleOauth2RestTemplate")
     @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
     public OAuth2RestTemplate geoServerOauth2RestTemplate() {
 

@@ -147,6 +147,10 @@ public class CoverageStoreResource extends AbstractCatalogResource {
         persister.setCallback( 
             new XStreamPersister.Callback() {
                 @Override
+                protected Class<CoverageStoreInfo> getObjectClass() {
+                    return CoverageStoreInfo.class;
+                }
+                @Override
                 protected CatalogInfo getCatalogObject() {
                     String workspace = getAttribute("workspace");
                     String coveragestore = getAttribute("coveragestore");

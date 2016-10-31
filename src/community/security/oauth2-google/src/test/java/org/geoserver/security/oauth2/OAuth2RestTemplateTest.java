@@ -5,14 +5,21 @@
 package org.geoserver.security.oauth2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RequestAuthenticator;
 import org.springframework.security.oauth2.client.http.AccessTokenRequiredException;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
+import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 
 /**
@@ -21,6 +28,28 @@ import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
  */
 public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
 
+    @Override
+    public void open() throws Exception {
+        configuration = new GoogleOAuth2SecurityConfiguration();
+        configuration.setAccessTokenRequest(accessTokenRequest);
+        resource = (AuthorizationCodeResourceDetails) configuration.geoServerOAuth2Resource();
+
+        assertNotNull(resource);
+
+        resource.setTokenName("bearer_token");
+        restTemplate = configuration.geoServerOauth2RestTemplate();
+
+        assertNotNull(restTemplate);
+
+        request = mock(ClientHttpRequest.class);
+        headers = new HttpHeaders();
+        when(request.getHeaders()).thenReturn(headers);
+        ClientHttpResponse response = mock(ClientHttpResponse.class);
+        HttpStatus statusCode = HttpStatus.OK;
+        when(response.getStatusCode()).thenReturn(statusCode);
+        when(request.execute()).thenReturn(response);
+    }
+    
     @Test(expected = AccessTokenRequiredException.class)
     public void testAccessDeneiedException() throws Exception {
         DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken("12345");

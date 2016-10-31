@@ -121,7 +121,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (OAuth2FilterConfigException ex) {
-            assertEquals(OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_NOT_HTTPS, ex.getId());
+            assertEquals(OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED, ex.getId());
             assertEquals(0, ex.getArgs().length);
             LOGGER.info(ex.getMessage());
             failed = true;

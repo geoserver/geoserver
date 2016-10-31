@@ -44,7 +44,7 @@ public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2Secu
     public void setAccessTokenRequest(AccessTokenRequest accessTokenRequest) {
         this.accessTokenRequest = accessTokenRequest;
     }
-
+    
     /**
      * Details for an OAuth2-protected resource.
      */

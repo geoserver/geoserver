@@ -77,6 +77,11 @@ public class LocalWFSSettingsTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testGetAsHTML() throws Exception {
+        getAsDOM("/rest/services/wfs/workspaces/sf/settings.html" );
+    }
+
+    @Test
     public void testCreateAsJSON() throws Exception {
         removeLocalWorkspace();
         String input = "{'wfs': {'id' : 'wfs', 'name' : 'WFS', 'workspace': {'name': 'sf'},'enabled': 'true'}}";

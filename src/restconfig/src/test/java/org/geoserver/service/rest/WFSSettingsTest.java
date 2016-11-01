@@ -53,6 +53,11 @@ public class WFSSettingsTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testGetAsHTML() throws Exception {
+        getAsDOM("/rest/services/wfs/settings.html" );
+    }
+
+    @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wfs': {'id':'wfs','enabled':'false','name':'WFS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/settings/",

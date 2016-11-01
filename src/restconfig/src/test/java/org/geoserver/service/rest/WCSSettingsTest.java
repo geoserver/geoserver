@@ -48,6 +48,11 @@ public class WCSSettingsTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testGetAsHTML() throws Exception {
+        getAsDOM("/rest/services/wcs/settings.html" );
+    }
+
+    @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wcs': {'id':'wcs','enabled':'false','name':'WCS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wcs/settings/",

@@ -51,6 +51,11 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testGetAsHTML() throws Exception {
+        getAsDOM("/rest/services/wms/settings.html" );
+    }
+
+    @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wms': {'id':'wms','enabled':'false','name':'WMS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings/",

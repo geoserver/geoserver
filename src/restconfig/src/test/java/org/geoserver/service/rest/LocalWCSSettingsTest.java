@@ -75,6 +75,11 @@ public class LocalWCSSettingsTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testGetAsHTML() throws Exception {
+        getAsDOM("/rest/services/wcs/workspaces/sf/settings.html" );
+    }
+
+    @Test
     public void testCreateAsJSON() throws Exception {
         removeLocalWorkspace();
         String input = "{'wcs': {'id' : 'wcs', 'name' : 'WCS', 'workspace': {'name': 'sf'},'enabled': 'true'}}";

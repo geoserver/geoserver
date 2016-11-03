@@ -64,6 +64,7 @@ The full syntax of a text symbolizer is::
       x-partials: <boolean>
       x-polygonAlign: <boolean>
       x-spaceAround: <expression>
+      x-underlineText: <boolean>
 
 where:
 
@@ -284,6 +285,10 @@ The following properties are equivalent to SLD "vendor options".
      - No
      - Minimum distance (in pixels) between two labels. A negative value specifies the maximum overlap between two labels.
      - 0
+   * - ``x-underlineText``
+     - No
+     - Instruct the renderer to underline labels.
+     - ``false``
 
 .. include:: include/composite.txt
 

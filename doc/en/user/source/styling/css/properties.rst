@@ -416,6 +416,11 @@ Text symbology (labeling) - part 3
       * list of lengths, one to four elements long.
       * Specifies an extra margin (in pixels) to be applied to the label text when calculating label dimensions for use with the ``-gt-shield-resize`` option.  Similar to the ``margin`` shorthand property in CSS for HTML, its interpretation varies depending on how many margin values are provided: 1 = use that margin length on all sides of the label 2 = use the first for top & bottom margins and the second for left & right margins. 3 = use the first for the top margin, second for left & right margins, third for the bottom margin. 4 = use the first for the top margin, second for the right margin, third for the bottom margin, and fourth for the left margin.
       * none
+    - * ``-gt-label-underline-text``
+      * one of ``true`` or ``false``
+      * If enabled, the render will underline labels. This is equivalent to the
+        :ref:`followLine<underlineText>` vendor parameter.
+      * no
 
 .. _css_properties_raster:
 

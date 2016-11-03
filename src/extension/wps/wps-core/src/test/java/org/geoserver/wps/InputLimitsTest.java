@@ -622,6 +622,7 @@ public class InputLimitsTest extends WPSTestSupport {
     }
 
     @Test
+    @Ignore // see [GEOS-7835] WPS execution time limits test randomly breaks builds
     public void testSyncExecutionLimits() throws Exception {
         // set synchronous process limits
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);

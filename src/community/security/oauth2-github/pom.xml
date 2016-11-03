@@ -14,10 +14,10 @@
 	</parent>
 
 	<groupId>org.geoserver.community</groupId>
-	<artifactId>gs-sec-oauth2-google</artifactId>
+	<artifactId>gs-sec-oauth2-github</artifactId>
 	<packaging>jar</packaging>
 	<version>2.9-SNAPSHOT</version>
-	<name>GeoServer OAuth2 Connect Security Module - Google Token Service</name>
+	<name>GeoServer OAuth2 Connect Security Module - GitHub Token Service</name>
 
 	<dependencies>
 		<dependency>
@@ -42,6 +42,28 @@
 			<groupId>org.springframework.security.oauth</groupId>
 			<artifactId>spring-security-oauth2</artifactId>
 			<version>2.0.11.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<classifier>jdk15</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
 		</dependency>
 
 		<dependency>

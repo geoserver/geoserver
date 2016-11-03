@@ -27,6 +27,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.geoserver.web</groupId>
+			<artifactId>gs-web-sec-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.geoserver.community</groupId>
 			<artifactId>gs-sec-oauth2</artifactId>
 			<version>${project.version}</version>
@@ -38,6 +44,28 @@
 			<version>2.0.11.RELEASE</version>
 		</dependency>
 
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<classifier>jdk15</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.geoserver.community</groupId>
 			<artifactId>gs-sec-oauth2</artifactId>

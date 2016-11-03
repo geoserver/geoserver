@@ -1025,6 +1025,27 @@
      <classifier>jdk15</classifier>
    </dependency>
    <dependency>
+     <groupId>org.codehaus.jackson</groupId>
+     <artifactId>jackson-mapper-asl</artifactId>
+     <version>${jackson1.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>com.fasterxml.jackson.core</groupId>
+     <artifactId>jackson-core</artifactId>
+     <version>${jackson2.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>com.fasterxml.jackson.core</groupId>
+     <artifactId>jackson-annotations</artifactId>
+     <version>${jackson2.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>com.fasterxml.jackson.core</groupId>
+     <artifactId>jackson-databind</artifactId>
+     <version>${jackson2.version}</version>
+   </dependency>
+
+   <dependency>
    <groupId>javax.mail</groupId>
      <artifactId>mail</artifactId>
      <version>1.4</version>
@@ -1798,6 +1819,8 @@
   <joda-time.version>2.8.1</joda-time.version>
   <git.commit.useNative>false</git.commit.useNative>
   <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
+  <jackson1.version>1.9.13</jackson1.version>
+  <jackson2.version>2.3.2</jackson2.version>
  </properties>
 
  <profiles>

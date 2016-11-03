@@ -17,7 +17,8 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 public class GoogleOAuth2AuthProviderPanelInfo
         extends AuthenticationFilterPanelInfo<GoogleOAuth2FilterConfig, GoogleOAuth2AuthProviderPanel> {
 
-    private static final long serialVersionUID = 9128733240285123850L;
+    /** serialVersionUID */
+    private static final long serialVersionUID = 75616833259749745L;
 
     public GoogleOAuth2AuthProviderPanelInfo() {
         setComponentClass(GoogleOAuth2AuthProviderPanel.class);

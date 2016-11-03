@@ -624,3 +624,19 @@ placed by hand and are assured not to conflict with each other, at all zoom leve
 .. code-block:: xml
 
   <VendorOption name="partials">true</VendorOption>
+
+.. _labeling_underline_text:
+
+underlineText
+^^^^^^^^^^^^^
+
+The ``underlineText`` option instruct the renderer to underline labels. The underline will work like a typical word processor text underline. The thickness and position of the underline will be defined by the font and color will be the same as the text. Spaces will also be underlined.
+
+.. code-block:: xml
+
+  <VendorOption name="underlineText">true</VendorOption>
+
+Some underlines examples:
+
+.. figure:: img/label_underlines.png
+   :align: center

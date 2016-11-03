@@ -106,7 +106,7 @@ public class InternalUserResolver implements UserResolver {
                     
             return securityManager.getActiveRoleService().getRoleByName(rolename) != null;
         } catch (IOException e) {
-            logger.log(Level.WARNING, "No matching Role [" + rolename + "] on ActiveRoleService", e);
+            logger.log(Level.WARNING, e.getMessage(), e);
             return false;
         }
     }
@@ -163,7 +163,7 @@ public class InternalUserResolver implements UserResolver {
 
             return stringSet;
         } catch (IOException e) {
-            logger.log(Level.WARNING, "No matching Roles for User [" + username + "]", e);
+            logger.log(Level.WARNING, e.getMessage(), e);
             return Collections.emptySet();
         }
     }

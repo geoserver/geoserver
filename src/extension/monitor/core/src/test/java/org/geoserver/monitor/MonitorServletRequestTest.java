@@ -5,19 +5,60 @@
  */
 package org.geoserver.monitor;
 
-import static org.junit.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.servlet.ServletInputStream;
+
+import org.apache.commons.io.IOUtils;
 import org.geoserver.monitor.MonitorServletRequest.MonitorInputStream;
 import org.junit.Test;
 
+import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockServletInputStream;
-import static junit.framework.Assert.assertEquals;
 
 public class MonitorServletRequestTest {
+    static final String THE_REQUEST = "TheRequest";
+    
+    static final class SingleInputCallRequest extends MockHttpServletRequest {
+        static final byte[] BUFFER = THE_REQUEST.getBytes();
+
+        AtomicBoolean called = new AtomicBoolean(false);
+
+        public javax.servlet.ServletInputStream getInputStream() throws IOException {
+            checkCalled();
+            final ByteArrayInputStream bis = new ByteArrayInputStream(BUFFER);
+            return new ServletInputStream() {
+                
+                @Override
+                public int read() throws IOException {
+                    return bis.read();
+                }
+            };
+        }
+
+        @Override
+        public BufferedReader getReader() throws IOException {
+            checkCalled();
+            return new BufferedReader(new InputStreamReader(new ByteArrayInputStream(BUFFER)));
+        }
+
+        private void checkCalled() {
+            if(called.get()) {
+                fail("Input got retrieved twice");
+            }
+            called.set(true);
+        }
+    }
 
     @Test
     public void testInputStreamMaxSizeZero() throws Exception {
@@ -72,5 +113,27 @@ public class MonitorServletRequestTest {
         
         in.close();
         return bytes.toByteArray();
+    }
+    
+    @Test
+    public void testGetReader() throws IOException {
+        MockHttpServletRequest mock = new SingleInputCallRequest();
+        
+        MonitorServletRequest request = new MonitorServletRequest(mock, 1024);
+        try(BufferedReader reader = request.getReader()) {
+            assertEquals(THE_REQUEST, reader.readLine());
+        };
+        assertArrayEquals(THE_REQUEST.getBytes(), request.getBodyContent());
+    }
+    
+    @Test
+    public void testGetInputStream() throws IOException {
+        MockHttpServletRequest mock = new SingleInputCallRequest();
+        
+        MonitorServletRequest request = new MonitorServletRequest(mock, 1024);
+        try(InputStream is = request.getInputStream()) {
+            assertEquals(THE_REQUEST, IOUtils.toString(is));
+        };
+        assertArrayEquals(THE_REQUEST.getBytes(), request.getBodyContent());
     }
 }

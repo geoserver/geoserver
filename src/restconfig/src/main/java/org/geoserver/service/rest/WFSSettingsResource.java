@@ -7,9 +7,12 @@ package org.geoserver.service.rest;
 
 import java.util.Map;
 
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.rest.CatalogFreemarkerHTMLFormat;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.format.DataFormat;
@@ -43,6 +46,24 @@ public class WFSSettingsResource extends ServiceSettingsResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setHideFeatureTypeAttributes();
+        persister.setCallback( new XStreamPersister.Callback() {
+            @Override
+            protected ServiceInfo getServiceObject() {
+                String workspace = getAttribute("workspace");
+                ServiceInfo service;
+                if (workspace != null) {
+                    WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
+                    service = geoServer.getService(ws, WFSInfo.class);
+                } else {
+                    service = geoServer.getService(WFSInfo.class);
+                }
+                return service;
+            }
+            @Override
+            protected Class<WFSInfo> getObjectClass() {
+                return WFSInfo.class;
+            }
+        });
         WFSXStreamLoader.initXStreamPersister(persister);
     }
 

@@ -307,3 +307,82 @@ An example of configuration file (config.xml) for this type of role service is t
         </org.geoserver.security.ldap.LDAPRoleServiceConfig>
 
 For further information, please refer to :ref:`configuring a role service <security_webadmin_roleservices>` in the :ref:`web_admin`.
+
+REST role service
+-----------------
+
+The REST role service is a read only role service that maps groups and associated users to roles from a remote REST web service.
+
+The REST service **must** support JSON encoding.
+
+Here is a listing of significant methods provided by the REST Role Service (based on the LDAP role service, which similarly has to make network calls to work):
+
+.. list-table:: Table: roles
+   :widths: 10 20 
+   :header-rows: 1
+
+   * - Method
+     - Mandatory
+   * - *getUserNamesForRole(roleName)*
+     - N (implemented in LDAP, but I don’t see actual users of this method besides a utility method that nobody uses)
+   * - *getRolesForUser(user)*
+     - Y
+   * - *getRolesForGroup(group)*
+     - N
+   * - *getRoles()*
+     - Y (used by the UI)
+   * - *getParentRole(role)*
+     - N
+   * - *getAdminRole()*
+     - Y
+   * - *getGroupAdminRole()*
+     - Y
+   * - *getRoleCount()*
+     - Y (does not seem to be used much, we can trivially implement it from getRoles()
+
+REST APIs
+^^^^^^^^^
+
+The following is an example of the REST API the role service may handle. The JSON and remote endpoints may differ; this is conifgurable via UI, allowing the REST role service to connect to a generci REST Service
+
+From the above we could have the following REST API to talk to
+
+``../api/roles``
+
+Returns the full list of roles (no paging required, we assume it’s small). Example response:
+
+.. code-block:: json
+
+    {"groups":["r1","r2","r3"]}
+
+``../api/adminrole``
+
+Returns the role of the administrator (yes, just one, it’s strange…):
+
+.. code-block:: json
+
+    {"adminRole":["root"]}
+
+``../api/users/<user>``
+
+Returns the list of roles for a particular user. Example response:
+
+.. code-block:: json
+
+    {"users": [{"user":"u1", "groups":["r1","r2"]}]}
+
+Configurable API
+^^^^^^^^^^^^^^^^
+
+The GeoServerRoleService talking to a remote service provides the following config parameters:
+
+* Base URL for the remote service
+* Configurable URLs for the various calls
+* JSON paths to the properties that contain the list of roles, and the one admin role
+
+The above can be configured via the :ref:`web_admin`. The figure below shows the REST role service options configured to be compatible with the sampe APIs above:
+
+.. figure:: images/restroleservice.png
+   :align: center
+
+   *REST based role service configuration panel*

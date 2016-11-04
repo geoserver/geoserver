@@ -179,5 +179,148 @@ public interface LayerGroupInfo extends PublishedInfo {
      * @see MetadataLinkInfo
      */
     List<MetadataLinkInfo> getMetadataLinks();
+
+    /**
+     * A way to compare two LayerGroupInfo instances that works around all the wrappers we have
+     * around (secured, decorating ecc) all changing some aspects of the bean and breaking
+     * usage of "common" equality). This method only uses getters to fetch the fields.
+     * Could have been build using EqualsBuilder and reflection, but would have been very slow 
+     * and we do lots of these calls on large catalogs.
+     * 
+     * @param lg
+     * @param obj
+     * @return
+     */
+    public static boolean equals(LayerGroupInfo lg, Object obj) {
+        if (lg == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!( obj instanceof LayerGroupInfo) ) 
+            return false;
+        LayerGroupInfo other = (LayerGroupInfo) obj;
+        if (lg.getBounds() == null) {
+            if (other.getBounds() != null)
+                return false;
+        } else if (!lg.getBounds().equals(other.getBounds()))
+            return false;
+        if (lg.getId() == null) {
+            if (other.getId() != null)
+                return false;
+        } else if (!lg.getId().equals(other.getId()))
+            return false;
+        if (lg.getLayers() == null) {
+            if (other.getLayers() != null)
+                return false;
+        } else if (!lg.getLayers().equals(other.getLayers()))
+            return false;
+        if (lg.getMetadata() == null) {
+            if (other.getMetadata() != null)
+                return false;
+        } else if (!lg.getMetadata().equals(other.getMetadata()))
+            return false;
+        if (lg.getName() == null) {
+            if (other.getName() != null)
+                return false;
+        } else if (!lg.getName().equals(other.getName()))
+            return false;
+        if (lg.getMode() == null) {
+            if (other.getMode() != null)
+                return false;
+        } else if (!lg.getMode().equals(other.getMode()))
+            return false;        
+        if (lg.getTitle() == null) {
+            if (other.getTitle() != null) {
+                return false;
+            }
+        } else if (!lg.getTitle().equals(other.getTitle())) 
+            return false;
+        if (lg.getAbstract() == null) {
+            if (other.getAbstract() != null) {
+                return false;
+            }
+        } else if (!lg.getAbstract().equals(other.getAbstract())) 
+            return false;        
+        if (lg.getWorkspace() == null) {
+            if (other.getWorkspace() != null)
+                return false;
+        } else if (!lg.getWorkspace().equals(other.getWorkspace()))
+            return false;
+        if (lg.getStyles() == null) {
+            if (other.getStyles() != null)
+                return false;
+        } else if (!lg.getStyles().equals(other.getStyles()))
+            return false;
+        if(lg.getAuthorityURLs() == null){
+            if (other.getAuthorityURLs() != null)
+                return false;
+        } else if (!lg.getAuthorityURLs().equals(other.getAuthorityURLs()))
+            return false;
+        
+        if(lg.getIdentifiers() == null){
+            if (other.getIdentifiers() != null)
+                return false;
+        } else if (!lg.getIdentifiers().equals(other.getIdentifiers()))
+            return false;
+    
+        if(lg.getRootLayer() == null){
+            if (other.getRootLayer() != null)
+                return false;
+        } else if (!lg.getRootLayer().equals(other.getRootLayer()))
+            return false;
+        
+        if(lg.getRootLayerStyle()== null){
+            if (other.getRootLayerStyle() != null)
+                return false;
+        } else if (!lg.getRootLayerStyle().equals(other.getRootLayerStyle()))
+            return false;
+        
+        if(lg.getAttribution() == null){
+            if (other.getAttribution() != null)
+                return false;
+        } else if (!lg.getAttribution().equals(other.getAttribution()))
+            return false;
+        
+        if(lg.getMetadataLinks() == null){
+            if (other.getMetadataLinks() != null)
+                return false;
+        } else if (!lg.getMetadataLinks().equals(other.getMetadataLinks()))
+            return false;
+        
+        if (!lg.isQueryDisabled() == other.isQueryDisabled())
+            return false;
+        
+        return true;
+    }
+
+    /**
+     * A way to build a hash code based only on LayerGroupInfo instances that works around all the wrappers we have
+     * around (secured, decorating ecc) all changing some aspects of the bean and breaking
+     * usage o "common" equality). This method only uses getters to fetch the fields.
+     * Could have been build using HashCodeBuilder and reflection, but would have been very slow 
+     * and we do lots of these calls on large catalogs.
+     */
+    public static int hashCode(LayerGroupInfo lg) {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((lg.getBounds() == null) ? 0 : lg.getBounds().hashCode());
+        result = prime * result + ((lg.getId() == null) ? 0 : lg.getId().hashCode());
+        result = prime * result + ((lg.getLayers() == null) ? 0 : lg.getLayers().hashCode());
+        result = prime * result + ((lg.getMetadata()== null) ? 0 : lg.getMetadata().hashCode());
+        result = prime * result + ((lg.getName() == null) ? 0 : lg.getName().hashCode());
+        result = prime * result + ((lg.getMode() == null) ? 0 : lg.getMode().hashCode());
+        result = prime * result + ((lg.getTitle() == null) ? 0 : lg.getTitle().hashCode());
+        result = prime * result + ((lg.getAbstract() == null) ? 0 : lg.getAbstract().hashCode());
+        result = prime * result + ((lg.getWorkspace() == null) ? 0 : lg.getWorkspace().hashCode());
+        result = prime * result + ((lg.getStyles() == null) ? 0 : lg.getStyles().hashCode());
+        result = prime * result + ((lg.getRootLayer() == null) ? 0 : lg.getRootLayer().hashCode());
+        result = prime * result + ((lg.getRootLayerStyle() == null) ? 0 : lg.getRootLayerStyle().hashCode());        
+        result = prime * result + ((lg.getAuthorityURLs() == null) ? 0 : lg.getAuthorityURLs().hashCode());
+        result = prime * result + ((lg.getIdentifiers() == null) ? 0 : lg.getIdentifiers().hashCode());
+        result = prime * result + ((lg.getAttribution() == null) ? 0 : lg.getAttribution().hashCode());
+        result = prime * result + ((lg.getMetadataLinks() == null) ? 0 : lg.getMetadataLinks().hashCode());
+        result = prime * result + Boolean.hashCode(lg.isQueryDisabled());
+        return result;
+    }
     
 }

@@ -366,4 +366,97 @@ and is responsible for creating the actual filter chain from the
 ``GeoServerSecurityFilterChain`` configuration object.
 
 
+Pluggable Login / Logout Endpoints
+----------------------------------
 
+To enable a new Login button just add lines similar to the following configuration into the ``applicationContext.xml``::
+
+	<!-- login button -->
+	<bean id="geoserverFormLoginButton" class="org.geoserver.web.LoginFormInfo">
+		<property name="id" value="geoserverFormLoginButton" />
+		<property name="titleKey" value="login" />
+		<property name="descriptionKey" value="GeoServerBasePage.description" />
+		<property name="componentClass" value="org.geoserver.web.GeoServerBasePage" />
+		<property name="name" value="form" />
+		<property name="icon" value="img/icons/silk/door-in.png" />
+		<property name="include" value="include_login_form.html" />
+		<property name="loginPath" value="j_spring_security_check" />
+	</bean>
+    
+The same can be done for any other Security Filter which needs a specific button for a Login Endpoint.
+
+The properties of ``LoginFormInfo`` are:
+
+#. **id**; a unique ID to be provided to the extension.
+
+#. **titleKey**; key of the ``GeoServerApplication.properties`` message with internazionalization. If **null** or not present, the Login button won't have any text.
+
+#. **descriptionKey**; optional image alt message. This value represents the key of the ``GeoServerApplication.properties`` message with internazionalization.
+
+#. **componentClass**; base class which will provide base package path for resources. Wicket will look for resources relative to the *componentClass* package.
+
+#. **name**; used for ordering. The Login buttons will be displayed in alphabetical order accordingly to this value. The name **must** also contain a keyword present on the associated Security Filter name defined by User.
+
+#. **icon**; optional resource path to the button icon. If not specified GeoServer will use the default "door-in" one. The path **must** be relative to the *componentClass* package.
+
+#. **include**; optional static HTML file resource to be rendered into the Login form. The path **must** be relative to the *componentClass* package.
+
+#. **loginPath**; Login custom endpoint used by the associated Security Filter.
+
+Example of **include** HTML can be::
+
+    <label class="noshow" for="username"><wicket:message key="username">Username</wicket:message></label>
+    <input id="username" type="text" name="username" value="" title="username" placeholder="username" wicket:message="title:username,placeholder:username"/>
+    <label class="noshow" for="password"><wicket:message key="password">Password</wicket:message></label>
+    <input id="password" type="password" name="password" value="" title="password" placeholder="password" wicket:message="title:password,placeholder:passwordGeoServer"/>
+    <label class="shown" for="_spring_security_remember_me"><wicket:message key="rememberMe">Remember me</wicket:message></label>
+    <input id="_spring_security_remember_me" type="checkbox" name="_spring_security_remember_me" />
+    
+Logout Pluggable Chains and Buttons
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Using a similar approach is possible to define and plug custom Logout Endpoints and Buttons.
+
+The configuration to use must be like the following one::
+
+	<!-- logout button -->
+	<bean id="geoserverFormLogoutButton" class="org.geoserver.web.LogoutFormInfo">
+		<property name="id" value="geoserverFormLogoutButton" />
+		<property name="titleKey" value="logout" />
+		<property name="descriptionKey" value="GeoServerBasePage.description" />
+		<property name="componentClass" value="org.geoserver.web.GeoServerBasePage" />
+		<property name="name" value="form" />
+		<property name="icon" value="img/icons/silk/door-out.png" />
+		<property name="logoutPath" value="j_spring_security_logout" />
+	</bean>
+
+The properties are similar to the Login buttons. Less in number but with the same meaning.
+
+The activation of a Logout Handler is not automatic though. You will need to sligthly modify the GeoServer Security configuration in order to activate the new Logout Filter Chain.
+
+Lets say that we want to enable a brand new Logout handler for Google ``j_spring_oauth2_google_logout``.
+
+First thing to do is to add the new paths to the ``webLogout`` Filter Chain
+
+.. figure:: images/web_logout.png
+   :align: center
+
+Add two new ANT patterns to the webLgout chain::
+
+    /j_spring_oauth2_google_logout,/j_spring_oauth2_google_logout/
+    
+Last step is to modify the configuration of the ``LogoutFilter`` by adding all the available ANT patterns to be catched by the Logout filter chain.
+
+#. Edit the file ``$GEOSERVER_DATA_DIR\security\filter\formLogout\config.xml``
+
+#. Update the ``formLogoutChain`` property accordingly::
+
+        <logoutFilter>
+          <id>52857278:13c7ffd66a8:-7ff3</id>
+          <name>formLogout</name>
+          <className>org.geoserver.security.filter.GeoServerLogoutFilter</className>
+          <redirectURL>/web/</redirectURL>
+          <formLogoutChain>/j_spring_security_logout,/j_spring_security_logout/,/j_spring_oauth2_google_logout,/j_spring_oauth2_google_logout/</formLogoutChain>
+        </logoutFilter>
+
+Save everything and reload GeoServer.

@@ -8,8 +8,9 @@ In particular:
 
 * Ability to create a named style by simply providing a list of colors, that will adapt to the layer in use based on request parameters and its statistics
 * Ability to control the palette application in GetMap via a number of extra parameters
+* GetTimeSeries operation, which can retrieve a CSV or an xy chart of a time series of values on a certain point
 
-At the time of writing the extra calls to extract time series, elevation series, transects and NetCDF metadata are not supported.
+At the time of writing the extra calls to extract elevation series, transects and NetCDF metadata are not supported.
 The extension is however not NetCDF specific, but can be used with any single banded raster layer instead.
 
 The Dynamic Palette style format
@@ -176,3 +177,40 @@ For example:
   * Getting only the "topp:states" layer: ``http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities&dataset=topp:states``
   * Getting the "tasmania" layer group: ``http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities&dataset=tasmania``
   
+ncWMS GetTimeSeries operation
+--------------------------------
+
+ncWMS provides a GetTimeSeries operation, which can retrieve a time series of values on a certain point, using a syntax similar to the GetFeatureInfo operation.
+The time series can be retrieved as a chart in PNG or JPEG image, or as a CSV.
+
+For example:
+
+  * Getting a time series as CSV: ``http://localhost:8080/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z&QUERY_LAYERS=watertemp&STYLES&LAYERS=watertemp&INFO_FORMAT=text%2Fcsv&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A4326&WIDTH=101&HEIGHT=101&BBOX=3.724365234375%2C40.81420898437501%2C5.943603515625%2C43.03344726562501``
+
+  * Getting a time series as PNG: ``http://localhost:8080/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z&QUERY_LAYERS=watertemp&STYLES&LAYERS=watertemp&INFO_FORMAT=image%2Fpng&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A4326&WIDTH=101&HEIGHT=101&BBOX=3.724365234375%2C40.81420898437501%2C5.943603515625%2C43.03344726562501``
+
+  * Getting a time series as JPG: ``http://localhost:8080/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z&QUERY_LAYERS=watertemp&STYLES&LAYERS=watertemp&INFO_FORMAT=image%2Fjpg&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A4326&WIDTH=101&HEIGHT=101&BBOX=3.724365234375%2C40.81420898437501%2C5.943603515625%2C43.03344726562501``
+
+The INFO_FORMAT accepts the following values: `image/png`, `image/jpg` and `text/csv`
+
+The TIME parameter accepts a time range as defined for other operations in the WMS standard (see Annex D of the 06-042 Web Map Server Implementation Specification). Examples:
+
+  * `TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z`
+  * `TIME=2008-10-31T00:00:00.000Z/2008-10-31T00:00:00.000Z`
+
+Sample CSV output:
+
+.. code-block:: none
+
+    # Latitude: 40.396728515625
+    # Longitude: -0.6921386718750019
+    Time (UTC),Temperature (degrees)
+    2014-01-01T00:00:00.000Z,0.4194810092449188
+    2014-02-01T00:00:00.000Z,0.8373379707336426
+    2014-03-01T00:00:00.000Z,3.1670899391174316
+    2014-04-01T00:00:00.000Z,4.932330131530762
+
+Sample chart output:
+
+.. figure:: images/geoserver-GetTimeSeries.png
+   :align: center

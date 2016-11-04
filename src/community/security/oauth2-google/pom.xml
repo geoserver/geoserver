@@ -27,6 +27,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.geoserver.web</groupId>
+			<artifactId>gs-web-sec-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.geoserver.community</groupId>
 			<artifactId>gs-sec-oauth2</artifactId>
 			<version>${project.version}</version>
@@ -38,6 +44,13 @@
 			<version>2.0.11.RELEASE</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.geoserver.community</groupId>
+			<artifactId>gs-sec-oauth2</artifactId>
+			<version>${project.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
 			<artifactId>gs-main</artifactId>

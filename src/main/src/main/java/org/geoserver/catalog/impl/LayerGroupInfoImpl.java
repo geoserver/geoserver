@@ -166,14 +166,6 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         return workspace != null ? workspace.getName()+":"+name : name;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-    
     @Override
     public LayerInfo getRootLayer() {
         return rootLayer;
@@ -264,134 +256,14 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((bounds == null) ? 0 : bounds.hashCode());
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((publishables == null) ? 0 : publishables.hashCode());
-        result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((mode == null) ? 0 : mode.hashCode());
-        result = prime * result + ((title == null) ? 0 : title.hashCode());
-        result = prime * result + ((abstractTxt == null) ? 0 : abstractTxt.hashCode());
-        result = prime * result + ((workspace == null) ? 0 : workspace.hashCode());
-        result = prime * result + ((path == null) ? 0 : path.hashCode());
-        result = prime * result + ((styles == null) ? 0 : styles.hashCode());
-        result = prime * result + ((rootLayer == null) ? 0 : rootLayer.hashCode());
-        result = prime * result + ((rootLayerStyle == null) ? 0 : rootLayerStyle.hashCode());        
-        result = prime * result + ((authorityURLs == null) ? 0 : authorityURLs.hashCode());
-        result = prime * result + ((identifiers == null) ? 0 : identifiers.hashCode());
-        result = prime * result + ((attribution == null) ? 0 : attribution.hashCode());
-        result = prime * result + ((metadataLinks == null) ? 0 : metadataLinks.hashCode());
-        result = prime * result + ((queryDisabled == null) ? 0 : queryDisabled.hashCode());
-        return result;
+        return LayerGroupInfo.hashCode(this);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (!( obj instanceof LayerGroupInfo) ) 
-            return false;
-        LayerGroupInfo other = (LayerGroupInfo) obj;
-        if (bounds == null) {
-            if (other.getBounds() != null)
-                return false;
-        } else if (!bounds.equals(other.getBounds()))
-            return false;
-        if (id == null) {
-            if (other.getId() != null)
-                return false;
-        } else if (!id.equals(other.getId()))
-            return false;
-        if (publishables == null) {
-            if (other.getLayers() != null)
-                return false;
-        } else if (!publishables.equals(other.getLayers()))
-            return false;
-        if (metadata == null) {
-            if (other.getMetadata() != null)
-                return false;
-        } else if (!metadata.equals(other.getMetadata()))
-            return false;
-        if (name == null) {
-            if (other.getName() != null)
-                return false;
-        } else if (!name.equals(other.getName()))
-            return false;
-        if (mode == null) {
-            if (other.getMode() != null)
-                return false;
-        } else if (!mode.equals(other.getMode()))
-            return false;        
-        if (title == null) {
-            if (other.getTitle() != null) {
-                return false;
-            }
-        } else if (!title.equals(other.getTitle())) 
-            return false;
-        if (abstractTxt == null) {
-            if (other.getAbstract() != null) {
-                return false;
-            }
-        } else if (!abstractTxt.equals(other.getAbstract())) 
-            return false;        
-        if (workspace == null) {
-            if (other.getWorkspace() != null)
-                return false;
-        } else if (!workspace.equals(other.getWorkspace()))
-            return false;
-        if (styles == null) {
-            if (other.getStyles() != null)
-                return false;
-        } else if (!styles.equals(other.getStyles()))
-            return false;
-        if(authorityURLs == null){
-            if (other.getAuthorityURLs() != null)
-                return false;
-        } else if (!authorityURLs.equals(other.getAuthorityURLs()))
-            return false;
-        
-        if(identifiers == null){
-            if (other.getIdentifiers() != null)
-                return false;
-        } else if (!identifiers.equals(other.getIdentifiers()))
-            return false;
-
-        if(rootLayer == null){
-            if (other.getRootLayer() != null)
-                return false;
-        } else if (!rootLayer.equals(other.getRootLayer()))
-            return false;
-        
-        if(rootLayerStyle == null){
-            if (other.getRootLayerStyle() != null)
-                return false;
-        } else if (!rootLayerStyle.equals(other.getRootLayerStyle()))
-            return false;
-        
-        if(attribution == null){
-            if (other.getAttribution() != null)
-                return false;
-        } else if (!attribution.equals(other.getAttribution()))
-            return false;
-        
-        if(metadataLinks == null){
-            if (other.getMetadataLinks() != null)
-                return false;
-        } else if (!metadataLinks.equals(other.getMetadataLinks()))
-            return false;
-        
-        if (queryDisabled == null) {
-            if (other.isQueryDisabled())
-                return false;
-        } else if (!queryDisabled.equals(other.isQueryDisabled()))
-            return false;
-        
-        return true;
+        return LayerGroupInfo.equals(this, obj);
     }
+
 
     @Override
     public List<AuthorityURLInfo> getAuthorityURLs() {

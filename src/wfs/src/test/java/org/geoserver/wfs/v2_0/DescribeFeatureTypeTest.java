@@ -12,11 +12,8 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.xml.namespace.QName;
 
@@ -32,13 +29,13 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.gml3.v3_2.GML;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DescribeFeatureTypeTest extends WFS20TestSupport {
 	
@@ -100,6 +97,34 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         
         Document doc = postAsDOM("wfs", xml);
         assertSchema(doc, CiteTestData.PRIMITIVEGEOFEATURE);
+    }
+    
+    
+    @Test
+    public void testConcurrentPost() throws Exception {
+        String typeName = getLayerId(CiteTestData.PRIMITIVEGEOFEATURE);
+        ExecutorCompletionService<Object> es = new ExecutorCompletionService<>(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        final int REQUESTS =  200;
+        for (int i = 0; i < REQUESTS; i++) {
+            es.submit(() -> {
+                Document doc = getAsDOM(
+                        "wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName="
+                                + typeName);
+                assertSchema(doc, CiteTestData.PRIMITIVEGEOFEATURE);
+                return null;
+            });
+        }
+        // just check there are no exceptions
+        for (int i = 0; i < REQUESTS; i++) {
+            long start = System.currentTimeMillis();
+            es.take().get();
+            if(i % 100 == 0) {
+                long curr = System.currentTimeMillis();
+                LOGGER.info(i + " - " + (curr - start));
+                start = curr;
+            }
+        }
+        
     }
     
     void assertSchema(Document doc, QName... types) throws Exception {

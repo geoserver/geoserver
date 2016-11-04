@@ -224,7 +224,7 @@ public class KMLTest extends WMSTestSupport {
         assertXpathEvaluatesTo("-0.0042,-6.0E-4 -0.0032,-3.0E-4 -0.0026,-1.0E-4 -0.0014,2.0E-4 2.0E-4,7.0E-4", "//kml:Placemark/kml:LineString/kml:coordinates", doc);
     }
     
-    @Ignore @Test
+    @Test
     public void testTimeTemplate() throws Exception {
         FeatureTypeInfo ftInfo = getCatalog().getResourceByName(getLayerId(MockData.OTHER),
                 FeatureTypeInfo.class);
@@ -241,13 +241,13 @@ public class KMLTest extends WMSTestSupport {
 
             // print(doc);
             assertXpathEvaluatesTo("1", "count(//kml:Placemark)", doc);
-            assertXpathEvaluatesTo("2002-02-12T00:00:00Z", "//kml:Placemark/kml:TimeStamp/kml:when", doc);
+            assertXpathEvaluatesTo("2002-12-02T00:00:00Z", "//kml:Placemark/kml:TimeStamp/kml:when", doc);
         } finally {
             assertTrue(templateFile.delete());
         }
     }
     
-    @Ignore @Test
+    @Test
     public void testTimeInvervalTemplate() throws Exception {
         FeatureTypeInfo ftInfo = getCatalog().getResourceByName(getLayerId(MockData.OTHER),
                 FeatureTypeInfo.class);
@@ -263,8 +263,8 @@ public class KMLTest extends WMSTestSupport {
 
             // print(doc);
             assertXpathEvaluatesTo("1", "count(//kml:Placemark)", doc);
-            assertXpathEvaluatesTo("2002-02-12T00:00:00Z", "//kml:Placemark/kml:TimeSpan/kml:begin", doc);
-            assertXpathEvaluatesTo("2002-02-12T00:00:00Z", "//kml:Placemark/kml:TimeSpan/kml:end", doc);
+            assertXpathEvaluatesTo("2002-12-02T00:00:00Z", "//kml:Placemark/kml:TimeSpan/kml:begin", doc);
+            assertXpathEvaluatesTo("2002-12-02T00:00:00Z", "//kml:Placemark/kml:TimeSpan/kml:end", doc);
         } finally {
             assertTrue(templateFile.delete());
         }

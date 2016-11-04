@@ -6,6 +6,7 @@ package org.geoserver.web.security.oauth2;
 
 import org.geoserver.security.oauth2.GeoServerOAuthAuthenticationFilter;
 import org.geoserver.security.oauth2.GoogleOAuth2FilterConfig;
+import org.geoserver.security.oauth2.GoogleOAuthAuthenticationFilter;
 import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 
 /**
@@ -16,11 +17,12 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 public class GoogleOAuth2AuthProviderPanelInfo
         extends AuthenticationFilterPanelInfo<GoogleOAuth2FilterConfig, GoogleOAuth2AuthProviderPanel> {
 
-    private static final long serialVersionUID = 9128733240285123850L;
+    /** serialVersionUID */
+    private static final long serialVersionUID = 75616833259749745L;
 
     public GoogleOAuth2AuthProviderPanelInfo() {
         setComponentClass(GoogleOAuth2AuthProviderPanel.class);
-        setServiceClass(GeoServerOAuthAuthenticationFilter.class);
+        setServiceClass(GoogleOAuthAuthenticationFilter.class);
         setServiceConfigClass(GoogleOAuth2FilterConfig.class);
     }
 }

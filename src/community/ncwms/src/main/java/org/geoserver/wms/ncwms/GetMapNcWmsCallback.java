@@ -83,7 +83,7 @@ public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
                     throw new ServiceException(
                             "Animation is supported only with image/gif output format",
                             ServiceException.INVALID_PARAMETER_VALUE, "format");
-                } else if(!GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED.equals(format)) {
+                } else if (!GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED.equals(format)) {
                     // switch to animated mode
                     rawKvp.put("format", GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED);
                     kvp.put("format", GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED);
@@ -134,7 +134,8 @@ public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
         try {
             return Double.parseDouble(element);
         } catch (NumberFormatException e) {
-            throw new ServiceException("Expected a number but got '" + element + "'", ServiceException.INVALID_PARAMETER_VALUE, locator);
+            throw new ServiceException("Expected a number but got '" + element + "'",
+                    ServiceException.INVALID_PARAMETER_VALUE, locator);
         }
     }
 }

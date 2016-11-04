@@ -474,6 +474,11 @@
     <version>${gt.version}</version>
    </dependency>
 
+   <dependency>
+     <groupId>com.google.code.gson</groupId>
+     <artifactId>gson</artifactId>
+     <version>2.3.1</version>
+   </dependency>
 
    <dependency>
     <groupId>org.geowebcache</groupId>
@@ -748,7 +753,22 @@
 	<groupId>org.apache.commons</groupId>
 	<artifactId>commons-exec</artifactId>
 	<version>1.3</version>
-  </dependency>
+   </dependency>
+   <dependency>
+    <groupId>com.jayway.jsonpath</groupId>
+    <artifactId>json-path</artifactId>
+    <version>2.2.0</version>
+   </dependency>
+   <dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpcore</artifactId>
+    <version>4.4.4</version>
+   </dependency>
+   <dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpclient</artifactId>
+    <version>4.5.1</version>
+   </dependency>
    <dependency>
     <groupId>org.springframework</groupId>
     <artifactId>spring-beans</artifactId>
@@ -1000,6 +1020,27 @@
      <version>2.2.3</version> 
      <classifier>jdk15</classifier>
    </dependency>
+   <dependency>
+     <groupId>org.codehaus.jackson</groupId>
+     <artifactId>jackson-mapper-asl</artifactId>
+     <version>${jackson1.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>com.fasterxml.jackson.core</groupId>
+     <artifactId>jackson-core</artifactId>
+     <version>${jackson2.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>com.fasterxml.jackson.core</groupId>
+     <artifactId>jackson-annotations</artifactId>
+     <version>${jackson2.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>com.fasterxml.jackson.core</groupId>
+     <artifactId>jackson-databind</artifactId>
+     <version>${jackson2.version}</version>
+   </dependency>
+
    <dependency>
    <groupId>javax.mail</groupId>
      <artifactId>mail</artifactId>
@@ -1382,6 +1423,7 @@
       <descriptor>release/ext-grib.xml</descriptor>
       <descriptor>release/ext-netcdf.xml</descriptor>
       <descriptor>release/ext-netcdf-out.xml</descriptor>
+      <descriptor>release/ext-vectortiles.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.11-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
@@ -1774,6 +1816,8 @@
   <joda-time.version>2.8.1</joda-time.version>
   <git.commit.useNative>false</git.commit.useNative>
   <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
+  <jackson1.version>1.9.13</jackson1.version>
+  <jackson2.version>2.3.2</jackson2.version>
  </properties>
 
  <profiles>

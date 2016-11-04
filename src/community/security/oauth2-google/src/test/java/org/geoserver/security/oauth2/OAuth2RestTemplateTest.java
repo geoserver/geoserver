@@ -10,23 +10,15 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.logging.Logger;
-
-import org.geoserver.test.GeoServerMockTestSupport;
-import org.geotools.util.logging.Logging;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.security.oauth2.client.DefaultOAuth2RequestAuthenticator;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RequestAuthenticator;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.http.AccessTokenRequiredException;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
-import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 
@@ -34,25 +26,9 @@ import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  *
  */
-public class OAuth2RestTemplateTest extends GeoServerMockTestSupport {
+public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
 
-    static protected Logger LOGGER = Logging.getLogger("org.geoserver.security");
-
-    DefaultOAuth2RequestAuthenticator authenticator = new DefaultOAuth2RequestAuthenticator();
-
-    GoogleOAuth2SecurityConfiguration configuration;
-
-    AccessTokenRequest accessTokenRequest = mock(AccessTokenRequest.class);
-
-    AuthorizationCodeResourceDetails resource;
-
-    OAuth2RestTemplate restTemplate;
-
-    ClientHttpRequest request;
-
-    HttpHeaders headers;
-
-    @Before
+    @Override
     public void open() throws Exception {
         configuration = new GoogleOAuth2SecurityConfiguration();
         configuration.setAccessTokenRequest(accessTokenRequest);
@@ -73,7 +49,7 @@ public class OAuth2RestTemplateTest extends GeoServerMockTestSupport {
         when(response.getStatusCode()).thenReturn(statusCode);
         when(request.execute()).thenReturn(response);
     }
-
+    
     @Test(expected = AccessTokenRequiredException.class)
     public void testAccessDeneiedException() throws Exception {
         DefaultOAuth2AccessToken token = new DefaultOAuth2AccessToken("12345");

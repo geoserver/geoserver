@@ -1,0 +1,37 @@
+<wfs:FeatureCollection xmlns="http://www.opengis.net/wfs" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:it.geosolutions="http://www.geo-solutions.it" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <gml:boundedBy>
+    <gml:null>unknown</gml:null>
+  </gml:boundedBy>
+  <gml:featureMember>
+    <it.geosolutions:test_places fid="test_places.1">
+      <it.geosolutions:location>
+        <gml:MultiPoint srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+          <gml:pointMember>
+            <gml:Point>
+              <gml:coordinates xmlns:gml="http://www.opengis.net/gml" decimal="." cs="," ts=" ">-79.39531946,36.58625388</gml:coordinates>
+            </gml:Point>
+          </gml:pointMember>
+        </gml:MultiPoint>
+      </it.geosolutions:location>
+      <it.geosolutions:scalerank>7</it.geosolutions:scalerank>
+      <it.geosolutions:natscale>20</it.geosolutions:natscale>
+      <it.geosolutions:labelrank>1</it.geosolutions:labelrank>
+    </it.geosolutions:test_places>
+  </gml:featureMember>
+  <gml:featureMember>
+    <it.geosolutions:test_places fid="test_places.2">
+      <it.geosolutions:location>
+        <gml:MultiPoint srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+          <gml:pointMember>
+            <gml:Point>
+              <gml:coordinates xmlns:gml="http://www.opengis.net/gml" decimal="." cs="," ts=" ">-78.16663477,39.1787313</gml:coordinates>
+            </gml:Point>
+          </gml:pointMember>
+        </gml:MultiPoint>
+      </it.geosolutions:location>
+      <it.geosolutions:scalerank>7</it.geosolutions:scalerank>
+      <it.geosolutions:natscale>20</it.geosolutions:natscale>
+      <it.geosolutions:labelrank>1</it.geosolutions:labelrank>
+    </it.geosolutions:test_places>
+  </gml:featureMember>
+</wfs:FeatureCollection>

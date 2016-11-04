@@ -87,4 +87,5 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
             return pi;
         }
     }
+
 }

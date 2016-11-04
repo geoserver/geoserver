@@ -17,6 +17,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
+import org.geoserver.wfs.WFSInfo;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -204,6 +205,10 @@ public class CoverageResource extends AbstractCatalogResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setCallback( new XStreamPersister.Callback() {
+            @Override
+            protected Class<CoverageInfo> getObjectClass() {
+                return CoverageInfo.class;
+            }
             @Override
             protected CatalogInfo getCatalogObject() {
                 String workspace = getAttribute("workspace");

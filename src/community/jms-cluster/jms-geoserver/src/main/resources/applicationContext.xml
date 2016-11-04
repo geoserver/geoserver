@@ -193,4 +193,12 @@
 		<constructor-arg index="2" ref="JMSXstream" />
 		<constructor-arg index="3" ref="JMSToggleProducer" />
 	</bean>
+
+	<bean id="JMSSettingsHandlerSPI"
+		  class="org.geoserver.cluster.impl.handlers.configuration.JMSSettingsHandlerSPI">
+		<constructor-arg index="0" value="1" />
+		<constructor-arg index="1" ref="geoServer" />
+		<constructor-arg index="2" ref="JMSXstream" />
+		<constructor-arg index="3" ref="JMSToggleProducer" />
+	</bean>
 </beans>

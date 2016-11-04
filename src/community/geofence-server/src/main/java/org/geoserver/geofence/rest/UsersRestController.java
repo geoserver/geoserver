@@ -33,20 +33,21 @@ public class UsersRestController {
 
     protected GeoServerSecurityManager securityManager;
 
-    protected String defaultServiceName;
-
-    public String getDefaultServiceName() {
-        return defaultServiceName;
-    }
-
-    public void setDefaultServiceName(String defaultServiceName) {
-        this.defaultServiceName = defaultServiceName;
+    private static final String DEFAULT_ROLE_SERVICE_NAME = "default";
+    
+    private String getDefaultServiceName() {
+        if (this.securityManager != null &&
+                this.securityManager.getActiveRoleService() != null) {
+            return this.securityManager.getActiveRoleService().getName();
+        }
+        
+        return DEFAULT_ROLE_SERVICE_NAME;
     }
 
     public UsersRestController(GeoServerSecurityManager securityManager) {
         this.securityManager = securityManager;
     }
-    
+
     @ExceptionHandler(IllegalArgumentException.class)
     public void somethingNotFound(IllegalArgumentException exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
     	response.sendError(404, exception.getMessage());
@@ -54,68 +55,68 @@ public class UsersRestController {
 
     @RequestMapping(value = "/rest/usergroup/users", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
     public @ResponseBody JaxbUserList getUsers() throws IOException {
-        return getUsers(defaultServiceName);
+        return getUsers(getDefaultServiceName());
     }
 
     @RequestMapping(value = "/rest/usergroup/groups", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
     public @ResponseBody JaxbGroupList getGroups() throws IOException {
-        return getGroups(defaultServiceName);
+        return getGroups(getDefaultServiceName());
     }
 
     @RequestMapping(value = "/rest/usergroup/group/{group}/users", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
     public @ResponseBody JaxbUserList getUsersFromGroup(@PathVariable("group") String groupName)
             throws IOException {
-        return getUsersFromGroup(defaultServiceName, groupName);
+        return getUsersFromGroup(getDefaultServiceName(), groupName);
     }
 
     @RequestMapping(value = "/rest/usergroup/user/{user}/groups", method = RequestMethod.GET, produces = {"application/xml", "application/json"})
     public @ResponseBody JaxbGroupList getGroupsFromUser(@PathVariable("user") String userName)
             throws IOException {
-        return getGroupsFromUser(defaultServiceName, userName);
+        return getGroupsFromUser(getDefaultServiceName(), userName);
     }
 
     @RequestMapping(value = "/rest/usergroup/users", method = RequestMethod.POST)
     public @ResponseStatus(HttpStatus.CREATED) void insertUser(@RequestBody JaxbUser user)
             throws PasswordPolicyException, IOException {
-        insertUser(defaultServiceName, user);
+        insertUser(getDefaultServiceName(), user);
     }
 
     @RequestMapping(value = "/rest/usergroup/user/{user}", method = RequestMethod.POST)
     public @ResponseStatus(HttpStatus.OK) void updateUser(@PathVariable("user") String userName,
             @RequestBody JaxbUser user) throws PasswordPolicyException, IOException {
-        updateUser(defaultServiceName, userName, user);
+        updateUser(getDefaultServiceName(), userName, user);
     }
 
     @RequestMapping(value = "/rest/usergroup/user/{user}", method = RequestMethod.DELETE)
     public @ResponseStatus(HttpStatus.OK) void deleteUser(@PathVariable("user") String userName)
             throws IOException {
-        deleteUser(defaultServiceName, userName);
+        deleteUser(getDefaultServiceName(), userName);
     }
 
     @RequestMapping(value = "/rest/usergroup/group/{group}", method = RequestMethod.POST)
     public @ResponseStatus(HttpStatus.CREATED) void insertGroup(
             @PathVariable("group") String groupName) throws PasswordPolicyException, IOException {
-        insertGroup(defaultServiceName, groupName);
+        insertGroup(getDefaultServiceName(), groupName);
     }
 
     @RequestMapping(value = "/rest/usergroup/group/{group}", method = RequestMethod.DELETE)
     public @ResponseStatus(HttpStatus.OK) void deleteGroup(@PathVariable("group") String groupName)
             throws IOException {
-        deleteGroup(defaultServiceName, groupName);
+        deleteGroup(getDefaultServiceName(), groupName);
     }
 
     @RequestMapping(value = "/rest/usergroup/user/{user}/group/{group}", method = RequestMethod.POST)
     public @ResponseStatus(HttpStatus.OK) void associateUserToGroup(
             @PathVariable("user") String userName, @PathVariable("group") String groupName)
             throws IOException {
-        associateUserToGroup(defaultServiceName, userName, groupName);
+        associateUserToGroup(getDefaultServiceName(), userName, groupName);
     }
 
     @RequestMapping(value = "/rest/usergroup/user/{user}/group/{group}", method = RequestMethod.DELETE)
     public @ResponseStatus(HttpStatus.OK) void disassociateUserFromGroup(
             @PathVariable("user") String userName, @PathVariable("group") String groupName)
             throws IOException {
-        disassociateUserFromGroup(defaultServiceName, userName, groupName);
+        disassociateUserFromGroup(getDefaultServiceName(), userName, groupName);
     }
 
     @RequestMapping(value = "/rest/usergroup/service/{serviceName}/users", method = RequestMethod.GET, produces = {"application/xml", "application/json"})

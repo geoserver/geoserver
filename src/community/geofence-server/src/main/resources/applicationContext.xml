@@ -45,9 +45,6 @@
                 <!-- You may replace the cachedRuleReader ref with ruleReaderService in order to disable the caching -->
                 <!--<prop key="ruleReaderFrontend">ruleReaderService</prop>-->
                 <prop key="ruleReaderFrontend">cachedRuleReader</prop>
-
-                <!-- the default user/group service name -->
-                <prop key="defaultUserGroupServiceName">default</prop>
             </props>
         </property>
     </bean>
@@ -134,7 +131,6 @@
 
     <bean id="usersRestController" class="org.geoserver.geofence.rest.UsersRestController">
         <constructor-arg index="0" ref="geoServerSecurityManager"/>
-        <property name="defaultServiceName" value="${defaultUserGroupServiceName}" />
     </bean>
 
     <bean id="rolesRestController" class="org.geoserver.geofence.rest.RolesRestController">

@@ -14,10 +14,10 @@
 	</parent>
 
 	<groupId>org.geoserver.community</groupId>
-	<artifactId>gs-sec-oauth2-geonode</artifactId>
+	<artifactId>gs-sec-oauth2-github</artifactId>
 	<packaging>jar</packaging>
 	<version>2.11-SNAPSHOT</version>
-	<name>GeoServer OAuth2 Connect Security Module - GeoNode Token Service</name>
+	<name>GeoServer OAuth2 Connect Security Module - GitHub Token Service</name>
 
 	<dependencies>
 		<dependency>
@@ -59,7 +59,7 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.geoserver.community</groupId>
 			<artifactId>gs-sec-oauth2</artifactId>

@@ -75,6 +75,7 @@
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
           <descriptor>release/ext-geogig.xml</descriptor>
           <descriptor>release/ext-oauth2-google.xml</descriptor>
+          <descriptor>release/ext-oauth2-github.xml</descriptor>
           <descriptor>release/ext-oauth2-geonode.xml</descriptor>
           <descriptor>release/ext-backup-restore.xml</descriptor>
           <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
@@ -216,6 +217,7 @@
         <module>gwc-sqlite</module>
         <module>security/oauth2</module>
         <module>security/oauth2-google</module>
+        <module>security/oauth2-github</module>
         <module>security/oauth2-geonode</module>
         <module>wmts-multi-dimensional</module>
         <module>onelogin</module>
@@ -473,6 +475,12 @@
       <id>oauth2-google</id>
       <modules>
         <module>security/oauth2-google</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>oauth2-github</id>
+      <modules>
+        <module>security/oauth2-github</module>
       </modules>
     </profile>
     <profile>

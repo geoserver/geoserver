@@ -1195,6 +1195,11 @@
       <artifactId>imageio-ext-turbojpeg</artifactId>
       <version>${imageio-ext.version}</version>
     </dependency>
+    <dependency>
+      <groupId>no.ecc.vectortile</groupId>
+      <artifactId>java-vector-tile</artifactId>
+      <version>1.0.9</version>
+    </dependency>
   </dependencies>
  </dependencyManagement>
 

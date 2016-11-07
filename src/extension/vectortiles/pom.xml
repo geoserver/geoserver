@@ -39,7 +39,6 @@
     <dependency>
       <groupId>no.ecc.vectortile</groupId>
       <artifactId>java-vector-tile</artifactId>
-      <version>1.0.9</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>

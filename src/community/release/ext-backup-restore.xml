@@ -10,13 +10,10 @@
       <outputDirectory></outputDirectory>
       <includes>
 	     <include>*backup-restore*</include>
-		 <include>spring-batch*.jar</include>
-		 <include>spring-batch*.jar</include>
-		 <include>spring-integration*.jar</include>
-		 <include>spring-messaging*.jar</include>
-		 <include>commons-exec*.jar</include>
-		 <include>commons-vfs2*.jar</include>
-		 <include>commons-fileupload*.jar</include>
+		 <include>spring*.jar</include>
+         <include>json*.jar</include>
+         <include>org.json*.jar</include>
+		 <include>commons*.jar</include>
 		 <include>org.restlet*.jar</include>
 		 <include>prettytime*.jar</include>
       </includes>      

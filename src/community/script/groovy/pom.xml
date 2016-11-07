@@ -15,6 +15,12 @@
  <artifactId>gs-script-groovy</artifactId>
  <packaging>jar</packaging>
  <name>Groovy Scripting Extension</name>
+ <repositories>
+  <repository>
+   <id>ECC</id>
+   <url>https://github.com/ElectronicChartCentre/ecc-mvn-repo/raw/master/releases</url>
+  </repository>
+ </repositories>
  <dependencies>
   <dependency>
    <groupId>org.geoserver.script</groupId>
@@ -27,10 +33,9 @@
    <version>1.7-SNAPSHOT</version>
   </dependency>
   <dependency>
-    <!-- this dependency taken from geoscript-groovy pom but upgraded to 1.0.8 -->
+    <!-- this dependency taken from geoscript-groovy pom but upgraded to 1.0.9 -->
     <groupId>no.ecc.vectortile</groupId>
     <artifactId>java-vector-tile</artifactId>
-    <version>1.0.8</version>
     <!-- Exclude protobuf here so gt-geobuf can pull in a more recent version -->
     <exclusions>
       <exclusion>

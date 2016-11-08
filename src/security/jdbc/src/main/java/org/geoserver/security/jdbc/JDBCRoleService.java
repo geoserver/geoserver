@@ -168,7 +168,9 @@ public  class JDBCRoleService extends AbstractJDBCService implements GeoServerRo
                 while (rs2.next()) {
                     String propName = rs2.getString(1);
                     Object propValue = rs2.getObject(2);
-                    roleObject.getProperties().put(propName, propValue==null ? "" : propValue );
+                    if (propName != null) {
+                        roleObject.getProperties().put(propName, propValue==null ? "" : propValue );
+                    }
                 }                
             }                
         } catch (SQLException ex) {

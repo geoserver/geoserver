@@ -647,7 +647,6 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
                 }
                 if (!fh.canWrite()) {
                     LOGGER.warning(msgPrefix + " , which is not writeable");
-                    continue;
                 }
 
                 // Sweet, we can work with this

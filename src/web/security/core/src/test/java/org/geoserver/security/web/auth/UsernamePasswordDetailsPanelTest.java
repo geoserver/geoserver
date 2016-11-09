@@ -167,6 +167,82 @@ public  class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServ
     }
 
     @Test
+    public void testMultipleAuthProviders() throws Exception{
+        initializeForXML();
+        
+        activatePanel();
+        
+        assertNotNull(getSecurityNamedServiceConfig("default"));
+        assertNull(getSecurityNamedServiceConfig("xxxxxxxx"));
+        
+        // Test add 1
+        clickAddNew();
+        
+        tester.assertRenderedPage(SecurityNamedServiceNewPage.class);
+        setSecurityConfigClassName(UsernamePasswordAuthProviderPanelInfo.class);
+
+        newFormTester();
+        setSecurityConfigName("default_001");                        
+        setUGName("default");
+        clickCancel();
+        
+        tester.assertRenderedPage(basePage.getClass());
+        assertEquals(1, countItems());
+        assertNotNull(getSecurityNamedServiceConfig("default"));
+        
+        clickAddNew();
+        newFormTester();
+        setSecurityConfigClassName(UsernamePasswordAuthProviderPanelInfo.class);
+        newFormTester();
+        setSecurityConfigName("default_001");        
+        setUGName("default");        
+        tester.assertRenderedPage(SecurityNamedServiceNewPage.class);
+        clickSave();
+        
+        // Test add 2
+        clickAddNew();
+        
+        tester.assertRenderedPage(SecurityNamedServiceNewPage.class);
+        setSecurityConfigClassName(UsernamePasswordAuthProviderPanelInfo.class);
+
+        newFormTester();
+        setSecurityConfigName("default_002");                        
+        setUGName("default");
+        clickCancel();
+        
+        tester.assertRenderedPage(basePage.getClass());
+        assertEquals(2, countItems());
+        assertNotNull(getSecurityNamedServiceConfig("default"));
+        
+        clickAddNew();
+        newFormTester();
+        setSecurityConfigClassName(UsernamePasswordAuthProviderPanelInfo.class);
+        newFormTester();
+        setSecurityConfigName("default_002");        
+        setUGName("default");        
+        tester.assertRenderedPage(SecurityNamedServiceNewPage.class);
+        clickSave();
+        
+        // start test modify
+        clickNamedServiceConfig("default_001");
+        tester.assertRenderedPage(SecurityNamedServiceEditPage.class);
+        tester.debugComponentTrees();
+        newFormTester("panel:panel:form");
+        clickCancel();
+        tester.assertRenderedPage(basePage.getClass());
+        
+        clickNamedServiceConfig("default_002");
+        tester.assertRenderedPage(SecurityNamedServiceEditPage.class);
+        tester.debugComponentTrees();
+        newFormTester("panel:panel:form");
+        clickCancel();
+        tester.assertRenderedPage(basePage.getClass());
+
+        doRemove(null, "default_001");
+        doRemove(null, "default_002");
+    }
+
+    @Test
     public void testRemove() throws Exception {
         initializeForXML();
         UsernamePasswordAuthenticationProviderConfig config = new UsernamePasswordAuthenticationProviderConfig();

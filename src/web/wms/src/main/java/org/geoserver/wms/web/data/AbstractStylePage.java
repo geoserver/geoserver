@@ -44,6 +44,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
@@ -98,14 +99,17 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         }
         
         //Try getting the first layer in the default store in the default workspace
-        DataStoreInfo defaultStore = catalog.getDefaultDataStore(catalog.getDefaultWorkspace());
-        if (defaultStore != null) {
-            List<ResourceInfo> resources = catalog.getResourcesByStore(defaultStore, ResourceInfo.class);
-            for (ResourceInfo resource : resources) {
-                layers = catalog.getLayers(resource);
-                if (layers.size() > 0) {
-                    layerModel = new Model<LayerInfo>(layers.get(0));
-                    return;
+        WorkspaceInfo defaultWs = catalog.getDefaultWorkspace();
+        if (defaultWs != null) {
+            DataStoreInfo defaultStore = catalog.getDefaultDataStore(defaultWs);
+            if (defaultStore != null) {
+                List<ResourceInfo> resources = catalog.getResourcesByStore(defaultStore, ResourceInfo.class);
+                for (ResourceInfo resource : resources) {
+                    layers = catalog.getLayers(resource);
+                    if (layers.size() > 0) {
+                        layerModel = new Model<LayerInfo>(layers.get(0));
+                        return;
+                    }
                 }
             }
         }
@@ -250,6 +254,25 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
                     @Override
                     public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        if (getLayerInfo() == null || getLayerInfo().getId() == null) {
+                            switch (index) {
+                                case 1:
+                                    tabbedPanel.error("Cannot show Publishing options: No Layers available.");
+                                    target.add(feedbackPanel);
+                                    return;
+                                case 2:
+                                    tabbedPanel.error("Cannot show Layer Preview: No Layers available.");
+                                    target.add(feedbackPanel);
+                                    return;
+                                case 3:
+                                    tabbedPanel.error("Cannot show Attribute Preview: No Layers available.");
+                                    target.add(feedbackPanel);
+                                    return;
+                                default:
+                                    break;
+                            }
+                        }
+
                         setSelectedTab(index);
                         target.add(tabbedPanel);
                     }

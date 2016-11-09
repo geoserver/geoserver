@@ -26,7 +26,7 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  * This class is simply wraps the FeatureIterator with two iterators wrappers that provide the above functionality.
  */
-public class TransformingCancelableInteratingFC extends DecoratingFeatureCollection {
+  class ImportTransformFeatureCollection extends DecoratingFeatureCollection {
 
     ProgressMonitor monitor;
 
@@ -34,29 +34,29 @@ public class TransformingCancelableInteratingFC extends DecoratingFeatureCollect
 
     FeatureType resultingFT;
 
-    VectorTransformChain tx;
+    VectorTransformChain vectorTransformChain;
 
     ImportTask task;
 
-    DataStore dataStore;
+    DataStore dataStoreDestination;
 
-    public TransformingCancelableInteratingFC(FeatureCollection fc, ProgressMonitor monitor,
+    public ImportTransformFeatureCollection(FeatureCollection fc, 
             FeatureDataConverter featureDataConverter, FeatureType resultingFT,
-            VectorTransformChain tx, ImportTask task, DataStore dataStore) {
+            VectorTransformChain vectorTransformChain, ImportTask task, DataStore dataStoreDestination) {
         super(fc);
-        this.monitor = monitor;
+        this.monitor = task.progress();
         this.featureDataConverter = featureDataConverter;
         this.resultingFT = resultingFT;
-        this.tx = tx;
+        this.vectorTransformChain = vectorTransformChain;
         this.task = task;
-        this.dataStore = dataStore;
+        this.dataStoreDestination = dataStoreDestination;
     }
 
     @Override
     public FeatureIterator features() {
         FeatureIterator fi = super.features();
         return new TransformingFeatureIterator(new CancelableFeatureIterator(fi, monitor),
-                resultingFT, featureDataConverter, tx, task, dataStore);
+                resultingFT, featureDataConverter, vectorTransformChain, task, dataStoreDestination);
     }
 
     /**
@@ -64,13 +64,13 @@ public class TransformingCancelableInteratingFC extends DecoratingFeatureCollect
      * 
      * The emulates the behavior of the Importer's low-level feature transformation.
      */
-    class TransformingFeatureIterator extends DecoratingFeatureIterator {
+    private class TransformingFeatureIterator extends DecoratingFeatureIterator {
 
         SimpleFeatureBuilder featureBuilder;
 
         FeatureDataConverter featureDataConverter;
 
-        VectorTransformChain tx;
+        VectorTransformChain vectorTransformChain;
 
         ImportTask task;
 
@@ -79,12 +79,12 @@ public class TransformingCancelableInteratingFC extends DecoratingFeatureCollect
         int cnt = 0;
 
         public TransformingFeatureIterator(FeatureIterator fi, FeatureType resultingFT,
-                FeatureDataConverter featureDataConverter, VectorTransformChain tx, ImportTask task,
+                FeatureDataConverter featureDataConverter, VectorTransformChain vectorTransformChain, ImportTask task,
                 DataStore dataStore) {
             super(fi);
             this.featureBuilder = new SimpleFeatureBuilder((SimpleFeatureType) resultingFT);
             this.featureDataConverter = featureDataConverter;
-            this.tx = tx;
+            this.vectorTransformChain = vectorTransformChain;
             this.task = task;
             this.dataStore = dataStore;
         }
@@ -114,7 +114,7 @@ public class TransformingCancelableInteratingFC extends DecoratingFeatureCollect
             }
 
             try {
-                result = tx.inline(task, dataStore, input, result);
+                result = vectorTransformChain.inline(task, dataStore, input, result);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -128,7 +128,7 @@ public class TransformingCancelableInteratingFC extends DecoratingFeatureCollect
      * Simple FeatureIterator that will handle canceling. If the monitor cancels, the iterator will say there are no more elementss (hasNext() will be
      * false)
      */
-    class CancelableFeatureIterator extends DecoratingFeatureIterator {
+    private class CancelableFeatureIterator extends DecoratingFeatureIterator {
         ProgressMonitor monitor;
 
         public CancelableFeatureIterator(FeatureIterator fi, ProgressMonitor monitor) {

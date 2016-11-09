@@ -1257,12 +1257,12 @@ public class Importer implements DisposableBean, ApplicationListener {
 
             // Move features
             if (format instanceof DataStoreFormat) {
-                error = copyFeaturesHighLevelAPI(data, task, (DataStoreFormat) format, dataStore,
+                error = copyFromFeatureSource(data, task, (DataStoreFormat) format, dataStore,
                         transaction, featureTypeName, uniquifiedFeatureTypeName,
                         featureDataConverter, tx);
             } else {
                 reader = format.read(data, task);
-                error = copyFeaturesLowLevelAPI(reader, task, format, dataStore, transaction,
+                error = copyFromFeatureReader(reader, task, format, dataStore, transaction,
                         featureTypeName, uniquifiedFeatureTypeName, featureDataConverter, tx);
             }
 
@@ -1296,8 +1296,8 @@ public class Importer implements DisposableBean, ApplicationListener {
         }
     }
 
-    private Exception copyFeaturesHighLevelAPI(ImportData data, ImportTask task,
-            DataStoreFormat format, DataStore dataStore, Transaction transaction,
+    private Exception copyFromFeatureSource(ImportData data, ImportTask task,
+            DataStoreFormat format, DataStore dataStoreDestination, Transaction transaction,
             String featureTypeName, String uniquifiedFeatureTypeName,
             FeatureDataConverter featureDataConverter, VectorTransformChain tx) throws IOException {
         Exception error = null;
@@ -1307,17 +1307,17 @@ public class Importer implements DisposableBean, ApplicationListener {
             task.clearMessages();
 
             task.setTotalToProcess(format.getFeatureCount(task.getData(), task));
-            LOGGER.info("begining import - highlevel api");
+            LOGGER.fine("begining import - highlevel api");
 
             FeatureSource fs = format.getFeatureSource(data, task);
             FeatureCollection fc = fs.getFeatures();
 
-            FeatureStore featureStore = (FeatureStore) dataStore
+            FeatureStore featureStore = (FeatureStore) dataStoreDestination
                     .getFeatureSource(uniquifiedFeatureTypeName);
             featureStore.setTransaction(transaction);
 
-            fc = new TransformingCancelableInteratingFC(fc, monitor, featureDataConverter,
-                    featureStore.getSchema(), tx, task, dataStore);
+            fc = new ImportTransformFeatureCollection(fc, featureDataConverter,
+                    featureStore.getSchema(), tx, task, dataStoreDestination);
 
             featureStore.addFeatures(fc);
 
@@ -1333,12 +1333,12 @@ public class Importer implements DisposableBean, ApplicationListener {
             try {
                 transaction.rollback();
             } catch (Exception e1) {
-                LOGGER.log(Level.WARNING, "Error rolling back transaction", e1);
+                LOGGER.log(Level.WARNING,"Unable to load data into "+ uniquifiedFeatureTypeName+", rolling back data insert:"+e1, e1);                
             }
 
             // attempt to drop the type that was created as well
             try {
-                dropSchema(dataStore, featureTypeName);
+                dropSchema(dataStoreDestination, featureTypeName);
             } catch (Exception e1) {
                 LOGGER.log(Level.WARNING, "Error dropping schema in rollback", e1);
             }
@@ -1347,8 +1347,8 @@ public class Importer implements DisposableBean, ApplicationListener {
         return error;
     }
 
-    Exception copyFeaturesLowLevelAPI(FeatureReader reader, ImportTask task, VectorFormat format,
-            DataStore dataStore, Transaction transaction, String featureTypeName,
+    Exception copyFromFeatureReader(FeatureReader reader, ImportTask task, VectorFormat format,
+            DataStore dataStoreDestination, Transaction transaction, String featureTypeName,
             String uniquifiedFeatureTypeName, FeatureDataConverter featureDataConverter,
             VectorTransformChain tx) throws IOException {
         FeatureWriter writer = null;
@@ -1364,9 +1364,9 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         task.setTotalToProcess(format.getFeatureCount(task.getData(), task));
 
-        LOGGER.info("begining import - lowlevel api");
+        LOGGER.fine("begining import - lowlevel api");
         try {
-            writer = dataStore.getFeatureWriterAppend(uniquifiedFeatureTypeName, transaction);
+            writer = dataStoreDestination.getFeatureWriterAppend(uniquifiedFeatureTypeName, transaction);
 
             while (reader.hasNext()) {
                 if (monitor.isCanceled()) {
@@ -1388,7 +1388,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                 }
 
                 // apply the feature transform
-                next = tx.inline(task, dataStore, feature, next);
+                next = tx.inline(task, dataStoreDestination, feature, next);
 
                 if (next == null) {
                     skipped++;
@@ -1419,7 +1419,7 @@ public class Importer implements DisposableBean, ApplicationListener {
 
             // attempt to drop the type that was created as well
             try {
-                dropSchema(dataStore, featureTypeName);
+                dropSchema(dataStoreDestination, featureTypeName);
             } catch (Exception e1) {
                 LOGGER.log(Level.WARNING, "Error dropping schema in rollback", e1);
             }

@@ -1030,8 +1030,9 @@ public class Importer implements DisposableBean, ApplicationListener {
                     calculateBounds(resource);
                 }
             }
-            catch(Exception e) {
-                LOGGER.log(Level.SEVERE, "Error occured during import", e);
+            catch(Throwable th) {
+                LOGGER.log(Level.SEVERE, "Error occured during import", th);
+                Exception e = (th instanceof Exception) ? (Exception) th : new Exception(th);
                 task.setError(e);
                 task.setState(ImportTask.State.ERROR);
                 return;
@@ -1178,12 +1179,12 @@ public class Importer implements DisposableBean, ApplicationListener {
     
      
     void loadIntoDataStore(ImportTask task, DataStoreInfo store, VectorFormat format,
-            VectorTransformChain tx) throws Exception {
+            VectorTransformChain tx) throws Throwable {
         ImportData data = task.getData();
         FeatureReader reader = null;
 
         // using this exception to throw at the end
-        Exception error = null;
+        Throwable error = null;
         Transaction transaction = new DefaultTransaction();
         try {
 
@@ -1296,11 +1297,11 @@ public class Importer implements DisposableBean, ApplicationListener {
         }
     }
 
-    private Exception copyFromFeatureSource(ImportData data, ImportTask task,
+    private Throwable copyFromFeatureSource(ImportData data, ImportTask task,
             DataStoreFormat format, DataStore dataStoreDestination, Transaction transaction,
             String featureTypeName, String uniquifiedFeatureTypeName,
             FeatureDataConverter featureDataConverter, VectorTransformChain tx) throws IOException {
-        Exception error = null;
+        Throwable error = null;
         ProgressMonitor monitor = task.progress();
         try {
             long startTime = System.currentTimeMillis();
@@ -1321,7 +1322,7 @@ public class Importer implements DisposableBean, ApplicationListener {
 
             featureStore.addFeatures(fc);
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             error = e;
         }
 
@@ -1347,12 +1348,12 @@ public class Importer implements DisposableBean, ApplicationListener {
         return error;
     }
 
-    Exception copyFromFeatureReader(FeatureReader reader, ImportTask task, VectorFormat format,
+    Throwable copyFromFeatureReader(FeatureReader reader, ImportTask task, VectorFormat format,
             DataStore dataStoreDestination, Transaction transaction, String featureTypeName,
             String uniquifiedFeatureTypeName, FeatureDataConverter featureDataConverter,
             VectorTransformChain tx) throws IOException {
         FeatureWriter writer = null;
-        Exception error = null;
+        Throwable error = null;
         ProgressMonitor monitor = task.progress();
 
         // @todo need better way to communicate to client
@@ -1401,7 +1402,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                 task.addMessage(Level.WARNING, skipped + " features were skipped.");
             }
             LOGGER.info("load to target took " + (System.currentTimeMillis() - startTime));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             error = e;
         }
         // no finally block, there is too much to do

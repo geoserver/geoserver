@@ -28,6 +28,7 @@ import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureReader;
+import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStoreFactorySpi;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
@@ -170,6 +171,10 @@ public class DataStoreFormat extends VectorFormat {
             task.getMetadata().put(DataStore.class, dataStore);
         }
         return dataStore;
+    }
+    
+    public FeatureSource getFeatureSource(ImportData data, ImportTask task) throws IOException {
+        return getDataStore(data, task).getFeatureSource(task.getOriginalLayerName());
     }
 
     @Override

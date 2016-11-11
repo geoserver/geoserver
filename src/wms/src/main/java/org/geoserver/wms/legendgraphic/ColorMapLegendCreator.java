@@ -160,6 +160,8 @@ public class ColorMapLegendCreator {
         private double columnMarginPercentage = LegendUtils.columnPaddingFactor;
 
         private double hMarginPercentage = LegendUtils.marginFactor;
+        
+        private boolean absoluteMargins = true;
 
         private boolean border = false;
 
@@ -368,6 +370,11 @@ public class ColorMapLegendCreator {
                 columnMarginPercentage = Double.parseDouble((String) additionalOptions.get("dx"));
 
             }
+            
+            if (additionalOptions.get("absoluteMargins") instanceof String) {
+                absoluteMargins = Boolean.parseBoolean((String) additionalOptions.get("absoluteMargins"));
+
+            }
 
             if (additionalOptions.get("bandInfo") instanceof String) {
                 bandInformation = Boolean.parseBoolean((String) additionalOptions.get("bandInfo"));
@@ -509,6 +516,8 @@ public class ColorMapLegendCreator {
     private double rowMarginPercentage = LegendUtils.rowPaddingFactor;
 
     private double columnMarginPercentage = LegendUtils.columnPaddingFactor;
+    
+    private boolean absoluteMargins = true;
 
     private Color borderColor = LegendUtils.DEFAULT_BORDER_COLOR;
 
@@ -573,6 +582,7 @@ public class ColorMapLegendCreator {
         this.labelFontColor = builder.labelFontColor;
         this.rowMarginPercentage = builder.rowMarginPercentage;
         this.columnMarginPercentage = builder.columnMarginPercentage;
+        this.absoluteMargins = builder.absoluteMargins;
         this.hMarginPercentage = builder.hMarginPercentage;
         this.vMarginPercentage = builder.vMarginPercentage;
         this.requestedDimension = (Dimension) builder.requestedDimension.clone();
@@ -668,7 +678,7 @@ public class ColorMapLegendCreator {
         // this.
         // final dimension are different between ramp and others since ramp does not have margin for rows
         final double maxW = Math.max(colorW + ruleW + labelW, footerW);
-        dx = maxW * columnMarginPercentage;
+        dx = absoluteMargins ? columnMarginPercentage : (maxW * columnMarginPercentage);
         dy = colorMapType == ColorMapType.RAMP ? 0 : rowH * rowMarginPercentage;
 
         final double mx = maxW * hMarginPercentage;
@@ -924,7 +934,7 @@ public class ColorMapLegendCreator {
         } else {
             List<RenderedImage> imgs = new ArrayList<RenderedImage>(legendsQueue);
             
-            LegendMerger.MergeOptions options = new LegendMerger.MergeOptions(imgs, (int) dx, (int) dy, (int) margin, backgroundColor, transparent, true, layout, rowWidth, 
+            LegendMerger.MergeOptions options = new LegendMerger.MergeOptions(imgs, (int) dx, (int) dy, (int) margin, 0, backgroundColor, transparent, true, layout, rowWidth, 
                     rows, columnHeight, columns, null ,false, false);
             finalLegend = LegendMerger.mergeRasterLegends(options);
         }

@@ -161,7 +161,7 @@ public class ColorMapLegendCreator {
 
         private double hMarginPercentage = LegendUtils.marginFactor;
         
-        private boolean absoluteMargins = false;
+        private boolean absoluteMargins = true;
 
         private boolean border = false;
 

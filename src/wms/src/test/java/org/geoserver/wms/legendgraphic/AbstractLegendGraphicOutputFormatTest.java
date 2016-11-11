@@ -1054,10 +1054,10 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
             this.legendProducer.buildLegendGraphic(req);
 
             BufferedImage image = this.legendProducer.buildLegendGraphic(req);
-            int proportionalWidth = image.getWidth();
-            legendOptions.put("absoluteMargins", "true");
+            int absoluteWidth = image.getWidth();
+            legendOptions.put("absoluteMargins", "false");
             image = this.legendProducer.buildLegendGraphic(req);
-            assertTrue(image.getWidth() < proportionalWidth);
+            assertTrue(image.getWidth() > absoluteWidth);
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
             if(coverage instanceof GridCoverage2D) {

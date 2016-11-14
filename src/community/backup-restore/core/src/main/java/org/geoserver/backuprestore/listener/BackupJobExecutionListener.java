@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.backuprestore.Backup;
@@ -115,6 +116,20 @@ public class BackupJobExecutionListener implements JobExecutionListener {
                     Resource sourceFolder = Resources
                             .fromURL(jobParameters.getString(Backup.PARAM_OUTPUT_FILE_PATH));
                     BackupUtils.compressTo(sourceFolder, backupExecution.getArchiveFile());
+                    
+                    // Cleanup Temporary Resources
+                    String cleanUpTempFolders = jobParameters.getString(Backup.PARAM_CLEANUP_TEMP);
+                    if (cleanUpTempFolders != null && Boolean.parseBoolean(cleanUpTempFolders) && sourceFolder != null) {
+                        if (Resources.exists(sourceFolder)) {
+                            try {
+                                if (!sourceFolder.delete()) {
+                                    LOGGER.warning("It was not possible to cleanup Temporary Resources. Please double check that Resources inside the Temp GeoServer Data Directory have been removed.");
+                                }
+                            } catch (Exception e) {
+                                LOGGER.log(Level.WARNING, "It was not possible to cleanup Temporary Resources. Please double check that Resources inside the Temp GeoServer Data Directory have been removed.", e);
+                            }
+                        }
+                    }
                 }
             }
         } catch (NoSuchJobExecutionException | IOException e) {

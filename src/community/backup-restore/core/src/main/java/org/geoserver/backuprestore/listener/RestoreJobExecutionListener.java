@@ -7,6 +7,7 @@ package org.geoserver.backuprestore.listener;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.backuprestore.Backup;
@@ -16,11 +17,13 @@ import org.geoserver.catalog.Wrapper;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
+import org.springframework.batch.core.JobParameters;
 
 /**
  * Implements a Spring Batch {@link JobExecutionListener}.
@@ -130,6 +133,24 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
                     }
                     
                     backupFacade.getGeoServer().reset();
+                    
+                    JobParameters jobParameters = restoreExecution.getJobParameters();
+                    Resource tempFolder = Resources
+                            .fromURL(jobParameters.getString(Backup.PARAM_INPUT_FILE_PATH));
+                    
+                    // Cleanup Temporary Resources
+                    String cleanUpTempFolders = jobParameters.getString(Backup.PARAM_CLEANUP_TEMP);
+                    if (cleanUpTempFolders != null && Boolean.parseBoolean(cleanUpTempFolders) && tempFolder != null) {
+                        if (Resources.exists(tempFolder)) {
+                            try {
+                                if (!tempFolder.delete()) {
+                                    LOGGER.warning("It was not possible to cleanup Temporary Resources. Please double check that Resources inside the Temp GeoServer Data Directory have been removed.");
+                                }
+                            } catch (Exception e) {
+                                LOGGER.log(Level.WARNING, "It was not possible to cleanup Temporary Resources. Please double check that Resources inside the Temp GeoServer Data Directory have been removed.", e);
+                            }
+                        }
+                    }
                 }
             }
             // Collect errors

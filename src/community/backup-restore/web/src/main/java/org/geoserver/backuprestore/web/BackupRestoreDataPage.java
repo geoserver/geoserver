@@ -171,6 +171,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
     private void populateBackupForm(Form form) {
         form.add(new CheckBox("backupOptOverwirte", new Model<Boolean>(false)));
         form.add(new CheckBox("backupOptBestEffort", new Model<Boolean>(false)));
+        form.add(new CheckBox("backupOptCleanTemp", new Model<Boolean>(true)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
         form.add(new AjaxSubmitLink("newBackupStart", form) {
             @Override
@@ -298,11 +299,16 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                 
                 Boolean backupOptOverwirte = ((CheckBox) form.get("backupOptOverwirte")).getModelObject();
                 Boolean backupOptBestEffort = ((CheckBox) form.get("backupOptBestEffort")).getModelObject();
-
+                Boolean backupOptCleanTemp = ((CheckBox) form.get("backupOptCleanTemp")).getModelObject();
+                
                 if (backupOptBestEffort) {
                     hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
                 }
-                
+
+                if (backupOptCleanTemp) {
+                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_CLEANUP_TEMP), Backup.PARAM_CLEANUP_TEMP));
+                }
+
                 Backup backupFacade = BackupRestoreWebUtils.backupFacade();
                 
                 return backupFacade.runBackupAsync(archiveFile, backupOptOverwirte, filter, hints).getId();
@@ -356,6 +362,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
     private void populateRestoreForm(Form form) {
         form.add(new CheckBox("restoreOptDryRun", new Model<Boolean>(false)));
         form.add(new CheckBox("restoreOptBestEffort", new Model<Boolean>(false)));
+        form.add(new CheckBox("restoreOptCleanTemp", new Model<Boolean>(true)));
         form.add(statusLabel = new Label("status", new Model()).setOutputMarkupId(true));
         form.add(new AjaxSubmitLink("newRestoreStart", form) {
             @Override
@@ -491,6 +498,12 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
 
                 if (restoreOptBestEffort) {
                     hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+                }
+                
+                Boolean restoreOptCleanTemp = ((CheckBox) form.get("restoreOptCleanTemp")).getModelObject();
+
+                if (restoreOptCleanTemp) {
+                    hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_CLEANUP_TEMP), Backup.PARAM_CLEANUP_TEMP));
                 }
                 
                 Backup backupFacade = BackupRestoreWebUtils.backupFacade();

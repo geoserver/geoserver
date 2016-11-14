@@ -76,6 +76,8 @@ public class Backup extends JobExecutionListenerSupport
 
     public static final String PARAM_INPUT_FILE_PATH = "input.file.path";
 
+    public static final String PARAM_CLEANUP_TEMP = "BK_CLEANUP_TEMP";
+    
     public static final String PARAM_DRY_RUN_MODE = "BK_DRY_RUN";
 
     public static final String PARAM_BEST_EFFORT_MODE = "BK_BEST_EFFORT";
@@ -348,7 +350,7 @@ public class Backup extends JobExecutionListenerSupport
         FileUtils.touch(archiveFile.file());
 
         // Write flat files into a temporary folder
-        Resource tmpDir = BackupUtils.tmpDir();
+        Resource tmpDir = BackupUtils.geoServerTmpDir(getGeoServerDataDirectory());
 
         // Fill Job Parameters
         JobParametersBuilder paramsBuilder = new JobParametersBuilder();
@@ -414,7 +416,7 @@ public class Backup extends JobExecutionListenerSupport
     public RestoreExecutionAdapter runRestoreAsync(final Resource archiveFile, final Filter filter,
             final Hints params) throws IOException {
         // Extract archive into a temporary folder
-        Resource tmpDir = BackupUtils.tmpDir();
+        Resource tmpDir = BackupUtils.geoServerTmpDir(getGeoServerDataDirectory());
         BackupUtils.extractTo(archiveFile, tmpDir);
 
         // Fill Job Parameters
@@ -601,6 +603,7 @@ public class Backup extends JobExecutionListenerSupport
                     final Set<String> key = ((Hints.OptionKey) param.getKey()).getOptions();
                     for (String k : key) {
                         switch (k) {
+                        case PARAM_CLEANUP_TEMP:                            
                         case PARAM_DRY_RUN_MODE:
                         case PARAM_BEST_EFFORT_MODE:
                             if (paramsBuilder.toJobParameters().getString(k) == null) {

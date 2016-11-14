@@ -129,7 +129,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         FormTester ft = tester.newFormTester( "form");
         ft.submit();
         
-        assertEquals( DefaultGeographicCRS.WGS84, foo.crs );
+        assertEquals( CRS.decode("EPSG:4326"), foo.crs );
     }
     
     @Test
@@ -157,7 +157,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         FormTester ft = tester.newFormTester( "form");
         ft.submit();
         
-        assertEquals( DefaultGeographicCRS.WGS84, foo.crs );
+        assertEquals( CRS.decode("EPSG:4326"), foo.crs );
     }
     
     @Test

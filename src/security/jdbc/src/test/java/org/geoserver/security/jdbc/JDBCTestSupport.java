@@ -201,8 +201,12 @@ public class JDBCTestSupport {
         config.setPassword(props.getProperty("password"));            
         config.setClassName(JDBCRoleService.class.getName());
         config.setCreatingTables(false);
-        if ("mysql".equals(fixtureId)) {
-            config.setPropertyFileNameDDL("rolesddl.mysql.xml");            
+        if ("h2".equals(fixtureId)) {
+            config.setPropertyFileNameDDL("rolesddl.h2.xml");
+        } else if ("postgis".equals(fixtureId)) {
+            config.setPropertyFileNameDDL("rolesddl.postgis.xml");
+        } else if ("mysql".equals(fixtureId)) {
+            config.setPropertyFileNameDDL("rolesddl.mysql.xml");
         } else {
             config.setPropertyFileNameDDL(JDBCRoleService.DEFAULT_DDL_FILE);
         }

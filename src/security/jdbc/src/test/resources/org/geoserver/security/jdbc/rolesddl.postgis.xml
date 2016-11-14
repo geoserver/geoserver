@@ -7,7 +7,7 @@
 	create table roles(name varchar(64) not null,parent varchar(64),  primary key(name))
   </entry>
   <entry key="roleprops.create">
-	create table role_props(rolename varchar(64) not null,propname varchar(64) not null, propvalue varchar(2048),primary key (rolename,propname))
+	create table role_props(id serial primary key, rolename varchar(64) not null,propname varchar(64), propvalue varchar(2048))
   </entry>
 
   <entry key="userroles.create">

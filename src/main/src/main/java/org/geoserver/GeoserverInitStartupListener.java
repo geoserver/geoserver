@@ -75,7 +75,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
     private final static String COMPARISON_TOLERANCE_PROPERTY = "COMPARISON_TOLERANCE";
 
-    private final static double DEFAULT_COMPARISON_TOLERANCE = 1e-9;
+    private final static double DEFAULT_COMPARISON_TOLERANCE = 1e-8;
 
     public void contextInitialized(ServletContextEvent sce) {
         // start up tctool - remove it before committing!!!!

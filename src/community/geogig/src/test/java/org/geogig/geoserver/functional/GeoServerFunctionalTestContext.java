@@ -17,6 +17,8 @@ import java.net.URI;
 import java.util.Random;
 import java.util.Set;
 
+import javax.json.JsonObject;
+
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
@@ -33,7 +35,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.DataAccess;
-import org.json.JSONObject;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.repository.GeoGIG;
@@ -134,12 +135,12 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         }
 
         public MockHttpServletResponse callInternal(Method method, String resourceUri,
-                JSONObject payload) throws Exception {
+                JsonObject payload) throws Exception {
             return callWithContentTypeInternal(method, resourceUri, payload, "application/json");
         }
 
         public MockHttpServletResponse callWithContentTypeInternal(Method method, String resourceUri,
-                JSONObject payload, String contentType) throws Exception {
+                JsonObject payload, String contentType) throws Exception {
             MockHttpServletRequest request = super.createRequest(resourceUri);
             request.setMethod(method.getName());
             // set the JSON payload
@@ -381,7 +382,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 //        }
     }
 
-    public void call(Method method, String resourceUri, JSONObject payload) {
+    public void call(Method method, String resourceUri, JsonObject payload) {
         try {
             resourceUri = replaceVariables(resourceUri);
             this.lastResponse = helper.callInternal(method, "/geogig" + resourceUri, payload);
@@ -398,7 +399,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      * @param payload JSON object payload to encode into the request
      * @param contentType Specific Content-Type header value to send
      */
-    public void callWithContentType(Method method, String resourceUri, JSONObject payload,
+    public void callWithContentType(Method method, String resourceUri, JsonObject payload,
             String contentType) {
         try {
             resourceUri = replaceVariables(resourceUri);

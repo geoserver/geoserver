@@ -338,6 +338,16 @@ public class CatalogImplTest {
         assertFalse( ns == ns2 );
         assertEquals( ns, ns2 );
     }
+
+    @Test
+    public void testSetDefaultNamespaceInvalid() {
+        try {
+            catalog.setDefaultNamespace( ns );
+            fail("Default namespace must exist in catalog");
+        } catch (IllegalArgumentException e) {
+            assertEquals("No such namespace: 'wsName'", e.getMessage());
+        }
+    }
     
     @Test
     public void testModifyNamespace() {
@@ -558,6 +568,16 @@ public class CatalogImplTest {
         assertFalse( ws == ws4 );
         assertEquals( ws, ws4 );
     }
+
+    @Test
+    public void testSetDefaultWorkspaceInvalid() {
+        try {
+            catalog.setDefaultWorkspace( ws );
+            fail("Default workspace must exist in catalog");
+        } catch (IllegalArgumentException e) {
+            assertEquals("No such workspace: 'wsName'", e.getMessage());
+        }
+    }
     
     @Test public void testModifyWorkspace() {
         catalog.add( ws );
@@ -653,15 +673,16 @@ public class CatalogImplTest {
         catalog.add( ds2 );
         assertEquals( 2, catalog.getDataStores().size() );
     }
-    
+
     @Test
     public void testAddDataStoreDefaultWorkspace() {
-        catalog.setDefaultWorkspace( ws );
-        
+        catalog.add(ws);
+        catalog.setDefaultWorkspace(ws);
+
         DataStoreInfo ds2 = catalog.getFactory().createDataStore();
-        ds2.setName( "ds2Name");
+        ds2.setName( "ds2Name" );
         catalog.add( ds2 );
-        
+
         assertEquals( ws, ds2.getWorkspace() );
     }
     

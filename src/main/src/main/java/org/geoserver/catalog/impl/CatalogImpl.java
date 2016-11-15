@@ -1154,6 +1154,8 @@ public class CatalogImpl implements Catalog {
             NamespaceInfo ns = getNamespaceByPrefix( defaultNamespace.getPrefix() );
             if ( ns == null ) {
                 throw new IllegalArgumentException( "No such namespace: '" + defaultNamespace.getPrefix() + "'" );
+            } else {
+                defaultNamespace = ns;
             }
         }
         facade.setDefaultNamespace(defaultNamespace);
@@ -1247,11 +1249,16 @@ public class CatalogImpl implements Catalog {
         return facade.getDefaultWorkspace();
     }
     
-    public void setDefaultWorkspace(WorkspaceInfo workspace) {
-        if (workspace != null && facade.getWorkspaceByName(workspace.getName()) == null) {
-            facade.add(workspace);
+    public void setDefaultWorkspace(WorkspaceInfo defaultWorkspace) {
+        if (defaultWorkspace != null) {
+            WorkspaceInfo ws = facade.getWorkspaceByName(defaultWorkspace.getName());
+            if ( ws == null ) {
+                throw new IllegalArgumentException( "No such workspace: '" + defaultWorkspace.getName() + "'" );
+            } else {
+                defaultWorkspace = ws;
+            }
         }
-        facade.setDefaultWorkspace(workspace);
+        facade.setDefaultWorkspace(defaultWorkspace);
     }
     
     public List<WorkspaceInfo> getWorkspaces() {

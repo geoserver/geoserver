@@ -231,6 +231,8 @@ Filter parameter applies to vector data. If this is the case with input data, a 
   
 Sample request
 +++++++++++++++++
+Synchronous execution
+^^^^^^^^^^^^^^^^^^^^^
 
 The following is a sample WPS request for processing a raster dataset. 
 Suppose we want to use the North America sample imagery (**nurc:Img_Sample**) layer, to produce an **80x80** pixels downloadable **tiff** in **EPSG:4326**
@@ -292,9 +294,15 @@ More parameters (from the parameter list above) can be used, for example, we can
    <wps:Input>
     <ows:Identifier>bandIndices</ows:Identifier>
     <wps:Data>
-     <wps:LiteralData>0,2</wps:LiteralData>
+     <wps:LiteralData>0</wps:LiteralData>
     </wps:Data>
-    </wps:Input>
+   </wps:Input>
+   <wps:Input>
+    <ows:Identifier>bandIndices</ows:Identifier>
+    <wps:Data>
+     <wps:LiteralData>2</wps:LiteralData>
+    </wps:Data>
+   </wps:Input>
 
   
 Or, use a **Region Of Interest** to crop the dataset:
@@ -316,20 +324,24 @@ Or, use a **Region Of Interest** to crop the dataset:
 
 The result produced is a zipped file to download.
 
-The process can also be performed asynchronously by using the **storeExecuteResponse** and **status** parameters, set to **true** for the ``ResponseDocument``. In this case, the second part (``wps:ResponseForm``) of the wps download payload slightly changes:
+
+Asynchronous execution
+^^^^^^^^^^^^^^^^^^^^^^
+The process can also be performed asynchronously.
+In this case, the second part (``wps:ResponseForm``) of the wps download payload slightly changes, by using the **storeExecuteResponse** and **status** parameters, set to **true** for the ``<wps:ResponseDocument>``:
 
  .. code-block:: xml
 
   <wps:ResponseForm>
     <wps:ResponseDocument storeExecuteResponse="true" status="true">
-    <wps:RawDataOutput mimeType="application/zip">
-     <ows:Identifier>result</ows:Identifier>
-    </wps:RawDataOutput>
+      <wps:RawDataOutput mimeType="application/zip">
+        <ows:Identifier>result</ows:Identifier>
+      </wps:RawDataOutput>
     </wps:ResponseDocument>>
   </wps:ResponseForm>
 
   
-In case of asynchronous execution, the initial request to download data returns an xml indication that the process has commenced successfully:
+In case of asynchronous execution, the initial request to download data returns an xml indication that the process has successfully started:
 
  .. code-block:: xml
 
@@ -344,11 +356,11 @@ In case of asynchronous execution, the initial request to download data returns 
     </wps:Status>
   </wps:ExecuteResponse>
 
-The response contains a  ``<wps:Status>`` block indicating successfull process creation and process start time. However, the important part in this responce is the **executionId=dd0d61f5-7da3-41ed-bd3f-15311fa660ba** attribute in the ``<wps:ExecuteResponse>`` tag. The ``dd0d61f5-7da3-41ed-bd3f-15311fa660ba`` ID can be used as a reference for this process, in order to issue new GET requests and to check process status. These requests have the form:
+The response contains a ``<wps:Status>`` block indicating successfull process creation and process start time. However, the important part in this response is the **executionId=dd0d61f5-7da3-41ed-bd3f-15311fa660ba** attribute in the ``<wps:ExecuteResponse>`` tag. The ``dd0d61f5-7da3-41ed-bd3f-15311fa660ba`` ID can be used as a reference for this process, in order to issue new GET requests and to check process status. These requests have the form:
 
 ``http://127.0.0.1:8080/geoserver/ows?service=WPS&request=GetExecutionStatus&executionId=277e24eb-365d-42e1-8329-44b8076d4fc0``
 
-When issued (and process has finished on the server), this GET request returns the result to download/process:
+When issued (and process has finished on the server), this GET request returns the result to download/process as a base64 encoded zip:
 
  .. code-block:: xml
 
@@ -373,6 +385,43 @@ When issued (and process has finished on the server), this GET request returns t
     </wps:ProcessOutputs>
   </wps:ExecuteResponse>
 
+Asynchronous execution (output as a reference)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The ``<wps:ResponseForm>`` of the previous asynchronous request payload example can be modified to get back a link to the file to be downloaded instead of the base64 encoded data.
 
+ .. code-block:: xml
 
-  
+  ...
+  <wps:ResponseForm>
+    <wps:ResponseDocument storeExecuteResponse="true" status="true">
+      <wps:Output asReference="true" mimeType="application/zip">
+        <ows:Identifier>result</ows:Identifier>
+      </wps:Output>
+    </wps:ResponseDocument>
+  </wps:ResponseForm>
+
+Note ``<wps:ResponseDocument>`` contains a ``<wps:Output>`` instead of a ``<wps:RawDataOutput>`` being used by previous example. 
+Moreover the attribute **asReference** set to **true** has been added to the ``<wps:Output>``.
+
+This time, when issued (and process has finished on the server), the GET request returns the result to download as a link as part of ``<wps:Output><wps:Reference>`` .
+
+ .. code-block:: xml
+
+  <?xml version="1.0" encoding="UTF-8"?>
+    <wps:ExecuteResponse xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en" service="WPS" serviceInstance="http://127.0.0.1:8080/geoserver/ows?" statusLocation="http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionStatus&amp;executionId=c1074100-446a-4963-94ad-cbbf8b8a7fd1" version="1.0.0">
+    <wps:Process wps:processVersion="1.0.0">
+      <ows:Identifier>gs:Download</ows:Identifier>
+      <ows:Title>Enterprise Download Process</ows:Title>
+      <ows:Abstract>Downloads Layer Stream and provides a ZIP.</ows:Abstract>
+    </wps:Process>
+    <wps:Status creationTime="2016-08-08T11:38:34.024Z">
+      <wps:ProcessSucceeded>Process succeeded.</wps:ProcessSucceeded>
+    </wps:Status>
+    <wps:ProcessOutputs>
+      <wps:Output>
+        <ows:Identifier>result</ows:Identifier>
+        <ows:Title>Zipped output files to download</ows:Title>
+        <wps:Reference href="http://127.0.0.1:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionResult&amp;executionId=c1074100-446a-4963-94ad-cbbf8b8a7fd1&amp;outputId=result.zip&amp;mimetype=application%2Fzip" mimeType="application/zip" />
+      </wps:Output>
+    </wps:ProcessOutputs>
+  </wps:ExecuteResponse>

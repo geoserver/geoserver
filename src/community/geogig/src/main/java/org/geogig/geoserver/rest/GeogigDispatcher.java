@@ -24,15 +24,19 @@ import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.locationtech.geogig.rest.repository.RepositoryRouter;
 import org.locationtech.geogig.rest.repository.UploadCommandResource;
 import org.locationtech.geogig.web.api.CommandSpecException;
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
 import org.springframework.beans.BeansException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.noelios.restlet.application.Decoder;
 import com.noelios.restlet.ext.servlet.ServletConverter;
 
@@ -78,7 +82,7 @@ public class GeogigDispatcher extends AbstractController {
         Router router = createInboundRoot();
 
         org.restlet.Context context = null;// getContext();
-        FixedEncoder encoder = new FixedEncoder(context);
+        FixedEncoder encoder = new _FixedEncoder(context);
         // needed for the Encoder to wrap the incoming requests if they come with
         // "Content-Type: gzip"
         encoder.setEncodeRequest(false);
@@ -115,10 +119,10 @@ public class GeogigDispatcher extends AbstractController {
         router.attach("/repos/{repository}.{extension}", RepositoryResource.class);
         router.attach("/repos/{repository}", RepositoryResource.class);
         router.attach("/repos/{repository}/repo", makeRepoRouter());
-        router.attach("/repos/{repository}/import", UploadCommandResource.class);
-        router.attach("/repos/{repository}/init", InitCommandResource.class);
-        router.attach("/repos/{repository}/init.{extension}", InitCommandResource.class);
         router.attach("/repos/{repository}/import.{extension}", UploadCommandResource.class);
+        router.attach("/repos/{repository}/import", UploadCommandResource.class);
+        router.attach("/repos/{repository}/init.{extension}", InitCommandResource.class);
+        router.attach("/repos/{repository}/init", InitCommandResource.class);
         router.attach("/repos/{repository}/{command}.{extension}", CommandResource.class);
         router.attach("/repos/{repository}/{command}", CommandResource.class);
 
@@ -222,5 +226,37 @@ public class GeogigDispatcher extends AbstractController {
 
         };
         return router;
+    }
+
+    private static class _FixedEncoder extends FixedEncoder {
+
+        public _FixedEncoder(Context context) {
+            super(context);
+        }
+
+        @Override
+        public boolean canEncode(Representation representation) {
+            // In the context of GeoServer, an applicationContext filter will automatically apply GZIP encoding for
+            // certain Representations by default. We don't want to double encode them
+            // from GeoServer's applicationContext, GZIP compression will be applied to:
+            // text/*
+            // *xml*
+            // application/json
+            // application/x-javascript
+            if (representation != null) {
+                final MediaType mediaType = representation.getMediaType();
+                final String mainType = Strings.nullToEmpty(mediaType.getMainType());
+                final String subType = Strings.nullToEmpty(mediaType.getSubType());
+                if ("text".equals(mainType) ||
+                        mainType.contains("xml") ||
+                        subType.contains("xml") ||
+                        ("application".equals(mainType) && ("json".equals(subType) || "x-javascript".equals(subType)))) {
+                    return false;
+                }
+            }
+            // just return the super impl
+            return super.canEncode(representation);
+        }
+
     }
 }

@@ -18,6 +18,7 @@
 
 	<properties>
 		<smack.version>4.0.3</smack.version>
+		<vysper.version>0.7</vysper.version>
 	</properties>
 
 	<dependencies>
@@ -68,11 +69,21 @@
 			<artifactId>smack-legacy</artifactId>
 			<version>${smack.version}</version>
 		</dependency>
-		<!-- dependency> <groupId>org.igniterealtime.smack</groupId> <artifactId>smack-resolver-dnsjava</artifactId> 
-			<version>${smack.version}</version> </dependency> <dependency> <groupId>org.igniterealtime.smack</groupId> 
-			<artifactId>smack-resolver-javax</artifactId> <version>${smack.version}</version> 
-			</dependency> <dependency> <groupId>org.igniterealtime.smack</groupId> <artifactId>smack-resolver-minidns</artifactId> 
-			<version>${smack.version}</version> </dependency -->
+		<!-- dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-resolver-dnsjava</artifactId> 
+			<version>${smack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId> 
+			<artifactId>smack-resolver-javax</artifactId>
+			<version>${smack.version}</version> 
+		</dependency>
+		<dependency>
+			<groupId>org.igniterealtime.smack</groupId>
+			<artifactId>smack-resolver-minidns</artifactId> 
+			<version>${smack.version}</version>
+		</dependency -->
 
 		<!-- Python Serializer (Pickler) -->
 		<dependency>
@@ -87,42 +98,35 @@
 		<dependency>
 			<groupId>org.apache.vysper</groupId>
 			<artifactId>vysper-core</artifactId>
-			<version>0.7</version>
-			<scope>test</scope>
+			<version>${vysper.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.vysper.extensions</groupId>
 			<artifactId>xep0045-muc</artifactId>
-			<version>0.7</version>
-			<scope>test</scope>
+			<version>${vysper.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.vysper.extensions</groupId>
 			<artifactId>xep0060-pubsub</artifactId>
-			<version>0.7</version>
-			<scope>test</scope>
+			<version>${vysper.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.vysper.extensions</groupId>
 			<artifactId>xep0124-xep0206-bosh</artifactId>
-			<version>0.7</version>
-			<scope>test</scope>
+			<version>${vysper.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.vysper.extensions</groupId>
 			<artifactId>vysper-websockets</artifactId>
-			<version>0.7</version>
-			<scope>test</scope>
+			<version>${vysper.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.4.2</version>
-			<scope>test</scope>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-security</artifactId>
+			<version>${jetty.version}</version>
 		</dependency>
-
-
+		   
 		<dependency>
 			<groupId>xmlunit</groupId>
 			<artifactId>xmlunit</artifactId>

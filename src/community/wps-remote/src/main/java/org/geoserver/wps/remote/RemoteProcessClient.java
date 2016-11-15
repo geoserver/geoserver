@@ -16,8 +16,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import javax.net.ssl.SSLContext;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -44,6 +42,7 @@ import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.Name;
 import org.opengis.util.ProgressListener;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.core.io.Resource;
 
 /**
  * Base class for the remote clients implementations. Those implementations will be plugged into GeoServer through the Spring app-context.
@@ -81,6 +80,12 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
     protected List<RemoteRequestDescriptor> pendingRequests = Collections
             .synchronizedList(new LinkedList<RemoteRequestDescriptor>());
 
+    /** */
+    protected File certificateFile = null;
+
+    /** */
+    protected String certificatePassword = null;
+
     /**
      * The default Cosntructor
      * 
@@ -105,7 +110,7 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
      * Initialization method
      * 
      */
-    public abstract void init(SSLContext customSSLContext) throws Exception;
+    public abstract void init() throws Exception;
 
     /**
      * Destroy method
@@ -163,6 +168,25 @@ public abstract class RemoteProcessClient implements DisposableBean, ExtensionPr
      */
     public int getPriority() {
         return priority;
+    }
+
+    /**
+     * Set the KeyStore Certificate Path
+     * 
+     * @param certificateFile
+     * @throws IOException
+     */
+    public void setCertificateFile(Resource certificateFile) throws IOException {
+        this.certificateFile = certificateFile.getFile();
+    }
+
+    /**
+     * Set the KeyStore Certificate Password
+     * 
+     * @param certificatePassword
+     */
+    public void setCertificatePassword(String certificatePassword) {
+        this.certificatePassword = certificatePassword;
     }
 
     /**

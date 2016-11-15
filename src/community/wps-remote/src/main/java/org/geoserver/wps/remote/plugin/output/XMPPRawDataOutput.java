@@ -119,12 +119,14 @@ public class XMPPRawDataOutput implements XMPPOutputType {
 
                 LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] FileRawData:" + fileName);
 
-                value = new ResourceRawData(Files.asResource(new File(((String) value))),
+                final File outputFile = getOutputFile(xmppClient, (String) value);
+                value = new ResourceRawData(Files.asResource(outputFile),
                         ((ResourceRawData) sample).getMimeType(),
                         ((ResourceRawData) sample).getFileExtension());
                 if (publish) {
                     final File tempFile = new File(FileUtils.getTempDirectory(), fileName);
                     FileUtils.copyFile(((ResourceRawData) value).getResource().file(), tempFile);
+                    FileUtils.waitFor(tempFile, 5);
 
                     try {
                         xmppClient.importLayer(tempFile, type, null, name + "_" + pID, title, description,
@@ -162,6 +164,33 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         return null;
     }
 
+    private File getOutputFile(XMPPClient xmppClient, String value) throws IOException {
+        final File file = new File(value);
+        if (file != null && file.exists() && file.canRead() && file.isFile()) {
+            return file;
+        } else {
+            // 1. try first if they are present on "uploadedFilesBasePath"
+            if (xmppClient.getConfiguration().get("uploadedFilesBasePath") != null) {
+                final String uploadedFilesBasePath = xmppClient.getConfiguration().get("uploadedFilesBasePath");
+                final File uploadedFile = new File(uploadedFilesBasePath, value);
+                
+                if (uploadedFile != null && 
+                        /*uploadedFile.isAbsolute() &&*/ uploadedFile.exists() && uploadedFile.canRead() && uploadedFile.isFile()) {
+                    return uploadedFile;
+                }
+            }
+                
+            // 2. check if the file has stored on the GeoServer Data Dir
+            final File uploadedFile = xmppClient.getGeoServer().getCatalog().getResourceLoader().find(value);
+            if (uploadedFile != null && 
+                    /*uploadedFile.isAbsolute() &&*/ uploadedFile.exists() && uploadedFile.canRead() && uploadedFile.isFile()) {
+                return uploadedFile;
+            }
+        }
+
+        throw new IOException("Produced Output file is not accessible!");
+    }
+
     /**
      * @param value
      * @param type
@@ -178,7 +207,8 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         final String extension = ((String) ((Object[]) XMPPClient.PRIMITIVE_NAME_TYPE_MAP
                 .get(type))[4]);
         final String fileName = "wps-remote-str-rawdata_" + pID + extension;
-        final String content = FileUtils.readFileToString(new File((String) value));
+        final File outputFile = getOutputFile(xmppClient, (String) value);
+        final String content = FileUtils.readFileToString(outputFile);
 
         LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] encodeAsPlainRawData:" + fileName);
 
@@ -192,6 +222,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                     + tempFile.getAbsolutePath());
 
             FileUtils.writeStringToFile(tempFile, ((StringRawData) value).getData());
+            FileUtils.waitFor(tempFile, 5);
 
             String wsName = xmppClient.getGeoServer().getCatalog().getDefaultWorkspace().getName();
             DataStoreInfo h2DataStore = xmppClient.createH2DataStore(wsName,

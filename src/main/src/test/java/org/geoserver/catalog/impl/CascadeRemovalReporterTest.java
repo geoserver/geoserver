@@ -47,8 +47,8 @@ public class CascadeRemovalReporterTest extends CascadeVisitorAbstractTest {
         visitor.visit(layer);
         //layer.accept(visitor);
         
-        // we expect a layer, a resource and a group
-        assertEquals(3, visitor.getObjects(null).size());
+        // we expect a layer, a resource and two groups
+        assertEquals(4, visitor.getObjects(null).size());
         
         // check the layer and resource have been marked to delete (and
         assertEquals(catalog.getLayerByName(name), 
@@ -56,11 +56,9 @@ public class CascadeRemovalReporterTest extends CascadeVisitorAbstractTest {
         assertEquals(catalog.getResourceByName(name, ResourceInfo.class), 
                 visitor.getObjects(ResourceInfo.class, ModificationType.DELETE).get(0));
         
-        // the group has been marked to update? (we need to compare by id as the
-        // objects won't compare properly by equality)
-        LayerGroupInfo group = catalog.getLayerGroupByName(LAKES_GROUP);
-        assertEquals(group.getId(), visitor.getObjects(LayerGroupInfo.class, 
-                ModificationType.GROUP_CHANGED).get(0).getId());
+        // the groups have been marked to update?
+        assertTrue(visitor.getObjects(LayerGroupInfo.class, ModificationType.GROUP_CHANGED).contains(catalog.getLayerGroupByName(LAKES_GROUP)));
+        assertTrue(visitor.getObjects(LayerGroupInfo.class, ModificationType.GROUP_CHANGED).contains(catalog.getLayerGroupByName(NEST_GROUP)));
     }
     
     @Test
@@ -103,14 +101,9 @@ public class CascadeRemovalReporterTest extends CascadeVisitorAbstractTest {
         // Layers belonging to this ws
         List<LayerGroupInfo> totalLayerGroups = getCatalog().getLayerGroups();
         for(LayerGroupInfo info : totalLayerGroups){
-            List<LayerInfo> layers = info.layers();
-            int size = layers.size();
-            for(LayerInfo l : layers){
-                if(stores.contains(l.getResource().getStore())){
-                    size--;
-                }
-            }
-            if(size == 0){
+            List<PublishedInfo> layers = info.getLayers();
+            int size = countStores(info, stores);
+            if(size == layers.size()){
                 if(!layerGroups.contains(info)){
                     layerGroups.add(info);
                 }
@@ -128,7 +121,24 @@ public class CascadeRemovalReporterTest extends CascadeVisitorAbstractTest {
         assertTrue(changedLayerGroups.containsAll(visitor.getObjects(LayerGroupInfo.class,
                 ModificationType.GROUP_CHANGED)));
     }
-    
+
+    private int countStores(LayerGroupInfo lg, List<StoreInfo> stores) {
+        List<PublishedInfo> layers = lg.getLayers();
+        int size = 0;
+        for(PublishedInfo l : layers){
+            if (l instanceof LayerInfo) {
+                if(stores.contains(((LayerInfo)l).getResource().getStore())){
+                    size++;
+                }
+            } else if (l instanceof LayerGroupInfo) {
+                if (countStores((LayerGroupInfo) l, stores) == ((LayerGroupInfo) l).getLayers().size()) {
+                    size++;
+                }
+            }
+        }
+        return size;
+    }
+
     @Test
     public void testCascadeStyle() {
         Catalog catalog = getCatalog();

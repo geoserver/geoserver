@@ -2211,6 +2211,29 @@ public class CatalogImplTest {
         assertEquals(l, lg2.layers().iterator().next());
         assertEquals(s, lg2.styles().iterator().next());        
     }
+
+    @Test
+    public void testRemoveLayerGroupInLayerGroup() throws Exception {
+        addLayerGroup();
+
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+
+        lg2.setName("layerGroup2");
+        lg2.getLayers().add(lg);
+        lg2.getStyles().add(s);
+        catalog.add(lg2);
+
+
+        try {
+            catalog.remove(lg);
+            fail("should have failed because lg is in another lg");
+        }
+        catch(IllegalArgumentException expected) {}
+
+        //removing the containing layer first should work
+        catalog.remove(lg2);
+        catalog.remove(lg);
+    }
     
     static class TestListener implements CatalogListener {
 

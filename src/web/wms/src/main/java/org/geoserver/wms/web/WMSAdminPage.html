@@ -95,6 +95,17 @@
     </li>
     <li>
       <fieldset>
+        <legend><span><wicket:message key="mapBufferSettings">Map buffer settings</wicket:message></span></legend>
+        <ul>
+          <li>
+            <label><wicket:message key="maxBuffer">Max buffer</wicket:message></label>
+            <input type="text" wicket:id="maxBuffer" class="field text"/>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset>
         <legend><span><wicket:message key="watermarkSettings">Watermark Settings</wicket:message></span></legend>
         <ul>
           <li class="choiceItem">
@@ -127,7 +138,7 @@
           </li>
         </ul>
       </fieldset>
-    </li>    
+    </li>
     <li>
       <fieldset>
         <legend><span><wicket:message key="jpegOptions">JPEG Options</wicket:message></span></legend>
@@ -194,15 +205,15 @@
             <label for="scalehint.mapunitsPixel"><wicket:message key="scalehintUnitsPixel">Show the Scalehint as units per diagonal pixel in the GetCapability response</wicket:message></label>
           </li>
         </ul>
-      </fieldset>      
+      </fieldset>
     </li>
     <li>
       <fieldset>
         <legend><span><wicket:message key="getMapMimeTypes"></wicket:message></span></legend>
         <ul>
-	        <li>	            
-	        <div wicket:id="getMapMimeTypes"></div>
-	        </li>
+          <li>
+          <div wicket:id="getMapMimeTypes"></div>
+          </li>
         </ul>
       </fieldset>
     </li>
@@ -210,12 +221,12 @@
       <fieldset>
         <legend><span><wicket:message key="getFeatureInfoMimeTypes"></wicket:message></span></legend>
         <ul>
-	        <li>	                
-	        <div wicket:id="getFeatureInfoMimeTypes"></div>
-	        </li>
+          <li>
+          <div wicket:id="getFeatureInfoMimeTypes"></div>
+          </li>
         </ul>
       </fieldset>
-    </li>        
+    </li>
     <div wicket:id="modal"></div>
   </wicket:extend>
 </body>

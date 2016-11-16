@@ -45,14 +45,15 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
         if (style != null) {
             catalog.remove(style);
         }
-        LayerGroupInfo group = catalog.getLayerGroupByName(LAKES_GROUP);
+        LayerGroupInfo group = catalog.getLayerGroupByName(NEST_GROUP);
         if (group != null) {
             catalog.remove(group);
         }
-        group = catalog.getLayerGroupByName(NEST_GROUP);
+        group = catalog.getLayerGroupByName(LAKES_GROUP);
         if (group != null) {
             catalog.remove(group);
         }
+
 
         setupExtras(getTestData(), catalog);
     }

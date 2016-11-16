@@ -19,6 +19,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 
 public class CascadeVisitorAbstractTest extends GeoServerSystemTestSupport {
     protected static final String LAKES_GROUP = "lakesGroup";
+    protected static final String NEST_GROUP = "nestGroup";
 
     protected static final String WS_STYLE = "wsStyle";
 
@@ -53,6 +54,13 @@ public class CascadeVisitorAbstractTest extends GeoServerSystemTestSupport {
         globalGroup.getLayers().add(catalog.getLayerByName(getLayerId(FORESTS)));
         globalGroup.getLayers().add(catalog.getLayerByName(getLayerId(BRIDGES)));
         catalog.add(globalGroup);
+
+        // add a layer group containing a layer group
+        LayerGroupInfo nestGroup = factory.createLayerGroup();
+        nestGroup.setName(NEST_GROUP);
+        nestGroup.getLayers().add(catalog.getLayerByName(getLayerId(LAKES)));
+        nestGroup.getLayers().add(globalGroup);
+        catalog.add(nestGroup);
 
         // add a workspace specific style
         WorkspaceInfo ws = catalog.getWorkspaceByName(CITE_PREFIX);

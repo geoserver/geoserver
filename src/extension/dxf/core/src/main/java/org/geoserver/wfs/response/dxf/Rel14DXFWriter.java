@@ -274,17 +274,18 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     private void writeAttributes(String layer, String ownerHandle, SimpleFeature f) throws IOException {
-        // TODO Auto-generated method stub
+        Geometry geometry = (Geometry)f.getDefaultGeometry();
+        Point intPoint = geometry.getInteriorPoint();
         for ( Property p : f.getProperties()) {
             Name name = p.getName();
             LOGGER.warning("    attr: " + name.getLocalPart() + " = " + p.getValue());
             if (!(p.getValue() instanceof Geometry)) {
-                writeAttribute(layer, ownerHandle, name.getLocalPart(), p.getValue());
+                writeAttribute(layer, ownerHandle, name.getLocalPart(), p.getValue(), intPoint);
             }
         }
     }
 
-    private void writeAttribute(String layer, String ownerHandle, String attribName, Object value) throws IOException {
+    private void writeAttribute(String layer, String ownerHandle, String attribName, Object value, Point intPoint) throws IOException {
         writeGroup(0, "ATTRIB");
         writeHandle("Geometry");
         // String handle = getNewHandle("Attrib");
@@ -293,8 +294,8 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
         writeSubClass("AcDbEntity");
         writeLayer(layer);
         writeSubClass("AcDbText");
-        writeDoubleGroup(10, 0.0);
-        writeDoubleGroup(20, 0.0);
+        writeDoubleGroup(10, intPoint.getX());
+        writeDoubleGroup(20, intPoint.getY());
         writeDoubleGroup(30, 0.0);
         writeDoubleGroup(40, 0.72 /*(Double) textConfig.get("height")*/);
         String valueString = "";
@@ -413,12 +414,12 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                 String endHandle = getNewHandle("Block");
                 writeStartBlock(startHandle, ownerHandle, false, "0", name);
                 String attributesLayer = getLayerName(coll) + "_attributes";
-                // writeGeometryStart("POINT", layer, ownerHandle);
-                writeGeometryStart("CIRCLE", attributesLayer, ownerHandle);
-                // writeSubClass("AcDbPoint");
-                writeSubClass("AcDbCircle");
+                writeGeometryStart("POINT", attributesLayer, ownerHandle);
+                // writeGeometryStart("CIRCLE", attributesLayer, ownerHandle);
+                writeSubClass("AcDbPoint");
+                // writeSubClass("AcDbCircle");
                 writePoint(0.0, 0.0, 0.0);
-                writeDoubleGroup(40, 1.0);
+                // writeDoubleGroup(40, 1.0);
                 writeAttributeDefinitions(attributesLayer, ownerHandle, coll);
                 writeEndBlock(endHandle, ownerHandle, false, "0", name);
             }

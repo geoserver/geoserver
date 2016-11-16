@@ -150,6 +150,20 @@ public class DXFOutputFormatTest extends WFSTestSupport {
         // has to insert an attribute
         checkSequence(sResponse,new String[] {"ATTRIB", "AcDbAttribute"},pos);
     }
+    
+    
+    /**
+     * Test writeattributes option, check position of attributes.
+     */
+    @Test
+    public void testWriteAttributesPosition() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf&format_options=withattributes:true");
+        String sResponse = testBasicResult(resp, "Polygons");
+        int pos = getGeometrySearchStart(sResponse);
+        assertTrue(pos != -1);
+        // has to insert an attribute
+        checkSequence(sResponse,new String[] {"POLYGONS_attributes", "ATTRIB", "POLYGONS_attributes", "AcDbText", "10", "500250.0", "20", "500050.0", "t0002"},pos);
+    }
 
     /**
      * Test a MultiPolygon geometry.

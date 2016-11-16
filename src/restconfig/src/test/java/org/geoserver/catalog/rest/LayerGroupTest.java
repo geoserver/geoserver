@@ -35,14 +35,14 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
 
     @Before
     public void revertChanges() throws Exception {
+        removeLayerGroup(null, "nestedLayerGroupTest");
         removeLayerGroup(null, "sfLayerGroup");
         removeLayerGroup(null, "citeLayerGroup");
         removeLayerGroup("sf", "foo");
         removeLayerGroup(null, "newLayerGroup");
         removeLayerGroup(null, "newLayerGroupWithTypeCONTAINER");
         removeLayerGroup(null, "newLayerGroupWithTypeEO");
-        removeLayerGroup(null, "nestedLayerGroupTest");
-        
+
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.setName( "sfLayerGroup" );
         lg.getLayers().add( catalog.getLayerByName( "sf:PrimitiveGeoFeature" ) );

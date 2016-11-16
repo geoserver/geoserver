@@ -930,6 +930,14 @@ public class CatalogImpl implements Catalog {
     }
     
     public void remove(LayerGroupInfo layerGroup) {
+        //ensure no references to the layer group
+        for ( LayerGroupInfo lg : facade.getLayerGroups() ) {
+            if ( lg.getLayers().contains( layerGroup ) || layerGroup.equals( lg.getRootLayer() ) ) {
+                String msg = "Unable to delete layer group referenced by layer group '"+lg.getName()+"'";
+                throw new IllegalArgumentException( msg );
+            }
+        }
+
         facade.remove(layerGroup);
         removed( layerGroup );
     }

@@ -134,7 +134,7 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
                 
                 // either update or remove the group
                 if(group.getLayers().size() == 0) {
-                    catalog.remove(group);
+                    visit(catalog.getLayerGroup(group.getId()));
                 } else {
                     catalog.save(group);
                 }
@@ -265,13 +265,19 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
                 .list(LayerGroupInfo.class, associatedTo)) {
             while (it.hasNext()) {
                 LayerGroupInfo group = it.next();
-                if (group.getLayers().remove(layerGroupToRemove)) {
-                    if (group.getLayers().size() == 0) {
-                        // if group is empty, delete it
-                        visit(group);
-                    } else {
-                        catalog.save(group);
-                    }
+
+                // parallel remove of layer and styles
+                int index = group.getLayers().indexOf(layerGroupToRemove);
+                while (index != -1) {
+                    group.getLayers().remove(index);
+                    group.getStyles().remove(index);
+                    index = group.getLayers().indexOf(layerGroupToRemove);
+                }
+                if (group.getLayers().size() == 0) {
+                    // if group is empty, delete it
+                    visit(group);
+                } else {
+                    catalog.save(group);
                 }
             }
         }

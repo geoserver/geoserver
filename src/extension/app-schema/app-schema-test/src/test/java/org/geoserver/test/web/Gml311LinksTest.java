@@ -18,6 +18,7 @@ public class Gml311LinksTest extends AbstractMapPreviewPageTest {
                 "http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=gsml:GeologicUnit&amp;outputFormat=gml3&amp;maxFeatures=50",
                 "http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex:FirstParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
                 "http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex:SecondParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
+                "http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=ex:ParentFeature&amp;outputFormat=gml3&amp;maxFeatures=50",
                 "http://localhost:80/context/ows?service=WFS&amp;version=1.1.0&amp;request=GetFeature&amp;typeName=om:Observation&amp;outputFormat=gml3&amp;maxFeatures=50"));
     }
 

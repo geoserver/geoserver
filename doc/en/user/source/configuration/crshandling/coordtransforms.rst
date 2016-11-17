@@ -16,12 +16,9 @@ If source and target CRSs are refered to a different datum, a datum transform ha
 Reprojection Console
 --------------------
 
-The reprojection console (in `Demos` => `Reprojection console`) lets quickly test coordinate operations. Use it to convert a single coordinate or WKT geometry, and to see the operation details GeoServer is using. It is also useful to learn by example when you have to `Define a custom Coordinate Operation`_.
+The reprojection console (available in :ref:`demos`) lets you quickly test coordinate operations. Use it to convert a single coordinate or WKT geometry, and to see the operation details GeoServer is using. It is also useful to learn by example when you have to `Define a custom Coordinate Operation`_.
 
-.. figure:: images/reprojection_console.png
-   :align: center
-   
-   Reprojection console showing operation details and a transformed coordinate pair.
+Read more about the :ref:`demos_reprojectionconsole`.
 
 Add Grid Shift Transform files
 ------------------------------

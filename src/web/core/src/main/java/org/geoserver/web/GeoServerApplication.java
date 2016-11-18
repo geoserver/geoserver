@@ -25,6 +25,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.core.request.handler.IPageRequestHandler;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.IExceptionMapper;
 import org.apache.wicket.request.IRequestHandler;
@@ -54,6 +55,11 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
+import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
+import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 
 /**
  * The GeoServer application, the main entry point for any Wicket application. In particular, this one sets up, among the others, custom resource
@@ -63,7 +69,7 @@ import org.springframework.context.ApplicationContextAware;
  * @author Andrea Aaime, The Open Planning Project
  * @author Justin Deoliveira, The Open Planning Project
  */
-public class GeoServerApplication extends WebApplication implements ApplicationContextAware {
+public class GeoServerApplication extends WebApplication implements ApplicationContextAware, ApplicationListener<ApplicationEvent> {
 
     /**
      * logger for web application
@@ -403,5 +409,14 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
         }
 
         return ((ServletWebRequest) req).getContainerRequest();
+    }
+
+    public void onApplicationEvent(ApplicationEvent event) {
+        if(event instanceof AuthenticationSuccessEvent || event instanceof InteractiveAuthenticationSuccessEvent) {
+            if(Session.exists()) {
+                WebSession.get().replaceSession();
+            }
+        }
+        
     }
 }

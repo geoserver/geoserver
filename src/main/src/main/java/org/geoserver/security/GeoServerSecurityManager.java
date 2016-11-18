@@ -153,6 +153,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -323,6 +324,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
         }
     };
 
+    private DefaultAuthenticationEventPublisher eventPublisher;
+
     public AuthenticationManager authenticationManager() {
         return authMgrProxy;
     }
@@ -342,6 +345,10 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
     public void setProviders(List<AuthenticationProvider> providers) throws Exception {
         providerMgr = new ProviderManager(providers);
         providerMgr.setEraseCredentialsAfterAuthentication(true);
+        // check to allow mock tests to work anyways 
+        if(eventPublisher != null) {
+            providerMgr.setAuthenticationEventPublisher(this.eventPublisher);
+        }
         providerMgr.afterPropertiesSet();
 
     }
@@ -355,6 +362,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
         this.appContext = appContext;
         this.xp = buildPersister();
         this.gxp = buildGlobalPersister();
+        this.eventPublisher = new DefaultAuthenticationEventPublisher(appContext);
+        
     }
 
     public ApplicationContext getApplicationContext() {

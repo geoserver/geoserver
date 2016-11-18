@@ -99,7 +99,7 @@ public class WebUtils {
 
             templateName = clazz.getSimpleName() + ".ftl";
 
-            cfg = new Configuration();
+            cfg = new Configuration(Configuration.VERSION_2_3_25);
             cfg.setClassForTemplateLoading(clazz, "");
         }
 

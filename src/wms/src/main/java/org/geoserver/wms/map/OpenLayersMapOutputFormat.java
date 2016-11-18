@@ -116,7 +116,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     private static Configuration cfg;
 
     static {
-        cfg = new Configuration();
+        cfg = new Configuration(Configuration.VERSION_2_3_25);
         cfg.setClassForTemplateLoading(OpenLayersMapOutputFormat.class, "");
         BeansWrapper bw = new BeansWrapper();
         bw.setExposureLevel(BeansWrapper.EXPOSE_PROPERTIES_ONLY);

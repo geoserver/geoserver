@@ -241,7 +241,7 @@ public class ReflectiveHTMLFormat extends DataFormat {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected Configuration createConfiguration(Object data, Class<?> clazz) {
-        Configuration cfg = new Configuration( );
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
         cfg.setObjectWrapper( new ObjectToMapWrapper( clazz ));
         cfg.setClassForTemplateLoading(ReflectiveHTMLFormat.class,"");
         if (encoding != null) {

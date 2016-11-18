@@ -63,7 +63,7 @@ public class FeatureTemplate {
     static {
         //initialize the template engine, this is static to maintain a cache 
         // over instantiations of kml writer
-        templateConfig = new Configuration();
+        templateConfig = new Configuration(Configuration.VERSION_2_3_25);
         templateConfig.setObjectWrapper(new FeatureWrapper());
         
         //set the default output formats for dates

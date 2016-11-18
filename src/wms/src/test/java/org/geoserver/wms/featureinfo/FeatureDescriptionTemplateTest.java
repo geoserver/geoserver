@@ -27,7 +27,7 @@ public class FeatureDescriptionTemplateTest {
 
     @Test
     public void testTemplate() throws Exception {
-        Configuration cfg = new Configuration();
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
         cfg.setObjectWrapper(new FeatureWrapper());
         cfg.setClassForTemplateLoading(FeatureTemplate.class, "");
 
@@ -71,7 +71,7 @@ public class FeatureDescriptionTemplateTest {
     }
 
     // public void testFeatureCollection() throws Exception {
-    // Configuration cfg = new Configuration();
+    // Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
     // cfg.setObjectWrapper(new FeatureWrapper());
     // cfg.setClassForTemplateLoading(FeatureDescriptionTemplate.class, "");
     //

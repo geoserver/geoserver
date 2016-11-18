@@ -51,7 +51,7 @@ public class FeatureWrapperTest {
                 "three", new Integer(3), new Double(3.3), gf.createPoint(new Coordinate(3, 3))
             }, "fid.3")
         );
-        cfg = new Configuration();
+        cfg = new Configuration(Configuration.VERSION_2_3_25);
         cfg.setClassForTemplateLoading(getClass(), "");
         cfg.setObjectWrapper(createWrapper());
     }

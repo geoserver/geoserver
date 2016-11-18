@@ -92,7 +92,7 @@ import freemarker.template.TemplateSequenceModel;
  *  //features we want to apply template to
  *  FeatureCollection features = ...;
  *  //create the configuration and set the wrapper
- *  Configuration cfg = new Configuration();
+ *  Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
  *  cfg.setObjectWrapper( new FeatureWrapper() );
  *  //get the template and go
  *  Template template = cfg.getTemplate( &quot;foo.ftl&quot; );

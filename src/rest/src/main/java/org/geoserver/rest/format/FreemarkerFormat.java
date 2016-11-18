@@ -39,7 +39,7 @@ public class FreemarkerFormat extends DataFormat {
     public FreemarkerFormat(String templateName, Class c, MediaType type){
         super(type);
         myTemplateFileName = templateName;
-        myConfig = new Configuration();
+        myConfig = new Configuration(Configuration.VERSION_2_3_25);
         myConfig.setClassForTemplateLoading(c, "");
     }
 

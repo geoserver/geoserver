@@ -142,7 +142,7 @@ public class TextDecoration implements MapDecoration {
     String evaluateMessage(WMSMapContent content) throws IOException, TemplateException {
         final Map env = content.getRequest().getEnv();
         Template t = new Template("name", new StringReader(messageTemplate),
-                new Configuration());
+                new Configuration(Configuration.VERSION_2_3_25));
         final BeansWrapper bw = new BeansWrapper();
         return FreeMarkerTemplateUtils.processTemplateIntoString(t, new TemplateHashModel() {
             

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -450,7 +451,24 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("2008-11-07T00:00:00.000Z", "//wcs:temporalDomain/wcs:timePeriod[2]/wcs:endPosition", dom);
     }
     
-    
+    @Test
+    public void testMethodNameInjection() throws Exception {
+        Document dom = getAsDOM("wcs?service=WCS&version=1.0.0"
+                + "&request=DescribeCoverage%22%3E%3C/ServiceException%3E%3Cfoo%3EHello,%20World%3C/foo%3E%3CServiceException+foo=%22"
+                + "&coverage=" + getLayerId(TIMERANGES));
+        // print(dom);
+
+        // check we have a valid exception
+        XMLAssert.assertXpathExists("/ServiceExceptionReport/ServiceException", dom);
+        XMLAssert.assertXpathEvaluatesTo("OperationNotSupported",
+                "/ServiceExceptionReport/ServiceException/@code", dom);
+        // the locator has been escaped
+        XMLAssert.assertXpathEvaluatesTo(
+                "DescribeCoverage\"></ServiceException><foo>Hello, World</foo><ServiceException foo=\"",
+                "/ServiceExceptionReport/ServiceException/@locator", dom);
+        // the attack failed and the foo element is not there
+        XMLAssert.assertXpathNotExists("//foo", dom);
+    }
     
     
 }

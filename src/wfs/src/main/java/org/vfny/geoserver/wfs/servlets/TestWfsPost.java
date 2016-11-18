@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
@@ -43,11 +44,6 @@ public class TestWfsPost extends HttpServlet {
      * without doing complex and error prone string building
      */
     static final String TEST_WFS_POST_PATH = "/TestWfsPost";
-    
-    /**
-     * The proxy base url variable
-     */
-    static final String PROXY_BASE_URL = "PROXY_BASE_URL";
     
     static final Logger LOGGER = Logging.getLogger(TestWfsPost.class);
     
@@ -318,7 +314,8 @@ public class TestWfsPost extends HttpServlet {
     }
 
     private void validateURL(HttpServletRequest request, String url) {
-        String proxyBase = GeoServerExtensions.getProperty(PROXY_BASE_URL);
+        GeoServer geoServer = (GeoServer) GeoServerExtensions.bean("geoServer");
+        String proxyBase = geoServer.getGlobal().getSettings().getProxyBaseUrl();
         if(proxyBase != null) {
             if(!url.startsWith(proxyBase)) {
                 throw new IllegalArgumentException("Invalid url requested, the demo requests should be hitting: " + proxyBase);

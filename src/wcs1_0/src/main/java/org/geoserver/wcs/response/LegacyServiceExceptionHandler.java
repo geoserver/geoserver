@@ -151,12 +151,12 @@ public class LegacyServiceExceptionHandler extends ServiceExceptionHandler {
 
         //exception code
         if ((exception.getCode() != null) && !exception.getCode().equals("")) {
-            sb.append(" code=\"" + exception.getCode() + "\"");
+            sb.append(" code=\"" + ResponseUtils.encodeXML(exception.getCode()) + "\"");
         }
 
         //exception locator
         if ((exception.getLocator() != null) && !exception.getLocator().equals("")) {
-            sb.append(" locator=\"" + exception.getLocator() + "\"");
+            sb.append(" locator=\"" + ResponseUtils.encodeXML(exception.getLocator()) + "\"");
         }
 
         sb.append(">");

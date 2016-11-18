@@ -323,17 +323,17 @@ public class TestWfsPost extends HttpServlet {
             if(!url.startsWith(proxyBase)) {
                 throw new IllegalArgumentException("Invalid url requested, the demo requests should be hitting: " + proxyBase);
             }
-        }
-        
-        // use the requested url then, and remove the TestWfsPort
-        String requestedUrl = request.getRequestURL().toString();
-        // this should not happen, but let's not make it an open proxy if it does
-        if(!requestedUrl.endsWith(TEST_WFS_POST_PATH)) {
-            throw new IllegalStateException("Unepected, the TestWfsPost was accessed by a path not ending with TestWfsPost: " + requestedUrl);
-        }
-        String base = requestedUrl.substring(0, requestedUrl.lastIndexOf(TEST_WFS_POST_PATH));
-        if(!url.startsWith(base)) {
-            throw new IllegalArgumentException("Invalid url requested, the demo requests should be hitting: " + base);
+        } else {
+            // use the requested url then, and remove the TestWfsPort
+            String requestedUrl = request.getRequestURL().toString();
+            // this should not happen, but let's not make it an open proxy if it does
+            if(!requestedUrl.endsWith(TEST_WFS_POST_PATH)) {
+                throw new IllegalStateException("Unepected, the TestWfsPost was accessed by a path not ending with TestWfsPost: " + requestedUrl);
+            }
+            String base = requestedUrl.substring(0, requestedUrl.lastIndexOf(TEST_WFS_POST_PATH));
+            if(!url.startsWith(base)) {
+                throw new IllegalArgumentException("Invalid url requested, the demo requests should be hitting: " + base);
+            }
         }
     }
 }

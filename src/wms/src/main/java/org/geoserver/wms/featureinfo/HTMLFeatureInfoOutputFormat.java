@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import freemarker.core.HTMLOutputFormat;
 import net.opengis.wfs.FeatureCollectionType;
 
 import org.geoserver.catalog.ResourceInfo;
@@ -52,6 +53,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         // initialize the template engine, this is static to maintain a cache
         // over instantiations of kml writer
         templateConfig = new Configuration(Configuration.VERSION_2_3_25);
+        templateConfig.setOutputFormat(HTMLOutputFormat.INSTANCE);
         templateConfig.setObjectWrapper(new FeatureWrapper(tfcFactory) {
     
             @Override
@@ -131,6 +133,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                         content = getTemplate(FeatureCollectionDecorator.getName(fc), "content.ftl", charSet);
                     }
                     try {
+
                         content.process(fc, osw);
                     } catch (TemplateException e) {
                         String msg = "Error occured processing content template " + content.getName()

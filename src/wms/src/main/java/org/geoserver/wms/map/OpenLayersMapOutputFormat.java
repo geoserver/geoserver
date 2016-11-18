@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import freemarker.core.HTMLOutputFormat;
 import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.URLMangler.URLType;
@@ -117,6 +118,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
 
     static {
         cfg = new Configuration(Configuration.VERSION_2_3_25);
+        cfg.setOutputFormat(HTMLOutputFormat.INSTANCE);
         cfg.setClassForTemplateLoading(OpenLayersMapOutputFormat.class, "");
         BeansWrapper bw = new BeansWrapper();
         bw.setExposureLevel(BeansWrapper.EXPOSE_PROPERTIES_ONLY);

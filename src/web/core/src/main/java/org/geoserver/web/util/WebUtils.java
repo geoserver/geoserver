@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import freemarker.core.HTMLOutputFormat;
 import org.apache.wicket.Component;
 import org.apache.wicket.Localizer;
 import org.apache.wicket.model.IModel;
@@ -100,6 +101,7 @@ public class WebUtils {
             templateName = clazz.getSimpleName() + ".ftl";
 
             cfg = new Configuration(Configuration.VERSION_2_3_25);
+            cfg.setOutputFormat(HTMLOutputFormat.INSTANCE);
             cfg.setClassForTemplateLoading(clazz, "");
         }
 

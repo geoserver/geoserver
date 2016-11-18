@@ -116,15 +116,7 @@ WCS Request Builder
 
 The WCS Request Builder is a tool for generating and executing WCS requests. Since WCS requests can be cumbersome to author, this tool can make working with WCS much easier.
 
-You can select the version of WCS you wish to work with, as well as any valid layer published in GeoServer.
-
-.. figure:: img/demos_wcsrequestbuilder.png
-
-   WCS Request Builder
-
-Once the parameters are set, you can select :guilabel:`GetCoverage` to execute the WCS request, or :guilabel:`Generate GetCoverage XML` to view/save the actual request XML.
-
-Read more about :ref:`wcs`.
+Read more about the :ref:`wcs_request_builder`.
 
 
 .. _demos_wpsrequestbuilder:
@@ -132,6 +124,6 @@ Read more about :ref:`wcs`.
 WPS Request Builder
 -------------------
 
-GeoServer with the WPS extension installed includes a request builder for generating and executing WPS processes. Since WPS requests can be cumbersome to author, this tool can make working with WPS much easier.
+GeoServer with the :ref:`WPS extension installed <wps_install>` includes a request builder for generating and executing WPS processes. Since WPS requests can be cumbersome to author, this tool can make working with WPS much easier.
 
 Read more about the :ref:`wps_request_builder`.

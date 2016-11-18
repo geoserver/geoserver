@@ -14,3 +14,4 @@ This section describes the Web Coverage Service (WCS).
    outputformats
    vendor
    configuration
+   requestbuilder

@@ -122,9 +122,12 @@ display: none;
 }
 
 .wrap {
-width: 990px;
-margin: 0 auto; 
+min-width: 890px;
+max-width: 990px;
+margin: 0 auto;
 padding: 0;
+
+position: relative;
 }
 
 /*-----------------------
@@ -139,21 +142,44 @@ background: #fff url(./chrome/main-bg.png) repeat-x;
 }
 
 #content {
-width: 740px; /*790px total*/
+min-width: 640px; 
+max-width: 740px;/*790px total*/
 float: left;
-margin: -3px 0 0 0;
-padding: 16px 28px 0 22px;
+margin: -3px 228px 0 22px;
+padding: 16px 0 0 0;
 background: #fff url(./chrome/content-bg.png) repeat-x;
 color: #262523;
 font-size: 1.2em;
 }
+#content-left {
+width: 22px;
+height: 100%;
+position: absolute;
+left: 0px;
+margin: -3px 0 0 0;
+padding: 16px 0 0 0;
+background: #fff url(./chrome/content-left-bg.png) repeat-x;
+color: #262523;
+}
+#content-right {
+width: 22px;
+height: 100%;
+position: absolute;
+right: 206px;
+margin: -3px 0 0 0;
+padding: 16px 0 0 0;
+background: #fff url(./chrome/content-right-bg.png) repeat-x;
+color: #262523;
+}
 
 #sidebar {
-float: left;
 width: 190px;
 margin: 0 0 0 10px;
 padding: 143px 0 0;
 color: #0076a1;
+
+position: absolute;
+right: 6px;
 }
 
 * html #sidebar {
@@ -250,7 +276,7 @@ color: #72a629;
 #quick-search {
 position: absolute;
 bottom: 40px;
-right: 0;
+right: 6px;
 background: transparent url(./chrome/search-box.png) top left no-repeat;
 height: 28px;
 width: 190px;
@@ -282,7 +308,6 @@ position: absolute;
 top: 6px;
 right: 5px;
 }
-
 
 /*-----------------------
 Content
@@ -911,4 +936,105 @@ border-top: 2px solid #e4f1d0;
 
 table.no-border td, table.no-border th {
 border-bottom: 0 none;
+}
+
+/*-----------------------
+Narrow
+-----------------------*/
+@media only screen and (max-width: 875px) {
+  .wrap {
+    min-width: 100%;
+    margin: 0 0;
+  }
+  #logo a {
+    background: url(./chrome/geoserver-logo-mobile.png) no-repeat;
+    margin: 0px;
+  }
+  #header .wrap {
+    height: 115px;
+  }
+  #top-nav {
+    right: auto;
+    bottom: 35px;
+  }
+  #quick-search {
+    bottom: 33px;
+    right: 6px;
+  }
+  #content {
+    min-width: 100%;
+    box-sizing: border-box;
+    margin: -3px 0px 0 0px;
+    padding: 16px 6px 0 6px;
+  }
+  #content-left {
+    display:none;
+  }
+  #content-right {
+    display:none;
+  }
+
+  #sidebar {
+  display: none;
+  }
+}
+/*-----------------------
+Mobile
+-----------------------*/
+
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 640px)
+  and (-webkit-min-device-pixel-ratio: 2) {
+  .wrap {
+  min-width: 100%;
+  margin: 0 0;
+  }
+  #logo a {
+    background: url(./chrome/geoserver-logo-mobile.png) no-repeat;
+    margin: 0px;
+  }
+  #header .wrap {
+    height: 115px;
+  }
+  #top-nav {
+    right: auto;
+    bottom: 31px;
+  }
+  #quick-search {
+    bottom: 33px;
+    right: 6px;
+  }
+  #content {
+    min-width: 100%;
+    box-sizing: border-box;
+    margin: -3px 0px 0 0px;
+    padding: 16px 6px 0 6px;
+    font-size: 2.2em;
+  }
+  #content-left {
+    display:none;
+  }
+  #content-right {
+    display:none;
+  }
+  #content #breadcrumbs {
+    font-size: .85em;
+  }
+  #top-nav li a {
+    font-size: 2em;
+  }
+  #footer {
+    font-size: 1em;
+  }
+  #content h1 {
+    font-size: 3em;
+  }
+  #content h2 {
+    font-size: 2.5em;
+  }
+
+  #sidebar {
+  display: none;
+  }
 }

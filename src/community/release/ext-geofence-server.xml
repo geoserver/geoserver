@@ -27,7 +27,6 @@
         <include>jta*</include>
         <include>log4j-api*</include>
         <include>log4j-slf4j-impl*</include>
-        <include>postgis*</include>
         <include>search*</include>
         <include>spring-orm*</include>
         <include>spring-oxm*</include>

@@ -194,7 +194,7 @@ public class TestWfsPost extends HttpServlet {
 
             try {
                 URL u = new URL(urlString);
-                validateURL(request, urlString);
+                validateURL(request, urlString, getProxyBaseURL() );
                 java.net.HttpURLConnection acon = (java.net.HttpURLConnection) u.openConnection();
                 acon.setAllowUserInteraction(false);
 
@@ -313,9 +313,15 @@ public class TestWfsPost extends HttpServlet {
         }
     }
 
-    private void validateURL(HttpServletRequest request, String url) {
+    String getProxyBaseURL() {
         GeoServer geoServer = (GeoServer) GeoServerExtensions.bean("geoServer");
-        String proxyBase = geoServer.getGlobal().getSettings().getProxyBaseUrl();
+        if( geoServer != null ){
+            geoServer.getGlobal().getSettings().getProxyBaseUrl();
+        }
+        return null;
+    }
+
+    void validateURL(HttpServletRequest request, String url, String proxyBase) {
         if(proxyBase != null) {
             if(!url.startsWith(proxyBase)) {
                 throw new IllegalArgumentException("Invalid url requested, the demo requests should be hitting: " + proxyBase);

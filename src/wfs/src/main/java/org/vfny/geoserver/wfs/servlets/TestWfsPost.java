@@ -194,8 +194,7 @@ public class TestWfsPost extends HttpServlet {
 
             try {
                 URL u = new URL(urlString);
-                GeoServer geoServer = (GeoServer) GeoServerExtensions.bean("geoServer");
-                validateURL(request, urlString, geoServer.getGlobal().getSettings().getProxyBaseUrl() );
+                validateURL(request, urlString, getProxyBaseURL() );
                 java.net.HttpURLConnection acon = (java.net.HttpURLConnection) u.openConnection();
                 acon.setAllowUserInteraction(false);
 
@@ -312,6 +311,14 @@ public class TestWfsPost extends HttpServlet {
                 }
             }
         }
+    }
+
+    String getProxyBaseURL() {
+        GeoServer geoServer = (GeoServer) GeoServerExtensions.bean("geoServer");
+        if( geoServer != null ){
+            geoServer.getGlobal().getSettings().getProxyBaseUrl();
+        }
+        return null;
     }
 
     void validateURL(HttpServletRequest request, String url, String proxyBase) {

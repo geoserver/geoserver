@@ -46,11 +46,31 @@ public class TestWfsPostTest {
         servlet.service(request, response);
         // System.out.println(response.getContentAsString());
         // check xml chars have been escaped
+        String txt = response.getContentAsString();
         assertTrue(response.getContentAsString().contains("Invalid url requested, the demo requests should be hitting: http://localhost:8080/geoserver"));
     }
     
     @Test
     public void testDisallowOpenProxyWithProxyBase() throws Exception {
+        TestWfsPost servlet = new TestWfsPost(){
+            String getProxyBaseURL(){
+                return "http://geoserver.org/geoserver";
+            }
+        };
+        MockHttpServletRequest request = buildMockRequest();
+        request.setParameter("url", "http://localhost:1234/internalApp");
+        request.setMethod("GET");
+        
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        servlet.service(request, response);
+        // System.out.println(response.getContentAsString());
+        // check xml chars have been escaped
+        String txt = response.getContentAsString();
+        assertTrue(response.getContentAsString().contains("Invalid url requested, the demo requests should be hitting: http://geoserver.org/geoserver"));
+    }
+    
+    @Test
+    public void testValidateURL() throws Exception {
         TestWfsPost servlet = new TestWfsPost();
         MockHttpServletRequest request = buildMockRequest();
         request.setParameter("url", "http://localhost:1234/internalApp");

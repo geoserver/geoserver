@@ -44,9 +44,7 @@ public class TestWfsPostTest {
         request.setMethod("GET");
         MockHttpServletResponse response = new MockHttpServletResponse();
         servlet.service(request, response);
-        // System.out.println(response.getContentAsString());
-        // check xml chars have been escaped
-        String txt = response.getContentAsString();
+        // checking that reqauest is disallowed
         assertTrue(response.getContentAsString().contains("Invalid url requested, the demo requests should be hitting: http://localhost:8080/geoserver"));
     }
     
@@ -63,9 +61,7 @@ public class TestWfsPostTest {
         
         MockHttpServletResponse response = new MockHttpServletResponse();
         servlet.service(request, response);
-        // System.out.println(response.getContentAsString());
-        // check xml chars have been escaped
-        String txt = response.getContentAsString();
+        // checking that reqauest is disallowed
         assertTrue(response.getContentAsString().contains("Invalid url requested, the demo requests should be hitting: http://geoserver.org/geoserver"));
     }
     

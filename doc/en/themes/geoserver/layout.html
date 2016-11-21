@@ -182,7 +182,7 @@
   {%- endblock %}
   <div id="main">
     <div class="wrap selfclear">
-      <div id="content-left"></div>
+      <div id="content-left" class="content-border"></div>
       <div id="content">
       {%- block breadcrumbbar %}{{ breadcrumbs() }}{% endblock %}
       {%- block rellinkbar %}{{ rellinkbar() }}{% endblock %}
@@ -200,7 +200,7 @@
       </div>
       {%- endif %}
       </div><!-- /#content> -->
-      <div id="content-right"></div>
+      <div id="content-right" class="content-border"></div>
 {%- block sidebar %}{{ sidebar() }}{% endblock %}
   </div><!-- /.wrap> -->
 </div><!-- /#main -->

@@ -140,36 +140,38 @@ background: #fff url(./chrome/header-bg.png) 0 100% repeat-x;
 #main {
 background: #fff url(./chrome/main-bg.png) repeat-x;
 }
+#main .wrap {
+display: table;
+}
 
 #content {
+width: auto;
 min-width: 640px; 
 max-width: 740px;/*790px total*/
 float: left;
 margin: -3px 228px 0 22px;
 padding: 16px 0 0 0;
+display: table-cell;
 background: #fff url(./chrome/content-bg.png) repeat-x;
 color: #262523;
 font-size: 1.2em;
 }
-#content-left {
+.content-border {
 width: 22px;
 height: 100%;
 position: absolute;
-left: 0px;
 margin: -3px 0 0 0;
-padding: 16px 0 0 0;
-background: #fff url(./chrome/content-left-bg.png) repeat-x;
+padding: 0px;
 color: #262523;
+display: table-cell;
+}
+#content-left {
+left: 0px;
+background: #fff url(./chrome/content-left-bg.png) repeat-x;
 }
 #content-right {
-width: 22px;
-height: 100%;
-position: absolute;
-right: 206px;
-margin: -3px 0 0 0;
-padding: 16px 0 0 0;
+right: 207px;
 background: #fff url(./chrome/content-right-bg.png) repeat-x;
-color: #262523;
 }
 
 #sidebar {

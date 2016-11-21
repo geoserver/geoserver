@@ -5,10 +5,7 @@
  */
 package org.geoserver.catalog;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertSame;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -281,17 +278,18 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         lg.getLayers().add(l);
         lg.setName("test-reproject");
         
-        //Give our layer a CRS without the EPSG code defined
-        CoordinateReferenceSystem lCrs = DefaultGeographicCRS.WGS84;
+        // EPSG:4901 "equivalent" but different uom
+        String wkt = "GEOGCS[\"GCS_ATF_Paris\",DATUM[\"D_ATF\",SPHEROID[\"Plessis_1817\",6376523.0,308.64]],PRIMEM[\"Paris\",2.337229166666667],UNIT[\"Grad\",0.01570796326794897]]";
+        CoordinateReferenceSystem lCrs = CRS.parseWKT(wkt);
         ((FeatureTypeInfo)l.getResource()).setSRS(null);
         ((FeatureTypeInfo)l.getResource()).setNativeCRS(lCrs);
         assertNull(CRS.lookupEpsgCode(lCrs, false));
         
-        //EPSG:4326 should have an EPSG code
-        CoordinateReferenceSystem lgCrs = CRS.decode("EPSG:4326");
+        // Use the real thing now
+        CoordinateReferenceSystem lgCrs = CRS.decode("EPSG:4901"); 
         assertNotNull(CRS.lookupEpsgCode(lgCrs, false));
         
-        //Reproject our layer group to EPSG:4326. We expect it to have an EPSG code.
+        //Reproject our layer group to EPSG:4901. We expect it to have an EPSG code.
         cb.calculateLayerGroupBounds(lg, lgCrs);
         assertNotNull(CRS.lookupEpsgCode(lg.getBounds().getCoordinateReferenceSystem(), false));
     }

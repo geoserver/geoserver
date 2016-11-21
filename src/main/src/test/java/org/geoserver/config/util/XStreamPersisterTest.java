@@ -957,12 +957,13 @@ public class XStreamPersisterTest {
 
     @Test
     public void testSRSConverter() throws Exception {
-        CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:4901");
         SRSConverter c = new SRSConverter();
 
-        assertEquals("EPSG:4326", c.toString(crs));
-        assertFalse("EPSG:4326".equals( 
-            c.toString(CRS.parseWKT("GEOGCS[\"GCS_WGS_1984\",DATUM[\"WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]"))));
+        assertEquals("EPSG:4901", c.toString(crs));
+        // definition with odd UOM that won't be matched to the EPSG one
+        assertFalse("EPSG:4901".equals( 
+            c.toString(CRS.parseWKT("GEOGCS[\"GCS_ATF_Paris\",DATUM[\"D_ATF\",SPHEROID[\"Plessis_1817\",6376523.0,308.64]],PRIMEM[\"Paris\",2.337229166666667],UNIT[\"Grad\",0.01570796326794897]]"))));
     }
 
     @Test

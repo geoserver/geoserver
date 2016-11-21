@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is for testing nesting features of complex types that doesn't respect the GML object-property model -->
+<xs:schema targetNamespace="http://example.com" xmlns:ex="http://example.com"
+           xmlns:gml="http://www.opengis.net/gml" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+
+  <xs:import namespace="http://www.opengis.net/gml"
+             schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
+
+  <xs:complexType name="nestedFeatureType" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:sequence>
+      <xs:element name="nestedValue" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="parentFeatureType" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:complexContent>
+      <xs:extension base="gml:AbstractFeatureType">
+        <xs:sequence>
+          <xs:element name="nestedFeature" type="ex:nestedFeatureType" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="parentValue" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="ParentFeature" substitutionGroup="gml:_Feature" type="ex:parentFeatureType"/>
+  <xs:element name="NestedFeature" substitutionGroup="gml:_Feature" type="ex:nestedFeatureType"/>
+
+</xs:schema>

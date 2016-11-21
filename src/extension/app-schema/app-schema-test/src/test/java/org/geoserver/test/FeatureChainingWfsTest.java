@@ -105,6 +105,20 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
     }
 
     /**
+     * Return third ex schema file.
+     */
+    private File getExSchemaThree() {
+        return findFile("featureTypes/ex_ParentFeature/NonValidNestedGML.xsd", getDataDir());
+    }
+
+    /**
+     * Return third ex schema location.
+     */
+    private String getExSchemaThreeLocation() {
+        return DataUtilities.fileToURL(getExSchemaThree()).toString();
+    }
+
+    /**
      * Test that ex schemas are found and the files exist.
      */
     @Test
@@ -130,13 +144,14 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         assertEquals(location , schemaLocation);
 
         // make sure non-feature types don't appear in FeatureTypeList
-        assertXpathCount(5, "//wfs:FeatureType", doc);
-        ArrayList<String> featureTypeNames = new ArrayList<String>(5);
+        assertXpathCount(6, "//wfs:FeatureType", doc);
+        ArrayList<String> featureTypeNames = new ArrayList<String>(6);
         featureTypeNames.add(evaluate("//wfs:FeatureType[1]/wfs:Name", doc));
         featureTypeNames.add(evaluate("//wfs:FeatureType[2]/wfs:Name", doc));
         featureTypeNames.add(evaluate("//wfs:FeatureType[3]/wfs:Name", doc));
         featureTypeNames.add(evaluate("//wfs:FeatureType[4]/wfs:Name", doc));
         featureTypeNames.add(evaluate("//wfs:FeatureType[5]/wfs:Name", doc));
+        featureTypeNames.add(evaluate("//wfs:FeatureType[6]/wfs:Name", doc));
         // Mapped Feture
         assertTrue(featureTypeNames.contains("gsml:MappedFeature"));
         // Geologic Unit
@@ -145,6 +160,8 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         assertTrue(featureTypeNames.contains("ex:FirstParentFeature"));
         // SecondParentFeature
         assertTrue(featureTypeNames.contains("ex:SecondParentFeature"));
+        // ParentFeature
+        assertTrue(featureTypeNames.contains("ex:ParentFeature"));
         // om:Observation
         assertTrue(featureTypeNames.contains("om:Observation"));
     }
@@ -357,7 +374,8 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 // ex import
                 String loc = evaluate(schemaLocation, doc);
                 assertTrue(loc.equals(getExSchemaOneLocation())
-                        || loc.equals(getExSchemaTwoLocation()));
+                        || loc.equals(getExSchemaTwoLocation())
+                        || loc.equals(getExSchemaThreeLocation()));
                 namespaces.remove(FeatureChainingMockData.EX_URI);
             } else {
                 // om import
@@ -1522,4 +1540,32 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         }
     }
 
+    /**
+     * Test the encoding of nested complex features that are mapped to GML complex types
+     * that don't respect the GML object-property model.
+     */
+    @Test
+    public void testNonValidNestedGML() throws Exception {
+        // get the complex features encoded in GML
+        Document result = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:ParentFeature");
+        // checking that we have the correct number of elements
+        assertXpathCount(3, "//ex:ParentFeature", result);
+        assertXpathCount(9, "//ex:ParentFeature/ex:nestedFeature", result);
+        assertXpathCount(9, "//ex:ParentFeature/ex:nestedFeature/ex:nestedValue", result);
+        // checking the content of the first feature
+        assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.1']/ex:parentValue[text()='string_one']", result);
+        assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.1']/ex:nestedFeature/ex:nestedValue[text()='1GRAV']", result);
+        assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.1']/ex:nestedFeature/ex:nestedValue[text()='1TILL']", result);
+        assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.1']/ex:nestedFeature/ex:nestedValue[text()='6ALLU']", result);
+        // checking the content of the second feature
+        assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.2']/ex:parentValue[text()='string_two']", result);
+        assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.2']/ex:nestedFeature/ex:nestedValue[text()='1GRAV']", result);
+        assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.2']/ex:nestedFeature/ex:nestedValue[text()='1TILL']", result);
+        assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.2']/ex:nestedFeature/ex:nestedValue[text()='6ALLU']", result);
+        // checking the content of the third feature
+        assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.3']/ex:parentValue[text()='string_three']", result);
+        assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.3']/ex:nestedFeature/ex:nestedValue[text()='1GRAV']", result);
+        assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.3']/ex:nestedFeature/ex:nestedValue[text()='1TILL']", result);
+        assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.3']/ex:nestedFeature/ex:nestedValue[text()='6ALLU']", result);
+    }
 }

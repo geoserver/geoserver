@@ -278,6 +278,7 @@ E.g.::
 
 Note that the GML encoding rules require that complex types are never the direct property of another complex type; they are always contained in a property type to ensure that their type is encoded in a surrounding element. Encoded GML is always type/property/type/property. This is also known as the GML "striping" rule. The consequence of this for app-schema mapping files is that ``targetAttributeNode`` must be applied to the property and the type must be set to the XSD property type, not to the type of the contained attribute (``gsml:CGI_TermValuePropertyType`` not ``gsml:CGI_TermValueType``). Because the XPath refers to a property type not the encoded content, ``targetAttributeNode`` appears in a mapping with ``targetAttribute`` and no other elements when using with complex types.
 
+The XML encoder will encode nested complex features that are mapped to a complex type that does not respect the GML striping rule. The Java configuration property ``encoder.relaxed`` can be set to ``false`` to disable this behavior.
 
 encodeIfEmpty (optional)
 ````````````````````````

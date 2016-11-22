@@ -206,6 +206,21 @@ public class ManifestLoader {
         return getAboutModel(classLoader);
     }
 
+    public static Manifest getManifest(Class<?> clz) {
+        String resource = "/" + clz.getName().replace(".", "/") + ".class";
+        String fullPath = clz.getResource(resource).toString();
+        String archivePath = fullPath.substring(0, fullPath.length() - resource.length());
+        if (archivePath.endsWith("\\WEB-INF\\classes") || archivePath.endsWith("/WEB-INF/classes")) {
+          archivePath = archivePath.substring(0, archivePath.length() - "/WEB-INF/classes".length()); // Required for wars
+        }
+
+        try (InputStream input = new URL(archivePath + "/META-INF/MANIFEST.MF").openStream()) {
+          return new Manifest(input);
+        } catch (Exception e) {
+          throw new RuntimeException("Loading MANIFEST for class " + clz + " failed!", e);
+        }
+      }
+    
     /**
      * @return dynamically built AboutModel of the geoserver's versions
      */
@@ -226,7 +241,8 @@ public class ManifestLoader {
                     .getLocation().toURI().toString();
             geoserverPath = geoserverPath + "!/META-INF/MANIFEST.MF";
 
-            Manifest manifest = manifests.get(geoserverPath);
+            Class geoserver_class = GeoServer.class;
+            Manifest manifest = ManifestLoader.getManifest(geoserver_class); 
             if (manifest != null) {
                 model.add(ManifestModel.parseManifest("GeoServer", manifest,
                         new ManifestModel.IncludeAttributeFilter(versionAttributeInclusions)));
@@ -243,7 +259,9 @@ public class ManifestLoader {
                     .toURI().toString();
             path = path + "!/META-INF/MANIFEST.MF";
 
-            Manifest manifest = manifests.get(path);
+            Class geoserver_class = GeoTools.class;
+            Manifest manifest = ManifestLoader.getManifest(geoserver_class); 
+
             if (manifest != null) {
                 model.add(ManifestModel.parseManifest("GeoTools", manifest,
                         new ManifestModel.IncludeAttributeFilter(versionAttributeInclusions)));
@@ -264,7 +282,8 @@ public class ManifestLoader {
                     .toURI().toString();
             path = path + "!/META-INF/MANIFEST.MF";
 
-            Manifest manifest = manifests.get(path);
+            Class geoserver_class = Class.forName("org.geowebcache.GeoWebCache");
+            Manifest manifest = ManifestLoader.getManifest(geoserver_class); 
             if (manifest != null) {
                 model.add(ManifestModel.parseManifest("GeoWebCache", manifest,
                         new ManifestModel.IncludeAttributeFilter(versionAttributeInclusions)));

@@ -6,7 +6,6 @@ package org.geoserver.wps.remote.plugin;
 
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;

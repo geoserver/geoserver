@@ -6,7 +6,6 @@ package org.geoserver.wps.remote.plugin;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.InetAddress;
@@ -222,28 +221,8 @@ public class XMPPClient extends RemoteProcessClient {
         // ----
         PRIMITIVE_NAME_TYPE_MAP.put("application/owc",
                 new Object[] { RawData.class, CType.COMPLEX,
-                        //new StringRawData("", "application/vnd.geo+json"),
-                        new RawData() {
-
-                            private String data = "";
-                            
-                            @Override
-                            public String getMimeType() {
-                                return "application/vnd.geo+json";
-                            }
-
-                            @Override
-                            public InputStream getInputStream() throws IOException {
-                                return IOUtils.toInputStream(data);
-                            }
-
-                            @Override
-                            public String getFileExtension() {
-                                return "json";
-                            }
-                    
-                        },
-                        "application/vnd.geo+json", ".json" });
+                        new StringRawData("", "application/vnd.geo+json"), "application/vnd.geo+json",
+                        ".json" });
 
         // ----
         PRIMITIVE_NAME_TYPE_MAP.put("image/geotiff",

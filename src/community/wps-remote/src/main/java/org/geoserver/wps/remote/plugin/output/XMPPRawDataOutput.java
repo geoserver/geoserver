@@ -41,6 +41,7 @@ import org.geoserver.wps.process.StreamRawData;
 import org.geoserver.wps.process.StringRawData;
 import org.geoserver.wps.remote.WmcFeature;
 import org.geoserver.wps.remote.plugin.XMPPClient;
+import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 
@@ -119,17 +120,18 @@ public class XMPPRawDataOutput implements XMPPOutputType {
 
                 LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] FileRawData:" + fileName);
 
-                final File outputFile = getOutputFile(xmppClient, (String) value);
+                File outputFile = getOutputFile(xmppClient, (String) value);
+                if (outputFile.renameTo(new File(outputFile.getParentFile(), fileName))) {
+                    outputFile = new File(outputFile.getParentFile(), fileName);
+                    outputFile.setLastModified(System.nanoTime());
+                }
+
                 value = new ResourceRawData(Files.asResource(outputFile),
                         ((ResourceRawData) sample).getMimeType(),
                         ((ResourceRawData) sample).getFileExtension());
                 if (publish) {
-                    final File tempFile = new File(FileUtils.getTempDirectory(), fileName);
-                    FileUtils.copyFile(((ResourceRawData) value).getResource().file(), tempFile);
-                    FileUtils.waitFor(tempFile, 5);
-
                     try {
-                        xmppClient.importLayer(tempFile, type, null, name + "_" + pID, title, description,
+                        xmppClient.importLayer(outputFile, type, null, name + "_" + pID, title, description,
                                 defaultStyle, targetWorkspace, metadata);
                     } catch (Exception e) {
                         LOGGER.log(Level.WARNING,
@@ -258,21 +260,44 @@ public class XMPPRawDataOutput implements XMPPOutputType {
         String[] workspaces = (targetWorkspace != null ? targetWorkspace.split(";") : null);
 
         LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] encodeAsPlainOWCMapContext:"
-                + layerToPublish);
+                + value);
 
         List<LayerInfo> wmc = new ArrayList<LayerInfo>();
 
         if (layerToPublish != null && layerToPublish.length > 0) {
-            final Catalog catalog = xmppClient.getGeoServer().getCatalog();
+            final GeoServer geoServer = xmppClient.getGeoServer();
+            final Catalog catalog = geoServer.getCatalog();
 
             for (int fi = 0; fi < layerToPublish.length; fi++) {
                 final String layerBaseName = layerToPublish[fi];
                 final String layerStyle = styles[fi];
                 final String layerWorkspace = workspaces[fi];
 
-                LayerInfo layerInfo = catalog.getLayerByName(layerBaseName + "_" + pID);
+                LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] looking for LayerInfo:"
+                        + layerBaseName + "_" + pID);
+                
+                LayerInfo layerInfo = 
+                        (catalog.getLayerByName(layerBaseName + "_" + pID) != null ?
+                                catalog.getLayerByName(layerBaseName + "_" + pID) :
+                                    catalog.getLayerByName(new NameImpl(layerWorkspace, layerBaseName + "_" + pID)));
+                
+                if (layerInfo == null) {
+                    LOGGER.warning("[XMPP Raw Data Output - ProduceOutput] cuold not find LayerInfo ["
+                        + layerBaseName + "_" + pID + "]... going to scan the whole Catalog!");
+                    for (LayerInfo layer : catalog.getLayers()){
+                        LOGGER.info("[XMPP Raw Data Output - ProduceOutput] looking for LayerInfo:" + layer.getName());
+                        if (layer.getName().contains(layerBaseName) && layer.getName().contains(pID)) {
+                            LOGGER.info("[XMPP Raw Data Output - ProduceOutput] found candidate LayerInfo:" + layer.getName());
+                            layerInfo = layer;
+                            break;
+                        }
+                    }
+                }
 
                 if (layerInfo != null) {
+                    LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] found LayerInfo:"
+                            + layerBaseName + "_" + pID);
+                    
                     if (layerStyle.trim().length() > 0) {
                         StyleInfo style = catalog.getStyleByName(layerStyle);
 
@@ -296,6 +321,11 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                     }
 
                     wmc.add(layerInfo);
+                    LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] added LayerInfo:"
+                            + layerInfo);
+                } else {
+                    LOGGER.finest("[XMPP Raw Data Output - ProduceOutput] could not find any LayerInfo:"
+                            + layerBaseName + "_" + pID);
                 }
             }
         }

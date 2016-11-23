@@ -370,7 +370,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     public Set<String> getLastResponseAllowedMethods() {
-        return Sets.newHashSet(getLastResponse().getHeader("ALLOW").split(","));
+        return Sets.newHashSet(getLastResponse().getHeader("ALLOW").replace(" ", "").split(","));
     }
 
     protected byte[] getBinary(MockHttpServletResponse response) {

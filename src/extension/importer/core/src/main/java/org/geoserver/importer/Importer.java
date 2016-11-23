@@ -1692,6 +1692,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                         
                         info.setFilename(styleName + "." +ext);
                         info.setFormat(styleHandler.getFormat());
+                        info.setFormatVersion(styleHandler.version(styleFile));
                         info.setWorkspace(task.getStore().getWorkspace());
 
                         try (InputStream in = new FileInputStream(styleFile)) {

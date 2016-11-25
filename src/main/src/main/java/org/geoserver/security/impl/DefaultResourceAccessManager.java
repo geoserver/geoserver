@@ -5,26 +5,44 @@
  */
 package org.geoserver.security.impl;
 
-import static org.geoserver.security.impl.DataAccessRule.*;
+import static org.geoserver.security.impl.DataAccessRule.ANY;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
 import org.geoserver.security.CatalogMode;
@@ -40,6 +58,7 @@ import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WorkspaceAccessLimits;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
+import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -76,15 +95,31 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
 
     SecureTreeNode root;
 
-//    Catalog catalog;
-    
     DataAccessRuleDAO dao;
+    
+    Catalog rawCatalog;
 
     long lastLoaded = Long.MIN_VALUE;
+    
+    Map<String, List<String>> layerGroupContainmentCache = new ConcurrentHashMap<>();
 
+    @Deprecated
     public DefaultResourceAccessManager(DataAccessRuleDAO dao) {
+        this(dao, (Catalog) GeoServerExtensions.bean("rawCatalog"));
+    }
+    
+    /**
+     * Pass a reference to the raw, unsecured catalog. The reference is used to evaluate the
+     * relationship between layers and the groups containing them
+     * @param dao
+     * @param rawCatalog
+     */
+    public DefaultResourceAccessManager(DataAccessRuleDAO dao, Catalog rawCatalog) {
         this.dao = dao;
+        this.rawCatalog = rawCatalog;
         this.root = buildAuthorizationTree(dao);
+        
+        rawCatalog.addListener(new CatalogChangeListener());
     }
 
     public CatalogMode getMode() {
@@ -156,14 +191,105 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
             // it's a layer whose resource we don't know about
             return true;
         }
-
+        
         SecureTreeNode node = root.getDeepestNode(new String[] { workspace, resource.getName() });
-        return node.canAccess(user, mode);
+        if(!node.canAccess(user, mode)) {
+            return false;
+        }
+        
+        // check if all containing layer groups stop access to the layer 
+        if(!layerGroupContainmentCheckRequired()) {
+            return true;
+        }
+
+        // check if there is any containing group that has security rules
+        List<SecureTreeNode> nodes = getNodesContainingResource(resource);
+        if(nodes.isEmpty()) {
+            return true;
+        }
+        
+        // if we have at least one containing tree that is secured and authorizes access, then 
+        // we have a winner
+        if(nodes.stream().anyMatch(n -> n.canAccess(user, mode))) {
+            return true;
+        }
+        
+        // if we get here, it means there is at least one secured tree node that denies access
+        // but we can still have one group that contains the layer, and that's not even mentioned
+        // in the security rules, that will authorize the layer anyways
+        Filter containsResource = Predicates.equal("layers.resource.id", resource.getId(), MatchAction.ANY);
+        Filter notSingle = Predicates.notEqual("mode", LayerGroupInfo.Mode.SINGLE);
+        Filter global = Predicates.isNull("workspace");
+        Filter inSameWorkspace = Predicates.equal("workspace.name", workspace);
+        Filter wsMatch = Predicates.or(global, inSameWorkspace);
+        Filter groupFilter = Predicates.and(wsMatch, notSingle, containsResource);
+        if(hasContainerGroupNotDenied(nodes, groupFilter)) {
+            return true;
+        }
+        // could not find an authorized layer group that will allow authorization, so not authorized
+        return false;
+    }
+
+    private List<SecureTreeNode> getNodesContainingResource(ResourceInfo resource) {
+        String ws = resource.getStore().getWorkspace().getName();
+        final String resourceId = resource.getId();
+        return getNodesContainingId(ws, resourceId);
+    }
+    
+    private List<SecureTreeNode> getNodesContainingGroup(LayerGroupInfo group) {
+        String ws = group.getWorkspace() != null ? group.getWorkspace().getName() : null;
+        final String groupId = group.getId();
+        return getNodesContainingId(ws, groupId);
+    }
+
+    private List<SecureTreeNode> getNodesContainingId(String ws, final String id) {
+        List<SecureTreeNode> nodes = new ArrayList<>();
+        root.getChildren().forEach((name, node) -> {
+            // global layer group, if contains it gets added, there is no change of name overlap
+            if (node.isContainerLayerGroup()) {
+                if (node.getContainedCatalogIds().contains(id)) {
+                    nodes.add(node);
+                }
+            } else if (ws != null && name.equals(ws)) {
+                List<SecureTreeNode> wsNodes = getSubNodesContainingId(node, ws, id);
+                nodes.addAll(wsNodes);
+            }
+        });
+
+        return nodes;
+    }
+
+    private List<SecureTreeNode> getSubNodesContainingId(SecureTreeNode parent, String workspace, String resourceId) {
+        return parent.getChildren().entrySet().stream().filter(
+                entry -> entry.getValue().isContainerLayerGroup() 
+                && entry.getValue().getContainedCatalogIds().contains(resourceId) 
+                && rawCatalog.getLayerByName(workspace + ":" + entry.getKey()) == null).map(entry -> entry.getValue()).collect(Collectors.toList());
+    }
+
+    private boolean layerGroupContainmentCheckRequired() {
+        // first, is it WMS?
+        Request request = Dispatcher.REQUEST.get();
+        if(request == null) {
+            return false;
+        }
+        
+        // layer groups are used only in WMS
+        final String service = request.getService();
+        boolean isMapService = "WMS".equalsIgnoreCase(service) || "gwc".equalsIgnoreCase(service);
+        if(!isMapService) {
+            return false;
+        }
+        
+        return true;
     }
 
     void checkPropertyFile() {
+        rebuildAuthorizationTree(false);
+    }
+
+    private void rebuildAuthorizationTree(boolean force) {
         long daoLastModified = dao.getLastModified();
-        if(lastLoaded < daoLastModified) {
+        if(lastLoaded < daoLastModified || force) {
             root = buildAuthorizationTree(dao);
             lastLoaded = daoLastModified;
         }
@@ -173,7 +299,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
         SecureTreeNode root = new SecureTreeNode();
         
         for(DataAccessRule rule : dao.getRules()) {
-            String workspace = rule.getWorkspace();
+            String workspace = rule.getRoot();
             String layer = rule.getLayer();
             AccessMode accessMode = rule.getAccessMode();
             
@@ -194,10 +320,16 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
                 // get/create the layer
                 if ("*".equals(layer)) {
                     node = ws;
+                } else if(rule.isGlobalGroupRule()) {
+                    ws.setContainerLayerGroup(true);
+                    updateContainedLayerIds(ws, null, workspace);
+                    node = ws;
                 } else {
                     SecureTreeNode layerNode = ws.getChild(layer);
-                    if (layerNode == null)
+                    if (layerNode == null) {
                         layerNode = ws.addChild(layer);
+                        updateContainedLayerIds(layerNode, workspace, layer);
+                    }                  
                     node = layerNode;
                 }
 
@@ -212,6 +344,35 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
         }
         
         return root;
+    }
+
+    private void updateContainedLayerIds(SecureTreeNode node, String workspace, String groupName) {
+        LayerGroupInfo lg = rawCatalog.getLayerGroupByName(workspace, groupName);
+        if(lg == null || lg.getMode() == Mode.SINGLE) {
+            node.setContainedCatalogIds(null);
+            node.setContainerLayerGroup(false);
+        } else {
+            LayerGroupHelper helper = new LayerGroupHelper(lg);
+            Set<String> ids = helper.allLayers().stream().filter(layer -> layer != null && layer.getResource() != null)
+                    .map(layer -> layer.getResource().getId()).collect(Collectors.toSet());
+            helper.allGroups().forEach(group -> {
+                if(group != null && group != lg) {
+                    ids.add(group.getId());                    
+                }
+            });
+            node.setContainedCatalogIds(ids);
+            node.setContainerLayerGroup(true);
+        }
+    }
+    
+    public void updateContainedLayerIds(SecureTreeNode node, LayerGroupInfo lg) {
+        WorkspaceInfo ws = lg.getWorkspace();
+        if(ws != null) {
+            updateContainedLayerIds(node, ws.getName(), lg.getName());
+        } else {
+            updateContainedLayerIds(node, null, lg.getName());
+        }
+        
     }
 
     public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer) {
@@ -280,7 +441,80 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
 
     @Override
     public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup) {
-        return null;
+        String[] path = getLayerGroupPath(layerGroup);
+        SecureTreeNode node = root.getDeepestNode(path);
+        if(node != null && !node.canAccess(user, AccessMode.READ)) {
+            return new LayerGroupAccessLimits(getMode());
+        }
+        // there is still a chance the group is contained only in a hidden parent group
+
+        // check if there is any containing group that has security rules
+        List<SecureTreeNode> nodes = getNodesContainingGroup(layerGroup);
+        if(nodes.isEmpty()) {
+            return null; // allow access
+        }
+        
+        // if we have at least one containing tree that is secured and authorizes access, then 
+        // we have a winner
+        if(nodes.stream().anyMatch(n -> n.canAccess(user, AccessMode.READ))) {
+            return null; // allow access
+        }
+        
+        // if we get here, it means there is at least one secured tree node that denies access
+        // but we can still have one group that contains the layer, and that's not even mentioned
+        // in the security rules, that will authorize the layer anyways
+        Filter containsResource = Predicates.equal("layers.id", layerGroup.getId(), MatchAction.ANY);
+        Filter notSingle = Predicates.notEqual("mode", LayerGroupInfo.Mode.SINGLE);
+        Filter global = Predicates.isNull("workspace");
+        Filter wsMatch = null;
+        if(layerGroup.getWorkspace() != null) {
+            Filter inSameWorkspace = Predicates.equal("workspace.name", layerGroup.getWorkspace().getName());
+            wsMatch = Predicates.or(global, inSameWorkspace);
+        } else {
+            wsMatch = global;
+        }
+        Filter groupFilter = Predicates.and(wsMatch, notSingle, containsResource);
+        if(hasContainerGroupNotDenied(nodes, groupFilter)) {
+            return null; // allow access
+        }
+        // could not find an authorized layer group that will allow authorization, so not authorized
+        return new LayerGroupAccessLimits(getMode());
+    }
+
+    private boolean hasContainerGroupNotDenied(List<SecureTreeNode> nodes, Filter groupFilter) {
+        try(CloseableIterator<LayerGroupInfo> it = rawCatalog.list(LayerGroupInfo.class, groupFilter)) {
+            while(it.hasNext()) {
+                LayerGroupInfo lg = it.next();
+                // if we have a node for this group it has already been considered
+                if(getNodeForGroup(lg) != null) {
+                    continue;
+                }
+                // need to check if it's nested in another group in the relevant lot first
+                if(nodes.stream().anyMatch(n -> {
+                    final String id = lg.getId();
+                    return n.getContainedCatalogIds().contains(id);
+                })) {
+                    continue;
+                }
+                // ok, then we have a container group that is not denied, allow
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Returns the possible location of the group in the secured tree based on name and workspace
+     * @param layerGroup
+     * @return
+     */
+    private String[] getLayerGroupPath(LayerGroupInfo layerGroup) {
+        if(layerGroup.getWorkspace() == null) {
+            return new String[] {layerGroup.getName()};
+        } else {
+           return new String[] {layerGroup.getWorkspace().getName(), layerGroup.getName()};
+        }
     }
 
     @Override
@@ -423,5 +657,95 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
             return access;
         }
     }
+    
+    private SecureTreeNode getNodeForGroup(LayerGroupInfo lg) {
+        SecureTreeNode node;
+        if(lg.getWorkspace() == null) {
+            node = root.getNode(lg.getName());
+        } else {
+            String[] path = getLayerGroupPath(lg);
+            node = root.getNode(path);
+        }
+        return node;
+    }
+    
+    /**
+     * This listener keeps the "layer group" flags in the authorization tree current, in order
+     * to optimize the application of layer group containment rules
+     */
+    class CatalogChangeListener implements CatalogListener {
+
+        @Override
+        public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
+            if(event.getSource() instanceof LayerGroupInfo) {
+                LayerGroupInfo lg = (LayerGroupInfo) event.getSource();
+                addGroupInfo(lg);
+            } 
+        }
+
+        private void addGroupInfo(LayerGroupInfo lg) {
+            SecureTreeNode node = getNodeForGroup(lg);
+            if(node != null) {
+                updateContainedLayerIds(node, lg);
+            }
+        }
+
+        @Override
+        public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
+            if(event.getSource() instanceof LayerGroupInfo) {
+                LayerGroupInfo lg = (LayerGroupInfo) event.getSource();
+                clearGroupInfo(lg);
+            }
+        }
+
+        @Override
+        public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
+            final CatalogInfo source = event.getSource();
+            if(source instanceof LayerGroupInfo) {
+                LayerGroupInfo lg = (LayerGroupInfo) event.getSource();
+                // was the layer group renamed or moved?
+                int nameIdx = event.getPropertyNames().indexOf("name");
+                int wsIdx = event.getPropertyNames().indexOf("workspace");
+                if(nameIdx != -1 || wsIdx != -1) {
+                    // group has been modified, clear the old node (the new one will be updated in ppost modify)
+                    clearGroupInfo(lg);
+                }
+            } 
+        }
+
+        @Override
+        public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
+            final CatalogInfo source = event.getSource();
+            if(source instanceof LayerGroupInfo) {
+                LayerGroupInfo lg = (LayerGroupInfo) event.getSource();
+                // this also handles switch of layer group to a different MODE
+                addGroupInfo(lg);
+            }
+            
+        }
+
+        @Override
+        public void reloaded() {
+            // force reloading the rules and thus rebuild the layer group cache
+            rebuildAuthorizationTree(true);
+        }
+        
+        private void clearGroupInfo(LayerGroupInfo lg) {
+            SecureTreeNode node = getNodeForGroup(lg);
+            clearGroupInfo(node);
+        }
+
+        private void clearGroupInfo(SecureTreeNode node) {
+            if(node != null) {
+                node.setContainerLayerGroup(false);
+                node.setContainedCatalogIds(null);
+            }
+        }
+        
+        
+    }
+
+    
 
 }
+ 

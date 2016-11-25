@@ -49,7 +49,7 @@ public class ConfirmRemovalDataAccessRulePanelTest extends AbstractConfirmRemova
     @Override
     protected DataAccessRule getRemoveableObject() throws Exception {
         for (DataAccessRule rule : DataAccessRuleDAO.get().getRules()) {
-            if (MockData.CITE_PREFIX.equals(rule.getWorkspace()) && 
+            if (MockData.CITE_PREFIX.equals(rule.getRoot()) && 
                 MockData.BRIDGES.getLocalPart().equals(rule.getLayer()))
                 return rule;
         }
@@ -68,7 +68,7 @@ public class ConfirmRemovalDataAccessRulePanelTest extends AbstractConfirmRemova
     @Override
     protected String getRemoveableObjectRegExp() throws Exception {
         DataAccessRule rule = getRemoveableObject();
-        return ".*"+rule.getWorkspace() + ".*" + rule.getLayer()
+        return ".*"+rule.getRoot() + ".*" + rule.getLayer()
                 +".*" + "ROLE_WFS"+".*";                
     }
     

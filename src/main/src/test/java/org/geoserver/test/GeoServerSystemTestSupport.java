@@ -826,7 +826,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected void addLayerAccessRule(String workspace, String layer, AccessMode mode, String... roles) throws IOException {
         DataAccessRuleDAO dao = DataAccessRuleDAO.get();
         DataAccessRule rule = new DataAccessRule();
-        rule.setWorkspace(workspace);
+        rule.setRoot(workspace);
         rule.setLayer(layer);
         rule.setAccessMode(mode);
         rule.getRoles().addAll(Arrays.asList(roles));

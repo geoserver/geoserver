@@ -140,30 +140,35 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
 
         // parse
         String[] elements = parseElements(ruleKey);
-        if(elements.length != 3) {
-            LOGGER.warning("Invalid rule " + rule + ", the expected format is workspace.layer.mode=role1,role2,...");
-            return null;
-        }
-        String workspace = elements[0];
-        String layerName = elements[1];
-        String modeAlias = elements[2];
-        Set<String> roles = parseRoles(ruleValue);
-
         // perform basic checks on the elements
-        if (elements.length != 3) {
-            LOGGER.warning("Invalid rule '" + rule
-                    + "', the standard form is [namespace].[layer].[mode]=[role]+ "
-                    + "Rule has been ignored");
+        if(elements.length != 3 && elements.length != 2) {
+            LOGGER.warning("Invalid rule " + rule + ", the expected format is workspace.layer.mode=role1,role2,... or globalGroup.mode=role1,role2,...");
             return null;
         }
+        String root = elements[0];
+        String layerName, modeAlias;
+        if(elements.length == 3) {
+            layerName = elements[1];
+            modeAlias = elements[2];    
+        } else {
+            layerName = null;
+            modeAlias = elements[1];
+        }
+        
+        Set<String> roles = parseRoles(ruleValue);
 
         // emit warnings for unknown workspaces, layers, but don't skip the rule,
         // people might be editing the catalog structure and will edit the access rule
         // file afterwards
-        if (!ANY.equals(workspace) && rawCatalog.getWorkspaceByName(workspace) == null)
-            LOGGER.warning("Namespace/Workspace " + workspace + " is unknown in rule " + rule);
-        if (!ANY.equals(layerName) && rawCatalog.getLayerByName(layerName) == null)
-            LOGGER.warning("Layer " + workspace + " is unknown in rule + " + rule);
+        if(layerName != null) {
+            if (!ANY.equals(root) && rawCatalog.getWorkspaceByName(root) == null)
+                LOGGER.warning("Namespace/Workspace " + root + " is unknown in rule " + rule);
+            if (!ANY.equals(layerName) && rawCatalog.getLayerByName(layerName) == null)
+                LOGGER.warning("Layer " + root + " is unknown in rule + " + rule);
+        } else {
+            if (!ANY.equals(root) && rawCatalog.getLayerGroupByName(root) == null)
+                LOGGER.warning("Global layer group " + root + " is unknown in rule " + rule);
+        }
 
         // check the access mode sanity
         AccessMode mode = AccessMode.getByAlias(modeAlias);
@@ -174,7 +179,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         }
 
         // check ANY usage sanity
-        if (ANY.equals(workspace)) {
+        if (ANY.equals(root)) {
             if (!ANY.equals(layerName)) {
                 LOGGER.warning("Invalid rule " + rule + ", when namespace "
                         + "is * then also layer must be *. Skipping rule " + rule);
@@ -191,7 +196,7 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         }
 
         // build the rule
-        return new DataAccessRule(workspace, layerName, mode, roles);
+        return new DataAccessRule(root, layerName, mode, roles);
     }
     
     /**
@@ -202,10 +207,12 @@ public class DataAccessRuleDAO extends AbstractAccessRuleDAO<DataAccessRule> {
         Properties props = new Properties();
         props.put("mode", catalogMode.toString());
         for (DataAccessRule rule : rules) {
-        	String key = rule.getWorkspace().replaceAll("\\.", "\\\\.") + "." 
-        	             + rule.getLayer().replaceAll("\\.", "\\\\.") + "." 
-        	             + rule.getAccessMode().getAlias();
-        	props.put(key, rule.getValue());
+        	StringBuilder sbKey = new StringBuilder(rule.getRoot().replaceAll("\\.", "\\\\."));
+        	if(!rule.isGlobalGroupRule()) {
+        	    sbKey.append(".").append(rule.getLayer().replaceAll("\\.", "\\\\."));
+        	}
+        	sbKey.append(".").append(rule.getAccessMode().getAlias());
+        	props.put(sbKey.toString(), rule.getValue());
         }
         return props;
     }

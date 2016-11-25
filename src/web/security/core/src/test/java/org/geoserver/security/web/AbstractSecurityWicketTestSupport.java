@@ -19,7 +19,12 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
@@ -57,6 +62,9 @@ import org.junit.Before;
 
 public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketTestSupport {
     
+    protected static final String NATURE_GROUP = "nature";
+    
+    protected static final String CITE_NATURE_GROUP = "citeNature";
     
     public String getRoleServiceName() {
         return "test";
@@ -77,6 +85,34 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
         springContextLocations.add("classpath*:/applicationTestContext.xml");
+    }
+    
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        // setup a layer group
+        Catalog catalog = getCatalog();
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        LayerInfo forests = catalog.getLayerByName(getLayerId(MockData.FORESTS));
+        if(lakes != null && forests != null) {
+            LayerGroupInfo nature = buildGroup(NATURE_GROUP, lakes, forests);
+            catalog.add(nature);
+            LayerGroupInfo citeNature = buildGroup(CITE_NATURE_GROUP, lakes, forests);
+            citeNature.setWorkspace(catalog.getWorkspaceByName(MockData.CITE_PREFIX));
+            catalog.add(citeNature);
+        }
+    }
+    private LayerGroupInfo buildGroup(String name, LayerInfo... layers)
+            throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
+        group.setName(name);
+        for (LayerInfo layer : layers) {
+            group.getLayers().add(layer);
+        }
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.calculateLayerGroupBounds(group);
+        return group;
     }
 
     

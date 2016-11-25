@@ -112,7 +112,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     }
 
     private static DefaultResourceAccessManager buildDefaultResourceAccessManager() {
-        return new DefaultResourceAccessManager(GeoServerExtensions.bean(DataAccessRuleDAO.class));
+        return new DefaultResourceAccessManager(GeoServerExtensions.bean(DataAccessRuleDAO.class), (Catalog) GeoServerExtensions.bean("rawCatalog"));
     }
 
     static DataAccessManager lookupDataAccessManager() throws Exception {

@@ -159,6 +159,29 @@ public class TransactionTest extends WFSTestSupport {
         assertEquals(2, dom.getElementsByTagName("gml:featureMember")
                 .getLength());
     }
+	
+	@Test
+    public void testInsertWithGetFeatureInThePath() throws Exception {
+        // perform an insert
+        String insert = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:gml=\"http://www.opengis.net/gml\"> "
+                + "<wfs:Insert > "
+                + "<cgf:Lines>"
+                + "<cgf:lineStringProperty>"
+                + "<gml:LineString>"
+                + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056415,5433016.8189323 494982.70115662,5435041.95096618"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>" + "</wfs:Transaction>";
+
+        Document dom = postAsDOM("wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=cgf:Lines", insert);
+        assertTrue(dom.getElementsByTagName("wfs:SUCCESS").getLength() != 0);
+        assertTrue(dom.getElementsByTagName("wfs:InsertResult").getLength() != 0);
+    }
 
 	@Test
     public void testUpdate() throws Exception {

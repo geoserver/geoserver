@@ -500,19 +500,19 @@ public class Dispatcher extends AbstractController {
         //check the body
         if (req.getInput() != null) {
             Map xml = readOpPost(req.getInput());
-            if (req.getService() == null) {
+            if (xml.get("service") != null) {
                 req.setService(normalize((String) xml.get("service")));    
             }
-            if (req.getVersion() == null) {
+            if (xml.get("version") != null) {
                 req.setVersion(normalizeVersion(normalize((String) xml.get("version"))));
             }
-            if (req.getRequest() == null) {
+            if (xml.get("request") != null) {
                 req.setRequest(normalize((String) xml.get("request")));    
             }
-            if (req.getOutputFormat() == null) {
+            if (xml.get("outputFormat") != null) {
                 req.setOutputFormat(normalize((String) xml.get("outputFormat")));    
             }
-            if (req.getNamespace() == null) {
+            if ((String)xml.get("namespace") != null) {
                 req.setNamespace(normalize((String)xml.get("namespace")));
             }
         }
@@ -623,12 +623,11 @@ public class Dispatcher extends AbstractController {
         }
 
         // ensure the requested operation exists
-        boolean exists = false;
-        for ( String op : serviceDescriptor.getOperations() ) {
-            if ( op.equalsIgnoreCase( req.getRequest() ) ) {
-                exists = true;
-                break;
-            }
+        boolean exists = operationExists(req, serviceDescriptor);
+        // did we have a mixed kvp + post request and trusted the body for the request?
+        if(!exists && req.getKvp().get("request") != null) {
+            req.setRequest(normalize(KvpUtils.getSingleValue(req.getKvp(), "request")));
+            exists = operationExists(req, serviceDescriptor);
         }
 
         // lookup the operation, initial lookup based on (service,request)
@@ -788,6 +787,17 @@ public class Dispatcher extends AbstractController {
 
         Operation op = new Operation(req.getRequest(), serviceDescriptor, operation, parameters);
         return fireOperationDispatchedCallback(req,op);
+    }
+
+    private boolean operationExists(Request req, Service serviceDescriptor) {
+        boolean exists = false;
+        for ( String op : serviceDescriptor.getOperations() ) {
+            if ( op.equalsIgnoreCase( req.getRequest() ) ) {
+                exists = true;
+                break;
+            }
+        }
+        return exists;
     }
 
     Operation fireOperationDispatchedCallback(Request req, Operation op ) {

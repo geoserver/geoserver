@@ -7,83 +7,100 @@
   <parent>
     <groupId>mil.nga.giat</groupId>
     <artifactId>elasticgeo</artifactId>
-    <version>2.9-SNAPSHOT</version>
+    <version>2.10-SNAPSHOT</version>
   </parent>
   <groupId>mil.nga.giat</groupId>
   <artifactId>gs-web-elasticsearch</artifactId>
   <packaging>jar</packaging>
-  <version>2.9-SNAPSHOT</version>  
+  <version>2.10-SNAPSHOT</version>
   <name>GeoServer Elasticsearch Module</name>
-  <properties>
-    <elasticsearch.version>${elasticsearch2.version}</elasticsearch.version>
-    <elasticsearch.classifier>es2</elasticsearch.classifier>
-  </properties>
   <build>
     <resources>
       <resource>
-	<directory>${basedir}/src/main/java</directory>
-	<includes>
-	  <include>applicationContext.xml</include>
-	  <include>**/*.html</include>
-	</includes>
+        <directory>${basedir}/src/main/java</directory>
+        <includes>
+          <include>applicationContext.xml</include>
+          <include>**/*.html</include>
+        </includes>
       </resource>
       <resource>
-	<directory>${basedir}/src/main/resources</directory>
-	<includes>
-	  <include>**/*</include>
-	</includes>
+        <directory>${basedir}/src/main/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
       </resource>
     </resources>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-	<version>2.5.1</version>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.10</version>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/lib</outputDirectory>
-	      <includeArtifactIds>guava</includeArtifactIds>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.4</version>
         <configuration>
-	  <descriptor>src/assembly/dist.xml</descriptor>
-	  <appendAssemblyId>false</appendAssemblyId>
-	  <finalName>elasticgeo${project.version}-gs${geoserver.version}-es${elasticsearch.version}</finalName>
+          <descriptor>src/assembly/dist.xml</descriptor>
+          <appendAssemblyId>false</appendAssemblyId>
+          <finalName>elasticgeo${project.version}-gs${geoserver.version}-es${elasticsearch.version}</finalName>
         </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>2.2</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+              <configuration>
+                <artifactSet>
+                  <excludes>
+                    <exclude>*:pom:*</exclude>
+                    <exclude>*:maven*:*</exclude>
+                    <exclude>log4j:log4j</exclude>
+                    <exclude>commons-collections</exclude>
+                    <exclude>javax.media:jai*:*</exclude>
+                    <exclude>*:jts:*</exclude>
+                    <exclude>*:*:jsr305</exclude>
+                    <exclude>*:guava:*</exclude>
+                  </excludes>
+                </artifactSet>
+                <filters>
+                  <filter>
+                    <artifact>*:*</artifact>
+                    <excludes>
+                      <exclude>META-INF/maven/**</exclude>
+                      <exclude>META-INF/*.SF</exclude>
+                      <exclude>META-INF/*.DSA</exclude>
+                      <exclude>META-INF/*.RSA</exclude>
+                    </excludes>
+                  </filter>
+                </filters>
+                <transformers>
+                  <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                </transformers>
+                <createDependencyReducedPom>false</createDependencyReducedPom>
+                <minimizeJar>false</minimizeJar>
+                <finalName>elasticgeo${project.version}-gs${geoserver.version}-es${elasticsearch.version}</finalName>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
   <dependencies>
     <dependency>
       <groupId>mil.nga.giat</groupId>
       <artifactId>gt-elasticsearch</artifactId>
       <version>${project.version}</version>
-      <classifier>${elasticsearch.classifier}</classifier>
+      <classifier>es${elasticsearch.major.version}</classifier>
     </dependency>
     <dependency>
-      <groupId>org.elasticsearch</groupId>
-      <artifactId>elasticsearch</artifactId>
-      <version>${elasticsearch.version}</version>
+      <groupId>mil.nga.giat</groupId>
+      <artifactId>gt-elasticsearch-process</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -131,60 +148,80 @@
   </dependencies>
   <profiles>
     <profile>
-      <id>elasticsearch1</id>
+      <id>elasticsearch5</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <properties>
-	<elasticsearch.version>${elasticsearch1.version}</elasticsearch.version>
-	<elasticsearch.classifier>es1</elasticsearch.classifier>
+        <elasticsearch.version>${elasticsearch5.version}</elasticsearch.version>
+        <elasticsearch.major.version>5</elasticsearch.major.version>
       </properties>
-    </profile>
-    <profile>
-      <id>deploy</id>
       <build>
-	<plugins>
-	  <plugin>
+        <plugins>
+          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
-            <version>2.2</version>
+          </plugin>
+        </plugins>
+      </build>
+      <dependencies>
+        <dependency>
+          <groupId>mil.nga.giat</groupId>
+          <artifactId>gt-elasticsearch5</artifactId>
+          <version>${project.version}</version>
+          <type>pom</type>
+        </dependency>
+        <dependency>
+          <groupId>mil.nga.giat</groupId>
+          <artifactId>gt-elasticsearch-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>elasticsearch2</id>
+      <properties>
+        <elasticsearch.version>${elasticsearch2.version}</elasticsearch.version>
+        <elasticsearch.major.version>2</elasticsearch.major.version>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.10</version>
             <executions>
               <execution>
-		<phase>package</phase>
-		<goals>
-		  <goal>shade</goal>
-		</goals>
-		<configuration>
-		  <artifactSet>
-                    <excludes>
-                      <exclude>*:pom:*</exclude>
-                      <exclude>*:maven*:*</exclude>
-                      <exclude>log4j:log4j</exclude>
-                      <exclude>commons-collections</exclude>
-                      <exclude>javax.media:jai*:*</exclude>
-                      <exclude>*:jts:*</exclude>
-                      <exclude>*:*:jsr305</exclude>
-                    </excludes>
-		  </artifactSet>
-		  <filters>
-                    <filter>
-                      <artifact>*:*</artifact>
-                      <excludes>
-			<exclude>META-INF/*.SF</exclude>
-			<exclude>META-INF/*.DSA</exclude>
-			<exclude>META-INF/*.RSA</exclude>
-                      </excludes>
-                    </filter>
-		  </filters>
-		  <transformers>
-                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-		  </transformers>
-		  <createDependencyReducedPom>false</createDependencyReducedPom>
-		  <minimizeJar>false</minimizeJar>
-		  <finalName>elasticgeo${project.version}-gs${geoserver.version}-es${elasticsearch.version}</finalName>
-		</configuration>
+                <id>copy-dependencies</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                  <includeArtifactIds>guava</includeArtifactIds>
+                </configuration>
               </execution>
             </executions>
-	  </plugin>
-	</plugins>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+          </plugin>
+        </plugins>
       </build>
+      <dependencies>
+        <dependency>
+          <groupId>mil.nga.giat</groupId>
+          <artifactId>gt-elasticsearch2</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+          <version>18.0</version>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 </project>

@@ -77,7 +77,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
                     ElasticLayerConfiguration layerConfig) {
                 _layerInfo = layerInfo;
                 _layerConfig = layerConfig;
-                
+
                 try {
                     saveLayer((FeatureTypeInfo) getResourceInfo());
                 } catch (IOException e) {
@@ -137,7 +137,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
         LayerInfo layerInfo = catalog.getLayerByName(qualifiedName);
 
         boolean isNew = ft.getId() == null || app.getCatalog().getResource(ft.getId(),ResourceInfo.class) == null;
-        
+
         FeatureTypeInfo typeInfo;
         if (layerInfo == null || isNew) {
             // New

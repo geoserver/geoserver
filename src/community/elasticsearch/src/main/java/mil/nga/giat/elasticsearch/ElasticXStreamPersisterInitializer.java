@@ -11,4 +11,5 @@ public class ElasticXStreamPersisterInitializer implements XStreamPersisterIniti
                 "mil.nga.giat.data.elasticsearch.ElasticAttribute"
         });
     }
+
 }

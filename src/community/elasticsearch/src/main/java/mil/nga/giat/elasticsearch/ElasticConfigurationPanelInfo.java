@@ -17,8 +17,7 @@ import org.geoserver.web.data.resource.ResourceConfigurationPanelInfo;
  * the Elasticsearch link after other panels.
  * 
  */
-public class ElasticConfigurationPanelInfo extends ResourceConfigurationPanelInfo implements
-        ExtensionPriority {
+public class ElasticConfigurationPanelInfo extends ResourceConfigurationPanelInfo implements ExtensionPriority {
 
     private static final long serialVersionUID = 1485404586629946126L;
 

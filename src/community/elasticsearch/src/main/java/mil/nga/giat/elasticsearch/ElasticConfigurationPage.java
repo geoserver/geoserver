@@ -72,7 +72,7 @@ public abstract class ElasticConfigurationPage extends Panel {
     private static final Logger LOGGER = Logging.getLogger(ElasticConfigurationPage.class);
 
     private FeedbackPanel feedbackPanel;
-    
+
     private final String useAllMarkupId;
 
     private static final List<Class<? extends Geometry>> GEOMETRY_TYPES = Arrays.asList(Geometry.class,
@@ -123,7 +123,7 @@ public abstract class ElasticConfigurationPage extends Panel {
         useAllCheckBox.setOutputMarkupId(true);
         elastic_form.add(useAllCheckBox);
         useAllMarkupId = useAllCheckBox.getMarkupId();
-        
+
         // use short name check box
         final Boolean useShortName;
         if (!attributes.isEmpty() && attributes.get(0).getUseShortName() != null) {
@@ -184,7 +184,7 @@ public abstract class ElasticConfigurationPage extends Panel {
             }
             if (!geomSet) {
                 error(new ParamResourceModel("geomEmptyFailure", ElasticConfigurationPage.this)
-                .getString());
+                        .getString());
             }
 
             Catalog catalog = ((GeoServerApplication) this.getPage().getApplication()).getCatalog();

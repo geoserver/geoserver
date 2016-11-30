@@ -23,7 +23,7 @@ public class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttri
     private static final long serialVersionUID = -1021780286733349153L;
 
     private List<ElasticAttribute> attributes = new ArrayList<ElasticAttribute>();
-    
+
     /**
      * Name of field
      */

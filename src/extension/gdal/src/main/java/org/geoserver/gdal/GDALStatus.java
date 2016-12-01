@@ -54,7 +54,7 @@ public class GDALStatus implements ModuleStatus {
 
     @Override
     public Optional<String> getMessage() {
-        String message = "JNI GDAL Wrapper Version: " + getGDALWrapperJarVersion();
+        String message = "JNI GDAL Wrapper Version: " + getGDALWrapperJarVersion().orElse("null");
         if (!isAvailable()) {
             message += "\njava.library.path: " + System.getProperty("java.library.path", "");
         } else {
@@ -68,11 +68,15 @@ public class GDALStatus implements ModuleStatus {
         return Optional.ofNullable("");
     }
 
-    public String getGDALWrapperJarVersion() {
+    public Optional<String> getGDALWrapperJarVersion() {
         if (isAvailable()) {
-            return GeoTools.getVersion(gdal.class).toString();
+            Version v = GeoTools.getVersion(gdal.class);
+            if (v == null) {
+                return Optional.empty();
+            }
+            return Optional.ofNullable(v.toString());
         } else {
-            return "unavailable";
+            return Optional.ofNullable("unavailable");
         }
     }
 

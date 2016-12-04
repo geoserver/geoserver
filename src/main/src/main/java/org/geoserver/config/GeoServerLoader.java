@@ -251,6 +251,21 @@ public abstract class GeoServerLoader {
         }
     }
     
+    boolean checkStoresOnStartup(XStreamPersister xp) {
+        Resource f = resourceLoader.get( "global.xml");
+        if ( Resources.exists(f) ) {
+            try {
+                GeoServerInfo global = depersist(xp, f, GeoServerInfo.class);
+                final ResourceErrorHandling resourceErrorHandling = global.getResourceErrorHandling();
+                return !ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                    resourceErrorHandling);
+            } catch (IOException e) {
+                LOGGER.log(Level.INFO, "Failed to determine the capabilities resource error handling", e);
+            }
+        }
+        return true;
+    }
+    
     /**
      * Reads the catalog from disk.
      */
@@ -260,7 +275,8 @@ public abstract class GeoServerLoader {
         xp.setCatalog( catalog );
         xp.setUnwrapNulls(false);
         
-        CatalogFactory factory = catalog.getFactory();
+        // see if we really need to verify stores on startup 
+        boolean checkStores = checkStoresOnStartup(xp);
        
         //global styles
         loadStyles(resourceLoader.get( "styles" ), catalog, xp);
@@ -361,7 +377,7 @@ public abstract class GeoServerLoader {
                             
                             LOGGER.info( "Loaded data store '" + ds.getName() +"'");
                             
-                            if (ds.isEnabled()) {
+                            if (checkStores && ds.isEnabled()) {
                                 //connect to the datastore to determine if we should disable it
                                 try {
                                     ds.getDataStore(null);

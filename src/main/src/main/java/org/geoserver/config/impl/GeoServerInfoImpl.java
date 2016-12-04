@@ -355,10 +355,10 @@ public class GeoServerInfoImpl implements GeoServerInfo {
             return false;
         }
         
-        if (resourceErrorHandling == null) {
+        if (getResourceErrorHandling() == null) {
             if (other.getResourceErrorHandling() != null) return false;
         } else {
-            if (!resourceErrorHandling.equals(other.getResourceErrorHandling())) return false;
+            if (!getResourceErrorHandling().equals(other.getResourceErrorHandling())) return false;
         }
         
         if (lockProviderName == null) {
@@ -437,7 +437,11 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     }
 
     public ResourceErrorHandling getResourceErrorHandling() {
-        return this.resourceErrorHandling;
+        if(this.resourceErrorHandling == null) {
+            return ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
+        }
+        
+        return resourceErrorHandling;
     }
 
     @Override

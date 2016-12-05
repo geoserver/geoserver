@@ -22,9 +22,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+
 import org.geogig.geoserver.config.PostgresConfigBean;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,8 +34,8 @@ import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.rest.RestletException;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
-import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
 
 import com.google.common.base.Optional;
 
@@ -66,7 +67,7 @@ public class InitRequestHandlerTest {
     }
 
     @Test
-    public void testCreateGeoGIG_RepositoryName() throws JSONException, IOException {
+    public void testCreateGeoGIG_RepositoryName() throws IOException {
         // build an Init request with only a repository name
         Request request = buildRequest(null);
         // create the Hints from the request
@@ -80,13 +81,14 @@ public class InitRequestHandlerTest {
     }
 
     @Test
-    public void testJSONMediaType() throws JSONException, IOException {
+    public void testJSONMediaType() throws IOException {
         // temp directory for the repo
         File repoDir = repoFolder.getRoot().getAbsoluteFile();
         // populate a JSON payload for a Directory repo
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(DIR_PARENT_DIR, repoDir.getAbsolutePath());
-        JsonRepresentation entity = new JsonRepresentation(jsonObject);
+        JsonObject jsonObject = Json.createObjectBuilder()
+                .add(DIR_PARENT_DIR, repoDir.getAbsolutePath())
+                .build();
+        StringRepresentation entity = new StringRepresentation(jsonObject.toString(), APPLICATION_JSON);
         // ensure the Content-Type is JSON
         Assert.assertEquals("Bad MediaType", APPLICATION_JSON, entity.getMediaType());
         // build the request
@@ -104,13 +106,14 @@ public class InitRequestHandlerTest {
     }
 
     @Test
-    public void testPGRepo() throws JSONException {
+    public void testPGRepo() {
         // populate a JSON payload for a PG repo
-        JSONObject jsonObject = new JSONObject();
+        JsonObject jsonObject = Json.createObjectBuilder()
         // add the DB attributes with no defaults at a minimum
-        jsonObject.put(DB_NAME, "pgDatabaseName");
-        jsonObject.put(DB_PASSWORD, "fakePassword");
-        JsonRepresentation entity = new JsonRepresentation(jsonObject);
+                .add(DB_NAME, "pgDatabaseName")
+                .add(DB_PASSWORD, "fakePassword")
+                .build();
+        StringRepresentation entity = new StringRepresentation(jsonObject.toString(), APPLICATION_JSON);
         // ensure the Content-Type is JSON
         Assert.assertEquals("Bad MediaType", APPLICATION_JSON, entity.getMediaType());
         // build the Request
@@ -134,17 +137,18 @@ public class InitRequestHandlerTest {
     }
 
     @Test
-    public void testAllPGParameters() throws JSONException {
+    public void testAllPGParameters() {
         // populate a JSON payload for a PG repo
-        JSONObject jsonObject = new JSONObject();
+        JsonObject jsonObject = Json.createObjectBuilder()
         // add the DB attributes with no defaults at a minimum
-        jsonObject.put(DB_NAME, "pgDatabaseName");
-        jsonObject.put(DB_PASSWORD, "fakePassword");
-        jsonObject.put(DB_SCHEMA, "fakeSchema");
-        jsonObject.put(DB_USER, "fakeUser");
-        jsonObject.put(DB_HOST, "fakeHost");
-        jsonObject.put(DB_PORT, "8899");
-        JsonRepresentation entity = new JsonRepresentation(jsonObject);
+                .add(DB_NAME, "pgDatabaseName")
+                .add(DB_PASSWORD, "fakePassword")
+                .add(DB_SCHEMA, "fakeSchema")
+                .add(DB_USER, "fakeUser")
+                .add(DB_HOST, "fakeHost")
+                .add(DB_PORT, "8899")
+                .build();
+        StringRepresentation entity = new StringRepresentation(jsonObject.toString(), APPLICATION_JSON);
         // ensure the Content-Type is JSON
         Assert.assertEquals("Bad MediaType", APPLICATION_JSON, entity.getMediaType());
         // build the Request
@@ -172,15 +176,16 @@ public class InitRequestHandlerTest {
     }
 
     @Test
-    public void testPGRepoBadPort() throws JSONException {
+    public void testPGRepoBadPort() {
         // populate a JSON payload for a PG repo
-        JSONObject jsonObject = new JSONObject();
+        JsonObject jsonObject = Json.createObjectBuilder()
         // add the DB attributes with no defaults at a minimum
-        jsonObject.put(DB_NAME, "pgDatabaseName");
-        jsonObject.put(DB_PASSWORD, "fakePassword");
-        // fill in junk for port
-        jsonObject.put(DB_PORT, "non-parsable integer");
-        JsonRepresentation entity = new JsonRepresentation(jsonObject);
+                .add(DB_NAME, "pgDatabaseName")
+                .add(DB_PASSWORD, "fakePassword")
+                // fill in junk for port
+                .add(DB_PORT, "non-parsable integer")
+                .build();
+        StringRepresentation entity = new StringRepresentation(jsonObject.toString(), APPLICATION_JSON);
         // ensure the Content-Type is JSON
         Assert.assertEquals("Bad MediaType", APPLICATION_JSON, entity.getMediaType());
         // build the Request

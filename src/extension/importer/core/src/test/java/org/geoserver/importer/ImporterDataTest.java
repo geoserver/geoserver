@@ -25,6 +25,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.importer.ImportTask.State;
@@ -1044,7 +1045,50 @@ public class ImporterDataTest extends ImporterTestSupport {
             "  </NamedLayer>" +
             "</StyledLayerDescriptor>";
 
-        FileUtils.write(new File(dir, "archsites.sld"), sld);
+        StyleInfo info = writeStyleAndImport(sld, "archsites.sld", dir);
+        Style style = info.getStyle();
+
+        StyleAttributeExtractor atts = new StyleAttributeExtractor();
+        style.accept(atts);
+
+        assertTrue(atts.getAttributeNameSet().contains("CAT_ID"));
+    }
+
+    @Test
+    public void testImportStyleWithCorrectVersion() throws Exception {
+        File dir = unpack("shape/archsites_epsg_prj.zip");
+
+        // add an sld file
+        String sld =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd\" xmlns:se=\"http://www.opengis.net/se\">" +
+                "  <NamedLayer>" +
+                "    <UserStyle>" +
+                "      <se:FeatureTypeStyle>" +
+                "        <se:Rule>" +
+                "          <se:PolygonSymbolizer>" +
+                "            <se:Fill>" +
+                "              <se:SvgParameter name=\"fill\">#d7191c</se:SvgParameter>" +
+                "            </se:Fill>" +
+                "            <se:Stroke>" +
+                "              <se:SvgParameter name=\"stroke\">#000000</se:SvgParameter>" +
+                "            </se:Stroke>" +
+                "          </se:PolygonSymbolizer>" +
+                "        </se:Rule>" +
+                "      </se:FeatureTypeStyle>" +
+                "    </UserStyle>" +
+                "  </NamedLayer>" +
+                "</StyledLayerDescriptor>";
+
+        StyleInfo info = writeStyleAndImport(sld, "archsites.sld", dir);
+        assertEquals(SLDHandler.VERSION_11, info.getFormatVersion());
+    }
+
+    /*
+     * Helper for tests exercising the style file import function.
+     */
+    StyleInfo writeStyleAndImport(String sld, String filename, File dir) throws IOException {
+        FileUtils.write(new File(dir, filename), sld);
 
         ImportContext imp = importer.createContext(new Directory(dir));
         importer.run(imp);
@@ -1052,13 +1096,6 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.COMPLETE, imp.getState());
         checkNoErrors(imp);
 
-        StyleInfo info = 
-            getCatalog().getStyle(imp.getTasks().get(0).getLayer().getDefaultStyle().getId());
-        Style style = info.getStyle();
-
-        StyleAttributeExtractor atts = new StyleAttributeExtractor();
-        style.accept(atts);
-
-        assertTrue(atts.getAttributeNameSet().contains("CAT_ID"));
+        return getCatalog().getStyle(imp.getTasks().get(0).getLayer().getDefaultStyle().getId());
     }
 }

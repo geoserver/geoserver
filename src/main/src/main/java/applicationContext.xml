@@ -287,4 +287,8 @@
   <bean id="entityResolverProvider" class="org.geoserver.util.EntityResolverProvider" depends-on="geoServer">
     <constructor-arg ref="geoServer"/>
   </bean>
+  
+  <bean id="capabilitiesCachingHeadersCallback" class="org.geoserver.config.CapabilitiesCacheHeadersCallback">
+    <constructor-arg ref="geoServer"/>
+  </bean>
 </beans>

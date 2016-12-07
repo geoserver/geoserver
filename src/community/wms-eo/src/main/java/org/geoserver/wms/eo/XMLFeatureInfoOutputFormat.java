@@ -7,7 +7,7 @@ package org.geoserver.wms.eo;
 
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
-
+import org.geoserver.wfs.xml.GML3OutputFormat;
 
 /**
  * A GetFeatureInfo response handler specialized in producing xml data for a GetFeatureInfo request.
@@ -25,7 +25,7 @@ public class XMLFeatureInfoOutputFormat extends GML3FeatureInfoOutputFormat {
     /**
      * Default constructor, sets up the supported output format string.
      */
-    public XMLFeatureInfoOutputFormat(final WMS wms) {
-        super(wms, FORMAT);
+    public XMLFeatureInfoOutputFormat(final GML3OutputFormat outputFormat) {
+        super(outputFormat, FORMAT);
     }
 }

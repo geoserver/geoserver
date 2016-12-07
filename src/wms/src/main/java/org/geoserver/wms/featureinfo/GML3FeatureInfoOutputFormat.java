@@ -18,16 +18,11 @@ import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
 
-import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geoserver.wfs.xml.GML3OutputFormat;
-import org.geoserver.wfs.xml.v1_1_0.WFS;
-import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geoserver.wms.GetFeatureInfoRequest;
-import org.geoserver.wms.WMS;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.opengis.feature.type.Name;
@@ -56,7 +51,7 @@ public class GML3FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         this(outputFormat, FORMAT);
     }
 
-    protected GML3FeatureInfoOutputFormat(GML3OutputFormat outputFormat, String format) {
+    public GML3FeatureInfoOutputFormat(GML3OutputFormat outputFormat, String format) {
         super(format);
         this.outputFormat = outputFormat;
     }

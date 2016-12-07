@@ -82,11 +82,11 @@
     </bean>
     
     <bean id="wmsGetFeatureInfoGML3" class="org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat">
-      <constructor-arg ref="wms" />
+      <constructor-arg ref="gml3OutputFormat" />
     </bean>
 
     <bean id="wmsGetFeatureInfoXML311" class="org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat">
-      <constructor-arg ref="wms" />
+      <constructor-arg ref="gml3OutputFormat" />
     </bean>
     
     <bean id="wmsGetFeatureInfoHTML" class="org.geoserver.wms.featureinfo.HTMLFeatureInfoOutputFormat">

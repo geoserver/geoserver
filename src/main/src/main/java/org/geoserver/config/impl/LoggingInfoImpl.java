@@ -70,20 +70,21 @@ public class LoggingInfoImpl implements LoggingInfo {
             return true;
         if (obj == null)
             return false;
-        if (getClass() != obj.getClass())
+        if (!( obj instanceof LoggingInfo ) ) {
             return false;
-        LoggingInfoImpl other = (LoggingInfoImpl) obj;
+        }
+        LoggingInfo other = (LoggingInfo) obj;
         if (level == null) {
-            if (other.level != null)
+            if (other.getLevel() != null)
                 return false;
-        } else if (!level.equals(other.level))
+        } else if (!level.equals(other.getLevel()))
             return false;
         if (location == null) {
-            if (other.location != null)
+            if (other.getLocation() != null)
                 return false;
-        } else if (!location.equals(other.location))
+        } else if (!location.equals(other.getLocation()))
             return false;
-        if (stdOutLogging != other.stdOutLogging)
+        if (stdOutLogging != other.isStdOutLogging())
             return false;
         return true;
     }

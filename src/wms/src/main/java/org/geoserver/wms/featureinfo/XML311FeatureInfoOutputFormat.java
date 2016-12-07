@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.featureinfo;
 
+import org.geoserver.wfs.xml.GML3OutputFormat;
 import org.geoserver.wms.WMS;
 
 /**
@@ -28,10 +29,9 @@ public class XML311FeatureInfoOutputFormat extends GML3FeatureInfoOutputFormat {
     /**
      * Default constructor, sets up the supported output format String.
      *
-     * @param wms WMS to use.
      */
-    public XML311FeatureInfoOutputFormat(WMS wms) {
-        super(wms, FORMAT);
+    public XML311FeatureInfoOutputFormat(GML3OutputFormat outputFormat) {
+        super(outputFormat, FORMAT);
     }
 
 }

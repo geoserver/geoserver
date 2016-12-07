@@ -21,6 +21,7 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.eclipse.xsd.XSDSchema;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
@@ -35,6 +36,7 @@ import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat;
 import org.geoserver.wms.wms_1_1_1.CapabilitiesTest;
+import org.geotools.filter.v1_1.OGC;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -840,4 +842,23 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         assertThat(xpath.evaluate("boolean(//wfs:FeatureCollection/gml:featureMember/gs:genericLines[@fid='line.2'][gs:name='line2'])", result), is("true"));
         assertThat(xpath.evaluate("boolean(//wfs:FeatureCollection/gml:featureMember/gs:genericLines[@fid='line.3'][gs:name='line3'])", result), is("true"));
     }
+    
+    @Test
+    public void testSchemaLeak() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format=" + GML3FeatureInfoOutputFormat.FORMAT + "&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
+        // prime system, make sure everything is wired
+        getAsDOM(request);
+
+        // count how many imports in the OGC filter schema
+        XSDSchema schema = OGC.getInstance().getSchema();
+        int expectedImportCounts = schema.getReferencingDirectives().size();
+
+        // now check how many there are after anothe request, should not go up
+        getAsDOM(request);
+        int actualImportCounts = schema.getReferencingDirectives().size();
+        assertEquals(expectedImportCounts, actualImportCounts);
+    }
+
 }

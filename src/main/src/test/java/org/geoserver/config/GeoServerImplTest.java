@@ -253,4 +253,13 @@ public class GeoServerImplTest {
         assertThat((Collection<ServiceInfo>)geoServer.getServices(ws1), allOf(hasItem(newService1), not(hasItems(globalService, newService2))));
         assertThat((Collection<ServiceInfo>)geoServer.getServices(ws2), allOf(hasItem(newService2), not(hasItems(newService1, globalService))));
     }
+
+    @Test
+    public void testModifyLogging() {
+        LoggingInfo logging = geoServer.getLogging();
+        logging.setLevel("VERBOSE_LOGGING.properties");
+        geoServer.save(logging);
+
+        assertEquals(logging, geoServer.getLogging());
+    }
 }

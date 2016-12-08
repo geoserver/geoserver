@@ -2866,8 +2866,8 @@ public class CatalogImplTest {
         catalog.save(ftproxy);
 
         Filter filter = Predicates.fullTextSearch("newKeyword");
-        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
-        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(ftproxy), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(lproxy), asSet(catalog.list(LayerInfo.class, filter)));
     }
 
     private <T> Set<T> asSet(CloseableIterator<T> list) {

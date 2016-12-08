@@ -10,13 +10,42 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-wps-remote*.jar</include>
+        <include>bcprov*.jar</include>
+        <include>common*.jar</include>
+        <include>dnsjava*.jar</include>
+        <include>ehcache*.jar</include>
+        <include>freemarker*.jar</include>
+        <include>geodb*.jar</include>
+        <include>GeographicLib*.jar</include>
         <include>*importer*.jar</include>
+        <include>*geojson*.jar</include>
+        <include>hamcrest*.jar</include>
+        <include>hatbox*.jar</include>
+        <include>http*.jar</include>
+        <include>icu4j*.jar</include>
+        <include>imageio*.jar</include>
+        <include>jasypt*.jar</include>
+        <include>javacsv*.jar</include>
+        <include>jbosh*.jar</include>
+        <include>jdom*.jar</include>
+        <include>jetty*.jar</include>
+        <include>json*.jar</include>
+        <include>jgridshift*.jar</include>
+        <include>jmf*.jar</include>
+        <include>jsqlparser*.jar</include>
+        <include>jsr*.jar</include>
+        <include>jt*.jar</include>
+        <include>mail*.jar</include>
+        <include>mina*.jar</include>
+        <include>picocontainer*.jar</include>
         <include>*smack*.jar</include>
         <include>*pyrolite*.jar</include>
         <include>*spark*.jar</include>
         <include>*vysper*.jar</include>
         <include>*xep*.jar</include>
         <include>*xmpp*.jar</include>
+        <include>xml*.jar</include>
+        <include>xpp3*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

@@ -6,6 +6,7 @@ package org.geoserver.wps.remote.plugin;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.InetAddress;
@@ -215,14 +216,34 @@ public class XMPPClient extends RemoteProcessClient {
         // ----
         PRIMITIVE_NAME_TYPE_MAP.put("application/json",
                 new Object[] { RawData.class, CType.COMPLEX,
-                        new StringRawData("", "application/json"), "application/json,text/plain",
+                        new StringRawData("", "application/vnd.geo+json"), "application/vnd.geo+json",
                         ".json" });
 
         // ----
         PRIMITIVE_NAME_TYPE_MAP.put("application/owc",
                 new Object[] { RawData.class, CType.COMPLEX,
-                        new StringRawData("", "application/json"), "application/json,text/plain",
-                        ".json" });
+                        //new StringRawData("", "application/vnd.geo+json"),
+                        new RawData() {
+
+                            private String data = "";
+                            
+                            @Override
+                            public String getMimeType() {
+                                return "application/vnd.geo+json";
+                            }
+
+                            @Override
+                            public InputStream getInputStream() throws IOException {
+                                return IOUtils.toInputStream(data);
+                            }
+
+                            @Override
+                            public String getFileExtension() {
+                                return "json";
+                            }
+                    
+                        },
+                        "application/vnd.geo+json", ".json" });
 
         // ----
         PRIMITIVE_NAME_TYPE_MAP.put("image/geotiff",
@@ -333,35 +354,51 @@ public class XMPPClient extends RemoteProcessClient {
         }
 
         // Actually performs the connection to the XMPP Server
-        try {
-            // Try first the TCP Endpoint
-            connection = new XMPPTCPConnection(config);
-            connection.connect();
-        } catch(NoResponseException e) {
-            connection = null;
-            LOGGER.warning("No XMPP TCP Endpoint available or could not get any response from the Server. Falling back to BOSH Endpoint.");
+        for (int testConn=0; testConn<5; testConn++) {
+            try {
+                // Try first the TCP Endpoint
+                connection = new XMPPTCPConnection(config);
+                connection.connect();
+                break;
+            } catch(NoResponseException e) {
+                connection = null;
+                if (testConn >= 5) {
+                    LOGGER.warning("No XMPP TCP Endpoint available or could not get any response from the Server. Falling back to BOSH Endpoint.");
+                } else {
+                    LOGGER.log(Level.WARNING, "Tentative #" + (testConn+1) + " - Error while trying to connect to XMPP TCP Endpoint.", e);
+                    Thread.sleep(500);
+                }
+            }
         }
 
         if (connection == null || !connection.isConnected()) {
-            try {
-                // Falling back to BOSH Endpoint
-                BOSHConfiguration boshConfig = 
-                        new BOSHConfiguration((sslcontext != null), server, port, null, getConfiguration().get("xmpp_domain"));
-                
-                if (sslcontext != null) {
-                    // boshConfig.setSASLAuthenticationEnabled(false);
-                    boshConfig.setSecurityMode(SecurityMode.enabled);
-                    boshConfig.setCustomSSLContext(sslcontext);
-                } else {
-                    boshConfig.setSecurityMode(SecurityMode.disabled);
+            for (int testConn=0; testConn<5; testConn++) {
+                try {
+                    // Falling back to BOSH Endpoint
+                    BOSHConfiguration boshConfig = 
+                            new BOSHConfiguration((sslcontext != null), server, port, null, getConfiguration().get("xmpp_domain"));
+                    
+                    if (sslcontext != null) {
+                        // boshConfig.setSASLAuthenticationEnabled(false);
+                        boshConfig.setSecurityMode(SecurityMode.enabled);
+                        boshConfig.setCustomSSLContext(sslcontext);
+                    } else {
+                        boshConfig.setSecurityMode(SecurityMode.disabled);
+                    }
+                    
+                    connection = new XMPPBOSHConnection(boshConfig);
+                    connection.connect();
+                    break;
+                } catch(NoResponseException e) {
+                    connection = null;
+                    if (testConn >= 5) {
+                        LOGGER.warning("No XMPP BOSH Endpoint available or could not get any response from the Server. The XMPP Client won't be available.");
+                    } else {
+                        LOGGER.log(Level.WARNING, "Tentative #" + (testConn+1) + " - Error while trying to connect to XMPP BOSH Endpoint.", e);
+                        Thread.sleep(500);
+                    }
                 }
-                
-                connection = new XMPPBOSHConnection(boshConfig);
-                connection.connect();
-            } catch(NoResponseException e) {
-                connection = null;
-                LOGGER.warning("No XMPP BOSH Endpoint available or could not get any response from the Server. The XMPP Client won't be available.");
-            }            
+            }
         }
         
         LOGGER.info("Connected: " + connection.isConnected());
@@ -1532,6 +1569,9 @@ class ParameterTemplate {
         this.clazz = clazz;
         this.defaultValue = defaultValue;
         this.meta.put("mimeTypes", mimeTypes);
+        if (mimeTypes != null && mimeTypes.split(",").length>0) {
+            this.meta.put("chosenMimeType", mimeTypes.split(",")[0]);
+        }
     }
 
     /**

@@ -113,6 +113,27 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
             return dispatch(req);
         }
+        
+        /**
+         * Issue a POST request to the provided URL with the given text.
+         *
+         * @param resourceUri   the url to issue the request to
+         * @param postText      the text to be posted
+         *
+         * @return the response to the request
+         */
+        public MockHttpServletResponse postText(String resourceUri, String postText)
+                throws Exception {
+
+            MockHttpServletRequest req = createRequest(resourceUri);
+
+            req.setContentType("text/plain");
+            req.addHeader("Content-Type", "text/plain");
+            req.setMethod("POST");
+            req.setContent(postText == null ? null : postText.getBytes());
+
+            return dispatch(req);
+        }
 
         /**
          * Issue a request with the given {@link Method} to the provided resource URI.
@@ -381,5 +402,25 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
             Throwables.propagate(e);
         }
     }
+
+	@Override
+	public String getHttpLocation(String repoName) {
+		return String.format("http://localhost:%d/geoserver/geogig/repos/%s", 8080, repoName);
+	}
+
+	@Override
+	protected void postTextInternal(String resourceUri, String postText) {
+        resourceUri = replaceVariables(resourceUri);
+        try {
+            lastResponse = helper.postText("/geogig" + resourceUri, postText);
+        } catch (Exception e) {
+            Throwables.propagate(e);
+        }
+	}
+
+	@Override
+	protected void serveHttpRepos() throws Exception {
+		// Do Nothing
+	}
 
 }

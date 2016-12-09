@@ -421,6 +421,11 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
             return false;
         
         final ResourceInfo other = (ResourceInfo) obj;
+        if (id == null) {
+            if (other.getId() != null)
+                return false;
+        } else if (!id.equals(other.getId()))
+            return false;
         if (_abstract == null) {
             if (other.getAbstract() != null)
                 return false;
@@ -437,11 +442,6 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         } else if (!description.equals(other.getDescription()))
             return false;
         if (enabled != other.isEnabled())
-            return false;
-        if (id == null) {
-            if (other.getId() != null)
-                return false;
-        } else if (!id.equals(other.getId()))
             return false;
         if (keywords == null) {
             if (other.getKeywords() != null)

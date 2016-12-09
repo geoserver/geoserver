@@ -292,9 +292,6 @@ public class GWCInitializer implements GeoServerInitializer {
         }
         // Cycle on the Layers
         for (LayerInfo layer : rawCatalog.getLayers()) {
-            if (!CatalogConfiguration.isLayerExposable(layer)) {
-                continue;
-            }
             try {
                 // Check if the Layer must not be cached
                 GeoServerTileLayerInfo tileLayerInfo = tileLayerCatalog.getLayerById(layer.getId());

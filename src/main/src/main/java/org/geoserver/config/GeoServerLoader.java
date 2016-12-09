@@ -5,10 +5,10 @@
  */
 package org.geoserver.config;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +46,7 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.IOUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -774,12 +775,8 @@ public abstract class GeoServerLoader {
      * Helper method which uses xstream to depersist an object as xml from disk.
      */
     <T> T depersist( XStreamPersister xp, Resource f , Class<T> clazz ) throws IOException {
-        BufferedInputStream in = new BufferedInputStream( f.in() );
-        try {
+        try(InputStream in = f.in()) {
             return xp.load( in, clazz );
-        }
-        finally {
-            in.close();
         }
     }
     

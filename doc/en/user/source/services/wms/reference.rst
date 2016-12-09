@@ -98,7 +98,7 @@ The parameters for the GetCapabilities operation are:
      - Service name. Value is ``WMS``.
    * - ``version``
      - Yes
-     - Service version. Value is one of ``1.0.0``, ``1.1.0``, ``1.1.1``, ``1.3``.
+     - Service version. Value is one of ``1.0.0``, ``1.1.0``, ``1.1.1``, ``1.3.0``.
    * - ``request``
      - Yes
      - Operation name. Value is ``GetCapabilities``.
@@ -179,7 +179,7 @@ The standard parameters for the GetMap operation are:
      - Service name. Value is ``WMS``.
    * - ``version``
      - Yes
-     - Service version. Value is one of ``1.0.0``, ``1.1.0``, ``1.1.1``, ``1.3``.
+     - Service version. Value is one of ``1.0.0``, ``1.1.0``, ``1.1.1``, ``1.3.0``.
    * - ``request``
      - Yes
      - Operation name. Value is ``GetMap``.
@@ -291,7 +291,7 @@ Example WMS request using a GetMap XML document is:
 Time
 ....
 
-As of GeoServer 2.2.0, GeoServer supports a TIME attribute for WMS GetMap requests as described in version 1.3 of the WMS specification.
+As of GeoServer 2.2.0, GeoServer supports a TIME attribute for WMS GetMap requests as described in version 1.3.0 of the WMS specification.
 This parameter allows filtering a dataset by temporal slices as well as spatial tiles for rendering.
 See :doc:`/services/wms/time` for information on its use.
 
@@ -322,7 +322,7 @@ The standard parameters for the GetFeatureInfo operation are:
      - Service name. Value is ``WMS``.
    * - ``version``
      - Yes
-     - Service version. Value is one of ``1.0.0``, ``1.1.0``, ``1.1.1``, ``1.3``.
+     - Service version. Value is one of ``1.0.0``, ``1.1.0``, ``1.1.1``, ``1.3.0``.
    * - ``request``
      - Yes
      - Operation name. Value is ``GetFeatureInfo``.

@@ -1,4 +1,4 @@
-.. _community_params_extractor:
+.. _wmts_multidminensional:
 
 WMTS Multidimensional
 =====================

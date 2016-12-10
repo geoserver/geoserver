@@ -651,19 +651,17 @@ public class CatalogImpl implements Catalog {
         // calling LayerInfo.setName(String) updates the resource (until the layer/publishing split
         // is in act), but that doesn't mean the resource was saved previously, which can leave the
         // catalog in an inconsistent state
-        if (null == getResourceByName(layer.getResource().getNamespace(), layer.getResource()
+        final NamespaceInfo ns = layer.getResource().getNamespace();
+        if (null == getResourceByName(ns, layer.getResource()
                 .getName(), ResourceInfo.class)) {
             throw new IllegalStateException("Found no resource named " + layer.prefixedName()
                     + " , Layer with that name can't be added");
         }
-        LayerInfo existing = getLayerByName( layer.getName() );
+        final String prefix = ns != null ? ns.getPrefix() : null;
+        LayerInfo existing = getLayerByName(prefix, layer.getName() );
         if ( existing != null && !existing.getId().equals( layer.getId() ) ) {
-            //JD: since layers are not qualified by anything (yet), check 
-            // namespace of the resource, if they are different then allow the 
-            // layer to be added
-            if ( existing.getResource().getNamespace().equals( layer.getResource().getNamespace() ) ) {
-                throw new IllegalArgumentException( "Layer named '"+layer.getName()+"' already exists.");
-            }
+            throw new IllegalArgumentException(
+                    "Layer named '" + layer.getName() + "' in workspace '" + prefix + "' already exists.");
         }
         
         // if the style is missing associate a default one, to avoid breaking WMS

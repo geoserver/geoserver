@@ -5,9 +5,12 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -31,6 +34,11 @@ import org.geoserver.catalog.WorkspaceInfo;
  *
  */
 public class ResolvingProxy extends ProxyBase {
+    
+    /**
+     * Avoids the cost of looking up over and over the same proxy class
+     */
+    static final Map<Class, Constructor> PROXY_CLASS_CONSTRUCTOR_CACHE = new ConcurrentHashMap<>();
 
     /**
      * Wraps an object in the proxy.
@@ -48,16 +56,17 @@ public class ResolvingProxy extends ProxyBase {
      */
     public static <T> T create( String ref, String prefix, Class<T> clazz ) {
         InvocationHandler h = new ResolvingProxy(ref, prefix);
-        
-        Class proxyClass = 
-            Proxy.getProxyClass( clazz.getClassLoader(), clazz );
-        
+
         T proxy;
         try {
-            proxy = (T) proxyClass.getConstructor(
-                new Class[] { InvocationHandler.class }).newInstance(new Object[] { h } );
-        }
-        catch( Exception e ) {
+            Constructor<T> constructor = PROXY_CLASS_CONSTRUCTOR_CACHE.get(clazz);
+            if(constructor == null) {
+                Class proxyClass = 
+                        Proxy.getProxyClass( clazz.getClassLoader(), clazz );
+                constructor = proxyClass.getConstructor(new Class[] { InvocationHandler.class });
+            }
+            proxy = (T) constructor.newInstance(new Object[] { h } );
+        } catch( Exception e ) {
             throw new RuntimeException( e );
         }
         

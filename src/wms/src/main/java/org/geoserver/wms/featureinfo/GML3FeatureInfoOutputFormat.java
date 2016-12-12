@@ -47,11 +47,14 @@ public class GML3FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
     private GML3OutputFormat outputFormat;
 
-    public GML3FeatureInfoOutputFormat(GML3OutputFormat outputFormat) {
+    /**
+     * Default constructor, sets up the supported output format string.
+     */
+    public GML3FeatureInfoOutputFormat(final GML3OutputFormat outputFormat) {
         this(outputFormat, FORMAT);
     }
 
-    public GML3FeatureInfoOutputFormat(GML3OutputFormat outputFormat, String format) {
+    protected GML3FeatureInfoOutputFormat(GML3OutputFormat outputFormat, String format) {
         super(format);
         this.outputFormat = outputFormat;
     }

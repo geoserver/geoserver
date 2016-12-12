@@ -16,7 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.wfs.WFSInfo;
@@ -321,21 +323,26 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         namespaces.add(FeatureChainingMockData.EX_URI);
         // targetNamespace depends on load order which is platform dependent
         if (targetNamespace.equals(FeatureChainingMockData.EX_URI)) {
-            assertEquals(2, numberOfImports); // gsml and om schemas
-            assertEquals(2, numberOfIncludes); // two ex schemas
-            
-            // two includes for ex schemas
-            String schemaLocation = "//xsd:include[" + 1 + "]/@schemaLocation";            
-            String firstLoc = evaluate(schemaLocation, doc);            
-            assertTrue(firstLoc.equals(getExSchemaOneLocation())
-                    || firstLoc.equals(getExSchemaTwoLocation()));
-           
-            schemaLocation = "//xsd:include[" + 2 + "]/@schemaLocation";            
-            String secondLoc = evaluate(schemaLocation, doc);            
-            assertTrue(secondLoc.equals(getExSchemaOneLocation())
-                    || secondLoc.equals(getExSchemaTwoLocation()));            
-            assertFalse(secondLoc.equals(firstLoc));
-            
+            assertEquals(2, numberOfImports);
+            assertEquals(3, numberOfIncludes);
+            @SuppressWarnings("serial")
+            Set<String> expectedExSchemaLocations = new HashSet<String>() {
+                {
+                    add(getExSchemaOneLocation());
+                    add(getExSchemaTwoLocation());
+                    add(getExSchemaThreeLocation());
+                }
+            };
+            // ensure expected schemaLocations are distinct
+            assertEquals(numberOfIncludes, expectedExSchemaLocations.size());
+            // check that found schemaLocations are as expected
+            Set<String> foundExSchemaLocations = new HashSet<String>();
+            for (int i = 1; i <= numberOfIncludes; i++) {
+                foundExSchemaLocations
+                        .add(evaluate("//xsd:include[" + i + "]/@schemaLocation", doc));
+            }
+            assertEquals(expectedExSchemaLocations, foundExSchemaLocations);
+            // ensure that this namespace is not used for imports in later asserts
             namespaces.remove(FeatureChainingMockData.EX_URI);
         } else {
             // If the targetNamespace is not the ex namespace, only one ex schema can be imported.

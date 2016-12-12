@@ -10,7 +10,7 @@ The Remote WPS Python framework source code is available on a public GitHub Repo
 
 Users can install the "wps-remote" Python package by using the PyPi distribution ::
 
-    pip install wps-remote==2.9
+    pip install wps-remote==2.11.0
 
 The source code repository is available at the following address:
 
@@ -161,7 +161,7 @@ The system requires Python 2.7.9+ with few packages in order to work correctly. 
 
   # From a Command Line prompt
 
-  $> pip install wps-remote==2.9
+  $> pip install wps-remote==2.11.0
 
 **Configure the RemoteWPS Environment**
 
@@ -237,21 +237,63 @@ To clone the RemoteWPS Python Framework into a working folder, e.g.:
 
   # Edit the file xmpp_data/configs/remote.config
 
-  [DEFAULT]
+	[DEFAULT]
 
-  bus_class_name = xmppBus.XMPPBus
+	bus_class_name = xmppBus.XMPPBus
 
-  port = 5223
-  address = <XMPP_server_ip_address>
-  domain = geoserver.org
-  user = default.GdalContour
-  password = R3m0T3wP5
+	port = 5223
+	address =  127.0.0.1
+	domain = geoserver.org
 
-  mucService = conference.%(domain)s
-  mucServicePassword = R3m0T3wP5
+	# . Those are the connection parameters to the XMPP Server.
+	# . The user must exists on the Server and its name must be
+	# . equal to the service name.
+	user = default.GdalContour
+	password = R3m0T3wP5
 
-  resource_file_dir = /share/xmpp_data/resource_dir
-  wps_execution_shared_dir = /share
+	mucService = conference.%(domain)s
+	mucServicePassword = admin
+
+	resource_file_dir = /share/xmpp_data/resource_dir
+
+	# . Configure this option (along with 'backup_on_wps_execution_shared_dir' 
+	# . on single outputs of 'service.config') in order to make a copy
+	# . of the results into a shared folder before sending messages to XMPP
+	# . WARNING: this option takes precedence on "UPLOADER" option
+	# wps_execution_shared_dir = /share/xmpp_data/share
+
+	# . This section is used to configure the uploader class and connection
+	# . parameters.
+	# . This is necessary in order to let the 'upload_data' option work on
+	# . single outputs of 'service.config'
+	[UPLOADER]
+	# There are different implementations of the FTP Uploader available right now:
+	# . Plain standard FTP Protocol (based on ftplib)
+	#       ftpUpload.FtpUpload
+	# . FTP over TLS (FTPS) Protocol (based on ftplib)
+	#       ftpsUpload.FtpsUpload
+	# . S-FTP Protocol (based on paramiko Python lib)
+	#       sftpUpload.SFtpUpload
+	uploader_class_name = ftpUpload.FtpUpload
+	uploader_host = ftp.<your_host_here>:<your_port_here_default_21>
+	uploader_username = <ftp_username>
+	uploader_password = <ftp_password_encrypted>
+
+	# . "encryptor" you can use encrypted passwords with a private/public key couple
+	#
+	# . To generate a new private key use the following command:
+	#     openssl genrsa -out myTestKey.pem -passout pass:"f00bar" -des3 2048
+	#
+	# . To generate a new public key use the following command:
+	#     openssl rsa -pubout -in myTestKey.pem -passin pass:"f00bar" -out myTestKey.pub
+	#
+	# . To encrypt your password use the following utility
+	#     python encrypt.py password path/to/rsakey.pub passphrase
+	#
+	# . To double check the password is correct use the following utility
+	#     python decrypt.py password path/to/rsakey.pem passphrase
+	uploader_private_rsa_key = /share/xmpp_data/ssl/myTestKey.pem
+	uploader_passphrase = f00bar
 
 The requisites for this configuration to work properly are:
 
@@ -316,74 +358,139 @@ The requisites for this configuration to work properly are:
 
   # Edit the file xmpp_data/configs/myservice/service.config
 
-  # ########################################### #
-  # Default Service Params                      #
-  # ########################################### #
+	# This is a INI file to be read with python ConfigParser (https://docs.python.org/2/library/configparser.html)
+	# Is possible to reference another variable in the ini file using the format %(<variable name>)s (note the 's' at the end)
 
-  [DEFAULT]
-  service = GdalContour
-  namespace = default
-  description = GDAL Contour Remote Service
-  executable_path = /work/RemoteWPS/xmpp_data/configs/myservice/code
-  executable_cmd = python %(executable_path)s/test.py
-  output_dir = /share/xmpp_data/output/
-  unique_execution_id = %(unique_exe_id)s
-  workdir = %(output_dir)s/%(unique_execution_id)s
-  active = True
-  max_running_time_seconds = 300
+	# ########################################### #
+	# Default Service Params                      #
+	# ########################################### #
 
-  # ########################################### #
-  # Inputs and Actions Declaration              #
-  # ########################################### #
+	[DEFAULT]
+	service = GdalContour
+	namespace = default
+	description = GDAL Contour Remote Service
+	executable_path = /share/xmpp_data/configs/myservice/code
+	executable_cmd = python %(executable_path)s/test.py
+	output_dir = /share/xmpp_data/output/
+	unique_execution_id = %(unique_exe_id)s
+	workdir = %(output_dir)s/%(unique_execution_id)s
+	active = True
+	max_running_time_seconds = 300
 
-  [Input1]
-  class = param
-  name = interval
-  title = Elevation Interval
-  type = int
-  description = Elevation interval between contours.
-  min = 1
-  max = 1
-  default = 200
+	# . This option allows you to set the CPU and Memory average load scan time.
+	# . It is espressed in 'minutes' and if disabled here it will be set by default
+	# . to 15 minutes.
+	load_average_scan_minutes = 1
 
-  [Action1]
-  class = cmdline
-  input_ref = interval
-  alias = i
-  template = -name value
+	# . Use this option to completely avoid using this host (and prevent starting a new
+	# . 'processbot') whenever one of the following process names are running.
+	# . In other words, if one of the following processes are currently running on this machine,
+	# . GeoServer won't send any WPS execute request until they are finished.
+	process_blacklist = [resource consuming process name1, resource consuming process name2]
 
-  [Const1]
-  class = const
-  name = workdir
-  type = string
-  description = Remote process sandbox working directory
-  value = %(workdir)s
+	# ########################################### #
+	# Inputs and Actions Declaration              #
+	# ########################################### #
 
-  [Action2]
-  class = cmdline
-  input_ref = workdir
-  alias = w
-  template = -name value
+	[Input1]
+	class = param
+	name = interval
+	title = Elevation Interval
+	type = int
+	description = Elevation interval between contours.
+	min = 1
+	max = 1
+	default = 200
 
-  # ########################################### #
-  # Output Parameters Declaration               #
-  # ########################################### #
+	[Action1]
+	class = cmdline
+	input_ref = interval
+	alias = i
+	template = -name value
 
-  [Output1]
-  name = result1
-  type = application/zip
-  description = WPS Resource Binary File
-  title = SRTM
-  filepath = %(workdir)s/contour.zip
-  publish_as_layer = true
-  publish_default_style = polygon
-  publish_target_workspace = it.geosolutions
-  publish_layer_name = contour
+	[Const1]
+	class = const
+	name = workdir
+	type = string
+	description = Remote process sandbox working directory
+	value = %(workdir)s
 
-  [Logging]
-  #note the order
-  stdout_parser = [.*\[DEBUG\](.*), .*\[INFO\] ProgressInfo\:([-+]?[0-9]*\.?[0-9]*)\%, .*\[(INFO)\](.*), .*\[(WARN)\](.*), .*\[(ERROR)\](.*), .*\[(CRITICAL)\](.*)]
-  stdout_action = [ignore,          progress,                                          log,              log,              log,               abort]
+
+	[Action2]
+	class = cmdline
+	input_ref = workdir
+	alias = w
+	template = -name value
+
+	# ########################################### #
+	# Output Parameters Declaration               #
+	# ########################################### #
+
+	[Output1]
+	name = result1
+	type = application/zip
+	description = WPS Resource Binary File
+	title = SRTM
+	filepath = %(workdir)s/contour.zip
+	publish_as_layer = true
+	publish_default_style = polygon
+	publish_target_workspace = it.geosolutions
+	publish_layer_name = contour
+	
+	# . Enable this option in order to perform a backup of this output
+	# . before sending it to GeoServer.
+	# . WARNING: This option works only along with 'wps_execution_shared_dir'
+	# .          option on 'remote.config', and takes precedence on 'upload_data'
+	# backup_on_wps_execution_shared_dir = true
+	
+	# . Enable this option if you want the output to be uploaded on remote host.
+	# . Notice that you must also configure uploader parameters on 'remote.config'
+	# upload_data = true
+	
+	# . Optionally it is possible to specify a root folder if the uploader class supports it.
+	# upload_data_root = /remote-wps/default
+	
+	[Output2]
+	name = result2
+	type = application/x-netcdf
+	description = NetCDF Binary File
+	title = flexpart
+	filepath = %(output_dir)s/flexpart.nc
+	publish_as_layer = true
+	publish_default_style = raster
+	publish_target_workspace = it.geosolutions
+	publish_layer_name = flexpart
+	
+	# . Enable this option in order to perform a backup of this output
+	# . before sending it to GeoServer.
+	# . WARNING: This option works only along with 'wps_execution_shared_dir'
+	# .          option on 'remote.config', and takes precedence on 'upload_data'
+	# backup_on_wps_execution_shared_dir = true
+	
+	# . Enable this option if you want the output to be uploaded on remote host.
+	# . Notice that you must also configure uploader parameters on 'remote.config'
+	# upload_data = true
+	
+	# . Optionally it is possible to specify a root folder if the uploader class supports it.
+	# upload_data_root = /remote-wps/default
+	
+	[Output3]
+	name = result3
+	type = application/owc
+	description = WPS OWC Json MapContext
+	layers_to_publish = result2
+	publish_as_layer = true
+	publish_layer_name = owc_json_ctx
+	publish_metadata = /share/xmpp_data/resource_dir/owc_json_ctx.json
+	
+	# ########################################### #
+	# Logging Options Declaration                 #
+	# ########################################### #
+
+	[Logging]
+	stdout_parser = [.*\[DEBUG\](.*), .*\[INFO\] ProgressInfo\:([-+]?[0-9]*\.?[0-9]*)\%, .*\[(INFO)\](.*), .*\[(WARN)\](.*), .*\[(ERROR)\](.*), .*\[(CRITICAL)\](.*)]
+	stdout_action = [ignore,          progress,                                          log,              log,              abort,               abort]
+
 
 The requisites for this configuration to work properly are:
 
@@ -548,6 +655,8 @@ Default Section
   sharedir = /home/myproc/repository/default
   active = True
   max_running_time_seconds = 300
+  load_average_scan_minutes = 1
+  process_blacklist = [resource consuming process name1, resource consuming process name2]
   
 * **service**; The name of the WPS service. On GeoServer the WPS Process will be represented as ``namespace.service``
   
@@ -572,6 +681,10 @@ Default Section
 * **active**; *Boolean* which enables or disables the service.
 
 * **max_running_time_seconds**; After this time the Python Wrapper tries to shutdown the process and send a *FAILED* message to GeoServer.
+
+* **load_average_scan_minutes**; This option allows you to set the CPU and Memory average load scan time. It is espressed in 'minutes' and if disabled here it will be set by default to 15 minutes.
+
+* **process_blacklist**; Use this option to completely avoid using this host (and prevent starting a new 'processbot') whenever one of the following process names are running. In other words, if one of the following processes are currently running on this machine, GeoServer won't send any WPS execute request until they are finished.
 
 Inputs Section
 ++++++++++++++
@@ -1026,6 +1139,10 @@ The examples above represents all the possible types of Outputs currently suppor
 **Other options for the Outputs**
 
     * **backup_on_wps_execution_shared_dir**; This is a boolean which tells to the Remote WPS to store first the outcome into the **sharedir** defined into the ``[DEFAULT]`` section before streaming out to GeoServer. This allows the Remote WPS to preserve the outcomes even when the resources are cleaned out.
+
+    * **upload_data**; This is a boolean which tells to the Remote WPS to upload first the outcome into the **host** defined into the ``[UPLOADER]`` section before streaming out to GeoServer. This allows the Remote WPS to preserve the outcomes even when the resources are cleaned out.
+		
+		.. warning:: If both enabled for a certain output, the **backup_on_wps_execution_shared_dir** takes precedence to the **upload_data** one.
     
     * **publish_as_layer**; A boolean to instruct GeoServer Remote WPS to *try* to automatically publish the outcome as a new Layer through the GeoServer **Importer** Plugin.
     

@@ -180,10 +180,14 @@ The initial setup is now complete. Log into the system using the newly created *
 
 Move to the ``Server Certificates`` section of the ``Server Settings`` tab panel. 
 
+.. warning:: This passage is not needed anymnore on Openfire 4.0+. At least the management of the certificates is a bit different. Please refer to the specific Openfire documentation for more information.
+
   .. figure:: images/openfire009.jpg
     :align: center
 
 Make sure that the self-signed certificates have been correctly generated and click on ``here`` in order to restart the server
+
+.. warning:: This passage is not needed anymnore on Openfire 4.0+. At least the management of the certificates is a bit different. Please refer to the specific Openfire documentation for more information.
 
   .. figure:: images/openfire010.jpg
     :align: center
@@ -191,6 +195,8 @@ Make sure that the self-signed certificates have been correctly generated and cl
 The same section now shows the server certificates and won't ask for another restart unless the certificates are generated again.
 
 Update the ``Security Settings`` in order to allow the server accepting self-signed certificates on secured connections.
+
+.. warning:: This passage is not needed anymnore on Openfire 4.0+. At least the management of the certificates is a bit different. Please refer to the specific Openfire documentation for more information.
 
   .. figure:: images/openfire011.jpg
     :align: center

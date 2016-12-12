@@ -1792,7 +1792,7 @@
   <poi.version>3.14</poi.version>
   <wicket.version>7.1.0</wicket.version>
   <ant.version>1.8.4</ant.version>
-  <imageio-ext.version>1.1.16</imageio-ext.version>
+  <imageio-ext.version>1.1.17</imageio-ext.version>
   <jaiext.version>1.0.12</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <jvm.opts></jvm.opts>

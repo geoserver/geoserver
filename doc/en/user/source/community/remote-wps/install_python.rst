@@ -267,10 +267,33 @@ To clone the RemoteWPS Python Framework into a working folder, e.g.:
 	# . This is necessary in order to let the 'upload_data' option work on
 	# . single outputs of 'service.config'
 	[UPLOADER]
+	# There are different implementations of the FTP Uploader available right now:
+	# . Plain standard FTP Protocol (based on ftplib)
+	#       ftpUpload.FtpUpload
+	# . FTP over TLS (FTPS) Protocol (based on ftplib)
+	#       ftpsUpload.FtpsUpload
+	# . S-FTP Protocol (based on paramiko Python lib)
+	#       sftpUpload.SFtpUpload
 	uploader_class_name = ftpUpload.FtpUpload
-	uploader_host = ftp.<your_host_here>
+	uploader_host = ftp.<your_host_here>:<your_port_here_default_21>
 	uploader_username = <ftp_username>
-	uploader_password = <ftp_password>
+	uploader_password = <ftp_password_encrypted>
+
+	# . "encryptor" you can use encrypted passwords with a private/public key couple
+	#
+	# . To generate a new private key use the following command:
+	#     openssl genrsa -out myTestKey.pem -passout pass:"f00bar" -des3 2048
+	#
+	# . To generate a new public key use the following command:
+	#     openssl rsa -pubout -in myTestKey.pem -passin pass:"f00bar" -out myTestKey.pub
+	#
+	# . To encrypt your password use the following utility
+	#     python encrypt.py password path/to/rsakey.pub passphrase
+	#
+	# . To double check the password is correct use the following utility
+	#     python decrypt.py password path/to/rsakey.pem passphrase
+	uploader_private_rsa_key = /share/xmpp_data/ssl/myTestKey.pem
+	uploader_passphrase = f00bar
 
 The requisites for this configuration to work properly are:
 
@@ -413,17 +436,20 @@ The requisites for this configuration to work properly are:
 	publish_default_style = polygon
 	publish_target_workspace = it.geosolutions
 	publish_layer_name = contour
-
+	
 	# . Enable this option in order to perform a backup of this output
 	# . before sending it to GeoServer.
 	# . WARNING: This option works only along with 'wps_execution_shared_dir'
 	# .          option on 'remote.config', and takes precedence on 'upload_data'
 	# backup_on_wps_execution_shared_dir = true
-
+	
 	# . Enable this option if you want the output to be uploaded on remote host.
 	# . Notice that you must also configure uploader parameters on 'remote.config'
 	# upload_data = true
-
+	
+	# . Optionally it is possible to specify a root folder if the uploader class supports it.
+	# upload_data_root = /remote-wps/default
+	
 	[Output2]
 	name = result2
 	type = application/x-netcdf
@@ -434,17 +460,29 @@ The requisites for this configuration to work properly are:
 	publish_default_style = raster
 	publish_target_workspace = it.geosolutions
 	publish_layer_name = flexpart
-
+	
 	# . Enable this option in order to perform a backup of this output
 	# . before sending it to GeoServer.
 	# . WARNING: This option works only along with 'wps_execution_shared_dir'
 	# .          option on 'remote.config', and takes precedence on 'upload_data'
 	# backup_on_wps_execution_shared_dir = true
-
+	
 	# . Enable this option if you want the output to be uploaded on remote host.
 	# . Notice that you must also configure uploader parameters on 'remote.config'
 	# upload_data = true
-
+	
+	# . Optionally it is possible to specify a root folder if the uploader class supports it.
+	# upload_data_root = /remote-wps/default
+	
+	[Output3]
+	name = result3
+	type = application/owc
+	description = WPS OWC Json MapContext
+	layers_to_publish = result2
+	publish_as_layer = true
+	publish_layer_name = owc_json_ctx
+	publish_metadata = /share/xmpp_data/resource_dir/owc_json_ctx.json
+	
 	# ########################################### #
 	# Logging Options Declaration                 #
 	# ########################################### #

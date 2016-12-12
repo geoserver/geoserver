@@ -217,6 +217,19 @@ Deploy And Configure GeoServer
 	# Default Properties
 	remoteProcessStubCycleSleepTime = 100
 
+	# Base path where uploaded files are stored
+	# . This is used only when a remote uploader is enabled on the Python
+	# . WPS Agent. This property represents the local base path (on the filesystem
+	# . of GeoServer) where to search for uploaded files.
+	# . If not file has been found here (or this option is not enabled), GeoServer
+	# . looks for absolute path and/or paths relative to the GEOSERVER DATA DIR.
+	#uploadedFilesBasePath = /tmp
+
+	# Full path to the template used to generate the OWS WMC Json output
+	# . This property is used only when a "application/owc" output type on
+	# . the Python WPS Agent.
+	#owc_wms_json_template = absolute_path/to/wmc_template.json
+
 	# Specific kvps for {@link RemoteProcessClient) implementations
 	xmpp_server = localhost
 	xmpp_server_embedded = false

@@ -60,9 +60,11 @@ public class RemoteProcessFactory implements ProcessFactory, RemoteProcessFactor
             for (RemoteProcessClient ext : availableRemoteClientInstances) {
                 if (ext.isEnabled()) {
                     remoteClient = ext;
-                    remoteClient.init(null);
-                    remoteClient.registerProcessFactoryListener(this);
-                    break;
+                    remoteClient.init();
+                    if (remoteClient.isEnabled()) {
+                        remoteClient.registerProcessFactoryListener(this);
+                        break;
+                    }
                 }
             }
         } catch (Exception e) {

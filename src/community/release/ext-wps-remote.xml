@@ -10,10 +10,31 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>gs-wps-remote*.jar</include>
+        <include>*commons-beanutils*.jar</include>
+        <include>*commons-exec*.jar</include>
+        <include>*commons-vfs2*.jar</include>
+        <include>*dnsjava*.jar</include>
+        <include>*geodb*.jar</include>
         <include>*importer*.jar</include>
-        <include>*smack*.jar</include>
+        <include>*hamcrest*.jar</include>
+        <include>*hatbox*.jar</include>
+        <include>*httpclient*.jar</include>
+        <include>*httpcore*.jar</include>
+        <include>*icu4j*.jar</include>
+        <include>*javacsv*.jar</include>
+        <include>*jbosh*.jar</include>
+        <include>*jetty*.jar</include>
+        <include>*jmf*.jar</include>
+        <include>*jsqlparser*.jar</include>
+        <include>*jtds*.jar</include>
+        <include>*jzlib*.jar</include>
         <include>*pyrolite*.jar</include>
+        <include>*smack*.jar</include>
         <include>*spark*.jar</include>
+        <include>*mina*.jar</include>
+        <include>*nbxml*.jar</include>
+        <include>*plexus*.jar</include>
+        <include>*regexp*.jar</include>
         <include>*vysper*.jar</include>
         <include>*xep*.jar</include>
         <include>*xmpp*.jar</include>

@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,7 +54,7 @@ public class XMPPCompletedMessage implements XMPPMessage {
         if (msg != null && msg.equals("completed")) {
             final Map<String, Object> outputs = new HashMap<String, Object>();
             try {
-                for (Entry<String, String> result : signalArgs.entrySet()) {
+                for (Entry<String, String> result : new TreeMap<String, String>(signalArgs).entrySet()) {
                     if (result.getKey().startsWith("result")) {
                         final String serviceResultString = URLDecoder.decode(result.getValue(),
                                 "UTF-8");
@@ -145,8 +146,8 @@ public class XMPPCompletedMessage implements XMPPMessage {
                                     outputs.put(result.getKey(), wpsOutputValue);
                                     continue;
                                 } else {
-                                    // throw new Exception("All the Oputput
-                                    // Producres failed transforming the WPS
+                                    // throw new Exception("All the Output
+                                    // Producers failed transforming the WPS
                                     // Output!");
                                     LOGGER.warning(
                                             "At least one of the Oputput Producres failed transforming the WPS Output!");

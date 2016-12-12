@@ -4,11 +4,13 @@
  */
 package org.geoserver.wps.remote.plugin;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -25,12 +27,16 @@ import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.ssl.SSLContexts;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.process.StreamRawData;
@@ -38,6 +44,7 @@ import org.geoserver.wps.process.StringRawData;
 import org.geoserver.wps.remote.RemoteMachineDescriptor;
 import org.geoserver.wps.remote.RemoteProcessClient;
 import org.geoserver.wps.remote.RemoteProcessClientListener;
+import org.geoserver.wps.remote.RemoteProcessFactoryConfiguration;
 import org.geoserver.wps.remote.RemoteProcessFactoryConfigurationWatcher;
 import org.geoserver.wps.remote.RemoteProcessFactoryListener;
 import org.geoserver.wps.remote.RemoteRequestDescriptor;
@@ -52,9 +59,12 @@ import org.jivesoftware.smack.PacketCollector;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.SmackConfiguration;
+import org.jivesoftware.smack.SmackException.NoResponseException;
 import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.bosh.BOSHConfiguration;
+import org.jivesoftware.smack.bosh.XMPPBOSHConnection;
 import org.jivesoftware.smack.filter.AndFilter;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.filter.PacketIDFilter;
@@ -205,13 +215,13 @@ public class XMPPClient extends RemoteProcessClient {
         // ----
         PRIMITIVE_NAME_TYPE_MAP.put("application/json",
                 new Object[] { RawData.class, CType.COMPLEX,
-                        new StringRawData("", "application/json"), "application/json,text/plain",
+                        new StringRawData("", "application/vnd.geo+json"), "application/vnd.geo+json",
                         ".json" });
 
         // ----
         PRIMITIVE_NAME_TYPE_MAP.put("application/owc",
                 new Object[] { RawData.class, CType.COMPLEX,
-                        new StringRawData("", "application/json"), "application/json,text/plain",
+                        new StringRawData("", "application/vnd.geo+json"), "application/vnd.geo+json",
                         ".json" });
 
         // ----
@@ -278,7 +288,7 @@ public class XMPPClient extends RemoteProcessClient {
     }
 
     @Override
-    public void init(SSLContext customSSLContext) throws Exception {
+    public void init() throws Exception {
 
         // Initializes the XMPP Client and starts the communication. It also
         // register GeoServer as "manager" to the service channels on the MUC
@@ -295,18 +305,81 @@ public class XMPPClient extends RemoteProcessClient {
         SmackConfiguration.setDefaultPacketReplyTimeout(packetReplyTimeout);
 
         config = new ConnectionConfiguration(server, port);
-        if (customSSLContext != null) {
+        
+        checkSecured(getConfiguration());
+        
+        // Trust own CA and all self-signed certs
+        SSLContext sslcontext = null;
+        if (this.certificateFile != null && this.certificatePassword != null) {
+            KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            FileInputStream instream = new FileInputStream(this.certificateFile);
+            try {
+                trustStore.load(instream, this.certificatePassword.toCharArray());
+            } finally {
+                instream.close();
+            }
+            
+            sslcontext = SSLContexts.custom()
+                    .loadTrustMaterial(trustStore, new TrustSelfSignedStrategy()).build();
+
+        }
+        
+        if (sslcontext != null) {
             // config.setSASLAuthenticationEnabled(false);
             config.setSecurityMode(SecurityMode.enabled);
-            config.setCustomSSLContext(customSSLContext);
+            config.setCustomSSLContext(sslcontext);
         } else {
             config.setSecurityMode(SecurityMode.disabled);
         }
 
         // Actually performs the connection to the XMPP Server
-        connection = new XMPPTCPConnection(config);
-        connection.connect();
+        for (int testConn=0; testConn<5; testConn++) {
+            try {
+                // Try first the TCP Endpoint
+                connection = new XMPPTCPConnection(config);
+                connection.connect();
+                break;
+            } catch(NoResponseException e) {
+                connection = null;
+                if (testConn >= 5) {
+                    LOGGER.warning("No XMPP TCP Endpoint available or could not get any response from the Server. Falling back to BOSH Endpoint.");
+                } else {
+                    LOGGER.log(Level.WARNING, "Tentative #" + (testConn+1) + " - Error while trying to connect to XMPP TCP Endpoint.", e);
+                    Thread.sleep(500);
+                }
+            }
+        }
 
+        if (connection == null || !connection.isConnected()) {
+            for (int testConn=0; testConn<5; testConn++) {
+                try {
+                    // Falling back to BOSH Endpoint
+                    BOSHConfiguration boshConfig = 
+                            new BOSHConfiguration((sslcontext != null), server, port, null, getConfiguration().get("xmpp_domain"));
+                    
+                    if (sslcontext != null) {
+                        // boshConfig.setSASLAuthenticationEnabled(false);
+                        boshConfig.setSecurityMode(SecurityMode.enabled);
+                        boshConfig.setCustomSSLContext(sslcontext);
+                    } else {
+                        boshConfig.setSecurityMode(SecurityMode.disabled);
+                    }
+                    
+                    connection = new XMPPBOSHConnection(boshConfig);
+                    connection.connect();
+                    break;
+                } catch(NoResponseException e) {
+                    connection = null;
+                    if (testConn >= 5) {
+                        LOGGER.warning("No XMPP BOSH Endpoint available or could not get any response from the Server. The XMPP Client won't be available.");
+                    } else {
+                        LOGGER.log(Level.WARNING, "Tentative #" + (testConn+1) + " - Error while trying to connect to XMPP BOSH Endpoint.", e);
+                        Thread.sleep(500);
+                    }
+                }
+            }
+        }
+        
         LOGGER.info("Connected: " + connection.isConnected());
 
         // Check if the connection to the XMPP server is successful; the login
@@ -335,6 +408,43 @@ public class XMPPClient extends RemoteProcessClient {
             checkPendingRequests();
         } else {
             setEnabled(false);
+            LOGGER.warning("Not connected! The XMPP client has been disabled.");
+        }
+    }
+
+    private void checkSecured(RemoteProcessFactoryConfiguration configuration) {
+        final String xmppServerEmbeddedSecure = configuration.get("xmpp_server_embedded_secure");
+        final String xmppServerEmbeddedCertFile = configuration.get("xmpp_server_embedded_certificate_file");
+        final String xmppServerEmbeddedCertPwd = configuration.get("xmpp_server_embedded_certificate_password");        
+
+        if (xmppServerEmbeddedSecure != null && Boolean.valueOf(xmppServerEmbeddedSecure.trim())) {
+            // Override XML properties
+            if (xmppServerEmbeddedCertFile != null && xmppServerEmbeddedCertPwd != null) {
+                final org.geoserver.platform.resource.Resource certFileResource = 
+                        Resources.fromURL(xmppServerEmbeddedCertFile.trim());
+                if (certFileResource != null) {
+                    this.certificateFile = certFileResource.file();
+                    this.certificatePassword = xmppServerEmbeddedCertPwd.trim();
+                } else {
+                    // Get the Resource loader
+                    GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+                    try {
+                        // Copy the default property file into the data directory
+                        //URL url = RemoteProcessFactoryConfigurationWatcher.class.getResource(xmppServerEmbeddedCertFile.trim());
+                        //if (url != null) {
+                            this.certificateFile = loader.createFile(xmppServerEmbeddedCertFile.trim());
+                            loader.copyFromClassPath(xmppServerEmbeddedCertFile.trim(), this.certificateFile/*,
+                                    RemoteProcessFactoryConfigurationWatcher.class*/);
+                        //}
+                        this.certificateFile = loader.find(xmppServerEmbeddedCertFile.trim());
+                        this.certificatePassword = xmppServerEmbeddedCertPwd.trim();
+                    } catch (IOException e) {
+                        if (LOGGER.isLoggable(Level.WARNING)) {
+                            LOGGER.log(Level.WARNING, e.getMessage(), e);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -488,16 +598,25 @@ public class XMPPClient extends RemoteProcessClient {
 
             mucManagementChannel = new MultiUserChat(connection,
                     managementChannel + "@" + bus + "." + domain);
-            mucManagementChannel.join(getJID(username), managementChannelPassword); /*
+            try {
+                mucManagementChannel.join(getJID(username), managementChannelPassword);     /*
                                                                                      * , history, connection. getPacketReplyTimeout());
                                                                                      */
+            } catch (Exception e) {
+                mucManagementChannel.join(username, managementChannelPassword);
+            }
 
             for (String channel : serviceChannels) {
                 MultiUserChat serviceChannel = new MultiUserChat(connection,
                         channel + "@" + bus + "." + domain);
-                serviceChannel.join(getJID(username), managementChannelPassword); /*
-                                                                                   * , history, connection. getPacketReplyTimeout());
-                                                                                   */
+                try {
+                    serviceChannel.join(getJID(username), managementChannelPassword); /*
+                                                                                       * , history, connection. getPacketReplyTimeout());
+                                                                                       */
+                } catch (Exception e) {
+                    serviceChannel.join(username, managementChannelPassword);
+                }
+                
                 mucServiceChannels.add(serviceChannel);
             }
 
@@ -516,7 +635,7 @@ public class XMPPClient extends RemoteProcessClient {
      *
      */
     private String getJID(String username) {
-        final String id = md5Java(username + "@" + this.domain + "/" + System.nanoTime());
+        // final String id = md5Java(username + "@" + this.domain + "/" + System.nanoTime());
         return username + "@" + this.domain;
     }
 
@@ -1429,6 +1548,9 @@ class ParameterTemplate {
         this.clazz = clazz;
         this.defaultValue = defaultValue;
         this.meta.put("mimeTypes", mimeTypes);
+        if (mimeTypes != null && mimeTypes.split(",").length>0) {
+            this.meta.put("chosenMimeType", mimeTypes.split(",")[0]);
+        }
     }
 
     /**

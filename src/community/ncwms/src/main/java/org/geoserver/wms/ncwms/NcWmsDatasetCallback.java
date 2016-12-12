@@ -28,6 +28,10 @@ public class NcWmsDatasetCallback extends AbstractDispatcherCallback implements 
 
     @Override
     public Request init(Request request) {
+        if(request.getRawKvp() == null) {
+            return request;
+        }
+        
         String dataset = Converters.convert(request.getRawKvp().get("DATASET"), String.class);
         if (dataset != null) {
             WorkspaceInfo ws = catalog.getWorkspaceByName(dataset);

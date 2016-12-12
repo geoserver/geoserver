@@ -8,11 +8,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLUnit;
@@ -27,6 +30,7 @@ import org.geoserver.wms.style.PaletteStyleHandler;
 import org.geotools.util.NumberRange;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class NcwmsIntegrationTest extends WMSTestSupport {
@@ -185,5 +189,41 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         assertEquals(1, xpath.getMatchingNodes("//wms:Layer[wms:Name = 'rain']", dom).getLength());
         // root container and the layer itself
         assertEquals(2, xpath.getMatchingNodes("//wms:Layer", dom).getLength());
+    }
+    
+    
+    @Test
+    public void testPostRequest() throws Exception {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+            "<ogc:GetMap xmlns:ogc=\"http://www.opengis.net/ows\"\n" + 
+            "            xmlns:gml=\"http://www.opengis.net/gml\"\n" + 
+            "   version=\"1.1.1\" service=\"WMS\">\n" + 
+            "   <StyledLayerDescriptor version=\"1.0.0\">\n" + 
+            "      <NamedLayer>\n" + 
+            "        <Name>" + getLayerId(RAIN) + "</Name>\n" + 
+            "        <NamedStyle><Name>" + GRAY_BLUE_STYLE + "</Name></NamedStyle> \n" + 
+            "      </NamedLayer> \n" + 
+            "   </StyledLayerDescriptor>\n" + 
+            "   <BoundingBox srsName=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n" + 
+            "      <gml:coord><gml:X>-180</gml:X><gml:Y>-90</gml:Y></gml:coord>\n" + 
+            "      <gml:coord><gml:X>180</gml:X><gml:Y>90</gml:Y></gml:coord>\n" + 
+            "   </BoundingBox>\n" + 
+            "   <Output>\n" + 
+            "      <Format>image/png</Format>\n" + 
+            "      <Size><Width>320</Width><Height>160</Height></Size>\n" + 
+            "   </Output>\n" + 
+            "</ogc:GetMap>";
+        
+        MockHttpServletResponse resp = postAsServletResponse("wms", xml);
+        assertEquals("image/png", resp.getContentType());
+        InputStream is = getBinaryInputStream(resp);
+        BufferedImage image = ImageIO.read(is);
+        
+        // heavy rain here
+        assertPixel(image, 32, 74, new Color(37, 37, 236));
+        // mid value here
+        assertPixel(image, 120, 74, new Color(129, 129, 191));
+        // dry here
+        assertPixel(image, 160, 60, new Color(170, 170, 170));
     }
 }

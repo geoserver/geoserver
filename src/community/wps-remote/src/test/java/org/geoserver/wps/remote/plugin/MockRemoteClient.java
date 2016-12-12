@@ -1,12 +1,10 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.remote.plugin;
 
 import java.util.Map;
-
-import javax.net.ssl.SSLContext;
 
 import org.geoserver.wps.remote.RemoteProcessClient;
 import org.geoserver.wps.remote.RemoteProcessFactoryConfigurationWatcher;
@@ -30,7 +28,7 @@ public class MockRemoteClient extends RemoteProcessClient {
     }
 
     @Override
-    public void init(SSLContext customSSLContext) throws Exception {
+    public void init() throws Exception {
     }
 
     @Override

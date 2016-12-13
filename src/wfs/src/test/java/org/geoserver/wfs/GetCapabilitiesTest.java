@@ -5,16 +5,27 @@
  */
 package org.geoserver.wfs;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.CapabilitiesCacheHeadersCallback;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.CiteTestData;
@@ -22,6 +33,10 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -244,4 +259,86 @@ public class GetCapabilitiesTest extends WFSTestSupport {
             getCatalog().save(layer);
         }
     }
+    
+    @Test
+    public void testCachingHeaders() throws Exception {
+        // first request, get the etag
+        MockHttpServletRequest request = createGetRequestWithHeaders("wfs?service=WFS&version=1.0.0&request=getCapabilities");
+        MockHttpServletResponse response = dispatch(request);
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        
+        // check caching headers
+        final String etag = response.getHeader(HttpHeaders.ETAG);
+        assertNotNull(etag);
+        assertEquals("max-age=0, must-revalidate", response.getHeader(HttpHeaders.CACHE_CONTROL));
+        
+        // now make a conditional request
+        request = createGetRequestWithHeaders("wfs?service=WFS&version=1.0.0&request=getCapabilities", HttpHeaders.IF_NONE_MATCH, etag);
+        response = dispatch(request);
+        assertEquals(HttpStatus.NOT_MODIFIED.value(), response.getStatus());
+    }
+    
+    @Test
+    public void testCachingHeadersDisabled() throws Exception {
+        CapabilitiesCacheHeadersCallback callback = GeoServerExtensions.bean(CapabilitiesCacheHeadersCallback.class);
+        boolean backup = callback.isCapabilitiesCacheHeadersEnabled();
+        try {
+            callback.setCapabilitiesCacheHeadersEnabled(false);
+
+            // first request, get the etag
+            MockHttpServletRequest request = createGetRequestWithHeaders("wfs?service=WFS&version=1.0.0&request=getCapabilities");
+            MockHttpServletResponse response = dispatch(request);
+            assertEquals(HttpStatus.OK.value(), response.getStatus());
+            
+            // check caching headers are not there
+            assertNull(response.getHeader(HttpHeaders.ETAG));
+            assertNull(response.getHeader(HttpHeaders.CACHE_CONTROL));
+        } finally {
+            callback.setCapabilitiesCacheHeadersEnabled(backup);
+        }
+    }
+    
+    @Test
+    public void testEtagModification() throws Exception {
+        // no changes, the etag should not change
+        String etag1 = getCapabilitiesEtag();
+        assertNotNull(etag1);
+        String etag2 = getCapabilitiesEtag();
+        assertEquals(etag2, etag1);
+        
+        // now force a reload
+        final GeoServer gs = getGeoServer();
+        gs.reload();
+        String etagAfterReload = getCapabilitiesEtag();
+        assertNotEquals(etagAfterReload, etag1);
+        
+        // and then also change something to force the update sequence up
+        final GeoServerInfo global = gs.getGlobal();
+        global.setFeatureTypeCacheSize(200);
+        gs.save(global);
+        
+        String etagAfterChanges = getCapabilitiesEtag();
+        assertNotEquals(etagAfterChanges, etag1);
+        assertNotEquals(etagAfterChanges, etagAfterReload);
+    }
+    
+    String getCapabilitiesEtag() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wfs?service=WFS&version=1.0.0&request=getCapabilities");
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        final String etag = response.getHeader(HttpHeaders.ETAG);
+        return etag;
+    }
+    
+    MockHttpServletRequest createGetRequestWithHeaders(String path, String... headers) {
+        MockHttpServletRequest request = createRequest( path ); 
+        request.setMethod( "GET" );
+        request.setContent(new byte[]{});
+
+        for(int i = 0; i < headers.length - 1; i+=2) {
+            request.addHeader(headers[i], headers[i+1]);
+        }
+        
+        return request;
+    }
+    
 }

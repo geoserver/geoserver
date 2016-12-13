@@ -9,7 +9,11 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.data.test.MockData.PRIMITIVEGEOFEATURE;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -39,7 +43,6 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.RemoteOWSTestSupport;
-import org.geoserver.util.NoExternalEntityResolver;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessState;
 import org.geoserver.wps.executor.ProcessStatusTracker;
@@ -56,14 +59,15 @@ import org.geotools.ows.v1_1.OWSConfiguration;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.xml.PreventLocalEntityResolver;
 import org.geotools.xml.Parser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -143,7 +147,7 @@ public class ExecuteTest extends WPSTestSupport {
         // print(d);
         
         String text = xp.evaluate("//ows:ExceptionText", d);
-        assertTrue(text.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue(text.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
     }
     
     
@@ -365,6 +369,59 @@ public class ExecuteTest extends WPSTestSupport {
                       "<wps:LiteralData></wps:LiteralData>" + 
                     "</wps:Data>" + 
                   "</wps:Input>" + 
+                 "</wps:DataInputs>" +
+                 "<wps:ResponseForm>" +  
+                   "<wps:ResponseDocument storeExecuteResponse='false'>" + 
+                     "<wps:Output>" +
+                       "<ows:Identifier>result</ows:Identifier>" +
+                     "</wps:Output>" + 
+                   "</wps:ResponseDocument>" +
+                 "</wps:ResponseForm>" + 
+               "</wps:Execute>";
+        
+        Document d = postAsDOM( "wps", xml );
+        // print(d);
+        checkValidationErrors(d);
+        
+        assertEquals( "wps:ExecuteResponse", d.getDocumentElement().getNodeName() );
+        
+        assertXpathExists( "/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
+        assertXpathExists( 
+            "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/wfs:FeatureCollection", d);
+    }
+    
+    /** 
+     * Test GEOS-5663 https://osgeo-org.atlassian.net/browse/GEOS-5663
+     * Location is removed from collections
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testFeatureCollectionInlineWithLocation() throws Exception { 
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
+              "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
+              "<ows:Identifier>gs:Nearest</ows:Identifier>" + 
+               "<wps:DataInputs>" + 
+                  "<wps:Input>" + 
+                      "<ows:Identifier>features</ows:Identifier>" + 
+                      "<wps:Data>" +
+                        "<wps:ComplexData>" + 
+                             readFileIntoString("places-FeatureCollectionLocation.xml") + 
+                        "</wps:ComplexData>" + 
+                      "</wps:Data>" +     
+                  "</wps:Input>" + 
+                  "<wps:Input>"+    
+                      "<ows:Identifier>point</ows:Identifier>"+
+                      "<wps:Data>"+
+                         "<wps:ComplexData mimeType=\"text/xml; subtype=gml/3.1.1\"><![CDATA[POINT(-96 41)]]></wps:ComplexData>"+
+                      "</wps:Data>"+
+                  "</wps:Input>"+
+                  "<wps:Input>"+
+                      "<ows:Identifier>crs</ows:Identifier>"+
+                      "<wps:Data>"+
+                           "<wps:LiteralData>EPSG:4326</wps:LiteralData>"+
+                      "</wps:Data>"+
+                 "</wps:Input>"+ 
                  "</wps:DataInputs>" +
                  "<wps:ResponseForm>" +  
                    "<wps:ResponseDocument storeExecuteResponse='false'>" + 

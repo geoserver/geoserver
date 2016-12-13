@@ -2,7 +2,7 @@
 
 ; Define your application name
 !define APPNAME "GeoServer"
-!define VERSION "2.10-SNAPSHOT"
+!define VERSION "2.11-SNAPSHOT"
 ;!define LONGVERSION "2.0.0.0"
 !define APPNAMEANDVERSION "${APPNAME} ${VERSION}"
 
@@ -608,7 +608,7 @@ Function Port
   Pop $PortHWND
   ${NSD_OnChange} $PortHWND PortCheck
 
-  ${NSD_CreateLabel} 110u 40u 120u 14u "Valid range is 1024-65535." 
+  ${NSD_CreateLabel} 110u 40u 120u 14u "Valid range is 80, 1024-65535." 
 
   nsDialogs::Show
 
@@ -623,15 +623,20 @@ Function PortCheck
 
 
   ; Check for illegal values of $Port
-  ${If} $Port < 1024        ; Too low
-  ${OrIf} $Port > 65535     ; Too high
-    GetDlgItem $0 $HWNDPARENT 1 ; Next
-    EnableWindow $0 0 ; Disable
-  ${Else}
+  ${If} $Port = 80
     GetDlgItem $0 $HWNDPARENT 1 ; Next
     EnableWindow $0 1 ; Enable
-  ${EndIf}
-
+  ${Else}  
+     ${If} $Port < 1024        ; Too low
+     ${OrIf} $Port > 65535     ; Too high
+      GetDlgItem $0 $HWNDPARENT 1 ; Next
+      EnableWindow $0 0 ; Disable
+     ${Else}
+      GetDlgItem $0 $HWNDPARENT 1 ; Next
+      EnableWindow $0 1 ; Enable
+     ${EndIf}
+   ${EndIf}
+   
 FunctionEnd
 
 ; Manual vs service selection
@@ -800,7 +805,7 @@ Section "Main" SectionMain
     CreateDirectory "$INSTDIR\work"
 	
     ; Install the service (and start it)
-    nsExec::Exec "$INSTDIR\wrapper.exe -it ./wrapper/wrapper.conf wrapper.java.additional.4=-Djetty.port=$Port"
+    nsExec::Exec "$INSTDIR\wrapper.exe -it ./wrapper/wrapper.conf wrapper.app.parameter.4=jetty.port=$Port"
 
   ${EndIf}
 
@@ -855,7 +860,7 @@ Section -FinishSection
   ${ElseIf} $IsManual == 1 ; manual
 
     FileOpen $9 startup.bat w ; Opens a Empty File and fills it
-    FileWrite $9 'call "$JavaHome\bin\java.exe" -DGEOSERVER_DATA_DIR="$DataDir" -Xmx512m -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Djetty.base="$INSTDIR" -Djetty.port=$Port -Djetty.logs="$INSTDIR\logs" -jar "$INSTDIR\start.jar"'
+    FileWrite $9 'call "$JavaHome\bin\java.exe" -DGEOSERVER_DATA_DIR="$DataDir" -Xmx512m -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Djetty.base="$INSTDIR" -Djetty.logs="$INSTDIR\logs" -jar "$INSTDIR\start.jar" --module=http jetty.port=$Port'
     FileClose $9 ; Closes the file
 
     FileOpen $9 shutdown.bat w ; Opens a Empty File and fills it

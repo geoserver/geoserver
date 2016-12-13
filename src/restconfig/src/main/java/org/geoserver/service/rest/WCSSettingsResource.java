@@ -11,12 +11,14 @@ import java.util.Map;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.rest.CatalogFreemarkerHTMLFormat;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.WCSInfoImpl;
 import org.geoserver.wcs.WCSXStreamLoader;
+import org.geoserver.wfs.WFSInfo;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -45,6 +47,24 @@ public class WCSSettingsResource extends ServiceSettingsResource {
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setHideFeatureTypeAttributes();
+        persister.setCallback( new XStreamPersister.Callback() {
+            @Override
+            protected ServiceInfo getServiceObject() {
+                String workspace = getAttribute("workspace");
+                ServiceInfo service;
+                if (workspace != null) {
+                    WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
+                    service = geoServer.getService(ws, WCSInfo.class);
+                } else {
+                    service = geoServer.getService(WCSInfo.class);
+                }
+                return service;
+            }
+            @Override
+            protected Class<WCSInfo> getObjectClass() {
+                return WCSInfo.class;
+            }
+        });
         WCSXStreamLoader.initXStreamPersister(persister);
     }
 

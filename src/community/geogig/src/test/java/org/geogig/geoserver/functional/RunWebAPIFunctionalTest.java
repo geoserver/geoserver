@@ -21,9 +21,8 @@ import cucumber.api.junit.Cucumber;
  */
 @RunWith(Cucumber.class)
 @CucumberOptions(strict = true,
-        features = {"classpath:org/geogig/web/functional/",
-                "classpath:org/geogig/geoserver/functional/"},
-        glue = {"org.geogig.web.functional", "org.geogig.geoserver.functional"},
+        features = {"classpath:org/geogig/web/functional/"},
+        glue = {"org.geogig.web.functional"},
         plugin = {"pretty", "html:cucumber-report","json:cucumber-report/cucumber.json"})
 public class RunWebAPIFunctionalTest {
 

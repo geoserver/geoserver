@@ -338,6 +338,16 @@ public class CatalogImplTest {
         assertFalse( ns == ns2 );
         assertEquals( ns, ns2 );
     }
+
+    @Test
+    public void testSetDefaultNamespaceInvalid() {
+        try {
+            catalog.setDefaultNamespace( ns );
+            fail("Default namespace must exist in catalog");
+        } catch (IllegalArgumentException e) {
+            assertEquals("No such namespace: 'wsName'", e.getMessage());
+        }
+    }
     
     @Test
     public void testModifyNamespace() {
@@ -558,6 +568,16 @@ public class CatalogImplTest {
         assertFalse( ws == ws4 );
         assertEquals( ws, ws4 );
     }
+
+    @Test
+    public void testSetDefaultWorkspaceInvalid() {
+        try {
+            catalog.setDefaultWorkspace( ws );
+            fail("Default workspace must exist in catalog");
+        } catch (IllegalArgumentException e) {
+            assertEquals("No such workspace: 'wsName'", e.getMessage());
+        }
+    }
     
     @Test public void testModifyWorkspace() {
         catalog.add( ws );
@@ -653,15 +673,16 @@ public class CatalogImplTest {
         catalog.add( ds2 );
         assertEquals( 2, catalog.getDataStores().size() );
     }
-    
+
     @Test
     public void testAddDataStoreDefaultWorkspace() {
-        catalog.setDefaultWorkspace( ws );
-        
+        catalog.add(ws);
+        catalog.setDefaultWorkspace(ws);
+
         DataStoreInfo ds2 = catalog.getFactory().createDataStore();
-        ds2.setName( "ds2Name");
+        ds2.setName( "ds2Name" );
         catalog.add( ds2 );
-        
+
         assertEquals( ws, ds2.getWorkspace() );
     }
     
@@ -2211,6 +2232,29 @@ public class CatalogImplTest {
         assertEquals(l, lg2.layers().iterator().next());
         assertEquals(s, lg2.styles().iterator().next());        
     }
+
+    @Test
+    public void testRemoveLayerGroupInLayerGroup() throws Exception {
+        addLayerGroup();
+
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+
+        lg2.setName("layerGroup2");
+        lg2.getLayers().add(lg);
+        lg2.getStyles().add(s);
+        catalog.add(lg2);
+
+
+        try {
+            catalog.remove(lg);
+            fail("should have failed because lg is in another lg");
+        }
+        catch(IllegalArgumentException expected) {}
+
+        //removing the containing layer first should work
+        catalog.remove(lg2);
+        catalog.remove(lg);
+    }
     
     static class TestListener implements CatalogListener {
 
@@ -2843,8 +2887,8 @@ public class CatalogImplTest {
         catalog.save(ftproxy);
 
         Filter filter = Predicates.fullTextSearch("newKeyword");
-        assertEquals(newHashSet(ft), asSet(catalog.list(FeatureTypeInfo.class, filter)));
-        assertEquals(newHashSet(l), asSet(catalog.list(LayerInfo.class, filter)));
+        assertEquals(newHashSet(ftproxy), asSet(catalog.list(FeatureTypeInfo.class, filter)));
+        assertEquals(newHashSet(lproxy), asSet(catalog.list(LayerInfo.class, filter)));
     }
 
     private <T> Set<T> asSet(CloseableIterator<T> list) {

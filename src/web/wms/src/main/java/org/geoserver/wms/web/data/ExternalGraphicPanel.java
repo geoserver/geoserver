@@ -177,18 +177,25 @@ public class ExternalGraphicPanel extends Panel {
             public void onClick(AjaxRequestTarget target, Form<?> form) {
                 
                 URLConnection conn = getExternalGraphic(target, form);
-                format.setModelValue(new String[] {conn.getContentType()});
-                BufferedImage image;
-                try {
-                    image = ImageIO.read(conn.getInputStream());
-                    width.setModelValue(new String[] {"" + image.getWidth()});
-                    height.setModelValue(new String[] {"" + image.getHeight()});
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (conn == null) {
+                    ValidationError error = new ValidationError();
+                    error.setMessage("Unable to access image");
+                    error.addKey("imageUnavailable");
+                    onlineResource.error(error);
+                } else {
+                    format.setModelValue(new String[] {conn.getContentType()});
+                    BufferedImage image;
+                    try {
+                        image = ImageIO.read(conn.getInputStream());
+                        width.setModelValue(new String[] {"" + image.getWidth()});
+                        height.setModelValue(new String[] {"" + image.getHeight()});
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    target.add(format);
+                    target.add(width);
+                    target.add(height);
                 }
-                target.add(format);
-                target.add(width);
-                target.add(height);
             }
         };
         

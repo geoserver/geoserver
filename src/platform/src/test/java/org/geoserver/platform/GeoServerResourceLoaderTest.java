@@ -5,15 +5,23 @@
 
 package org.geoserver.platform;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.io.IOException;
 
 import javax.servlet.ServletContext;
 
 import org.easymock.EasyMock;
+import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.ResourceStore;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 /**
  * Tests for {@link GeoServerResourceLoader}.
@@ -22,7 +30,10 @@ public class GeoServerResourceLoaderTest {
 
     @Rule
     public final ExpectedException expected = ExpectedException.none();
-
+    
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+    
     /**
      * Test {@link GeoServerResourceLoader#requireFile(String, String)} for a single file that exists.
      */
@@ -123,6 +134,28 @@ public class GeoServerResourceLoaderTest {
         expected.expectMessage("Missing required file: does-not-exist "
                 + "From: Servlet context parameter GEOSERVER_REQUIRE_FILE: does-not-exist");
         GeoServerResourceLoader.lookupGeoServerDataDirectory(context);
+    }
+    
+    @Test
+    public void testSetBaseDirectory() throws IOException {
+        GeoServerResourceLoader loader = new GeoServerResourceLoader();
+        assertNull(loader.getBaseDirectory());
+        assertEquals(ResourceStore.EMPTY, loader.getResourceStore());
+        
+        tempFolder.create();
+        File tempDir = tempFolder.getRoot();
+        loader.setBaseDirectory(tempDir);
+        assertEquals(tempDir, loader.getBaseDirectory());
+        assertTrue(loader.getResourceStore() instanceof FileSystemResourceStore);
+        
+        ResourceStore mockStore = EasyMock.createMock(ResourceStore.class);
+        loader = new GeoServerResourceLoader(mockStore);
+        assertNull(loader.getBaseDirectory());
+        assertEquals(mockStore, loader.getResourceStore());
+        
+        loader.setBaseDirectory(tempDir);
+        assertEquals(tempDir, loader.getBaseDirectory());
+        assertEquals(mockStore, loader.getResourceStore());
     }
 
 }

@@ -59,13 +59,14 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
     @After
     public void rollback() throws Exception {
         Catalog cat = getCatalog();
+        if(nested != null) {
+            cat.remove(nested);
+        }
         cat.remove(cite);
         cat.remove(sf);
         cat.remove(global);
         cat.remove(global2);
-        if(nested != null) {
-            cat.remove(nested);
-        }
+
     }
     
     protected void registerNamespaces(java.util.Map<String,String> namespaces) {

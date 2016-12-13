@@ -7,6 +7,8 @@ package org.geoserver.web.data.store;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.management.RuntimeErrorException;
@@ -20,11 +22,17 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.web.data.layer.NewLayerPage;
 import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.wms.WebMapServer;
+import org.geotools.data.wms.xml.WMSSchema;
 import org.geotools.ows.ServiceException;
+import org.geotools.xml.DocumentFactory;
+import org.geotools.xml.XMLHandlerHints;
+import org.geotools.xml.handlers.DocumentHandler;
+import org.xml.sax.EntityResolver;
 
 public class WMSStoreNewPage extends AbstractWMSStorePage {
 
@@ -63,8 +71,8 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
             // GeoServer Env substitution; validate first
             getCatalog().validate(expandedStore, false).throwIfInvalid();
             
-            // GeoServer Env substitution; fore to *AVOID* resolving env placeholders...
-            expandedStore = getCatalog().getResourcePool().clone(info, false);
+            // GeoServer Env substitution; force to *AVOID* resolving env placeholders...
+            savedStore = getCatalog().getResourcePool().clone(info, false);
             // ... and save
             getCatalog().save(savedStore);
         } catch (RuntimeException e) {
@@ -110,7 +118,18 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                     client.setUser(user);
                     client.setPassword(pwd);
                 }
-                WebMapServer server = new WebMapServer(new URL(url), client);
+                Map<String, Object> hints = new HashMap<>();
+                hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
+                hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
+                EntityResolverProvider provider = getCatalog().getResourcePool().getEntityResolverProvider();
+                if(provider != null) {
+                    EntityResolver entityResolver = provider.getEntityResolver();
+                    if(entityResolver != null) {
+                        hints.put(XMLHandlerHints.ENTITY_RESOLVER, entityResolver);
+                    }
+                }
+                
+                WebMapServer server = new WebMapServer(new URL(url), client, hints);
                 server.getCapabilities();
             } catch(IOException | ServiceException e) {
                 IValidationError err = new ValidationError("WMSCapabilitiesValidator.connectionFailure")

@@ -11,6 +11,7 @@ import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
+import org.geoserver.config.GeoServer;
 import org.geoserver.wcs.WCSInfo;
 import org.junit.After;
 import org.junit.Test;
@@ -47,6 +48,11 @@ public class WCSSettingsTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testGetAsHTML() throws Exception {
+        getAsDOM("/rest/services/wcs/settings.html" );
+    }
+
+    @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wcs': {'id':'wcs','enabled':'false','name':'WCS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wcs/settings/",
@@ -61,7 +67,7 @@ public class WCSSettingsTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    public void testPutASXML() throws Exception {
+    public void testPutAsXML() throws Exception {
         String xml = "<wcs>"
                 + "<id>wcs</id>"
                 + "<enabled>false</enabled>"
@@ -74,6 +80,27 @@ public class WCSSettingsTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM("/rest/services/wcs/settings.xml");
         assertXpathEvaluatesTo("false", "/wcs/enabled", dom);
         assertXpathEvaluatesTo("WCS", "/wcs/name", dom);
+    }
+
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        GeoServer geoServer = getGeoServer();
+        WCSInfo i = geoServer.getService(WCSInfo.class);
+        i.setEnabled(true);
+        geoServer.save(i);
+        String xml = "<wcs>"
+                + "<id>wcs</id>"
+                + "<name>WCS</name><title>GeoServer Web Coverage Service</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</wcs>";
+        MockHttpServletResponse response = putAsServletResponse("/rest/services/wcs/settings", xml,
+                "text/xml");
+        assertEquals(200, response.getStatus());
+        Document dom = getAsDOM("/rest/services/wcs/settings.xml");
+        assertXpathEvaluatesTo("true", "/wcs/enabled", dom);
+        assertXpathEvaluatesTo("WCS", "/wcs/name", dom);
+        i = geoServer.getService(WCSInfo.class);
+        assertTrue(i.isEnabled());
     }
 
     @Test

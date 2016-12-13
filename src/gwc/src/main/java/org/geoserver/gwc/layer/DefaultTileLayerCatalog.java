@@ -292,11 +292,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             LOGGER.fine("Depersisting GeoServerTileLayerInfo from " + res.path());
         }
         GeoServerTileLayerInfoImpl info;
-        Reader reader = new InputStreamReader(res.in(), "UTF-8");
-        try {
+        try(Reader reader = new InputStreamReader(res.in(), "UTF-8")) {
             info = (GeoServerTileLayerInfoImpl) serializer.fromXML(reader);
-        } finally {
-            reader.close();
         }
 
         return info;

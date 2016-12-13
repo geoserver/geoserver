@@ -6,20 +6,19 @@
 
 package org.geoserver.catalog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.*;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 
 import javax.media.jai.PlanarImage;
@@ -35,6 +34,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -44,10 +44,14 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
+import org.geotools.ows.ServiceException;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.resources.image.ImageUtilities;
+import org.geotools.styling.AbstractStyleVisitor;
+import org.geotools.styling.Mark;
 import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Style;
 import org.geotools.util.SoftValueHashMap;
@@ -59,6 +63,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.style.ExternalGraphic;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Tests for {@link ResourcePool}.
@@ -68,6 +73,8 @@ import org.w3c.dom.Element;
 @Category(SystemTest.class)
 public class ResourcePoolTest extends GeoServerSystemTestSupport {
     
+    private static final String HUMANS = "humans";
+
     static {
         System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
     }
@@ -76,6 +83,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
     protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
     
+    private static final String EXTERNAL_ENTITIES = "externalEntities";
+    
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -83,8 +92,13 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         testData.addStyle("relative", "se_relativepath.sld", ResourcePoolTest.class, getCatalog());
         testData.addStyle("relative_protocol", "se_relativepath_protocol.sld",
                 ResourcePoolTest.class, getCatalog());
+        testData.addStyle(HUMANS, "humans.sld", ResourcePoolTest.class, getCatalog());
+        testData.addStyle(EXTERNAL_ENTITIES, "externalEntities.sld", TestData.class, getCatalog());
         StyleInfo style = getCatalog().getStyleByName("relative");
-        style.setSLDVersion(new Version("1.1.0"));
+        style.setFormatVersion(new Version("1.1.0"));
+        getCatalog().save(style);
+        style = getCatalog().getStyleByName(HUMANS);
+        style.setFormatVersion(new Version("1.1.0"));
         getCatalog().save(style);
         File images = new File(testData.getDataDirectoryRoot(), "styles/images");
         assertTrue(images.mkdir());
@@ -425,5 +439,94 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertNotNull(clonedCs);
         
         assertEquals(source2, clonedCs);
+    }
+    
+    @Test
+    public void testWmsCascadeEntityExpansion() throws Exception {
+        //Other tests mess with or reset the resourcePool, so lets make it is initialized properly
+        GeoServerExtensions.extensions(ResourcePoolInitializer.class).get(0).initialize(getGeoServer());
+        
+        ResourcePool rp = getCatalog().getResourcePool();
+        
+        WMSStoreInfo info = getCatalog().getFactory().createWebMapServer();
+        URL url = getClass().getResource("1.3.0Capabilities-xxe.xml");
+        info.setCapabilitiesURL(url.toExternalForm());
+        info.setEnabled(true);
+        // the connection pooling client does not support file references, disable it
+        info.setUseConnectionPooling(false);
+        try {
+            rp.getWebMapServer(info);
+            fail("WebMapServer instantiation should fail");
+        } catch(IOException e) {
+            assertThat(e.getCause(), instanceOf(ServiceException.class));
+            ServiceException serviceException = (ServiceException) e.getCause();
+            assertThat(serviceException.getMessage(), containsString("Error while parsing XML"));
+            
+            SAXException saxException = (SAXException) serviceException.getCause();
+            Exception cause = saxException.getException();
+            assertFalse("Expect external entity cause", cause != null && cause instanceof FileNotFoundException);
+        }
+        //make sure clearing the catalog does not clear the EntityResolver
+        getGeoServer().reload();
+        rp = getCatalog().getResourcePool();
+        
+        try {
+            rp.getWebMapServer(info);
+            fail("WebMapServer instantiation should fail");
+        } catch(IOException e) {
+            assertThat(e.getCause(), instanceOf(ServiceException.class));
+            ServiceException serviceException = (ServiceException) e.getCause();
+            assertThat(serviceException.getMessage(), containsString("Error while parsing XML"));
+            
+            SAXException saxException = (SAXException) serviceException.getCause();
+            Exception cause = saxException.getException();
+            assertFalse("Expect external entity cause", cause != null && cause instanceof FileNotFoundException);
+        }
+        
+    }
+    
+    @Test
+    public void testWfsCascadeEntityExpansion() throws Exception {
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        DataStoreInfo ds = cb.buildDataStore("wfs-xxe");
+        URL url = getClass().getResource("wfs1.1.0Capabilities-xxe.xml");
+        ds.getConnectionParameters().put(WFSDataStoreFactory.URL.key, url);
+        // required or the store won't fetch caps from a file
+        ds.getConnectionParameters().put("TESTING", Boolean.TRUE);
+        final ResourcePool rp = getCatalog().getResourcePool();
+        try {
+            rp.getDataStore(ds);
+            fail("Store creation should have failed to to XXE attack");
+        } catch(Exception e) {
+            String message = e.getMessage();
+            assertThat(message, containsString("Entity resolution disallowed"));
+            assertThat(message, containsString("file:///file/not/there"));
+        }
+    }
+    
+    @Test
+    public void testStyleWithExternalEntities() throws Exception {
+        StyleInfo si = getCatalog().getStyleByName(EXTERNAL_ENTITIES);
+        try {
+            si.getStyle();
+            fail("Should have failed with a parse error");
+        } catch(Exception e) {
+            String message = e.getMessage();
+            assertThat(message, containsString("Entity resolution disallowed"));
+            assertThat(message, containsString("/this/file/does/not/exist"));
+        }
+    }
+    
+    @Test
+    public void testParseExternalMark() throws Exception {
+        StyleInfo si = getCatalog().getStyleByName(HUMANS);
+        // used to blow here with an NPE
+        Style s = si.getStyle();
+        s.accept(new AbstractStyleVisitor() {
+            @Override
+            public void visit(Mark mark) {
+                assertEquals("ttf://Webdings", mark.getExternalMark().getOnlineResource().getLinkage().toASCIIString());
+            }
+        });
     }
 }

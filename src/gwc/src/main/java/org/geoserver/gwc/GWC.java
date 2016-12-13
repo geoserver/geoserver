@@ -223,6 +223,9 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     private GeoWebCacheEnvironment gwcEnvironment;
     
     final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+
+    // list of GeoServer contributed grid sets that should not be editable by the user
+    private final Set<String> geoserverEmbeddedGridSets = new HashSet<>();
     
     public GWC(final GWCConfigPersister gwcConfigPersister, final StorageBroker sb,
             final TileLayerDispatcher tld, final GridSetBroker gridSetBroker,
@@ -1883,12 +1886,18 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     /**
+     * Add the provided grid set id to the list of GeoServer grid sets that cannot be edited by the user.
+     */
+    public void addEmbeddedGridSet(String gridSetId) {
+        geoserverEmbeddedGridSets.add(gridSetId);
+    }
+
+    /**
      * @return {@code true} if the GridSet named {@code gridSetId} is a GWC internally defined one,
      *         {@code false} otherwise
      */
     public boolean isInternalGridSet(final String gridSetId) {
-        boolean internal = gridSetBroker.getEmbeddedNames().contains(gridSetId);
-        return internal;
+        return gridSetBroker.getEmbeddedNames().contains(gridSetId) || geoserverEmbeddedGridSets.contains(gridSetId);
     }
 
     /**

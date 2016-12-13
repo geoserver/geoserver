@@ -24,7 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 
 
@@ -36,6 +38,12 @@ import org.geotools.util.logging.Logging;
  * @version 1.0
  */
 public class TestWfsPost extends HttpServlet {
+    
+    /**
+     * The path at which TestWfsPost is exposed. Used to find the full location of GeoServer
+     * without doing complex and error prone string building
+     */
+    static final String TEST_WFS_POST_PATH = "/TestWfsPost";
     
     static final Logger LOGGER = Logging.getLogger(TestWfsPost.class);
     
@@ -186,6 +194,7 @@ public class TestWfsPost extends HttpServlet {
 
             try {
                 URL u = new URL(urlString);
+                validateURL(request, urlString, getProxyBaseURL() );
                 java.net.HttpURLConnection acon = (java.net.HttpURLConnection) u.openConnection();
                 acon.setAllowUserInteraction(false);
 
@@ -300,6 +309,33 @@ public class TestWfsPost extends HttpServlet {
                     out.println("</servlet-exception>");
                     out.close();
                 }
+            }
+        }
+    }
+
+    String getProxyBaseURL() {
+        GeoServer geoServer = (GeoServer) GeoServerExtensions.bean("geoServer");
+        if( geoServer != null ){
+            geoServer.getGlobal().getSettings().getProxyBaseUrl();
+        }
+        return null;
+    }
+
+    void validateURL(HttpServletRequest request, String url, String proxyBase) {
+        if(proxyBase != null) {
+            if(!url.startsWith(proxyBase)) {
+                throw new IllegalArgumentException("Invalid url requested, the demo requests should be hitting: " + proxyBase);
+            }
+        } else {
+            // use the requested url then, and remove the TestWfsPort
+            String requestedUrl = request.getRequestURL().toString();
+            // this should not happen, but let's not make it an open proxy if it does
+            if(!requestedUrl.endsWith(TEST_WFS_POST_PATH)) {
+                throw new IllegalStateException("Unepected, the TestWfsPost was accessed by a path not ending with TestWfsPost: " + requestedUrl);
+            }
+            String base = requestedUrl.substring(0, requestedUrl.lastIndexOf(TEST_WFS_POST_PATH));
+            if(!url.startsWith(base)) {
+                throw new IllegalArgumentException("Invalid url requested, the demo requests should be hitting: " + base);
             }
         }
     }

@@ -19,7 +19,6 @@ import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.GMLInfo;
@@ -30,11 +29,10 @@ import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetFeatureTest extends WFS20TestSupport {
 
@@ -91,6 +89,29 @@ public class GetFeatureTest extends WFS20TestSupport {
         // just check there are no exceptions
         for (int i = 0; i < REQUESTS; i++) {
             es.take().get();
+        }
+        
+    }
+    
+    @Test
+    public void testConcurrentPost() throws Exception {
+        ExecutorCompletionService<Object> es = new ExecutorCompletionService<>(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        final int REQUESTS =  200;
+        for (int i = 0; i < REQUESTS; i++) {
+            es.submit(() -> {
+                testPost();
+                return null;
+            });
+        }
+        // just check there are no exceptions
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < REQUESTS; i++) {
+            es.take().get();
+            if(i % 100 == 0) {
+                long curr = System.currentTimeMillis();
+                LOGGER.info(i + " - " + (curr - start));
+                start = curr;
+            }
         }
         
     }

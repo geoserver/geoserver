@@ -45,10 +45,15 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
         if (style != null) {
             catalog.remove(style);
         }
-        LayerGroupInfo group = catalog.getLayerGroupByName(LAKES_GROUP);
+        LayerGroupInfo group = catalog.getLayerGroupByName(NEST_GROUP);
         if (group != null) {
             catalog.remove(group);
         }
+        group = catalog.getLayerGroupByName(LAKES_GROUP);
+        if (group != null) {
+            catalog.remove(group);
+        }
+
 
         setupExtras(getTestData(), catalog);
     }
@@ -67,6 +72,21 @@ public class CascadeDeleteVisitorTest extends CascadeVisitorAbstractTest {
         LayerGroupInfo group = catalog.getLayerGroupByName(LAKES_GROUP);
         assertEquals(2, group.getLayers().size());
         assertFalse(group.getLayers().contains(layer));
+    }
+
+    @Test
+    public void testCascadeLayerGroup() {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo layerGroup = catalog.getLayerGroupByName(LAKES_GROUP);
+        assertNotNull(layerGroup);
+
+        CascadeDeleteVisitor visitor = new CascadeDeleteVisitor(catalog);
+        visitor.visit(layerGroup);
+
+        LayerGroupInfo nestedGroup = catalog.getLayerGroupByName(NEST_GROUP);
+        assertNotNull(nestedGroup);
+        assertEquals(1, nestedGroup.getLayers().size());
+        assertEquals(1, nestedGroup.getStyles().size());
     }
     
     @Test

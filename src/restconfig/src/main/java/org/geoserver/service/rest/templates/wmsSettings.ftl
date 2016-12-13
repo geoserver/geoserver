@@ -7,19 +7,33 @@
 <h4>Service Metadata</h4>
 
 <ul>
-  <li>WMS Enabled:  "${properties.enabled}"</li>
-  <li>Strict CITE compliance:  "${properties.citeCompliant}"</li>
-  <li>Maintainer:  "${properties.maintainer}"</li>
-  <li>Online Resource:  "${properties.onlineResource}"</li>
-  <li>Title:  "${properties.title}"</li>
-  <li>Abstract:  "${properties.abstract}"</li>
-  <li>Fees:  "${properties.fees}"</li>
-  <li>Access Constraints:  "${properties.accessConstraints}"</li>
-  <li>Keywords:  "${properties.keywords}"</li>
-  <li>Name:  "${properties.name}"</li>
-  <li>Versions:  "${properties.versions}"</li>
-  <li>Schema Base URL:  "${properties.schemaBaseURL}"</li>
-  <li>Verbose Messages:  "${properties.verbose}"</li>
+  <li>WMS Enabled:  "${properties.enabled!}"</li>
+  <li>Strict CITE compliance:  "${properties.citeCompliant!}"</li>
+  <li>Maintainer:  "${properties.maintainer!}"</li>
+  <li>Online Resource:  "${properties.onlineResource!}"</li>
+  <li>Title:  "${properties.title!}"</li>
+  <li>Abstract:  "${properties.abstract!}"</li>
+  <li>Fees:  "${properties.fees!}"</li>
+  <li>Access Constraints:  "${properties.accessConstraints!}"</li>
+  <#if properties.keywords?is_enumerable>
+    <li>Keywords: "
+        <#list properties.keywords as el>
+            ${el.value!}
+            <#if el.language??>(${el.language}) </#if>
+            <#if el.vocabulary??>[${el.vocabulary}] </#if>
+        <#if el_has_next>, </#if></#list>
+    "</li>
+  <#else>
+    <li>Keywords: ""</li>
+  </#if>
+  <li>Name:  "${properties.name!}"</li>
+  <#if properties.versions?is_enumerable>
+    <li>Versions:  "${properties.versions!}"</li>
+  <#else>
+    <li>Versions: ""</li>
+  </#if>
+  <li>Schema Base URL:  "${properties.schemaBaseURL!}"</li>
+  <li>Verbose Messages:  "${properties.verbose!}"</li>
 </ul>
 
 <#if properties.authorityURLs != 'NO_AUTHORITY_URL'>
@@ -51,25 +65,25 @@ Output bounding box for every supported CRS:  "${properties.bboxForEachCRS}"
 
 <h4>Raster Rendering Options</h4>
 <ul>
-  <li>Interpolation: "${properties.interpolation}"</li>
+  <li>Interpolation: "${properties.interpolation!}"</li>
 </ul>
 
 <h4>KML Options</h4>
 <ul>
   <#if properties.kmlReflectorMode != 'NO_KMLREFLECTORMODE'>  
-    <li>Default Reflector Mode:  "${properties.kmlReflectorMode}"</li>
+    <li>Default Reflector Mode:  "${properties.kmlReflectorMode!}"</li>
   </#if>
   <#if properties.kmlSuperoverlayMode != 'NO_KMLSUPEROVERLAY'>
-    <li>Default Superoverlay Mode:  "${properties.kmlSuperoverlayMode}"</li>
+    <li>Default Superoverlay Mode:  "${properties.kmlSuperoverlayMode!}"</li>
   </#if>
   <#if properties.kmlAttr != 'NO_KMLATTR'>
-    <li>Generate vector placemarks:  "${properties.kmlAttr}"</li>
+    <li>Generate vector placemarks:  "${properties.kmlAttr!}"</li>
   </#if>
   <#if properties.kmlPlacemark != 'NO_KMLPLACEMARK'>
-    <li>Generate raster placemarks:  "${properties.kmlPlacemark}"</li>
+    <li>Generate raster placemarks:  "${properties.kmlPlacemark!}"</li>
   </#if>
   <#if properties.kmlKmscore != 'NO_KMLKMSCORE'>
-    <li>Raster/vector threshold:  "${properties.kmlKmscore}"</li>
+    <li>Raster/vector threshold:  "${properties.kmlKmscore!}"</li>
   </#if>
 </ul>
 
@@ -82,12 +96,12 @@ Output bounding box for every supported CRS:  "${properties.bboxForEachCRS}"
 
 <h4>Watermark Settings</h4>
 <ul>
-  <li>Enable watermark:  "${properties.watermarkEnabled}"
+  <li>Enable watermark:  "${properties.watermarkEnabled!}"</li>
   <#if properties.watermarkUrl != 'NO_WATERMARK_URL'>
-    <li>Watermark URL:  "${properties.watermarkUrl}"</li>
+    <li>Watermark URL:  "${properties.watermarkUrl!}"</li>
   </#if>
-  <li>Watermark Transparency:  "${properties.watermarkTransparency}"</li>
-  <li>Watermark Position:  "${properties.watermarkPosition}"</li>
+  <li>Watermark Transparency:  "${properties.watermarkTransparency!}"</li>
+  <li>Watermark Position:  "${properties.watermarkPosition!}"</li>
 </ul>
 
 <h4>Image output options</h4>

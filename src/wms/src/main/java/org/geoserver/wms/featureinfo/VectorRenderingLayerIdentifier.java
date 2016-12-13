@@ -93,7 +93,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         ExtensionPriority {
 
     static final Logger LOGGER = Logging.getLogger(VectorRenderingLayerIdentifier.class);
-    private static final String FEAUTURE_INFO_RENDERING_ENABLED_KEY = "org.geoserver.wms.featureinfo.render.enabled";
+    private static final String FEATURE_INFO_RENDERING_ENABLED_KEY = "org.geoserver.wms.featureinfo.render.enabled";
     protected static final int MIN_BUFFER_SIZE = Integer.getInteger("org.geoserver.wms.featureinfo.render.minBuffer", 3);
     protected static boolean RENDERING_FEATUREINFO_ENABLED;
     
@@ -102,10 +102,10 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     
     static {
-        String value = System.getProperty(FEAUTURE_INFO_RENDERING_ENABLED_KEY, "true");
+        String value = System.getProperty(FEATURE_INFO_RENDERING_ENABLED_KEY, "true");
         RENDERING_FEATUREINFO_ENABLED = Boolean.valueOf(value);
         if(!RENDERING_FEATUREINFO_ENABLED) {
-            LOGGER.info("Rendering based GetFeatureInfo disabled since " + FEAUTURE_INFO_RENDERING_ENABLED_KEY + " is set to " + value);
+            LOGGER.info("Rendering based GetFeatureInfo disabled since " + FEATURE_INFO_RENDERING_ENABLED_KEY + " is set to " + value);
         }
     }
 

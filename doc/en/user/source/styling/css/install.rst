@@ -13,10 +13,10 @@ The installation process is similar to other GeoServer extensions:
 
 #. Restart GeoServer.
 
-If installation was successful, you will see a CSS entry in the :ref:`web_admin`. 
+If installation was successful, you will see a new CSS entry in the :ref:`styling_webadmin` editor. 
 
-.. figure:: images/csslink.png
+.. figure:: images/css_style_format.png
 
-   CSS link in the web admin interface
+   CSS format in the new style page
 
 After installation, you may wish to read the tutorial: :ref:`Styling data with CSS <css_tutorial>`.

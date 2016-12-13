@@ -44,6 +44,21 @@ public class GeoServerImplTest {
         geoServer.setGlobal( global );
        
         assertEquals( global, geoServer.getGlobal() );
+
+        //GEOS-7890
+        GeoServerInfo global1 = geoServer.getFactory().createGlobal();
+        GeoServerInfo global2 = geoServer.getFactory().createGlobal();
+        global1.setGlobalServices(new Boolean(true));
+        global1.setXmlExternalEntitiesEnabled(new Boolean(false));
+        global1.setVerbose(new Boolean(false));
+        global1.setVerboseExceptions(new Boolean(false));
+
+        global2.setGlobalServices(new Boolean(true));
+        global2.setXmlExternalEntitiesEnabled(new Boolean(false));
+        global2.setVerbose(new Boolean(false));
+        global2.setVerboseExceptions(new Boolean(false));
+        assertEquals(global1, global2);
+
     }
     
     @Test 
@@ -237,5 +252,14 @@ public class GeoServerImplTest {
         assertThat((Collection<ServiceInfo>)geoServer.getServices(), allOf(hasItem(globalService), not(hasItems(newService1, newService2))));
         assertThat((Collection<ServiceInfo>)geoServer.getServices(ws1), allOf(hasItem(newService1), not(hasItems(globalService, newService2))));
         assertThat((Collection<ServiceInfo>)geoServer.getServices(ws2), allOf(hasItem(newService2), not(hasItems(newService1, globalService))));
+    }
+
+    @Test
+    public void testModifyLogging() {
+        LoggingInfo logging = geoServer.getLogging();
+        logging.setLevel("VERBOSE_LOGGING.properties");
+        geoServer.save(logging);
+
+        assertEquals(logging, geoServer.getLogging());
     }
 }

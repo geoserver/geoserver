@@ -56,6 +56,7 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.operation.TransformException;
+import org.xml.sax.EntityResolver;
 
 /**
  * Key/Value pair set parsed for a GetLegendGraphic request. When calling <code>getRequest</code> produces a {@linkPlain
@@ -648,6 +649,10 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      */
     private Style[] parseSld(Reader xmlIn) throws ServiceException {
         SLDParser parser = new SLDParser(styleFactory, xmlIn);
+        EntityResolver entityResolver = wms.getCatalog().getResourcePool().getEntityResolver();
+        if(entityResolver != null) {
+            parser.setEntityResolver(entityResolver);
+        }
         Style[] styles = null;
 
         try {

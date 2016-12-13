@@ -6,6 +6,7 @@
 package org.geoserver.util;
 
 import org.geoserver.config.GeoServer;
+import org.geotools.xml.PreventLocalEntityResolver;
 import org.xml.sax.EntityResolver;
 
 
@@ -28,6 +29,8 @@ public class EntityResolverProvider {
         this.geoServer = geoServer;
     }
     
+    
+    
     public EntityResolver getEntityResolver() {
         if (geoServer != null) {
             Boolean externalEntitiesEnabled = geoServer.getGlobal().isXmlExternalEntitiesEnabled();
@@ -38,6 +41,6 @@ public class EntityResolverProvider {
         }
 
         // default behaviour: entities disabled
-        return new NoExternalEntityResolver();
+        return PreventLocalEntityResolver.INSTANCE;
     } 
 }

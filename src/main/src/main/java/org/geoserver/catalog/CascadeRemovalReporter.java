@@ -206,7 +206,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
                 // make sure to mark the group as removed if all the layers inside of
                 // it are going to be removed, just changed otherwise
                 if(layers.size() == new HashSet<PublishedInfo>(group.getLayers()).size()) {
-                    add(group, ModificationType.DELETE);
+                    visit(group);
                 } else {
                     add(group, ModificationType.GROUP_CHANGED);
                 }
@@ -256,8 +256,10 @@ public class CascadeRemovalReporter implements CatalogVisitor {
                 .list(LayerGroupInfo.class, associatedTo)) {
             while (it.hasNext()) {
                 LayerGroupInfo group = it.next();
-                if (group.getLayers().remove(layerGroupToRemove)) {
-                    if (group.getLayers().size() == 0) {
+                if (group.getLayers().contains(layerGroupToRemove)) {
+                    final List<PublishedInfo> layers = new ArrayList<>(group.getLayers());
+                    layers.removeAll(objects.keySet());
+                    if (layers.size() == 0) {
                         visit(group);
                     } else {
                         add(group, ModificationType.GROUP_CHANGED);

@@ -972,6 +972,102 @@ public class AbstractLegendGraphicOutputFormatTest extends BaseLegendTest{
             }
         }
     }
+    
+    /**
+     * Tests labelMargin legend option
+     */
+    @org.junit.Test
+    public void testLabelMargin() throws Exception {              
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
+                MockData.POINTS.getNamespaceURI(), MockData.POINTS.getLocalPart());
+        req.setLayer(ftInfo.getFeatureType());
+        Style externalGraphicStyle = readSLD("ExternalGraphicDemo.sld");
+        req.setStyle(externalGraphicStyle);
+
+        final int HEIGHT_HINT = 20;
+        req.setHeight(HEIGHT_HINT);
+        
+        HashMap legendOptions = new HashMap();
+        legendOptions.put("labelMargin", "10");
+        req.setLegendOptions(legendOptions);
+        
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        assertEquals(HEIGHT_HINT * 2, image.getHeight());
+        for(int x = 21; x <= 29; x++) {
+            assertPixel(image, x, HEIGHT_HINT/2, new Color(255, 255, 255));
+        }
+        
+        legendOptions.put("labelMargin", "20");
+        req.setLegendOptions(legendOptions);
+        
+        this.legendProducer.buildLegendGraphic(req);
+
+        image = this.legendProducer.buildLegendGraphic(req);
+        assertEquals(HEIGHT_HINT * 2, image.getHeight());
+        for(int x = 21; x <= 39; x++) {
+            assertPixel(image, x, HEIGHT_HINT/2, new Color(255, 255, 255));
+        }
+    }
+    
+    /**
+     * Tests labelMargin legend option
+     */
+    @org.junit.Test
+    public void testAbsoluteMargins() throws Exception {              
+        Style style = readSLD("ColorMapWithLongLabels.sld");
+        assertNotNull(style.featureTypeStyles());
+        assertEquals(1, style.featureTypeStyles().size());
+        FeatureTypeStyle fts = style.featureTypeStyles().get(0);
+        assertNotNull(fts.rules());
+        assertEquals(1, fts.rules().size());
+        Rule rule = fts.rules().get(0);
+        assertNotNull(rule.symbolizers());
+        assertEquals(1, rule.symbolizers().size());
+        assertTrue(rule.symbolizers().get(0) instanceof RasterSymbolizer);
+        RasterSymbolizer symbolizer = (RasterSymbolizer)rule.symbolizers().get(0);
+        assertNotNull(symbolizer.getColorMap());
+        assertEquals(3, symbolizer.getColorMap().getColorMapEntries().length);
+        
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        CoverageInfo cInfo = getCatalog().getCoverageByName("world");
+        assertNotNull(cInfo);
+
+        GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        try {
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            req.setLayer(feature.getSchema());
+            req.setStyle(style);
+            HashMap legendOptions = new HashMap();
+            legendOptions.put("dx", "0.5");
+            legendOptions.put("dy", "0");
+            req.setLegendOptions(legendOptions);
+            
+            final int HEIGHT_HINT = 30;
+            req.setHeight(HEIGHT_HINT);
+            
+            // use default values for the rest of parameters
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+            int absoluteWidth = image.getWidth();
+            legendOptions.put("absoluteMargins", "false");
+            image = this.legendProducer.buildLegendGraphic(req);
+            assertTrue(image.getWidth() > absoluteWidth);
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if(coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if(ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
+    }
 
     /**
      * @param sldName

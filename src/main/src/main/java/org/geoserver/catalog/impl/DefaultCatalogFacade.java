@@ -410,8 +410,9 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     
     public List<LayerInfo> getLayers(ResourceInfo resource) {
         List<LayerInfo> matches = new ArrayList<LayerInfo>();
+        final String id = resource.getId();
         for (LayerInfo layer : layers) {
-            if ( resource.equals( layer.getResource() ) ) {
+            if (id.equals(layer.getResource().getId()) && resource.equals( layer.getResource() ) ) {
                 matches.add( layer );
             }
         }

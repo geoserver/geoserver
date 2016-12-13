@@ -11,6 +11,8 @@ import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerInitializer;
+import org.geoserver.config.GeoServerReinitializer;
+import org.geoserver.util.EntityResolverProvider;
 
 /**
  * Initializes parameters of the {@link ResourcePool} class from configuration.
@@ -18,10 +20,15 @@ import org.geoserver.config.GeoServerInitializer;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class ResourcePoolInitializer implements GeoServerInitializer {
+public class ResourcePoolInitializer implements GeoServerReinitializer {
 
     GeoServer gs;
+    EntityResolverProvider resolverProvider;
     
+    public ResourcePoolInitializer(EntityResolverProvider resolverProvider) {
+        this.resolverProvider = resolverProvider;
+    }
+
     public void initialize(GeoServer geoServer) throws Exception {
         this.gs = geoServer;
         
@@ -43,6 +50,8 @@ public class ResourcePoolInitializer implements GeoServerInitializer {
                 gs.getCatalog().getResourcePool().setCoverageExecutor(global.getCoverageAccess().getThreadPoolExecutor());
             }
         });
+        
+        gs.getCatalog().getResourcePool().setEntityResolverProvider(resolverProvider);
     }
     
 }

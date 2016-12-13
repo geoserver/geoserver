@@ -8,10 +8,13 @@ package org.geoserver.service.rest;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
+import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.WFSInfo;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +53,11 @@ public class WFSSettingsTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testGetAsHTML() throws Exception {
+        getAsDOM("/rest/services/wfs/settings.html" );
+    }
+
+    @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wfs': {'id':'wfs','enabled':'false','name':'WFS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/settings/",
@@ -64,7 +72,7 @@ public class WFSSettingsTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    public void testPutASXML() throws Exception {
+    public void testPutAsXML() throws Exception {
         String xml = "<wfs>"
                 + "<id>wfs</id>"
                 + "<enabled>disabled</enabled>"
@@ -77,6 +85,27 @@ public class WFSSettingsTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM("/rest/services/wfs/settings.xml");
         assertXpathEvaluatesTo("false", "/wfs/enabled", dom);
         assertXpathEvaluatesTo("WFS", "/wfs/name", dom);
+    }
+    
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        GeoServer geoServer = getGeoServer();
+        WFSInfo i = geoServer.getService(WFSInfo.class);
+        i.setEnabled(true);
+        String xml = "<wfs>"
+                + "<id>wfs</id>"
+                + "<name>WFS</name><title>GeoServer Web Feature Service</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</wfs>";
+        MockHttpServletResponse response = putAsServletResponse("/rest/services/wfs/settings", xml,
+                "text/xml");
+        assertEquals(200, response.getStatus());
+        Document dom = getAsDOM("/rest/services/wfs/settings.xml");
+        assertXpathEvaluatesTo("true", "/wfs/enabled", dom);
+        assertXpathEvaluatesTo("WFS", "/wfs/name", dom);
+        i = geoServer.getService(WFSInfo.class);
+        geoServer.save(i);
+        assertTrue(i.isEnabled());
     }
 
     @Test

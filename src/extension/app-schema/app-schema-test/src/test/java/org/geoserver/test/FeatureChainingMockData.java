@@ -61,6 +61,9 @@ public class FeatureChainingMockData extends AbstractAppSchemaMockData {
                 "ControlledConcept.properties", "simpleContent.xsd", "SimpleContent.properties");
         addFeatureType(EX_PREFIX, "SecondParentFeature", "SecondParentFeature.xml", 
                 "ControlledConcept.properties", "simpleContent.xsd", "SimpleContent.properties");
+        // used for testing the nesting of features mapped to complex types that doesn't respect the GML object-property model
+        addFeatureType(EX_PREFIX, "ParentFeature", "NonValidNestedGML.xml",
+                "ControlledConcept.properties", "NonValidNestedGML.xsd", "SimpleContent.properties");
         // test anyType encoding with om:result in om:observation type
         addFeatureType(OM_PREFIX, "Observation", "ObservationAnyTypeTest.xml",
                 "MappedFeaturePropertyfile.properties");

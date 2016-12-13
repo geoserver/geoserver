@@ -78,25 +78,33 @@ When creating the first release candidate of a series, there are some extra step
     git pull
     git status
 
-* Create the new stable branch and push it to GitHub; for example, if master is ``2.7-SNAPSHOT`` and the remote for the official GeoServer is called ``geoserver``::
+* Create the new stable branch and push it to GitHub; for example, if master is ``2.11-SNAPSHOT`` and the remote for the official GeoServer is called ``geoserver``::
 
-    git checkout -b 2.7.x
-    git push geoserver 2.7.x
+    git checkout -b 2.11.x
+    git push geoserver 2.11.x
 
-* Checkout the master branch and update the version in all pom.xml files; for example, if changing master from ``2.7-SNAPSHOT`` to ``2.8-SNAPSHOT``::
+* Checkout the master branch and update the version in all pom.xml files; for example, if changing master from ``2.11-SNAPSHOT`` to ``2.12-SNAPSHOT``::
 
     git checkout master
-    find . -name pom.xml -exec sed -i 's/2.7-SNAPSHOT/2.8-SNAPSHOT/g' {} \;
+    find . -name pom.xml -exec sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' {} \;
 
   .. note:: ``sed`` behaves differently on Linux vs. Mac OS X. If running on OS X, the ``-i`` should be followed by ``'' -e`` for each of these ``sed`` commands.
 
-* Update GeoTools dependency; for example if changing from ``13-SNAPSHOT`` to ``14-SNAPSHOT``::
+* Update release artifact paths and labels, for example, if changing master from ``2.11-SNAPSHOT`` to ``2.12-SNAPSHOT``::
 
-    sed -i 's/13-SNAPSHOT/14-SNAPSHOT/g' src/pom.xml
+    sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' src/release/bin.xml
+    sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' src/release/installer/win/GeoServerEXE.nsi
+    sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' src/release/installer/win/wrapper.conf
 
-* Update GeoWebCache dependency; for example if changing from ``1.7-SNAPSHOT`` to ``1.8-SNAPSHOT``::
+  .. note:: These can be written as a single ``sed`` command with multiple files.
 
-    sed -i 's/1.7-SNAPSHOT/1.8-SNAPSHOT/g' src/pom.xml
+* Update GeoTools dependency; for example if changing from ``17-SNAPSHOT`` to ``18-SNAPSHOT``::
+
+    sed -i 's/17-SNAPSHOT/18-SNAPSHOT/g' src/pom.xml
+
+* Update GeoWebCache dependency; for example if changing from ``1.11-SNAPSHOT`` to ``1.12-SNAPSHOT``::
+
+    sed -i 's/1.11-SNAPSHOT/1.12-SNAPSHOT/g' src/pom.xml
 
 * Manually update hardcoded versions in configuration files:
 
@@ -108,12 +116,17 @@ When creating the first release candidate of a series, there are some extra step
 
 * Commit the changes and push to the master branch on GitHub::
 
-      git commit -am "Updated version to 2.8-SNAPSHOT, updated GeoTools dependency to 14-SNAPSHOT, updated GeoWebCache dependency to 1.8-SNAPSHOT, and related changes"
+      git commit -am "Updated version to 2.12-SNAPSHOT, updated GeoTools dependency to 18-SNAPSHOT, updated GeoWebCache dependency to 1.12-SNAPSHOT, and related changes"
       git push geoserver master
       
-* Create the new beta version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on master; for example, if master is now ``2.8-SNAPSHOT``, create a Jira version ``2.8-beta`` for the first release of the ``2.8.x`` series
+* Create the new beta version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on master; for example, if master is now ``2.12-SNAPSHOT``, create a Jira version ``2.12-beta`` for the first release of the ``2.12.x`` series
 
 * Announce on the developer mailing list that the new stable branch has been created and that the feature freeze on master is over
+
+* Switch to the new branch and update:
+   
+  * ``README.md`` documentation links
+  * ``doc/en/user/source/conf.py`` documentation links
 
 Build the Release
 -----------------

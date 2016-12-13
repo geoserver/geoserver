@@ -84,6 +84,7 @@ Here is a description of the various parameters that can be used in ``LEGEND_OPT
     - **bgColor (hex)** background color for the generated legend, values are expressed in ``0xRRGGBB`` format
     - **dpi (integer)** sets the DPI for the current request, in the same way as it is supported by GetMap. Setting a DPI larger than 91 (the default) makes all fonts, symbols and line widths grow without changing the current scale, making it possible to get a high resolution version of the legend suitable for inclusion in printouts 
     - **forceLabels** "on" means labels will always be drawn, even if only one rule is available. "off" means labels will never be drawn, even if multiple rules are available. Off by default.
+    - **labelMargin** margin (in pixels) to use between icons and labels.
     - **layout** sets icons layout to be **vertical** (default) or **horizontal**.
     - **columnheight** enables **multicolumn** layout when layout is **vertical**. Each column height is limited by the columnheight value (in pixels).
     - **rowwidth** enables **multirow** layout when layout is **horizontal**. Each row width is limited by the rowwidth value (in pixels).
@@ -141,6 +142,7 @@ The producer for the raster legend will make use of this elements in order to bu
     - the height of each row is set to the maximum height of the single elements
     - the width of each row is set to the sum of the width of the various elements plus the various paddings
     - **dx,dy** the spaces between elements and rows are set to the 15% of the requested width and height. Notice that **dy** is ignored for the colormaps of type **ramp** since they must create a continuous color strip.
+    - **absoluteMargins** true/false, used to change the uom of **dx** from percentage (when false) to a fixed number of pixels (when true).
     - **mx,my** the margins from the border of the legends are set to the 1.5% of the total size of the legend
 
 Just to jump right to the conclusions (which is a bad practice I know, but no one is perfect ), here below I am adding an image of a sample legend with all the various options at work. The request that generated it is the following::

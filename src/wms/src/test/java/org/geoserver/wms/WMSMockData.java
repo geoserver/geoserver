@@ -99,6 +99,8 @@ public class WMSMockData {
         catalog.add(namespaceInfo);
 
         workspaceInfo = new WorkspaceInfoImpl();
+        workspaceInfo.setName("testWs");
+        catalog.add(workspaceInfo);
         catalog.setDefaultWorkspace(workspaceInfo);
 
         defaultStyle = new StyleInfoImpl(catalog) {

@@ -6,9 +6,7 @@
 package org.geoserver.monitor;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.URLDecoder;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -18,7 +16,6 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -27,14 +24,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.geoserver.filters.GeoServerFilter;
+import org.geoserver.monitor.RequestData.Status;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.util.logging.Logging;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.geoserver.filters.GeoServerFilter;
-import org.geoserver.monitor.RequestData.Status;
-import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.util.logging.Logging;
 
 public class MonitorFilter implements GeoServerFilter {
 
@@ -116,12 +112,22 @@ public class MonitorFilter implements GeoServerFilter {
         data.setHttpReferer(getHttpReferer(req));
         
         
-        if (SecurityContextHolder.getContext() != null 
+        if (SecurityContextHolder.getContext() != null
                 && SecurityContextHolder.getContext().getAuthentication() != null) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth.getPrincipal() != null && auth.getPrincipal() instanceof UserDetails) {
-                data.setRemoteUser(((UserDetails)auth.getPrincipal()).getUsername());
+            Object principal = auth.getPrincipal();
+            if (principal != null) {
+                if (principal instanceof UserDetails) {
+                    data.setRemoteUser(((UserDetails) principal).getUsername());
+                } else if (principal instanceof String) {
+                    data.setRemoteUser((String) principal);
+                }
             }
+        }
+
+        // fallback if the above method fails to get us a user
+        if (data.getRemoteUser() == null || data.getRemoteUser().isEmpty()) {
+            data.setRemoteUser(req.getRemoteUser());
         }
 
         data.setRemoteUserAgent(req.getHeader("user-agent"));

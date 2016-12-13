@@ -11,11 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URLEncoder;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -32,6 +27,7 @@ import org.geotools.process.geometry.GeometryProcessFactory;
 import org.geotools.process.raster.RasterProcessFactory;
 import org.geotools.util.NumberRange;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -577,6 +573,7 @@ public class InputLimitsTest extends WPSTestSupport {
     }
 
     @Test
+    @Ignore // see [GEOS-7835] WPS execution time limits test randomly breaks builds
     public void testAsyncTotalLimit() throws Exception {
         // set synchronous process limits
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
@@ -625,6 +622,7 @@ public class InputLimitsTest extends WPSTestSupport {
     }
 
     @Test
+    @Ignore // see [GEOS-7835] WPS execution time limits test randomly breaks builds
     public void testSyncExecutionLimits() throws Exception {
         // set synchronous process limits
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);

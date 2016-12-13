@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -42,6 +44,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
@@ -96,14 +99,17 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         }
         
         //Try getting the first layer in the default store in the default workspace
-        DataStoreInfo defaultStore = catalog.getDefaultDataStore(catalog.getDefaultWorkspace());
-        if (defaultStore != null) {
-            List<ResourceInfo> resources = catalog.getResourcesByStore(defaultStore, ResourceInfo.class);
-            for (ResourceInfo resource : resources) {
-                layers = catalog.getLayers(resource);
-                if (layers.size() > 0) {
-                    layerModel = new Model<LayerInfo>(layers.get(0));
-                    return;
+        WorkspaceInfo defaultWs = catalog.getDefaultWorkspace();
+        if (defaultWs != null) {
+            DataStoreInfo defaultStore = catalog.getDefaultDataStore(defaultWs);
+            if (defaultStore != null) {
+                List<ResourceInfo> resources = catalog.getResourcesByStore(defaultStore, ResourceInfo.class);
+                for (ResourceInfo resource : resources) {
+                    layers = catalog.getLayers(resource);
+                    if (layers.size() > 0) {
+                        layerModel = new Model<LayerInfo>(layers.get(0));
+                        return;
+                    }
                 }
             }
         }
@@ -248,8 +254,27 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
                     @Override
                     public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                        if (getLayerInfo() == null || getLayerInfo().getId() == null) {
+                            switch (index) {
+                                case 1:
+                                    tabbedPanel.error("Cannot show Publishing options: No Layers available.");
+                                    target.add(feedbackPanel);
+                                    return;
+                                case 2:
+                                    tabbedPanel.error("Cannot show Layer Preview: No Layers available.");
+                                    target.add(feedbackPanel);
+                                    return;
+                                case 3:
+                                    tabbedPanel.error("Cannot show Attribute Preview: No Layers available.");
+                                    target.add(feedbackPanel);
+                                    return;
+                                default:
+                                    break;
+                            }
+                        }
+
                         setSelectedTab(index);
-                        target.add(AbstractStylePage.this);
+                        target.add(tabbedPanel);
                     }
                 };
                 link.setDefaultFormProcessing(false);
@@ -282,21 +307,38 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
                     getRequestCycle().setResponsePage(StyleEditPage.class, parameters);
                 }
-                target.add(AbstractStylePage.this);
+                target.add(feedbackPanel);
+                //Update preview if we are on the preview tab
+                if (style != null && tabbedPanel.getSelectedTab() == 2) {
+                    tabbedPanel.visitChildren(StyleEditTabPanel.class, (component, visit) -> {
+                        if (component instanceof OpenLayersPreviewPanel) {
+                            OpenLayersPreviewPanel previewPanel = (OpenLayersPreviewPanel) component;
+                            try {
+                                target.appendJavaScript(previewPanel.getUpdateCommand());
+                            } catch (Exception e) {
+                                LOGGER.log(Level.FINER, e.getMessage(), e);
+                            }
+                        }
+                    });
+                }
             }
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(AbstractStylePage.this);
+                target.add(feedbackPanel);
             }
         });
         add(new AjaxSubmitLink("submit", styleForm) {
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                doReturn(StylePage.class);
+            protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
+                if (form.hasError()) {
+                    target.add(feedbackPanel);
+                } else {
+                    doReturn(StylePage.class);
+                }
             }
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.add(AbstractStylePage.this);
+                target.add(feedbackPanel);
             }
         });
         Link<StylePage> cancelLink = new Link<StylePage>("cancel") {
@@ -357,7 +399,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         try {
             final String sld = editor.getInput();
             ByteArrayInputStream input = new ByteArrayInputStream(sld.getBytes());
-            List<Exception> validationErrors = styleHandler().validate(input, null, null);
+            List<Exception> validationErrors = styleHandler().validate(input, null, getCatalog().getResourcePool().getEntityResolver());
             return validationErrors;
         } catch( Exception e ) {
             return Arrays.asList( e );

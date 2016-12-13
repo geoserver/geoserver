@@ -65,11 +65,14 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureReader;
+import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
 import org.geotools.data.directory.DirectoryDataStore;
 import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -1027,8 +1030,9 @@ public class Importer implements DisposableBean, ApplicationListener {
                     calculateBounds(resource);
                 }
             }
-            catch(Exception e) {
-                LOGGER.log(Level.SEVERE, "Error occured during import", e);
+            catch(Throwable th) {
+                LOGGER.log(Level.SEVERE, "Error occured during import", th);
+                Exception e = (th instanceof Exception) ? (Exception) th : new Exception(th);
                 task.setError(e);
                 task.setState(ImportTask.State.ERROR);
                 return;
@@ -1172,192 +1176,107 @@ public class Importer implements DisposableBean, ApplicationListener {
         }
         return true;
     }
-
-    void loadIntoDataStore(ImportTask task, DataStoreInfo store, VectorFormat format, 
-        VectorTransformChain tx) throws Exception {
-
+    
+     
+    void loadIntoDataStore(ImportTask task, DataStoreInfo store, VectorFormat format,
+            VectorTransformChain tx) throws Throwable {
         ImportData data = task.getData();
         FeatureReader reader = null;
-        FeatureWriter writer = null;
+
         // using this exception to throw at the end
-        Exception error = null;
+        Throwable error = null;
         Transaction transaction = new DefaultTransaction();
         try {
-            reader = format.read(data, task);
 
-            SimpleFeatureType featureType = (SimpleFeatureType) reader.getFeatureType();
+            SimpleFeatureType featureType = (SimpleFeatureType) task.getMetadata()
+                    .get(FeatureType.class);
+
             final String featureTypeName = featureType.getName().getLocalPart();
-    
+
             DataStore dataStore = (DataStore) store.getDataStore(null);
             FeatureDataConverter featureDataConverter = FeatureDataConverter.DEFAULT;
             if (isShapefileDataStore(dataStore)) {
                 featureDataConverter = FeatureDataConverter.TO_SHAPEFILE;
-            }
-            else if (isOracleDataStore(dataStore)) {
+            } else if (isOracleDataStore(dataStore)) {
                 featureDataConverter = FeatureDataConverter.TO_ORACLE;
-            }
-            else if (isPostGISDataStore(dataStore)) {
+            } else if (isPostGISDataStore(dataStore)) {
                 featureDataConverter = FeatureDataConverter.TO_POSTGIS;
             }
-            
+
             featureType = featureDataConverter.convertType(featureType, format, data, task);
             UpdateMode updateMode = task.getUpdateMode();
             final String uniquifiedFeatureTypeName;
             if (updateMode == UpdateMode.CREATE) {
-                //find a unique type name in the target store
+                // find a unique type name in the target store
                 uniquifiedFeatureTypeName = findUniqueNativeFeatureTypeName(featureType, store);
                 task.setOriginalLayerName(featureTypeName);
-    
+
                 if (!uniquifiedFeatureTypeName.equals(featureTypeName)) {
-                    //update the metadata
+                    // update the metadata
                     task.getLayer().getResource().setName(uniquifiedFeatureTypeName);
                     task.getLayer().getResource().setNativeName(uniquifiedFeatureTypeName);
-                    
-                    //retype
+
+                    // retype
                     SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
                     typeBuilder.setName(uniquifiedFeatureTypeName);
                     typeBuilder.addAll(featureType.getAttributeDescriptors());
                     featureType = typeBuilder.buildFeatureType();
                 }
-    
+
                 // @todo HACK remove this at some point when timezone issues are fixed
                 // this will force postgis to create timezone w/ timestamp fields
                 if (dataStore instanceof JDBCDataStore) {
                     JDBCDataStore ds = (JDBCDataStore) dataStore;
                     // sniff for postgis (h2 is used in tests and will cause failure if this occurs)
                     if (ds.getSqlTypeNameToClassMappings().containsKey("timestamptz")) {
-                        ds.getSqlTypeToSqlTypeNameOverrides().put(java.sql.Types.TIMESTAMP, "timestamptz");
+                        ds.getSqlTypeToSqlTypeNameOverrides().put(java.sql.Types.TIMESTAMP,
+                                "timestamptz");
                     }
                 }
-    
-                //apply the feature type transform
+
+                // apply the feature type transform
                 featureType = tx.inline(task, dataStore, featureType);
-    
+
                 dataStore.createSchema(featureType);
             } else {
                 // @todo what to do if featureType transform is present?
-                
+
                 // @todo implement me - need to specify attribute used for id
                 if (updateMode == UpdateMode.UPDATE) {
-                    throw new UnsupportedOperationException("updateMode UPDATE is not supported yet");
+                    throw new UnsupportedOperationException(
+                            "updateMode UPDATE is not supported yet");
                 }
                 uniquifiedFeatureTypeName = featureTypeName;
             }
 
             if (updateMode == UpdateMode.REPLACE) {
-                
+
                 FeatureStore fs = (FeatureStore) dataStore.getFeatureSource(featureTypeName);
                 fs.setTransaction(transaction);
                 fs.removeFeatures(Filter.INCLUDE);
             }
-            
-            //start writing features
-            // @todo ability to collect transformation errors for use in a dry-run (auto-rollback)
-            
-            ProgressMonitor monitor = task.progress();
-            
-            // @todo need better way to communicate to client
-            int skipped = 0;
-            int cnt = 0;
-            // metrics
-            long startTime = System.currentTimeMillis();
-            task.clearMessages();
-            
-            task.setTotalToProcess(format.getFeatureCount(task.getData(), task));
-            
-            LOGGER.info("begining import");
-            try {
-                writer = dataStore.getFeatureWriterAppend(uniquifiedFeatureTypeName, transaction);
-                
-                while(reader.hasNext()) {
-                    if (monitor.isCanceled()){
-                        break;
-                    }
-                    SimpleFeature feature = (SimpleFeature) reader.next();
-                    SimpleFeature next = (SimpleFeature) writer.next();
-    
-                    //(JD) TODO: some formats will rearrange the geometry type (like shapefile) which
-                    // makes the geometry the first attribute regardless, so blindly copying over
-                    // attributes won't work unless the source type also  has the geometry as the 
-                    // first attribute in the schema
-                    featureDataConverter.convert(feature, next);
-                    
-                    // @hack #45678 - mask empty geometry or postgis will complain
-                    Geometry geom = (Geometry) next.getDefaultGeometry();
-                    if (geom != null && geom.isEmpty()) {
-                        next.setDefaultGeometry(null);
-                    }
-                    
-                    //apply the feature transform
-                    next = tx.inline(task, dataStore, feature, next);
-                    
-                    if (next == null) {
-                        skipped++;
-                    } else {
-                        writer.write();
-                    }
-                    task.setNumberProcessed(++cnt);
-                }
-                if (skipped > 0) {
-                    task.addMessage(Level.WARNING,skipped + " features were skipped.");
-                }
-                LOGGER.info("load to target took " + (System.currentTimeMillis() - startTime));
-            } 
-            catch (Exception e) {
-                error = e;
+
+            // Move features
+            if (format instanceof DataStoreFormat) {
+                error = copyFromFeatureSource(data, task, (DataStoreFormat) format, dataStore,
+                        transaction, featureTypeName, uniquifiedFeatureTypeName,
+                        featureDataConverter, tx);
+            } else {
+                reader = format.read(data, task);
+                error = copyFromFeatureReader(reader, task, format, dataStore, transaction,
+                        featureTypeName, uniquifiedFeatureTypeName, featureDataConverter, tx);
             }
-            // no finally block, there is too much to do
-            
-            if (error != null || monitor.isCanceled()) {
-                // all sub exceptions in this catch block should be logged, not thrown
-                // as the triggering exception will be thrown
-    
-                //failure, rollback transaction
-                try {
-                    transaction.rollback();
-                } catch (Exception e1) {
-                    LOGGER.log(Level.WARNING, "Error rolling back transaction",e1);
-                }
-    
-                //attempt to drop the type that was created as well
-                try {
-                    dropSchema(dataStore,featureTypeName);
-                } catch(Exception e1) {
-                    LOGGER.log(Level.WARNING, "Error dropping schema in rollback",e1);
-                }
-            }
-            
-            // @revisit - when this gets disposed, any following uses seem to
-            // have a problem where later users of the dataStore get an NPE 
-            // since the dataStore gets cached by the ResourcePool but is in a 
-            // closed state???
-            
-            // do this last in case we have to drop the schema
-    //        try {
-    //            dataStore.dispose();
-    //        } catch (Exception e) {
-    //            LOGGER.log(Level.WARNING, "Error closing dataStore",e);
-    //        }
+
         } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (Exception e) {
-                    if (error != null) {
-                        error = e;
-                    }
-                    LOGGER.log(Level.WARNING, "Error closing writer",e);
-                }
-            }
-            try {    
-                if(reader != null) {
+            try {
+                if (reader != null) {
                     format.dispose(reader, task);
                     // @hack catch _all_ Exceptions here - occassionally closing a shapefile
                     // seems to result in an IllegalArgumentException related to not
                     // holding the lock...
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Error closing reader",e);
+                LOGGER.log(Level.WARNING, "Error closing reader", e);
             }
 
             transaction.commit();
@@ -1369,14 +1288,144 @@ public class Importer implements DisposableBean, ApplicationListener {
                 if (error != null) {
                     error = e;
                 }
-                LOGGER.log(Level.WARNING, "Error closing transaction",e);
+                LOGGER.log(Level.WARNING, "Error closing transaction", e);
             }
         }
-        
         // finally, throw any error
         if (error != null) {
             throw error;
         }
+    }
+
+    private Throwable copyFromFeatureSource(ImportData data, ImportTask task,
+            DataStoreFormat format, DataStore dataStoreDestination, Transaction transaction,
+            String featureTypeName, String uniquifiedFeatureTypeName,
+            FeatureDataConverter featureDataConverter, VectorTransformChain tx) throws IOException {
+        Throwable error = null;
+        ProgressMonitor monitor = task.progress();
+        try {
+            long startTime = System.currentTimeMillis();
+            task.clearMessages();
+
+            task.setTotalToProcess(format.getFeatureCount(task.getData(), task));
+            LOGGER.fine("begining import - highlevel api");
+
+            FeatureSource fs = format.getFeatureSource(data, task);
+            FeatureCollection fc = fs.getFeatures();
+
+            FeatureStore featureStore = (FeatureStore) dataStoreDestination
+                    .getFeatureSource(uniquifiedFeatureTypeName);
+            featureStore.setTransaction(transaction);
+
+            fc = new ImportTransformFeatureCollection(fc, featureDataConverter,
+                    featureStore.getSchema(), tx, task, dataStoreDestination);
+
+            featureStore.addFeatures(fc);
+
+        } catch (Throwable e) {
+            error = e;
+        }
+
+        if (error != null || monitor.isCanceled()) {
+            // all sub exceptions in this catch block should be logged, not thrown
+            // as the triggering exception will be thrown
+
+            // failure, rollback transaction
+            try {
+                transaction.rollback();
+            } catch (Exception e1) {
+                LOGGER.log(Level.WARNING,"Unable to load data into "+ uniquifiedFeatureTypeName+", rolling back data insert:"+e1, e1);                
+            }
+
+            // attempt to drop the type that was created as well
+            try {
+                dropSchema(dataStoreDestination, featureTypeName);
+            } catch (Exception e1) {
+                LOGGER.log(Level.WARNING, "Error dropping schema in rollback", e1);
+            }
+        }
+
+        return error;
+    }
+
+    Throwable copyFromFeatureReader(FeatureReader reader, ImportTask task, VectorFormat format,
+            DataStore dataStoreDestination, Transaction transaction, String featureTypeName,
+            String uniquifiedFeatureTypeName, FeatureDataConverter featureDataConverter,
+            VectorTransformChain tx) throws IOException {
+        FeatureWriter writer = null;
+        Throwable error = null;
+        ProgressMonitor monitor = task.progress();
+
+        // @todo need better way to communicate to client
+        int skipped = 0;
+        int cnt = 0;
+        // metrics
+        long startTime = System.currentTimeMillis();
+        task.clearMessages();
+
+        task.setTotalToProcess(format.getFeatureCount(task.getData(), task));
+
+        LOGGER.fine("begining import - lowlevel api");
+        try {
+            writer = dataStoreDestination.getFeatureWriterAppend(uniquifiedFeatureTypeName, transaction);
+
+            while (reader.hasNext()) {
+                if (monitor.isCanceled()) {
+                    break;
+                }
+                SimpleFeature feature = (SimpleFeature) reader.next();
+                SimpleFeature next = (SimpleFeature) writer.next();
+
+                // (JD) TODO: some formats will rearrange the geometry type (like shapefile) which
+                // makes the geometry the first attribute regardless, so blindly copying over
+                // attributes won't work unless the source type also has the geometry as the
+                // first attribute in the schema
+                featureDataConverter.convert(feature, next);
+
+                // @hack #45678 - mask empty geometry or postgis will complain
+                Geometry geom = (Geometry) next.getDefaultGeometry();
+                if (geom != null && geom.isEmpty()) {
+                    next.setDefaultGeometry(null);
+                }
+
+                // apply the feature transform
+                next = tx.inline(task, dataStoreDestination, feature, next);
+
+                if (next == null) {
+                    skipped++;
+                } else {
+                    writer.write();
+                }
+                task.setNumberProcessed(++cnt);
+            }
+            if (skipped > 0) {
+                task.addMessage(Level.WARNING, skipped + " features were skipped.");
+            }
+            LOGGER.info("load to target took " + (System.currentTimeMillis() - startTime));
+        } catch (Throwable e) {
+            error = e;
+        }
+        // no finally block, there is too much to do
+
+        if (error != null || monitor.isCanceled()) {
+            // all sub exceptions in this catch block should be logged, not thrown
+            // as the triggering exception will be thrown
+
+            // failure, rollback transaction
+            try {
+                transaction.rollback();
+            } catch (Exception e1) {
+                LOGGER.log(Level.WARNING, "Error rolling back transaction", e1);
+            }
+
+            // attempt to drop the type that was created as well
+            try {
+                dropSchema(dataStoreDestination, featureTypeName);
+            } catch (Exception e1) {
+                LOGGER.log(Level.WARNING, "Error dropping schema in rollback", e1);
+            }
+        }
+        return error;
     }
 
     StoreInfo lookupDefaultStore() {
@@ -1643,6 +1692,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                         
                         info.setFilename(styleName + "." +ext);
                         info.setFormat(styleHandler.getFormat());
+                        info.setFormatVersion(styleHandler.version(styleFile));
                         info.setWorkspace(task.getStore().getWorkspace());
 
                         try (InputStream in = new FileInputStream(styleFile)) {
@@ -1665,6 +1715,4 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         return null;
     }
-
-
 }

@@ -7,6 +7,7 @@ package org.geoserver.backuprestore.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -20,11 +21,13 @@ import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.VFS;
 import org.codehaus.plexus.util.FileUtils;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.util.IOUtils;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -39,8 +42,62 @@ public class BackupUtils {
 
     private static final Logger LOGGER = Logging.getLogger(BackupUtils.class);
 
+    /**
+     * Returns a random temp folder Resource inside the System Temp Directory.
+     * 
+     * @return
+     * @throws IOException
+     */
     public static Resource tmpDir() throws IOException {
-        Resource root = Resources.fromPath(System.getProperty("java.io.tmpdir", "."));
+        String tempPath = null;
+        try {
+            tempPath = System.getProperty("java.io.tmpdir");
+            if (tempPath == null) {
+                tempPath = IOUtils.createTempDirectory("backuputils").getAbsolutePath();
+                LOGGER.warning(
+                        "It was not possible to create a temporary folder into the System 'java.io.tmpdir'. Falling back to default TEMP ["
+                                + tempPath + "].");
+            }
+        } catch (Exception e) {
+            tempPath = null;
+            LOGGER.log(Level.SEVERE,
+                    "It was not possible to create a temporary folder! In order to fix the problem, please check the System 'java.io.tmpdir' point to a valid folder.",
+                    e);
+            throw new IOException(
+                    "It was not possible to create a temporary folder! In order to fix the problem, please check the System 'java.io.tmpdir' point to a valid folder.",
+                    e);
+        }
+
+        if (tempPath == null) {
+            LOGGER.log(Level.SEVERE,
+                    "It was not possible to create or find a suitable temporary folder. 'tempPath' is NULL! In order to fix the problem, please check the System 'java.io.tmpdir' point to a valid folder.");
+            throw new IOException(
+                    "It was not possible to create or find a suitable temporary folder. 'tempPath' is NULL! In order to fix the problem, please check the System 'java.io.tmpdir' point to a valid folder.");
+        }
+        
+        return createRandomResource(tempPath);
+    }
+
+    /**
+     * Returns a random temp folder Resource inside the GeoServer Temp Directory.
+     * 
+     * @param geoServerDataDirectory
+     * @return
+     * @throws IOException 
+     */
+    public static Resource geoServerTmpDir(GeoServerDataDirectory geoServerDataDirectory) throws IOException {
+        String tempPath = geoServerDataDirectory.findOrCreateDir("temp").getAbsolutePath();
+        
+        return createRandomResource(tempPath);
+    }
+
+    /**
+     * @param tempPath
+     * @return
+     * @throws IOException
+     */
+    private static Resource createRandomResource(String tempPath) throws IOException {
+        Resource root = Resources.fromPath(tempPath);
         Resource directory = Resources.createRandom("tmp", "", root);
 
         do {
@@ -51,7 +108,7 @@ public class BackupUtils {
 
         return Files.asResource(directory.dir());
     }
-
+    
     /**
      * Extracts the archive file {@code archiveFile} to {@code targetFolder}; both shall previously exist.
      *
@@ -226,4 +283,5 @@ public class BackupUtils {
         return Resources.fromPath(
                 Resources.directory(targetPath, !Resources.exists(targetPath)).getAbsolutePath());
     }
+
 }

@@ -51,6 +51,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.data.test.TestData;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.GetMap;
 import org.geoserver.wms.GetMapOutputFormat;
@@ -61,11 +62,11 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.OpenLayersMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
+import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetMapIntegrationTest extends WMSTestSupport {
 
@@ -950,7 +951,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     
     @Test
     public void testSldExternalEntities() throws Exception {
-        URL sldUrl = GetMapIntegrationTest.class.getResource("../externalEntities.sld");
+        URL sldUrl = TestData.class.getResource("externalEntities.sld");
         String url = "wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&sld=" + sldUrl.toString();
@@ -1144,5 +1145,28 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         // checks it's a PNG
         BufferedImage image = getAsImage(request, "image/png");
         assertBlank("testJpegPngEmpty", image, new Color(255,255,255,0));
+    }
+    
+    @Test
+    public void testFeatureIdMultipleLayers() throws Exception {
+        String lakes = getLayerId(MockData.LAKES);
+        String places = getLayerId(MockData.NAMED_PLACES);
+
+        String urlSingle = "wms?LAYERS="
+                + lakes
+                + "&STYLES=&FORMAT=image%2Fpng"
+                + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+        BufferedImage imageLakes = getAsImage(urlSingle, "image/png");
+
+        // ask with featureid filter against two layers... used to fail
+        String url = "wms?LAYERS="
+                + lakes + "," + places
+                + "&STYLES=&FORMAT=image%2Fpng"
+                + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010"  
+                + "&featureId=Lakes.1107531835962";
+        BufferedImage imageLakesPlaces = getAsImage(url, "image/png");
+        
+        // should be the same image, the second request filters out anything in "places"
+        ImageAssert.assertEquals(imageLakes, imageLakesPlaces, 0);
     }
 }

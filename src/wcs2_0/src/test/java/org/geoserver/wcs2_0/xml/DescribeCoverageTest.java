@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.geoserver.util.NoExternalEntityResolver;
 import org.geoserver.wcs2_0.WCSTestSupport;
+import org.geotools.xml.PreventLocalEntityResolver;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -24,7 +24,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         // print(dom, System.out);
 
         String text = xpath.evaluate("//ows:ExceptionText", dom);
-        assertTrue(text.contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+        assertTrue(text.contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
     }
 
     @Test

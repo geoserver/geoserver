@@ -78,6 +78,7 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 import org.opengis.style.GraphicLegend;
 import org.opengis.util.InternationalString;
+import org.springframework.util.StringUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -429,8 +430,11 @@ public class BufferedImageLegendGraphicBuilder {
                     legendsStack.add(image);
                     graphics.dispose();
                 }
-                
-                LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(legendsStack, 0, 0, 0, request, forceLabelsOn, forceLabelsOff);
+                int labelMargin = 3;
+                if(!StringUtils.isEmpty(request.getLegendOptions().get("labelMargin"))) {
+                    labelMargin = Integer.parseInt(request.getLegendOptions().get("labelMargin").toString());
+                }
+                LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(legendsStack, 0, 0, 0, labelMargin, request, forceLabelsOn, forceLabelsOff);
                 // JD: changed legend behavior, see GEOS-812
                 // this.legendGraphic = scaleImage(mergeLegends(legendsStack), request);
                 BufferedImage image = LegendMerger.mergeLegends(applicableRules, request, options); 
@@ -671,7 +675,7 @@ public class BufferedImageLegendGraphicBuilder {
      */
     private BufferedImage mergeGroups(List<RenderedImage> imageStack, Rule[] rules, GetLegendGraphicRequest req,
             boolean forceLabelsOn, boolean forceLabelsOff) {
-        LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(imageStack, 0, 0, 0, req, forceLabelsOn, forceLabelsOff);
+        LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(imageStack, 0, 0, 0, 0, req, forceLabelsOn, forceLabelsOff);
         options.setLayout(LegendUtils.getGroupLayout(req));
         return LegendMerger.mergeGroups(rules, options);
 

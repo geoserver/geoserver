@@ -16,6 +16,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.AuthorityURLInfoInfoListConverter;
 import org.geoserver.config.util.LayerIdentifierInfoListConverter;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersister.ServiceInfoConverter;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
@@ -63,7 +64,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
     public static void initXStreamPersister(XStreamPersister xp) {
         XStream xs = xp.getXStream();
         xs.alias("wms", WMSInfo.class, WMSInfoImpl.class);
-        xs.registerConverter(new WMSInfoConverter(xs));
+        xs.registerConverter(new WMSInfoConverter(xp));
         xs.addDefaultImplementation(WatermarkInfoImpl.class, WatermarkInfo.class);
         xs.allowTypes(new Class[] { WatermarkInfo.class, WatermarkInfoImpl.class });
     }
@@ -103,10 +104,10 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
      * 
      * @since 2.1.3
      */
-    static class WMSInfoConverter extends ReflectionConverter {
+    static class WMSInfoConverter extends ServiceInfoConverter {
 
-        public WMSInfoConverter(XStream xs) {
-            super(xs.getMapper(), xs.getReflectionProvider());
+        public WMSInfoConverter(XStreamPersister xp) {
+            xp.super(WMSInfo.class);
         }
 
         @Override

@@ -92,7 +92,7 @@ public class RasterizerResource extends AbstractCatalogResource {
         
     	StyleHandler sh = Styles.handler(SLDHandler.MIMETYPE_10);
     	Version ver = sh.versionForMimeType(SLDHandler.MIMETYPE_10);
-        formats.add(new StyleFormat(sh.mimeType(ver), ver, false, sh, request));
+        formats.add(new StyleFormat(sh.mimeType(ver), ver, false, sh, request, catalog.getResourcePool().getEntityResolver()));
         
         return formats;
     }

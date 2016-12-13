@@ -651,19 +651,17 @@ public class CatalogImpl implements Catalog {
         // calling LayerInfo.setName(String) updates the resource (until the layer/publishing split
         // is in act), but that doesn't mean the resource was saved previously, which can leave the
         // catalog in an inconsistent state
-        if (null == getResourceByName(layer.getResource().getNamespace(), layer.getResource()
+        final NamespaceInfo ns = layer.getResource().getNamespace();
+        if (null == getResourceByName(ns, layer.getResource()
                 .getName(), ResourceInfo.class)) {
             throw new IllegalStateException("Found no resource named " + layer.prefixedName()
                     + " , Layer with that name can't be added");
         }
-        LayerInfo existing = getLayerByName( layer.getName() );
+        final String prefix = ns != null ? ns.getPrefix() : null;
+        LayerInfo existing = getLayerByName(prefix, layer.getName() );
         if ( existing != null && !existing.getId().equals( layer.getId() ) ) {
-            //JD: since layers are not qualified by anything (yet), check 
-            // namespace of the resource, if they are different then allow the 
-            // layer to be added
-            if ( existing.getResource().getNamespace().equals( layer.getResource().getNamespace() ) ) {
-                throw new IllegalArgumentException( "Layer named '"+layer.getName()+"' already exists.");
-            }
+            throw new IllegalArgumentException(
+                    "Layer named '" + layer.getName() + "' in workspace '" + prefix + "' already exists.");
         }
         
         // if the style is missing associate a default one, to avoid breaking WMS
@@ -930,6 +928,14 @@ public class CatalogImpl implements Catalog {
     }
     
     public void remove(LayerGroupInfo layerGroup) {
+        //ensure no references to the layer group
+        for ( LayerGroupInfo lg : facade.getLayerGroups() ) {
+            if ( lg.getLayers().contains( layerGroup ) || layerGroup.equals( lg.getRootLayer() ) ) {
+                String msg = "Unable to delete layer group referenced by layer group '"+lg.getName()+"'";
+                throw new IllegalArgumentException( msg );
+            }
+        }
+
         facade.remove(layerGroup);
         removed( layerGroup );
     }
@@ -1154,6 +1160,8 @@ public class CatalogImpl implements Catalog {
             NamespaceInfo ns = getNamespaceByPrefix( defaultNamespace.getPrefix() );
             if ( ns == null ) {
                 throw new IllegalArgumentException( "No such namespace: '" + defaultNamespace.getPrefix() + "'" );
+            } else {
+                defaultNamespace = ns;
             }
         }
         facade.setDefaultNamespace(defaultNamespace);
@@ -1247,11 +1255,16 @@ public class CatalogImpl implements Catalog {
         return facade.getDefaultWorkspace();
     }
     
-    public void setDefaultWorkspace(WorkspaceInfo workspace) {
-        if (workspace != null && facade.getWorkspaceByName(workspace.getName()) == null) {
-            facade.add(workspace);
+    public void setDefaultWorkspace(WorkspaceInfo defaultWorkspace) {
+        if (defaultWorkspace != null) {
+            WorkspaceInfo ws = facade.getWorkspaceByName(defaultWorkspace.getName());
+            if ( ws == null ) {
+                throw new IllegalArgumentException( "No such workspace: '" + defaultWorkspace.getName() + "'" );
+            } else {
+                defaultWorkspace = ws;
+            }
         }
-        facade.setDefaultWorkspace(workspace);
+        facade.setDefaultWorkspace(defaultWorkspace);
     }
     
     public List<WorkspaceInfo> getWorkspaces() {

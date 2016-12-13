@@ -12,6 +12,7 @@ import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -142,6 +143,10 @@ public class WMSStoreResource extends AbstractCatalogResource {
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
         persister.setCallback( 
             new XStreamPersister.Callback() {
+                @Override
+                protected Class<WMSStoreInfo> getObjectClass() {
+                    return WMSStoreInfo.class;
+                }
                 @Override
                 protected CatalogInfo getCatalogObject() {
                     String workspace = getAttribute("workspace");

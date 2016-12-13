@@ -145,7 +145,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
         if (layerGroupPolicy.hideLayerGroup(group, filteredLayers)) {
             return null;
         } else {
-            if (group.getLayers().size() != filteredLayers.size()) {
+            if (!group.getLayers().equals(filteredLayers)) {
                 return new DecoratingLayerGroupInfo(group) {
                     @Override
                     public List<PublishedInfo> getLayers() {

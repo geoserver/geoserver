@@ -18,6 +18,7 @@ import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -141,6 +142,19 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
                                    "The value of 'Width' must be at least 0.", 
                                    "The value of 'Height' must be at least 0.");       
         
+    }
+    
+    @Test
+    public void testLegendAutoFillEmpty() throws Exception {
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
+        //Make sure the fields we are editing actually exist
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:autoFill", GeoServerAjaxFormLink.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
+        tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
+        
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:autoFill", "click");
     }
     
     @Test

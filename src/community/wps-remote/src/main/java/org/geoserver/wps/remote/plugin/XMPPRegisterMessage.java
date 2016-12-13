@@ -135,7 +135,7 @@ public class XMPPRegisterMessage implements XMPPMessage {
                                     choosenOutputMimeTypeParam, String.class, Text.text(""),
                                     Text.text(""), false, 0, 1,
                                     paramType.get("output_mime_type").toString(), null);
-                            inputs.put(choosenOutputMimeTypeParam, outputChoosenMimeTypeParam);
+                            outputs.put(choosenOutputMimeTypeParam, outputChoosenMimeTypeParam);
                         }
 
                         final InternationalString outputTitle = (paramType.get("title") != null

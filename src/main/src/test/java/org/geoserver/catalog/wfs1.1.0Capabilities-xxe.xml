@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE name [  
+  <!ENTITY xxe SYSTEM "file:///file/not/there" >]>
+<wfs:WFS_Capabilities version="1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.opengis.net/wfs"
+	xmlns:wfs="http://www.opengis.net/wfs"
+	xmlns:ows="http://www.opengis.net/ows"
+	xmlns:gml="http://www.opengis.net/gml"
+	xmlns:ogc="http://www.opengis.net/ogc"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xsi:schemaLocation="http://www.opengis.net/wfs http://localhost:8080/geoserver/schemas/wfs/1.1.0/wfs.xsd"
+	xmlns:sf="http://www.openplans.org/spearfish"
+	xmlns:it.geosolutions="http://www.geo-solutions.it"
+	xmlns:topp="http://www.openplans.org/topp"
+	xmlns:sde="http://geoserver.sf.net"
+	xmlns:nurc="http://www.nurc.nato.int"
+	xmlns:tiger="http://www.census.gov"
+	xmlns:cite="http://www.opengeospatial.net/cite">
+	<ows:ServiceIdentification>
+		<ows:Title>My GeoServer WFS</ows:Title>
+		<ows:Abstract>
+			This is a description of your Web Feature Server.
+		</ows:Abstract>
+		<ows:Keywords>
+			<ows:Keyword>WFS</ows:Keyword>
+			<ows:Keyword>WMS</ows:Keyword>
+			<ows:Keyword>GEOSERVER</ows:Keyword>
+		</ows:Keywords>
+		<ows:ServiceType>WFS</ows:ServiceType>
+		<ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
+		<ows:Fees>NONE</ows:Fees>
+		<ows:AccessConstraints>NONE</ows:AccessConstraints>
+	</ows:ServiceIdentification>
+	<ows:ServiceProvider>
+		<ows:ProviderName />
+		<ows:ProviderSite xlink:href="http://www.geoserver.org" />
+		<ows:ServiceContact />
+	</ows:ServiceProvider>
+	<ows:OperationsMetadata>
+		<ows:Operation name="GetCapabilities">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get
+						xlink:href="http://localhost:8080/geoserver/wfs/get?" />
+					<ows:Post
+						xlink:href="http://localhost:8080/geoserver/wfs/post?" />
+				</ows:HTTP>
+			</ows:DCP>
+			<ows:Parameter name="AcceptVersions">
+				<ows:Value>1.0.0</ows:Value>
+				<ows:Value>1.1.0</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="AcceptFormats">
+				<ows:Value>text/xml</ows:Value>
+			</ows:Parameter>
+		</ows:Operation>
+		<ows:Operation name="DescribeFeatureType">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get
+						xlink:href="http://localhost:8080/geoserver/wfs?" />
+				</ows:HTTP>
+			</ows:DCP>
+			<ows:Parameter name="outputFormat">
+				<ows:Value>text/gml; subtype=gml/3.1.1</ows:Value>
+			</ows:Parameter>
+		</ows:Operation>
+		<ows:Operation name="GetFeature">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get
+						xlink:href="http://localhost:8080/geoserver/wfs?" />
+					<ows:Post
+						xlink:href="http://localhost:8080/geoserver/wfs?" />
+				</ows:HTTP>
+			</ows:DCP>
+			<ows:Parameter name="resultType">
+				<ows:Value>results</ows:Value>
+				<ows:Value>hits</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="outputFormat">
+				<ows:Value>text/gml; subtype=gml/3.1.1</ows:Value>
+                <ows:Value>text/xml; subtype=gml/2.1.2</ows:Value>
+			</ows:Parameter>
+		</ows:Operation>
+		<ows:Operation name="LockFeature">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get
+						xlink:href="http://localhost:8080/geoserver/wfs?" />
+					<ows:Post
+						xlink:href="http://localhost:8080/geoserver/wfs?" />
+				</ows:HTTP>
+			</ows:DCP>
+			<ows:Parameter name="releaseAction">
+				<ows:Value>ALL</ows:Value>
+				<ows:Value>SOME</ows:Value>
+			</ows:Parameter>
+		</ows:Operation>
+		<ows:Operation name="GetFeatureWithLock">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get
+						xlink:href="http://localhost:8080/geoserver/wfs?" />
+					<ows:Post
+						xlink:href="http://localhost:8080/geoserver/wfs?" />
+				</ows:HTTP>
+			</ows:DCP>
+			<ows:Parameter name="resultType">
+				<ows:Value>results</ows:Value>
+				<ows:Value>hits</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="outputFormat">
+				<ows:Value>text/gml; subtype=gml/3.1.1</ows:Value>
+			</ows:Parameter>
+		</ows:Operation>
+		<ows:Operation name="Transaction">
+			<ows:DCP>
+				<ows:HTTP>
+					<ows:Get
+						xlink:href="http://localhost:8080/geoserver/wfs?" />
+					<ows:Post
+						xlink:href="http://localhost:8080/geoserver/wfs?" />
+				</ows:HTTP>
+			</ows:DCP>
+			<ows:Parameter name="inputFormat">
+				<ows:Value>text/gml; subtype=gml/3.1.1</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="idgen">
+				<ows:Value>GenerateNew</ows:Value>
+				<ows:Value>UseExisting</ows:Value>
+				<ows:Value>ReplaceDuplicate</ows:Value>
+			</ows:Parameter>
+			<ows:Parameter name="releaseAction">
+				<ows:Value>ALL</ows:Value>
+				<ows:Value>SOME</ows:Value>
+			</ows:Parameter>
+		</ows:Operation>
+	</ows:OperationsMetadata>
+	<FeatureTypeList>
+		<Operations>
+			<Operation>Query</Operation>
+			<Operation>Insert</Operation>
+			<Operation>Update</Operation>
+			<Operation>Delete</Operation>
+			<Operation>Lock</Operation>
+		</Operations>
+		
+		<FeatureType xmlns:sf="http://www.openplans.org/spearfish">
+			<Name>&xxe;</Name>
+			<Title>archsites_Type</Title>
+			<Abstract>Generated from sfArchsites</Abstract>
+			<ows:Keywords>
+				<ows:Keyword>archsites sfArchsites</ows:Keyword>
+			</ows:Keywords>
+			<DefaultSRS>EPSG:26713</DefaultSRS>
+			<OutputFormats>
+				<Format>GML2</Format>
+				<Format>text/xml; subtype=gml/2.1.2</Format>
+				<Format>GML2-GZIP</Format>
+				<Format>text/xml; subtype=gml/3.1.1</Format>
+				<Format>gml3</Format>
+				<Format>SHAPE-ZIP</Format>
+				<Format>json</Format>
+			</OutputFormats>
+			<ows:WGS84BoundingBox>
+				<ows:LowerCorner>
+					-104 44
+				</ows:LowerCorner>
+				<ows:UpperCorner>
+					-103 45
+				</ows:UpperCorner>
+			</ows:WGS84BoundingBox>
+		</FeatureType>
+	</FeatureTypeList>
+	<ogc:Filter_Capabilities>
+		<ogc:Spatial_Capabilities>
+			<ogc:GeometryOperands>
+				<ogc:GeometryOperand>gml:Envelope</ogc:GeometryOperand>
+				<ogc:GeometryOperand>gml:Point</ogc:GeometryOperand>
+				<ogc:GeometryOperand>
+					gml:LineString
+				</ogc:GeometryOperand>
+				<ogc:GeometryOperand>gml:Polygon</ogc:GeometryOperand>
+			</ogc:GeometryOperands>
+			<ogc:SpatialOperators>
+				<ogc:SpatialOperator name="Disjoint" />
+				<ogc:SpatialOperator name="Equals" />
+				<ogc:SpatialOperator name="DWithin" />
+				<ogc:SpatialOperator name="Beyond" />
+				<ogc:SpatialOperator name="Intersects" />
+				<ogc:SpatialOperator name="Touches" />
+				<ogc:SpatialOperator name="Crosses" />
+				<ogc:SpatialOperator name="Contains" />
+				<ogc:SpatialOperator name="BBOX" />
+			</ogc:SpatialOperators>
+		</ogc:Spatial_Capabilities>
+		<ogc:Scalar_Capabilities>
+			<ogc:LogicalOperators />
+			<ogc:ComparisonOperators>
+				<ogc:ComparisonOperator>LessThan</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>GreaterThan</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>LessThanEqualTo</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>GreaterThanEqualTo</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>EqualTo</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>NotEqualTo</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>Like</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>Between</ogc:ComparisonOperator>
+				<ogc:ComparisonOperator>NullCheck</ogc:ComparisonOperator>
+			</ogc:ComparisonOperators>
+			<ogc:ArithmeticOperators>
+				<ogc:SimpleArithmetic />
+				<ogc:Functions>
+					<ogc:FunctionNames>
+						<ogc:FunctionName nArgs="0">abs</ogc:FunctionName>
+                        <ogc:FunctionName nArgs="0">buffer</ogc:FunctionName>
+						<ogc:FunctionName nArgs="0">within</ogc:FunctionName>
+					</ogc:FunctionNames>
+				</ogc:Functions>
+			</ogc:ArithmeticOperators>
+		</ogc:Scalar_Capabilities>
+		<ogc:Id_Capabilities>
+			<ogc:FID />
+			<ogc:EID />
+		</ogc:Id_Capabilities>
+	</ogc:Filter_Capabilities>
+</wfs:WFS_Capabilities>

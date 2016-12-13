@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -65,6 +66,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
+import org.geoserver.util.EntityResolverProvider;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -88,6 +90,7 @@ import org.geotools.data.store.ContentDataStore;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.data.store.ContentState;
 import org.geotools.data.wms.WebMapServer;
+import org.geotools.data.wms.xml.WMSSchema;
 import org.geotools.factory.Hints;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.FeatureTypes;
@@ -100,8 +103,12 @@ import org.geotools.measure.Measure;
 import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.util.SoftValueHashMap;
+import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
+import org.geotools.xml.DocumentFactory;
 import org.geotools.xml.Schemas;
+import org.geotools.xml.XMLHandlerHints;
+import org.geotools.xml.handlers.DocumentHandler;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
@@ -121,6 +128,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.springframework.context.ApplicationContext;
 import org.vfny.geoserver.global.GeoServerFeatureLocking;
 import org.vfny.geoserver.util.DataStoreUtils;
+import org.xml.sax.EntityResolver;
 
 /**
  * Provides access to resources such as datastores, coverage readers, and 
@@ -198,13 +206,7 @@ public class ResourcePool {
     List<Listener> listeners;
     ThreadPoolExecutor coverageExecutor;
     CatalogRepository repository;
-
-    /**
-     * Creates a new instance of the resource pool.
-     */
-    public static ResourcePool create(Catalog catalog) {
-        return create(catalog, null);
-    }
+    EntityResolverProvider entityResolverProvider;
 
     /**
      * Creates a new instance of the resource pool explicitly supplying the application 
@@ -442,6 +444,29 @@ public class ResourcePool {
     }
     
     /**
+     * Sets the entity resolver provider injected in the code doing XML parsing
+     * @param entityResolverProvider
+     */
+    public void setEntityResolverProvider(EntityResolverProvider entityResolverProvider) {
+        this.entityResolverProvider = entityResolverProvider;
+    }
+    
+    /**
+     * Returns the entity resolver provider injected in the code doing XML parsing
+     * @return
+     */
+    public EntityResolverProvider getEntityResolverProvider() {
+        return entityResolverProvider;
+    }
+
+    /**
+     * Creates a new instance of the resource pool.
+     */
+    public static ResourcePool create(Catalog catalog) {
+        return create(catalog, null);
+    }
+    
+    /**
      * Returns a {@link CoordinateReferenceSystem} object based on its identifier
      * caching the result.
      * <p>
@@ -591,6 +616,19 @@ public class ResourcePool {
                             for ( Param p : params ) {
                                 if(Repository.class.equals(p.getType())) {
                                     connectionParameters.put(p.getName(), repository);
+                                }
+                            }
+                        }
+                        
+                        // see if the store has a entity resolver param, if so, pass it down
+                        EntityResolver resolver = getEntityResolver();
+                        if(resolver != null && params != null) {
+                            for ( Param p : params ) {
+                                if(EntityResolver.class.equals(p.getType())) {
+                                    if(!(resolver instanceof Serializable)) {
+                                        resolver = new SerializableEntityResolver(resolver);
+                                    }
+                                    connectionParameters.put(p.getName(), (Serializable) resolver);
                                 }
                             }
                         }
@@ -1469,11 +1507,15 @@ public class ResourcePool {
             }
         }
 
+        if(coverageInfo == null && coverageName != null) {
+            coverageInfo = getCoverageInfo(coverageName, info);
+        }
+        
         if (coverageInfo != null) {
             MetadataMap metadata = coverageInfo.getMetadata();
             if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
                 CoverageView coverageView = (CoverageView) metadata.get(CoverageView.COVERAGE_VIEW);
-                return CoverageViewReader.wrap((GridCoverage2DReader) reader, coverageView, coverageInfo, hints);
+                reader = CoverageViewReader.wrap((GridCoverage2DReader) reader, coverageView, coverageInfo, hints);
             }
         }
 
@@ -1483,7 +1525,7 @@ public class ResourcePool {
             // GeoServer does not need to be updated to the multicoverage stuff
             // (we might want to introduce a hint later for code that really wants to get the
             // multi-coverage reader)
-            return CoverageDimensionCustomizerReader.wrap((GridCoverage2DReader) reader, coverageName, info);
+            return CoverageDimensionCustomizerReader.wrap((GridCoverage2DReader) reader, coverageName, coverageInfo);
         } else {
             // In order to deal with Bands customization, we need to get a CoverageInfo.
             // Therefore we won't wrap the reader into a CoverageDimensionCustomizerReader in case 
@@ -1493,7 +1535,7 @@ public class ResourcePool {
             // that case so returning the simple reader.
             final int numCoverages = ((GridCoverage2DReader) reader).getGridCoverageCount();
             if (numCoverages == 1) {
-                return CoverageDimensionCustomizerReader.wrap((GridCoverage2DReader) reader, null, info);
+                return CoverageDimensionCustomizerReader.wrap((GridCoverage2DReader) reader, null, coverageInfo);
             }
             // Avoid dimensions wrapping since we have a multi-coverage reader 
             // but no coveragename have been specified
@@ -1660,8 +1702,15 @@ public class ResourcePool {
         WMSStoreInfo expandedStore = clone(info, true);
         
         try {
+            EntityResolver entityResolver = getEntityResolver();
+            
             String id = info.getId();
             WebMapServer wms = wmsCache.get(id);
+            // if we have a hit but the resolver has been changed, clean and build again
+            if(wms != null && wms.getHints() != null && !Objects.equals(wms.getHints().get(XMLHandlerHints.ENTITY_RESOLVER), entityResolver)) {
+                wmsCache.remove(id);
+                wms = null;
+            }
             if (wms == null) {
                 synchronized (wmsCache) {
                     wms = wmsCache.get(id);
@@ -1669,8 +1718,15 @@ public class ResourcePool {
                         HTTPClient client = getHTTPClient(expandedStore);
                         String capabilitiesURL = expandedStore.getCapabilitiesURL();
                         URL serverURL = new URL(capabilitiesURL);
-                        wms = new WebMapServer(serverURL, client);
+                        Map<String, Object> hints = new HashMap<>();
+                        hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
+                        hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
+                        if(entityResolver != null) {
+                            hints.put(XMLHandlerHints.ENTITY_RESOLVER, entityResolver);
+                        }
                         
+                        wms = new WebMapServer(serverURL, client, hints);
+
                         wmsCache.put(id, wms);
                     }
                 }
@@ -1682,6 +1738,18 @@ public class ResourcePool {
         } catch (Exception e) {
             throw (IOException) new IOException().initCause(e);
         }
+    }
+
+    /**
+     * Returns the entity resolver from the {@link EntityResolverProvider}, or null if none is configured
+     * @return
+     */
+    public EntityResolver getEntityResolver() {
+        EntityResolver entityResolver = null;
+        if(entityResolverProvider != null) {
+             entityResolver = entityResolverProvider.getEntityResolver();
+        }
+        return entityResolver;
     }
     
     private HTTPClient getHTTPClient(WMSStoreInfo info) {
@@ -2478,5 +2546,40 @@ public class ResourcePool {
         target.setMaxConnections(source.getMaxConnections());
         target.setConnectTimeout(source.getConnectTimeout());
         target.setReadTimeout(source.getReadTimeout());
+    }
+
+    /**
+     * Retrieve the proper {@link CoverageInfo} object from the specified {@link CoverageStoreInfo} 
+     * using the specified coverageName (which may be the native one in some cases).
+     * In case of null coverageName being specified, we assume we are dealing with a 
+     * single coverageStore <-> single coverage relation so we will take the first coverage available
+     * on that store.
+     * 
+     * @param storeInfo the storeInfo to be used to access the catalog
+     *
+     */
+    static CoverageInfo getCoverageInfo(String coverageName, CoverageStoreInfo storeInfo) {
+        Utilities.ensureNonNull("storeInfo", storeInfo);
+        final Catalog catalog = storeInfo.getCatalog();
+        CoverageInfo info = null;
+        if (coverageName != null) {
+            info = catalog.getCoverageByName(coverageName);
+        }
+        if (info == null) {
+            final List<CoverageInfo> coverages = catalog.getCoveragesByStore(storeInfo);
+            if (coverageName != null) {
+                for (CoverageInfo coverage: coverages) {
+                    if (coverage.getNativeName().equalsIgnoreCase(coverageName)) {
+                        info = coverage;
+                        break;
+                    }
+                }
+            }
+            if (info == null && coverages != null && coverages.size() == 1) {
+                // Last resort
+                info = coverages.get(0);
+            }
+        }
+        return info;
     }
 }

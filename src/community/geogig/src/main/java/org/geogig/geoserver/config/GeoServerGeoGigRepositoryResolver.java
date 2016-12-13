@@ -7,7 +7,6 @@ package org.geogig.geoserver.config;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -70,7 +69,7 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
     }
 
     @Override
-    public ConfigDatabase getConfigDatabase(URI repoURI, Context repoContext) {
+    public ConfigDatabase getConfigDatabase(URI repoURI, Context repoContext, boolean rootUri) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -82,16 +81,19 @@ public class GeoServerGeoGigRepositoryResolver extends RepositoryResolver {
         // get the repo by name
         try {
             RepositoryInfo info = repoMgr.getByRepoName(name);
-            String repositoryId = info.getId();
-            Repository repo = repoMgr.getRepository(repositoryId);
+            // get the native RepositoryResolver for the location and open it directly
+            // Using the RepositryManager to get the repo would cause the repo to be managed by the RepositoryManager,
+            // when this repo should be managed by the DataStore. The DataStore will close this repo instance when
+            // GeoServer decides to dispose the DataStore.
+            Repository repo = RepositoryResolver.load(info.getLocation());
             checkState(repo.isOpen(), "RepositoryManager returned a closed repository for %s",
                     name);
             return repo;
-        } catch (IOException ioe) {
+        } catch (Exception ex) {
             // didn't find a repo
             RepositoryConnectionException rce = new RepositoryConnectionException(
                     "No GeoGig repository found with NAME or ID: " + name);
-            rce.initCause(ioe);
+            rce.initCause(ex);
             throw rce;
         }
     }

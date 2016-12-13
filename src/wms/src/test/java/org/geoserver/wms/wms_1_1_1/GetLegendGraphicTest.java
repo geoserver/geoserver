@@ -5,29 +5,31 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URLEncoder;
 import java.util.Collections;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.Converters;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.w3c.dom.Document;
-
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetLegendGraphicTest extends WMSTestSupport {
@@ -222,6 +224,18 @@ public class GetLegendGraphicTest extends WMSTestSupport {
         assertPixel(image, 24, 6, Color.WHITE);
         
         assertPixel(image, 1, 20, Color.WHITE);
+    }
+    
+    @Test
+    public void testEntityExpansionSldBody() throws Exception {
+        String base = "wms?LEGEND_OPTIONS=forceLabels:on&REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=200&HEIGHT=20&LAYER=" + getLayerId(MockData.POLYGONS) + "&SLD_BODY=";
+        String sld = IOUtils.toString(TestData.class.getResource("externalEntities.sld"));
+        MockHttpServletResponse response = getAsServletResponse(base + URLEncoder.encode(sld, "UTF-8"));
+        // should fail with an error message poiting at entity resolution
+        assertEquals("application/vnd.ogc.se_xml", response.getContentType());
+        final String content = response.getContentAsString();
+        assertThat(content, containsString("Entity resolution disallowed"));
+        assertThat(content, containsString("/this/file/does/not/exist"));
     }
     
 }

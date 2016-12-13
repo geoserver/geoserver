@@ -13,18 +13,18 @@ import static org.junit.Assert.fail;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.opengis.cat.csw20.ElementSetType;
-import net.opengis.cat.csw20.GetRecordByIdType;
-
 import org.geoserver.csw.kvp.GetRecordByIdKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
-import org.geoserver.util.NoExternalEntityResolver;
 import org.geotools.csw.CSWConfiguration;
+import org.geotools.xml.PreventLocalEntityResolver;
 import org.junit.Test;
 import org.w3c.dom.Document;
+
+import net.opengis.cat.csw20.ElementSetType;
+import net.opengis.cat.csw20.GetRecordByIdType;
 
 
 /**
@@ -79,7 +79,7 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
             fail("Should have failed with an entity expansion disallowed exception");
         } catch (ServiceException e) {
             Throwable cause = e.getCause();
-            assertTrue(cause.getMessage().contains(NoExternalEntityResolver.ERROR_MESSAGE_BASE));
+            assertTrue(cause.getMessage().contains(PreventLocalEntityResolver.ERROR_MESSAGE_BASE));
         }
 
     }

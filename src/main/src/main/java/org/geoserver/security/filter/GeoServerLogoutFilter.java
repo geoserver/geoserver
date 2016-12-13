@@ -58,8 +58,10 @@ public class GeoServerLogoutFilter extends GeoServerSecurityFilter  {
         redirectUrl= ((LogoutFilterConfig) config).getRedirectURL();
         logoutSuccessHandler=new SimpleUrlLogoutSuccessHandler();
         if (StringUtils.hasLength(redirectUrl))            
-            logoutSuccessHandler.setDefaultTargetUrl(redirectUrl);            
-        pathInfos=GeoServerSecurityFilterChain.FORM_LOGOUT_CHAIN.split(",");    
+            logoutSuccessHandler.setDefaultTargetUrl(redirectUrl);
+        String formLogoutChain = (((LogoutFilterConfig) config).getFormLogoutChain() != null ? 
+                ((LogoutFilterConfig) config).getFormLogoutChain() : GeoServerSecurityFilterChain.FORM_LOGOUT_CHAIN);
+        pathInfos=formLogoutChain.split(",");    
     }
     
 
@@ -70,7 +72,7 @@ public class GeoServerLogoutFilter extends GeoServerSecurityFilter  {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
         boolean doLogout = false;
-        for (String pathInfo:pathInfos) {              
+        for (String pathInfo:pathInfos) {
             if (getRequestPath(request).startsWith(pathInfo)) {
                 doLogout=true;
                 break;

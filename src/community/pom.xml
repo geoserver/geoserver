@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.10-SNAPSHOT</version>
+    <version>2.11-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -26,11 +26,6 @@
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-gwc</artifactId>
-      <version>2.10-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -71,7 +66,6 @@
           <descriptor>release/ext-gdal-wcs.xml</descriptor>
           <descriptor>release/ext-gdal-wps.xml</descriptor>
           <descriptor>release/ext-wps-jdbc.xml</descriptor>
-          <descriptor>release/ext-vectortiles.xml</descriptor>
           <descriptor>release/ext-params-extractor.xml</descriptor>
           <descriptor>release/ext-wps-remote.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
@@ -80,8 +74,12 @@
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
           <descriptor>release/ext-geogig.xml</descriptor>
-		      <descriptor>release/ext-backup-restore.xml</descriptor>
+          <descriptor>release/ext-oauth2-google.xml</descriptor>
+          <descriptor>release/ext-oauth2-github.xml</descriptor>
+          <descriptor>release/ext-oauth2-geonode.xml</descriptor>
+          <descriptor>release/ext-backup-restore.xml</descriptor>
           <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
+          <descriptor>release/ext-onelogin.xml</descriptor> 
         </descriptors>
       </configuration>
      </plugin>
@@ -172,6 +170,12 @@
       </modules>
     </profile>
     <profile>
+      <id>onelogin</id>
+      <modules>
+        <module>onelogin</module>
+      </modules>
+    </profile>
+    <profile>
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>
@@ -198,21 +202,25 @@
         <module>geofence-server</module>
         <module>sldService</module>
         <module>params-extractor</module>
-        <module>vectortiles</module>
         <module>wps-remote</module>
         <module>wps-jdbc</module>
         <module>release</module>
         <module>geogig</module>
-		<module>gwc-distributed</module>
-		<module>jdbcstore</module>
-		<module>gdal</module>
-		<module>gwc-s3</module>
-		<module>ysld</module>
+        <module>gwc-distributed</module>
+        <module>jdbcstore</module>
+        <module>gdal</module>
+        <module>gwc-s3</module>
+        <module>ysld</module>
         <module>backup-restore</module>
-		<module>ncwms</module>
+        <module>ncwms</module>
         <module>web-resource</module>
         <module>gwc-sqlite</module>
+        <module>security/oauth2</module>
+        <module>security/oauth2-google</module>
+        <module>security/oauth2-github</module>
+        <module>security/oauth2-geonode</module>
         <module>wmts-multi-dimensional</module>
+        <module>onelogin</module>
       </modules>
     </profile>
     <profile>
@@ -384,12 +392,6 @@
       </modules>
     </profile>
     <profile>
-      <id>vectortiles</id>
-        <modules>
-          <module>vectortiles</module>
-        </modules>
-    </profile>    
-    <profile>
       <id>jdbcstore</id>
       <modules>
         <module>jdbcconfig</module>
@@ -467,6 +469,24 @@
       <id>geogig</id>
       <modules>
         <module>geogig</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>oauth2-google</id>
+      <modules>
+        <module>security/oauth2-google</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>oauth2-github</id>
+      <modules>
+        <module>security/oauth2-github</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>oauth2-geonode</id>
+      <modules>
+        <module>security/oauth2-geonode</module>
       </modules>
     </profile>
     <profile>

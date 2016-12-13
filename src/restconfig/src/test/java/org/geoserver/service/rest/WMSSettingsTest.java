@@ -11,8 +11,7 @@ import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
-import org.geoserver.test.TestSetup;
-import org.geoserver.test.TestSetupFrequency;
+import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMSInfo;
 import org.junit.After;
 import org.junit.Test;
@@ -52,6 +51,11 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testGetAsHTML() throws Exception {
+        getAsDOM("/rest/services/wms/settings.html" );
+    }
+
+    @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wms': {'id':'wms','enabled':'false','name':'WMS'}}";
         MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings/",
@@ -67,7 +71,7 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    public void testPutASXML() throws Exception {
+    public void testPutAsXML() throws Exception {
         String xml = "<wms>"
                 + "<id>wms</id>"
                 + "<enabled>false</enabled>"
@@ -82,6 +86,28 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("false", "/wms/enabled", dom);
         assertXpathEvaluatesTo("WMS", "/wms/name", dom);
 
+    }
+
+    @Test
+    public void testPutNonDestructive() throws Exception {
+        GeoServer geoServer = getGeoServer();
+        WMSInfo i = geoServer.getService(WMSInfo.class);
+        i.setEnabled(true);
+        geoServer.save(i);
+        String xml = "<wms>"
+                + "<id>wms</id>"
+                + "<name>WMS</name><title>GeoServer Web Map Service</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</wms>";
+        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings", xml,
+                "text/xml");
+        assertEquals(200, response.getStatus());
+        
+        Document dom = getAsDOM("/rest/services/wms/settings.xml");
+        assertXpathEvaluatesTo("true", "/wms/enabled", dom);
+        assertXpathEvaluatesTo("WMS", "/wms/name", dom);
+        i = geoServer.getService(WMSInfo.class);
+        assertTrue(i.isEnabled());
     }
 
     @Test

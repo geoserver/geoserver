@@ -16,6 +16,7 @@ import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -305,6 +306,10 @@ public class FeatureTypeResource extends AbstractCatalogResource {
             persister.setHideFeatureTypeAttributes();
         }
         persister.setCallback( new XStreamPersister.Callback() {
+            @Override
+            protected Class<FeatureTypeInfo> getObjectClass() {
+                return FeatureTypeInfo.class;
+            }
             @Override
             protected CatalogInfo getCatalogObject() {
                 String workspace = getAttribute("workspace");

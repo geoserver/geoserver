@@ -78,6 +78,11 @@ public class LocalWMSSettingsTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("Nearest", "/wms/interpolation", dom);
     }
 
+    @Test
+    public void testGetAsHTML() throws Exception {
+        getAsDOM("/rest/services/wms/workspaces/sf/settings.html" );
+    }
+
     public void testCreateAsJSON() throws Exception {
         removeLocalWorkspace();
         String input = "{'wms': {'id' : 'wms_sf', 'workspace':{'name':'sf'},'name' : 'WMS', 'enabled': 'true'}}";

@@ -1,3 +1,4 @@
+
 /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
@@ -5,8 +6,10 @@
  */
 package org.geoserver.monitor;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +52,16 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
             input = new MonitorInputStream(delegateTo, maxSize);
         }
         return input;
+    }
+    
+    @Override
+    public BufferedReader getReader() throws IOException {
+        String encoding = getCharacterEncoding();
+        if (encoding == null) {
+            return new BufferedReader(new InputStreamReader(getInputStream()));
+        } else {
+            return new BufferedReader(new InputStreamReader(getInputStream(), encoding));
+        }
     }
 
     static class MonitorInputStream extends ServletInputStream {

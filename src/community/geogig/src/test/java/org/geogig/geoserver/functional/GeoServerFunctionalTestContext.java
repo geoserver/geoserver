@@ -61,6 +61,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
     private GeoServerRepositoryProvider repoProvider = null;
 
+    private GeoGigTestData testData;
     /**
      * Helper class for running mock http requests.
      */
@@ -163,6 +164,8 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected void setUp() throws Exception {
+        System.out.println("\n\nRUNNING SETUP\n");
+        testData = new GeoGigTestData(this.tempFolder);
         if (helper == null) {
             helper = new TestHelper();
             helper.doSetup();
@@ -179,10 +182,14 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected void tearDown() throws Exception {
+        System.out.println("\n\nRUNNING TEAR DOWN\n");
         try {
             if (helper != null) {
                 RepositoryManager.close();
                 helper.doTearDown();
+            }
+            if (testData != null) {
+                testData.tearDown();
             }
         } finally {
             helper = null;
@@ -212,7 +219,6 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected TestData createRepo(String name) throws Exception {
-        GeoGigTestData testData = new GeoGigTestData(RunWebAPIFunctionalTest.TEMP_ROOT.getRoot());
         testData.setUp(name);
         testData.init().config("user.name", "John").config("user.email", "John.Doe@example.com");
         GeoGIG geogig = testData.getGeogig();

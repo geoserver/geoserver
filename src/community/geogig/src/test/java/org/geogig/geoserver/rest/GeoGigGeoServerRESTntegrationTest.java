@@ -76,6 +76,7 @@ public class GeoGigGeoServerRESTntegrationTest extends CatalogRESTTestSupport {
     @After
     public void after() {
 		RepositoryManager.close();
+		getCatalog().dispose();
     }
 
     /**

@@ -8,17 +8,10 @@ package org.geoserver.wps;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
-
-import java.io.InputStream;
-
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.MockData;
-import org.geoserver.platform.GeoServerExtensions;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -48,7 +41,7 @@ public class GetCapabilitiesTest extends WPSTestSupport {
     }
     
     @Test
-    public void testWPSScriptEnable() throws Exception {
+    public void testInvalidWPSConfig() throws Exception {
         GeoServer gs = getGeoServer();
         WPSInfo wpsInfo = gs.getService(WPSInfo.class);
         
@@ -56,7 +49,6 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         gs.getFacade().remove(wpsInfo);
         try {
             Document dom = getAsDOM("wps?service=wps&request=getcapabilities");
-            print(dom);
             checkOws11Exception(dom);
         } finally {
             gs.getFacade().add(wpsInfo);
@@ -228,20 +220,6 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         // print( dom );
         assertEquals("wps:Capabilities", dom.getFirstChild().getNodeName());
     }
-    
-    /**
-     * Helper method tha reads a WPS configuration from a XML file and return that info.
-     */
-    private WPSInfo loadFromXml(String resource) throws Exception {
-        XStreamPersisterFactory factory = GeoServerExtensions.bean(XStreamPersisterFactory.class);
-        XStreamPersister xp = factory.createXMLPersister();
-        WPSXStreamLoader loader = GeoServerExtensions.bean(WPSXStreamLoader.class);
-        loader.initXStreamPersister(xp, getGeoServer());
-        try (InputStream is = getClass().getResourceAsStream(resource)) {
-            return xp.load(is, WPSInfo.class);
-        }
-    }
-
     
     /* TODO Update Sequence tests
     public void testUpdateSequenceInferiorGet() throws Exception { // Standard Test A.4.2.6

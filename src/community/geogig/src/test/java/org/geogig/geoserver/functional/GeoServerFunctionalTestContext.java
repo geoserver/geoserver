@@ -35,9 +35,9 @@ import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.DataAccess;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
-import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryResolver;
+import org.locationtech.geogig.repository.impl.GeoGIG;
 import org.locationtech.geogig.web.api.TestData;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -213,6 +213,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         } finally {
             helper = null;
         }
+        System.runFinalization();
     }
 
     /**

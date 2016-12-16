@@ -31,8 +31,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.locationtech.geogig.plumbing.ResolveGeogigDir;
 import org.locationtech.geogig.porcelain.InitOp;
-import org.locationtech.geogig.repository.GeoGIG;
 import org.locationtech.geogig.repository.RepositoryResolver;
+import org.locationtech.geogig.repository.impl.GeoGIG;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 

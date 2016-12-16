@@ -4,11 +4,6 @@
  */
 package org.geogig.geoserver.functional;
 
-import java.io.IOException;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
 import cucumber.api.CucumberOptions;

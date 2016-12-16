@@ -17,7 +17,6 @@ import org.apache.wicket.validation.ValidationError;
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.geogig.geoserver.util.PostgresConnectionErrorHandler;
-import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.RepositoryResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

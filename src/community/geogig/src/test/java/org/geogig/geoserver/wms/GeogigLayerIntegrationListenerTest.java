@@ -7,7 +7,7 @@ package org.geogig.geoserver.wms;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.REPOSITORY;
-import static org.locationtech.geogig.model.RevObjectTestSupport.hashString;
+import static org.locationtech.geogig.model.impl.RevObjectTestSupport.hashString;
 
 import java.io.Serializable;
 import java.util.List;

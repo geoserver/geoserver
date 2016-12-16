@@ -27,6 +27,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDataProvider.PropertyPlaceholder;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -64,7 +65,7 @@ public class LayerGroupEntryPanel extends Panel {
     List<LayerGroupEntry> items;
     GeoServerDialog dialog;
     
-    public LayerGroupEntryPanel( String id, LayerGroupInfo layerGroup ) {
+    public LayerGroupEntryPanel( String id, LayerGroupInfo layerGroup, IModel<WorkspaceInfo> groupWorkspace) {
         super( id );
         
         items = new ArrayList<LayerGroupEntry>();
@@ -114,7 +115,7 @@ public class LayerGroupEntryPanel extends Panel {
                 popupWindow.setInitialHeight( 375 );
                 popupWindow.setInitialWidth( 525 );
                 popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
-                popupWindow.setContent( new LayerListPanel(popupWindow.getContentId()) {
+                popupWindow.setContent( new LayerListPanel(popupWindow.getContentId(), groupWorkspace.getObject()) {
                     private static final long serialVersionUID = -47811496174289699L;
 
                     @Override
@@ -141,7 +142,7 @@ public class LayerGroupEntryPanel extends Panel {
                 popupWindow.setInitialHeight( 375 );
                 popupWindow.setInitialWidth( 525 );
                 popupWindow.setTitle(new ParamResourceModel("chooseLayerGroup", this));
-                popupWindow.setContent( new LayerGroupListPanel(popupWindow.getContentId()) {
+                popupWindow.setContent( new LayerGroupListPanel(popupWindow.getContentId(), groupWorkspace.getObject()) {
                     private static final long serialVersionUID = 4052338807144204692L;
 
                     @Override

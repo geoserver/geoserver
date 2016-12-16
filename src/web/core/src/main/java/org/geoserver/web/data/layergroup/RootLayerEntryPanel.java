@@ -95,7 +95,7 @@ public class RootLayerEntryPanel extends Panel {
                 popupWindow.setInitialHeight(375);
                 popupWindow.setInitialWidth(525);
                 popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
-                popupWindow.setContent(new LayerListPanel(popupWindow.getContentId()) {
+                popupWindow.setContent(new LayerListPanel(popupWindow.getContentId(), workspace) {
                     private static final long serialVersionUID = -650599334132713975L;
 
                     @Override

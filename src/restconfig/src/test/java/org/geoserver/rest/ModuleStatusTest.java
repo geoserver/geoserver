@@ -13,10 +13,23 @@ import org.junit.Test;
 public class ModuleStatusTest extends GeoServerSystemTestSupport {
 
     @Test
-    public void testGetHTML() throws Exception {
+    public void testGetStatusHTML() throws Exception {
         String html = getAsString("/rest/about/status");
         assertTrue(html.contains("Available"));
         assertTrue(html.contains("Enabled"));
+    }
+
+    @Test
+    public void testGetSingleModule() throws Exception {
+        String html = getAsString("/rest/about/status/gs-main");
+        assertTrue(html.contains("<b>Module</b> : gs-main"));
+        assertTrue(html.contains("<b>Enabled</b> : true"));
+    }
+
+    @Test
+    public void testMalformedModuleName() throws Exception {
+        String html = getAsString("/rest/about/status/fake1_module");
+        assertTrue(html.contains("No such module"));
     }
 
 }

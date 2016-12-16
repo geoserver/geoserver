@@ -4,10 +4,12 @@
  */
 package org.geoserver.rest;
 
+import org.geoserver.rest.util.RESTUtils;
 import org.restlet.Finder;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Resource;
+
 
 /**
  * @author Morgan Thompson - Boundless
@@ -20,6 +22,7 @@ public class AboutStatusFinder extends Finder {
     }
 
     public Resource findTarget(Request request, Response response) {
-        return new AboutStatus(getContext(), request, response);
+        String module = RESTUtils.getAttribute(request, "module");
+        return new AboutStatus(getContext(), request, response, module);
     }
 }

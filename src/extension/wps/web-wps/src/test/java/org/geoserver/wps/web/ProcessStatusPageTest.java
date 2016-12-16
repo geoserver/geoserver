@@ -59,9 +59,6 @@ public class ProcessStatusPageTest extends WPSPagesTestSupport {
         Document dom = getAsDOM(request);
         // print(dom);
         assertXpathExists("//wps:ProcessAccepted", dom);
-//        XpathEngine xpath = XMLUnit.newXpathEngine();
-//        String fullStatusLocation = xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
-//        String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
         
         // start the page, should have one process running
         tester.startPage(new ProcessStatusPage());

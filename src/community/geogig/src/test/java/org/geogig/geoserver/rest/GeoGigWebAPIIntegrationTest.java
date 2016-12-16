@@ -145,6 +145,7 @@ public class GeoGigWebAPIIntegrationTest extends GeoServerSystemTestSupport {
     @After
     public void after() {
         RepositoryManager.close();
+        getCatalog().dispose();
     }
 
     /**

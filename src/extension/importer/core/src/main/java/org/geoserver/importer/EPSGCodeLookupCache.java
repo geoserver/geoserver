@@ -9,7 +9,7 @@ import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import it.geosolutions.imageio.utilities.SoftValueHashMap;
+import org.geotools.util.SoftValueHashMap;
 
 /**
  * Caches expensive EPSG code lookups 

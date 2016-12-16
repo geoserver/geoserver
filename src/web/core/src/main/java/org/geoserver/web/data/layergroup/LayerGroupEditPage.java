@@ -106,6 +106,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
         private EnvelopePanel envelopePanel;       
         protected RootLayerEntryPanel rootLayerPanel; 
         
+        @SuppressWarnings("serial")
         private void initUI() {
 
             final WebMarkupContainer rootLayerPanelContainer = new WebMarkupContainer("rootLayerContainer");
@@ -149,6 +150,15 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                     new DropDownChoice<WorkspaceInfo>("workspace", new WorkspacesModel(), 
                             new WorkspaceChoiceRenderer());
             wsChoice.setNullValid(true);
+            wsChoice.add(new OnChangeAjaxBehavior() {
+
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    // nothing to do really, just wanted to get the state back on the server side
+                    // for the chooser dialogs to use
+                }
+                
+            });
             if (!isAuthenticatedAsAdmin()) {
                 wsChoice.setNullValid(false);
                 wsChoice.setRequired(true);
@@ -214,7 +224,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                 }
             });
             
-            add(lgEntryPanel = new LayerGroupEntryPanel( "layers", getPublishedInfo() ));
+            add(lgEntryPanel = new LayerGroupEntryPanel( "layers", getPublishedInfo(), wsChoice.getModel()));
             
             add(new MetadataLinkEditor("metadataLinks", myModel));
             

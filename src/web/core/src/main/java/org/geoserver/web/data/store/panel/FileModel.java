@@ -7,6 +7,7 @@ package org.geoserver.web.data.store.panel;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,8 +51,14 @@ public class FileModel implements IModel<String> {
         return isSubfile(root, selection.getParentFile());
     }
 
+    @Override
     public String getObject() {
-        return delegate.getObject();
+        Object obj = delegate.getObject();
+        if (obj instanceof URL) {
+            URL url = (URL)obj;
+            return url.toExternalForm();
+        }
+        return (String)obj;
     }
 
     public void detach() {

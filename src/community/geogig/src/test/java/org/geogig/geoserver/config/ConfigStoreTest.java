@@ -88,7 +88,7 @@ public class ConfigStoreTest {
         // Files.copy(resource.file(), System.err);
         String expected = "<RepositoryInfo>"//
                 + "<id>" + dummyId + "</id>"//
-                + "<location>file:/home/test/repo</location>"//
+                + "<location>" + info.getLocation().toString() + "</location>"//
                 + "</RepositoryInfo>";
 
         XMLAssert.assertXMLEqual(new StringReader(expected),
@@ -162,7 +162,8 @@ public class ConfigStoreTest {
         RepositoryInfo info = store.get(dummyId);
         assertNotNull(info);
         assertEquals(dummyId, info.getId());
-        assertEquals(new URI("file:/home/test/repo"), info.getLocation());
+        assertEquals("file", info.getLocation().getScheme());
+        assertTrue(info.getLocation().toString().endsWith("/home/test/repo"));
     }
 
     @Test

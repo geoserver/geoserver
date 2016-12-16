@@ -268,6 +268,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         String repoName = resolver.getName(repoURI);
         RepositoryInfo repositoryInfo = RepositoryManager.get().getByRepoName(repoName);
         assertNotNull(repositoryInfo);
+        catalog.dispose();
         return new TestData(geogig);
     }
 

@@ -185,7 +185,6 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected void setUp() throws Exception {
-        System.out.println("\n\nRUNNING SETUP\n");
         testData = new GeoGigTestData(this.tempFolder);
         if (helper == null) {
             helper = new TestHelper();
@@ -203,7 +202,6 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected void tearDown() throws Exception {
-        System.out.println("\n\nRUNNING TEAR DOWN\n");
         try {
             if (helper != null) {
                 RepositoryManager.close();

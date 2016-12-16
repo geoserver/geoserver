@@ -5,9 +5,7 @@
  */
 package org.geoserver.web.demo;
 
-import java.util.Collection;
-import java.util.Locale;
-
+import com.vividsolutions.jts.geom.Envelope;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.CssUrlReferenceHeaderItem;
@@ -23,15 +21,20 @@ import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.crs.DynamicCrsMapResource;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleBookmarkableLink;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.opengis.metadata.extent.Extent;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import org.opengis.metadata.extent.GeographicExtent;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.ProjectedCRS;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.InternationalString;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.logging.Level;
 
 import static org.geoserver.ows.util.ResponseUtils.baseURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
@@ -42,6 +45,8 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
 
     private String jsBbox;
 
+    private String jsUnit;
+
     private double jsMaxResolution;
 
     /**
@@ -49,7 +54,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
      * 
      */
     public void renderHead(IHeaderResponse headerResponse) {
-        String onLoadJsCall = "initMap('" + jsSrs + "', " + jsBbox + ", " + jsMaxResolution + ")";
+        String onLoadJsCall = "initMap('" + jsSrs + "', '" + jsUnit + "', " + jsBbox + ", " + jsMaxResolution + ")";
         headerResponse.render(new OnDomReadyHeaderItem(onLoadJsCall));
     }
 
@@ -63,10 +68,10 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                 String baseUrl = baseURL(req);
 
                 response.render(new CssUrlReferenceHeaderItem(
-                    buildURL(baseUrl, "openlayers/theme/default/style.css", null, URLMangler.URLType.RESOURCE),
+                    buildURL(baseUrl, "openlayers3/ol.css", null, URLMangler.URLType.RESOURCE),
                     null, null));
                 response.render(new JavaScriptUrlReferenceHeaderItem(
-                    buildURL(baseUrl, "openlayers/OpenLayers.js", null, URLMangler.URLType.RESOURCE),
+                    buildURL(baseUrl, "openlayers3/ol.js", null, URLMangler.URLType.RESOURCE),
                     null, false, "UTF-8", null));
             }
         });
@@ -97,6 +102,18 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         String areaOfValidity = "";
         this.jsBbox = "null";
         this.jsSrs = code;
+
+        // use the unicode escape sequence for the degree sign so its not
+        // screwed up by different local encodings
+        this.jsUnit = crs instanceof ProjectedCRS ? "m" : "degrees";
+        try {
+            String unit = crs.getCoordinateSystem().getAxis(0).getUnit().toString();
+            if ("ft".equals(unit) || "feets".equals(unit))
+                this.jsUnit = "feet";
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error trying to determine unit of measure", e);
+        }
+
         CoordinateReferenceSystem mapCrs = crs;
         if (crs != null) {
             // CoordinateSystem coordinateSystem = crs.getCoordinateSystem();
@@ -139,35 +156,25 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
 
                 GeographicBoundingBox box = CRS.getGeographicBoundingBox(crs);
 
+
                 double westBoundLongitude = box.getWestBoundLongitude();
                 double eastBoundLongitude = box.getEastBoundLongitude();
                 double southBoundLatitude = box.getSouthBoundLatitude();
                 double northBoundLatitude = box.getNorthBoundLatitude();
 
-                double[] dst1;
-                double[] dst2;
                 double x1;
                 double y1;
                 double x2;
                 double y2;
                 try {
+                    Envelope envelope = new Envelope(westBoundLongitude, eastBoundLongitude, southBoundLatitude, northBoundLatitude);
                     MathTransform tr = CRS.findMathTransform(CRS.decode("EPSG:4326"), crs, true);
-                    dst1 = new double[tr.getTargetDimensions()];
-                    dst2 = new double[tr.getTargetDimensions()];
-                    double[] src1 = new double[tr.getSourceDimensions()];
-                    src1[0] = westBoundLongitude;
-                    src1[1] = southBoundLatitude;
+                    Envelope destEnvelope = JTS.transform(envelope, null, tr, 10);
 
-                    double[] src2 = new double[tr.getSourceDimensions()];
-                    src2[0] = eastBoundLongitude;
-                    src2[1] = northBoundLatitude;
-                    tr.transform(src1, 0, dst1, 0, 1);
-                    tr.transform(src2, 0, dst2, 0, 1);
-
-                    x1 = Math.min(dst1[0], dst2[0]);
-                    y1 = Math.min(dst1[1], dst2[1]);
-                    x2 = Math.max(dst1[0], dst2[0]);
-                    y2 = Math.max(dst1[1], dst2[1]);
+                    x1 = destEnvelope.getMinX();
+                    y1 = destEnvelope.getMinY();
+                    x2 = destEnvelope.getMaxX();
+                    y2 = destEnvelope.getMaxY();
                 } catch (Exception e1) {
                     x1 = westBoundLongitude;
                     y1 = southBoundLatitude;

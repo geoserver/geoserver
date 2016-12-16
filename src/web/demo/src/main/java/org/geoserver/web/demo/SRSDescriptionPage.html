@@ -52,35 +52,44 @@
         <script>
             var map = null;
             
-            function initMap(srs, bbox, resolution){
-              // make OL compute scale according to WMS spec
-              OpenLayers.DOTS_PER_INCH = 25.4 / 0.28;
-              
-                format = 'image/png';
+            function initMap(srs, units, bbox, resolution){
+                var format = 'image/png';
 
-                var bounds = new OpenLayers.Bounds(bbox[0], bbox[1], bbox[2], bbox[3]);
-                
-                var options = {
-                    controls: [],
-                    maxExtent: bounds,
-                    maxResolution: resolution
-                };
+                var projection = new ol.proj.Projection({
+                    code: srs,
+                    units: units,
+                    axisOrientation: 'neu',
+                });
+
                 // setup single tiled layer
-                untiled = new OpenLayers.Layer.WMS(
-                    "CRS Area Of Validity", document.getElementById("aovMap").src,
-                    {layers: ""},
-                    {singleTile: true, ratio: 1}
-                );
-        
-                map = new OpenLayers.Map('aovMapContainer', options);
-                map.addLayers([untiled]);
-                map.addControl(new OpenLayers.Control.PanZoom(
-                    {position: new OpenLayers.Pixel(2, 2)}
-                  ));
-                map.addControl(new OpenLayers.Control.Navigation());
-                map.addControl(new OpenLayers.Control.MousePosition("location"));
-                
-                map.zoomToExtent(bounds);                
+                var untiled = new ol.layer.Image({
+                    title: 'CRS Area Of Validity',
+                    source: new ol.source.ImageWMS({
+                      url: document.getElementById("aovMap").src,
+                      params: {LAYERS: '', VERSION: '1.1.1', FORMAT: format}
+                    })
+                });
+
+                map = new ol.Map({
+                    target: 'aovMapContainer',
+                    layers: [untiled],
+                    controls: ol.control.defaults({attribution: false}).extend([
+                        new ol.control.MousePosition({
+                            coordinateFormat: ol.coordinate.createStringXY(4),
+                            projection: projection,
+                            undefinedHTML: '&nbsp;'
+                        })
+                    ]),
+                    view: new ol.View({
+                      center: [0, 0],
+                      zoom: 2,
+                      extent: bbox,
+                      projection: projection,
+                      maxResolution: resolution
+                    })
+                });
+
+                map.getView().fit(bbox,map.getSize());
             }
         </script>
           </div>

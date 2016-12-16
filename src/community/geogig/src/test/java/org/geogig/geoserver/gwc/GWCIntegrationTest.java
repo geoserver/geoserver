@@ -102,6 +102,11 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertNotNull(lineLayerInfo);
 
     }
+    
+    @Override
+    protected void onTearDown(SystemTestData testData) throws Exception {
+    	getCatalog().dispose();
+    }
 
     /**
      * Override so that default layers are not added

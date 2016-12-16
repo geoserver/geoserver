@@ -30,9 +30,9 @@ import org.locationtech.geogig.porcelain.RemoteAddOp;
 import org.locationtech.geogig.porcelain.RemoteListOp;
 import org.locationtech.geogig.porcelain.RemoteRemoveOp;
 import org.locationtech.geogig.repository.Context;
-import org.locationtech.geogig.repository.GeogigTransaction;
 import org.locationtech.geogig.repository.Remote;
 import org.locationtech.geogig.repository.Repository;
+import org.locationtech.geogig.repository.impl.GeogigTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

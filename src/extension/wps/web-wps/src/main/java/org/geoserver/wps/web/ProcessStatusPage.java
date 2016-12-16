@@ -121,9 +121,9 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
                     // occurred, so refresh the table
                     if (table.getSelection().size() == 0) {
                         setEnabled(false);
-                        target.add(ProcessDismissLink.this);
-                        target.add(table);
                     }
+                    target.add(ProcessDismissLink.this);
+                    target.add(table);
                 }
                 
             });

@@ -113,7 +113,7 @@ public class MonkeyProcess {
         }
     }
 
-    static final ProcessFactory getFactory() {
+    public static final ProcessFactory getFactory() {
         return new MonkeyProcessFactory();
     }
 

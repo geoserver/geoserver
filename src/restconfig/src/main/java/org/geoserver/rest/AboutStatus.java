@@ -9,6 +9,7 @@ package org.geoserver.rest;
  * @author Morgan Thompson - Boundless
  */
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.geoserver.catalog.rest.CatalogFreemarkerHTMLFormat;
@@ -20,6 +21,7 @@ import org.geoserver.rest.format.DataFormat;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Resource;
 
 import com.thoughtworks.xstream.XStream;
@@ -33,8 +35,11 @@ import freemarker.template.TemplateModelException;
 
 public class AboutStatus extends ReflectiveResource {
 
-    public AboutStatus(Context context, Request request, Response response) {
+    static String target;
+
+    public AboutStatus(Context context, Request request, Response response, String module) {
         super(context, request, response);
+        target = module;
     }
 
     @Override
@@ -47,12 +52,23 @@ public class AboutStatus extends ReflectiveResource {
         return new StatusHTMLFormat(request, response, this);
     }
 
+    protected static Predicate<ModuleStatus> getModule() {
+        return m -> m.getModule().equalsIgnoreCase(target);
+    }
+
     @Override
     protected Object handleObjectGet() throws Exception {
         GeoServerExtensions gse = new GeoServerExtensions();
-
-        List<ModuleStatus> applicationStatus = gse.extensions(ModuleStatus.class).stream()
+        List<ModuleStatus> applicationStatus;
+        if (target != null) {
+             applicationStatus = gse.extensions(ModuleStatus.class).stream().map(ModuleStatusImpl::new).filter(getModule()).collect(Collectors.toList());
+             if (applicationStatus.isEmpty()) {
+                 throw new RestletException( "No such module: " + target, Status.CLIENT_ERROR_NOT_FOUND );
+             }
+        } else {
+            applicationStatus = gse.extensions(ModuleStatus.class).stream()
                 .map(ModuleStatusImpl::new).collect(Collectors.toList());
+        }
         return applicationStatus;
     }
 

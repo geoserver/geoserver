@@ -345,7 +345,10 @@
           <key><value>/about/status.{format}</value></key>
           <value>aboutStatusFinder</value>
         </entry>
-        
+        <entry>
+          <key><value>/about/status/{module}</value></key>
+          <value>aboutStatusFinder</value>
+        </entry>
         <entry>
           <key><value>/fonts.{format}</value></key>
           <value>fontFinder</value>

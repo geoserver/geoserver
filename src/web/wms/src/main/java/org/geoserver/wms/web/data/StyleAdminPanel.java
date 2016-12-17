@@ -110,8 +110,6 @@ public class StyleAdminPanel extends StyleEditTabPanel {
             // format only settable upon creation
             formatChoice.setEnabled(false);
             formatReadOnlyMessage.setVisible(true);
-            
-            uploadLink.setVisible(false);
         }
     }
     

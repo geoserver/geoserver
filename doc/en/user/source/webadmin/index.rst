@@ -51,7 +51,7 @@ The :ref:`services` section is for configuring the services published by GeoServ
 
 * The :ref:`Web Coverage Service (WCS) <services_webadmin_wcs>` page manages metadata, resource limits, and SRS availability for WCS.
 
-* The :ref:`Web Feature Service (WCS) <services_webadmin_wfs>` page manages metadata, feature publishing, service level options, and data-specific output for WFS.
+* The :ref:`Web Feature Service (WFS) <services_webadmin_wfs>` page manages metadata, feature publishing, service level options, and data-specific output for WFS.
 
 * The :ref:`Web Map Service (WMS) <services_webadmin_wms>` page manages metadata, resource limits, SRS availability, and other data-specific output for WMS.
 

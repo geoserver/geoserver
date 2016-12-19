@@ -12,7 +12,7 @@ Cascaded stored query parameters
 
 The relationship between stored query parameters and the schema returned by the query is not well defined. For cascaded stored queries to work, the relationship between the query received by GeoServer and the parameters passed to the stored query must be defined.
 
-When you set up a layer based on a stored query, you have to selecte which stored query to cascade and what values are passed to each parameter. Cascaded stored queries can leverage view parameters passed to the query. This is similar to how arbitrary parameters are passed to :ref:`sql_views`. GeoServer supports multiple strategies to pass these values. See below for a full list.
+When you set up a layer based on a stored query, you have to select which stored query to cascade and what values are passed to each parameter. Cascaded stored queries can leverage view parameters passed to the query. This is similar to how arbitrary parameters are passed to :ref:`sql_views`. GeoServer supports multiple strategies to pass these values. See below for a full list.
 
 .. list-table::
    :widths: 20 80

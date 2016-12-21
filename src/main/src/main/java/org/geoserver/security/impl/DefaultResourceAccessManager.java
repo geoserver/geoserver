@@ -8,7 +8,6 @@ package org.geoserver.security.impl;
 import static org.geoserver.security.impl.DataAccessRule.ANY;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -30,7 +29,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -183,34 +181,35 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
     public boolean canAccess(Authentication user, ResourceInfo resource, AccessMode mode) {
         checkPropertyFile();
         String workspace;
+        final String resourceName = resource.getName();
         try {
             workspace = resource.getStore().getWorkspace().getName();
         } catch (Exception e) {
             LOGGER.log(Level.FINE, "Errors occurred trying to gather workspace of resource "
-                    + resource.getName());
+                    + resourceName);
             // it's a layer whose resource we don't know about
             return true;
         }
         
-        SecureTreeNode node = root.getDeepestNode(new String[] { workspace, resource.getName() });
-        if(!node.canAccess(user, mode)) {
-            return false;
-        }
-        
-        // check if all containing layer groups stop access to the layer 
-        if(!layerGroupContainmentCheckRequired()) {
-            return true;
+        // if we have a catalog rule that is at resource level, it's the most specific type,
+        // it wins. As an alternative, it could be that we do not need to check layer groups at all
+        SecureTreeNode catalogNode = root.getDeepestNode(new String[] { workspace, resourceName });
+        int catalogNodeDepth = catalogNode.getDepth();
+        final boolean catalogNodeAllowsAccess = catalogNode.canAccess(user, mode);
+        if(catalogNodeDepth == SecureTreeNode.RESOURCE_DEPTH || !layerGroupContainmentCheckRequired()) {
+            return catalogNodeAllowsAccess;
         }
 
-        // check if there is any containing group that has security rules
+        // check if there is any containing group that has security rules, if not, the deepest
+        // catalog rule wins
         List<SecureTreeNode> nodes = getNodesContainingResource(resource);
         if(nodes.isEmpty()) {
-            return true;
+            return catalogNodeAllowsAccess;
         }
         
         // if we have at least one containing tree that is secured and authorizes access, then 
         // we have a winner
-        if(nodes.stream().anyMatch(n -> n.canAccess(user, mode))) {
+        if(nodes.stream().anyMatch(n -> n.canAccess(user, mode) && n.getDepth() > catalogNodeDepth)) {
             return true;
         }
         
@@ -221,13 +220,19 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
         Filter notSingle = Predicates.notEqual("mode", LayerGroupInfo.Mode.SINGLE);
         Filter global = Predicates.isNull("workspace");
         Filter inSameWorkspace = Predicates.equal("workspace.name", workspace);
+        // add a check on the depth here
         Filter wsMatch = Predicates.or(global, inSameWorkspace);
         Filter groupFilter = Predicates.and(wsMatch, notSingle, containsResource);
-        if(hasContainerGroupNotDenied(nodes, groupFilter)) {
+        if(hasContainerGroupNotDenied(user, nodes, groupFilter, catalogNodeDepth)) {
             return true;
         }
-        // could not find an authorized layer group that will allow authorization, so not authorized
-        return false;
+        // ok, no overrides, see if there was a more specific lg node denying access, otherwise go
+        // for the catalog one
+        if(nodes.stream().anyMatch(n -> !n.canAccess(user, mode) && n.getDepth() > catalogNodeDepth)) {
+            return false;
+        } else { 
+            return catalogNodeAllowsAccess;
+        }
     }
 
     private List<SecureTreeNode> getNodesContainingResource(ResourceInfo resource) {
@@ -474,14 +479,17 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
             wsMatch = global;
         }
         Filter groupFilter = Predicates.and(wsMatch, notSingle, containsResource);
-        if(hasContainerGroupNotDenied(nodes, groupFilter)) {
+        if(hasContainerGroupNotDenied(user, nodes, groupFilter, node.getDepth())) {
             return null; // allow access
         }
         // could not find an authorized layer group that will allow authorization, so not authorized
         return new LayerGroupAccessLimits(getMode());
     }
 
-    private boolean hasContainerGroupNotDenied(List<SecureTreeNode> nodes, Filter groupFilter) {
+    private boolean hasContainerGroupNotDenied(Authentication user, List<SecureTreeNode> nodes, Filter groupFilter, int minimumDepth) {
+        if(minimumDepth >= SecureTreeNode.RESOURCE_DEPTH) {
+            return false;
+        }
         try(CloseableIterator<LayerGroupInfo> it = rawCatalog.list(LayerGroupInfo.class, groupFilter)) {
             while(it.hasNext()) {
                 LayerGroupInfo lg = it.next();
@@ -489,11 +497,19 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
                 if(getNodeForGroup(lg) != null) {
                     continue;
                 }
+                // the layer group must be specific enough to override the catalog rule
+                if(minimumDepth >= 1 && lg.getWorkspace() == null) {
+                    continue;
+                }
                 // need to check if it's nested in another group in the relevant lot first
                 if(nodes.stream().anyMatch(n -> {
                     final String id = lg.getId();
                     return n.getContainedCatalogIds().contains(id);
                 })) {
+                    continue;
+                }
+                // check if the group itself is allowed (global or workspace rules might deny access to it)
+                if(getAccessLimits(user, lg) != null) {
                     continue;
                 }
                 // ok, then we have a container group that is not denied, allow

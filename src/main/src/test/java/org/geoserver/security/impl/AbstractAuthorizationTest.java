@@ -143,6 +143,10 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     protected LayerGroupInfo wsContainerD;
 
     protected LayerGroupInfo nestedContainerE;
+
+    protected LayerInfo citiesLayer;
+
+    protected FeatureTypeInfo cities;
     
 
     @Before
@@ -171,6 +175,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
         statesLayer = buildLayer("states", toppWs, FeatureTypeInfo.class, false);
         roadsLayer = buildLayer("roads", toppWs, FeatureTypeInfo.class, false);
+        citiesLayer = buildLayer("cities", nurcWs, FeatureTypeInfo.class);
         landmarksLayer = buildLayer("landmarks", toppWs, FeatureTypeInfo.class);
         basesLayer = buildLayer("bases", toppWs, FeatureTypeInfo.class);
         forestsLayer = buildLayer("forests", toppWs, FeatureTypeInfo.class);
@@ -183,6 +188,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         arcGrid = (CoverageInfo) arcGridLayer.getResource();
         arcGridStore = arcGrid.getStore();
         roads = (FeatureTypeInfo) roadsLayer.getResource();
+        cities = (FeatureTypeInfo) citiesLayer.getResource();
         roadsStore = roads.getStore();
         landmarks = (FeatureTypeInfo) landmarksLayer.getResource();
         bases = (FeatureTypeInfo) basesLayer.getResource();
@@ -197,7 +203,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         layerGroupWithSomeLockedLayer = buildLayerGroup("layerGroupWithSomeLockedLayer", lineStyle, toppWs, statesLayer, roadsLayer);
         
         // container groups for testing group security
-        namedTreeA = buildLayerGroup("namedTreeA", Mode.NAMED, null, null, null, statesLayer, roadsLayer);
+        namedTreeA = buildLayerGroup("namedTreeA", Mode.NAMED, null, null, null, statesLayer, roadsLayer, citiesLayer);
         nestedContainerE = buildLayerGroup("nestedContainerE", Mode.CONTAINER, null, null, null, forestsLayer);
         containerTreeB = buildLayerGroup("containerTreeB", Mode.CONTAINER, null, null, null, roadsLayer, landmarksLayer, nestedContainerE);
         singleGroupC = buildLayerGroup("singleGroupC", Mode.SINGLE, null, null, null, statesLayer, basesLayer);
@@ -376,7 +382,10 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                 arcGrid).anyTimes();
         expect(catalog.getFeatureTypeByName("topp:roads")).andReturn(roads)
                 .anyTimes();
+        expect(catalog.getFeatureTypeByName("nurc:cities")).andReturn(cities)
+        .anyTimes();
         expect(catalog.getLayerByName("topp:roads")).andReturn(roadsLayer).anyTimes();
+        expect(catalog.getLayerByName("nurc:cities")).andReturn(citiesLayer).anyTimes();
         expect(catalog.getFeatureTypeByName("topp:landmarks")).andReturn(
                 landmarks).anyTimes();
         expect(catalog.getFeatureTypeByName("topp:bases")).andReturn(bases)

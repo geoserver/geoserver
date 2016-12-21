@@ -56,6 +56,8 @@ Limited to WMS, layers will be also secured by considering their containing laye
 * Rules with other types of groups (*Named tree*, *Container tree*, *Earth Observation tree*) also affect contained layers and nested layer groups. 
   If the group is not accessible, the layers and groups contained in it won't either.
   The only exception is when another layer group contains the same layer or nested group, in that case the layers they will show up under the allowed groups.
+* Workspace rules gets precedence over global layer group ones when it comes to allow access to layers
+* Layer rules get precedence over all layer group rules when it comes to allow access to layers
   
 The following tables summarizes the layer group behavior depending on whether they are used in a public or secured environment:
 
@@ -282,57 +284,94 @@ To clarify, lets assume the following starting situation, in which all layers an
 
     root
     +- namedTreeGroupA
-    |   |   layerA
-    |   └   layerB
+    |   |   ws1:layerA
+    |   └   ws2:layerB
     +- namedTreeGroupB
-    |   |   layerB
-    |   └   layerC
+    |   |   ws2:layerB
+    |   └   ws1:layerC
     +- layerD
-    +- singleGroupC (contains layerA and layerD when requested)
+    +- singleGroupC (contains ws1:layerA and layerD when requested)
 
 
 Here are a few examples of how the structure changes based on different security rules.
 
 * Denying access to ``namedTreeGroupA`` by::
 
-    ``namedTreeGroupA.r=ROLE_PRIVATE`` 
+    namedTreeGroupA.r=ROLE_PRIVATE 
 
   Will give the following capabilities tree to anonymous users::
 
     root
     +- namedTreeGroupB
-    |   |   layerB
-    |   └   layerC
+    |   |   ws2:layerB
+    |   └   ws1:layerC
     +- layerD
     +- singleGroupC (contains only layerD when requested)
 
 
 * Denying access to ``namedTreeGroupB``by ::
 
-    ``namedTreeGroupB.r=ROLE_PRIVATE`` 
+    namedTreeGroupB.r=ROLE_PRIVATE 
 
   Will give the following capabilities tree to anonymous users::
 
     root
     +- namedTreeGroupA
-    |   |   layerA
-    |   └   layerB
+    |   |   ws1:layerA
+    |   └   ws2:layerB
     +- layerD
-    +- singleGroupC (contains layerA and layerD when requested)
+    +- singleGroupC (contains ws1:layerA and layerD when requested)
 
 * Denying access to ``singleGroupC`` by::
 
-    ``singleGroupC.r=ROLE_PRIVATE`` 
+    singleGroupC.r=ROLE_PRIVATE 
 
   Will give the following capabilities tree to anonymous users::
 
     root
     +- namedTreeGroupA
-    |   |   layerA
-    |   └   layerB
+    |   |   ws1:layerA
+    |   └   ws2:layerB
     +- namedTreeGroupB
-    |   |   layerB
-    |   └   layerC
+    |   |   ws2:layerB
+    |   └   ws1:layerC
+    +- layerD
+    
+* Denying access to everything, but allowing explicit access to namedTreeGroupA by::
+
+    nameTreeGroupA.r=*
+    *.*.r=PRIVATE
+    *.*.w=PRIVATE 
+
+  Will give the following capabilities tree to anonymous users::
+
+    root
+    +- namedTreeGroupA
+        |   ws1:layerA
+        └   ws2:layerB
+
+* Denying access to ``nameTreeA`` and ``namedTreeGroupB`` but explicitly allowing access to ``ws1:layerA``::
+
+    namedTreeGroupA.r=ROLE_PRIVATE
+    namedTreeGroupB.r=ROLE_PRIVATE
+    ws1.layerA.r=* 
+
+  Will give the following capabilities tree to anonymous users (notice how ws1:layerA popped up to the root)::
+
+    root
+    +- ws1:layerA
     +- layerD
 
+* Denying access to ``nameTreeA`` and ``namedTreeGroupB`` but explicitly allowing all layers in ws2
+  (a workspace rules overrides global groups ones)::
 
+    namedTreeGroupA.r=ROLE_PRIVATE
+    namedTreeGroupB.r=ROLE_PRIVATE
+    ws2.*.r=* 
+
+  Will give the following capabilities tree to anonymous users (notice how ws1:layerB popped up to the root)::
+
+    root
+    +- ws2:layerB
+    +- layerD
+    +- singleGroupC

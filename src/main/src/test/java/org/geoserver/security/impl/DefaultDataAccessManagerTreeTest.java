@@ -150,7 +150,7 @@ public class DefaultDataAccessManagerTreeTest extends AbstractAuthorizationTest 
         SecureTreeNode lgNode = root.getChild("namedTreeA");
         assertNotNull(lgNode);
         assertTrue(lgNode.isContainerLayerGroup());
-        assertEquals(new HashSet<String>(Arrays.asList("states-id", "roads-id")), lgNode.getContainedCatalogIds());
+        assertEquals(new HashSet<String>(Arrays.asList("states-id", "roads-id", "cities-id")), lgNode.getContainedCatalogIds());
     }
     
     @Test

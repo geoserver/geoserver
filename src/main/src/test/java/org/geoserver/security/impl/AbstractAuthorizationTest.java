@@ -147,6 +147,8 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     protected LayerInfo citiesLayer;
 
     protected FeatureTypeInfo cities;
+
+    protected List<LayerGroupInfo> layerGroups;
     
 
     @Before
@@ -203,11 +205,15 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         layerGroupWithSomeLockedLayer = buildLayerGroup("layerGroupWithSomeLockedLayer", lineStyle, toppWs, statesLayer, roadsLayer);
         
         // container groups for testing group security
-        namedTreeA = buildLayerGroup("namedTreeA", Mode.NAMED, null, null, null, statesLayer, roadsLayer, citiesLayer);
-        nestedContainerE = buildLayerGroup("nestedContainerE", Mode.CONTAINER, null, null, null, forestsLayer);
-        containerTreeB = buildLayerGroup("containerTreeB", Mode.CONTAINER, null, null, null, roadsLayer, landmarksLayer, nestedContainerE);
-        singleGroupC = buildLayerGroup("singleGroupC", Mode.SINGLE, null, null, null, statesLayer, basesLayer);
-        wsContainerD = buildLayerGroup("wsContainerD", Mode.CONTAINER, null, null, nurcWs, arcGridLayer);
+        namedTreeA = buildLayerGroup("namedTreeA", Mode.NAMED, null, statesLayer, roadsLayer, citiesLayer);
+        nestedContainerE = buildLayerGroup("nestedContainerE", Mode.CONTAINER, null, forestsLayer);
+        containerTreeB = buildLayerGroup("containerTreeB", Mode.CONTAINER, null, roadsLayer, landmarksLayer, nestedContainerE);
+        singleGroupC = buildLayerGroup("singleGroupC", Mode.SINGLE, null, statesLayer, basesLayer);
+        wsContainerD = buildLayerGroup("wsContainerD", Mode.CONTAINER, nurcWs, arcGridLayer);
+
+        layerGroups = Arrays.asList(layerGroupGlobal, layerGroupTopp, 
+                layerGroupWithSomeLockedLayer, namedTreeA, containerTreeB, singleGroupC, wsContainerD, nestedContainerE);
+
 
         // cascaded WMS layer
         cascadedLayer = buildLayer("cascaded", toppWs, WMSLayerInfo.class);
@@ -277,6 +283,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(layer.getPrefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
         expect(layer.prefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
         expect(layer.getResource()).andReturn(resource).anyTimes();
+        expect(layer.getId()).andReturn(name + "-lid").anyTimes();
         if (!advertised) expect(layer.isAdvertised()).andReturn(advertised).anyTimes();
         replay(layer);
 
@@ -293,14 +300,27 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     }
 
     protected LayerGroupInfo buildLayerGroup(String name, StyleInfo style, WorkspaceInfo ws, LayerInfo... layer) {
-        return buildLayerGroup(name, LayerGroupInfo.Mode.SINGLE, null, style, ws, layer);
+        return buildLayerGroup(name, LayerGroupInfo.Mode.SINGLE, ws, layer);
     }
-
-    protected LayerGroupInfo buildLayerGroup(String name, LayerGroupInfo.Mode type, LayerInfo rootLayer, StyleInfo style, WorkspaceInfo ws, PublishedInfo... contents) {
+    
+    protected LayerGroupInfo buildLayerGroup(String name, LayerGroupInfo.Mode type, WorkspaceInfo ws, PublishedInfo... contents) {
         LayerGroupInfo layerGroup = createNiceMock(LayerGroupInfo.class);
         expect(layerGroup.getName()).andReturn(name).anyTimes();
         expect(layerGroup.prefixedName()).andReturn((ws != null ? ws.getName() + ":" : "") + name).anyTimes();
         expect(layerGroup.getMode()).andReturn(type).anyTimes();
+        expect(layerGroup.getLayers()).andReturn(new ArrayList<PublishedInfo>(Arrays.asList(contents))).anyTimes();
+        expect(layerGroup.getWorkspace()).andReturn(ws).anyTimes();
+        expect(layerGroup.layers()).andAnswer(() -> new LayerGroupHelper(layerGroup).allLayers()).anyTimes();
+        expect(layerGroup.getId()).andAnswer(() -> (ws == null ? name : ws.getName() + ":" + name) + "-id").anyTimes(); 
+        replay(layerGroup);
+        return layerGroup;
+    }
+
+    protected LayerGroupInfo buildEOLayerGroup(String name, LayerInfo rootLayer, StyleInfo style, WorkspaceInfo ws, PublishedInfo... contents) {
+        LayerGroupInfo layerGroup = createNiceMock(LayerGroupInfo.class);
+        expect(layerGroup.getName()).andReturn(name).anyTimes();
+        expect(layerGroup.prefixedName()).andReturn((ws != null ? ws.getName() + ":" : "") + name).anyTimes();
+        expect(layerGroup.getMode()).andReturn(Mode.EO).anyTimes();
         expect(layerGroup.getRootLayer()).andReturn(rootLayer).anyTimes();
         expect(layerGroup.getLayers()).andReturn(new ArrayList<PublishedInfo>(Arrays.asList(contents))).anyTimes();
         expect(layerGroup.getStyles()).andReturn(Arrays.asList(style)).anyTimes();
@@ -414,20 +434,20 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(catalog.getStyles()).andReturn(Arrays.asList(pointStyle, lineStyle)).anyTimes();
         expect(catalog.getStylesByWorkspace(toppWs)).andReturn(Arrays.asList(pointStyle, lineStyle)).anyTimes();
         expect(catalog.getStylesByWorkspace(nurcWs)).andReturn(Arrays.asList(pointStyle)).anyTimes();
-        expect(catalog.getLayerGroups()).andReturn(Arrays.asList(layerGroupGlobal, layerGroupTopp, 
-                layerGroupWithSomeLockedLayer, namedTreeA, containerTreeB, singleGroupC, nestedContainerE)).anyTimes();
+        expect(catalog.getLayerGroups()).andReturn(layerGroups).anyTimes();
+        for (LayerGroupInfo lg : layerGroups) {
+            expect(catalog.getLayerGroup(lg.getId())).andReturn(lg).anyTimes();
+            if(lg.getWorkspace() == null) {
+                expect(catalog.getLayerGroupByName(lg.getName())).andReturn(lg).anyTimes();
+                expect(catalog.getLayerGroupByName(NULL_STRING, lg.getName())).andReturn(lg).anyTimes();
+            } else {
+                expect(catalog.getLayerGroupByName(lg.getWorkspace(), lg.getName())).andReturn(lg).anyTimes();
+                expect(catalog.getLayerGroupByName(lg.getWorkspace().getName(), lg.getName())).andReturn(lg).anyTimes();
+            }
+        }
+        
         expect(catalog.getLayerGroupsByWorkspace("topp")).andReturn(Arrays.asList(new LayerGroupInfo[] { layerGroupTopp, layerGroupWithSomeLockedLayer })).anyTimes();
         expect(catalog.getLayerGroupsByWorkspace("nurc")).andReturn(Arrays.asList(layerGroupGlobal)).anyTimes();
-        expect(catalog.getLayerGroupByName("topp", layerGroupWithSomeLockedLayer.getName())).andReturn(layerGroupWithSomeLockedLayer).anyTimes();
-        expect(catalog.getLayerGroupByName(namedTreeA.getName())).andReturn(namedTreeA).anyTimes();
-        expect(catalog.getLayerGroupByName(containerTreeB.getName())).andReturn(containerTreeB).anyTimes();
-        expect(catalog.getLayerGroupByName(singleGroupC.getName())).andReturn(singleGroupC).anyTimes();
-        expect(catalog.getLayerGroupByName(nestedContainerE.getName())).andReturn(nestedContainerE).anyTimes();
-        expect(catalog.getLayerGroupByName(NULL_STRING, namedTreeA.getName())).andReturn(namedTreeA).anyTimes();
-        expect(catalog.getLayerGroupByName(NULL_STRING, containerTreeB.getName())).andReturn(containerTreeB).anyTimes();
-        expect(catalog.getLayerGroupByName(NULL_STRING, singleGroupC.getName())).andReturn(singleGroupC).anyTimes();
-        expect(catalog.getLayerGroupByName(NULL_STRING, nestedContainerE.getName())).andReturn(nestedContainerE).anyTimes();
-        expect(catalog.getLayerGroupByName("nurc", wsContainerD.getName())).andReturn(wsContainerD).anyTimes();
         expect(catalog.list(eq(LayerGroupInfo.class), anyObject(Filter.class))).andAnswer(() -> { 
             List<LayerGroupInfo> groups = catalog.getLayerGroups();
             Filter f = (Filter) EasyMock.getCurrentArguments()[1];

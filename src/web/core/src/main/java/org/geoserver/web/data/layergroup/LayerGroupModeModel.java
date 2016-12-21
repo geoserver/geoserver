@@ -6,6 +6,7 @@
 package org.geoserver.web.data.layergroup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -21,11 +22,6 @@ public class LayerGroupModeModel extends LoadableDetachableModel<List<LayerGroup
 
     @Override
     protected List<LayerGroupInfo.Mode> load() {
-        List<LayerGroupInfo.Mode> modes = new ArrayList<LayerGroupInfo.Mode>();
-        modes.add(LayerGroupInfo.Mode.SINGLE);
-        modes.add(LayerGroupInfo.Mode.NAMED);
-        modes.add(LayerGroupInfo.Mode.CONTAINER);
-        modes.add(LayerGroupInfo.Mode.EO);        
-        return modes;
+        return new ArrayList<LayerGroupInfo.Mode>(Arrays.asList(LayerGroupInfo.Mode.values()));
     }
 }

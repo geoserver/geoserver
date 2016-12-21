@@ -1128,7 +1128,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
            handleMetadataList(metadataLinks);
 
            // handle children layers and groups
-           if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
+           if(LayerGroupInfo.Mode.OPAQUE_CONTAINER.equals(layerGroup.getMode())) {
+               // just hide the layers in the group
+               layersAlreadyProcessed.addAll(layerGroup.layers());
+           } else if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
                for (PublishedInfo child : layerGroup.getLayers()) {
                    if (child instanceof LayerInfo) {
                        LayerInfo layer = (LayerInfo) child;

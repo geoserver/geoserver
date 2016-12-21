@@ -137,7 +137,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
 
         // check it doesn't have children Layers
-        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Layer", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'base']/Layer", dom);
         
         // check its layers are present at the same level
         assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);

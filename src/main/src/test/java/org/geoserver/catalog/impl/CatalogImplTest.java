@@ -2208,6 +2208,10 @@ public class CatalogImplTest {
         assertEquals(lg2.getLayers(), lg2.layers());
         assertEquals(lg2.getStyles(), lg2.styles());
         
+        lg2.setMode(LayerGroupInfo.Mode.OPAQUE_CONTAINER);
+        assertEquals(lg2.getLayers(), lg2.layers());
+        assertEquals(lg2.getStyles(), lg2.styles());
+        
         lg2.setMode(LayerGroupInfo.Mode.NAMED);
         assertEquals(lg2.getLayers(), lg2.layers());
         assertEquals(lg2.getStyles(), lg2.styles());

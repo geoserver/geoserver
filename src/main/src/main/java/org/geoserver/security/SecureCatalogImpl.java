@@ -10,6 +10,7 @@ import static org.geoserver.catalog.Predicates.or;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -53,6 +54,7 @@ import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.security.decorators.SecuredWMSLayerInfo;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.DefaultResourceAccessManager;
+import org.hsqldb.lib.ArrayListIdentity;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
@@ -484,10 +486,22 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return (T) checkAccess(user, (ResourceInfo) info, mixedModeBehavior);
         }
         if (info instanceof LayerInfo) {
-            return (T) checkAccess(user, (LayerInfo) info, mixedModeBehavior);
+            return (T) checkAccess(user, (LayerInfo) info, mixedModeBehavior, Collections.emptyList());
         }
         if (info instanceof LayerGroupInfo) {
-            return (T) checkAccess(user, (LayerGroupInfo) info, mixedModeBehavior);
+            return (T) checkAccess(user, (LayerGroupInfo) info, mixedModeBehavior, Collections.emptyList());
+        }
+
+        return info;
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected <T extends PublishedInfo> T checkAccess(Authentication user, T info, MixedModeBehavior mixedModeBehavior, List<LayerGroupInfo> containers) {
+        if (info instanceof LayerInfo) {
+            return (T) checkAccess(user, (LayerInfo) info, mixedModeBehavior, containers);
+        }
+        if (info instanceof LayerGroupInfo) {
+            return (T) checkAccess(user, (LayerGroupInfo) info, mixedModeBehavior, containers);
         }
 
         return info;
@@ -585,12 +599,12 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * otherwise
      *
      */
-    protected LayerInfo checkAccess(Authentication user, LayerInfo layer, MixedModeBehavior mixedModeBehavior) {
+    protected LayerInfo checkAccess(Authentication user, LayerInfo layer, MixedModeBehavior mixedModeBehavior, List<LayerGroupInfo> containers) {
         if (layer == null)
             return null;
         
         // first off, handle the case where the user cannot even read the data
-        WrapperPolicy policy = buildWrapperPolicy(user, layer, layer.getName(), mixedModeBehavior);
+        WrapperPolicy policy = buildWrapperPolicy(user, layer, layer.getName(), mixedModeBehavior, containers);
         
         // handle the modes that do not require wrapping
         if(policy.level == AccessLevel.HIDDEN)
@@ -608,12 +622,12 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * it, null otherwise
      *
      */
-    protected LayerGroupInfo checkAccess(Authentication user, LayerGroupInfo group, MixedModeBehavior mixedModeBehavior) {
+    protected LayerGroupInfo checkAccess(Authentication user, LayerGroupInfo group, MixedModeBehavior mixedModeBehavior, List<LayerGroupInfo> containers) {
         if (group == null)
             return null;
 
         //first check the layer group itself
-        WrapperPolicy policy = buildWrapperPolicy(user, group, group.getName(), mixedModeBehavior);
+        WrapperPolicy policy = buildWrapperPolicy(user, group, group.getName(), mixedModeBehavior, containers);
         if(policy.level == AccessLevel.HIDDEN) {
             return null;
         }
@@ -627,11 +641,14 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             }
         }
         
+        List<LayerGroupInfo> extendedContainers = new ArrayList<LayerGroupInfo>(containers);
+        extendedContainers.add(group);
+        
         final List<PublishedInfo> layers = group.getLayers();
         ArrayList<PublishedInfo> wrapped = new ArrayList<PublishedInfo>(layers.size());        
         for (PublishedInfo layer : layers) {
             // for nested layers, hide in mixed mode, the inner layers were not explicitly requested
-            PublishedInfo checked = checkAccess(user, layer, MixedModeBehavior.HIDE);
+            PublishedInfo checked = checkAccess(user, layer, MixedModeBehavior.HIDE, extendedContainers);
             if (checked != null) {
                 wrapped.add(checked);
             }
@@ -767,11 +784,31 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      */
     public WrapperPolicy buildWrapperPolicy(Authentication user,
             CatalogInfo info, String resourceName, MixedModeBehavior mixedModeBehavior) {
-        return SecureCatalogImpl.buildWrapperPolicy(accessManager, user, info, resourceName, mixedModeBehavior);
+        return SecureCatalogImpl.buildWrapperPolicy(accessManager, user, info, resourceName, mixedModeBehavior, Collections.emptyList());
+    }
+    
+    /**
+     * Factors out the policy that decides what access level the current user
+     * has to a specific resource considering the read/write access, the security
+     * mode, and the filtering status
+     * @param user
+     * @param canRead
+     * @param canWrite
+     * @param resourceName
+     *
+     */
+    public WrapperPolicy buildWrapperPolicy(Authentication user,
+            CatalogInfo info, String resourceName, MixedModeBehavior mixedModeBehavior, List<LayerGroupInfo> containers) {
+        return SecureCatalogImpl.buildWrapperPolicy(accessManager, user, info, resourceName, mixedModeBehavior, containers);
+    }
+
+    static WrapperPolicy buildWrapperPolicy(ResourceAccessManager accessManager, 
+            Authentication user, CatalogInfo info, String resourceName, MixedModeBehavior mixedModeBehavior) {
+    	return buildWrapperPolicy(accessManager, user, info, resourceName, mixedModeBehavior, Collections.emptyList());
     }
     
     static WrapperPolicy buildWrapperPolicy(ResourceAccessManager accessManager, 
-            Authentication user, CatalogInfo info, String resourceName, MixedModeBehavior mixedModeBehavior) {
+            Authentication user, CatalogInfo info, String resourceName, MixedModeBehavior mixedModeBehavior, List<LayerGroupInfo> containers) {
         boolean canRead = true;
         boolean canWrite = true;
 
@@ -803,7 +840,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             WorkspaceAccessLimits wl;
             
             if(info instanceof LayerInfo) {
-                dl = accessManager.getAccessLimits(user, (LayerInfo) info);
+                dl = accessManager.getAccessLimits(user, (LayerInfo) info, containers);
                 wl = accessManager.getAccessLimits(user, 
                     ((LayerInfo)info).getResource().getStore().getWorkspace());
             } else {
@@ -833,7 +870,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
                 ws = ((StyleInfo)info).getWorkspace();
             }
             else {
-                limits = accessManager.getAccessLimits(user, (LayerGroupInfo) info);
+                limits = accessManager.getAccessLimits(user, (LayerGroupInfo) info, containers);
                 ws = ((LayerGroupInfo)info).getWorkspace();
             }
             
@@ -1397,9 +1434,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     }
 
     @Override
-    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count,
-    		SortBy sortBy) {
-    	Filter securityFilter = securityFilter(of, filter);
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter,
+            Integer offset, Integer count, SortBy sortBy) {
+        Filter securityFilter = securityFilter(of, filter);
 
         CloseableIterator<T> filtered;
         filtered = delegate.list(of, securityFilter, offset, count, sortBy);

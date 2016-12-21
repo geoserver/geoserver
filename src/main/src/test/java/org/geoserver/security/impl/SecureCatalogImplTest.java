@@ -1402,7 +1402,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testWmsNamedTreeAMilitaryOnly() throws Exception {
         // prepare the stage
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         buildManager("namedTreeAMilitaryOnly.properties");
 
         // try with read only user
@@ -1443,7 +1443,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testWfsNamedTreeAMilitaryOnly() throws Exception {
         // prepare the stage, this time for a WFS test, the containment rules won't apply anymore
-        setupRequesThreadLocal("WFS");
+        setupRequestThreadLocal("WFS");
         buildManager("namedTreeAMilitaryOnly.properties");
 
         // try with read only user
@@ -1486,7 +1486,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testWmsContainerTreeBMilitaryOnly() throws Exception {
         // prepare the stage
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         buildManager("containerTreeGroupBMilitaryOnly.properties");
 
         // try with read only user, layer group A and its contents should be fine
@@ -1526,7 +1526,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testWmsBothGroupABMilitaryOnlyMilitaryOnly() throws Exception {
         // prepare the stage
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         buildManager("bothGroupABMilitaryOnly.properties");
 
         // try with read only user, layer group A and its contents should not be available
@@ -1566,7 +1566,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testWmsSingleGroupCMilitaryOnly() throws Exception {
         // prepare the stage
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         buildManager("singleGroupCMilitaryOnly.properties");
 
         // try with read only user, layer group A and its contents should be fine
@@ -1599,7 +1599,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testWmsWsContainerGroupDMilitaryOnly() throws Exception {
         // prepare the stage
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         buildManager("wsContainerGroupDMilitaryOnly.properties");
 
         // try with read only user, layer group A and its contents should be fine
@@ -1639,7 +1639,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testWMSLayerGroupAllowsAccess() throws Exception {
         // prepare the stage
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         buildManager("namedTreeAllow.properties");
 
         // try with read only user, only layer group A and its contents should be visible
@@ -1662,7 +1662,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testWMSLayerGroupAllowLayerOverride() throws Exception {
         // prepare the stage
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         buildManager("namedTreeAllowLayerOverride.properties");
 
         // try with read only user, only layer group A and its contents should be visible, but 
@@ -1686,7 +1686,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testWMSLayerGroupAllowWorkspaceOverride() throws Exception {
         // prepare the stage
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         buildManager("namedTreeAllowWorkspaceOverride.properties");
 
         // try with read only user, only layer group A and its contents should be visible
@@ -1709,7 +1709,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     @Test
     public void testWMSLayerGroupDenyWSAllow() throws Exception {
         // prepare the stage
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         buildManager("namedTreeDenyWSAllow.properties");
 
         // try with read only user, the layer group A is not allowed

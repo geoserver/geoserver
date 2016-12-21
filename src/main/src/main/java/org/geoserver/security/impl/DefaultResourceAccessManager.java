@@ -280,12 +280,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager, Data
         
         // layer groups are used only in WMS
         final String service = request.getService();
-        boolean isMapService = "WMS".equalsIgnoreCase(service) || "gwc".equalsIgnoreCase(service);
-        if(!isMapService) {
-            return false;
-        }
-        
-        return true;
+        return "WMS".equalsIgnoreCase(service) || "gwc".equalsIgnoreCase(service);
     }
 
     void checkPropertyFile() {

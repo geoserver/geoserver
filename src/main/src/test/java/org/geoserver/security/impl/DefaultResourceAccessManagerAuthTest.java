@@ -173,7 +173,7 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     
     @Test
     public void testWmsNamedTreeAMilitaryOnly() throws Exception {
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         DefaultResourceAccessManager manager = buildAccessManager("namedTreeAMilitaryOnly.properties");
         assertFalse(canAccess(manager, roUser, namedTreeA, AccessMode.READ));
         // only contained in the hidden group and in a "single mode" one
@@ -198,7 +198,7 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     
     @Test
     public void testContainerGroupBMilitaryOnly() throws Exception {
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         DefaultResourceAccessManager manager = buildAccessManager("containerTreeGroupBMilitaryOnly.properties");
         
         // layer group A and its contents should be visible
@@ -226,7 +226,7 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     
     @Test
     public void testWmsbothGroupABMilitaryOnly() throws Exception {
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         DefaultResourceAccessManager manager = buildAccessManager("bothGroupABMilitaryOnly.properties");
         assertFalse(canAccess(manager, roUser, namedTreeA, AccessMode.READ));
         // only contained in the hidden group and in a "single mode" one
@@ -253,7 +253,7 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     
     @Test
     public void testSingleGroupCMilitaryOnly() throws Exception {
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         DefaultResourceAccessManager manager = buildAccessManager("singleGroupCMilitaryOnly.properties");
         
         // layer group A and its contents should be visible
@@ -277,7 +277,7 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     
     @Test
     public void testWsContainerGroupDMilitaryOnly() throws Exception {
-        setupRequesThreadLocal("WMS");
+        setupRequestThreadLocal("WMS");
         DefaultResourceAccessManager manager = buildAccessManager("wsContainerGroupDMilitaryOnly.properties");
         
         // layer group A and its contents should be visible

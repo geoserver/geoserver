@@ -219,7 +219,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         Dispatcher.REQUEST.remove();
     }
     
-    protected void setupRequesThreadLocal(String service) {
+    protected void setupRequestThreadLocal(String service) {
         Request request = new Request();
         request.setService(service);
         Dispatcher.REQUEST.set(request);

@@ -22,10 +22,10 @@ The syntax for a layer security rule can follow three different patterns (``[]``
 
 The parameters include:
 
-* ``globalLayerGroup``— Name of a global layer group.
+* ``globalLayerGroup``— Name of a global layer group (one without workspace associated to it).
 * ``workspace``— Name of the workspace. The wildcard ``*`` is used to indicate all workspaces.
 * ``layer``— Name of a resource (featuretype/coverage/etc...). The wildcard ``*`` is used to indicate all layers.
-* ``workspaceLayerGroup``— Name of a workspace specific layer group
+* ``workspaceLayerGroup``— Name of a workspace specific layer group.
 * ``permission``— Type of access permission/mode. 
    
    * ``r``—Read access
@@ -47,17 +47,17 @@ General rules for layer security:
 * Each entry must have a unique combination of workspace, layer, and permission values. 
 * If a permission at the global level is not specified, global permissions are assumed to allow read/write access. 
 * If a permission for a workspace is not specified, it inherits permissions from the global specification. 
-* If a permission for a layer is not specified, it inherits permissions from its workspace specification in all protocols but WMS (where layer groups rules play a role, see below).
+* If a permission for a layer is not specified, it inherits permissions from its workspace specification in all protocols except WMS (where layer groups rules play a role, see below).
 * If a user belongs to multiple roles, the **least restrictive** permission they inherit will apply.
 
-Limited to WMS, layers will be also secured by considering their containing layer groups. In particular:
+For WMS, layers will be also secured by considering their containing layer groups. In particular:
 
-* Rules with *Single* layer groups only affect the group itself, but not its contents. *Single* mode is considered just an alias for a list of layers, with no containment
+* Rules with *Single* layer groups only affect the group itself, but not its contents. *Single* mode is considered just an alias for a list of layers, with no containment.
 * Rules with other types of groups (*Named tree*, *Container tree*, *Earth Observation tree*) also affect contained layers and nested layer groups. 
-  If the group is not accessible, the layers and groups contained in it won't either.
-  The only exception is when another layer group contains the same layer or nested group, in that case the layers they will show up under the allowed groups.
-* Workspace rules gets precedence over global layer group ones when it comes to allow access to layers
-* Layer rules get precedence over all layer group rules when it comes to allow access to layers
+  If the group is not accessible, the layers and groups contained in that group will not be accessible either..
+  The only exception is when another layer group which is accessible contains the same layer or nested group, in that case the layers they will show up under the allowed groups.
+* Workspace rules gets precedence over global layer group ones when it comes to allow access to layers.
+* Layer rules get precedence over all layer group rules when it comes to allow access to layers.
   
 The following tables summarizes the layer group behavior depending on whether they are used in a public or secured environment:
 

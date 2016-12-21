@@ -163,9 +163,9 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
      * and if anything else is equal, read comes before write
      */
     public int compareTo(DataAccessRule other) {
-        int compareWs = compareCatalogItems(root, other.root);
-        if (compareWs != 0)
-            return compareWs;
+        int compareRoot = compareCatalogItems(root, other.root);
+        if (compareRoot != 0)
+            return compareRoot;
 
         int compareLayer = compareCatalogItems(layer, other.layer);
         if (compareLayer != 0)

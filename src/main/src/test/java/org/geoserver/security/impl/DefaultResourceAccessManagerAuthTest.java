@@ -8,21 +8,29 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.DataAccessLimits;
+import org.geoserver.security.LayerGroupAccessLimits;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WorkspaceAccessLimits;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.springframework.security.core.Authentication;
 
 
 public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationTest {
+    
+    @Before
+    public void setupCatalog() {
+        populateCatalog();
+    }
 
     @Test 
     public void testWideOpen() throws Exception {
@@ -163,9 +171,147 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
         assertFalse(canAccess(manager, milUser, toppWs, AccessMode.READ));
     }
     
+    @Test
+    public void testWmsNamedTreeAMilitaryOnly() throws Exception {
+        setupRequestThreadLocal("WMS");
+        DefaultResourceAccessManager manager = buildAccessManager("namedTreeAMilitaryOnly.properties");
+        assertFalse(canAccess(manager, roUser, namedTreeA, AccessMode.READ));
+        // only contained in the hidden group and in a "single mode" one
+        assertFalse(canAccess(manager, roUser, statesLayer, AccessMode.READ));
+        // contained also in containerTreeB
+        assertTrue(canAccess(manager, roUser, roadsLayer, AccessMode.READ));
+        // the other layers in groups are also available
+        assertTrue(canAccess(manager, roUser, containerTreeB, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, nestedContainerE, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, forestsLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, singleGroupC, AccessMode.READ));
+        
+        // check the mil user sees everything instead
+        assertTrue(canAccess(manager, milUser, namedTreeA, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, statesLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, roadsLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, containerTreeB, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, nestedContainerE, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, forestsLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, singleGroupC, AccessMode.READ));
+    }
+    
+    @Test
+    public void testContainerGroupBMilitaryOnly() throws Exception {
+        setupRequestThreadLocal("WMS");
+        DefaultResourceAccessManager manager = buildAccessManager("containerTreeGroupBMilitaryOnly.properties");
+        
+        // layer group A and its contents should be visible
+        assertTrue(canAccess(manager, roUser, namedTreeA, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, statesLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, roadsLayer, AccessMode.READ));
+        // layer group B and landmarks should not
+        assertFalse(canAccess(manager, roUser, containerTreeB, AccessMode.READ));
+        assertFalse(canAccess(manager, roUser, landmarksLayer, AccessMode.READ));
+        // nor the nested group
+        assertFalse(canAccess(manager, roUser, nestedContainerE, AccessMode.READ));
+        assertFalse(canAccess(manager, roUser, forestsLayer, AccessMode.READ));
+        // layer group C should be available
+        assertTrue(canAccess(manager, roUser, singleGroupC, AccessMode.READ));
+        
+        // now switch to the military user, that should see everything instead
+        assertTrue(canAccess(manager, milUser, namedTreeA, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, statesLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, roadsLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, containerTreeB, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, nestedContainerE, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, forestsLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, singleGroupC, AccessMode.READ));
+    }
+    
+    @Test
+    public void testWmsbothGroupABMilitaryOnly() throws Exception {
+        setupRequestThreadLocal("WMS");
+        DefaultResourceAccessManager manager = buildAccessManager("bothGroupABMilitaryOnly.properties");
+        assertFalse(canAccess(manager, roUser, namedTreeA, AccessMode.READ));
+        // only contained in the hidden group and in a "single mode" one
+        assertFalse(canAccess(manager, roUser, statesLayer, AccessMode.READ));
+        // contained also in containerTreeB, which is also denied
+        assertFalse(canAccess(manager, roUser, roadsLayer, AccessMode.READ));
+        // the other layers in groups are also available
+        assertFalse(canAccess(manager, roUser, containerTreeB, AccessMode.READ));
+        assertFalse(canAccess(manager, roUser, landmarksLayer, AccessMode.READ));
+        assertFalse(canAccess(manager, roUser, nestedContainerE, AccessMode.READ));
+        assertFalse(canAccess(manager, roUser, forestsLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, singleGroupC, AccessMode.READ));
+        
+        // check the mil user sees everything instead
+        assertTrue(canAccess(manager, milUser, namedTreeA, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, statesLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, roadsLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, landmarksLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, containerTreeB, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, nestedContainerE, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, forestsLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, singleGroupC, AccessMode.READ));
+    }
+    
+    @Test
+    public void testSingleGroupCMilitaryOnly() throws Exception {
+        setupRequestThreadLocal("WMS");
+        DefaultResourceAccessManager manager = buildAccessManager("singleGroupCMilitaryOnly.properties");
+        
+        // layer group A and its contents should be visible
+        assertTrue(canAccess(manager, roUser, namedTreeA, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, statesLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, roadsLayer, AccessMode.READ));
+        // layer group B and landmarks should also be visible
+        assertTrue(canAccess(manager, roUser, containerTreeB, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, landmarksLayer, AccessMode.READ));
+        // layer group C should not be available, but the layers in it, states and bases, should
+        assertFalse(canAccess(manager, roUser, singleGroupC, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, basesLayer, AccessMode.READ));
+        
+        // now switch to the military user, that should see everything instead
+        assertTrue(canAccess(manager, milUser, namedTreeA, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, statesLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, roadsLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, containerTreeB, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, singleGroupC, AccessMode.READ));
+    }
+    
+    @Test
+    public void testWsContainerGroupDMilitaryOnly() throws Exception {
+        setupRequestThreadLocal("WMS");
+        DefaultResourceAccessManager manager = buildAccessManager("wsContainerGroupDMilitaryOnly.properties");
+        
+        // layer group A and its contents should be visible
+        assertTrue(canAccess(manager, roUser, namedTreeA, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, statesLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, roadsLayer, AccessMode.READ));
+        // layer group B and landmarks should also be visible
+        assertTrue(canAccess(manager, roUser, containerTreeB, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, landmarksLayer, AccessMode.READ));
+        // layer group C should available, but the layers in it, states and bases, should
+        assertTrue(canAccess(manager, roUser, singleGroupC, AccessMode.READ));
+        assertTrue(canAccess(manager, roUser, basesLayer, AccessMode.READ));
+        // layer group D and its exclusive contents are not visible
+        assertFalse(canAccess(manager, roUser, wsContainerD, AccessMode.READ));
+        assertFalse(canAccess(manager, roUser, arcGridLayer, AccessMode.READ));
+        
+        // now switch to the military user, that should see everything instead
+        assertTrue(canAccess(manager, milUser, namedTreeA, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, statesLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, roadsLayer, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, containerTreeB, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, singleGroupC, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, wsContainerD, AccessMode.READ));
+        assertTrue(canAccess(manager, milUser, arcGridLayer, AccessMode.READ));
+    }
+
     private boolean canAccess(ResourceAccessManager manager, Authentication user, LayerInfo catalogInfo, AccessMode mode) {
         DataAccessLimits limits = manager.getAccessLimits(user, catalogInfo);
         return canAccess(mode, limits);
+    }
+    
+    private boolean canAccess(ResourceAccessManager manager, Authentication user, LayerGroupInfo catalogInfo, AccessMode mode) {
+        LayerGroupAccessLimits limits = manager.getAccessLimits(user, catalogInfo);
+        return limits == null;
     }
 
     private boolean canAccess(AccessMode mode, DataAccessLimits limits) {

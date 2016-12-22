@@ -5,8 +5,11 @@
  */
 package org.geoserver.security.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,10 +36,27 @@ public class SecureTreeNode {
      * The role given to the administrators
      */
     static final String ROOT_ROLE = GeoServerRole.ADMIN_ROLE.getAuthority();
+    
+    /**
+     * Depth or the security tree root
+     */
+    static int ROOT_DEPTH = 0;
+    
+    /**
+     * Depth of a workspace/global group rule
+     */
+    static int WS_LG_DEPTH = 1;
+    
+    /**
+     * Depth of a resource specific rule
+     */
+    static int RESOURCE_DEPTH = 2;
 
     Map<String, SecureTreeNode> children = new HashMap<String, SecureTreeNode>();
 
     SecureTreeNode parent;
+    
+    boolean containerLayerGroup = false;
 
     /**
      * A map from access mode to set of roles that can perform that kind of
@@ -52,6 +72,12 @@ public class SecureTreeNode {
      * </ul>
      */
     Map<AccessMode, Set<String>> authorizedRoles = new HashMap<AccessMode, Set<String>>();
+    
+    /**
+     * Cache of contained layer ids for nodes that are a match for a layer group (we keep ids instead
+     * of full layers to avoid memory boundless for non in-memory catalogs) 
+     */
+    Set<String> containedCatalogIds;
 
     /**
      * Builds a child of the specified parent node
@@ -175,14 +201,64 @@ public class SecureTreeNode {
      * @param pathElements
      *
      */
-    public SecureTreeNode getDeepestNode(String[] pathElements) {
+    public SecureTreeNode getDeepestNode(String... pathElements) {
+        SecureTreeNode curr = this;
+        SecureTreeNode result = this;
+        for (int i = 0; i < pathElements.length; i++) {
+            final SecureTreeNode next = curr.getChild(pathElements[i]);
+            if (next == null) {
+                return result;  
+            } else {
+                curr = next;
+                // don't return info about a node that has no explicit 
+                // rule associated, the parent will do
+                if(curr.authorizedRoles != null && !curr.authorizedRoles.isEmpty()) {
+                    result = curr;
+                }
+            }
+        }
+        return curr;
+    }
+    
+    /**
+     * Returns all the layer group nodes containing the specified catalog id
+     * @param id
+     * @return
+     */
+    public List<SecureTreeNode> getLayerGroupNodesForCatalogId(String catalogId) {
+        List<SecureTreeNode> result = new ArrayList<>();
+        collectLayerGroupNodesForCatalogId(catalogId, result);
+        
+        return result;
+    }
+    
+    private void collectLayerGroupNodesForCatalogId(String catalogId, List<SecureTreeNode> result) {
+        // add this node if it contains the catalog id
+        if(containerLayerGroup && containedCatalogIds != null && containedCatalogIds.contains(catalogId)) {
+            result.add(this);
+        } 
+        // recurse
+        for (SecureTreeNode child : children.values()) {
+            collectLayerGroupNodesForCatalogId(catalogId, result);
+        }
+    }
+
+    /**
+     * Utility method that drills down from the current node using the specified
+     * list of child names, and returns an element only if it fully matches the provided path
+     * 
+     * @param pathElements
+     *
+     */
+    public SecureTreeNode getNode(String... pathElements) {
         SecureTreeNode curr = this;
         for (int i = 0; i < pathElements.length; i++) {
             final SecureTreeNode next = curr.getChild(pathElements[i]);
-            if (next == null)
-                return curr;
-            else
+            if (next == null) {
+                return null;
+            } else {
                 curr = next;
+            }
         }
         return curr;
     }
@@ -194,6 +270,56 @@ public class SecureTreeNode {
      */
     Map<String, SecureTreeNode> getChildren() {
         return children;
+    }
+
+    /**
+     * Indicates that this node is supposed to match a container layer group (named or container tree)
+     * @return
+     */
+    public boolean isContainerLayerGroup() {
+        return containerLayerGroup;
+    }
+
+    /**
+     * Flags this node as a container layer group (named or container tree)
+     * @param isGlobalLayerGroup
+     */
+    public void setContainerLayerGroup(boolean isGlobalLayerGroup) {
+        this.containerLayerGroup = isGlobalLayerGroup;
+    }
+    
+    public Set<String> getContainedCatalogIds() {
+        return containedCatalogIds;
+    }
+
+    public void setContainedCatalogIds(Set<String> containedLayerIds) {
+        this.containedCatalogIds = containedLayerIds;
+    }
+
+    @Override
+    public String toString() {
+        // customized toString to avoid printing the whole tree recursively, this one prints only
+        // the info in the current level
+        return "SecureTreeNode [childrenCount=" + children.size() + ", hasParent=" + (parent != null) + ", layerGroup="
+                + containerLayerGroup + ", authorizedRoles=" + authorizedRoles + ", containedCatalogIds="
+                + containedCatalogIds + "]";
+    }
+    
+    /**
+     * Returns the node depth, 0 is the root, 1 is a workspace/global layer one, 2 is layer specific
+     * @return
+     */
+    int getDepth() {
+        int depth = 0;
+        Set<SecureTreeNode> visited = new HashSet<>();
+        SecureTreeNode n = this;
+        while(n.parent != null && !visited.contains(n.parent)) {
+            depth++;
+            visited.add(n);
+            n = n.parent;
+        }
+        
+        return depth;
     }
 
 }

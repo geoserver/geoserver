@@ -80,16 +80,17 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         CatalogFilterAccessManager mgr = setupAccessManager();
 
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, mgr) {};
-        assertEquals(3, sc.getLayerGroups().size());
+        assertEquals(catalog.getLayerGroups().size(), sc.getLayerGroups().size());
 
+        // all groups in this one or global
         WorkspaceInfo ws = sc.getWorkspaceByName("topp");
         LocalWorkspace.set(ws);
-        assertEquals(3, sc.getLayerGroups().size());
+        assertEquals(catalog.getLayerGroups().size(), sc.getLayerGroups().size());
         LocalWorkspace.remove();
 
         ws = sc.getWorkspaceByName("nurc");
         LocalWorkspace.set(ws);
-        assertEquals(1, sc.getLayerGroups().size());
+        assertEquals(5, sc.getLayerGroups().size());
         assertEquals("layerGroup", sc.getLayerGroups().get(0).getName());
         LocalWorkspace.remove();
     }

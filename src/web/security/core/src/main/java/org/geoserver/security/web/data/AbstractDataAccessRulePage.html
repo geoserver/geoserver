@@ -8,14 +8,20 @@
   <ul>
      <li>
       <fieldset>
-        <ul>    
-          <li>
-            <label for="workspace"><wicket:message key="workspace">workspace</wicket:message></label>
-            <select wicket:id="workspace" id="workspace" />
+        <ul>  
+          <li class="choiceItem">
+            <input id="globalGroupRule" wicket:id="globalGroupRule" type="checkbox"/>
+            <label for="globalGroupRule"><wicket:message key="globalGroupRule">GlobalGroupRule</wicket:message></label>
           </li>
           <li>
-            <label for="layer"><wicket:message key="layer">layer</wicket:message></label>
+            <label for="root"><span wicket:id="rootLabel"></span></label>
+            <select wicket:id="root" id="root" />
+          </li>
+          <li wicket:id="layerContainer">
+            <span wicket:id="layerAndLabel">
+            <label for="layer"><wicket:message key="layerGroup">layerAndGroup</wicket:message></label>
             <select wicket:id="layer" id="layer" />
+            </span>
           </li>
           <li>
             <label for="accessMode"><wicket:message key="accessMode">mode</wicket:message></label> 

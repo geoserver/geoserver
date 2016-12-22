@@ -29,21 +29,24 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
     public static DataAccessRule READ_ALL = new DataAccessRule(ANY, ANY, AccessMode.READ);
     public static DataAccessRule WRITE_ALL = new DataAccessRule(ANY, ANY, AccessMode.WRITE);
 
-    String workspace;
+    String root;
 
     String layer;
 
     AccessMode accessMode;
 
     Set<String> roles;
+    
+    boolean globalGroupRule;
 
     /**
      * Builds a new rule
      */
-    public DataAccessRule(String workspace, String layer, AccessMode accessMode, Set<String> roles) {
+    public DataAccessRule(String root, String layer, AccessMode accessMode, Set<String> roles) {
         super();
-        this.workspace = workspace;
+        this.root = root;
         this.layer = layer;
+        this.globalGroupRule = (layer == null);
         this.accessMode = accessMode;
         if (roles == null)
             this.roles = new HashSet<String>();
@@ -54,17 +57,18 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
     /**
      * Builds a new rule
      */
-    public DataAccessRule(String workspace, String layer, AccessMode accessMode, String... roles) {
-        this(workspace, layer, accessMode, roles == null ? null : new HashSet<String>(Arrays.asList(roles)));
+    public DataAccessRule(String root, String layer, AccessMode accessMode, String... roles) {
+        this(root, layer, accessMode, roles == null ? null : new HashSet<String>(Arrays.asList(roles)));
     }
 
     /**
      * Copy constructor
      */
     public DataAccessRule(DataAccessRule other) {
-        this.workspace = other.workspace;
+        this.root = other.root;
         this.layer = other.layer;
         this.accessMode = other.accessMode;
+        this.globalGroupRule = other.globalGroupRule;
         this.roles = new HashSet<String>(other.roles);
     }
 
@@ -75,12 +79,26 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
         this(ANY, ANY, AccessMode.READ);
     }
 
-    public String getWorkspace() {
-        return workspace;
+    public String getRoot() {
+        return root;
     }
 
+    public void setRoot(String root) {
+        this.root = root;
+    }
+    
+    /**
+     * @deprecated Use getRoot(), the rule root can now be a workspace or a global layer group name
+     */
+    public String getWorkspace() {
+        return root;
+    }
+
+    /**
+     * @deprecated Use setRoot(), the rule root can now be a workspace or a global layer group name
+     */
     public void setWorkspace(String workspace) {
-        this.workspace = workspace;
+        this.root = workspace;
     }
 
     public String getLayer() {
@@ -102,14 +120,24 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
     public Set<String> getRoles() {
         return roles;
     }
+    
+    public boolean isGlobalGroupRule() {
+        return globalGroupRule;
+    }
+
+    public void setGlobalGroupRule(boolean globalGroupRule) {
+        this.globalGroupRule = globalGroupRule;
+    }
 
     /**
      * Returns the key for the current rule. No other rule should have the same
-     * 
-     *
      */
     public String getKey() {
-        return workspace + "." + layer + "." + accessMode.getAlias();
+        if(globalGroupRule) {
+            return root + "." + accessMode.getAlias();
+        } else {
+            return root + "." + layer + "." + accessMode.getAlias();
+        }
     }
     
     /**
@@ -135,9 +163,9 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
      * and if anything else is equal, read comes before write
      */
     public int compareTo(DataAccessRule other) {
-        int compareWs = compareCatalogItems(workspace, other.workspace);
-        if (compareWs != 0)
-            return compareWs;
+        int compareRoot = compareCatalogItems(root, other.root);
+        if (compareRoot != 0)
+            return compareRoot;
 
         int compareLayer = compareCatalogItems(layer, other.layer);
         if (compareLayer != 0)
@@ -175,7 +203,7 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
      */
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(workspace).append(layer).append(accessMode.getAlias())
+        return new HashCodeBuilder().append(root).append(layer).append(accessMode.getAlias())
                 .toHashCode();
     }
 
@@ -183,6 +211,9 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
      * Generic string comparison that considers the use of {@link #ANY}
      */
     public int compareCatalogItems(String item, String otherItem) {
+        if(item == null) {
+            return otherItem != null ? -1 : 0; 
+        }
         if (item.equals(otherItem))
             return 0;
         else if (ANY.equals(item))
@@ -198,4 +229,5 @@ public class DataAccessRule implements Comparable<DataAccessRule>, Serializable 
     public String toString() {
         return getKey() + "=" + getValue();
     }
+    
 }

@@ -66,7 +66,7 @@ import org.geoserver.security.decorators.SecuredDataStoreInfo;
 import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
-import org.geoserver.security.decorators.*;
+import org.geoserver.security.decorators.SecuredWMSLayerInfo;
 import org.geotools.util.logging.Logging;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -1398,4 +1398,336 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertThat(wmsLayerInfo.getResource(), not(instanceOf(SecuredWMSLayerInfo.class)));
         assertThat(wmsLayerInfo.getResource(), instanceOf(WMSLayerInfo.class));
     }
+    
+    @Test
+    public void testWmsNamedTreeAMilitaryOnly() throws Exception {
+        // prepare the stage
+        setupRequestThreadLocal("WMS");
+        buildManager("namedTreeAMilitaryOnly.properties");
+
+        // try with read only user
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        assertNull(sc.getFeatureTypeByName("topp:states"));
+        // cannot see the named tree
+        assertNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        // only contained in the hidden group and in a "single mode" one
+        assertNull(sc.getLayerByName(statesLayer.prefixedName()));
+        // not shared
+        assertNull(sc.getLayerByName(citiesLayer.prefixedName()));
+        // this layer is contained also in containerTreeB
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        // the other layers in groups are also available
+        assertNotNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        assertNotNull(sc.getLayerGroupByName(nestedContainerE.prefixedName()));
+        assertNotNull(sc.getLayerByName(forestsLayer.prefixedName()));
+        // check the single group is there but lost the states layer
+        LayerGroupInfo securedSingleGroup = sc.getLayerGroupByName(singleGroupC.prefixedName());
+        assertNotNull(securedSingleGroup);
+        assertEquals(1, securedSingleGroup.layers().size());
+        assertEquals(basesLayer.prefixedName(), securedSingleGroup.layers().get(0).prefixedName());
+
+        // check the mil user sees everything instead
+        SecurityContextHolder.getContext().setAuthentication(milUser);
+        assertNotNull(sc.getFeatureTypeByName("topp:states"));
+        assertNotNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNotNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNotNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        securedSingleGroup = sc.getLayerGroupByName(singleGroupC.prefixedName());
+        assertNotNull(securedSingleGroup);
+        assertEquals(2, securedSingleGroup.layers().size());
+        assertEquals(statesLayer.prefixedName(), securedSingleGroup.layers().get(0).prefixedName());
+        assertEquals(basesLayer.prefixedName(), securedSingleGroup.layers().get(1).prefixedName());
+    }
+    
+    @Test
+    public void testWfsNamedTreeAMilitaryOnly() throws Exception {
+        // prepare the stage, this time for a WFS test, the containment rules won't apply anymore
+        setupRequestThreadLocal("WFS");
+        buildManager("namedTreeAMilitaryOnly.properties");
+
+        // try with read only user
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        assertNotNull(sc.getFeatureTypeByName("topp:states"));
+        // cannot see the named tree
+        assertNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        // only contained in the hidden group and in a "single mode" one
+        assertNotNull(sc.getLayerByName(statesLayer.prefixedName()));
+        // not shared
+        assertNotNull(sc.getLayerByName(citiesLayer.prefixedName()));
+        // this layer is contained also in containerTreeB
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        // the other layers in groups are also available
+        assertNotNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        assertNotNull(sc.getLayerByName(landmarksLayer.prefixedName()));
+        assertNotNull(sc.getLayerGroupByName(nestedContainerE.prefixedName()));
+        assertNotNull(sc.getLayerByName(forestsLayer.prefixedName()));
+        // check the single group is there but lost the states layer
+        LayerGroupInfo securedSingleGroup = sc.getLayerGroupByName(singleGroupC.prefixedName());
+        assertNotNull(securedSingleGroup);
+        assertEquals(2, securedSingleGroup.layers().size());
+        assertEquals(statesLayer.prefixedName(), securedSingleGroup.layers().get(0).prefixedName());
+        assertEquals(basesLayer.prefixedName(), securedSingleGroup.layers().get(1).prefixedName());
+
+        // check the mil user sees everything instead
+        SecurityContextHolder.getContext().setAuthentication(milUser);
+        assertNotNull(sc.getFeatureTypeByName("topp:states"));
+        assertNotNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNotNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNotNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        securedSingleGroup = sc.getLayerGroupByName(singleGroupC.prefixedName());
+        assertNotNull(securedSingleGroup);
+        assertEquals(2, securedSingleGroup.layers().size());
+        assertEquals(statesLayer.prefixedName(), securedSingleGroup.layers().get(0).prefixedName());
+        assertEquals(basesLayer.prefixedName(), securedSingleGroup.layers().get(1).prefixedName());
+    }
+    
+    @Test
+    public void testWmsContainerTreeBMilitaryOnly() throws Exception {
+        // prepare the stage
+        setupRequestThreadLocal("WMS");
+        buildManager("containerTreeGroupBMilitaryOnly.properties");
+
+        // try with read only user, layer group A and its contents should be fine
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        assertNotNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNotNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(citiesLayer.prefixedName()));
+        // layer group B and landmarks should not be accessible
+        assertNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        assertNull(sc.getLayerByName(landmarksLayer.prefixedName()));
+        // the nested group and its sub-layer is also not available
+        assertNull(sc.getLayerGroupByName(nestedContainerE.prefixedName()));
+        assertNull(sc.getLayerByName(forestsLayer.prefixedName()));
+
+        // check the single group is there and fully available
+        LayerGroupInfo securedSingleGroup = sc.getLayerGroupByName(singleGroupC.prefixedName());
+        assertNotNull(securedSingleGroup);
+        assertEquals(2, securedSingleGroup.layers().size());
+        assertEquals(statesLayer.prefixedName(), securedSingleGroup.layers().get(0).prefixedName());
+        assertEquals(basesLayer.prefixedName(), securedSingleGroup.layers().get(1).prefixedName());
+
+        // check the mil user sees everything instead
+        SecurityContextHolder.getContext().setAuthentication(milUser);
+        assertNotNull(sc.getFeatureTypeByName("topp:states"));
+        assertNotNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNotNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNotNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        securedSingleGroup = sc.getLayerGroupByName(singleGroupC.prefixedName());
+        assertNotNull(securedSingleGroup);
+        assertEquals(2, securedSingleGroup.layers().size());
+        assertEquals(statesLayer.prefixedName(), securedSingleGroup.layers().get(0).prefixedName());
+        assertEquals(basesLayer.prefixedName(), securedSingleGroup.layers().get(1).prefixedName());
+    }
+    
+    @Test
+    public void testWmsBothGroupABMilitaryOnlyMilitaryOnly() throws Exception {
+        // prepare the stage
+        setupRequestThreadLocal("WMS");
+        buildManager("bothGroupABMilitaryOnly.properties");
+
+        // try with read only user, layer group A and its contents should not be available
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        assertNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNull(sc.getLayerByName(citiesLayer.prefixedName()));
+        // layer group B and landmarks should not be accessible
+        assertNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        assertNull(sc.getLayerByName(landmarksLayer.prefixedName()));
+        // the nested group and its sub-layer is also not available
+        assertNull(sc.getLayerGroupByName(nestedContainerE.prefixedName()));
+        assertNull(sc.getLayerByName(forestsLayer.prefixedName()));
+
+        // check the single group is there and states is gone
+        LayerGroupInfo securedSingleGroup = sc.getLayerGroupByName(singleGroupC.prefixedName());
+        assertNotNull(securedSingleGroup);
+        assertEquals(1, securedSingleGroup.layers().size());
+        assertEquals(basesLayer.prefixedName(), securedSingleGroup.layers().get(0).prefixedName());
+
+        // check the mil user sees everything instead
+        SecurityContextHolder.getContext().setAuthentication(milUser);
+        assertNotNull(sc.getFeatureTypeByName("topp:states"));
+        assertNotNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNotNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(landmarksLayer.prefixedName()));
+        assertNotNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        securedSingleGroup = sc.getLayerGroupByName(singleGroupC.prefixedName());
+        assertNotNull(securedSingleGroup);
+        assertEquals(2, securedSingleGroup.layers().size());
+        assertEquals(statesLayer.prefixedName(), securedSingleGroup.layers().get(0).prefixedName());
+        assertEquals(basesLayer.prefixedName(), securedSingleGroup.layers().get(1).prefixedName());
+    }
+    
+    @Test
+    public void testWmsSingleGroupCMilitaryOnly() throws Exception {
+        // prepare the stage
+        setupRequestThreadLocal("WMS");
+        buildManager("singleGroupCMilitaryOnly.properties");
+
+        // try with read only user, layer group A and its contents should be fine
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        assertNotNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNotNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(citiesLayer.prefixedName()));
+        // layer group B and landmarks should also be accessible
+        assertNotNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        assertNotNull(sc.getLayerByName(landmarksLayer.prefixedName()));
+        // check the single group is not available, but its extra layer is
+        assertNull(sc.getLayerGroupByName(singleGroupC.prefixedName()));
+        assertNotNull(sc.getLayerByName(basesLayer.prefixedName()));
+        
+        // check the mil user sees everything instead
+        SecurityContextHolder.getContext().setAuthentication(milUser);
+        assertNotNull(sc.getFeatureTypeByName("topp:states"));
+        assertNotNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNotNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNotNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        LayerGroupInfo securedSingleGroup = sc.getLayerGroupByName(singleGroupC.prefixedName());
+        assertNotNull(securedSingleGroup);
+        assertEquals(2, securedSingleGroup.layers().size());
+        assertEquals(statesLayer.prefixedName(), securedSingleGroup.layers().get(0).prefixedName());
+        assertEquals(basesLayer.prefixedName(), securedSingleGroup.layers().get(1).prefixedName());
+    }
+    
+    @Test
+    public void testWmsWsContainerGroupDMilitaryOnly() throws Exception {
+        // prepare the stage
+        setupRequestThreadLocal("WMS");
+        buildManager("wsContainerGroupDMilitaryOnly.properties");
+
+        // try with read only user, layer group A and its contents should be fine
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        assertNotNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNotNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(citiesLayer.prefixedName()));
+        // layer group B and landmarks should also be accessible
+        assertNotNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        assertNotNull(sc.getLayerByName(landmarksLayer.prefixedName()));
+        // the single group is  available too
+        assertNotNull(sc.getLayerGroupByName(singleGroupC.prefixedName()));
+        assertNotNull(sc.getLayerByName(basesLayer.prefixedName()));
+        // the ws specific group is not available instead, nor its contained layers
+        assertNull(sc.getLayerGroupByName("nurc", "wsContainerD"));
+        assertNull(sc.getLayerByName(arcGridLayer.prefixedName()));
+        
+        // check the mil user sees everything instead
+        SecurityContextHolder.getContext().setAuthentication(milUser);
+        assertNotNull(sc.getFeatureTypeByName("topp:states"));
+        assertNotNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNotNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNotNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        LayerGroupInfo securedSingleGroup = sc.getLayerGroupByName(singleGroupC.prefixedName());
+        assertNotNull(securedSingleGroup);
+        assertEquals(2, securedSingleGroup.layers().size());
+        assertEquals(statesLayer.prefixedName(), securedSingleGroup.layers().get(0).prefixedName());
+        assertEquals(basesLayer.prefixedName(), securedSingleGroup.layers().get(1).prefixedName());
+        LayerGroupInfo wsSpecificGroup = sc.getLayerGroupByName("nurc", "wsContainerD");
+        assertNotNull(wsSpecificGroup);
+        assertEquals(1, wsSpecificGroup.getLayers().size());
+        assertNotNull(sc.getLayerByName(arcGridLayer.prefixedName()));
+    }
+    
+    @Test
+    public void testWMSLayerGroupAllowsAccess() throws Exception {
+        // prepare the stage
+        setupRequestThreadLocal("WMS");
+        buildManager("namedTreeAllow.properties");
+
+        // try with read only user, only layer group A and its contents should be visible
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        assertNotNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNotNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(citiesLayer.prefixedName()));
+        // layer group B should not be accessible
+        assertNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        assertNull(sc.getLayerByName(landmarksLayer.prefixedName()));
+        // the single group not available either
+        assertNull(sc.getLayerGroupByName(singleGroupC.prefixedName()));
+        assertNull(sc.getLayerByName(basesLayer.prefixedName()));
+        // the ws specific group is not available either
+        assertNull(sc.getLayerGroupByName("nurc", "wsContainerD"));
+        assertNull(sc.getLayerByName(arcGridLayer.prefixedName()));
+    }
+    
+    @Test
+    public void testWMSLayerGroupAllowLayerOverride() throws Exception {
+        // prepare the stage
+        setupRequestThreadLocal("WMS");
+        buildManager("namedTreeAllowLayerOverride.properties");
+
+        // try with read only user, only layer group A and its contents should be visible, but 
+        // not topp:states
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        assertNotNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(citiesLayer.prefixedName()));
+        // layer group B should not be accessible
+        assertNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        assertNull(sc.getLayerByName(landmarksLayer.prefixedName()));
+        // the single group not available either
+        assertNull(sc.getLayerGroupByName(singleGroupC.prefixedName()));
+        assertNull(sc.getLayerByName(basesLayer.prefixedName()));
+        // the ws specific group is not available either
+        assertNull(sc.getLayerGroupByName("nurc", "wsContainerD"));
+        assertNull(sc.getLayerByName(arcGridLayer.prefixedName()));
+    }
+    
+    @Test
+    public void testWMSLayerGroupAllowWorkspaceOverride() throws Exception {
+        // prepare the stage
+        setupRequestThreadLocal("WMS");
+        buildManager("namedTreeAllowWorkspaceOverride.properties");
+
+        // try with read only user, only layer group A and its contents should be visible
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        assertNotNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        assertNotNull(sc.getLayerByName(citiesLayer.prefixedName()));
+        // layer group B should not be accessible
+        assertNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        assertNull(sc.getLayerByName(landmarksLayer.prefixedName()));
+        // the single group not available either
+        assertNull(sc.getLayerGroupByName(singleGroupC.prefixedName()));
+        assertNull(sc.getLayerByName(basesLayer.prefixedName()));
+        // the ws specific group is not available either
+        assertNull(sc.getLayerGroupByName("nurc", "wsContainerD"));
+        assertNull(sc.getLayerByName(arcGridLayer.prefixedName()));
+    }
+    
+    @Test
+    public void testWMSLayerGroupDenyWSAllow() throws Exception {
+        // prepare the stage
+        setupRequestThreadLocal("WMS");
+        buildManager("namedTreeDenyWSAllow.properties");
+
+        // try with read only user, the layer group A is not allowed
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        assertNull(sc.getLayerGroupByName(namedTreeA.getName()));
+        assertNull(sc.getLayerByName(statesLayer.prefixedName()));
+        assertNull(sc.getLayerByName(roadsLayer.prefixedName()));
+        // however cities are allowed explicity because they are in the nurc ws
+        assertNotNull(sc.getLayerByName(citiesLayer.prefixedName()));
+        // layer group B should not be accessible
+        assertNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));
+        assertNull(sc.getLayerByName(landmarksLayer.prefixedName()));
+        // the single group not available either
+        assertNull(sc.getLayerGroupByName(singleGroupC.prefixedName()));
+        assertNull(sc.getLayerByName(basesLayer.prefixedName()));
+        // the ws specific group is made available by the workspace rule
+        assertNotNull(sc.getLayerGroupByName("nurc", "wsContainerD"));
+        assertNotNull(sc.getLayerByName(arcGridLayer.prefixedName()));
+    }
+        
 }

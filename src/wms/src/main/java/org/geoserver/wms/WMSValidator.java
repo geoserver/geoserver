@@ -34,9 +34,8 @@ public class WMSValidator extends AbstractCatalogValidator {
         try {
             if (
                 lyr.getResource() == null ||
-                (hasGeometry(lyr) && 
-                    (lyr.getResource().getSRS() == null ||
-                     lyr.getResource().getLatLonBoundingBox() == null))
+                ((lyr.getResource().getSRS() == null ||
+                     lyr.getResource().getLatLonBoundingBox() == null) && hasGeometry(lyr))
             ) throw new RuntimeException( "Layer's resource is not fully configured");
           
             // Resource-dependent checks
@@ -57,8 +56,7 @@ public class WMSValidator extends AbstractCatalogValidator {
             } else throw new RuntimeException("Layer is neither RASTER nor VECTOR type");
     
             // Style-dependent checks
-            if (hasGeometry(lyr) &&
-               (lyr.getDefaultStyle() == null || lyr.getStyles().contains(null))
+            if ((lyr.getDefaultStyle() == null || lyr.getStyles().contains(null)) && hasGeometry(lyr)
             ) throw new RuntimeException("Layer has null styles!");
         } catch(IOException e) {
             throw new RuntimeException(e);

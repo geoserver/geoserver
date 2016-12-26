@@ -267,11 +267,11 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
                 LayerGroupInfo group = it.next();
 
                 // parallel remove of layer and styles
-                int index = group.getLayers().indexOf(layerGroupToRemove);
+                int index = getLayerGroupIndex(layerGroupToRemove, group);
                 while (index != -1) {
                     group.getLayers().remove(index);
                     group.getStyles().remove(index);
-                    index = group.getLayers().indexOf(layerGroupToRemove);
+                    index = getLayerGroupIndex(layerGroupToRemove, group);
                 }
                 if (group.getLayers().size() == 0) {
                     // if group is empty, delete it
@@ -284,6 +284,28 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         
         // finally remove the group
         catalog.remove(layerGroupToRemove);
+    }
+
+    /**
+     * Between modification proxies and security buffering the list of layers of a group it's just
+     * safer and more predictable to use a id comparison instead of a equals that accounts for
+     * each and every field
+     *  
+     * @param layerGroup
+     * @param container
+     * @return
+     */
+    private int getLayerGroupIndex(LayerGroupInfo layerGroup, LayerGroupInfo container) {
+        int idx = 0;
+        final String id = layerGroup.getId();
+        for (PublishedInfo pi : container.getLayers()) {
+            if(pi instanceof LayerGroupInfo && id.equals(pi.getId())) {
+                return idx; 
+            }
+            idx++;
+        }
+        
+        return -1;
     }
 
     public void visit(WMSLayerInfo wmsLayer) {

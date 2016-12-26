@@ -118,8 +118,15 @@ public class Start {
                 log.info("Loading Jetty config from file: " + jettyConfigFile);
                 (new XmlConfiguration(new FileInputStream(jettyConfigFile))).configure(jettyServer);
             }
+            
+            long start = System.currentTimeMillis();
+            log.severe("GeoServer starting");
 
            jettyServer.start();
+           
+           long end = System.currentTimeMillis();
+           log.severe("GeoServer startup complete in " + (end - start) / 1000. + "s");
+           
 
            /*
             * Reads from System.in looking for the string "stop\n" in order to gracefully terminate

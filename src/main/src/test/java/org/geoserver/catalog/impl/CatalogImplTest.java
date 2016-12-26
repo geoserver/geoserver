@@ -941,8 +941,7 @@ public class CatalogImplTest {
         try {
             catalog.getFeatureTypes().remove( ft );
             fail( "removing directly should cause exception");
-        }
-        catch( Exception e ) {}
+        } catch( Exception e ) {}
         
         catalog.remove( ft );
         assertTrue( catalog.getFeatureTypes().isEmpty() );

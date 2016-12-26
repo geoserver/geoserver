@@ -76,7 +76,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
                 LocalPublished.set(lg);
             }
             else {
-                //if no workspace context specified and server configuration not allowing global
+                // if no workspace context specified and server configuration not allowing global
                 // services throw an error
                 if (!gs.getGlobal().isGlobalServices()) {
                     throw new ServiceException("No such workspace '" + request.context + "'" );  

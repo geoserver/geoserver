@@ -1069,9 +1069,10 @@ public class CatalogImpl implements Catalog {
         
         NamespaceInfo added;
         synchronized (facade) {
-            added = facade.add(resolve(namespace));
+            final NamespaceInfo resolved = resolve(namespace);
+            added = facade.add(resolved);
             if ( getDefaultNamespace() == null ) {
-                setDefaultNamespace(namespace);
+                setDefaultNamespace(resolved);
             }
         }
         
@@ -1386,10 +1387,8 @@ public class CatalogImpl implements Catalog {
     
     public void remove(StyleInfo style) {
         //ensure no references to the style
-        for ( LayerInfo l : facade.getLayers() ) {
-            if ( style.equals( l.getDefaultStyle() ) || l.getStyles().contains( style )) {
-                throw new IllegalArgumentException( "Unable to delete style referenced by '"+ l.getName()+"'");
-            }
+        for ( LayerInfo l : facade.getLayers(style) ) {
+            throw new IllegalArgumentException( "Unable to delete style referenced by '"+ l.getName()+"'");
         }
 
         for ( LayerGroupInfo lg : facade.getLayerGroups() ) {

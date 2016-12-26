@@ -353,4 +353,25 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     public void removeListeners(Class listenerClass) {
         delegate.removeListeners(listenerClass);
     }
+    
+    @Override
+    public NamespaceInfo getDefaultNamespace() {
+        if (LocalWorkspace.get() != null) {
+            WorkspaceInfo ws = LocalWorkspace.get();
+            NamespaceInfo ns = delegate.getNamespaceByPrefix(ws.getName());
+            if(ns != null) {
+                return ns;
+            }
+        }
+        
+        return super.getDefaultNamespace();
+    }
+    
+    @Override
+    public WorkspaceInfo getDefaultWorkspace() {
+        if (LocalWorkspace.get() != null) {
+            return LocalWorkspace.get();
+        }
+        return super.getDefaultWorkspace();
+    }
 }

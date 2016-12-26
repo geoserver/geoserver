@@ -62,11 +62,11 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
                                 typeName = new QName(ns.getURI(),
                                         typeName.getLocalPart());
                             } else if (typeName.getNamespaceURI().equals(
-                                    catalog.getDefaultNamespace().getURI())) {
+                                    catalog.getDefaultNamespace().getURI()) || !typeName.getNamespaceURI().equals(ns.getURI())) {
                                 // more complex case, if we have the default
                                 // namespace, we have to check if it's been
                                 // specified on the request, or assigned by parser
-                                typeName = checkDefaultNamespace(request, ns,
+                                typeName = checkOriginallyUnqualified(request, ns,
                                         typeName);
                             }
                             qualifiedNames.add(typeName);
@@ -90,7 +90,7 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
      * @param typeName
      *
      */
-    private QName checkDefaultNamespace(Request request, NamespaceInfo ns,
+    private QName checkOriginallyUnqualified(Request request, NamespaceInfo ns,
             QName typeName) {
         Map<String, String[]> originalParams = request
                 .getHttpRequest().getParameterMap();

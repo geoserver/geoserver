@@ -155,10 +155,11 @@
     <!-- the schema cleaner -->
     <bean id="xsdSchemaCleaner" class="org.geoserver.wfs.xml.SchemaCleanerCallback"/>
 
-    <bean id="wfs20ExceptionHandler" class="org.geoserver.ows.OWS11ServiceExceptionHandler">
+    <bean id="wfs20ExceptionHandler" class="org.geoserver.wfs.response.Wfs2ExceptionHandler">
         <constructor-arg>
-           <ref bean="wfsService-2.0"/>
-        </constructor-arg>  
+            <ref bean="wfsService-2.0"/>
+        </constructor-arg>
+        <constructor-arg ref="geoServer"/>
         <property name="useServiceVersion" value="true"/>
     </bean>
 	

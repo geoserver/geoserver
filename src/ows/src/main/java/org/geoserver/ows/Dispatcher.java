@@ -1634,14 +1634,25 @@ public class Dispatcher extends AbstractController {
             } else {
                 logger.log(Level.FINER, "", t);
             }
-            
+
+            boolean isError = ece.getErrorCode() >= 400;
+            HttpServletResponse rsp = request.getHttpResponse();
             try {
-                if(ece.getMessage() != null) {
-                    request.getHttpResponse().sendError(ece.getErrorCode(),ece.getMessage());
-                } else {
-                    request.getHttpResponse().sendError(ece.getErrorCode());
+                if (isError) {
+                    if (ece.getMessage() != null) {
+                        rsp.sendError(ece.getErrorCode(), ece.getMessage());
+                    }
+                    else {
+                        rsp.sendError(ece.getErrorCode());
+                    }
                 }
-                if (ece.getErrorCode() < 400) {
+                else {
+                    rsp.setStatus(ece.getErrorCode());
+                    if (ece.getMessage() != null) {
+                        rsp.getOutputStream().print(ece.getMessage());
+                    }
+                }
+                if (!isError) {
                     // gwc returns an HttpErrorCodeException for 304s
                     // we don't want to flag these as errors for upstream filters, ie the monitoring extension
                     t = null;

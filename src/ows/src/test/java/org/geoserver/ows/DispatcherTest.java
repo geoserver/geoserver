@@ -342,14 +342,18 @@ public class DispatcherTest extends TestCase {
     }
     
     public void testHttpErrorCodeException() throws Exception {
-    	assertHttpErrorCode("httpErrorCodeException");
+    	assertHttpErrorCode("httpErrorCodeException", HttpServletResponse.SC_NO_CONTENT);
     }
     
     public void testWrappedHttpErrorCodeException() throws Exception {
-        assertHttpErrorCode("wrappedHttpErrorCodeException");
+        assertHttpErrorCode("wrappedHttpErrorCodeException", HttpServletResponse.SC_NO_CONTENT);
     }
 
-    private void assertHttpErrorCode(String requestType) throws Exception {
+    public void testBadRequestHttpErrorCodeException() throws Exception {
+        assertHttpErrorCode("badRequestHttpErrorCodeException", HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    private void assertHttpErrorCode(String requestType, int expectedCode) throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
         FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
@@ -389,7 +393,9 @@ public class DispatcherTest extends TestCase {
         request.setQueryString("service=hello&request=hello&message=HelloWorld");
         
         dispatcher.handleRequest(request, response);
-        assertEquals(HttpServletResponse.SC_NO_CONTENT, response.getStatusCode());
+        assertEquals(expectedCode, response.getStatusCode());
+
+        assertEquals(expectedCode >= 400, response.isError());
 	}
     
     /**

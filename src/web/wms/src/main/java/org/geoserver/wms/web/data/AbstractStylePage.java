@@ -27,7 +27,6 @@ import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.PanelCachingTab;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -46,6 +45,8 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -82,6 +83,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     }
 
     public AbstractStylePage(StyleInfo style) {
+        recoverCssStyle(style);
         initPreviewLayer(style);
         initUI(style);
     }
@@ -430,7 +432,61 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         editor.setModelObject(rawStyle);
         in.close();
     }
-    
+
+    /**
+     * Check for an original CSS version of the style created by the old CSS extension (pre-pluggable styles). If a CSS style is found, recover it if
+     * the derived SLD has not subsequently been manually edited.
+     * 
+     * The recovery is accomplished by updating the catalog to point to the original CSS file, and changing the style's format to "css".
+     * 
+     * @param si The {@link StyleInfo} for which to check for and potentially recover a CSS version.
+     */
+    protected void recoverCssStyle(StyleInfo si) {
+        if (si == null) {
+            return;
+        }
+
+        // Only try to repair missing CSS files if a CSS style handler is registered.
+        try {
+            Styles.handler("css");
+        } catch (Exception e) {
+            return;
+        }
+
+        // Use this tolerance to prevent erasing an SLD that was manually edited after being
+        // generated from a CSS file. (Generated SLDs will always be newer than the CSS).
+        long favorSLDIfNewerByMS = 600000;
+
+        // The problem only exists for styles with an "sld" format (either explicitly or by default).
+        if ("sld".equalsIgnoreCase(si.getFormat())) {
+            String filename = si.getFilename();
+            String filenameCss = filename.substring(0, filename.lastIndexOf('.')) + ".css";
+            GeoServerDataDirectory dataDir = new GeoServerDataDirectory(
+                    getCatalog().getResourceLoader());
+            Resource cssResource = dataDir.get(si, filenameCss);
+
+            if (!cssResource.getType().equals(Resource.Type.UNDEFINED)) {
+                // If there is an existing CSS file with the style's name, check if it should be recovered.
+                Resource sldResource = dataDir.get(si, filename);
+                long sldNewerByMs = sldResource.lastmodified() - cssResource.lastmodified();
+
+                if (sldNewerByMs > favorSLDIfNewerByMS) {
+                    LOGGER.log(Level.WARNING,
+                            "A CSS version of " + si.getName() + " has been recovered ("
+                                    + filenameCss + "), but the SLD is more recent by "
+                                    + sldNewerByMs + " ms. The style will be left as an SLD.");
+                } else {
+                    LOGGER.log(Level.WARNING,
+                            "A CSS version of " + si.getName() + " has been recovered ("
+                                    + filenameCss + "). The style will be converted to CSS.");
+                    si.setFilename(filenameCss);
+                    si.setFormat("css");
+                    getCatalog().save(si);
+                }
+            }
+        }
+    }
+
     /**
      * Called when a configuration change requires updating an inactive tab
      */

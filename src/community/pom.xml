@@ -80,6 +80,7 @@
           <descriptor>release/ext-backup-restore.xml</descriptor>
           <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
           <descriptor>release/ext-onelogin.xml</descriptor> 
+          <descriptor>release/ext-ows-simulate.xml</descriptor> 
         </descriptors>
       </configuration>
      </plugin>
@@ -221,6 +222,7 @@
         <module>security/oauth2-geonode</module>
         <module>wmts-multi-dimensional</module>
         <module>onelogin</module>
+        <module>ows-simulate</module>
       </modules>
     </profile>
     <profile>
@@ -493,6 +495,12 @@
       <id>wmts-multi-dimensional</id>
       <modules>
         <module>wmts-multi-dimensional</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ows-simulate</id>
+      <modules>
+        <module>ows-simulate</module>
       </modules>
     </profile>
   </profiles>

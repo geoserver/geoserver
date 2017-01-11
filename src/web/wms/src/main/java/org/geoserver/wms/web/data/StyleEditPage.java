@@ -45,6 +45,8 @@ public class StyleEditPage extends AbstractStylePage {
             doReturn(StylePage.class);
             return;
         }
+        
+        recoverCssStyle(si);
         initPreviewLayer(si);
         initUI(si);
 

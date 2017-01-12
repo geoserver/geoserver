@@ -38,6 +38,7 @@
 		     <value>hello</value>
 		     <value>httpErrorCodeException</value>
 		     <value>wrappedHttpErrorCodeException</value>
+		     <value>badRequestHttpErrorCodeException</value>
 		   </list>
 		</constructor-arg>
 	</bean>

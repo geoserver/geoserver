@@ -85,14 +85,18 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         // all groups in this one or global
         WorkspaceInfo ws = sc.getWorkspaceByName("topp");
         LocalWorkspace.set(ws);
-        assertEquals(catalog.getLayerGroups().size(), sc.getLayerGroups().size());
+        assertEquals(getWorkspaceAccessibleGroupSize("topp"), sc.getLayerGroups().size());
         LocalWorkspace.remove();
 
         ws = sc.getWorkspaceByName("nurc");
         LocalWorkspace.set(ws);
-        assertEquals(5, sc.getLayerGroups().size());
+        assertEquals(getWorkspaceAccessibleGroupSize("nurc"), sc.getLayerGroups().size());
         assertEquals("layerGroup", sc.getLayerGroups().get(0).getName());
         LocalWorkspace.remove();
+    }
+
+    private long getWorkspaceAccessibleGroupSize(String workspaceName) {
+        return catalog.getLayerGroups().stream().filter(lg -> lg.getWorkspace() == null || workspaceName.equals(lg.getWorkspace().getName())).count();
     }
 
     @Test

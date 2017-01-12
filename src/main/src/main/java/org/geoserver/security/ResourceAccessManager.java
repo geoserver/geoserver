@@ -5,9 +5,10 @@
  */
 package org.geoserver.security;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
 
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -40,6 +41,15 @@ public interface ResourceAccessManager {
      * Returns the access limits for the specified layer, or null if there are no limits.
      */
     public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer);
+    
+    /**
+     * Returns the access limits for the specified layer accessed via the groups listed as containers
+     * (will be an empty list for direct access), or null if there are no limits.
+     */
+    public default DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer, List<LayerGroupInfo> containers) {
+    	return getAccessLimits(user, layer);
+    }
+
 
     /**
      * Returns the access limits for the specified resource, or null if there are no limits.
@@ -55,6 +65,15 @@ public interface ResourceAccessManager {
      * Returns the access limits for the specified layer group, or null if there are no limits.
      */
     public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup);
+
+    /**
+     * Returns the access limits for the specified layer group accessed via the groups listed as containers
+     * (will be an empty list for direct access), or null if there are no limits, or null if there are no limits.
+     */
+    public default LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup, List<LayerGroupInfo> containers) {
+    	return getAccessLimits(user, layerGroup);
+    }
+
     
     /**
      * Returns a filter selecting only the objects authorized by the manager.  May return 

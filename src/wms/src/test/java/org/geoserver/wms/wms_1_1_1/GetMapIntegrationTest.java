@@ -35,6 +35,7 @@ import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -46,6 +47,7 @@ import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
@@ -194,6 +196,8 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 GetMapTest.class, getCatalog());
 
         addCoverageViewLayer();
+        
+        setupOpaqueGroup(catalog);
     }
 
     private void addCoverageViewLayer() throws Exception {
@@ -1168,5 +1172,32 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         
         // should be the same image, the second request filters out anything in "places"
         ImageAssert.assertEquals(imageLakes, imageLakesPlaces, 0);
+    }
+    
+    @Test
+    public void testGetMapOpaqueGroup() throws Exception {
+        String url = "wms?LAYERS=" + OPAQUE_GROUP + "&STYLES=&FORMAT=image%2Fpng"
+                + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-0.0043,-0.0025,0.0043,0.0025";
+        BufferedImage imageGroup = getAsImage(url, "image/png");
+
+        ImageAssert.assertEquals(
+                new File("./src/test/resources/org/geoserver/wms/wms_1_1_1/opaqueGroup.png"),
+                imageGroup, 300);
+    }
+
+    @Test
+    public void testGetMapLayersInOpaqueGroup() throws Exception {
+        LayerGroupInfo group = getCatalog().getLayerGroupByName(OPAQUE_GROUP);
+        for (PublishedInfo pi : group.layers()) {
+            String url = "wms?LAYERS=" + pi.prefixedName() + "&STYLES=&FORMAT=image%2Fpng"
+                    + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=-0.0043,-0.0025,0.0043,0.0025";
+            Document dom = getAsDOM(url);
+            //print(dom);
+            
+            // should not be found
+            XMLAssert.assertXpathEvaluatesTo("1", "count(/ServiceExceptionReport)", dom);
+            XMLAssert.assertXpathEvaluatesTo("layers", "//ServiceException/@locator", dom);
+            XMLAssert.assertXpathEvaluatesTo("LayerNotDefined", "//ServiceException/@code", dom);
+        }
     }
 }

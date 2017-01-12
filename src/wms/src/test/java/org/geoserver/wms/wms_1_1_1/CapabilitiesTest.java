@@ -9,11 +9,11 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -23,10 +23,11 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataLinkInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -45,8 +46,6 @@ import org.w3c.dom.NodeList;
 
 public class CapabilitiesTest extends WMSTestSupport {
     
-    static final String CONTAINER_GROUP = "containerGroup";
-
     public CapabilitiesTest() {
         super();
     }
@@ -81,15 +80,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         lakesLayer.getStyles().add(tigerRoadsStyle);
         catalog.save(lakesLayer);
         
-        // create a group containing the other group
-        LayerGroupInfo containerGroup = catalog.getFactory().createLayerGroup();
-        LayerGroupInfo nature = catalog.getLayerGroupByName(NATURE_GROUP);
-        containerGroup.setName(CONTAINER_GROUP);
-        containerGroup.setMode(Mode.CONTAINER);
-        containerGroup.getLayers().add(nature);
-        CatalogBuilder cb = new CatalogBuilder(catalog);
-        cb.calculateLayerGroupBounds(containerGroup);
-        catalog.add(containerGroup);
+        setupOpaqueGroup(catalog);
     }
 
 
@@ -125,24 +116,15 @@ public class CapabilitiesTest extends WMSTestSupport {
 
     @Test
     public void testLayerCount() throws Exception {
-        List<LayerInfo> layers = new ArrayList<LayerInfo>(getCatalog().getLayers());
-        for (ListIterator<LayerInfo> it = layers.listIterator(); it.hasNext();) {
-            LayerInfo next = it.next();
-            if (!next.enabled() || next.getName().equals(MockData.GEOMETRYLESS.getLocalPart())) {
-                it.remove();
-            }
-        }
-        List<LayerGroupInfo> groups = getCatalog().getLayerGroups();
-
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), true);
 
         XpathEngine xpath = XMLUnit.newXpathEngine();
         NodeList nodeLayers = xpath.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/Layer",
                 dom);
 
-        assertEquals(layers.size() + groups.size() - 1 /* nested group */, nodeLayers.getLength());
+        assertEquals(getRawTopLayerCount(), nodeLayers.getLength());
     }
-
+    
     @Test
     public void testNonAdvertisedLayer() throws Exception {
         String layerId = getLayerId(MockData.BUILDINGS);
@@ -566,6 +548,60 @@ public class CapabilitiesTest extends WMSTestSupport {
         } finally {
             lakes.setAdvertised(true);
             catalog.save(lakes);
+        }
+    }
+    
+    @Test
+    public void testOpaqueGroup() throws Exception {
+        Document dom = dom(get("wms?request=GetCapabilities&version=1.1.0"), true);
+
+        // the layer group is there, but not the contained layers
+        assertXpathEvaluatesTo("1", "count(//Layer[Name='opaqueGroup'])", dom);
+        for (LayerInfo l : getCatalog().getLayerGroupByName(OPAQUE_GROUP).layers()) {
+            assertXpathNotExists("//Layer[Name='" + l.prefixedName() + "']", dom);
+        }
+    }
+
+    @Test
+    public void testNestedGroupInOpaqueGroup() throws Exception {
+        Catalog catalog = getCatalog();
+        
+        // nest container inside opaque, this should make it disappear from the caps
+        LayerGroupInfo container = catalog.getLayerGroupByName(CONTAINER_GROUP);
+        LayerGroupInfo opaque = catalog.getLayerGroupByName(OPAQUE_GROUP);
+        opaque.getLayers().add(container);
+        opaque.getStyles().add(null);
+        catalog.save(opaque);
+
+        try {
+            Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.0");
+            // print(dom);
+
+            // the layer group is there, but not the contained layers, which are not visible anymore
+            assertXpathEvaluatesTo("1", "count(//Layer[Name='opaqueGroup'])", dom);
+            for (PublishedInfo p : getCatalog().getLayerGroupByName(OPAQUE_GROUP).getLayers()) {
+                assertXpathNotExists("//Layer[Name='" + p.prefixedName() + "']", dom);
+            }
+
+            // now check the layer count too, we just hide everything in the container layer
+            List<LayerInfo> nestedLayers = new LayerGroupHelper(container).allLayers();
+
+            int expectedLayerCount = getRawTopLayerCount()
+                    // layers gone due to the nesting
+                    - nestedLayers.size()
+                    /* container has been nested and disappeared */
+                    - 1;
+            XpathEngine xpath = XMLUnit.newXpathEngine();
+            NodeList nodeLayers = xpath
+                    .getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/Layer", dom);
+
+            assertEquals(expectedLayerCount /* the layers under the opaque group */,
+                    nodeLayers.getLength());
+        } finally {
+            // restore the configuration
+            opaque.getLayers().remove(container);
+            opaque.getStyles().remove(opaque.getStyles().size() - 1);
+            catalog.save(opaque);
         }
     }
 }

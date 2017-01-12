@@ -5,7 +5,9 @@
  */
 package org.geoserver.security.impl;
 
+import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
@@ -27,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -613,12 +616,15 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     
     @Test
     public void testEoLayerGroupMustBeHiddenIfItsRootLayerIsHidden() throws Exception {
-        LayerGroupInfo eoRoadsLayerGroup = buildLayerGroup("eoRoadsLayerGroup", LayerGroupInfo.Mode.EO, roadsLayer, lineStyle, toppWs, statesLayer);
-        LayerGroupInfo eoStatesLayerGroup = buildLayerGroup("eoStatesLayerGroup", LayerGroupInfo.Mode.EO, statesLayer, lineStyle, toppWs, roadsLayer);
+        LayerGroupInfo eoRoadsLayerGroup = buildEOLayerGroup("eoRoadsLayerGroup", roadsLayer, lineStyle, toppWs, statesLayer);
+        LayerGroupInfo eoStatesLayerGroup = buildEOLayerGroup("eoStatesLayerGroup", statesLayer, lineStyle, toppWs, roadsLayer);
         
         Catalog eoCatalog = createNiceMock(Catalog.class);
         expect(eoCatalog.getLayerGroupByName("topp", eoRoadsLayerGroup.getName())).andReturn(eoRoadsLayerGroup).anyTimes();
-        expect(eoCatalog.getLayerGroupByName("topp", eoStatesLayerGroup.getName())).andReturn(eoStatesLayerGroup).anyTimes();        
+        expect(eoCatalog.getLayerGroupByName("topp", eoStatesLayerGroup.getName())).andReturn(eoStatesLayerGroup).anyTimes();
+        expect(eoCatalog.getLayerGroups()).andReturn(Arrays.asList(eoRoadsLayerGroup, eoStatesLayerGroup));
+        expect(eoCatalog.list(eq(LayerGroupInfo.class), anyObject(Filter.class))).
+        	andReturn(new CloseableIteratorAdapter<LayerGroupInfo>(Collections.emptyIterator())).anyTimes();
         replay(eoCatalog);
         this.catalog = eoCatalog;
         extensions.singleton("catalog", eoCatalog, Catalog.class);
@@ -627,13 +633,13 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         SecurityContextHolder.getContext().setAuthentication(roUser);
         
         // if root layer is not hidden
-        LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "eoRoadsLayerGroup");                
+        LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "eoRoadsLayerGroup");
         assertNotNull(layerGroup);
         assertNotNull(layerGroup.getRootLayer());
         
         // if root layer is hidden
-        layerGroup = sc.getLayerGroupByName("topp", "eoStatesLayerGroup");                
-        assertNull(layerGroup);        
+        layerGroup = sc.getLayerGroupByName("topp", "eoStatesLayerGroup");
+        assertNull(layerGroup);
     }
 
     @Test
@@ -1717,7 +1723,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertNull(sc.getLayerGroupByName(namedTreeA.getName()));
         assertNull(sc.getLayerByName(statesLayer.prefixedName()));
         assertNull(sc.getLayerByName(roadsLayer.prefixedName()));
-        // however cities are allowed explicity because they are in the nurc ws
+        // however cities are allowed explicitly because they are in the nurc ws
         assertNotNull(sc.getLayerByName(citiesLayer.prefixedName()));
         // layer group B should not be accessible
         assertNull(sc.getLayerGroupByName(containerTreeB.prefixedName()));

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.springframework.security.core.Authentication;
@@ -55,8 +56,6 @@ public class SecureTreeNode {
     Map<String, SecureTreeNode> children = new HashMap<String, SecureTreeNode>();
 
     SecureTreeNode parent;
-    
-    boolean containerLayerGroup = false;
 
     /**
      * A map from access mode to set of roles that can perform that kind of
@@ -73,12 +72,6 @@ public class SecureTreeNode {
      */
     Map<AccessMode, Set<String>> authorizedRoles = new HashMap<AccessMode, Set<String>>();
     
-    /**
-     * Cache of contained layer ids for nodes that are a match for a layer group (we keep ids instead
-     * of full layers to avoid memory boundless for non in-memory catalogs) 
-     */
-    Set<String> containedCatalogIds;
-
     /**
      * Builds a child of the specified parent node
      * 
@@ -220,29 +213,7 @@ public class SecureTreeNode {
         return curr;
     }
     
-    /**
-     * Returns all the layer group nodes containing the specified catalog id
-     * @param id
-     * @return
-     */
-    public List<SecureTreeNode> getLayerGroupNodesForCatalogId(String catalogId) {
-        List<SecureTreeNode> result = new ArrayList<>();
-        collectLayerGroupNodesForCatalogId(catalogId, result);
-        
-        return result;
-    }
     
-    private void collectLayerGroupNodesForCatalogId(String catalogId, List<SecureTreeNode> result) {
-        // add this node if it contains the catalog id
-        if(containerLayerGroup && containedCatalogIds != null && containedCatalogIds.contains(catalogId)) {
-            result.add(this);
-        } 
-        // recurse
-        for (SecureTreeNode child : children.values()) {
-            collectLayerGroupNodesForCatalogId(catalogId, result);
-        }
-    }
-
     /**
      * Utility method that drills down from the current node using the specified
      * list of child names, and returns an element only if it fully matches the provided path
@@ -272,37 +243,12 @@ public class SecureTreeNode {
         return children;
     }
 
-    /**
-     * Indicates that this node is supposed to match a container layer group (named or container tree)
-     * @return
-     */
-    public boolean isContainerLayerGroup() {
-        return containerLayerGroup;
-    }
-
-    /**
-     * Flags this node as a container layer group (named or container tree)
-     * @param isGlobalLayerGroup
-     */
-    public void setContainerLayerGroup(boolean isGlobalLayerGroup) {
-        this.containerLayerGroup = isGlobalLayerGroup;
-    }
-    
-    public Set<String> getContainedCatalogIds() {
-        return containedCatalogIds;
-    }
-
-    public void setContainedCatalogIds(Set<String> containedLayerIds) {
-        this.containedCatalogIds = containedLayerIds;
-    }
-
     @Override
     public String toString() {
         // customized toString to avoid printing the whole tree recursively, this one prints only
         // the info in the current level
-        return "SecureTreeNode [childrenCount=" + children.size() + ", hasParent=" + (parent != null) + ", layerGroup="
-                + containerLayerGroup + ", authorizedRoles=" + authorizedRoles + ", containedCatalogIds="
-                + containedCatalogIds + "]";
+        return "SecureTreeNode [childrenCount=" + children.size() + ", hasParent=" 
+            + (parent != null) + ", authorizedRoles=" + authorizedRoles + "]";
     }
     
     /**
@@ -321,5 +267,5 @@ public class SecureTreeNode {
         
         return depth;
     }
-
+    
 }

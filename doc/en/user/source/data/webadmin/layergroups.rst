@@ -9,9 +9,10 @@ A layer group also provides a consistent, fixed ordering of the layers it contai
 Layer Group modes
 -----------------
 
-Layer group behaviour can be configured by setting its :guilabel:`mode`. There are 4 available values:
+Layer group behaviour can be configured by setting its :guilabel:`mode`. There are 5 available values:
 
-* **single**: the layer group is exposed as a single layer with a name.
+* **single**: the layer group is exposed as a single layer with a name, acting as an alias for a list of layers. The layers are still showing up as top level entries in the WMS capabilities document (unless explicitly referred by a tree group).
+* **opaque container**: the layer group is exposed as a single layer with a name, acting as an alias for a list of layers. However, the layers and sub-groups contained in it won't show up in the capabilities document (unless explicitly referred by a tree group) and won't be available by themselves in WMS calls and in the WMS capabilities document, but only  as part of the group.
 * **named tree**: the layer group can be referred to by one name, but also exposes its nested layers and groups in the capabilities document.
 * **container tree**: the layer group is exposed in the capabilities document, but does not have a name, making it impossible to render it on its own. This is called "containing category" in the WMS specification.
 * **Earth Observation tree**: a special type of group created to manage the WMS Earth Observation requirements. This group does not render its nested layers and groups, but only a "preview layer" called Root Layer. When this mode is chosen, a new field "Root Layer" will be exposed in the configuration UI.

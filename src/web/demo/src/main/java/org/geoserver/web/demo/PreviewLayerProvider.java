@@ -227,6 +227,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         // return only layer groups that are not containers
         Filter nonContainerGroup = Predicates.or(Predicates.equal("mode", LayerGroupInfo.Mode.EO),
                 Predicates.equal("mode", LayerGroupInfo.Mode.NAMED),
+                Predicates.equal("mode", LayerGroupInfo.Mode.OPAQUE_CONTAINER), 
                 Predicates.equal("mode", LayerGroupInfo.Mode.SINGLE));
 
         // Filter for the Layers

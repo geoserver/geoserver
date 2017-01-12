@@ -8,12 +8,8 @@ package org.geoserver.security.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
@@ -140,55 +136,5 @@ public class DefaultDataAccessManagerTreeTest extends AbstractAuthorizationTest 
         assertTrue(bases.canAccess(milUser, AccessMode.WRITE));
     }
     
-    @Test
-    public void testNamedTreeAMilitaryOnly() throws Exception {
-        SecureTreeNode root = buildTree("namedTreeAMilitaryOnly.properties");
-        assertNamedTreeAMilitary(root);
-    }
-    
-    private void assertNamedTreeAMilitary(SecureTreeNode root) {
-        SecureTreeNode lgNode = root.getChild("namedTreeA");
-        assertNotNull(lgNode);
-        assertTrue(lgNode.isContainerLayerGroup());
-        assertEquals(new HashSet<String>(Arrays.asList("states-id", "roads-id", "cities-id")), lgNode.getContainedCatalogIds());
-    }
-    
-    @Test
-    public void testContainerGroupBMilitaryOnly() throws Exception {
-        SecureTreeNode root = buildTree("containerTreeGroupBMilitaryOnly.properties");
-        assertContainerTreeBMilitaryOnly(root);
-    }
-
-    private void assertContainerTreeBMilitaryOnly(SecureTreeNode root) {
-        SecureTreeNode lgNode = root.getChild("containerTreeB");
-        assertNotNull(lgNode);
-        assertTrue(lgNode.isContainerLayerGroup());
-        assertEquals(new HashSet<String>(Arrays.asList("roads-id", "landmarks-id", "forests-id", "nestedContainerE-id")), lgNode.getContainedCatalogIds());
-    }
-    
-    @Test
-    public void testSingleGroupCMilitaryOnly() throws Exception {
-        SecureTreeNode root = buildTree("singleGroupCMilitaryOnly.properties");
-        SecureTreeNode lgNode = root.getChild("singleGroupC");
-        assertNotNull(lgNode);
-        assertFalse(lgNode.isContainerLayerGroup());
-        assertNull(lgNode.getContainedCatalogIds());
-    }
-    
-    @Test
-    public void testWsContainerGroupDMilitaryOnly() throws Exception {
-        SecureTreeNode root = buildTree("wsContainerGroupDMilitaryOnly.properties");
-        SecureTreeNode lgNode = root.getChild("nurc").getChild("wsContainerD");
-        assertNotNull(lgNode);
-        assertTrue(lgNode.isContainerLayerGroup());
-        assertEquals(Collections.singleton("arc.grid-id"), lgNode.getContainedCatalogIds());
-    }
-    
-    @Test
-    public void testBothABMilitaryOnly() throws Exception {
-        SecureTreeNode root = buildTree("bothGroupABMilitaryOnly.properties");
-        assertNamedTreeAMilitary(root);
-        assertContainerTreeBMilitaryOnly(root);
-    }
 
 }

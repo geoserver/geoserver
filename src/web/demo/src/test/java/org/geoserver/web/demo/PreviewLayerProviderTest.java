@@ -63,6 +63,29 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
     }
     
     @Test
+    public void testOpaqueContainerLayerGroup() throws Exception {
+        String layerId = getLayerId(MockData.BUILDINGS);
+        LayerInfo layer = getCatalog().getLayerByName(layerId);
+        
+        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
+        group.setName("testOpaqueContainerLayerGroup");
+        group.setMode(LayerGroupInfo.Mode.OPAQUE_CONTAINER);
+        group.getLayers().add(layer);
+        group.setTitle("This is the title");
+        group.setAbstract("This is the abstract");
+        getCatalog().add(group);
+        try {
+            PreviewLayerProvider provider = new PreviewLayerProvider();
+            PreviewLayer pl = getPreviewLayer(provider, group.prefixedName());
+            assertNotNull(pl);
+            assertEquals("This is the title", pl.getTitle());
+            assertEquals("This is the abstract", pl.getAbstract());
+        } finally {
+            getCatalog().remove(group);
+        }
+    }
+    
+    @Test
     public void testWorkspacedLayerGroup() throws Exception {
         String layerId = getLayerId(MockData.BUILDINGS);
         LayerInfo layer = getCatalog().getLayerByName(layerId);

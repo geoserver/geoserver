@@ -26,7 +26,7 @@ public class WMTSXStreamLoaderTest extends GeoServerSystemTestSupport {
         loader.initXStreamPersister(xp, getGeoServer());
         // parsing service information
         try (InputStream is = getClass().getResourceAsStream("/wmts-test.xml")) {
-            WMTSInfo serviceInfo = xp.load(is, WMTSInfo.class);
+            WMTSInfo serviceInfo = loader.initialize(xp.load(is, WMTSInfo.class));
             assertThat(serviceInfo.getId(), is("WMTS-TEST"));
             assertThat(serviceInfo.isEnabled(), is(false));
             assertThat(serviceInfo.getName(), is("WMTS"));

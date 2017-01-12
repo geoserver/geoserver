@@ -46,12 +46,19 @@ public abstract class WorkspaceQualifyingCallback implements DispatcherCallback 
         return service;
     }
     
+    
     public Operation operationDispatched(Request request, Operation operation) {
-        if (LocalWorkspace.get() != null) {
+        if (LocalWorkspace.get() != null && !isStoredQueryRequest(request)) {
             qualifyRequest(LocalWorkspace.get(), LocalLayer.get(), operation, request);
         }
         
         return operation;
+    }
+
+    private boolean isStoredQueryRequest(Request request) {
+    	return "WFS".equals(request.getService()) && 
+    			"GetFeature".equals(request.getRequest()) && 
+    			request.getKvp().containsKey("STOREDQUERY_ID");
     }
 
     public Object operationExecuted(Request request, Operation operation, Object result) {

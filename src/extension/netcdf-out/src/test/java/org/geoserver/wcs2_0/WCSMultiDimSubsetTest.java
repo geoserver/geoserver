@@ -101,13 +101,12 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest{
             
             assertTrue(targetCoverage instanceof GranuleStack);
             GridCoverage2D firstResult = ((GranuleStack)targetCoverage).getGranules().get(0);
-            // checks
             
-            //TODO this grid geometry is not entirely what we expect yet, perhaps reveals another issue with this projection
+            // checks
             assertEquals(1, firstResult.getGridGeometry().getGridRange().getSpan(0));
             assertEquals(1, firstResult.getGridGeometry().getGridRange().getSpan(1));
             assertEquals(0, firstResult.getGridGeometry().getGridRange().getLow(0));
-            assertEquals(326, firstResult.getGridGeometry().getGridRange().getLow(1));
+            assertEquals(1, firstResult.getGridGeometry().getGridRange().getLow(1));
             
         } finally {
             if (coverageReader != null) {

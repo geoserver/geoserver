@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms;
 
+import static junit.framework.TestCase.fail;
 import static org.junit.Assert.*;
 
 import java.awt.Color;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -30,6 +32,7 @@ import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.dom.DOMSource;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -54,12 +57,15 @@ import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
+import org.geotools.wms.v1_3.WMSConfiguration;
+import org.geotools.xlink.XLINKConfiguration;
+import org.geotools.xml.Parser;
 import org.geotools.xml.transform.TransformerBase;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-
+import org.xml.sax.SAXParseException;
 import org.springframework.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -618,6 +624,28 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         int opaqueDelta = groups.stream().anyMatch(lg -> OPAQUE_GROUP.equals(lg.getName())) ? 2 : 0;
         int expectedLayerCount = layers.size() + groups.size() - 1 /* nested layer group */ - opaqueDelta;
         return expectedLayerCount;
+    }
+    
+    /**
+     * Validates a document against the
+     * 
+     * @param dom
+     * @param configuration
+     */
+    @SuppressWarnings("rawtypes")
+    protected void checkWms13ValidationErrors(Document dom) throws Exception {
+        Parser p = new Parser(new WMSConfiguration());
+        p.setValidating(true);
+        p.parse(new DOMSource(dom));
+
+        if (!p.getValidationErrors().isEmpty()) {
+            for (Iterator e = p.getValidationErrors().iterator(); e.hasNext();) {
+                SAXParseException ex = (SAXParseException) e.next();
+                System.out.println(ex.getLineNumber() + "," + ex.getColumnNumber() + " -"
+                        + ex.toString());
+            }
+            fail("Document did not validate.");
+        }
     }
 
 }

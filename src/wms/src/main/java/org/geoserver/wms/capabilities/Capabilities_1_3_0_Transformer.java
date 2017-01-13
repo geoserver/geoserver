@@ -1215,6 +1215,11 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
             handleMetadataList(metadataLinks);
 
+            // the layer style is not provided since the group does just have
+            // one possibility, the lack of styles that will make it use
+            // the default ones for each layer
+            handleScaleDenominator(layerGroup);
+            
             // handle children layers and groups
             if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
                 for (PublishedInfo child : layerGroup.getLayers()) {
@@ -1230,12 +1235,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 }
             }
             
-            // the layer style is not provided since the group does just have
-            // one possibility, the lack of styles that will make it use
-            // the default ones for each layer
-            
-            handleScaleDenominator(layerGroup);
-
             end("Layer");            
         }
         

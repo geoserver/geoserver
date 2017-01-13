@@ -81,7 +81,7 @@ The GeoServer keystore is password protected with a :ref:`security_master_passwd
 
 .. code-block:: bash
 
-  $ keytools -list -keystore geoserver.jceks -storetype "JCEKS"
+  $ keytool -list -keystore geoserver.jceks -storetype "JCEKS"
 
 .. _security_master_passwd:
 

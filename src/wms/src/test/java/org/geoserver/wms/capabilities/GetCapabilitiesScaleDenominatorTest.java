@@ -23,6 +23,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
@@ -117,6 +118,7 @@ public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
         LayerGroupInfo layerGroup1 = catalog.getFactory().createLayerGroup();        
         layerGroup1.setName("testLayerGroup1");
         layerGroup1.setBounds(nativeBounds);
+        layerGroup1.setMode(Mode.NAMED);
         
         LayerGroupInfo layerGroup2 = catalog.getFactory().createLayerGroup();        
         layerGroup2.setName("testLayerGroup2");
@@ -149,7 +151,8 @@ public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
 
         Document dom = findCapabilities(false);
         
-        print(dom);
+        // print(dom);
+        checkWms13ValidationErrors(dom);
 
         Element layerElement= searchLayerElement("testLayerGroup1", dom);
 

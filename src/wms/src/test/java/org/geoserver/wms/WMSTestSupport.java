@@ -57,8 +57,7 @@ import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
-import org.geotools.wms.v1_3.WMSConfiguration;
-import org.geotools.xlink.XLINKConfiguration;
+import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
 import org.geotools.xml.transform.TransformerBase;
 import org.opengis.feature.Feature;
@@ -634,7 +633,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      */
     @SuppressWarnings("rawtypes")
     protected void checkWms13ValidationErrors(Document dom) throws Exception {
-        Parser p = new Parser(new WMSConfiguration());
+        Parser p = new Parser((Configuration) Class.forName("org.geotools.wms.v1_3.WMSConfiguration").newInstance());
         p.setValidating(true);
         p.parse(new DOMSource(dom));
 

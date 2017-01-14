@@ -233,9 +233,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         cat.add(layerInfoView);
     }
 
-    // protected String getDefaultLogConfiguration() {
-    // return "/DEFAULT_LOGGING.properties";
-    // }
+     protected String getDefaultLogConfiguration() {
+         return "/DEFAULT_LOGGING.properties";
+     }
 
     @Test
     public void testImage() throws Exception {

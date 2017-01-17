@@ -129,6 +129,14 @@ public class SimulateCallback implements DispatcherCallback {
       out.value(null);
       return;
     }
+    if (obj instanceof Collection) {
+      handleCollection((Collection)obj, depth, maxDepth, out);
+      return;
+    }
+    if (obj instanceof Map) {
+      handleMap((Map)obj, depth, maxDepth, out);
+      return;
+    }
     if (obj instanceof Envelope) {
       Envelope e = (Envelope) obj;
       out.object();
@@ -193,17 +201,33 @@ public class SimulateCallback implements DispatcherCallback {
             out.value(((Info)value).getId());
           }
           else if (value instanceof Collection) {
-            out.array();
-            for (Object o : ((Collection)value)) {
-              traverse(o, depth+1, maxDepth, out);
-            }
-            out.endArray();
+            handleCollection((Collection)value, depth, maxDepth, out);
+          }
+          else if (value instanceof Map) {
+            handleMap((Map)value, depth, maxDepth, out);
           }
           else {
             traverse(value, depth+1, maxDepth, out);
           }
         });
 
+    out.endObject();
+  }
+
+  void handleCollection(Collection value, int depth, int maxDepth, JSONStringer out) {
+    out.array();
+    for (Object o : ((Collection)value)) {
+      traverse(o, depth+1, maxDepth, out);
+    }
+    out.endArray();
+  }
+
+  void handleMap(Map value, int depth, int maxDepth, JSONStringer out) {
+    out.object();
+    for (Object k : value.keySet()) {
+      out.key(k != null ? k.toString() : "null");
+      traverse(value.get(k), depth+1, maxDepth, out);
+    }
     out.endObject();
   }
 

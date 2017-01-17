@@ -68,6 +68,36 @@ public class SimulateIntegrationTest extends GeoServerSystemTestSupport {
 
   }
 
+  @Test
+  public void testGetMapWithViewParams() throws Exception {
+    JSONObject rsp = (JSONObject) getAsJSON("wms?" + String.join("&",
+        "service=wms",
+        "request=GetMap",
+        "version=1.1.1",
+        "layers=" + getLayerId(BASIC_POLYGONS),
+        "styles=",
+        "bbox=-170,-80,170,80",
+        "srs=EPSG:4326",
+        "width=256",
+        "height=256",
+        "format=image/png",
+        "viewparams=foo:bar;baz:bam",
+        "simulate=true"
+    ));
+    print(rsp);
+
+    JSONObject req = rsp.getJSONObject("operation").getJSONObject("request");
+    JSONArray vp = req.getJSONArray("view_params");
+    assertEquals(1, vp.size());
+    
+    JSONObject kvp = vp.getJSONObject(0);
+    assertEquals(2, kvp.size());
+  
+    assertEquals("bam", kvp.get("BAZ"));
+    assertEquals("bar", kvp.get("FOO"));
+
+  }
+  
   void assertService(JSONObject rsp, String id, String ver) {
     JSONObject srv = rsp.getJSONObject("service");
     assertEquals(id, srv.getString("name"));

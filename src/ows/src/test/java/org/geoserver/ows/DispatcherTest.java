@@ -353,7 +353,13 @@ public class DispatcherTest extends TestCase {
         assertHttpErrorCode("badRequestHttpErrorCodeException", HttpServletResponse.SC_BAD_REQUEST);
     }
 
-    private void assertHttpErrorCode(String requestType, int expectedCode) throws Exception {
+    public void testHttpErrorCodeExceptionWithContentType() throws Exception {
+        CodeExpectingHttpServletResponse rsp = 
+            assertHttpErrorCode("httpErrorCodeExceptionWithContentType", HttpServletResponse.SC_OK);
+        assertEquals("application/json", rsp.getContentType());
+    }
+
+    private CodeExpectingHttpServletResponse assertHttpErrorCode(String requestType, int expectedCode) throws Exception {
         URL url = getClass().getResource("applicationContext.xml");
 
         FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
@@ -396,6 +402,7 @@ public class DispatcherTest extends TestCase {
         assertEquals(expectedCode, response.getStatusCode());
 
         assertEquals(expectedCode >= 400, response.isError());
+        return response;
 	}
     
     /**

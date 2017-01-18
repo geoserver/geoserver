@@ -1637,6 +1637,10 @@ public class Dispatcher extends AbstractController {
 
             boolean isError = ece.getErrorCode() >= 400;
             HttpServletResponse rsp = request.getHttpResponse();
+
+            if (ece.getContentType() != null) {
+                rsp.setContentType(ece.getContentType());
+            }
             try {
                 if (isError) {
                     if (ece.getMessage() != null) {

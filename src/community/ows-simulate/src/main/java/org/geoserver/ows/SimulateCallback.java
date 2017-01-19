@@ -79,7 +79,7 @@ public class SimulateCallback implements DispatcherCallback {
       simOpts = Collections.emptyMap();
     }
 
-    throw new HttpErrorCodeException(202, toJSON(operation, simOpts));
+    throw new HttpErrorCodeException(202, toJSON(operation, simOpts)).setContentType("application/json");
   }
 
   @Override

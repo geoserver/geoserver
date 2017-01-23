@@ -1,4 +1,4 @@
-.. _cartography.ysld.cookbook.polygons:
+.. _ysld_cookbook.polygons:
 
 Polygons
 ========
@@ -54,7 +54,7 @@ Simple polygon
 
 This example shows a polygon filled in blue.
 
-.. figure:: images/polygon_simplepolygon.png
+.. figure:: ../../sld/cookbook/images/polygon_simplepolygon.png
 
    Simple polygon
 
@@ -88,7 +88,7 @@ Simple polygon with stroke
 
 This example adds a 2 pixel white stroke to the :ref:`ysld_cookbook_polygons_simplepolygon` example.
 
-.. figure:: images/polygon_simplepolygonwithstroke.png
+.. figure:: ../../sld/cookbook/images/polygon_simplepolygonwithstroke.png
 
    Simple polygon with stroke
 
@@ -121,7 +121,7 @@ Transparent polygon
 
 This example builds on the :ref:`ysld_cookbook_polygons_simplepolygonwithstroke` example and makes the fill partially transparent by setting the opacity to 50%.
 
-.. figure:: images/polygon_transparentpolygon.png
+.. figure:: ../../sld/cookbook/images/polygon_transparentpolygon.png
 
    Transparent polygon
 
@@ -157,7 +157,7 @@ Graphic fill
 
 This example fills the polygons with a tiled graphic.
 
-.. figure:: images/polygon_graphicfill.png
+.. figure:: ../../sld/cookbook/images/polygon_graphicfill.png
 
    Graphic fill
 
@@ -188,7 +188,7 @@ Details
 
 This style fills the polygon with a tiled graphic. This is known as an ``external`` in YSLD, to distinguish it from commonly-used shapes such as squares and circles that are "internal" to the renderer. **Lines 11-13** specify details for the graphic, with **line 12** setting the path and file name of the graphic and **line 13** indicating the file format (MIME type) of the graphic (``image/png``). Although a full URL could be specified if desired, no path information is necessary in **line 12** because this graphic is contained in the same directory as the YSLD. **Line 9** determines the height of the displayed graphic in pixels; if the value differs from the height of the graphic then it will be scaled accordingly while preserving the aspect ratio.
 
-.. figure:: images/colorblocks.png
+.. figure:: ../../sld/cookbook/images/colorblocks.png
 
    Graphic used for fill
 
@@ -198,7 +198,7 @@ Hatching fill
 
 This example fills the polygons with a hatching pattern.
 
-.. figure:: images/polygon_hatchingfill.png
+.. figure:: ../../sld/cookbook/images/polygon_hatchingfill.png
 
    Hatching fill
 
@@ -238,7 +238,7 @@ Polygon with default label
 
 This example shows a text label on the polygon. In the absence of any other customization, this is how a label will be displayed.
 
-.. figure:: images/polygon_polygonwithdefaultlabel.png
+.. figure:: ../../sld/cookbook/images/polygon_polygonwithdefaultlabel.png
 
    Polygon with default label
 
@@ -274,7 +274,7 @@ Label halo
 
 This example alters the look of the :ref:`ysld_cookbook_polygons_polygonwithdefaultlabel` by adding a white halo to the label.
 
-.. figure:: images/polygon_labelhalo.png
+.. figure:: ../../sld/cookbook/images/polygon_labelhalo.png
 
    Label halo
 
@@ -316,7 +316,7 @@ Polygon with styled label
 
 This example improves the label style from the :ref:`ysld_cookbook_polygons_polygonwithdefaultlabel` example by centering the label on the polygon, specifying a different font name and size, and setting additional label placement optimizations.
 
-.. figure:: images/polygon_polygonwithstyledlabel.png
+.. figure:: ../../sld/cookbook/images/polygon_polygonwithstyledlabel.png
 
    Polygon with styled label
 
@@ -365,7 +365,7 @@ Attribute-based polygon
 
 This example styles the polygons differently based on the "pop" (Population) attribute.
 
-.. figure:: images/polygon_attributebasedpolygon.png
+.. figure:: ../../sld/cookbook/images/polygon_attributebasedpolygon.png
 
    Attribute-based polygon
 
@@ -446,15 +446,15 @@ Zoom-based polygon
 This example alters the style of the polygon at different zoom levels.
 
 
-.. figure:: images/polygon_zoombasedpolygonlarge.png
+.. figure:: ../../sld/cookbook/images/polygon_zoombasedpolygonlarge.png
 
    Zoom-based polygon: Zoomed in
 
-.. figure:: images/polygon_zoombasedpolygonmedium.png
+.. figure:: ../../sld/cookbook/images/polygon_zoombasedpolygonmedium.png
 
    Zoom-based polygon: Partially zoomed
 
-.. figure:: images/polygon_zoombasedpolygonsmall.png
+.. figure:: ../../sld/cookbook/images/polygon_zoombasedpolygonsmall.png
 
    Zoom-based polygon: Zoomed out
 

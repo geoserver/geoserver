@@ -1,4 +1,4 @@
-.. _cartography.ysld.cookbook.points:
+.. _ysld_cookbook.points:
 
 Points
 ======
@@ -50,7 +50,7 @@ Simple point
 
 This example specifies points be styled as red circles with a diameter of 6 pixels.
 
-.. figure:: images/point_simplepoint.png
+.. figure:: ../../sld/cookbook/images/point_simplepoint.png
 
    Simple point
    
@@ -87,7 +87,7 @@ Simple point with stroke
 
 This example adds a stroke (or border) around the :ref:`ysld_cookbook_points_simplepoint`, with the stroke colored black and given a thickness of 2 pixels.
 
-.. figure:: images/point_simplepointwithstroke.png
+.. figure:: ../../sld/cookbook/images/point_simplepointwithstroke.png
 
    Simple point with stroke
 
@@ -124,7 +124,7 @@ Rotated square
 
 This example creates a square instead of a circle, colors it green, sizes it to 12 pixels, and rotates it by 45 degrees.
 
-.. figure:: images/point_rotatedsquare.png
+.. figure:: ../../sld/cookbook/images/point_rotatedsquare.png
 
    Rotated square
 
@@ -160,7 +160,7 @@ Transparent triangle
 
 This example draws a triangle, creates a black stroke identical to the :ref:`ysld_cookbook_points_simplepointwithstroke` example, and sets the fill of the triangle to 20% opacity (mostly transparent).
 
-.. figure:: images/point_transparenttriangle.png
+.. figure:: ../../sld/cookbook/images/point_transparenttriangle.png
 
    Transparent triangle
 
@@ -197,7 +197,7 @@ Point as graphic
 
 This example styles each point as a graphic instead of as a simple shape.
 
-.. figure:: images/point_pointasgraphic.png
+.. figure:: ../../sld/cookbook/images/point_pointasgraphic.png
 
    Point as graphic
 
@@ -226,7 +226,7 @@ Details
 
 This style uses a graphic instead of a simple shape to render the points. In YSLD, this is known as an ``external``, to distinguish it from the commonly-used shapes such as squares and circles that are "internal" to the renderer. **Lines 9-11** specify the details of this graphic. **Line 10** sets the path and file name of the graphic, while **line 11** indicates the format (MIME type) of the graphic (image/png). In this example, the graphic is contained in the same directory as the YSLD, so no path information is necessary in **line 10**,  although a full URL could be used if desired. **Line 7** determines the size of the displayed graphic; this can be set independently of the dimensions of the graphic itself, although in this case they are the same (32 pixels). Should a graphic be rectangular, the ``size`` value will apply to the *height* of the graphic only, with the width scaled proportionally.
 
-.. figure:: images/smileyface.png
+.. figure:: ../../sld/cookbook/images/smileyface.png
 
    Graphic used for points
 
@@ -237,7 +237,7 @@ Point with default label
 
 This example shows a text label on the :ref:`ysld_cookbook_points_simplepoint` that displays the "name" attribute of the point. This is how a label will be displayed in the absence of any other customization.
 
-.. figure:: images/point_pointwithdefaultlabel.png
+.. figure:: ../../sld/cookbook/images/point_pointwithdefaultlabel.png
 
    Point with default label
 
@@ -282,7 +282,7 @@ Point with styled label
 
 This example improves the label style from the :ref:`ysld_cookbook_points_pointwithdefaultlabel` example by centering the label above the point and providing a different font name and size.
 
-.. figure:: images/point_pointwithstyledlabel.png
+.. figure:: ../../sld/cookbook/images/point_pointwithstyledlabel.png
 
    Point with styled label
 
@@ -330,7 +330,7 @@ Point with rotated label
 
 This example builds on the previous example, :ref:`ysld_cookbook_points_pointwithstyledlabel`, by rotating the label by 45 degrees, positioning the labels farther away from the points, and changing the color of the label to purple.
 
-.. figure:: images/point_pointwithrotatedlabel.png
+.. figure:: ../../sld/cookbook/images/point_pointwithrotatedlabel.png
 
    Point with rotated label
 
@@ -378,7 +378,7 @@ Attribute-based point
 
 This example alters the size of the symbol based on the value of the population ("pop") attribute. 
 
-.. figure:: images/point_attributebasedpoint.png
+.. figure:: ../../sld/cookbook/images/point_attributebasedpoint.png
 
    Attribute-based point
    
@@ -471,15 +471,15 @@ Zoom-based point
 
 This example alters the style of the points at different zoom levels.
 
-.. figure:: images/point_zoombasedpointlarge.png
+.. figure:: ../../sld/cookbook/images/point_zoombasedpointlarge.png
 
    Zoom-based point: Zoomed in
 
-.. figure:: images/point_zoombasedpointmedium.png
+.. figure:: ../../sld/cookbook/images/point_zoombasedpointmedium.png
    
    Zoom-based point: Partially zoomed
 
-.. figure:: images/point_zoombasedpointsmall.png
+.. figure:: ../../sld/cookbook/images/point_zoombasedpointsmall.png
    
    Zoom-based point: Zoomed out
 

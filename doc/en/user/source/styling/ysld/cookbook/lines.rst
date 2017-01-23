@@ -1,4 +1,4 @@
-.. _cartography.ysld.cookbook.lines:
+.. _ysld_cookbook.lines:
 
 Lines
 =====
@@ -106,7 +106,7 @@ Simple line
 
 This example specifies lines be colored black with a thickness of 3 pixels.
 
-.. figure:: images/line_simpleline.png
+.. figure:: ../../sld/cookbook/images/line_simpleline.png
 
    Simple line
 
@@ -142,7 +142,7 @@ Line with border
 This example shows how to draw lines with borders (sometimes called "cased lines").
 In this case the lines are drawn with a 3 pixel blue center and a 1 pixel wide gray border.
 
-.. figure:: images/line_linewithborder.png
+.. figure:: ../../sld/cookbook/images/line_linewithborder.png
 
    Line with border
 
@@ -196,7 +196,7 @@ Dashed line
 This example alters the :ref:`ysld_cookbook_lines_simpleline` to create a dashed line consisting of 5 pixels of drawn
 line alternating with 2 pixels of blank space.
 
-.. figure:: images/line_dashedline.png
+.. figure:: ../../sld/cookbook/images/line_dashedline.png
 
    Dashed line
 
@@ -228,7 +228,7 @@ Offset line
 
 This example alters the :ref:`ysld_cookbook_lines_simpleline` to add a perpendicular offset line on the left side of the line, at five pixels distance.
 
-.. figure:: images/line_dashoffset.png
+.. figure:: ../../sld/cookbook/images/line_dashoffset.png
 
    Dashed line
 
@@ -266,7 +266,7 @@ Railroad (hatching)
 This example uses hatching to create a railroad style. Both the line and the hatches are black, with a 2 pixel
 thickness for the main line and a 1 pixel width for the perpendicular hatches.
 
-.. figure:: images/line_railroad.png
+.. figure:: ../../sld/cookbook/images/line_railroad.png
 
    Railroad (hatching)
 
@@ -314,7 +314,7 @@ Adding the dash array specification allows to control the amount of space betwee
 Without using the dash
 array the lines would be densely populated with dots, each one touching the previous one.
 
-.. figure:: images/line_dashspace.png
+.. figure:: ../../sld/cookbook/images/line_dashspace.png
 
    Spaced symbols along a line
 
@@ -371,7 +371,7 @@ section and 2 pixels of the pen-up section, then draws the remaining 8 pixels of
 The example shows how to use these features to create two synchronized sequences of dash arrays, 
 one drawing line segments and the other symbols.
 
-.. figure:: images/line_dashdot.png
+.. figure:: ../../sld/cookbook/images/line_dashdot.png
 
    Alternating dash and symbol
 
@@ -422,7 +422,7 @@ Line with default label
 This example shows a text label on the simple line. This is how a label will be displayed in the absence of any other
 customization.
 
-.. figure:: images/line_linewithdefaultlabel.png
+.. figure:: ../../sld/cookbook/images/line_linewithdefaultlabel.png
 
    Line with default label
 
@@ -465,7 +465,7 @@ Label following line
 
 This example renders the text label to follow the contour of the lines.
 
-.. figure:: images/line_labelfollowingline.png
+.. figure:: ../../sld/cookbook/images/line_labelfollowingline.png
 
    Label following line
 
@@ -510,7 +510,7 @@ Optimized label placement
 
 This example optimizes label placement for lines such that the maximum number of labels are displayed.
 
-.. figure:: images/line_optimizedlabel.png
+.. figure:: ../../sld/cookbook/images/line_optimizedlabel.png
 
    Optimized label
 
@@ -556,7 +556,7 @@ Optimized and styled label
 
 This example improves the style of the labels from the :ref:`ysld_cookbook_lines_optimizedlabel` example.
 
-.. figure:: images/line_optimizedstyledlabel.png
+.. figure:: ../../sld/cookbook/images/line_optimizedstyledlabel.png
 
    Optimized and styled label
 
@@ -601,7 +601,7 @@ Attribute-based line
 
 This example styles the lines differently based on the "type" (Road class) attribute.
 
-.. figure:: images/line_attributebasedline.png
+.. figure:: ../../sld/cookbook/images/line_attributebasedline.png
 
    Attribute-based line
 
@@ -686,17 +686,17 @@ Zoom-based line
 
 This example alters the :ref:`ysld_cookbook_lines_simpleline` style at different zoom levels.
 
-.. figure:: images/line_zoombasedlinelarge.png
+.. figure:: ../../sld/cookbook/images/line_zoombasedlinelarge.png
 
    Zoom-based line: Zoomed in
 
 
-.. figure:: images/line_zoombasedlinemedium.png
+.. figure:: ../../sld/cookbook/images/line_zoombasedlinemedium.png
 
    Zoom-based line: Partially zoomed
 
 
-.. figure:: images/line_zoombasedlinesmall.png
+.. figure:: ../../sld/cookbook/images/line_zoombasedlinesmall.png
 
    Zoom-based line: Zoomed out
 

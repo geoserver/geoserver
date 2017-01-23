@@ -1,4 +1,4 @@
-.. _cartography.ysld.cookbook.rasters:
+.. _ysld_cookbook.rasters:
 
 Rasters
 =======
@@ -12,7 +12,7 @@ Example raster
 
 The :download:`raster layer <artifacts/ysld_cookbook_raster.zip>` that is used in the examples below contains elevation data for a fictional world. The data is stored in EPSG:4326 (longitude/latitude) and has a data range from 70 to 256. If rendered in grayscale, where minimum values are colored black and maximum values are colored white, the raster would look like this:
 
-.. figure:: images/raster.png
+.. figure:: ../../sld/cookbook/images/raster.png
 
    Raster file as rendered in grayscale
 
@@ -26,7 +26,7 @@ Two-color gradient
 
 This example shows a two-color style with green at lower elevations and brown at higher elevations.
 
-.. figure:: images/raster_twocolorgradient.png
+.. figure:: ../../sld/cookbook/images/raster_twocolorgradient.png
 
    Two-color gradient
 
@@ -63,7 +63,7 @@ Transparent gradient
 
 This example creates the same two-color gradient as in the :ref:`ysld_cookbook_raster_twocolorgradient` as in the example above but makes the entire layer mostly transparent by setting a 30% opacity.
 
-.. figure:: images/raster_transparentgradient.png
+.. figure:: ../../sld/cookbook/images/raster_transparentgradient.png
 
    Transparent gradient
 
@@ -100,7 +100,7 @@ Brightness and contrast
 
 This example normalizes the color output and then increases the brightness by a factor of 2.
 
-.. figure:: images/raster_brightnessandcontrast.png
+.. figure:: ../../sld/cookbook/images/raster_brightnessandcontrast.png
 
    Brightness and contrast
  
@@ -142,7 +142,7 @@ Three-color gradient
 
 This example creates a three-color gradient in primary colors.
 
-.. figure:: images/raster_threecolorgradient.png
+.. figure:: ../../sld/cookbook/images/raster_threecolorgradient.png
 
    Three-color gradient
 
@@ -181,7 +181,7 @@ Alpha channel
 
 This example creates an "alpha channel" effect such that higher values are increasingly transparent.
 
-.. figure:: images/raster_alphachannel.png
+.. figure:: ../../sld/cookbook/images/raster_alphachannel.png
 
    Alpha channel
 
@@ -219,7 +219,7 @@ Discrete colors
 
 This example shows a gradient that is not linearly interpolated but instead has values mapped precisely to one of three specific colors.
 
-.. figure:: images/raster_discretecolors.png
+.. figure:: ../../sld/cookbook/images/raster_discretecolors.png
 
    Discrete colors
 
@@ -255,7 +255,7 @@ Many color gradient
 
 This example shows a gradient interpolated across eight different colors.
 
-.. figure:: images/raster_manycolorgradient.png
+.. figure:: ../../sld/cookbook/images/raster_manycolorgradient.png
 
    Many color gradient
 

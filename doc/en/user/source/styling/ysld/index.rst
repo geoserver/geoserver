@@ -15,3 +15,4 @@ YSLD is not a part of GeoServer by default, but is available as an optional inst
    installing
    gs-extensions
    reference/index
+   cookbook/index

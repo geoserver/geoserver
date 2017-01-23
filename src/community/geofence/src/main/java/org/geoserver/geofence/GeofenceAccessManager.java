@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2007 - 2016 GeoSolutions S.A.S.
+ *  Copyright (C) 2007 - 2017 GeoSolutions S.A.S.
  *  http://www.geo-solutions.it
  *
  *  GPLv3 + Classpath exception
@@ -248,14 +248,19 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             }
             return sourceAddress;
         }
-        
+
         // try Spring
-        HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
-        String sourceAddress = getSourceAddress(request);
-        if(sourceAddress == null) {
-            LOGGER.log(Level.WARNING, "Could not retrieve source address from Spring Request");
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            String sourceAddress = getSourceAddress(request);
+            if(sourceAddress == null) {
+                LOGGER.log(Level.WARNING, "Could not retrieve source address with Spring Request");
+            }
+            return sourceAddress;
+        } catch (IllegalStateException ex) {
+            LOGGER.log(Level.WARNING, "Error retrieving source address with Spring Request: " + ex.getMessage());
+            return null;
         }
-        return sourceAddress;
     }
 
 

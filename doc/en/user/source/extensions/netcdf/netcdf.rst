@@ -121,4 +121,11 @@ Specify an external file through system properties
 You may also specify the NetCDF projections definition file by setting a **Java system property** which links to the specified file.
 As an instance: :file:`-Dnetcdf.projections.file=/full/path/of/the/customfile.properties`
 
+NetCDF files in read-only directories
+-------------------------------------
 
+GeoServer creates hidden index files when accessing NetCDF files. Because these index files are created in the same directory as each NetCDF file, GeoServer will fail to publish NetCDF files if it lacks write access the containing directory.
+
+To permit access to NetCDF files in read-only directories, specify an alternate writeable directory for NetCDF index files by setting the ``NETCDF_DATA_DIR`` Java system property::
+
+    -DNETCDF_DATA_DIR=/path/to/writeable/index/file/directory

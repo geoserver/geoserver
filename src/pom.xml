@@ -944,7 +944,12 @@
     <version>${jetty.version}</version>
     <type>pom</type>
    </dependency>
-   <dependency>
+  <dependency>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-servlets</artifactId>
+    <version>${jetty.version}</version>
+  </dependency>
+  <dependency>
     <groupId>tomcat</groupId>
     <artifactId>jasper-compiler-jdt</artifactId>
     <version>5.5.15</version>

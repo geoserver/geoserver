@@ -1,0 +1,18 @@
+title: 'YSLD Cook Book: Railroad (hatching)'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - line:
+        stroke-color: '#333333'
+        stroke-width: 3
+    - line:
+        stroke-color: '#333333'
+        stroke-width: 1
+        stroke-graphic-stroke:
+          size: 12
+          symbols:
+          - mark:
+              shape: shape://vertline
+              stroke-color: '#333333'
+              stroke-width: 1

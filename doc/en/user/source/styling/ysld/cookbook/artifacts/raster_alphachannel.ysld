@@ -1,0 +1,12 @@
+title: 'YSLD Cook Book: Alpha channel'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - raster:
+        opacity: 1
+        color-map:
+          type: ramp
+          entries:
+          - ['#008000',1,70,'']
+          - ['#008000',0,256,'']

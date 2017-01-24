@@ -1,0 +1,12 @@
+title: 'YSLD Cook Book: Rotated square'
+feature-styles:
+- name: name
+  rules:
+  - symbolizers:
+    - point:
+        size: 12
+        rotation: 45
+        symbols:
+        - mark:
+            shape: square
+            fill-color: '#009900'

@@ -6,6 +6,10 @@ Layer Groups
 A layer group is a container in which layers and other layer groups can be organized in a hierarchical structure. A layer group can be referred to by a single name in WMS requests.  This allows simpler requests, as one layer can be specified instead of multiple individual layers.
 A layer group also provides a consistent, fixed ordering of the layers it contains, and can specify alternate (non-default) styles for layers.
 
+.. figure:: img/data_layergroups.png
+
+   Layer Groups page
+   
 Layer Group modes
 -----------------
 
@@ -19,9 +23,20 @@ Layer group behaviour can be configured by setting its :guilabel:`mode`. There a
 
 If a layer is included in any non *single* mode group, it will no longer be listed in the flat layer list.  It will still be possible to include the layer in other layer groups. 
 
-.. figure:: img/data_layergroups.png
++------------------------+-------+-------------------+----------------+------------------+
+| Layer Group Mode       | Named | Contains Children | Lists Children | Details          |
++========================+=======+===================+================+==================+
+| Single                 | named |                   | no             |                  |
++------------------------+-------+-------------------+----------------+------------------+
+| Opaque Container       | named | yes               | no             | hides children   |
++------------------------+-------+-------------------+----------------+------------------+
+| Named Tree             | named | yes               | lists children |                  |
++------------------------+-------+-------------------+----------------+------------------+
+| Contrainer Tree        |       | yes               | lists children |                  |
++------------------------+-------+-------------------+----------------+------------------+
+| Earth Observation Tree | named | yes               | lists children | has root layer   |
++------------------------+-------+-------------------+----------------+------------------+
 
-   Layer Groups page
 
 Edit a Layer Group
 ------------------

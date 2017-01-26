@@ -144,6 +144,20 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertEquals(6, arr.size());
         arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONArray("styles").getJSONObject(0).getJSONArray("style");
         assertEquals(6, arr.size());
+
+        //GEOS-7873
+        LayerGroupInfo lg2 = catalog.getLayerGroupByName("citeLayerGroup");
+        List<StyleInfo> styles = lg2.getStyles();
+        styles.set(1, catalog.getStyleByName( StyleInfo.DEFAULT_POINT ) );
+        styles.set(3, catalog.getStyleByName( StyleInfo.DEFAULT_POINT ) );
+        catalog.save(lg2);
+
+        print(get("/rest/layergroups/citeLayerGroup.json"));
+        json = getAsJSON( "/rest/layergroups/citeLayerGroup.json");
+        arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONArray("publishables").getJSONObject(0).getJSONArray("published");
+        assertEquals(6, arr.size());
+        arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONArray("styles").getJSONObject(0).getJSONArray("style");
+        assertEquals(6, arr.size());
     }
 
 

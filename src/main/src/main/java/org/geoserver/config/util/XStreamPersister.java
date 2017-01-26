@@ -1163,8 +1163,6 @@ public class XStreamPersister {
                     writer.addAttribute("type", typeName);
                 }
                 context.convertAnother( item, new ReferenceConverter( clazz ) );
-            } else if (writer instanceof JettisonStaxWriter) {
-                writer.setValue("null");
             }
             writer.endNode();
         }

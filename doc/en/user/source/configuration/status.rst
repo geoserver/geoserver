@@ -4,12 +4,15 @@ Status
 ======
 The Server Status page has two tabs to summarize the current status of GeoServer. The Status tab provides a summary of server configuration parameters and run-time status. The modules tab provides the status of the various modules installed on the server. This page provides a useful diagnostic tool in a testing environment. 
 
+Server Status
+-------------
+
 .. figure:: img/server_status.png
    
    Status Page (default tab)
 
 Status Field Descriptions
--------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following table describes the current status indicators.
 
@@ -71,7 +74,7 @@ The modules tab provides a summary of the status of all installed modules in the
    Module Status
    
 Module Status Field Descriptions
---------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. list-table::
    :widths: 20 80
@@ -95,31 +98,5 @@ Module Status Field Descriptions
 .. figure:: img/module_popup.png
 
    Module Status popup
-
-Timestamps Field Descriptions
------------------------------
-
-.. list-table::
-   :widths: 20 80 
-   :header-rows: 1
-
-   * - Option
-     - Description
-   * - GeoServer
-     - Currently a placeholder. Refers to the day and time of current GeoServer install.
-   * - Configuration
-     - Currently a placeholder. Refers to the day and time of last configuration change.
-   * - XML
-     - Currently a placeholder. 
      
-     
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
+

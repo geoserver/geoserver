@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,7 +28,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.thoughtworks.xstream.io.json.JettisonStaxWriter;
+import com.thoughtworks.xstream.io.xml.StaxWriter;
 import org.apache.commons.collections.MultiHashMap;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
+import org.codehaus.jettison.util.FastStack;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
@@ -1164,7 +1172,26 @@ public class XStreamPersister {
                 }
                 context.convertAnother( item, new ReferenceConverter( clazz ) );
             } else if (writer instanceof JettisonStaxWriter) {
+                /*
+                 * GEOS-7771 / GEOS-7873
+                 * Workaround for an array serialization bug in jettison 1.0.1
+                 * Can be removed when we upgrade to jettison 1.2
+                 */
                 writer.setValue("null");
+                try {
+                    Field outField = StaxWriter.class.getDeclaredField("out");
+                    Field nodesField = MappedXMLStreamWriter.class.getDeclaredField("nodes");
+                    outField.setAccessible(true);
+                    nodesField.setAccessible(true);
+                    FastStack nodes = (FastStack) nodesField.get(outField.get(writer.underlyingWriter()));
+                    if (nodes.peek() instanceof JSONArray) {
+                        nodes.pop();
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                }
             }
             writer.endNode();
         }

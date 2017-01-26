@@ -59,6 +59,8 @@ Enable CORS
 
 The standalone distributions of GeoServer include the Jetty application server. Enable Cross-Origin Resource Sharing (CORS) to allow JavaScript applications outside of your own domain to use GeoServer.
 
+For more information on what this does and other options see `Jetty Documentation <http://www.eclipse.org/jetty/documentation>`_
+
 Uncomment the following <filter> and <filter-mapping> from :file:`webapps/geoserver/WEB-INF/web.xml`::
   
   <web-app>

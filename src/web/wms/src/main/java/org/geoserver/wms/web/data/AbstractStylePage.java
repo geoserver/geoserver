@@ -134,6 +134,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             styleModel.getObject().setName("");
             styleModel.getObject().setLegend(getCatalog().getFactory().createLegend());
         } else {
+            if (style.getLegend() == null) {
+                style.setLegend(getCatalog().getFactory().createLegend());
+            }
             styleModel = new CompoundPropertyModel<StyleInfo>(style);
         }
         

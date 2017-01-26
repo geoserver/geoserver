@@ -59,7 +59,7 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         JSON json = getAsJSON( "/rest/workspaces/sf/datastores.json");
         assertTrue( json instanceof JSONObject );
         
-        Object datastores = ((JSONObject)json).getJSONObject("dataStores").get("dataStore");
+        Object datastores = ((JSONObject)json).getJSONArray("dataStores").getJSONObject(0).get("dataStore");
         assertNotNull( datastores );
         
         if( datastores instanceof JSONArray ) {

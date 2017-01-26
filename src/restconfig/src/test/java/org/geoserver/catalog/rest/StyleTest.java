@@ -69,7 +69,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         
         List<StyleInfo> styles = catalog.getStyles();
         assertEquals( styles.size(), 
-            ((JSONObject) json).getJSONObject("styles").getJSONArray("style").size());
+            ((JSONObject) json).getJSONArray("styles").getJSONObject(0).getJSONArray("style").size());
     }
     
     @Test

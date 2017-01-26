@@ -133,16 +133,16 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
     public void testGetAsJSON() throws Exception {
         print(get("/rest/layergroups/sfLayerGroup.json"));
         JSON json = getAsJSON( "/rest/layergroups/sfLayerGroup.json");
-        JSONArray arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("publishables").getJSONArray("published");
+        JSONArray arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONArray("publishables").getJSONObject(0).getJSONArray("published");
         assertEquals(2, arr.size());
-        arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("styles").getJSONArray("style");
+        arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONArray("styles").getJSONObject(0).getJSONArray("style");
         assertEquals(2, arr.size());
 
         print(get("/rest/layergroups/citeLayerGroup.json"));
         json = getAsJSON( "/rest/layergroups/citeLayerGroup.json");
-        arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("publishables").getJSONArray("published");
+        arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONArray("publishables").getJSONObject(0).getJSONArray("published");
         assertEquals(6, arr.size());
-        arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("styles").getJSONArray("style");
+        arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONArray("styles").getJSONObject(0).getJSONArray("style");
         assertEquals(6, arr.size());
     }
 

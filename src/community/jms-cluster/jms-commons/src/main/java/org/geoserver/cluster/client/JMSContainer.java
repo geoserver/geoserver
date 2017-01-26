@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 
+import org.geoserver.cluster.JMSApplicationListener;
 import org.geoserver.cluster.JMSFactory;
 import org.geoserver.cluster.configuration.ConnectionConfiguration;
 import org.geoserver.cluster.configuration.ConnectionConfiguration.ConnectionConfigurationStatus;
@@ -59,7 +60,7 @@ final public class JMSContainer extends DefaultMessageListenerContainer implemen
     // millisecs to wait between tests (connection)
     private static long maxWait;
 
-    public JMSContainer(JMSConfiguration config, JMSQueueListener listener) {
+    public JMSContainer(JMSConfiguration config, JMSApplicationListener listener) {
         super();
 
         // configuration

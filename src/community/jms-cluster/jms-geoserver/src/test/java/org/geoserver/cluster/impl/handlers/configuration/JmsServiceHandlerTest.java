@@ -23,7 +23,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
-public class JMSServiceHandlerTest extends GeoServerSystemTestSupport {
+public class JmsServiceHandlerTest extends GeoServerSystemTestSupport {
 
     @Override
     protected void setUpSpring(List<String> springContextLocations) {

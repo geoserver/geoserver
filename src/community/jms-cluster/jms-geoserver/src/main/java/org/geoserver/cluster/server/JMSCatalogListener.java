@@ -100,7 +100,7 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
                     styleFile=loader.get("styles/" + sInfo.getFilename());
                 }
                 // checks
-                if(!Resources.exists(styleFile)||!Resources.canRead(styleFile)||styleFile.getType() == Type.RESOURCE){
+                if(!Resources.exists(styleFile)||!Resources.canRead(styleFile)||!(styleFile.getType() == Type.RESOURCE)){
                     throw new IllegalStateException("Unable to find style for event: "+sInfo.toString());
                 }
 

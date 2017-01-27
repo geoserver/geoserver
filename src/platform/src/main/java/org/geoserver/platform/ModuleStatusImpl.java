@@ -4,6 +4,7 @@
  */
 package org.geoserver.platform;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 /**
@@ -17,7 +18,10 @@ import java.util.Optional;
  * 
  * @author Morgan Thompson - Boundless
  */
-public class ModuleStatusImpl implements ModuleStatus {
+public class ModuleStatusImpl implements ModuleStatus, Serializable {
+
+    /** serialVersionUID */
+    private static final long serialVersionUID = -5759469520194940051L;
 
     private String module;
 

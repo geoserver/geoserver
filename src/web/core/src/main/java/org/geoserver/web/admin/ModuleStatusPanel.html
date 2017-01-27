@@ -1,0 +1,33 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+    <table class="alternating-rows">
+    <wicket:fragment wicket:id="iconFragment">
+        <img wicket:id="statusIcon" />
+    </wicket:fragment>
+    <thead>
+      <tr>
+          <th><wicket:message key="moduleName">Name</wicket:message></th>          
+          <th><wicket:message key="moduleStatus">Module</wicket:message></th>
+          <th><wicket:message key="moduleAvailable">Available?</wicket:message></th>
+          <th><wicket:message key="moduleEnabled">Enabled?</wicket:message></th>
+          <th><wicket:message key="moduleComponent">Component</wicket:message></th>
+          <th><wicket:message key="moduleVersion">Version</wicket:message></th>
+      </tr>
+    </thead>
+    <wicket:container wicket:id="listViewContainer">
+                <tr wicket:id="modules">
+                    <td><a href="#" wicket:id="msg"><span wicket:id="nameLink"></span></a></td>
+                    <td><span wicket:id="module"></span></td>
+                    <td><span wicket:id="available"></span></td>
+                    <td><span wicket:id="enabled"></span></td>
+                    <td><span wicket:id="component"></span></td>
+                    <td><span wicket:id="version"></span></td>
+               </tr>
+    </wicket:container>
+    </table>
+    <div wicket:id="popup"></div>
+</wicket:panel>
+</body>
+</html>

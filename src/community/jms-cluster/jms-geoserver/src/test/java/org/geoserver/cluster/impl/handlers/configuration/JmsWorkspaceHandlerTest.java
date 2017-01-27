@@ -22,7 +22,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
-public class JMSWorkspaceHandlerTest extends GeoServerSystemTestSupport {
+public class JmsWorkspaceHandlerTest extends GeoServerSystemTestSupport {
 
     private WorkspaceInfo testWorkspace;
 

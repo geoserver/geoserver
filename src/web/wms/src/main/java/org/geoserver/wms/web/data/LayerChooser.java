@@ -119,6 +119,7 @@ public class LayerChooser extends Panel {
                                         parent.getLayerModel().setObject(layer);
                                         parent.getPopup().close(target);
                                         parent.configurationChanged();
+                                        target.add(parent.getFeedbackPanel());
                                         target.add(parent.styleForm);
                                     }
                                     @Override

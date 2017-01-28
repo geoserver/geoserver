@@ -232,7 +232,6 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent("styleForm:context:panel:changeLayer:link", "click");
         tester.assertComponent("styleForm:popup:content:layer.table", GeoServerTablePanel.class);
         tester.executeAjaxEvent("styleForm:popup:content:layer.table:navigatorBottom:navigator:last", "click");
-        print(tester.getLastRenderedPage(), true, true, true);
         tester.assertLabel("styleForm:popup:content:layer.table:listContainer:items:30:itemProperties:2:component:link:layer.name", "unlayer");
         tester.executeAjaxEvent("styleForm:popup:content:layer.table:listContainer:items:30:itemProperties:2:component:link", "click");
         tester.assertContains("Failed to load attribute list, internal error is:");

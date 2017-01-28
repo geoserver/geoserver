@@ -607,7 +607,7 @@ public class SystemTestData extends CiteTestData {
         featureType.setNativeBoundingBox(LayerProperty.ENVELOPE.get(props, null));
 
         FeatureTypeInfo ft = catalog.getFeatureTypeByDataStore(store, name);
-        LayerInfo layer = catalog.getLayerByName(new NameImpl(prefix, name));
+        LayerInfo layer = catalog.getLayerByName(new NameImpl(uri, name));
         if (ft == null) {
             ft = featureType;
             catalog.add(featureType);

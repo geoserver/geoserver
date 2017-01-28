@@ -6,9 +6,9 @@
 package org.geoserver.platform.resource;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -186,4 +186,18 @@ public interface Resource {
      *
      */
     boolean renameTo(Resource dest);
+    
+    
+    /**
+     * Returns a resource full contents as a byte array. Usage is suggested only if 
+     * the resource is known to be small (e.g. a configuration file).
+     * @return
+     * @throws IOException 
+     */
+    default byte[] getContents() throws IOException {
+        try(InputStream in = in()) {
+            return org.apache.commons.io.IOUtils.toByteArray(in);
+        }
+    }
+
 }

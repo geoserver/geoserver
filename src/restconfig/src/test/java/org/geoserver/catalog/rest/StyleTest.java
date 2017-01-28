@@ -75,15 +75,18 @@ public class StyleTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAllAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/styles.html");
+        print(dom);
         
-        List<StyleInfo> styles = catalog.getStyles();
+        List<StyleInfo> styles = catalog.getStylesByWorkspace(CatalogFacade.NO_WORKSPACE);
         NodeList links = xp.getMatchingNodes("//html:a", dom);
 
         for ( int i = 0; i < styles.size(); i++ ) {
             StyleInfo s = (StyleInfo) styles.get( i );
             Element link = (Element) links.item( i );
             
-            assertTrue( link.getAttribute("href").endsWith( s.getName()+ ".html"));
+            final String href = link.getAttribute("href");
+            assertTrue("Expected href to bed with " + s.getName() + ".html but was " + href,
+                    href.endsWith(s.getName() + ".html"));
         }
     }
 

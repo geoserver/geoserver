@@ -698,7 +698,7 @@ public abstract class GeoServerLoader {
     }
 
     void loadStyles(Resource styles, Catalog catalog, XStreamPersister xp) {
-        for ( Resource sf : Resources.list(styles, new Resources.ExtensionFilter("XML") ) ) {
+        for ( Resource sf : Resources.list(styles, new Resources.ExtensionFilter("XML")) ) {
             try {
                 //handle the .xml.xml case
                 if (Resources.exists(styles.get(sf.name() + ".xml"))) {
@@ -774,7 +774,7 @@ public abstract class GeoServerLoader {
      * Helper method which uses xstream to depersist an object as xml from disk.
      */
     <T> T depersist( XStreamPersister xp, Resource f , Class<T> clazz ) throws IOException {
-        try(InputStream in = f.in()) {
+        try(InputStream in = new ByteArrayInputStream(f.getContents())) {
             return xp.load( in, clazz );
         }
     }

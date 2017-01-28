@@ -107,7 +107,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
      */
     private boolean isStyleNewerThanSample(Resource styleResource,
             Resource sampleFile) {
-        return isSampleExisting(sampleFile)
+        return styleResource != null
                 && styleResource.getType() == Resource.Type.RESOURCE
                 && styleResource.lastmodified() > sampleFile.lastmodified();
     }

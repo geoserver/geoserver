@@ -73,6 +73,12 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
                 delegate.getLayers().remove(index);
                 return layers.remove(index);
             }
+            
+            @Override
+            public boolean remove(Object o) {
+                delegate.getLayers().remove(o);
+                return layers.remove(o);
+            }
 
         };
     }

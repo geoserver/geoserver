@@ -14,6 +14,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -424,15 +427,20 @@ public class FileSystemResourceStore implements ResourceStore {
 
         @Override
         public Type getType() {
-            if (!file.exists()) {
+            try {
+                BasicFileAttributes attributes = java.nio.file.Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+                if(attributes.isDirectory()) {
+                    return Type.DIRECTORY;
+                } else if(attributes.isRegularFile()) {
+                    return Type.RESOURCE;
+                } else {
+                    throw new IllegalStateException(
+                          "Path does not represent a configuration resource: " + path);
+                }
+            } catch(NoSuchFileException e) {
                 return Type.UNDEFINED;
-            } else if (file.isDirectory()) {
-                return Type.DIRECTORY;
-            } else if (file.isFile()) {
-                return Type.RESOURCE;
-            } else {
-                throw new IllegalStateException(
-                        "Path does not represent a configuration resource: " + path);
+            } catch(IOException e) {
+                throw new IllegalStateException(e);
             }
         }
 
@@ -495,6 +503,12 @@ public class FileSystemResourceStore implements ResourceStore {
                 return false;
             }
             return true;
+        }
+        
+      
+        @Override
+        public byte[] getContents() throws IOException {
+            return java.nio.file.Files.readAllBytes(file.toPath());
         }
     }
 

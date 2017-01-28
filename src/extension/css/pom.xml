@@ -14,8 +14,8 @@
   <dependencies>
     <!-- Runtime/compile-time dependencies -->
     <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-core</artifactId>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -32,13 +32,6 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.web</groupId>
-      <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

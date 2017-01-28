@@ -510,6 +510,38 @@ public class FileSystemResourceStore implements ResourceStore {
         public byte[] getContents() throws IOException {
             return java.nio.file.Files.readAllBytes(file.toPath());
         }
+        
+        @Override
+        public void setContents(byte[] byteArray) throws IOException {
+            final File actualFile = file();
+            if (!actualFile.exists()) {
+                throw new IllegalStateException("Cannot access " + actualFile);
+            }
+            try {
+                // first save to a temp file
+                final File temp;
+                synchronized(this) {
+                    File tryTemp;
+                    do {
+                        UUID uuid = UUID.randomUUID();
+                        tryTemp = new File(actualFile.getParentFile(), String.format("%s.%s.tmp", actualFile.getName(), uuid));
+                    } while(tryTemp.exists());
+                    
+                    temp = tryTemp;
+                }
+                
+                java.nio.file.Files.write(temp.toPath(), byteArray);
+                Lock lock = lock();
+                try {
+                    // no errors, overwrite the original file
+                    Files.move(temp, actualFile);
+                } finally {
+                    lock.release();
+                }
+            } catch (FileNotFoundException e) {
+                throw new IllegalStateException("Cannot access " + actualFile, e);
+            }
+        }
     }
 
     @Override

@@ -7,6 +7,7 @@ package org.geoserver.config;
 
 import static org.geoserver.config.util.XStreamUtils.xStreamPersist;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -723,7 +724,9 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     private void persist( Object o, Resource r ) throws IOException {
         try {
             synchronized ( xp ) {
-                xStreamPersist(r, o, xp);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                xp.save(o, bos);
+                r.setContents(bos.toByteArray());
             }
             LOGGER.fine("Persisted " + o.getClass().getName() + " to " + r.path() );
         }

@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * Resource used for configuration storage.
  * 
@@ -197,6 +199,18 @@ public interface Resource {
     default byte[] getContents() throws IOException {
         try(InputStream in = in()) {
             return org.apache.commons.io.IOUtils.toByteArray(in);
+        }
+    }
+
+    /**
+     * Writes a resource contents as a byte array. Usage is suggested only if the resource
+     * is known to be small (e.g. a configuration file).
+     * @param byteArray
+     * @throws IOException
+     */
+    default void setContents(byte[] byteArray) throws IOException {
+        try(OutputStream os = out()) {
+            IOUtils.write(byteArray, os);
         }
     }
 

@@ -331,7 +331,19 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     
     public <T extends ResourceInfo> T getResourceByStore(StoreInfo store,
             String name, Class<T> clazz) {
-        T resource = resources.findFirst(clazz, r -> name.equals( r.getName() ) && store.equals( r.getStore()));
+        T resource = null;
+        NamespaceInfo ns = null;
+        if(store.getWorkspace() != null && store.getWorkspace().getName() != null &&
+                (ns = getNamespaceByPrefix(store.getWorkspace().getName())) != null) {
+            resource = resources.findByName(new NameImpl(ns.getId(), name), clazz);
+            if(resource != null && !(store.equals(resource.getStore()))) {
+                return null;
+            }
+        } else {
+            // should not happen, but some broken test code sets up namespaces without equivalent workspaces
+            // or stores without workspaces
+            resource = resources.findFirst(clazz, r -> name.equals( r.getName() ) && store.equals( r.getStore()));
+        }
         return wrapInModificationProxy(resource, clazz);
     }
 

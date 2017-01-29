@@ -257,7 +257,7 @@ public abstract class GeoServerLoader {
             try {
                 GeoServerInfo global = depersist(xp, f, GeoServerInfo.class);
                 final ResourceErrorHandling resourceErrorHandling = global.getResourceErrorHandling();
-                return !ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
+                return resourceErrorHandling != null && !ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
                     resourceErrorHandling);
             } catch (IOException e) {
                 LOGGER.log(Level.INFO, "Failed to determine the capabilities resource error handling", e);

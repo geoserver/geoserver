@@ -92,7 +92,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         
         String property = null;
         if ( ( method.getName().startsWith( "get")  || method.getName().startsWith( "is" ) ) 
-                && method.getParameterTypes().length == 0 ) {
+                && method.getParameterCount() == 0 ) {
             //intercept getter to check the dirty property set
             property = method.getName().substring( 
                 method.getName().startsWith( "get") ? 3 : 2 );

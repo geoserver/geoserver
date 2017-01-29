@@ -12,7 +12,7 @@ package org.geoserver.security.auth;
 public class GuavaAuthenticationCacheTest extends BaseAuthenticationCacheTest {
     private static final int CONCURRENCY = 3;
     
-    protected static final int TIME_CLEANUP = 5;
+    protected static final int TIME_CLEANUP = 1;
 
     @Override
     protected AuthenticationCache createAuthenticationCache() {

@@ -37,6 +37,10 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     private boolean reversible = true;
     private String prefix;
 
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+    
     
     public String getName() {
         return name;
@@ -61,7 +65,6 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
 
     public AbstractGeoserverPasswordEncoder() {
         setAvailableWithoutStrongCryptogaphy(true);
-        Security.addProvider(new BouncyCastleProvider());
     }
 
     protected PasswordEncoder getStringEncoder() {

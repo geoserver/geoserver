@@ -1434,6 +1434,7 @@
       <descriptor>release/ext-netcdf.xml</descriptor>
       <descriptor>release/ext-netcdf-out.xml</descriptor>
       <descriptor>release/ext-vectortiles.xml</descriptor>
+      <descriptor>release/ext-ysld.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.11-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

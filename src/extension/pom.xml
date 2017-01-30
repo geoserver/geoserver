@@ -313,12 +313,17 @@
         <module>netcdf-out</module>
       </modules>
     </profile>
-
- <profile>
+    <profile>
       <id>vectortiles</id>
-        <modules>
-          <module>vectortiles</module>
-        </modules>
+      <modules>
+        <module>vectortiles</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>ysld</id>
+      <modules>
+        <module>ysld</module>
+      </modules>
     </profile>
 
     <!-- allExtensions profile, includes all modules -->
@@ -358,7 +363,8 @@
         <module>grib</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
-	<module>vectortiles</module>
+        <module>vectortiles</module>
+        <module>ysld</module>
       </modules>
     </profile>
 
@@ -400,9 +406,8 @@
         <module>netcdf</module>
         <module>netcdf-out</module>
         <module>vectortiles</module>
+        <module>ysld</module>
       </modules>
     </profile>
-
   </profiles>
-
 </project>

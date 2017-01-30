@@ -69,7 +69,6 @@
           <descriptor>release/ext-params-extractor.xml</descriptor>
           <descriptor>release/ext-wps-remote.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
-          <descriptor>release/ext-ysld.xml</descriptor>
           <descriptor>release/ext-jdbcstore.xml</descriptor>
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
@@ -211,7 +210,6 @@
         <module>jdbcstore</module>
         <module>gdal</module>
         <module>gwc-s3</module>
-        <module>ysld</module>
         <module>backup-restore</module>
         <module>ncwms</module>
         <module>web-resource</module>
@@ -434,12 +432,6 @@
       <id>dem</id>
       <modules>
         <module>dem</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>ysld</id>
-      <modules>
-        <module>ysld</module>
       </modules>
     </profile>
     <profile>

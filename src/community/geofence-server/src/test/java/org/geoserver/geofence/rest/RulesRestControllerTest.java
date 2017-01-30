@@ -1,4 +1,4 @@
-/* (c) 2015 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -43,6 +43,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         rule.setPriority(5L);
         rule.setUserName("pipo");
         rule.setRoleName("clown");
+        rule.setAddressRange("127.0.0.1/32");
         rule.setService("wfs");
         rule.setRequest("getFeature");
         rule.setWorkspace("workspace");
@@ -56,6 +57,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertEquals(rule.getPriority().longValue(), realRule.getPriority());
         assertEquals(rule.getUserName(), realRule.getUsername());
         assertEquals(rule.getRoleName(), realRule.getRolename());
+        assertEquals(rule.getAddressRange(), realRule.getAddressRange().getCidrSignature());
         assertEquals(rule.getService().toUpperCase(), realRule.getService().toUpperCase());
         assertEquals(rule.getRequest().toUpperCase(), realRule.getRequest().toUpperCase());
         assertEquals(rule.getWorkspace(), realRule.getWorkspace());

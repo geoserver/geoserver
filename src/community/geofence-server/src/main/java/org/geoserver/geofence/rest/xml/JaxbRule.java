@@ -1,4 +1,4 @@
-/* (c) 2015 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2015 - 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.geoserver.geofence.core.model.IPAddressRange;
 import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.core.model.enums.GrantType;
 
@@ -21,6 +22,8 @@ public class JaxbRule {
     private String userName;
 
     private String roleName;
+
+    private String addressRange;
 
     private String workspace;
 
@@ -41,6 +44,7 @@ public class JaxbRule {
         priority = rule.getPriority();
         userName = rule.getUsername();
         roleName = rule.getRolename();
+        addressRange = rule.getAddressRange() == null? null : rule.getAddressRange().getCidrSignature();
         workspace = rule.getWorkspace();
         layer = rule.getLayer();
         service = rule.getService() == null ? null : rule.getService().toUpperCase();
@@ -78,6 +82,14 @@ public class JaxbRule {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getAddressRange() {
+        return addressRange;
+    }
+
+    public void setAddressRange(String addressRange) {
+        this.addressRange = addressRange;
     }
 
     @XmlElement
@@ -133,6 +145,7 @@ public class JaxbRule {
         rule.setAccess(GrantType.valueOf(getAccess()));
         rule.setUsername(getUserName());
         rule.setRolename(getRoleName());
+        rule.setAddressRange(getAddressRange() == null? null: new IPAddressRange(getAddressRange()));
         rule.setService(getService());
         rule.setRequest(getRequest());
         rule.setWorkspace(getWorkspace());
@@ -153,6 +166,9 @@ public class JaxbRule {
         }
         if (getRoleName() != null) {
             rule.setRolename(convertAny(getRoleName()));
+        }
+        if (getAddressRange() != null) {
+            rule.setAddressRange(new IPAddressRange(getAddressRange()));
         }
         if (getService() != null) {
             rule.setService(convertAny(getService()));

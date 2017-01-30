@@ -314,6 +314,13 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>ysld</id>
+      <modules>
+        <module>ysld</module>
+      </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -351,6 +358,7 @@
         <module>grib</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
+        <module>ysld</module>
       </modules>
     </profile>
 
@@ -391,9 +399,8 @@
         <module>grib</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
+        <module>ysld</module>
       </modules>
     </profile>
-
   </profiles>
-
 </project>

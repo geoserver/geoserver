@@ -14,5 +14,6 @@ The integrated geofence server can be configured using its WebGUI page or REST c
    installing
    gui
    rest
+   rest-adminrule
    rest-userrole
    tutorial

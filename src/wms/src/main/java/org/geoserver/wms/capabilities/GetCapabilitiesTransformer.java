@@ -84,8 +84,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
-import sun.security.action.GetBooleanAction;
-
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
 import org.geoserver.wfs.json.JSONType;
@@ -100,8 +98,13 @@ import org.geoserver.wfs.json.JSONType;
  *      org.geoserver.platform.Operation)
  */
 public class GetCapabilitiesTransformer extends TransformerBase {
-    /** fixed MIME type for the returned capabilities document */
-    public static final String WMS_CAPS_MIME = "application/vnd.ogc.wms_xml";
+    /** default MIME type for the returned capabilities document */
+    public static final String WMS_CAPS_DEFAULT_MIME = "application/vnd.ogc.wms_xml";
+
+    // available MIME types for the returned capabilities document
+    public static final String[] WMS_CAPS_AVAIL_MIME = {
+            WMS_CAPS_DEFAULT_MIME, "text/xml"
+    };
 
     /** the WMS supported exception formats */
     static final String[] EXCEPTION_FORMATS = { "application/vnd.ogc.se_xml",
@@ -473,7 +476,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             start("Request");
 
             start("GetCapabilities");
-            element("Format", WMS_CAPS_MIME);
+
+            // add all the supported MIME types for the capabilities document
+            for (String mimeType : WMS_CAPS_AVAIL_MIME) {
+                element("Format", mimeType);
+            }
 
             // build the service URL and make sure it ends with &
             String serviceUrl = buildURL(request.getBaseUrl(), "wms", params("SERVICE", "WMS"),

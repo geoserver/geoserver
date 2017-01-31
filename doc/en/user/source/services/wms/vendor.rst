@@ -293,3 +293,14 @@ or empty if the default method has to be used for the related layer.
 
 The parameter allows to override the global WMS Raster Rendering Options setting (see :ref:`WMS Settings <services_webadmin_wms>` for more info), on a layer by layer basis. 
 
+format
+------
+
+The ``format`` parameter can be used to request capabilities documents in a certain format. If the requested format is not supported the default format will be used.
+
+An example request:
+
+  http://localhost:8080/geoserver/ows?service=wms&version=1.1.1&request=GetCapabilities&format=text/xml
+
+.. note::  
+  Currently this parameter can only be used to request WMS 1.1.1 capabilities documents encoded in ``text/xml``, if used with other WMS versions or other formats it will have no effect.

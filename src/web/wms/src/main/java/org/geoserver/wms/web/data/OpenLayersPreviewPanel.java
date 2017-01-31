@@ -22,8 +22,9 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.CssUrlReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.JavaScriptUrlReferenceHeaderItem;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -158,7 +159,8 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         Template template = templates.getTemplate("ol-load.ftl");
         StringWriter script = new java.io.StringWriter();
         template.process(context, script);
-        header.render(JavaScriptHeaderItem.forUrl(ResponseUtils.buildURL(base, "/openlayers/OpenLayers.js", null, URLType.RESOURCE)));
+        header.render(new CssUrlReferenceHeaderItem(ResponseUtils.buildURL(base, "/openlayers3/ol.css", null, URLType.RESOURCE), null, null));
+        header.render(new JavaScriptUrlReferenceHeaderItem(ResponseUtils.buildURL(base, "/openlayers3/ol.js", null, URLType.RESOURCE), null, false, "UTF-8", null));
         header.render(OnLoadHeaderItem.forScript(script.toString()));
     }
     

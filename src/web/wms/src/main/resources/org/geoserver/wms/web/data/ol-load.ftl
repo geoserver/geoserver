@@ -1,44 +1,51 @@
-OpenLayers.DOTS_PER_INCH = 25.4 / 0.28;
-OpenLayers.ImgPath = "${baseUrl}/www/openlayers/img/";
 
-var cfg = {
-  maxExtent: new OpenLayers.Bounds(${minx?c}, ${miny?c}, ${maxx?c}, ${maxy?c}),
-  maxResolution: ${resolution?c},
-  controls: [
-    new OpenLayers.Control.PanZoomBar(),
-    new OpenLayers.Control.Scale(),
-    new OpenLayers.Control.Navigation()
-  ]
-};
-
-var map = new OpenLayers.Map("${id}", cfg);
+var source = new ol.source.ImageWMS({
 <#if styleWorkspace??>
-map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "${baseUrl}/${styleWorkspace}/wms",
+  url: "${baseUrl}/${styleWorkspace}/wms",
 <#else>
-map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "${baseUrl}/wms",
+  url: "${baseUrl}/wms",
 </#if>
-    {
-      layers: "${layer}",
-      styles: "${style}",
-      format: "image/png",
-      format_options: "layout:css-legend;fontAntiAliasing:true",
-      random: ${cachebuster?c}
-    }, {
-      singleTile: true,
-      ratio: 1
-    }
-  )
-);
+  params: {
+    'LAYERS': '${layer}',
+    'STYLES': '${style}',
+    'FORMAT': 'image/png',
+    'FORMAT_OPTIONS': "layout:css-legend;fontAntiAliasing:true",
+    'RANDOM': ${cachebuster?c}
+  },
+  serverType: 'geoserver',
+  ratio: 1
+});
 
-map.zoomToMaxExtent();
-window.olMaps = window.olMaps || {};
-window.olMaps["${id}"] = map;
+var extent = [${minx?c}, ${miny?c}, ${maxx?c}, ${maxy?c}];
+var scaleControl = document.createElement('div');
+scaleControl.className = 'ol-scale ol-control ol-unselectable'
+
+var map = new ol.Map({
+  layers: [new ol.layer.Image({source: source})],
+  target: '${id}',
+  controls: ol.control.defaults({attribution: false}).extend([
+    new ol.control.Control({element: scaleControl})
+  ]),
+  view: new ol.View({
+    zoom: 2,
+    projection: "EPSG:4326",
+    extent: extent
+  })
+});
+
+map.getView().on('change:resolution', function(evt) {
+  var res = evt.target.getResolution();
+  var units = map.getView().getProjection().getUnits();
+  var dpi = 25.4 / 0.28;
+  var mpu = ol.proj.METERS_PER_UNIT[units];
+  var scale = Math.round(res * mpu * 39.37 * dpi);
+  scaleControl.innerHTML =  'Scale = 1 : ' + scale;
+});
+
+map.getView().fit(extent, map.getSize());
+
 if (!window.olUpdate) {
-    window.olUpdate = function(id, params) {
-        var map = window.olMaps[id];
-        for (var i = 0; i < map.layers.length; i++) {
-            var layer = map.layers[i];
-            if (layer.mergeNewParams) layer.mergeNewParams(params);
-        }
-    };
+  window.olUpdate = function(id, params) {
+    source.updateParams(params);
+  };
 }

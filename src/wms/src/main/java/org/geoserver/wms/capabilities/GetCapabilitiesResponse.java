@@ -11,7 +11,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -76,6 +78,8 @@ import org.xml.sax.XMLReader;
  */
 public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
 
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(GetCapabilitiesResponse.class);
+
     private WMS wms;
 
     /**
@@ -84,7 +88,7 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
      *            check of internal DTD elements shall be added to the output document
      */
     public GetCapabilitiesResponse(final WMS wms) {
-        super(GetCapabilitiesTransformer.class,GetCapabilitiesTransformer.WMS_CAPS_MIME);
+        super(GetCapabilitiesTransformer.class,GetCapabilitiesTransformer.WMS_CAPS_DEFAULT_MIME);
         this.wms = wms;
     }
 
@@ -262,4 +266,41 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
         return fullDTDDeclaration;
     }
 
+    @Override
+    public String getMimeType(Object value, Operation operation) throws ServiceException {
+        // check that we have a valid value (same check as the super method)
+        if (value == null || !value.getClass().isAssignableFrom(super.getBinding())) {
+            // this is not good (same error message as the super method)
+            String message = String.format("%s/%s",
+                    value == null ? "null" : value.getClass().getName(), operation.getId());
+            throw new IllegalArgumentException(message);
+        }
+        // search for the get capabilities object
+        GetCapabilitiesRequest request = null;
+        for (Object parameter : operation.getParameters()) {
+            if (parameter instanceof GetCapabilitiesRequest) {
+                // we found our request
+                request = (GetCapabilitiesRequest) parameter;
+            }
+        }
+        if (request == null) {
+            // unlikely but no get capabilities request was found, fall back to the default behavior
+            return super.getMimeType(value, operation);
+        }
+        // let's see if we have the format parameter
+        String format = request.getRawKvp().get("FORMAT");
+        if (format == null || format.isEmpty()) {
+            // no format parameter, fall back to default behavior
+            return super.getMimeType(value, operation);
+        }
+        // if the requested format is a valid mime type return it
+        for (String mimeType : GetCapabilitiesTransformer.WMS_CAPS_AVAIL_MIME) {
+            if (format.equalsIgnoreCase(mimeType)) {
+                // the format parameter value maps to a valid mime type, returning the associate mime type
+                return mimeType;
+            }
+        }
+        // the requested format is not supported, throw an exception
+        throw new RuntimeException(String.format("The request format '%s' is not supported.", format));
+    }
 }

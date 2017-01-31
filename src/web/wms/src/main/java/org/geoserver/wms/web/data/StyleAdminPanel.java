@@ -43,6 +43,9 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.AbstractResource;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.StyleGenerator;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.StyleType;
@@ -107,6 +110,9 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                 nameTextField.setEnabled(false);
                 uploadLink.setEnabled(false);
             }
+            if (StylePage.isDefaultStyle(getStylePage().getStyleInfo())) {
+                nameTextField.setEnabled(false);
+            }
             // format only settable upon creation
             formatChoice.setEnabled(false);
             formatReadOnlyMessage.setVisible(true);
@@ -121,6 +127,21 @@ public class StyleAdminPanel extends StyleEditTabPanel {
         
         add(nameTextField = new TextField<String>("name", nameBinding));
         nameTextField.setRequired(true);
+
+        //when editing a default style, disallow changing the name
+        if (StylePage.isDefaultStyle(style)) {
+            nameTextField.add(new IValidator<String>() {
+                String originalName = style.getName();
+                @Override public void validate(IValidatable<String> validatable) {
+                    if (originalName != null && !originalName.equals(validatable.getValue())) {
+                        ValidationError error = new ValidationError();
+                        error.setMessage( "Can't change the name of default styles." );
+                        error.addKey("editDefaultStyleNameDisallowed");
+                        validatable.error(error);
+                    }
+                }
+            });
+        }
         
         IModel<WorkspaceInfo> wsBinding = styleModel.bind("workspace");
         wsChoice = 

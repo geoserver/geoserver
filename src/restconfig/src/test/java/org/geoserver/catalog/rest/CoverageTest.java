@@ -72,8 +72,16 @@ public class CoverageTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllByCoverageStore() throws Exception {
+        removeStore("gs", "usaWorldImage");
+        String req = "wcs?service=wcs&request=getcoverage&version=1.1.1&identifier=gs:usa" +
+            "&boundingbox=-100,30,-80,44,EPSG:4326&format=image/tiff" +
+            "&gridbasecrs=EPSG:4326&store=true";
+
+        Document dom = getAsDOM( req );
+        assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
+
         addCoverageStore(true);
-        Document dom = getAsDOM( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        dom = getAsDOM( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
         assertEquals( 1, dom.getElementsByTagName( "coverage").getLength() );
         assertXpathEvaluatesTo( "1", "count(//coverage/name[text()='usa'])", dom );
     }
@@ -287,6 +295,76 @@ public class CoverageTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("-130.85168", "/coverage/latLonBoundingBox/minx", dom);
         assertXpathEvaluatesTo("983 598", "/coverage/grid/range/high", dom);
 
+    }
+
+    @Test
+    public void testPostNewAsXMLWithNativeCoverageName() throws Exception {
+        removeStore("gs", "usaWorldImage");
+        String req = "wcs?service=wcs&request=getcoverage&version=1.1.1&identifier=gs:differentName" +
+            "&boundingbox=-100,30,-80,44,EPSG:4326&format=image/tiff" +
+            "&gridbasecrs=EPSG:4326&store=true";
+
+        Document dom = getAsDOM( req );
+        assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
+
+        addCoverageStore(false);
+        dom = getAsDOM( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        assertEquals( 0, dom.getElementsByTagName( "coverage").getLength() );
+
+        String xml =
+            "<coverage>" +
+                "<name>differentName</name>"+
+                "<nativeCoverageName>usa</nativeCoverageName>"+
+              "</coverage>";
+        MockHttpServletResponse response =
+            postAsServletResponse( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
+
+        assertEquals( 201, response.getStatus() );
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName" ) );
+
+        dom = getAsDOM( req );
+        assertEquals( "wcs:Coverages", dom.getDocumentElement().getNodeName() );
+
+        dom = getAsDOM("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName.xml");
+        assertXpathEvaluatesTo("differentName", "/coverage/name", dom);
+        assertXpathEvaluatesTo("differentName", "/coverage/title", dom);
+        assertXpathEvaluatesTo("usa", "/coverage/nativeCoverageName", dom);
+    }
+
+    @Test
+    public void testPostNewAsXMLWithNativeNameFallback() throws Exception {
+        removeStore("gs", "usaWorldImage");
+        String req = "wcs?service=wcs&request=getcoverage&version=1.1.1&identifier=gs:differentName" +
+            "&boundingbox=-100,30,-80,44,EPSG:4326&format=image/tiff" +
+            "&gridbasecrs=EPSG:4326&store=true";
+
+        Document dom = getAsDOM( req );
+        assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
+
+        addCoverageStore(false);
+        dom = getAsDOM( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        assertEquals( 0, dom.getElementsByTagName( "coverage").getLength() );
+
+        String xml =
+            "<coverage>" +
+                "<name>differentName</name>"+
+                "<nativeName>usa</nativeName>"+
+              "</coverage>";
+        MockHttpServletResponse response =
+            postAsServletResponse( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
+
+        assertEquals( 201, response.getStatus() );
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName" ) );
+
+        dom = getAsDOM( req );
+        assertEquals( "wcs:Coverages", dom.getDocumentElement().getNodeName() );
+
+        dom = getAsDOM("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName.xml");
+        assertXpathEvaluatesTo("differentName", "/coverage/name", dom);
+        assertXpathEvaluatesTo("differentName", "/coverage/title", dom);
+        assertXpathEvaluatesTo("usa", "/coverage/nativeCoverageName", dom);
     }
 
     @Test

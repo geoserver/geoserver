@@ -238,6 +238,7 @@
         <module>notification-common</module>
         <module>notification-geonode</module>
         <module>ows-simulate</module>
+        <module>jdbc-metrics</module>
       </modules>
     </profile>
     <profile>
@@ -522,6 +523,12 @@
       <id>oseo</id>
       <modules>
         <module>oseo</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jdbc-metrics</id>
+      <modules>
+        <module>jdbc-metrics</module>
       </modules>
     </profile>
   </profiles>

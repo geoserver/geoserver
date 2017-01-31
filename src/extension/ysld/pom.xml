@@ -6,11 +6,11 @@
   
   <parent>
     <groupId>org.geoserver</groupId>
-    <artifactId>community</artifactId>
+    <artifactId>extension</artifactId>
     <version>2.11-SNAPSHOT</version>
   </parent>
   
-  <groupId>org.geoserver.community</groupId>
+  <groupId>org.geoserver</groupId>
   <artifactId>gs-ysld</artifactId>
   <name>Ysld GeoServer Plugin</name>
   <packaging>jar</packaging>

@@ -10,8 +10,11 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
+
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.File;
+import java.io.FileReader;
 import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -26,9 +29,9 @@ import org.apache.wicket.Session;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTesterHelper;
 import org.geoserver.catalog.LayerInfo;
@@ -42,7 +45,9 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -62,6 +67,11 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     StyleInfo buildingsStyle;
     StyleEditPage edit;
 
+    private static final String STYLE_TO_MOVE_NAME = "testStyle";
+    private static final String STYLE_TO_MOVE_FILENAME = "testMoveStyle.sld";
+    private static final String STYLE_TO_MOVE_FILENAME_UPDATED = "testMoveStyleUpdated.sld";
+    StyleInfo styleInfoToMove;
+    
     @Before
     public void setUp() throws Exception {
         Catalog catalog = getCatalog();
@@ -145,6 +155,14 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         
         edit = new StyleEditPage(buildingsStyle);
         tester.startPage(edit);
+        styleInfoToMove = catalog.getStyleByName("testStyle");
+        
+    }
+    
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        testData.addStyle(STYLE_TO_MOVE_NAME, STYLE_TO_MOVE_FILENAME, this.getClass(), getCatalog());
     }
 
     @Test
@@ -523,4 +541,46 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         assertNull(style.getLegend());
     }
 
+    /*
+     * Test that a user can update the .sld file contents and move the style into a workspace in a single edit.
+     */
+    @Test
+    public void testMoveWorkspaceAndEdit() throws Exception {
+        edit = new StyleEditPage(styleInfoToMove);
+        tester.startPage(edit);
+
+        // Before the edit, the style should have one <FeatureTypeStyle>
+        assertEquals(1, styleInfoToMove.getStyle().featureTypeStyles().size());
+
+        FormTester form = tester.newFormTester("styleForm", false);
+
+        // Update the workspace (select "sf" from the dropdown)
+        DropDownChoice<WorkspaceInfo> typeDropDown = (DropDownChoice<WorkspaceInfo>) tester
+                .getComponentFromLastRenderedPage("styleForm:context:panel:workspace");
+
+        for (int wsIdx = 0; wsIdx < typeDropDown.getChoices().size(); wsIdx++) {
+            WorkspaceInfo ws = typeDropDown.getChoices().get(wsIdx);
+            if ("sf".equalsIgnoreCase(ws.getName())) {
+                form.select("context:panel:workspace", wsIdx);
+                break;
+            }
+        }
+
+        // Update the raw style contents (the new style has TWO <FeatureTypeStyle> entries).
+        File styleFile = new File(getClass().getResource(STYLE_TO_MOVE_FILENAME_UPDATED).toURI());
+        String updatedSld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
+        form.setValue("styleEditor:editorContainer:editorParent:editor", updatedSld);
+
+        // Submit the form and verify that both the new workspace and new rawStyle saved.
+        form.submit();
+
+        StyleInfo si = getCatalog().getStyleByName(getCatalog().getWorkspaceByName("sf"),
+                STYLE_TO_MOVE_NAME);
+        assertNotNull(si);
+        assertNotNull(si.getWorkspace());
+        assertEquals("sf", si.getWorkspace().getName());
+        assertEquals(2, si.getStyle().featureTypeStyles().size());
+    }
+    
 }

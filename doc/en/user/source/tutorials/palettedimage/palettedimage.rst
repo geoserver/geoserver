@@ -3,7 +3,7 @@
 Paletted Images
 ===============
 
-Geoserver has the ability to output high quality 256 color images. This tutorial introduces you to the palette concepts, the various image generation options, and offers a quality/resource comparison of them in different situations.
+GeoServer has the ability to output high quality 256 color images. This tutorial introduces you to the palette concepts, the various image generation options, and offers a quality/resource comparison of them in different situations.
 
 What are Paletted Images?
 -------------------------

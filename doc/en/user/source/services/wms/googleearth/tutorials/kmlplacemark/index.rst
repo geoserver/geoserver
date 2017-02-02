@@ -52,7 +52,7 @@ And voila. Your first template
 
 	   *Hello World template.*
 	
-**Refreshing Templates**: One nice aspect of templates is that they are read upon every request. So one can simply edit the template in place and have it picked up by Geoserver as soon as the file is saved. So when after editing and saving a template simply "Refresh" the network link in Google Earth to have the new content picked up.
+**Refreshing Templates**: One nice aspect of templates is that they are read upon every request. So one can simply edit the template in place and have it picked up by GeoServer as soon as the file is saved. So when after editing and saving a template simply "Refresh" the network link in Google Earth to have the new content picked up.
 
 	.. figure:: refresh.png
 	   :align: center

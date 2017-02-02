@@ -15,12 +15,6 @@
  <artifactId>gs-script-groovy</artifactId>
  <packaging>jar</packaging>
  <name>Groovy Scripting Extension</name>
- <repositories>
-  <repository>
-   <id>ECC</id>
-   <url>https://github.com/ElectronicChartCentre/ecc-mvn-repo/raw/master/releases</url>
-  </repository>
- </repositories>
  <dependencies>
   <dependency>
    <groupId>org.geoserver.script</groupId>

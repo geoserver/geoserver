@@ -13,14 +13,6 @@
   <artifactId>gs-vectortiles</artifactId>
   <packaging>jar</packaging>
   <name>Vector Tiles</name>
-  
-  <repositories>
-    <repository>
-        <id>ECC</id>
-        <url>https://github.com/ElectronicChartCentre/ecc-mvn-repo/raw/master/releases</url>
-    </repository>
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>com.google.code.gson</groupId>

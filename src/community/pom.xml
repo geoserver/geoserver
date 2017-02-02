@@ -187,7 +187,6 @@
         <module>wms-eo</module>
         <module>colormap</module>
         <module>mbtiles</module>
-        <module>mbstyle</module>
         <module>geopkg</module>
         <module>pgraster</module>
         <module>dyndimension</module>

@@ -206,14 +206,14 @@ public class ResourceTest extends GeoServerSystemTestSupport {
                 + "  }"
                 + "},"
                 + "\"lastModified\": \"" + FORMAT.format(myRes.parent().lastmodified()) + "\","
-                + "  \"children\": {\"child\": [  {"
+                + "  \"children\": [{\"child\":  {"
                 + "    \"name\": \"myres\","
                 + "    \"link\":     {"
                 + "      \"href\": \"http://localhost:8080/geoserver/rest/resource/mydir/myres\","
                 + "      \"rel\": \"alternate\","
                 + "      \"type\": \"application/octet-stream\""
                 + "    }"
-                + "  }]}"
+                + "  }}]"
                 + "}}";
         JSONAssert.assertEquals(expected, (JSONObject) json);
     }

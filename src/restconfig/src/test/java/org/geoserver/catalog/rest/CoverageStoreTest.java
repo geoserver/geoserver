@@ -62,7 +62,7 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         JSON json = getAsJSON( "/rest/workspaces/wcs/coveragestores.json");
         assertTrue( json instanceof JSONObject );
         
-        Object coveragestores = ((JSONObject)json).getJSONObject("coverageStores").get("coverageStore");
+        Object coveragestores = ((JSONObject)json).getJSONArray("coverageStores").getJSONObject(0).get("coverageStore");
         assertNotNull( coveragestores );
         
         if( coveragestores instanceof JSONArray ) {

@@ -47,7 +47,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         JSON json = getAsJSON( "/rest/namespaces.json");
         assertTrue( json instanceof JSONObject );
         
-        JSONArray namespaces = ((JSONObject)json).getJSONObject("namespaces").getJSONArray("namespace");
+        JSONArray namespaces = ((JSONObject)json).getJSONArray("namespaces").getJSONObject(0).getJSONArray("namespace");
         assertNotNull( namespaces );
         
         assertEquals( catalog.getNamespaces().size() , namespaces.size() ); 

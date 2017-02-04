@@ -433,23 +433,6 @@ public class CatalogConfiguration implements Configuration {
             this.gridSetBroker = gridSetBroker;
             this.layerCache.invalidateAll();
             this.tileLayerCatalog.initialize();
-
-            // startup sanity check
-            for (String layerId : tileLayerCatalog.getLayerIds()) {
-                final String layerName = tileLayerCatalog.getLayerName(layerId);
-                try {
-                    getTileLayerById(layerId);
-                } catch (Exception e) {
-                    String msg = "GeoServer TileLayer named '" + layerName + "' with id '"
-                            + layerId + "' can't be loaded. "
-                            + "It will be removed from the configuration but you'll need"
-                            + " to delete its cache manually (if any). Original error message: "
-                            + e.getMessage();
-                    LOGGER.log(Level.SEVERE, msg, e);
-                    tileLayerCatalog.delete(layerId);
-                }
-            }
-            LOGGER.info("GWC configuration based on GeoServer's Catalog loaded successfuly");
         } finally {
             lock.releaseWriteLock();
         }

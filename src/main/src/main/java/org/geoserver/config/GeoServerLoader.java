@@ -277,6 +277,9 @@ public abstract class GeoServerLoader {
         
         // see if we really need to verify stores on startup 
         boolean checkStores = checkStoresOnStartup(xp);
+        if(!checkStores) {
+            catalog.setExtendedValidation(false);
+        }
        
         //global styles
         loadStyles(resourceLoader.get( "styles" ), catalog, xp);
@@ -553,6 +556,10 @@ public abstract class GeoServerLoader {
         }
         xp.setUnwrapNulls(true);
         catalog.resolve();
+        // re-enable extended validation
+        if(!checkStores) {
+            catalog.setExtendedValidation(true);
+        }
         return catalog;
     }
     

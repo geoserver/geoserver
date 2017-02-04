@@ -24,6 +24,7 @@ import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.locationtech.geogig.rest.repository.RepositoryRouter;
 import org.locationtech.geogig.rest.repository.UploadCommandResource;
 import org.locationtech.geogig.web.api.CommandSpecException;
+import org.locationtech.geogig.web.api.index.IndexCommandResource;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
@@ -125,6 +126,8 @@ public class GeogigDispatcher extends AbstractController {
         router.attach("/repos/{repository}/init", InitCommandResource.class);
         router.attach("/repos/{repository}/{command}.{extension}", CommandResource.class);
         router.attach("/repos/{repository}/{command}", CommandResource.class);
+        router.attach("/repos/{repository}/index/{command}.{extension}", IndexCommandResource.class);
+        router.attach("/repos/{repository}/index/{command}", IndexCommandResource.class);
 
         return router;
     }

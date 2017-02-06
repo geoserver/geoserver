@@ -78,6 +78,7 @@
           <descriptor>release/ext-oauth2-google.xml</descriptor>
           <descriptor>release/ext-oauth2-github.xml</descriptor>
           <descriptor>release/ext-oauth2-geonode.xml</descriptor>
+          <descriptor>release/ext-notification.xml</descriptor> 
         </descriptors>
       </configuration>
      </plugin>
@@ -168,6 +169,19 @@
       </modules>
     </profile>
     <profile>
+      <id>notification</id>
+      <modules>
+	<module>notification-common</module>
+        <module>notification</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>notification-geonode</id>
+      <modules>
+	<module>notification-geonode</module>
+      </modules>
+    </profile>
+    <profile>
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>
@@ -210,6 +224,9 @@
         <module>security/oauth2-google</module>
         <module>security/oauth2-github</module>
         <module>security/oauth2-geonode</module>
+        <module>notification</module>
+        <module>notification-common</module>
+        <module>notification-geonode</module>
       </modules>
     </profile>
     <profile>

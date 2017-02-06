@@ -68,7 +68,9 @@ class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
             String wsName = workspace == null ? null : workspace.getName();
             PageParameters parameters = new PageParameters();
             parameters.add(LayerGroupEditPage.GROUP, layerGroup.getName());
-            parameters.add(LayerGroupEditPage.WORKSPACE, wsName);
+            if (wsName != null) {
+                parameters.add(LayerGroupEditPage.WORKSPACE, wsName);
+            }
             LayerGroupEditPage layerGroupEditPage = new LayerGroupEditPage(parameters);
             if (returnPage != null) {
                 layerGroupEditPage.setReturnPage(returnPage);

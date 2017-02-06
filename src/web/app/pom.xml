@@ -16,7 +16,7 @@
   <artifactId>gs-web-app</artifactId>
   <packaging>jar</packaging>
   <version>2.11-SNAPSHOT</version>
-  <name>GeoServer Web Application</name>    
+  <name>GeoServer Web Application</name>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.web</groupId>
@@ -1207,7 +1207,7 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
-    </profile>   
+    </profile>
 	<profile>
       <id>gwc-distributed</id>
       <dependencies>
@@ -1245,8 +1245,8 @@
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-geofence-server</artifactId>
           <version>${project.version}</version>
-        </dependency>              
-      </dependencies>      
+        </dependency>
+      </dependencies>
    </profile>
    <profile>
       <id>vectortiles</id>
@@ -1255,8 +1255,8 @@
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-vectortiles</artifactId>
           <version>${project.version}</version>
-        </dependency>              
-      </dependencies>      
+        </dependency>
+      </dependencies>
    </profile>
    <profile>
       <id>gdal-translate</id>
@@ -1474,6 +1474,26 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-onelogin</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>notification</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-notification</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-notification-common</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-notification-geonode</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

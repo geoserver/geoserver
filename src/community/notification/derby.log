@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Wed Jan 18 14:16:42 CET 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.8.2.2 - (1181258): instance a816c00e-0159-b1b8-e814-0000122db6d0 
+on database directory G:\Temp\1484745400541-0\derbystore\default\default  with class loader sun.misc.Launcher$AppClassLoader@61baa894 
+Loaded from file:/G:/.m2/org/apache/derby/derby/10.8.2.2/derby-10.8.2.2.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_73-b02
+user.dir=G:\Archivio\Sviluppo\GIT\GeoSolution\geoserver\src\community\notification
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Wed Jan 18 14:16:57 CET 2017:
+Shutting down instance a816c00e-0159-b1b8-e814-0000122db6d0 on database directory G:\Temp\1484745400541-0\derbystore\default\default with class loader sun.misc.Launcher$AppClassLoader@61baa894 

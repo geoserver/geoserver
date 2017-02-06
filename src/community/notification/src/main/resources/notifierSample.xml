@@ -1,0 +1,37 @@
+<notificationConfiguration>
+	<queueSize>1000</queueSize>
+	<notificator>
+		<queueSize>1000</queueSize>
+		<processorThreads>1</processorThreads>
+		<messageFilter>type='Catalog'</messageFilter>
+		<genericProcessor>
+			<geonodeEncoder />
+			<fanoutSender>
+				<username>guest</username>
+				<password>guest</password>
+				<host>localhost</host>
+				<port>4432</port>
+				<virtualHost></virtualHost>
+				<exchangeName>geonode</exchangeName>
+				<routingKey>geoserver.catalog</routingKey>
+			</fanoutSender>
+		</genericProcessor>
+	</notificator>
+	<notificator>
+		<queueSize>1000</queueSize>
+		<processorThreads>10</processorThreads>
+		<messageFilter>type='Data'</messageFilter>
+		<genericProcessor>
+			<geonodeEncoder />
+			<fanoutSender>
+				<username>guest</username>
+				<password>guest</password>
+				<host>localhost</host>
+				<port>4432</port>
+				<virtualHost></virtualHost>
+				<exchangeName>geonode</exchangeName>
+				<routingKey>geoserver.data</routingKey>
+			</fanoutSender>
+		</genericProcessor>
+	</notificator>
+</notificationConfiguration>

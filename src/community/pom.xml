@@ -79,6 +79,7 @@
           <descriptor>release/ext-backup-restore.xml</descriptor>
           <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
           <descriptor>release/ext-onelogin.xml</descriptor> 
+          <descriptor>release/ext-notification.xml</descriptor> 
           <descriptor>release/ext-ows-simulate.xml</descriptor> 
         </descriptors>
       </configuration>
@@ -175,6 +176,19 @@
         <module>onelogin</module>
       </modules>
     </profile>
+	<profile>
+      <id>notification</id>
+      <modules>
+		<module>notification-common</module>
+        <module>notification</module>
+      </modules>
+    </profile>
+	<profile>
+      <id>notification-geonode</id>
+      <modules>
+		<module>notification-geonode</module>
+      </modules>
+    </profile>
     <profile>
       <id>communityRelease</id>
       <modules>
@@ -220,6 +234,9 @@
         <module>security/oauth2-geonode</module>
         <module>wmts-multi-dimensional</module>
         <module>onelogin</module>
+        <module>notification</module>
+        <module>notification-common</module>
+        <module>notification-geonode</module>
         <module>ows-simulate</module>
       </modules>
     </profile>

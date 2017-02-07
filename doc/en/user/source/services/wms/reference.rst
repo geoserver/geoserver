@@ -116,6 +116,9 @@ They are fully documented in the :ref:`wms_vendor_parameters` section.
    * - ``namespace``
      - No
      - limits response to layers in a given namespace
+   * - ``format``
+     - No
+     - request the capabilities document in a certain format
 
 
 A example GetCapabilities request is:

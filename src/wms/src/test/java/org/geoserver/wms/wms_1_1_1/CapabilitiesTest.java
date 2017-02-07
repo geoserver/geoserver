@@ -9,10 +9,11 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import static org.junit.Assert.*;
+import java.util.ArrayList;
+import static org.hamcrest.CoreMatchers.is;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 
 import org.custommonkey.xmlunit.XMLUnit;
@@ -38,8 +39,11 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.capabilities.GetCapabilitiesTransformer;
+import org.geotools.data.Base64;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -83,12 +87,53 @@ public class CapabilitiesTest extends WMSTestSupport {
         setupOpaqueGroup(catalog);
     }
 
-
     @Test
     public void testCapabilities() throws Exception {
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
         Element e = dom.getDocumentElement();
         assertEquals("WMT_MS_Capabilities", e.getLocalName());
+    }
+
+    @Test
+    /**
+     * Tests the behavior of the format vendor parameter.
+     */
+    public void testCapabilitiesFormat() throws Exception {
+        // the default and only wms standard conform mime type is application/vnd.ogc.wms_xml
+        MockHttpServletResponse response = getAsServletResponse("wms?request=getCapabilities&version=1.1.1");
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentType(), is("application/vnd.ogc.wms_xml"));
+        // request with the supported ime type text/xml
+        response = getAsServletResponse("wms?request=getCapabilities&version=1.1.1&format=text/xml");
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentType(), is("text/xml"));
+        // using an invalid mime type should throw an exception
+        response = getAsServletResponse("wms?request=getCapabilities&version=1.1.1&format=invalid");
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentType(), is("application/vnd.ogc.se_xml"));
+        // using an empty mime type should fall back to the default mime type
+        response = getAsServletResponse("wms?request=getCapabilities&version=1.1.1&format=");
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentType(), is("application/vnd.ogc.wms_xml"));
+    }
+
+    @Test
+    /**
+     * Test that all the supported mime types for the get capabilities
+     * operation are listed.
+     */
+    public void testGetCapabilities() throws Exception {
+        // request a wms 1.1.1 capabilities document
+        MockHttpServletResponse response = getAsServletResponse("wms?request=getCapabilities&version=1.1.1");
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentType(), is("application/vnd.ogc.wms_xml"));
+        // parse the result as a xml document
+        InputStream content = new ByteArrayInputStream(response.getContentAsByteArray());
+        Document document = dom(content, true);
+        // check that all the available mime types are present
+        for(String mimeType : GetCapabilitiesTransformer.WMS_CAPS_AVAIL_MIME) {
+            assertXpathExists(String.format("//GetCapabilities[Format='%s']", mimeType), document);
+        }
     }
 
     @Test

@@ -13,6 +13,10 @@
 #/rest/workspaces/topp/**;GET=ROLE_ADMINISTRATOR
 #/**;POST,DELETE,PUT=ROLE_ADMINISTRATOR
 #
+# Next line enables access to user self-admin operations (such as changing own password):
+# 
+#/rest/security/self/**;PUT=ROLE_AUTHENTICATED
+#
 #
 /**;GET=ROLE_ADMINISTRATOR
 /**;POST,DELETE,PUT=ROLE_ADMINISTRATOR

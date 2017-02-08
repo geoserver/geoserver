@@ -415,5 +415,13 @@ public class WMSMapContent extends MapContent {
     public Map<String, Object> getMetadata() {
         return metadata;
     }
-
+    
+    @Override
+    public void dispose() {
+        this.request = null;
+        this.callbacks = null;
+        this.metadata = null;
+        super.dispose();
+    }
+    
 }

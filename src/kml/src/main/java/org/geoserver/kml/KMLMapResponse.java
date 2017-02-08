@@ -109,15 +109,15 @@ public class KMLMapResponse extends AbstractMapResponse {
             RenderedImageMap imageMap;
             try {
                 imageMap = pngProducer.produceMap(subContext);
+    
+                // write it to the zip stream
+                entry = new ZipEntry(path);
+                zip.putNextEntry(entry);
+                pngEncoder.write(imageMap, zip, operation);
+                zip.closeEntry();
             } finally {
                 subContext.dispose();
             }
-
-            // write it to the zip stream
-            entry = new ZipEntry(path);
-            zip.putNextEntry(entry);
-            pngEncoder.write(imageMap, zip, operation);
-            zip.closeEntry();
         }
         zip.closeEntry();// close the images/ folder
 

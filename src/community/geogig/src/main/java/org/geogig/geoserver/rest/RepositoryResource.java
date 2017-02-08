@@ -1,4 +1,4 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -130,7 +130,7 @@ public class RepositoryResource extends DeleteRepository {
             w.writeStartElement("repository");
             w.writeElement("id", repo.getId());
             w.writeElement("name", repo.getRepoName());
-            w.writeElement("location", repo.getLocation());
+            w.writeElement("location", repo.getMaskedLocation());
             w.writeEndElement();
         }
     }

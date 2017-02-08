@@ -1,4 +1,4 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -35,6 +35,7 @@ public class RepositoryInfo implements Serializable {
 
     private java.net.URI location;
 
+    private String maskedLocation;
     /**
      * Stores the "nice" name for a repo. This is the name that is shown in the Repository list, as
      * well as what is stored in the GeoGIG repository config. It is transient, as we don't want to
@@ -72,6 +73,16 @@ public class RepositoryInfo implements Serializable {
     public URI getLocation() {
         readResolve();
         return this.location;
+    }
+
+    public String getMaskedLocation() {
+        if (maskedLocation == null) {
+            // ensure the location is set
+            getLocation();
+            // get the masked version of the URI
+            this.maskedLocation = GeoServerGeoGigRepositoryResolver.getURI(getRepoName());
+        }
+        return this.maskedLocation;
     }
 
     public void setLocation(URI location) {

@@ -5,8 +5,8 @@
  */
 package org.geoserver.wms.map;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.junit.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -56,7 +56,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         testData.addStyle("crop_raster","CropTransform.sld",getClass(),catalog);
         testData.addStyle("lakeScale", "lakeScale.sld", getClass(), catalog);
  
-        Map props = new HashMap();
+        Map<LayerProperty, Object> props = new HashMap<>();
         props.put(LayerProperty.STYLE, "indexed");
         
         testData.addRasterLayer(new QName(MockData.SF_URI, "indexed", MockData.SF_PREFIX), 

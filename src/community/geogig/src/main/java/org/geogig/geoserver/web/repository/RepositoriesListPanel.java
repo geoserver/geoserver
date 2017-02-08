@@ -1,4 +1,4 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -231,7 +231,7 @@ public class RepositoriesListPanel extends GeoServerTablePanel<RepositoryInfo> {
 
         static final Property<RepositoryInfo> NAME = new BeanProperty<>("name", "repoName");
 
-        static final Property<RepositoryInfo> LOCATION = new BeanProperty<>("location", "location");
+        static final Property<RepositoryInfo> LOCATION = new BeanProperty<>("location", "maskedLocation");
 
         static final Property<RepositoryInfo> REMOVELINK = new AbstractProperty<RepositoryInfo>(
                 "remove") {

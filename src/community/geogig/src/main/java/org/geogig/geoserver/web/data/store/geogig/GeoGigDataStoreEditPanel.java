@@ -1,4 +1,4 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -258,7 +258,7 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
                 URI repoUri = new URI(repoUriStr);
                 RepositoryResolver resolver = RepositoryResolver.lookup(repoUri);
                 RepositoryInfo info = RepositoryManager.get().getByRepoName(resolver.getName(repoUri));
-                return info.getRepoName() + " (" + info.getLocation() + ")";
+                return info.getRepoName() + " (" + info.getMaskedLocation()+ ")";
             } catch (URISyntaxException e) {
                 throw Throwables.propagate(e);
             }

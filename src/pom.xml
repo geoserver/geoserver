@@ -1793,7 +1793,7 @@
   <ant.version>1.8.4</ant.version>
 
   <imageio-ext.version>1.1.17</imageio-ext.version>
-  <jaiext.version>1.0.12</jaiext.version>
+  <jaiext.version>1.0.13</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <jvm.opts></jvm.opts>
   <jalopy.phase>disabled</jalopy.phase>

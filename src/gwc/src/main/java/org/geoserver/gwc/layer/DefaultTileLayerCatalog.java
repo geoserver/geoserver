@@ -109,14 +109,14 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         });
 
         LOGGER.info("Loading tile layers from " + baseDir.path());
-        for (Resource res : tileLayerFiles) {
+        tileLayerFiles.parallelStream().forEach(res -> {
             GeoServerTileLayerInfoImpl info;
             try {
                 info = depersist(res);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Error depersisting tile layer information from file "
                         + res.name(), e);
-                continue;
+                return;
             }
 
             layersById.put(info.getId(), info.getName());
@@ -124,7 +124,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("Loaded tile layer '" + info.getName() + "'");
             }
-        }
+        });
         this.initialized = true;
     }
 

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -361,7 +362,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         long previousTime = sldResource.lastmodified();
         sldResource.file().setLastModified(lastTime + 1000);
         
-        catalog.firePostModified(catalog.getStyleByName("Bridges"));
+        catalog.firePostModified(catalog.getStyleByName("Bridges"), new ArrayList<String>(), new ArrayList(), new ArrayList());
         
         TransformerBase tr = createTransformer();
         tr.setIndentation(2);

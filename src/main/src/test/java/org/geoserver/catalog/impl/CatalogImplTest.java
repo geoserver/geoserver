@@ -423,6 +423,9 @@ public class CatalogImplTest {
         assertEquals( 1, l.modified.size() );
         assertEquals( catalog, l.modified.get(0).getSource());
         assertEquals( "defaultNamespace", l.modified.get(0).getPropertyNames().get(0));
+        assertEquals( 1, l.postModified.size() );
+        assertEquals( catalog, l.postModified.get(0).getSource());
+        assertEquals( "defaultNamespace", l.postModified.get(0).getPropertyNames().get(0));
         
         ns = catalog.getNamespaceByPrefix( "ns2Prefix" );
         ns.setURI( "changed");
@@ -433,6 +436,11 @@ public class CatalogImplTest {
         assertTrue(l.modified.get(1).getPropertyNames().get(0).equalsIgnoreCase("uri" ));
         assertTrue(l.modified.get(1).getOldValues().contains( "ns2URI" ));
         assertTrue(l.modified.get(1).getNewValues().contains( "changed" ));
+        assertEquals( 2, l.postModified.size() );
+        assertEquals( 1, l.postModified.get(1).getPropertyNames().size());
+        assertTrue(l.postModified.get(1).getPropertyNames().get(0).equalsIgnoreCase("uri" ));
+        assertTrue(l.postModified.get(1).getOldValues().contains( "ns2URI" ));
+        assertTrue(l.postModified.get(1).getNewValues().contains( "changed" ));
         
         assertTrue( l.removed.isEmpty() );
         catalog.remove( ns );
@@ -637,6 +645,8 @@ public class CatalogImplTest {
         assertEquals( ws, l.added.get(0).getSource());
         assertEquals( catalog, l.modified.get(0).getSource());
         assertEquals( "defaultWorkspace", l.modified.get(0).getPropertyNames().get(0));
+        assertEquals( catalog, l.postModified.get(0).getSource());
+        assertEquals( "defaultWorkspace", l.postModified.get(0).getPropertyNames().get(0));
         
         ws = catalog.getWorkspaceByName( "ws2" );
         ws.setName( "changed");
@@ -646,6 +656,9 @@ public class CatalogImplTest {
         assertTrue(l.modified.get(1).getPropertyNames().contains( "name" ));
         assertTrue(l.modified.get(1).getOldValues().contains( "ws2" ));
         assertTrue(l.modified.get(1).getNewValues().contains( "changed" ));
+        assertTrue(l.postModified.get(1).getPropertyNames().contains( "name" ));
+        assertTrue(l.postModified.get(1).getOldValues().contains( "ws2" ));
+        assertTrue(l.postModified.get(1).getNewValues().contains( "changed" ));
         
         assertTrue( l.removed.isEmpty() );
         catalog.remove( ws );
@@ -842,6 +855,8 @@ public class CatalogImplTest {
         assertEquals( ds, l.added.get(0).getSource() );
         assertEquals( 1, l.modified.size() );
         assertEquals( catalog, l.modified.get(0).getSource() );
+        assertEquals( 1, l.postModified.size() );
+        assertEquals( catalog, l.postModified.get(0).getSource() );
         
         DataStoreInfo ds2 = catalog.getDataStoreByName( ds.getName() );
         ds2.setDescription( "changed" );
@@ -854,12 +869,23 @@ public class CatalogImplTest {
         assertEquals( ds2, me.getSource() );
         assertEquals( 1, me.getPropertyNames().size() );
         assertEquals( "description", me.getPropertyNames().get(0));
-        
+
         assertEquals( 1, me.getOldValues().size() );
         assertEquals( 1, me.getNewValues().size() );
-        
+
         assertEquals( "dsDescription", me.getOldValues().get(0));
         assertEquals( "changed", me.getNewValues().get(0));
+
+        CatalogPostModifyEvent pme = l.postModified.get(1);
+        assertEquals( ds2, pme.getSource() );
+        assertEquals( 1, pme.getPropertyNames().size() );
+        assertEquals( "description", pme.getPropertyNames().get(0));
+
+        assertEquals( 1, pme.getOldValues().size() );
+        assertEquals( 1, pme.getNewValues().size() );
+
+        assertEquals( "dsDescription", pme.getOldValues().get(0));
+        assertEquals( "changed", pme.getNewValues().get(0));
         
         assertEquals( 0, l.removed.size() );
         catalog.remove( ds );
@@ -1169,6 +1195,11 @@ public class CatalogImplTest {
         assertTrue( l.modified.get(0).getPropertyNames().contains( "description"));
         assertTrue( l.modified.get(0).getOldValues().contains( "ftDescription"));
         assertTrue( l.modified.get(0).getNewValues().contains( "changed"));
+        assertEquals( 1, l.modified.size() );
+        assertEquals( ft, l.postModified.get(0).getSource() );
+        assertTrue( l.postModified.get(0).getPropertyNames().contains( "description"));
+        assertTrue( l.postModified.get(0).getOldValues().contains( "ftDescription"));
+        assertTrue( l.postModified.get(0).getNewValues().contains( "changed"));
         
         assertTrue( l.removed.isEmpty() );
         catalog.remove( ft );
@@ -1499,6 +1530,11 @@ public class CatalogImplTest {
         assertTrue( tl.modified.get(0).getPropertyNames().contains( "path") );
         assertTrue( tl.modified.get(0).getOldValues().contains( null ) );
         assertTrue( tl.modified.get(0).getNewValues().contains( "newPath") );
+        assertEquals( 1, tl.postModified.size() );
+        assertEquals( l2, tl.postModified.get(0).getSource() );
+        assertTrue( tl.postModified.get(0).getPropertyNames().contains( "path") );
+        assertTrue( tl.postModified.get(0).getOldValues().contains( null ) );
+        assertTrue( tl.postModified.get(0).getNewValues().contains( "newPath") );
         
         assertTrue( tl.removed.isEmpty() );
         catalog.remove( l2 );
@@ -1732,12 +1768,18 @@ public class CatalogImplTest {
         s2.setFilename( "changed");
         
         assertTrue( l.modified.isEmpty() );
+        assertTrue( l.postModified.isEmpty() );
         catalog.save( s2 );
         assertEquals( 1, l.modified.size() );
         assertEquals( s2, l.modified.get(0).getSource() );
         assertTrue( l.modified.get(0).getPropertyNames().contains( "filename") );
         assertTrue( l.modified.get(0).getOldValues().contains( "styleFilename") );
         assertTrue( l.modified.get(0).getNewValues().contains( "changed") );
+        assertEquals( 1, l.postModified.size() );
+        assertEquals( s2, l.postModified.get(0).getSource() );
+        assertTrue( l.postModified.get(0).getPropertyNames().contains( "filename") );
+        assertTrue( l.postModified.get(0).getOldValues().contains( "styleFilename") );
+        assertTrue( l.postModified.get(0).getNewValues().contains( "changed") );
         
         assertTrue( l.removed.isEmpty() );
         catalog.remove( s2 );
@@ -2301,9 +2343,9 @@ public class CatalogImplTest {
     }
     
     static class TestListener implements CatalogListener {
-
         public List<CatalogAddEvent> added = new CopyOnWriteArrayList<>();
         public List<CatalogModifyEvent> modified = new CopyOnWriteArrayList<>();
+        public List<CatalogPostModifyEvent> postModified = new CopyOnWriteArrayList<>();
         public List<CatalogRemoveEvent> removed = new CopyOnWriteArrayList<>();
         
         public void handleAddEvent(CatalogAddEvent event) {
@@ -2315,6 +2357,7 @@ public class CatalogImplTest {
         }
 
         public void handlePostModifyEvent(CatalogPostModifyEvent event) {
+            postModified.add( event );
         }
         
         public void handleRemoveEvent(CatalogRemoveEvent event) {

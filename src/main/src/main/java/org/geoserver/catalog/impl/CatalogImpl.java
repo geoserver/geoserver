@@ -1489,10 +1489,13 @@ public class CatalogImpl implements Catalog {
         event(event);
     }
 
-    public void firePostModified(CatalogInfo object) {
+    public void firePostModified(CatalogInfo object, List propertyNames, List oldValues,
+            List newValues) {
         CatalogPostModifyEventImpl event = new CatalogPostModifyEventImpl();
         event.setSource( object);
-        
+        event.setPropertyNames(propertyNames);
+        event.setOldValues(oldValues);
+        event.setNewValues(newValues);
         event(event);
     }
     

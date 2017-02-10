@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -37,6 +38,7 @@ import org.geoserver.web.data.store.DataAccessEditPage;
 import org.geoserver.web.data.store.DataAccessNewPage;
 import org.geoserver.web.data.store.StoreEditPanel;
 import org.geoserver.web.data.store.StoreExtensionPoints;
+import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
@@ -46,6 +48,9 @@ import org.locationtech.geogig.model.Ref;
 import com.google.common.base.Suppliers;
 
 public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
+
+    private static final String BASE = "dataStoreForm:parametersPanel";
+
     private Page page;
 
     private DataStoreInfo storeInfo;
@@ -64,17 +69,20 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
         //
     }
 
+    private <T extends Component> T getComponent(String path, Class<T> clazz) {
+        return clazz.cast(tester.getComponentFromLastRenderedPage(path));
+    }
+
     private GeoGigDataStoreEditPanel startPanelForNewStore() {
         login();
-        page = new DataAccessNewPage(new GeoGigDataStoreFactory().getDisplayName());
+        page = new DataAccessNewPage(GeoGigDataStoreFactory.DISPLAY_NAME);
         tester.startPage(page);
 
-        editForm = (Form<DataStoreInfo>) tester.getComponentFromLastRenderedPage("dataStoreForm");
+        editForm = getComponent("dataStoreForm", Form.class);
 
         editForm.getModelObject().getConnectionParameters()
                 .put(GeoGigDataStoreFactory.REPOSITORY.key, null);
-        GeoGigDataStoreEditPanel panel = (GeoGigDataStoreEditPanel) tester
-                .getComponentFromLastRenderedPage("dataStoreForm:parametersPanel");
+        GeoGigDataStoreEditPanel panel = getComponent(BASE, GeoGigDataStoreEditPanel.class);
 
         return panel;
     }
@@ -85,7 +93,7 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
         storeInfo.setDescription("dummy geogig store");
         storeInfo.setEnabled(true);
         storeInfo.setName("dummy_geogig");
-        storeInfo.setType((new GeoGigDataStoreFactory()).getDisplayName());
+        storeInfo.setType(GeoGigDataStoreFactory.DISPLAY_NAME);
         storeInfo.setWorkspace(catalog.getDefaultWorkspace());
         storeInfo.getConnectionParameters().put(GeoGigDataStoreFactory.BRANCH.key, "alpha");
         storeInfo.getConnectionParameters().put(GeoGigDataStoreFactory.REPOSITORY.key, null);
@@ -94,16 +102,21 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
         login();
         page = new DataAccessEditPage(storeId);
         tester.startPage(page);
-        editForm = (Form) tester.getComponentFromLastRenderedPage("dataStoreForm");
-        GeoGigDataStoreEditPanel panel = (GeoGigDataStoreEditPanel) tester
-                .getComponentFromLastRenderedPage("dataStoreForm:parametersPanel");
+        editForm = getComponent("dataStoreForm", Form.class);
+        GeoGigDataStoreEditPanel panel = getComponent(BASE, GeoGigDataStoreEditPanel.class);
         return panel;
+    }
+
+    private void assertCommonComponents() {
+        tester.assertComponent(BASE + ":geogig_repository", DropDownChoice.class);
+        tester.assertComponent(BASE + ":branch", BranchSelectionPanel.class);
+        tester.assertComponent(BASE + ":autoIndexing", CheckBoxParamPanel.class);
     }
 
     @Test
     public void testExtensionPoint() {
         storeInfo = getCatalog().getFactory().createDataStore();
-        storeInfo.setType(new GeoGigDataStoreFactory().getDisplayName());
+        storeInfo.setType(GeoGigDataStoreFactory.DISPLAY_NAME);
         editForm = new Form("formid");
         editForm.setModel(new Model(storeInfo));
         GeoServerApplication app = getGeoServerApplication();
@@ -116,20 +129,14 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
     @Test
     public void testStartupForNew() {
         startPanelForNewStore();
-
-        final String base = "dataStoreForm:parametersPanel:";
-        tester.assertComponent(base + "geogig_repository", DropDownChoice.class);
-        tester.assertComponent(base + "branch", BranchSelectionPanel.class);
+        assertCommonComponents();
     }
 
     @Test
     public void testStartupForEdit() {
         startPanelToEditStore();
-
-        final String base = "dataStoreForm:parametersPanel:";
-        tester.assertComponent(base + "geogig_repository", DropDownChoice.class);
-        tester.assertComponent(base + "branch", BranchSelectionPanel.class);
-        tester.assertModelValue(base + "branch:branchDropDown", "alpha");
+        assertCommonComponents();
+        tester.assertModelValue(BASE + ":branch:branchDropDown", "alpha");
     }
 
     @Test
@@ -139,15 +146,13 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
                 .put(GeoGigDataStoreFactory.REPOSITORY.key, getURI("dummy_repo_2"));
 
         final FormTester formTester = tester.newFormTester("dataStoreForm");
-        final String base = "dataStoreForm:parametersPanel:";
-        BranchSelectionPanel branchPanel = (BranchSelectionPanel) tester
-                .getComponentFromLastRenderedPage(base + "branch");
+        BranchSelectionPanel branchPanel = getComponent(BASE + ":branch", BranchSelectionPanel.class);
         RepositoryInfo repoInfo = mock(RepositoryInfo.class);
         when(repoInfo.getId()).thenReturn(UUID.randomUUID().toString());
         when(mockManager.getByRepoName("dummy_repo_2")).thenReturn(repoInfo);
         when(mockManager.listBranches(anyString())).thenThrow(new IOException("Could not connect"));
         branchPanel.setRepositoryManager(Suppliers.ofInstance(mockManager));
-        String submitLink = base + "branch:refresh";
+        String submitLink = BASE + ":branch:refresh";
         tester.executeAjaxEvent(submitLink, "click");
         FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessages().first();
         assertNotNull(feedbackMessage);
@@ -164,9 +169,7 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
                 .put(GeoGigDataStoreFactory.REPOSITORY.key, getURI("dummy_repo_3"));
 
         final FormTester formTester = tester.newFormTester("dataStoreForm");
-        final String base = "dataStoreForm:parametersPanel:";
-        BranchSelectionPanel branchPanel = (BranchSelectionPanel) tester
-                .getComponentFromLastRenderedPage(base + "branch");
+        BranchSelectionPanel branchPanel = getComponent(BASE + ":branch", BranchSelectionPanel.class);
         assertNotNull(branchPanel);
         ObjectId dummyId = hashString("dummy");
         final List<Ref> branches = Arrays.asList(new Ref("master", dummyId),
@@ -177,12 +180,11 @@ public class GeoGigDataStoreEditPanelTest extends GeoServerWicketTestSupport {
         branchPanel.setRepositoryManager(Suppliers.ofInstance(mockManager));
         when(mockManager.getByRepoName("dummy_repo_3")).thenReturn(repoInfo);
         when(mockManager.listBranches(anyString())).thenReturn(branches);
-        String dropDownPath = base + "branch:branchDropDown";
-        final DropDownChoice choice = (DropDownChoice) tester
-                .getComponentFromLastRenderedPage(dropDownPath);
+        String dropDownPath = BASE + ":branch:branchDropDown";
+        final DropDownChoice choice = getComponent(dropDownPath, DropDownChoice.class);
 
         assertTrue(choice.getChoices().isEmpty());
-        String submitLink = base + "branch:refresh";
+        String submitLink = BASE + ":branch:refresh";
         tester.executeAjaxEvent(submitLink, "click");
         FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessages().first();
         assertNull(feedbackMessage);

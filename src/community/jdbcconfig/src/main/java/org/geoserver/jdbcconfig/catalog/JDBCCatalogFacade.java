@@ -197,12 +197,18 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
         DataStoreInfo old = getDefaultDataStore(workspace);
 
-        db.setDefault(target, id);
-
-        // fire change event
+        //fire modify event before change
         if (!Utilities.equals(old, workspace)) {
             Catalog catalog = getCatalog();
             catalog.fireModified(catalog, Arrays.asList("defaultDataStore"), Arrays.asList(old),
+                    Arrays.asList(store));
+        }
+        db.setDefault(target, id);
+
+        //fire postmodify event after change
+        if (!Utilities.equals(old, workspace)) {
+            Catalog catalog = getCatalog();
+            catalog.firePostModified(catalog, Arrays.asList("defaultDataStore"), Arrays.asList(old),
                     Arrays.asList(store));
         }
     }
@@ -568,12 +574,18 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
         NamespaceInfo old = getDefaultNamespace();
 
+        if (!Utilities.equals(old, defaultNamespace)) {
+            //fire modify event before change
+            Catalog catalog = getCatalog();
+            catalog.fireModified(catalog, Arrays.asList("defaultNamespace"), Arrays.asList(old),
+                    Arrays.asList(defaultNamespace));
+        }
         db.setDefault(target, id);
 
         if (!Utilities.equals(old, defaultNamespace)) {
-            // fire change event
+            //fire postmodify event after change
             Catalog catalog = getCatalog();
-            catalog.fireModified(catalog, Arrays.asList("defaultNamespace"), Arrays.asList(old),
+            catalog.firePostModified(catalog, Arrays.asList("defaultNamespace"), Arrays.asList(old),
                     Arrays.asList(defaultNamespace));
         }
     }
@@ -671,12 +683,18 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
         WorkspaceInfo old = getDefaultWorkspace();
 
+        if (!Utilities.equals(old, workspace)) {
+            //fire modify event before change
+            Catalog catalog = getCatalog();
+            catalog.fireModified(catalog, Arrays.asList("defaultWorkspace"), Arrays.asList(old),
+                    Arrays.asList(workspace));
+        }
         db.setDefault(type, id);
 
         if (!Utilities.equals(old, workspace)) {
-            // fire change event
+            //fire postmodify event after change
             Catalog catalog = getCatalog();
-            catalog.fireModified(catalog, Arrays.asList("defaultWorkspace"), Arrays.asList(old),
+            catalog.firePostModified(catalog, Arrays.asList("defaultWorkspace"), Arrays.asList(old),
                     Arrays.asList(workspace));
         }
     }
@@ -969,22 +987,24 @@ public class JDBCCatalogFacade implements CatalogFacade {
         Assert.notNull(info);
         Assert.notNull(info.getId(), "Can't modify a CatalogInfo with no id");
 
-        beforeSaved(info);
-        commitProxy(info);
-        afterSaved(info);
-    }
-
-    protected void beforeSaved(CatalogInfo object) {
         // this object is a proxy
-        ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(object);
+        ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(info);
 
-        // get the real object
-        CatalogInfo real = (CatalogInfo) h.getProxyObject();
+
 
         // fire out what changed
         List<String> propertyNames = h.getPropertyNames();
         List<Object> newValues = h.getNewValues();
         List<Object> oldValues = h.getOldValues();
+
+        beforeSaved(info, propertyNames, oldValues, newValues);
+        commitProxy(info);
+        afterSaved(info, propertyNames, oldValues, newValues);
+    }
+
+    protected void beforeSaved(CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+        // get the real object
+        CatalogInfo real = ModificationProxy.unwrap(object);
 
         // TODO: protect this original object, perhaps with another proxy
         getCatalog().fireModified(real, propertyNames, oldValues, newValues);
@@ -998,11 +1018,11 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return real;
     }
 
-    protected void afterSaved(CatalogInfo object) {
+    protected void afterSaved(CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
         CatalogInfo real = ModificationProxy.unwrap(object);
 
         // fire the post modify event
-        getCatalog().firePostModified(real);
+        getCatalog().firePostModified(real, propertyNames, oldValues, newValues);
     }
 
     private <T extends CatalogInfo> T getByName(final String name, final Class<T> clazz) {

@@ -90,43 +90,43 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
 		if (info instanceof LayerGroupInfo) {
 			
 			final LayerGroupInfo localizedObject = CatalogUtils.localizeLayerGroup((LayerGroupInfo) info, catalog);
-			catalog.firePostModified(ModificationProxy.unwrap(localizedObject));
+			catalog.firePostModified(ModificationProxy.unwrap(localizedObject), modifyEv.getPropertyNames(), modifyEv.getOldValues(), modifyEv.getNewValues());
 
 	
 		} else if (info instanceof LayerInfo) {
 	
 			final LayerInfo localizedObject=CatalogUtils.localizeLayer((LayerInfo) info, catalog);
-			catalog.firePostModified(ModificationProxy.unwrap(localizedObject));
+			catalog.firePostModified(ModificationProxy.unwrap(localizedObject), modifyEv.getPropertyNames(), modifyEv.getOldValues(), modifyEv.getNewValues());
 			
 		} else if (info instanceof MapInfo) {
 	
 			final MapInfo localizedObject = CatalogUtils.localizeMapInfo((MapInfo) info,catalog);
-			catalog.firePostModified(ModificationProxy.unwrap(localizedObject));
+			catalog.firePostModified(ModificationProxy.unwrap(localizedObject), modifyEv.getPropertyNames(), modifyEv.getOldValues(), modifyEv.getNewValues());
 			
 		} else if (info instanceof NamespaceInfo) {
 	
 			final NamespaceInfo localizedObject=CatalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
-			catalog.firePostModified(ModificationProxy.unwrap(localizedObject));
+			catalog.firePostModified(ModificationProxy.unwrap(localizedObject), modifyEv.getPropertyNames(), modifyEv.getOldValues(), modifyEv.getNewValues());
 			
 		} else if (info instanceof StoreInfo) {
 	
 			final StoreInfo localizedObject=CatalogUtils.localizeStore((StoreInfo)info,catalog);
-			catalog.firePostModified(ModificationProxy.unwrap(localizedObject));
+			catalog.firePostModified(ModificationProxy.unwrap(localizedObject), modifyEv.getPropertyNames(), modifyEv.getOldValues(), modifyEv.getNewValues());
 	
 		} else if (info instanceof ResourceInfo) {
 			
 			final ResourceInfo localizedObject=CatalogUtils.localizeResource((ResourceInfo)info,catalog);
-			catalog.firePostModified(ModificationProxy.unwrap(localizedObject));
+			catalog.firePostModified(ModificationProxy.unwrap(localizedObject), modifyEv.getPropertyNames(), modifyEv.getOldValues(), modifyEv.getNewValues());
 	
 		} else if (info instanceof StyleInfo) {
 	
 			final StyleInfo localizedObject = CatalogUtils.localizeStyle((StyleInfo) info, catalog);
-			catalog.firePostModified(ModificationProxy.unwrap(localizedObject));
+			catalog.firePostModified(ModificationProxy.unwrap(localizedObject), modifyEv.getPropertyNames(), modifyEv.getOldValues(), modifyEv.getNewValues());
 	
 		} else if (info instanceof WorkspaceInfo) {
 			
 			final WorkspaceInfo localizedObject= CatalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
-			catalog.firePostModified(ModificationProxy.unwrap(localizedObject));
+			catalog.firePostModified(ModificationProxy.unwrap(localizedObject), modifyEv.getPropertyNames(), modifyEv.getOldValues(), modifyEv.getNewValues());
 	
 		} else if (info instanceof CatalogInfo) {
 

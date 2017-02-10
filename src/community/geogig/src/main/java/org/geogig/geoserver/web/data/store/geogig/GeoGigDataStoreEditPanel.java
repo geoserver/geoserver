@@ -4,6 +4,7 @@
  */
 package org.geogig.geoserver.web.data.store.geogig;
 
+import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.AUTO_INDEXING;
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.BRANCH;
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.REPOSITORY;
 
@@ -36,6 +37,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.web.data.store.DataAccessEditPage;
 import org.geoserver.web.data.store.DataAccessNewPage;
 import org.geoserver.web.data.store.StoreEditPanel;
+import org.geoserver.web.data.store.panel.CheckBoxParamPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
 import org.locationtech.geogig.repository.RepositoryResolver;
@@ -60,6 +62,7 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
 
     private final String originalRepo, originalBranch;
 
+    private final IModel<Boolean> autoIndexingModel;
     /**
      * @param componentId the wicket component id
      * @param storeEditForm the data store edit form, as provided by {@link DataAccessEditPage} and
@@ -77,6 +80,7 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
 
         this.repositoryUriModel = new MapModel(paramsModel, REPOSITORY.key);
         this.branchNameModel = new MapModel(paramsModel, BRANCH.key);
+        this.autoIndexingModel = new MapModel(paramsModel, AUTO_INDEXING.key);
 
         this.originalRepo = repositoryUriModel.getObject();
         this.originalBranch = branchNameModel.getObject();
@@ -86,8 +90,15 @@ public class GeoGigDataStoreEditPanel extends StoreEditPanel {
         add(addNewLink(storeEditForm));
 
         add(branch = createBranchNameComponent(storeEditForm));
-
+        add(createAutoIndexingPanel());
         add(modalWindow = new ModalWindow("modalWindow"));
+    }
+
+    private CheckBoxParamPanel createAutoIndexingPanel() {
+        CheckBoxParamPanel checkBoxParamPanel = new CheckBoxParamPanel("autoIndexing", autoIndexingModel,
+                new ResourceModel("autoIndexing", "Auto-Indexing"));
+        checkBoxParamPanel.setOutputMarkupId(true);
+        return checkBoxParamPanel;
     }
 
     private DropDownChoice<String> createRepositoryPanel() {

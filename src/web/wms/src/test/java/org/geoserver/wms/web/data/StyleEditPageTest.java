@@ -583,4 +583,11 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         assertEquals(2, si.getStyle().featureTypeStyles().size());
     }
     
+    @Test
+    public void applyThenSubmit() throws Exception {
+        tester.executeAjaxEvent("apply", "click");
+        tester.executeAjaxEvent("submit", "click");
+        tester.assertNoErrorMessage();
+    }
+    
 }

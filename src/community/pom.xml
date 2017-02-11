@@ -518,5 +518,11 @@
         <module>ows-simulate</module>
       </modules>
     </profile>
+    <profile>
+      <id>opensearch-eo</id>
+      <modules>
+        <module>opensearch-eo</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

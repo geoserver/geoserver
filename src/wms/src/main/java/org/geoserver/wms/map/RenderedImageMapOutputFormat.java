@@ -93,6 +93,7 @@ import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
+import org.jaitools.imageutils.ROIGeometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
@@ -1277,28 +1278,38 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         
         //
         // If we need to add a collar use mosaic or if we need to blend/apply a bkg color
-        if(!(imageBounds.contains(mapRasterArea) || imageBounds.equals(mapRasterArea))||transparencyType!=Transparency.OPAQUE) {
-            Rectangle roi = imageBounds.intersection(mapRasterArea);
-            ROI[] rois = new ROI[] { new ROIShape(!roi.isEmpty() ? roi : mapRasterArea) };
+        ImageWorker iw = new ImageWorker(image);
+        Object roiCandidate = image.getProperty("roi");
+        if (!(imageBounds.contains(mapRasterArea) || imageBounds.equals(mapRasterArea)) 
+                || transparencyType != Transparency.OPAQUE
+                || iw.getNoData() != null || roiCandidate instanceof ROI) {
+            ROI roi;
+            if (roiCandidate instanceof ROI) {
+                ROI imageROI = (ROI) roiCandidate;
+                roi = imageROI.intersect(new ROIShape(mapRasterArea));
+            } else {
+                Rectangle intersection = imageBounds.intersection(mapRasterArea);
+                roi = new ROIShape(!intersection.isEmpty() ? intersection : mapRasterArea);
+            }
+            ROI[] rois = new ROI[] {roi};
 
             // build the transparency thresholds
             double[][] thresholds = new double[][] { { ColorUtilities.getThreshold(image
                     .getSampleModel().getDataType()) } };
             // apply the mosaic
-            ImageWorker w = new ImageWorker(image);
-            w.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
-            w.setBackground(bgValues);
-            w.mosaic(new RenderedImage[] { image }, 
+            
+            iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
+            iw.setBackground(bgValues);
+            iw.mosaic(new RenderedImage[] { image }, 
                     alphaChannels != null && transparencyType==Transparency.TRANSLUCENT ? MosaicDescriptor.MOSAIC_TYPE_BLEND: MosaicDescriptor.MOSAIC_TYPE_OVERLAY, 
                     alphaChannels, 
                     rois, 
                     thresholds, 
                     null);
-            image = w.getRenderedImage();
+            image = iw.getRenderedImage();
         } else {
             // Check if we need to crop a subset of the produced image, else return it right away
             if (imageBounds.contains(mapRasterArea) && !imageBounds.equals(mapRasterArea)) { // the produced image does not need a final mosaicking operation but a crop!
-                ImageWorker iw = new ImageWorker(image);
                 iw.setBackground(bgValues);
                 iw.crop(0, 0, mapWidth, mapHeight);
                 image = iw.getRenderedImage();

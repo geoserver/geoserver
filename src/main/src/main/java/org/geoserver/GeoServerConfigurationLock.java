@@ -29,15 +29,17 @@ import org.geotools.util.logging.Logging;
 public class GeoServerConfigurationLock {
     
     /** DEFAULT_TRY_LOCK_TIMEOUT_MS */
-    private static final long DEFAULT_TRY_LOCK_TIMEOUT_MS =
+    public static long DEFAULT_TRY_LOCK_TIMEOUT_MS =
             (GeoServerExtensions.getProperty("CONFIGURATION_TRYLOCK_TIMEOUT") != null ? 
-                Long.valueOf(GeoServerExtensions.getProperty("CONFIGURATION_TRYLOCK_TIMEOUT")) : 5000);
+                Long.valueOf(GeoServerExtensions.getProperty("CONFIGURATION_TRYLOCK_TIMEOUT")) : 30000);
 
     private static final Level LEVEL = Level.FINE;
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerConfigurationLock.class);
 
     private static final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
+    
+    private static final ThreadLocal<LockType> currentLock = new ThreadLocal<>();
 
     public static enum LockType {
         READ, WRITE
@@ -70,6 +72,7 @@ public class GeoServerConfigurationLock {
         Lock lock = getLock(type);
         
         lock.lock();
+        currentLock.set(type);
         
         if (LOGGER.isLoggable(LEVEL)) {
             LOGGER.log(LEVEL, "Thread " + Thread.currentThread().getId() + " got the lock in mode "
@@ -114,6 +117,10 @@ public class GeoServerConfigurationLock {
         } catch (InterruptedException e) {
             LOGGER.log(Level.WARNING, "Thread " + Thread.currentThread().getId() + " thrown an InterruptedException on GeoServerConfigurationLock TryLock.", e);
             res = false;
+        } finally {
+            if(res) {
+                currentLock.set(type);
+            }
         }
         
         if (LOGGER.isLoggable(LEVEL)) {
@@ -128,6 +135,32 @@ public class GeoServerConfigurationLock {
         
         return res;
     }
+    
+    /**
+     * Tries to upgrade the current read lock to a write lock. If the current lock is not a read
+     * one, it will throw an {@link IllegalStateException}
+     * @return True if the lock upgrade succeeded, false in case it failed. In case of failure the
+     *         previously owned read lock is also lost.
+     */
+    public void tryUpgradeLock() {
+        LockType lock = currentLock.get();
+        if(lock == null) {
+            throw new IllegalStateException("No lock currently held");
+        } else if(lock == LockType.WRITE) {
+            throw new IllegalStateException("Already owning a write lock");
+        } else {
+            // core java does not have a notion of lock upgrade, one has to release the
+            // read lock and get a write one
+            unlock();
+            if(tryLock(LockType.WRITE)) {
+                currentLock.set(LockType.WRITE);
+            } else {
+                currentLock.set(null);
+                throw new RuntimeException("Failed to upgrade lock from read to write "
+                        + "state, please re-try the configuration operation"); 
+            }
+        }
+    }
 
     /**
      * Unlocks a previously acquired lock. The lock type must match the previous
@@ -135,18 +168,26 @@ public class GeoServerConfigurationLock {
      * 
      * @param type
      */
-    public void unlock(LockType type) {
+    public void unlock() {
         if (!enabled) {
             return;
         }
 
-        Lock lock  = getLock(type);
-        
-        if (LOGGER.isLoggable(LEVEL)) {
-            LOGGER.log(LEVEL, "Thread " + Thread.currentThread().getId()
-                    + " releasing the lock in mode " + type);
+        final LockType type = getCurrentLock();
+        if(type == null) {
+            return;
         }
-        lock.unlock();
+        try {
+            Lock lock  = getLock(type);
+            
+            if (LOGGER.isLoggable(LEVEL)) {
+                LOGGER.log(LEVEL, "Thread " + Thread.currentThread().getId()
+                        + " releasing the lock in mode " + type);
+            }
+            lock.unlock();
+        } finally {
+            currentLock.set(null);
+        }
     }
 
     public boolean isEnabled() {
@@ -173,6 +214,14 @@ public class GeoServerConfigurationLock {
                     + type);
         }
         return lock;
+    }
+    
+    /**
+     * Returns the lock type owned by the current thread (could be {@code null} for no lock)
+     * @return
+     */
+    public LockType getCurrentLock() {
+        return currentLock.get();
     }
 
 }

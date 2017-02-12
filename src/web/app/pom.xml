@@ -19,6 +19,10 @@
   <name>GeoServer Web Application</name>
   <dependencies>
     <dependency>
+        <groupId>org.marlin</groupId>
+        <artifactId>marlin</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>

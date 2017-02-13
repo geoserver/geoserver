@@ -120,6 +120,10 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(projectionPolicy);
 
         refForm.add(new ReprojectionIsPossibleValidator(nativeCRS, declaredCRS, projectionPolicy));
+        
+        
+        TextField<Integer> sortIndex = new TextField<Integer>("sortIndex");
+        refForm.add(sortIndex);
     }
 
     AjaxSubmitLink computeNativeBoundsLink(final Form refForm, final EnvelopePanel nativeBBox) {

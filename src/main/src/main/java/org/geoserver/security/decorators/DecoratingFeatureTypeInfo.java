@@ -320,6 +320,16 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     public void setCqlFilter(String cqlFilter) {
         delegate.setCqlFilter(cqlFilter);
     }
+    
+    @Override
+    public Integer getSortIndex() {
+		return delegate.getSortIndex();
+	}
+
+    @Override
+	public void setSortIndex(Integer sortIndex) {
+		delegate.setSortIndex(sortIndex);
+	}
 
     @Override
     public boolean getEncodeMeasures() {

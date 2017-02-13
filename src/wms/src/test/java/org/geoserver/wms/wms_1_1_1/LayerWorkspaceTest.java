@@ -47,10 +47,12 @@ public class LayerWorkspaceTest extends WMSTestSupport {
         Document doc = getAsDOM("/wms?service=WMS&request=getCapabilities&version=1.1.1", true);
         List<String> originalList = layerNameList(doc);
         assertFalse(originalList.isEmpty());
-        List<String> names =
-                originalList.stream().map(x -> removeLayerPrefix(x)).collect(Collectors.toList());
-        List<String> orderedNames = names.stream().sorted().collect(Collectors.toList());
-        assertTrue(orderedNames.equals(names));
+        int prevIndex = 0;
+        for (String layerName : originalList) {
+            Integer currentIndex = catalog.getLayerByName(layerName).getSortIndex();
+            assertTrue(currentIndex>=prevIndex);
+            prevIndex = currentIndex;
+        }
     }
 
     /** Test layer names order from GetCapabilities on workspace */
@@ -60,9 +62,12 @@ public class LayerWorkspaceTest extends WMSTestSupport {
                 getAsDOM("/cite/wms?service=WMS&request=getCapabilities&version=1.1.1", true);
         List<String> originalList = layerNameList(doc);
         assertFalse(originalList.isEmpty());
-        assertTrue(originalList.stream().noneMatch(x -> x.indexOf(":") > -1));
-        List<String> orderedNames = originalList.stream().sorted().collect(Collectors.toList());
-        assertTrue(orderedNames.equals(originalList));
+        int prevIndex = 0;
+        for (String layerName : originalList) {            
+            Integer currentIndex = catalog.getLayerByName(layerName).getSortIndex();
+            assertTrue(currentIndex>=prevIndex);
+            prevIndex = currentIndex;
+        }
     }
 
     /**

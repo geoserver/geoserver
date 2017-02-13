@@ -249,6 +249,9 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
 
             add(new MetadataLinkEditor("metadataLinks", myModel));
 
+            TextField<Integer> sortIndex = new TextField<Integer>("sortIndex");
+            add(sortIndex);
+
             // add keywords editor
             add(
                     new KeywordsEditor(

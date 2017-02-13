@@ -20,8 +20,8 @@ import org.geoserver.catalog.StyleInfo;
 import org.geotools.util.decorate.AbstractDecorator;
 
 /**
- * Delegates every method to the wrapped {@link LayerInfo}. Subclasses will override selected
- * methods to perform their "decoration" job
+ * Delegates every method to the wrapped {@link LayerInfo}. Subclasses will
+ * override selected methods to perform their "decoration" job
  *
  * @author Andrea Aime
  */
@@ -121,11 +121,7 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName())
-                .append('[')
-                .append(delegate)
-                .append(']')
-                .toString();
+        return new StringBuilder(getClass().getSimpleName()).append('[').append(delegate).append(']').toString();
     }
 
     public void setQueryable(boolean _queryableEnabled) {
@@ -193,4 +189,15 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     public void setDefaultWMSInterpolationMethod(WMSInterpolation interpolationMethod) {
         delegate.setDefaultWMSInterpolationMethod(interpolationMethod);
     }
+
+    @Override
+    public Integer getSortIndex() {
+        return delegate.getSortIndex();
+    }
+
+    @Override
+    public void setSortIndex(Integer sortIndex) {
+        delegate.setSortIndex(sortIndex);
+    }
+
 }

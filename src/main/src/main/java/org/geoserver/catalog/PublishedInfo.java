@@ -26,7 +26,8 @@ public interface PublishedInfo extends CatalogInfo {
     /**
      * The derived prefixed name.
      *
-     * <p>If a workspace is set this method returns:
+     * <p>
+     * If a workspace is set this method returns:
      *
      * <pre>
      *   getWorkspace().getName() + ":" + getName();
@@ -34,7 +35,9 @@ public interface PublishedInfo extends CatalogInfo {
      *
      * Otherwise it simply returns:
      *
-     * <pre>getName()</pre>
+     * <pre>
+     * getName()
+     * </pre>
      */
     String prefixedName();
 
@@ -73,8 +76,23 @@ public interface PublishedInfo extends CatalogInfo {
     /**
      * Sets the attribution information for this layer.
      *
-     * @param attribution an AttributionInfo instance with the new attribution information.
+     * @param attribution an AttributionInfo instance with the new attribution
+     *                    information.
      * @see AttributionInfo
      */
     void setAttribution(AttributionInfo attribution);
+
+    /**
+     * The index used to order the results
+     * 
+     * @return the index
+     */
+    public Integer getSortIndex();
+
+    /**
+     * Set the position index for sort
+     * @param sortIndex
+     */
+    public void setSortIndex(Integer sortIndex);
+
 }

@@ -820,7 +820,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             Filter filter = Predicates.acceptAll();
             addNameSpaceFilterIfNeed(filter, "workspace.name");
             // order by name ASC
-            SortBy order = asc("name");
+            SortBy order = asc("sortIndex");
             // get list from iterator
             try (CloseableIterator<LayerGroupInfo> iter =
                     catalog.list(LayerGroupInfo.class, filter, null, null, order)) {
@@ -839,7 +839,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             // namespace filter
             addNameSpaceFilterIfNeed(filter, "resource.namespace.prefix");
             // order by name ASC
-            SortBy order = asc("name");
+            SortBy order = asc("sortIndex");
             // get list:
             try (CloseableIterator<LayerInfo> iter =
                     catalog.list(LayerInfo.class, filter, null, null, order)) {
@@ -949,7 +949,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     data,
                     new Comparator<LayerInfo>() {
                         public int compare(LayerInfo o1, LayerInfo o2) {
-                            return o1.getName().compareTo(o2.getName());
+                            return o1.getSortIndex().compareTo(o2.getSortIndex());
                         }
                     });
 

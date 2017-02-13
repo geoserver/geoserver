@@ -79,6 +79,10 @@ public class DecoratingWMTSLayerInfo extends AbstractDecorator<WMTSLayerInfo>
         return delegate.getId();
     }
 
+    public Integer getSortIndex() {
+        return delegate.getSortIndex();
+    }
+
     @Override
     public List<KeywordInfo> getKeywords() {
         return delegate.getKeywords();
@@ -168,6 +172,8 @@ public class DecoratingWMTSLayerInfo extends AbstractDecorator<WMTSLayerInfo>
     public void setCatalog(Catalog catalog) {
         delegate.setCatalog(catalog);
     }
+
+    public void setSortIndex(Integer sortIndex) { delegate.setSortIndex(sortIndex); }
 
     public void setDescription(String description) {
         delegate.setDescription(description);

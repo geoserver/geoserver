@@ -186,4 +186,17 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     public String getPrefixedName() {
         return delegate.getPrefixedName();
     }
+    
+    @Override
+    public Integer getSortIndex() {
+        return delegate.getSortIndex();
+    }
+
+    @Override
+    public void setSortIndex(Integer sortIndex) {
+        delegate.setSortIndex(sortIndex);
+    }
+    
+
+
 }

@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
@@ -87,6 +88,8 @@ public class LayerInfoImpl implements LayerInfo {
      * @since 2.1.3
      */
     protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(1);
+    
+    protected Integer sortIndex = FeatureTypeInfo.DEFAULT_INDEX_FOR_NOT_SORTED;
 
     @Override
     public String getId() {
@@ -418,4 +421,16 @@ public class LayerInfoImpl implements LayerInfo {
     public String getPrefixedName() {
         return prefixedName();
     }
+
+    @Override
+    public Integer getSortIndex() {
+        return this.resource.getSortIndex();
+    }
+
+    @Override
+    public void setSortIndex(Integer sortIndex) {
+        this.resource.setSortIndex(sortIndex);;
+    }
+    
+    
 }

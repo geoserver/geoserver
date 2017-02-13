@@ -45,6 +45,12 @@ public interface ResourceInfo extends CatalogInfo {
      */
     public static final String CACHING_ENABLED = "cachingEnabled";
     
+    
+    /**
+     * Default value in sorting
+     */
+    static final Integer DEFAULT_INDEX_FOR_NOT_SORTED = 99999;
+    
 
     /**
      * The catalog the resource is part of.
@@ -427,4 +433,12 @@ public interface ResourceInfo extends CatalogInfo {
      * @param advertised
      */
     void setAdvertised(boolean advertised);
+    
+    /**
+     * The index used to order the results
+     * @return the index
+     */
+    public Integer getSortIndex();
+
+    public void setSortIndex(Integer sortIndex);
 }

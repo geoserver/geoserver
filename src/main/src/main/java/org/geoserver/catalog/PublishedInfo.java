@@ -99,5 +99,13 @@ public interface PublishedInfo extends CatalogInfo {
      * @see AttributionInfo
      */
     void setAttribution(AttributionInfo attribution);
+    
+    /**
+     * The index used to order the results
+     * @return the index
+     */
+    public Integer getSortIndex();
+
+    public void setSortIndex(Integer sortIndex);
 
 }

@@ -12,6 +12,7 @@ import java.io.IOException;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
@@ -84,6 +85,19 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         assertEquals(4.5, re.getMinY(), 0.1);
         assertEquals(-93, re.getMaxX(), 0.1);
         assertEquals(4.5, re.getMaxY(), 0.1);
+    }
+    
+    
+    @Test
+    public void testSortIndex() throws Exception {
+        LayerInfo layer = getGeoServerApplication().getCatalog().getLayerByName(getLayerId(MockData.BASIC_POLYGONS));
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("sortIndex", "33");
+        ft.submit("submit");
+        tester.assertNoErrorMessage();
+        assertEquals(layer.getSortIndex(), "33");
     }
     
 }

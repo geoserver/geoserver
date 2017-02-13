@@ -1,6 +1,19 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <body>
   <wicket:extend>
+  	<fieldset>
+        <legend><span><wicket:message key="rootLayerInfo">Root Layer Info</wicket:message></span></legend>
+        <ul>
+          <li>
+          	<label for="rootLayerTitle"><wicket:message key="rootLayerTitle">Title</wicket:message></label>
+            <input type="text" wicket:id="rootLayerTitle" class="field text" />
+          </li> 
+          <li>
+          	<label for="rootLayerAbstract"><wicket:message key="rootLayerAbstract">Abstract</wicket:message></label>
+            <textarea class="field textarea" rows="10" cols="30" wicket:id="rootLayerAbstract"></textarea>
+          </li>          
+        </ul>
+      </fieldset>
     <li>
       <div wicket:id="authoritiesAndIds"></div>
     </li>

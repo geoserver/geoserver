@@ -58,7 +58,11 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     int maxRenderingErrors;
 
-    private String capabilitiesErrorHandling;
+    private String capabilitiesErrorHandling;    
+    
+    private String rootLayerTitle;
+    
+    private String rootLayerAbstract;
 
     public WMSInfoImpl() {
         authorityURLs = new ArrayList<AuthorityURLInfo>(2);
@@ -184,4 +188,21 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     public void setGetMapMimeTypeCheckingEnabled(boolean getMapMimeTypeCheckingEnabled) {
         this.getMapMimeTypeCheckingEnabled = getMapMimeTypeCheckingEnabled;
     }
+
+	public String getRootLayerTitle() {
+		return rootLayerTitle;
+	}
+
+	public void setRootLayerTitle(String rootLayerTitle) {
+		this.rootLayerTitle = rootLayerTitle;
+	}
+
+	public String getRootLayerAbstract() {
+		return rootLayerAbstract;
+	}
+
+	public void setRootLayerAbstract(String rootLayerAbstract) {
+		this.rootLayerAbstract = rootLayerAbstract;
+	}
+    
 }

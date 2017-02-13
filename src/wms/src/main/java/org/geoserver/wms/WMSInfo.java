@@ -146,4 +146,31 @@ public interface WMSInfo extends ServiceInfo {
      * @return the list of identifiers for the WMS root layer
      */
     List<LayerIdentifierInfo> getIdentifiers();
+    
+    /**
+     * 
+     * @return the title of the root layer
+     */
+    String getRootLayerTitle();
+
+    /**
+     * Sets the title of the root layer
+     * @param rootLayerTitle
+     */
+    void setRootLayerTitle(String rootLayerTitle);
+    
+    /**
+     * 
+     * @return the abstract of the root layer
+     */
+	public String getRootLayerAbstract();
+
+	/**
+	 * Sets the abstract of the root layer
+     * @param rootLayerAbstract
+	 */
+	public void setRootLayerAbstract(String rootLayerAbstract);
+    
+    
+    
 }

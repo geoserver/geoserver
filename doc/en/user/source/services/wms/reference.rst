@@ -372,7 +372,7 @@ The standard parameters for the GetFeatureInfo operation are:
 
 **Note:**  If you are sending a GetFeatureInfo request against a layergroup, all the layers in that layergroup must be set as "Queryable" to get a result (See :ref:`WMS Settings on Layers page<data_webadmin_layers>`)
        
-Geoserver supports a number of output formats for the ``GetFeatureInfo`` response.
+GeoServer supports a number of output formats for the ``GetFeatureInfo`` response.
 Server-styled HTML is the most commonly-used format. 
 For maximum control and customisation the client should use GML3 and style the raw data itself.
 The supported formats are:
@@ -555,7 +555,7 @@ The standard parameters for the DescribeLayer operation are:
      - Format in which to report exceptions.
        The default value is ``application/vnd.ogc.se_xml``.
 
-Geoserver supports a number of output formats for the ``DescribeLayer`` response.
+GeoServer supports a number of output formats for the ``DescribeLayer`` response.
 Server-styled HTML is the most commonly-used format. 
 The supported formats are:
 

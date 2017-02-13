@@ -37,7 +37,7 @@ The *header template* is invoked just once, and usually contains the start of th
 	-->
 	<html>
 	  <head>
-	    <title>Geoserver GetFeatureInfo output</title>
+	    <title>GeoServer GetFeatureInfo output</title>
 	  </head>
 	  <style type="text/css">
 		table.featureInfo, table.featureInfo td, table.featureInfo th {

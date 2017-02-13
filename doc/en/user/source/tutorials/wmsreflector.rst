@@ -103,7 +103,7 @@ Say you have a webpage and you wish to include a picture that is 400 pixels wide
 
   <img src="http://localhost:8080/geoserver/wms/reflect?layers=topp:states&width=400" />
 
-If you want the page to render in the browser before Geoserver is done, you should specify the height and width of the picture. You could just pick any approximate value, but it may be a good idea to look at the generated image first and then use those values. In the case of the layer above, the height becomes 169 pixels, so we can specify that as an attribute in the <img> tag:
+If you want the page to render in the browser before GeoServer is done, you should specify the height and width of the picture. You could just pick any approximate value, but it may be a good idea to look at the generated image first and then use those values. In the case of the layer above, the height becomes 169 pixels, so we can specify that as an attribute in the <img> tag:
 
 .. code-block:: html
 

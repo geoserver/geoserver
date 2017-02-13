@@ -1,9 +1,9 @@
 .. _data_imagemosaic_tutorial:
 
-Using the imagemosaic extension
+Using the ImageMosaic extension
 ===============================
 
-This tutorial will show you how to configure and publish an imagemosaic store and coverage, followed by some configuration examples.
+This tutorial will show you how to configure and publish an ImageMosaic store and coverage, followed by some configuration examples.
 
 Configuring a coverage in GeoServer
 -----------------------------------
@@ -19,7 +19,7 @@ Create a new store
 
    .. figure:: images/imagemosaiccreate.png
 
-      Imagemosaic in the list of raster data stores
+      ImageMosaic in the list of raster data stores
 
 #. In order to create a new mosaic it is necessary to choose a workspace and store name in the :guilabel:`Basic Store Info` section, as well as a URL in the :guilabel:`Connection Parameters` section. Valid URLs include:
 
@@ -27,13 +27,13 @@ Create a new store
 
      * The absolute path to the configuration file (`*.properties``) or a directory containing the configuration file. If ``datastore.properties`` and ``indexer.properties`` exist, they should be in the same directory as this configuration file.
 
-     * The absolute path of a directory where the files you want to mosaic to reside. In this case GeoServer automatically creates the needed mosaic files (.dbf, .prj, .properties, .shp and .shx) by inspecting the data that is present in the given directory (GeoServer will also find the data in any subdirectories).
+     * The absolute path of a directory where the files you want to mosaic reside. In this case GeoServer automatically creates the needed mosaic files (.dbf, .prj, .properties, .shp and .shx) by inspecting the data present in the given directory and any subdirectories.
 
 #. Click :guilabel:`Save`:
 
    .. figure:: images/imagemosaicconfigure.png
 
-      Configuring an imagemosaic data store
+      Configuring an ImageMosaic data store
 
 Create a new coverage
 ~~~~~~~~~~~~~~~~~~~~~
@@ -58,19 +58,19 @@ Create a new coverage
 
 #. Use the :guilabel:`Layer Preview` to view the mosaic.
 
-.. warning:: If the created layer appears to be all black, it may be that GeoServer has not found any acceptable granules in the provided index. It is also possible that the shapefile index is empty (no granules were found in in the provided directory) or it might be that the granules' paths in the shapefile index are not correct, which could happen if an existing index (using absolute paths) is moved to another place. If the shapefile index paths are not correct, then the DBF file can be opened and fixed with an editor. Alternately, you can delete the index and let GeoServer recreate it from the root directory.
+.. warning:: If the created layer appears to be all black, it may be that GeoServer has not found any acceptable granules in the provided index. It is also possible that the shapefile index is empty (no granules were found in the provided directory) or it might be that the granules' paths in the shapefile index are not correct, which could happen if an existing index (using absolute paths) is moved to another place. If the shapefile index paths are not correct, then the DBF file can be opened and fixed with an editor. Alternately, you can delete the index and let GeoServer recreate it from the root directory.
 
 
 Configuration examples
 ----------------------
 
-Below are a few examples of mosaic configurations to demonstrate how we can make use of the imagemosaic parameters.
+Below are a few examples of mosaic configurations to demonstrate how we can make use of the ImageMosaic parameters.
 
 
 DEM/Bathymetry
 ~~~~~~~~~~~~~~
 
-Such a mosaic can be use to serve large amount of data which represents altitude or depth and therefore does not specify colors directly while it rather needs an SLD to generate pictures. In our case we have a DEM dataset which consists of a set of raw GeoTIFF files.
+Such a mosaic can be used to serve large amounts of data representing altitude or depth and therefore does not specify colors directly (it needs an SLD to generate pictures). In our case, we have a DEM dataset which consists of a set of raw GeoTIFF files.
 
 The first operation is to create the CoverageStore specifying, for example, the path of the shapefile in the :guilabel:`URL` field.
 
@@ -121,9 +121,9 @@ The result is the following:
 
    Basic configuration
 
-By setting the other configuration parameters appropriately, it is possible to improve at the same time both the appearance of the mosaic as well as the its performances. As an instance we could:
+By setting the other configuration parameters appropriately, it is possible to improve both the appearance of the mosaic as well as its performance. For instance, we could:
 
-* Make the "nodata" areas transparent and coherent with the real data. To achieve this we need to change the opacity of the "nodata" ColorMapEntry in the ``dem`` style to ``0.0`` and set ``BackgroundValues`` parameter to ``-9999`` so that empty areas will be filled with this value. The result is as follows:
+* Make the "nodata" areas transparent and coherent with the real data. To achieve this we need to change the opacity of the "nodata" ColorMapEntry in the ``dem`` style to ``0.0`` and set the ``BackgroundValues`` parameter to ``-9999`` so that empty areas will be filled with this value. The result is as follows:
 
   .. figure:: images/vito_2.png
 
@@ -132,7 +132,7 @@ By setting the other configuration parameters appropriately, it is possible to i
 * Allow multithreaded granules loading. By setting the ``AllowMultiThreading`` parameter to ``true``, GeoServer will load the granules in parallel using multiple threads with a increase in performance on some architectures.
 
 
-The configuration parameters are the followings:
+The configuration parameters are as follows:
 
 .. list-table::
    :widths: 25 75
@@ -190,7 +190,7 @@ In this example we are going to create a mosaic that will serve aerial imagery, 
 The result is the following:
 
 .. figure:: images/prato_1.png
-   
+
    Basic configuration
 
 .. note:: Those ugly black areas are the result of applying the default mosaic parameters to a mosaic that does not entirely cover its bounding box. The areas within the BBOX that are not covered with data will default to a value of 0 on each band. Since this mosaic is RGB we can simply set the ``OutputTransparentColor`` to ``0,0,0`` in order to get transparent fills for the BBOX.
@@ -239,8 +239,8 @@ The result is the following.
 
    Basic configuration
 
-This mosaic, formed by two single granules, shows a typical case where the "nodata" collar areas of the granules overlap, as hown in the picture above.
-In this case we can use the ``InputTransparentColor`` parameter to make the collar areas disappear during the superimposition process, as instance, in this case, by using an ``InputTransparentColor`` of ``#FFFFFF``  
+This mosaic, formed by two single granules, shows a typical case where the "nodata" collar areas of the granules overlap, as shown in the picture above.
+In this case we can use the ``InputTransparentColor`` parameter to make the collar areas disappear during the superimposition process — in this case, by using an ``InputTransparentColor`` of ``#FFFFFF``.
 
 
 The final configuration parameters are the following:
@@ -290,11 +290,11 @@ To add new granules, the index that was created when the mosaic was originally c
 * Manually through the file system
 * Through the :ref:`rest` interface
 
-To update an imagemosaic through the file system:
+To update an ImageMosaic through the file system:
 
-#. Update the contents of the mosaic by copying the new files into place. (Sub-directories are acceptable.)
+#. Update the contents of the mosaic by copying the new files into place. (Subdirectories are acceptable.)
 
-#. Delete the index files. These files are contained in the top level directory containing the mosaic files. These files consist of (but are not limited to) the following:
+#. Delete the index files. These files are contained in the top level directory containing the mosaic files and include (but are not limited to) the following:
 
    * :file:`<mosaic_name>.dbf`
    * :file:`<mosaic_name>.fix`
@@ -318,13 +318,13 @@ Multi-resolution imagery with reprojection
 
 As a general rule, we want to have the highest resolution granules shown "on top", with the lower-resolution granules filling in the gaps as necessary.
 
-In this example, we will serve up overlapping granules that have varying resolutions. In addition, we will mix resolutions, such that the higher resolution granule is reprojected to match the resolution of the 
+In this example, we will serve up overlapping granules that have varying resolutions. In addition, we will mix resolutions, such that the higher resolution granule is reprojected to match the resolution of the lower resolution granules.
 
 #. In the Coverage Editor, use the basic ``raster`` style.
 
 #. Create the mosaic in GeoServer.
 
-#. One important configuration setting is the :guilabel:`SORTING` parameter of the layer. In order to see the highest resolution imagery on top (as is the typical case), it must be set to :kbd:`resolution A`. (For the case of lowest resolution on top, use :kbd:`resolution D` .)
+#. One important configuration setting is the :guilabel:`SORTING` parameter of the layer. In order to see the highest resolution imagery on top (the typical case), it must be set to :kbd:`resolution A`. (For the case of lowest resolution on top, use :kbd:`resolution D` .)
 
 #. Make any other configuration changes.
 

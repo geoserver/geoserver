@@ -669,9 +669,13 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             final Catalog catalog = wmsConfig.getCatalog();
                         
             WMSInfo serviceInfo = wmsConfig.getServiceInfo();
-            element("Title", serviceInfo.getTitle());
-            element("Abstract", serviceInfo.getAbstract());
-
+            if(StringUtils.isBlank(serviceInfo.getRootLayerTitle())) {
+            	element("Title", serviceInfo.getTitle());
+            	element("Abstract", serviceInfo.getAbstract());
+            } else {
+            	element("Title", serviceInfo.getRootLayerTitle());
+            	element("Abstract", serviceInfo.getRootLayerAbstract());
+            }
             List<String> srsList = serviceInfo.getSRS();
             Set<String> srs = new HashSet<String>();
             if (srsList != null) {

@@ -9,9 +9,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.geoserver.gwc.GWC.tileLayerName;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +21,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.gwc.ConfigurableBlobStore;
@@ -38,6 +40,7 @@ import org.geotools.util.logging.Logging;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 import org.geowebcache.storage.blobstore.memory.CacheProvider;
 import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
+import org.opengis.filter.Filter;
 
 /**
  * GeoSever initialization hook that preserves backwards compatible GWC configuration at start up.
@@ -290,37 +293,24 @@ public class GWCInitializer implements GeoServerInitializer {
         if(LOGGER.isLoggable(Level.FINEST)){
             LOGGER.finest("Adding Layers to avoid In Memory Caching");
         }
-        // Cycle on the Layers
-        for (LayerInfo layer : rawCatalog.getLayers()) {
+        List<PublishedInfo> publisheds = new ArrayList<>(rawCatalog.getLayers());
+        publisheds.addAll(rawCatalog.getLayerGroups());
+        publisheds.parallelStream().forEach(layer -> {
             try {
                 // Check if the Layer must not be cached
                 GeoServerTileLayerInfo tileLayerInfo = tileLayerCatalog.getLayerById(layer.getId());
                 if (tileLayerInfo != null && tileLayerInfo.isEnabled()
                         && !tileLayerInfo.isInMemoryCached()) {
                     // Add it to the cache
-                    cache.addUncachedLayer(tileLayerInfo.getName());
+                    synchronized(cache) {
+                        cache.addUncachedLayer(tileLayerInfo.getName());
+                    }
                 }
             } catch (RuntimeException e) {
                 LOGGER.log(Level.WARNING, "Error occurred retrieving Layer '" + layer.getName()
                         + "'", e);
             }
-        }
-
-        // Cycle on the Layergroups
-        for (LayerGroupInfo layer : rawCatalog.getLayerGroups()) {
-            try {
-                // Check if the LayerGroup must not be cached
-                GeoServerTileLayerInfo tileLayerInfo = tileLayerCatalog.getLayerById(layer.getId());
-                if (tileLayerInfo != null && tileLayerInfo.isEnabled()
-                        && !tileLayerInfo.isInMemoryCached()) {
-                    // Add it to the cache
-                    cache.addUncachedLayer(tileLayerInfo.getName());
-                }
-            } catch (RuntimeException e) {
-                LOGGER.log(Level.WARNING, "Error occurred retrieving LayerGroup '"
-                        + tileLayerName(layer) + "'", e);
-            }
-        }
+        });
     }
 
     /**

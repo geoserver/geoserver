@@ -35,10 +35,7 @@ import org.geowebcache.config.XMLConfiguration;
 import org.geowebcache.storage.blobstore.file.FilePathUtils;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 import com.thoughtworks.xstream.XStream;
 
 public class DefaultTileLayerCatalog implements TileLayerCatalog {
@@ -47,12 +44,12 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
     private static final String LAYERINFO_DIRECTORY = "gwc-layers";
 
-    private BiMap<String, String> layersById;
+    private Map<String, GeoServerTileLayerInfo> layersById;
 
     /**
      * View of layer ids by name
      */
-    private BiMap<String, String> layersByName;
+    private Map<String, String> layersByName;
 
     private final XStream serializer;
 
@@ -76,9 +73,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         this.resourceLoader = resourceLoader;
         this.baseDirectory = LAYERINFO_DIRECTORY;
 
-        BiMap<String, String> baseBiMap = HashBiMap.create();
-        this.layersById = Maps.synchronizedBiMap(baseBiMap);
-        this.layersByName = layersById.inverse();
+        this.layersByName = new ConcurrentHashMap<>();
+        this.layersById = new ConcurrentHashMap<>();
         this.initialized = false;
 
         // setup xstream security for local classes
@@ -91,13 +87,14 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     @Override
     public void reset() {
         layersById.clear();
+        layersByName.clear();
         this.initialized = false;
     }
 
     @Override
     public void initialize() {
 
-        layersById.clear();
+        reset();
 
         Resource baseDir = resourceLoader.get(baseDirectory);
 
@@ -111,7 +108,6 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         });
 
         LOGGER.info("Loading tile layers from " + baseDir.path());
-        Map<String, String> temp = new ConcurrentHashMap<>();
         tileLayerFiles.parallelStream().forEach(res -> {
             GeoServerTileLayerInfoImpl info;
             try {
@@ -122,32 +118,21 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
                 return;
             }
 
-            temp.put(info.getId(), info.getName());
+            layersByName.put(info.getName(), info.getId());
+            layersById.put(info.getId(), info);
 
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("Loaded tile layer '" + info.getName() + "'");
             }
         });
-        layersById.putAll(temp);
         this.initialized = true;
     }
 
     @Override
     public GeoServerTileLayerInfo getLayerById(final String id) {
         checkInitialized();
-        if (!layersById.containsKey(id)) {
-            return null;
-        }
-
-        try {
-            GeoServerTileLayerInfo real = loadInternal(id);
-            return real;
-        } catch (IOException e) {
-            LOGGER.finer("GeoServer tile layer does not exist or can't be loaded: " + id);
-            LOGGER.log(Level.FINEST, "Trying to load tile layer " + id, e);
-        }
-
-        return null;
+        GeoServerTileLayerInfo layer = layersById.get(id);
+        return layer == null ? null : layer.clone();
     }
 
     private synchronized void checkInitialized() {
@@ -192,6 +177,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             if (info != null) {
                 Resource file = getFile(tileLayerId);
                 layersById.remove(tileLayerId);
+                layersByName.remove(info.getName());
                 file.delete();
             }
             return info;
@@ -229,7 +215,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
             }
 
             persist(newValue);
-            layersById.put(newValue.getId(), newValue.getName());
+            layersByName.put(newValue.getName(), newValue.getId());
+            layersById.put(newValue.getId(), newValue.clone());
 
         } catch (Exception e) {
             if (e instanceof ExecutionException) {
@@ -332,7 +319,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     @Override
     public String getLayerName(String layerId) {
         checkInitialized();
-        return layersById.get(layerId);
+        return layersById.get(layerId).getName();
     }
 
 }

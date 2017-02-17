@@ -108,18 +108,21 @@ public class StyleEditPage extends AbstractStylePage {
                 style.setLegend(null);
             }
 
-            // write out the SLD
+            // save the updated StyleInfo
+            getCatalog().save(style);
+
+            // save the updated style contents to the new file location
             try {
-                getCatalog().getResourcePool().writeStyle(style, 
+                getCatalog().getResourcePool().writeStyle(style,
                         new ByteArrayInputStream(rawStyle.getBytes()));
             } catch (IOException e) {
                 throw new WicketRuntimeException(e);
             }
-            getCatalog().save(style);
+
             styleForm.info("Style saved");
-        } catch( Exception e ) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error occurred saving the style", e);
-            styleForm.error( e );
+            styleForm.error(e);
         }
     }
 }

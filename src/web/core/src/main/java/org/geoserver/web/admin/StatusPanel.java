@@ -267,7 +267,7 @@ public class StatusPanel extends Panel {
 
         String formattedUsedMemory;
         if (bytes > GB) {
-            formattedUsedMemory = formatter.format(bytes / GB) + " GB";
+            formattedUsedMemory = formatter.format((float)bytes / GB) + " GB";
         } else if (bytes > MB) {
             formattedUsedMemory = formatter.format(bytes / MB) + " MB";
         } else {

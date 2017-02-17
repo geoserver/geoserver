@@ -3,11 +3,13 @@ create extension if not exists postgis;
 create extension if not exists hstore;
 
 -- cleanup
-drop table if exists granule; 
+drop table if exists granule;
 drop table if exists collection_ogclink;
 drop table if exists product_ogclink;
 drop table if exists ogclink;
+drop table if exists product_metadata;
 drop table if exists product;
+drop table if exists collection_metadata;
 drop table if exists collection;
 
 -- the collections and the attributes describing them
@@ -16,7 +18,6 @@ create table collection (
   name varchar,
   "primary" boolean,
   "htmlDescription" text,
-  isoMetadata text,
   footprint geography(Polygon, 4326),
   "timeStart" timestamp,
   "timeEnd" timestamp,
@@ -60,14 +61,17 @@ CREATE INDEX "idx_collection_eoSecurityConstraints" ON "collection" ("eoSecurity
 CREATE INDEX "idx_collection_eoDissemination" ON "collection" ("eoDissemination");
 CREATE INDEX "idx_collection_eoAcquisitionStation" ON "collection" ("eoAcquisitionStation");
 
-
+-- the iso metadata storage (large files, not used for search, thus separate table)
+create table collection_metadata (
+  id int primary key references collection(id),
+  metadata text
+);
 
 -- the products and attributes describing them
 create table product (
   id serial primary key,
   name varchar,
   "htmlDescription" text,
-  "omEoMetadata" text,
   footprint geography(Polygon, 4326),
   "timeStart" timestamp,
   "timeEnd" timestamp,
@@ -156,6 +160,13 @@ create index "idx_product_footprint" on product using GIST(footprint);
  CREATE INDEX "idx_product_sarIncidenceAngleVariation" ON "product" ("sarIncidenceAngleVariation");
  CREATE INDEX "idx_product_eoResolution" ON "product" ("eoResolution");
 
+ -- the eo metadata storage (large files, not used for search, thus separate table)
+create table product_metadata (
+  id int primary key references collection(id),
+  metadata text
+);
+
+ 
 -- ogc links (abstract)
 create table ogclink (
   id serial primary key,
@@ -176,7 +187,7 @@ create table product_ogclink (
   product_id int references product(id)
 ) inherits(ogclink);
 
--- the granules table
+-- the granules table (might be abstract, and we can use partitioning)
 create table granule (
   id serial primary key,
   product_id int references product(id),

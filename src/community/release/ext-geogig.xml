@@ -26,6 +26,7 @@
             <include>javax.inject-*.jar</include>
             <!-- LZW compression libs -->
             <include>compress-lzf-*.jar</include>
+            <include>lz4-*.jar</include>
             <!-- Rocksdb JNI bindings. Used by default storage backend -->
             <include>rocksdbjni*.jar</include>
             <!-- Eclipse annotations -->

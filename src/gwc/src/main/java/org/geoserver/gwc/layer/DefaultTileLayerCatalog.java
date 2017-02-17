@@ -16,8 +16,10 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -109,6 +111,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         });
 
         LOGGER.info("Loading tile layers from " + baseDir.path());
+        Map<String, String> temp = new ConcurrentHashMap<>();
         tileLayerFiles.parallelStream().forEach(res -> {
             GeoServerTileLayerInfoImpl info;
             try {
@@ -119,12 +122,13 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
                 return;
             }
 
-            layersById.put(info.getId(), info.getName());
+            temp.put(info.getId(), info.getName());
 
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("Loaded tile layer '" + info.getName() + "'");
             }
         });
+        layersById.putAll(temp);
         this.initialized = true;
     }
 

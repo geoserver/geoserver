@@ -24,10 +24,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.config.AsynchResourceIterator;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.platform.resource.Resources.ExtensionFilter;
 import org.geoserver.util.Filter;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.ContextualConfigurationProvider.Context;
@@ -99,16 +101,10 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         Resource baseDir = resourceLoader.get(baseDirectory);
 
         LOGGER.info("GeoServer TileLayer store base directory is: " + baseDir.path());
-
-        final List<Resource> tileLayerFiles = Resources.list(baseDir, new Filter<Resource>() {
-            @Override
-            public boolean accept(Resource res) {
-                return res.name().endsWith(".xml");
-            }
-        });
-
         LOGGER.info("Loading tile layers from " + baseDir.path());
-        tileLayerFiles.parallelStream().forEach(res -> {
+        
+        ExtensionFilter xmlFilter = new Resources.ExtensionFilter("XML");
+        baseDir.list().parallelStream().filter(r -> xmlFilter.accept(r)).forEach(res -> {
             GeoServerTileLayerInfoImpl info;
             try {
                 info = depersist(res);
@@ -285,6 +281,15 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         }
         GeoServerTileLayerInfoImpl info;
         try(Reader reader = new InputStreamReader(new ByteArrayInputStream(res.getContents()), "UTF-8")) {
+            info = (GeoServerTileLayerInfoImpl) serializer.fromXML(reader);
+        }
+
+        return info;
+    }
+    
+    private GeoServerTileLayerInfoImpl depersist(final byte[] contents) throws IOException {
+        GeoServerTileLayerInfoImpl info;
+        try(Reader reader = new InputStreamReader(new ByteArrayInputStream(contents), "UTF-8")) {
             info = (GeoServerTileLayerInfoImpl) serializer.fromXML(reader);
         }
 

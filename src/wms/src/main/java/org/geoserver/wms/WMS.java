@@ -10,6 +10,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +43,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
@@ -1110,7 +1112,7 @@ public class WMS implements ApplicationContextAware {
             List<String> values = request.getCustomDimension(domain);
             if (values != null) {
                 readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
-                        values, domain);
+                        dimensions.convertDimensionValue(domain, values), domain);
                 customDomains.remove(domain);
             }
         }
@@ -1121,8 +1123,9 @@ public class WMS implements ApplicationContextAware {
                 final DimensionInfo customInfo = metadata.get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + name,
                         DimensionInfo.class);
                 if (customInfo != null && customInfo.isEnabled()) {
-                    final ArrayList<String> val = new ArrayList<String>(1);
-                    val.add(getDefaultCustomDimensionValue(name, coverage, String.class));
+                    Object val = dimensions.convertDimensionValue(name,
+                            getDefaultCustomDimensionValue(name, coverage, String.class));
+
                     readParameters = CoverageUtils.mergeParameter(
                         parameterDescriptors, readParameters, val, name);
                 }

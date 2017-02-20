@@ -418,10 +418,10 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                         if (dimInfo instanceof DimensionInfo && dimensions.hasDomain(axisName)) {
                             int valueCount = axis.getSingleValue().size();
                             if (valueCount > 0) {
-                                List<String> dimValues = new ArrayList<String>(valueCount);
+                                List<Object> dimValues = new ArrayList<Object>(valueCount);
                                 for (int s = 0; s < valueCount; s++) {
-                                    dimValues.add(((TypedLiteralType) axis
-                                            .getSingleValue().get(s)).getValue());
+                                    dimValues.addAll(dimensions.convertDimensionValue(axisName,
+                                            ((TypedLiteralType) axis.getSingleValue().get(s)).getValue()));
                                 }
                                 readParameters = CoverageUtils.mergeParameter(parameterDescriptors,
                                         readParameters, dimValues, axisName);

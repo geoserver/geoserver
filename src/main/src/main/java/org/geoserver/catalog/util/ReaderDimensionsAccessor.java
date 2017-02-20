@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -26,6 +27,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.ows.kvp.TimeParser;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
@@ -35,6 +37,7 @@ import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.UniqueVisitor;
+import org.geotools.util.Converters;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Range;
@@ -552,6 +555,40 @@ public class ReaderDimensionsAccessor {
     public boolean hasResolution(String domain) {
         Utilities.ensureNonNull("name", domain);
         return metadataNames.contains(domain.toUpperCase() + "_DOMAIN_RESOLUTION");
+    }
+
+    public Collection<Object> convertDimensionValue(String name, String value) {
+        List<Object> result = new ArrayList<Object>();
+        try {
+            String typeName = getDomainDatatype(name);
+            if (typeName != null) {
+                Class<?> type = Class.forName(typeName);
+                if (type == java.util.Date.class) {
+                    result.addAll(new TimeParser().parse(value));
+                } else {
+                    for (String element : value.split(",")) {
+                        result.add(Converters.convert(element, type));
+                    }
+                }
+            } else {
+                result.add(value);
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Failed to convert dimension value: ", e);
+            result.add(value);
+        }
+
+        return result;
+    }
+
+    public List<Object> convertDimensionValue(String name, List<String> value) {
+        List<Object> list = new ArrayList<Object>();
+
+        for (String val : value) {
+            list.addAll(convertDimensionValue(name, val));
+        }
+
+        return list;
     }
 
     

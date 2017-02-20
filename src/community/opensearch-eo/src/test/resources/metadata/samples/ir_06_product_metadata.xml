@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <opt:EarthObservation xmlns:opt="http://www.opengis.net/opt/2.0" xmlns:gml="http://www.opengis.net/gml/3.2"
-  xmlns:atm="http://www.opengis.net/atm/2.0" xmlns:eop="http://www.opengis.net/eop/2.0" xmlns:gmlov="http://www.opengis.net/gml"
+  xmlns:atm="http://www.opengis.net/atm/2.0" xmlns:eop="http://www.opengis.net/eop/2.1" xmlns:gmlov="http://www.opengis.net/gml"
   xmlns:om="http://www.opengis.net/om/2.0" xmlns:ows="http://www.opengis.net/ows/2.0" xmlns:sar="http://www.opengis.net/sar/2.0"
   xmlns:swe="http://www.opengis.net/swe/1.0" xmlns:wrs="http://www.opengis.net/cat/wrs/1.0"
   xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -115,7 +115,8 @@
   </om:result>
   <eop:metaDataProperty>
     <eop:EarthObservationMetaData>
-      <eop:identifier>urn:eop:DLR:EOWEB:IRS-P6.LISS-IV.P-MONO:/dims_nz_pl_dfd_XXXXB00000001110264115372/dims_op_pl_dfd_//IRS-P6.LISS-IV.P</eop:identifier>
+      <eop:identifier>${eo:productIdentifier></eop:identifier>
+      <eop:creationDate>${eo:creationDate}</eop:creationDate>
       <eop:doi>IRS-P6.LISS-IV.P-MONO:/dims_nz_pl_dfd_XXXXB00000001110264115372/dims_op_pl_dfd_//IRS-P6.LISS-IV.P</eop:doi>
       <eop:parentIdentifier>urn:eop:DLR:EOWEB:IRS-P6.LISS-IV.P-MONO</eop:parentIdentifier>
       <eop:acquisitionType>NOMINAL</eop:acquisitionType>
@@ -127,6 +128,7 @@
           <eop:acquisitionDate>2004-10-28T11:08:03.260Z</eop:acquisitionDate>
         </eop:DownlinkInformation>
       </eop:downlinkedTo>
+      <eop:productQualityDegradation>${eo:productQualityStatus}</eop:productQualityDegradation>
       <eop:archivedIn>
         <eop:ArchivingInformation>
           <eop:archivingCenter codeSpace="urn:eop:PHR:stationCode">Euromap</eop:archivingCenter>

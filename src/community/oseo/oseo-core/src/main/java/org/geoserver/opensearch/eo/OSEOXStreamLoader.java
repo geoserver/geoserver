@@ -4,10 +4,15 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.util.List;
+
+import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geotools.metadata.iso.identification.KeywordsImpl;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -29,6 +34,11 @@ public class OSEOXStreamLoader extends XStreamServiceLoader<OSEOInfo> {
     protected OSEOInfo createServiceFromScratch(GeoServer gs) {
         OSEOInfoImpl oseo = new OSEOInfoImpl();
         oseo.setName("OSEO");
+        oseo.setAbstract("Provides interoperable access, following ISO/OGC interface guidelines, to Earth Observation metadata.");
+        oseo.setTitle("OpenSearch for Earth Observation");
+        final List<KeywordInfo> keywords = oseo.getKeywords();
+        keywords.add(new Keyword("EarthObservation"));
+        keywords.add(new Keyword("OGC"));
         return oseo;
     }
 

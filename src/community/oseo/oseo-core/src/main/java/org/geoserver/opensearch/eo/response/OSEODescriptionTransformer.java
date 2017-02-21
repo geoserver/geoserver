@@ -4,11 +4,14 @@
  */
 package org.geoserver.opensearch.eo.response;
 
-import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.geoserver.catalog.KeywordInfo;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.opensearch.eo.OSEODescription;
+import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
-import org.h2.engine.Procedure;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -60,8 +63,28 @@ public class OSEODescriptionTransformer extends TransformerBase {
         
         @Override
         public void encode(Object o) throws IllegalArgumentException {
+            OSEODescription description = (OSEODescription) o;
             // <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:eo="http://a9.com/-/opensearch/extensions/eo/1.0/" xmlns:geo="http://a9.com/-/opensearch/extensions/geo/1.0/" xmlns:param="http://a9.com/-/spec/opensearch/extensions/parameters/1.0/" xmlns:semantic="http://a9.com/-/opensearch/extensions/semantic/1.0/" xmlns:sru="http://a9.com/-/opensearch/extensions/sru/2.0/" xmlns:time="http://a9.com/-/opensearch/extensions/time/1.0/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
-            element("OpenSearchDescription", null, "xmlns", "http://a9.com/-/spec/opensearch/1.1/");
+            element("OpenSearchDescription", () -> describeOpenSearch(description), "xmlns", "http://a9.com/-/spec/opensearch/1.1/");
+        }
+
+        private void describeOpenSearch(OSEODescription description) {
+            OSEOInfo oseo = description.getServiceInfo();
+            // while the OpenSearch specification does not seem to mandate a specific order for tags,
+            // the one of the spec examples has been followed in order to ensure maximum compatibility with clients
+            element("ShortName", oseo.getName());
+            element("Description", oseo.getAbstract());
+            GeoServerInfo gs = description.getGeoserverInfo();
+            element("Contact", gs.getSettings().getContact().getContactEmail());
+            String tags = oseo.getKeywords().stream().map(k -> k.getValue()).collect(Collectors.joining(" "));
+            element("Tags", tags);
+            element("LongName", oseo.getTitle());
+            element("Developer", oseo.getMaintainer());
+            element("SyndicationRight", "open"); // make configurable?
+            element("AdultContent", "false");
+            element("Language", "en-us");
+            element("OutputEncoding", "UTF-8");
+            element("InputEncoding", "UTF-8");
         }
         
     }

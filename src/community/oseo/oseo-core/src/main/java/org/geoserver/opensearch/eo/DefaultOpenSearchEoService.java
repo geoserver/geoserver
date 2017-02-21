@@ -17,8 +17,8 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
     @Override
     public OSEODescription description(OSEODescriptionRequest request) {
-        // TODO: provide a list of searchable parameters based on the request
-        return new OSEODescription(request);
+        // TODO: provide a list of searchable parameters based on the chosen collection
+        return new OSEODescription(request, geoServer.getService(OSEOInfo.class), geoServer.getGlobal());
     }
 
     @Override

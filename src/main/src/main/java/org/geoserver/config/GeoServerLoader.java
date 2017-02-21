@@ -484,7 +484,7 @@ public abstract class GeoServerLoader {
                     
                     // set the default workspace, this value might be null in the case of coming from a
                     // 2.0.0 data directory. See https://osgeo-org.atlassian.net/browse/GEOS-3440
-                    if (ns != null) {
+                    if (defaultWorkspace != null) {
                         if (ws.getName().equals(defaultWorkspace.getName())) {
                             catalog.setDefaultWorkspace(ws);
                             if (ns != null) {

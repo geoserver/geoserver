@@ -6,14 +6,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.geoserver</groupId>
-    <artifactId>community</artifactId>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-oseo</artifactId>
     <version>2.11-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>gs-openseach-eo</artifactId>
-  <name>OpenSearch for EO service</name>
+  <artifactId>gs-oseo-core</artifactId>
+  <name>OpenSearch for EO</name>
   <packaging>jar</packaging>
   <version>2.11-SNAPSHOT</version>
 

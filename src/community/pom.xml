@@ -519,9 +519,9 @@
       </modules>
     </profile>
     <profile>
-      <id>opensearch-eo</id>
+      <id>oseo</id>
       <modules>
-        <module>opensearch-eo</module>
+        <module>oseo</module>
       </modules>
     </profile>
   </profiles>

@@ -33,6 +33,7 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.wms.WMS;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.Configuration;
 import org.geowebcache.config.XMLGridSubset;
@@ -449,27 +450,8 @@ public class CatalogConfiguration implements Configuration {
     }
     
     public static boolean isLayerExposable(LayerInfo layer) {
-        assert layer!=null;
-        // TODO: this was copied from WMS 1.1 GetCapabilitesTransformer.handleLayerTree and is
-        // replicated again in the WMS 1.3 implementation.  Should be refactored to eliminate
-        // duplication.
-        
-        // no sense in exposing a geometryless layer through wms...
-        boolean wmsExposable = false;
-        if (layer.getType() == PublishedType.RASTER || layer.getType() == PublishedType.WMS) {
-            wmsExposable = true;
-        } else {
-            try {
-                wmsExposable = layer.getType() == PublishedType.VECTOR
-                        && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
-                                .getGeometryDescriptor() != null;
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "An error occurred trying to determine if"
-                        + " the layer is geometryless", e);
-            }
-        }
-        
-        return wmsExposable;
+        assert layer != null;
+        return WMS.isWmsExposable(layer);
     }
  
     @Override

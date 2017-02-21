@@ -518,5 +518,11 @@
         <module>ows-simulate</module>
       </modules>
     </profile>
+    <profile>
+      <id>oseo</id>
+      <modules>
+        <module>oseo</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

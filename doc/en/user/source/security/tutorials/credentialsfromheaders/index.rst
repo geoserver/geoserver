@@ -9,8 +9,8 @@ Introduction
 When using Apache HTTPD as a proxy frontend for GeoServer, it is possible to share
 authentication with a proper configuration of both.
 
-This requires enabling Session for the Geoserver location in Apache HTTPD and adding 
-a custom Request Header with the session content, so that the Geoserver security system
+This requires enabling Session for the GeoServer location in Apache HTTPD and adding 
+a custom Request Header with the session content, so that the GeoServer security system
 can receive user credentials and use them to authenticate the user with its internal 
 filters.
 
@@ -125,7 +125,7 @@ This can be done with an HTTPD configuration that looks like the following:
 			RequestHeader set X-Credentials "%{HTTP_SESSION}e"
 		</Location>
 
-This configuration adds a new `X-Credentials` Request Header to each Geoserver request.
+This configuration adds a new `X-Credentials` Request Header to each GeoServer request.
 The request header will contain the HTTPD Session information in a special format.
 
 An example of the Session content is the following:

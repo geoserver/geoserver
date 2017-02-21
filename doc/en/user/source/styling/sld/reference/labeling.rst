@@ -231,7 +231,7 @@ So, for example, if you wanted to have the state abbreviation sitting on the nex
   ]]>(<ogc:PropertyName>STATE_ABBR</ogc:PropertyName>)
   </Label>
 
-Geoserver Enhanced Options
+GeoServer Enhanced Options
 -----------------------------------
 
 GeoServer provides a number of label styling options as extensions to the SLD specification.
@@ -521,7 +521,7 @@ This means the label will be drawn even if it overlaps with other labels, and ot
 goodnessOfFit
 ^^^^^^^^^^^^^
 
-Geoserver will remove labels if they are a particularly bad fit for the geometry they are labeling.
+GeoServer will remove labels if they are a particularly bad fit for the geometry they are labeling.
 
 .. list-table::
    :widths: 30 70 

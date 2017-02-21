@@ -6,6 +6,7 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -1199,5 +1200,73 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             XMLAssert.assertXpathEvaluatesTo("layers", "//ServiceException/@locator", dom);
             XMLAssert.assertXpathEvaluatesTo("LayerNotDefined", "//ServiceException/@code", dom);
         }
+    }
+    
+    @Test
+    public void testReprojectRGBTransparent() throws Exception {
+        // UTM53N, close enough to tasmania but sure to add rotation
+        BufferedImage image = getAsImage("wms/reflect?layers=" + getLayerId(MockData.TASMANIA_BM) + "&SRS=EPSG:32753&format=image/png&transparent=true", "image/png");
+        
+        // it's transparent
+        assertTrue(image.getColorModel().hasAlpha());
+        assertEquals(4, image.getSampleModel().getNumBands());
+        // assert pixels in the 4 corners, the rotation should have made them all transparent
+        assertPixelIsTransparent(image, 0, 0);
+        assertPixelIsTransparent(image, image.getWidth() - 1, 0);
+        assertPixelIsTransparent(image, image.getWidth() - 1, image.getHeight() - 1);
+        assertPixelIsTransparent(image, 0, image.getHeight() - 1);
+        
+    }
+    
+    @Test
+    public void testReprojectRGBWithBgColor() throws Exception {
+        // UTM53N, close enough to tasmania but sure to add rotation
+        BufferedImage image = getAsImage("wms/reflect?layers=" + getLayerId(MockData.TASMANIA_BM) + "&SRS=EPSG:32753&format=image/png&bgcolor=#FF0000", "image/png");
+        
+        // it's not transparent
+        assertFalse(image.getColorModel().hasAlpha());
+        assertEquals(3, image.getSampleModel().getNumBands());
+        // assert pixels in the 4 corners, the rotation should have made them all red
+        assertPixel(image, 0, 0, Color.RED);
+        assertPixel(image, image.getWidth() - 1, 0, Color.RED);
+        assertPixel(image, image.getWidth() - 1, image.getHeight() - 1, Color.RED);
+        assertPixel(image, 0, image.getHeight() - 1, Color.RED);
+        
+    }
+    
+    @Test
+    public void testReprojectedDemWithTransparency() throws Exception {
+        // UTM53N, close enough to tasmania but sure to add rotation
+        BufferedImage image = getAsImage("wms/reflect?layers=" + getLayerId(MockData.TASMANIA_DEM) + "&styles=demTranslucent&SRS=EPSG:32753&format=image/png&transparent=true", "image/png");
+
+        // RenderedImageBrowser.showChain(image);
+        
+        // it's transparent
+        assertTrue(image.getColorModel().hasAlpha());
+        assertEquals(1, image.getSampleModel().getNumBands());
+        // assert pixels in the 4 corners, the rotation should have made them all dark gray
+        assertPixelIsTransparent(image, 0, 0);
+        assertPixelIsTransparent(image, image.getWidth() - 1, 0);
+        assertPixelIsTransparent(image, image.getWidth() - 1, image.getHeight() - 1);
+        assertPixelIsTransparent(image, 0, image.getHeight() - 1);
+
+    }
+    
+    @Test
+    public void testDemWithBgColor() throws Exception {
+        // UTM53N, close enough to tasmania but sure to add rotation
+        BufferedImage image = getAsImage("wms/reflect?layers=" + getLayerId(MockData.TASMANIA_DEM) + "&styles=demTranslucent&SRS=EPSG:32753&format=image/png&bgcolor=#404040", "image/png");
+
+        // RenderedImageBrowser.showChain(image);
+        
+        // it's transparent
+        assertFalse(image.getColorModel().hasAlpha());
+        assertEquals(1, image.getSampleModel().getNumBands());
+        // assert pixels in the 4 corners, the rotation should have made them all dark gray
+        assertPixel(image, 0, 0, Color.DARK_GRAY);
+        assertPixel(image, image.getWidth() - 1, 0, Color.DARK_GRAY);
+        assertPixel(image, image.getWidth() - 1, image.getHeight() - 1, Color.DARK_GRAY);
+        assertPixel(image, 0, image.getHeight() - 1, Color.DARK_GRAY);
+
     }
 }

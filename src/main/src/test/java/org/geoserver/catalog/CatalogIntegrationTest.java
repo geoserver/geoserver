@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -47,6 +48,12 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         GeoServerExtensions extension = GeoServerExtensions.bean(GeoServerExtensions.class);
         if( extension == null ){
             GeoServerExtensionsHelper.init( this.applicationContext );
+        }
+        
+        File root = testData.getDataDirectoryRoot();
+        File defaultWorkspace = new File(root, "workspaces/default.xml");
+        if(defaultWorkspace.exists()) {
+            defaultWorkspace.delete();
         }
     }
     

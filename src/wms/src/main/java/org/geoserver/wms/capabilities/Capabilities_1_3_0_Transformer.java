@@ -903,19 +903,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 return false;
             }
 
-            boolean wmsExposable = false;
-            if (layer.getType() == PublishedType.RASTER || layer.getType() == PublishedType.WMS) {
-                wmsExposable = true;
-            } else {
-                try {
-                    wmsExposable = layer.getType() == PublishedType.VECTOR
-                            && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
-                                    .getGeometryDescriptor() != null;
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, "An error occurred trying to determine if"
-                            + " the layer is geometryless", e);
-                }
-            }
+            boolean wmsExposable = WMS.isWmsExposable(layer); 
             return wmsExposable;
         }
 

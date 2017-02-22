@@ -10,7 +10,7 @@
     <version>2.10-SNAPSHOT</version>
   </parent>
   
-  <groupId>org.geoserver</groupId>
+  <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-ysld</artifactId>
   <name>Ysld GeoServer Plugin</name>
   <packaging>jar</packaging>

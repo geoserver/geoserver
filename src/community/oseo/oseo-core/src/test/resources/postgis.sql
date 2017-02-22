@@ -1,12 +1,10 @@
 -- extensions
 create extension if not exists postgis;
-create extension if not exists hstore;
 
 -- cleanup
 drop table if exists granule;
 drop table if exists collection_ogclink;
 drop table if exists product_ogclink;
-drop table if exists ogclink;
 drop table if exists product_metadata;
 drop table if exists product;
 drop table if exists collection_metadata;
@@ -36,8 +34,7 @@ create table collection (
   "eoWavelenght" int,
   "eoSecurityConstraints" boolean,
   "eoDissemination" varchar,
-  "eoAcquisitionStation" varchar,
-  "customAttributes" hstore
+  "eoAcquisitionStation" varchar
 );
 -- index all (really, this is a search engine)
 -- manually generated indexes
@@ -114,7 +111,6 @@ create table product (
   "sarDopplerFrequency" float,
   "sarIncidenceAngleVariation" float,
   "eoResolution" float,
-  "customAttributeValues" hstore
 );
 -- index all (really, this is a search engine)
 -- manually generated indexes
@@ -167,25 +163,27 @@ create table product_metadata (
 );
 
  
--- ogc links (abstract)
-create table ogclink (
+-- links for collections
+create table collection_ogclink (
   id serial primary key,
+  collection_id int references collection(id),
   offering varchar,
   method varchar,
   code varchar,
   "type" varchar,
   href varchar
-);
-
--- links for collections
-create table collection_ogclink (
-  collection_id int references collection(id)
-) inherits(ogclink);
+) 
 
 -- links for products
 create table product_ogclink (
-  product_id int references product(id)
-) inherits(ogclink);
+  id serial primary key,
+  product_id int references product(id),
+  offering varchar,
+  method varchar,
+  code varchar,
+  "type" varchar,
+  href varchar
+) 
 
 -- the granules table (might be abstract, and we can use partitioning)
 create table granule (

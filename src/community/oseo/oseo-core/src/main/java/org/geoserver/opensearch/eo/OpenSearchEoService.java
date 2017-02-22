@@ -4,6 +4,8 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.io.IOException;
+
 import org.geotools.feature.FeatureCollection;
 
 public interface OpenSearchEoService {
@@ -13,8 +15,9 @@ public interface OpenSearchEoService {
      * 
      * @param request
      * @return
+     * @throws IOException 
      */
-    public OSEODescription description(OSEODescriptionRequest request);
+    public OSEODescription description(OSEODescriptionRequest request) throws IOException;
 
     /**
      * Searches either collection or products, returned as complex features

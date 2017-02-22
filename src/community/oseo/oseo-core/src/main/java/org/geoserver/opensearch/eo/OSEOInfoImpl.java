@@ -10,4 +10,17 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
     private static final long serialVersionUID = -6834845955630638054L;
 
+    String openSearchAccessStoreId;
+
+    public String getOpenSearchAccessStoreId() {
+        return openSearchAccessStoreId;
+    }
+
+    public void setOpenSearchAccessStoreId(String openSearchAccessStoreId) {
+        this.openSearchAccessStoreId = openSearchAccessStoreId;
+    }
+    
+    
+        
+
 }

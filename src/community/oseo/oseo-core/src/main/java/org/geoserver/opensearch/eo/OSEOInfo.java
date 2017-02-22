@@ -13,4 +13,10 @@ public interface OSEOInfo extends ServiceInfo {
      * Version 1.0.0
      */
     public static final Version VERSION_1_0_0 = new Version("1.0.0");
+
+    /**
+     * Returns the identifier of the OpenSearchAccess
+     * @return
+     */
+    String getOpenSearchAccessStoreId();
 }

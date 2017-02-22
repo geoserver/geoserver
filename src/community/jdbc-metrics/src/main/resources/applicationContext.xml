@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="jdbcMetricsFilter" class="org.geoserver.jdbc.metrics.RequestMetricsFilter"/>
+    <bean id="jdbcMetricsController" class="org.geoserver.jdbc.metrics.RequestMetricsController"/>
+
+    <bean id="jdbcMetricsMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true"/>
+        <property name="mappings">
+            <props>
+                <prop key="/jdbc-metrics/**">jdbcMetricsController</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

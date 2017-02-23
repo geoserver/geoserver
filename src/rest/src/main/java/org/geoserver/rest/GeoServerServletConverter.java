@@ -56,7 +56,7 @@ public class GeoServerServletConverter extends ServletConverter {
             // raise the logging level to SEVERE
             LOGGER.log(Level.SEVERE, "Exception intercepted", e);
             response.getHttpCall().setStatusCode(Status.SERVER_ERROR_INTERNAL.getCode());
-            response.getHttpCall().setReasonPhrase("An unexpected exception occured");
+            response.getHttpCall().setReasonPhrase("An unexpected exception occurred");
         }
     }
 

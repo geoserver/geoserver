@@ -60,7 +60,7 @@ public class GeogigDispatcher extends AbstractController {
     private GeoServerRepositoryProvider repositoryProvider;
 
     /**
-     * converter for turning servlet requests into resetlet requests.
+     * converter for turning servlet requests into restlet requests.
      */
     private ServletConverter converter;
 
@@ -106,6 +106,8 @@ public class GeogigDispatcher extends AbstractController {
         router.attach("/repos.{extension}", RepositoryListResource.class);
         router.attach("/repos/", RepositoryListResource.class);
         router.attach("/repos.{extension}/", RepositoryListResource.class);
+        router.attach("/repos/{repository}/importExistingRepo", ImportRepoCommandResource.class);
+        router.attach("/repos/{repository}/importExistingRepo.{extension}", ImportRepoCommandResource.class);
 
         router.attach("/tasks.{extension}", TaskStatusResource.class);
         router.attach("/tasks", TaskStatusResource.class);

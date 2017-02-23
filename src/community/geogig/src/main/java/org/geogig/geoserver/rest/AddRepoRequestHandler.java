@@ -4,21 +4,17 @@
  */
 package org.geogig.geoserver.rest;
 
-import static org.locationtech.geogig.web.api.RESTUtils.getStringAttribute;
-import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
 import org.geogig.geoserver.config.PostgresConfigBean;
+import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.repository.Repository;
+import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.rest.RestletException;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -27,8 +23,16 @@ import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.resource.Representation;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.locationtech.geogig.web.api.RESTUtils.getStringAttribute;
+import static org.restlet.data.Status.CLIENT_ERROR_BAD_REQUEST;
 
 /**
  * Utility for handling GeoGIG repository init requests. This class will pull repository creation
@@ -36,9 +40,9 @@ import com.google.common.base.Optional;
  * and build a GeoGIG repository form them, by converting the request into a
  * {@link org.locationtech.geogig.repository.Hints Hints}.
  */
-class InitRequestHandler {
+class AddRepoRequestHandler {
 
-    private static final InitRequestHandler INSTANCE = new InitRequestHandler();
+    private static final AddRepoRequestHandler INSTANCE = new AddRepoRequestHandler();
 
     static final String REPO_ATTR = "repository";
 
@@ -47,6 +51,10 @@ class InitRequestHandler {
      * Directory option for Parent Directory.
      */
     static final String DIR_PARENT_DIR = "parentDirectory";
+    /**
+     * Directory of GeoGig repository
+     */
+    static final String GEOGIG_REPO_DIR = "leafDirectory";
     /**
      * Database option for Host.
      */
@@ -107,6 +115,7 @@ class InitRequestHandler {
      */
     private void addParameters(Map<String, String> params, JSONObject json) {
         addParameter(params, DIR_PARENT_DIR, json.optString(DIR_PARENT_DIR, null));
+        addParameter(params, GEOGIG_REPO_DIR, json.optString(GEOGIG_REPO_DIR, null));
         addParameter(params, DB_HOST, json.optString(DB_HOST, null));
         addParameter(params, DB_PORT, json.optString(DB_PORT, null));
         addParameter(params, DB_NAME, json.optString(DB_NAME, null));
@@ -128,6 +137,7 @@ class InitRequestHandler {
      */
     private void addParameters(Map<String, String> params, Form form) {
         addParameter(params, DIR_PARENT_DIR, form.getFirstValue(DIR_PARENT_DIR, null));
+        addParameter(params, GEOGIG_REPO_DIR, form.getFirstValue(GEOGIG_REPO_DIR, null));
         addParameter(params, DB_HOST, form.getFirstValue(DB_HOST, null));
         addParameter(params, DB_PORT, form.getFirstValue(DB_PORT, null));
         addParameter(params, DB_NAME, form.getFirstValue(DB_NAME, null));
@@ -179,6 +189,7 @@ class InitRequestHandler {
     private void updateHintsWithParams(Hints hints, Map<String, String> params) {
         // get parameters
         final String parentDir = params.get(DIR_PARENT_DIR);
+        final String repoDir = params.get(GEOGIG_REPO_DIR);
         final String dbHost = params.get(DB_HOST);
         final String dbPort = params.get(DB_PORT);
         final String dbName = params.get(DB_NAME);
@@ -187,7 +198,7 @@ class InitRequestHandler {
         final String dbPassword = params.get(DB_PASSWORD);
         // use parent directory if present
         if (parentDir != null) {
-            final String leafDir = UUID.randomUUID().toString();
+            final String leafDir = repoDir != null ? repoDir : UUID.randomUUID().toString();
             final String uri = new File(parentDir, leafDir).getAbsoluteFile().toURI().toString();
             hints.set(Hints.REPOSITORY_URL, uri);
         } else if (dbName != null && dbPassword != null) {
@@ -210,7 +221,7 @@ class InitRequestHandler {
                     Integer portInt = Integer.parseInt(dbPort);
                     bean.setPort(portInt);
                 } catch (Exception ex) {
-                    // use the defaukt in PostgresConfigBean
+                    // use the default in PostgresConfigBean
                 }
             }
             final String uri = bean.buildUriForRepo(
@@ -243,4 +254,34 @@ class InitRequestHandler {
         // now build the repo with the Hints
         return Optional.fromNullable(RepositoryManager.get().createRepo(hints));
     }
+
+    static Optional<Repository> importGeogig(Request request) {
+
+        try {
+            // build URI
+            Hints hint = INSTANCE.createHintsFromRequest(request);
+
+            // now build the repo with the Hints
+            RepositoryInfo repoInfo = new RepositoryInfo();
+
+            // set the repo location from the URI
+            URI uri = new URI((String) hint.get(Hints.REPOSITORY_URL).get());
+            repoInfo.setLocation(uri);
+
+            // check to see if repo is initialized
+            RepositoryResolver repoResolver = RepositoryResolver.lookup(uri);
+            if(!repoResolver.repoExists(uri)) {
+                return Optional.absent();
+            }
+
+            // save the repo, this will set a UUID
+            RepositoryManager.get().save(repoInfo);
+
+            return Optional.of(RepositoryManager.get().getRepository(repoInfo.getId()));
+        } catch (IOException | URISyntaxException e) {
+            Throwables.propagate(e);
+        }
+        return Optional.absent();
+    }
+
 }

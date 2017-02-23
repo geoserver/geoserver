@@ -81,6 +81,7 @@
           <descriptor>release/ext-onelogin.xml</descriptor> 
           <descriptor>release/ext-notification.xml</descriptor> 
           <descriptor>release/ext-ows-simulate.xml</descriptor> 
+          <descriptor>release/ext-jdbc-metrics.xml</descriptor> 
         </descriptors>
       </configuration>
      </plugin>

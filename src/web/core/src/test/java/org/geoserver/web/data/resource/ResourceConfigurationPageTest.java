@@ -5,9 +5,7 @@
  */
 package org.geoserver.web.data.resource;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
@@ -18,9 +16,10 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.publish.PublishedConfigurationPage;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
@@ -90,14 +89,18 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
     
     @Test
     public void testSortIndex() throws Exception {
-        LayerInfo layer = getGeoServerApplication().getCatalog().getLayerByName(getLayerId(MockData.BASIC_POLYGONS));
+        final Catalog catalog = getCatalog();
+        
+        final CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.setStore(catalog.getStoreByName(MockData.POLYGONS.getPrefix(), DataStoreInfo.class));
+        FeatureTypeInfo feat = cb.buildFeatureType(new NameImpl(MockData.LINES));
+        LayerInfo layer = cb.buildLayer(feat); 
+        layer.setResource(feat);
+        layer.setSortIndex(33);
         login();
-        tester.startPage(new ResourceConfigurationPage(layer, false));
-        FormTester ft = tester.newFormTester("form");
-        ft.setValue("sortIndex", "33");
-        ft.submit("submit");
-        tester.assertNoErrorMessage();
-        assertEquals(layer.getSortIndex(), "33");
+        tester.startPage(new ResourceConfigurationPage(layer, true));
+        tester.assertContains("33");
+        
     }
     
 }

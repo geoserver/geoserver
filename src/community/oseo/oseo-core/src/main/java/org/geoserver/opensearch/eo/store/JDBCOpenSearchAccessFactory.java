@@ -13,6 +13,7 @@ import java.util.Map;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.Repository;
+import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.util.Converters;
 import org.geotools.util.KVP;
 import org.opengis.feature.Feature;
@@ -27,11 +28,14 @@ import org.opengis.feature.type.Name;
 public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
 
     public static final Param REPOSITORY_PARAM = new Param("repository", Repository.class,
-            "The repository that will provide the store intances", true, null,
+            "The repository that will provide the store instances", false, null,
             new KVP(Param.LEVEL, "advanced"));
 
     public static final Param STORE_PARAM = new Param("store", String.class, "Delegate data store",
             false, null, new KVP(Param.ELEMENT, String.class));
+    
+    /** parameter for database type */
+    public static final Param DBTYPE = new Param("dbtype", String.class, "Type", true, "opensearch-eo-jdbc");
 
     @Override
     public Map<Key, ?> getImplementationHints() {
@@ -60,7 +64,7 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
 
     @Override
     public Param[] getParametersInfo() {
-        return new Param[] { REPOSITORY_PARAM, STORE_PARAM };
+        return new Param[] { DBTYPE, REPOSITORY_PARAM, STORE_PARAM };
     }
 
     @Override
@@ -105,7 +109,20 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
                 }
             }
         }
-        return true;
+        
+        // dbtype specific check
+        String type;
+        try {
+            type = (String) DBTYPE.lookUp(params);
+
+            if (DBTYPE.sample.equals(type)) {
+                return true;
+            }
+
+            return false;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     @Override

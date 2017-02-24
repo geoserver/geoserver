@@ -4,9 +4,12 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.util.List;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.geoserver.config.GeoServerInfo;
+import org.geotools.data.Parameter;
 
 /**
  * Summary of a OpenSearch EO description, with indication of URL template parameters and the like
@@ -21,14 +24,18 @@ public class OSEODescription {
     String parentId;
 
     OSEOInfo serviceInfo;
-    
+
     GeoServerInfo geoserverInfo;
 
-    public OSEODescription(OSEODescriptionRequest request, OSEOInfo serviceInfo, GeoServerInfo geoserverInfo) {
+    List<Parameter> searchParameters;
+
+    public OSEODescription(OSEODescriptionRequest request, OSEOInfo serviceInfo,
+            GeoServerInfo geoserverInfo, List<Parameter> searchParameters) {
         this.baseURL = request.getBaseUrl();
         this.parentId = request.getParentId();
         this.serviceInfo = serviceInfo;
         this.geoserverInfo = geoserverInfo;
+        this.searchParameters = searchParameters;
     }
 
     public OSEOInfo getServiceInfo() {
@@ -42,9 +49,13 @@ public class OSEODescription {
     public String getBaseURL() {
         return baseURL;
     }
-    
+
     public GeoServerInfo getGeoserverInfo() {
         return geoserverInfo;
+    }
+    
+    public List<Parameter> getSearchParameters() {
+        return searchParameters;
     }
 
     @Override

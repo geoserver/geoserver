@@ -5,14 +5,22 @@
 package org.geoserver.opensearch.eo;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.ServiceException;
 import org.geotools.data.DataAccess;
+import org.geotools.data.Parameter;
 import org.geotools.feature.FeatureCollection;
 
+/**
+ * Default implementation of {@link OpenSearchEoService}
+ *
+ * @author Andrea Aime - GeoSolutions
+ */
 public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
     GeoServer geoServer;
@@ -24,8 +32,13 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
     @Override
     public OSEODescription description(OSEODescriptionRequest request) throws IOException {
         OpenSearchAccess openSearchAccess = getOpenSearchAccess();
-        // TODO: get a list of searchable parameters, their types and restrictions
-        return new OSEODescription(request, getService(), geoServer.getGlobal());
+        
+        final OSEOInfo service = getService();
+        
+        List<Parameter> searchParameters = new ArrayList<>();
+        searchParameters.addAll(OpenSearchParameters.getBasicOpensearch(service));
+        searchParameters.addAll(OpenSearchParameters.getGeoTimeOpensearch());
+        return new OSEODescription(request, service, geoServer.getGlobal(), searchParameters);
     }
 
     @Override

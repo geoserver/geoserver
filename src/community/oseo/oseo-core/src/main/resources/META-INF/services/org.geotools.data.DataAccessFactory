@@ -1,1 +1,1 @@
-org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess
+org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessFactory

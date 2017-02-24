@@ -7,7 +7,6 @@ package org.geoserver.opensearch.eo.store;
 import java.io.IOException;
 import java.util.List;
 
-import org.geotools.data.DataAccess;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Repository;
 import org.geotools.data.ServiceInfo;

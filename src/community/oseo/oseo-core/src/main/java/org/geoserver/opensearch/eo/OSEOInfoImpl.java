@@ -12,15 +12,23 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
     String openSearchAccessStoreId;
 
+    int maximumRecords = OSEOInfo.DEFAULT_MAXIMUM_RECORDS;
+
+    public int getMaximumRecords() {
+        return maximumRecords;
+    }
+
+    public void setMaximumRecords(int maximumRecords) {
+        this.maximumRecords = maximumRecords;
+    }
+
     public String getOpenSearchAccessStoreId() {
         return openSearchAccessStoreId;
     }
 
+    @Override
     public void setOpenSearchAccessStoreId(String openSearchAccessStoreId) {
         this.openSearchAccessStoreId = openSearchAccessStoreId;
     }
-    
-    
-        
 
 }

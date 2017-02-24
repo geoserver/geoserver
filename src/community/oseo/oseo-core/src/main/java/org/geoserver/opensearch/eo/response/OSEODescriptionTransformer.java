@@ -4,14 +4,25 @@
  */
 package org.geoserver.opensearch.eo.response;
 
+import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.geoserver.ows.util.ResponseUtils.params;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.opensearch.eo.OSEODescription;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.opensearch.eo.OpenSearchParameters;
+import org.geoserver.ows.URLMangler.URLType;
+import org.geotools.data.Parameter;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
+import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -27,28 +38,37 @@ public class OSEODescriptionTransformer extends TransformerBase {
         return new OSEODescriptionTranslator(handler);
     }
 
-    /**
-     * @author Gabriel Roldan
-     * @version $Id
-     */
     private static class OSEODescriptionTranslator extends TranslatorSupport {
+
+        static final Runnable NO_CONTENTS = () -> {
+        };
 
         public OSEODescriptionTranslator(ContentHandler contentHandler) {
             super(contentHandler, null, null);
         }
 
-        void element(String elementName, Runnable contentsEncoder, String... attributes) {
-            if(attributes != null && attributes.length > 0) {
-                start(elementName, attributes(attributes));
+        void element(String elementName, Runnable contentsEncoder, Attributes attributes) {
+            if (attributes != null) {
+                start(elementName, attributes);
             } else {
                 start(elementName);
             }
-            if(contentsEncoder != null) {
+            if (contentsEncoder != null) {
                 contentsEncoder.run();
             }
             end(elementName);
         }
-        
+
+        private Attributes attributes(Map<String, String> map) {
+            AttributesImpl attributes = new AttributesImpl();
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                String name = entry.getKey();
+                String value = entry.getValue();
+                attributes.addAttribute("", name, name, "", value);
+            }
+            return attributes;
+        }
+
         private AttributesImpl attributes(String... kvp) {
             String[] atts = kvp;
             AttributesImpl attributes = new AttributesImpl();
@@ -60,12 +80,17 @@ public class OSEODescriptionTransformer extends TransformerBase {
             return attributes;
         }
 
-        
         @Override
         public void encode(Object o) throws IllegalArgumentException {
             OSEODescription description = (OSEODescription) o;
-            // <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:eo="http://a9.com/-/opensearch/extensions/eo/1.0/" xmlns:geo="http://a9.com/-/opensearch/extensions/geo/1.0/" xmlns:param="http://a9.com/-/spec/opensearch/extensions/parameters/1.0/" xmlns:semantic="http://a9.com/-/opensearch/extensions/semantic/1.0/" xmlns:sru="http://a9.com/-/opensearch/extensions/sru/2.0/" xmlns:time="http://a9.com/-/opensearch/extensions/time/1.0/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
-            element("OpenSearchDescription", () -> describeOpenSearch(description), "xmlns", "http://a9.com/-/spec/opensearch/1.1/");
+            element("OpenSearchDescription", () -> describeOpenSearch(description), //
+                    attributes("xmlns", "http://a9.com/-/spec/opensearch/1.1/", //
+                            "xmlns:param",
+                            "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/", //
+                            "xmlns:geo", "http://a9.com/-/opensearch/extensions/geo/1.0/", //
+                            "xmlns:time", "http://a9.com/-/opensearch/extensions/time/1.0/", //
+                            "xmlns:eo", "http://a9.com/-/opensearch/extensions/eo/1.0/" //
+                    ));
         }
 
         private void describeOpenSearch(OSEODescription description) {
@@ -76,8 +101,18 @@ public class OSEODescriptionTransformer extends TransformerBase {
             element("Description", oseo.getAbstract());
             GeoServerInfo gs = description.getGeoserverInfo();
             element("Contact", gs.getSettings().getContact().getContactEmail());
-            String tags = oseo.getKeywords().stream().map(k -> k.getValue()).collect(Collectors.joining(" "));
+            String tags = oseo.getKeywords().stream().map(k -> k.getValue())
+                    .collect(Collectors.joining(" "));
             element("Tags", tags);
+            element("Url", NO_CONTENTS,
+                    attributes("rel", "self", //
+                            "template", buildSelfUrl(description), //
+                            "type", "application/opensearchdescription+xml"));
+            element("Url", () -> describeParameters(description),
+                    attributes( //
+                            "rel", "results", //
+                            "template", buildResultsUrl(description), //
+                            "type", "application/atom+xml"));
             element("LongName", oseo.getTitle());
             element("Developer", oseo.getMaintainer());
             element("SyndicationRight", "open"); // make configurable?
@@ -86,9 +121,83 @@ public class OSEODescriptionTransformer extends TransformerBase {
             element("OutputEncoding", "UTF-8");
             element("InputEncoding", "UTF-8");
         }
-        
+
+        private String buildSelfUrl(OSEODescription description) {
+            String baseURL = description.getBaseURL();
+            Map<String, String> params = buildParentIdParams(description);
+            return buildURL(baseURL, "oseo/description", params, URLType.SERVICE);
+        }
+
+        private Map<String, String> buildParentIdParams(OSEODescription description) {
+            Map<String, String> params;
+            if (description.getParentId() == null) {
+                params = Collections.emptyMap();
+            } else {
+                params = params("parentId", description.getParentId());
+            }
+            return params;
+        }
+
+        public String buildResultsUrl(OSEODescription description) {
+            String baseURL = description.getBaseURL();
+            Map<String, String> params = buildParentIdParams(description);
+            String base = buildURL(baseURL, "oseo/description", params, URLType.SERVICE);
+            // the template must not be url encoded instead
+            String paramSpec = description.getSearchParameters().stream().map(p -> {
+                String spec = p.key + "={";
+                spec += getQualifiedParamName(p);
+                if (!p.required) {
+                    spec += "?";
+                }
+                spec += "}";
+                return spec;
+            }).collect(Collectors.joining("&"));
+
+            return appendQueryString(base, paramSpec);
+        }
+
+        private String getQualifiedParamName(Parameter p) {
+            String prefix = p.metadata == null ? null
+                    : (String) p.metadata.get(OpenSearchParameters.PARAM_PREFIX);
+            if (prefix != null) {
+                return prefix + ":" + p.key;
+            } else {
+                return p.key;
+            }
+        }
+
+        private void describeParameters(OSEODescription description) {
+            for (Parameter param : description.getSearchParameters()) {
+                Runnable contentsEncoder = null;
+
+                final Map<String, String> map = new LinkedHashMap<>();
+                map.put("name", param.key);
+                map.put("value", "{" + getQualifiedParamName(param) + "}");
+                if (!param.isRequired()) {
+                    map.put("minimum", "0");
+                }
+                if (param.metadata != null) {
+                    String[] keys = new String[] { OpenSearchParameters.MIN_INCLUSIVE,
+                            OpenSearchParameters.MAX_INCLUSIVE };
+                    for (String key : keys) {
+                        Object value = param.metadata.get(key);
+                        if (value != null) {
+                            map.put(key, String.valueOf(value));
+                        }
+                    }
+                }
+                if(!map.containsKey("pattern")) {
+                    Class type = param.getType();
+                    if(Integer.class == type) {
+                        map.put("pattern", "[0-9]+");
+                    } else if(Date.class.isAssignableFrom(type)) {
+                        map.put("pattern", "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[\\+\\-][0-9]{2}:[0-9]{2})$");
+                    }
+                }
+                element("param:Parameter", contentsEncoder, attributes(map));
+            }
+        }
+
     }
-
-
 
 }

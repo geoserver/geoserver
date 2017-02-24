@@ -20,14 +20,16 @@ import org.geoserver.platform.ServiceException;
  * @author Andrea Aime - GeoSolutions
  */
 public class OSEODescriptionResponse extends Response {
-
+    
+    public static final String OS_DESCRIPTION_MIME = "application/opensearchdescription+xml";
+    
     public OSEODescriptionResponse() {
-        super(OSEODescription.class, "text/xml");
+        super(OSEODescription.class, OS_DESCRIPTION_MIME);
     }
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return "text/xml";
+        return OS_DESCRIPTION_MIME;
     }
 
     @Override

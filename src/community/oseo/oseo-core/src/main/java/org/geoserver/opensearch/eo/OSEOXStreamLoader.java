@@ -32,7 +32,7 @@ public class OSEOXStreamLoader extends XStreamServiceLoader<OSEOInfo> {
     }
 
     protected OSEOInfo createServiceFromScratch(GeoServer gs) {
-        OSEOInfoImpl oseo = new OSEOInfoImpl();
+        OSEOInfo oseo = new OSEOInfoImpl();
         oseo.setName("OSEO");
         oseo.setAbstract("Provides interoperable access, following ISO/OGC interface guidelines, to Earth Observation metadata.");
         oseo.setTitle("OpenSearch for Earth Observation");

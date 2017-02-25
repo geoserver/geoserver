@@ -26,6 +26,8 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourcePool;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.platform.resource.Resource.Type;
@@ -150,23 +152,36 @@ public class DataStoreFileResource extends StoreFileResource {
         if (info == null) {
             throw new RestletException("No such datastore " + datastore, Status.CLIENT_ERROR_NOT_FOUND);
         }
-        
-        Map<String,Serializable> params = info.getConnectionParameters();
+        ResourcePool rp = info.getCatalog().getResourcePool();
+        GeoServerResourceLoader resourceLoader = info.getCatalog().getResourceLoader();
+        Map<String,Serializable> rawParamValues = info.getConnectionParameters();
+        Map<String,Serializable> paramValues = rp.getParams(rawParamValues, resourceLoader);
         File directory = null;
-        for (Map.Entry<String, Serializable> e : params.entrySet()) {
-            if (e.getValue() instanceof File) {
-                directory = (File) e.getValue();
+        try {
+            DataAccessFactory factory = rp.getDataStoreFactory(info);
+            for (Param param : factory.getParametersInfo()) {
+                if(File.class.isAssignableFrom(param.getType())) {
+                    Object result = param.lookUp(paramValues);
+                    if(result instanceof File) {
+                        directory = (File) result;
+                    }
+                } else if(URL.class.isAssignableFrom(param.getType())) {
+                    Object result = param.lookUp(paramValues);
+                    if(result instanceof URL) {
+                        directory = new File(((URL)result).getFile());
+                    }
+                }
+                
+                if (directory != null && !"directory".equals(param.key)) {
+                    directory = directory.getParentFile();
+                }
+                
+                if (directory != null) {
+                    break;
+                }
             }
-            else if (e.getValue() instanceof URL) {
-                directory = new File(((URL)e.getValue()).getFile());
-            }
-            if (directory != null && !"directory".equals(e.getKey())) {
-                directory = directory.getParentFile();
-            }
-            
-            if (directory != null) {
-                break;
-            }
+        } catch(Exception e) {
+            throw new RestletException( "Failed to lookup source directory for store " + datastore, Status.CLIENT_ERROR_NOT_FOUND, e);
         }
         
         if ( directory == null || !directory.exists() || !directory.isDirectory() ) {
@@ -204,6 +219,9 @@ public class DataStoreFileResource extends StoreFileResource {
                 zout.close();
             }
         };
+        Form headers = RESTUtils.getHeaders(getResponse());
+        headers.add("Content-type", "application/zip");
+        headers.add("Content-disposition", "attachment; filename=" + info.getName() + ".zip");
         getResponse().setEntity( fmt.toRepresentation( directory ) );
     }
     

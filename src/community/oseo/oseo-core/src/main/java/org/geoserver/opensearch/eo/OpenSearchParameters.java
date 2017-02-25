@@ -45,7 +45,8 @@ public class OpenSearchParameters {
                         .maximumInclusive(90).build(),
                 new ParameterBuilder("lon", Double.class).prefix("geo").minimumInclusive(-180)
                         .maximumInclusive(180).build(),
-                new ParameterBuilder("radius", Double.class).prefix("geo").build(),
+                new ParameterBuilder("radius", Double.class).prefix("geo").minimumInclusive(0)
+                        .build(),
                 new ParameterBuilder("start", Date.class).prefix("time").build(),
                 new ParameterBuilder("end", Date.class).prefix("time").build());
     }

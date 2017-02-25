@@ -15,5 +15,5 @@ import org.opengis.feature.type.FeatureType;
  */
 public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
 
-    // TODO: create the complex features here
+    
 }

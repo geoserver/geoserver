@@ -27,12 +27,19 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     Repository repository;
 
     Name delegateStoreName;
+    
+    FeatureType collectionFeatureType;
+    FeatureType productFeatureType;
 
     public JDBCOpenSearchAccess(Repository repository, Name delegateStoreName) {
         // TODO: maybe get a direct Catalog reference so that we can lookup by store id, which is
         // stable though renames?
         this.repository = repository;
         this.delegateStoreName = delegateStoreName;
+        
+        // TODO: check the expected feature types are available
+        
+        // TODO: build the complex feature types here
     }
 
     @Override

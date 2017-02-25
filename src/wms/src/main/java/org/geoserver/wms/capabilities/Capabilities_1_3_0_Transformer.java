@@ -760,8 +760,11 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 String currentSRS;
 
                 while (it.hasNext()) {
-                    currentSRS = qualifySRS(it.next());
-                    element("CRS", currentSRS);
+                    String code = it.next();
+                    if(!"WGS84(DD)".equals(code)) {
+                        currentSRS = qualifySRS(code);
+                        element("CRS", currentSRS);
+                    }
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);

@@ -319,7 +319,7 @@ public class GetCapabilitiesTransformerTest {
         supportedCodes.addAll(CRS.getSupportedCodes("AUTO"));
         NodeList allCrsCodes = XPATH.getMatchingNodes("/WMT_MS_Capabilities/Capability/Layer/SRS",
                 dom);
-        assertEquals(supportedCodes.size(), allCrsCodes.getLength());
+        assertEquals(supportedCodes.size() - 1 /* WGS84(DD) */, allCrsCodes.getLength());
     }
 
     @Test

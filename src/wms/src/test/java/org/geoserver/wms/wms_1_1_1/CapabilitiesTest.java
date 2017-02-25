@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 
+import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributionInfo;
@@ -92,6 +93,13 @@ public class CapabilitiesTest extends WMSTestSupport {
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
         Element e = dom.getDocumentElement();
         assertEquals("WMT_MS_Capabilities", e.getLocalName());
+    }
+    
+    @org.junit.Test 
+    public void testCapabilitiesNoWGS84DD() throws Exception {
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+        // print(dom);
+        XMLAssert.assertXpathNotExists("//SRS[text() = 'EPSG:WGS84(DD)']", dom);
     }
 
     @Test

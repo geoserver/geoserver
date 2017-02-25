@@ -1428,12 +1428,7 @@ public class CatalogImpl implements Catalog {
     
     @Override
     public void removeListeners(Class listenerClass) {
-        for (Iterator it = listeners.iterator(); it.hasNext();) {
-            CatalogListener listener = (CatalogListener) it.next();
-            if(listenerClass.isInstance(listener)) {
-                it.remove();
-            }
-        }
+        new ArrayList<>(listeners).stream().filter(l -> listenerClass.isInstance(l)).forEach(l -> listeners.remove(l));
     }
 
     public Iterator search(String cql) {

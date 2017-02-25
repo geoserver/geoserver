@@ -168,7 +168,7 @@ public class DataStoreFileResource extends StoreFileResource {
                 } else if(URL.class.isAssignableFrom(param.getType())) {
                     Object result = param.lookUp(paramValues);
                     if(result instanceof URL) {
-                        directory = new File(((URL)result).getFile());
+                        directory = DataUtilities.urlToFile((URL) result);
                     }
                 }
                 

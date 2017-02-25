@@ -764,8 +764,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 String currentSRS;
 
                 while (it.hasNext()) {
-                    currentSRS = qualifySRS(it.next());
-                    element("SRS", currentSRS);
+                    String code = it.next();
+                    if(!"WGS84(DD)".equals(code)) {
+                        currentSRS = qualifySRS(code);
+                        element("SRS", currentSRS);
+                    }
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);

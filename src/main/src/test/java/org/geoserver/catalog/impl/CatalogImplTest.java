@@ -6,18 +6,36 @@
 package org.geoserver.catalog.impl;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static org.geoserver.catalog.Predicates.*;
-import static org.junit.Assert.*;
+import static org.geoserver.catalog.Predicates.acceptAll;
+import static org.geoserver.catalog.Predicates.asc;
+import static org.geoserver.catalog.Predicates.contains;
+import static org.geoserver.catalog.Predicates.desc;
+import static org.geoserver.catalog.Predicates.equal;
+import static org.geoserver.catalog.Predicates.or;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
@@ -48,6 +66,7 @@ import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.util.logging.Logging;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -2261,9 +2280,9 @@ public class CatalogImplTest {
     
     static class TestListener implements CatalogListener {
 
-        public List<CatalogAddEvent> added = new ArrayList();
-        public List<CatalogModifyEvent> modified = new ArrayList();
-        public List<CatalogRemoveEvent> removed = new ArrayList();
+        public List<CatalogAddEvent> added = new CopyOnWriteArrayList<>();
+        public List<CatalogModifyEvent> modified = new CopyOnWriteArrayList<>();
+        public List<CatalogRemoveEvent> removed = new CopyOnWriteArrayList<>();
         
         public void handleAddEvent(CatalogAddEvent event) {
             added.add( event );
@@ -2930,6 +2949,50 @@ public class CatalogImplTest {
         ft2.setName(name);
         ft2.setStore(ds);
         return ft2;
+    }
+
+    @Test
+    public void testConcurrentCatalogModification() throws Exception {
+        Logger logger = Logging.getLogger(CatalogImpl.class);
+        final int tasks = 8;
+        ExecutorService executor = Executors.newFixedThreadPool(tasks / 2);
+        Level previousLevel = logger.getLevel();
+        // clear previous listeners
+        new ArrayList<>(catalog.getListeners()).forEach(l -> catalog.removeListener(l));
+        try {
+            // disable logging for this test, it will stay a while in case of failure otherwise
+            logger.setLevel(Level.OFF);
+            ExecutorCompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
+            for (int i = 0; i < tasks; i++) {
+                 completionService.submit(() -> {
+                     // attach listeners
+                     List<TestListener> listeners = new ArrayList<>();
+                     for (int j = 0; j < 3; j++) {
+                         TestListener tl = new TestListener();
+                         listeners.add(tl);
+                         catalog.addListener(tl);
+                     }
+    
+                     // simulate catalog removals, check the events get to destination
+                     CatalogInfo catalogInfo = new CoverageInfoImpl();
+                     catalog.fireRemoved(catalogInfo);
+                     // make sure each listener actually got the message
+                     for (TestListener testListener : listeners) {
+                         assertTrue("Did not find the expected even in the listener", 
+                                 testListener.removed.stream().anyMatch(event -> event.getSource() == catalogInfo));
+                     }
+    
+                     // clear the listeners
+                     listeners.forEach(l -> catalog.removeListener(l));
+                 }, null);
+            }
+            for (int i = 0; i < tasks; ++i) {
+                completionService.take().get();
+            }
+        } finally {
+            executor.shutdown();
+            logger.setLevel(previousLevel);
+        }
     }
 
 }

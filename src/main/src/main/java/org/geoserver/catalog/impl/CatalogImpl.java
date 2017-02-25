@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -91,7 +92,7 @@ public class CatalogImpl implements Catalog {
     /**
      * listeners
      */
-    protected List listeners = new ArrayList();
+    protected List listeners = new CopyOnWriteArrayList<>();
 
     /** 
      * resources
@@ -1518,8 +1519,7 @@ public class CatalogImpl implements Catalog {
             } catch(Throwable t) {
                 if ( t instanceof CatalogException && toThrow == null) {
                     toThrow = (CatalogException) t;
-                }
-                else {
+                } else if(LOGGER.isLoggable(Level.WARNING)) {
                     LOGGER.log(Level.WARNING, "Catalog listener threw exception handling event.", t);
                 }
             }

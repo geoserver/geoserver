@@ -993,33 +993,40 @@ public class Dispatcher extends AbstractController {
             setHeaders(req,opDescriptor,result,response);
             
             OutputStream output = outputStrategy.getDestination(req.getHttpResponse());
-
-            if (req.isSOAP()) {
-                //SOAP request, start the SOAP wrapper
-                startSOAPEnvelope(output, response);
-            }
-
-            //special check for transformer
-            if (req.isSOAP() && result instanceof TransformerBase) {
-                ((TransformerBase)result).setOmitXMLDeclaration(true);
-            }
-
-            // actually write out the response
-            response.write(result, output, opDescriptor);
-
-            if (req.isSOAP()) {
-                //SOAP request, start the SOAP wrapper
-                endSOAPEnvelope(output);
-            }
-
-            // flush the output with detection of client shutting the door in our face
+            boolean abortResponse = true;
             try {
-                outputStrategy.flush(req.getHttpResponse());
-            } catch(IOException e) {
-                throw new ClientStreamAbortedException(e);
+                if (req.isSOAP()) {
+                    //SOAP request, start the SOAP wrapper
+                    startSOAPEnvelope(output, response);
+                }
+    
+                //special check for transformer
+                if (req.isSOAP() && result instanceof TransformerBase) {
+                    ((TransformerBase)result).setOmitXMLDeclaration(true);
+                }
+    
+                // actually write out the response
+                response.write(result, output, opDescriptor);
+    
+                if (req.isSOAP()) {
+                    //SOAP request, start the SOAP wrapper
+                    endSOAPEnvelope(output);
+                }
+    
+                // flush the output with detection of client shutting the door in our face
+                try {
+                    outputStrategy.flush(req.getHttpResponse());
+                } catch(IOException e) {
+                    throw new ClientStreamAbortedException(e);
+                }
+                abortResponse = true;
+            } finally {
+                if(abortResponse) {
+                    outputStrategy.abort();
+                }
             }
 
-            //flush the underlying out stream for good meaure
+            // flush the underlying out stream for good measure
             req.getHttpResponse().getOutputStream().flush();
         }
     }

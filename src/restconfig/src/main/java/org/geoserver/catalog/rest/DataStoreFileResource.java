@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -396,6 +397,7 @@ public class DataStoreFileResource extends StoreFileResource {
 
                         tx.commit();
                     } catch (Exception e) {
+                        LOGGER.log(Level.SEVERE, "Failed to import data, rolling back the transaction", e);
                         tx.rollback();
                     } finally {
                         tx.close();

@@ -68,6 +68,13 @@ public class DescriptionTest extends OSEOTestSupport {
                 paramBase + "[@name='searchTerms' and @value='{searchTerms}' and @minimum='0']"));
         assertThat(dom, hasXPath(paramBase
                 + "[@name='count' and @value='{count}' and @minimum='0' and  @minInclusive='0' and @maxInclusive='50']"));
+        
+        // check some EO parameter
+        assertThat(dom, hasXPath(paramBase
+                + "[@name='wavelength' and @value='{eo:wavelength}' and @minimum='0']"));
+        assertThat(dom, hasXPath(paramBase
+                + "[@name='identifier' and @value='{eo:identifier}' and @minimum='0']"));
+
 
         // general validation
         checkValidOSDD(dom);

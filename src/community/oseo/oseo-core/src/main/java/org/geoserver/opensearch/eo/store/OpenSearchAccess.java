@@ -7,6 +7,7 @@ package org.geoserver.opensearch.eo.store;
 import org.geotools.data.DataAccess;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 
 /**
  * Holds OpenSearchAccess specific constants
@@ -14,6 +15,14 @@ import org.opengis.feature.type.FeatureType;
  * @author Andrea Aime - GeoSolutions
  */
 public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
+
+    String EO_NAMESPACE = "http://a9.com/-/opensearch/extensions/eo/1.0/";
+
+    /**
+     * Returns the name of the feature type backing EO collections
+
+     */
+    Name getCollectionName();
 
     
 }

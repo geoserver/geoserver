@@ -31,7 +31,7 @@ create table collection (
   "eoProcessingLevel" varchar,
   "eoOrbitType" varchar,
   "eoSpectralRange" varchar,
-  "eoWavelenght" int,
+  "eoWavelength" int,
   "eoSecurityConstraints" boolean,
   "eoDissemination" varchar,
   "eoAcquisitionStation" varchar
@@ -53,7 +53,7 @@ CREATE INDEX "idx_collection_eoCompositeType" ON collection ("eoCompositeType");
 CREATE INDEX "idx_collection_eoProcessingLevel" ON collection ("eoProcessingLevel");
 CREATE INDEX "idx_collection_eoOrbitType" ON collection ("eoOrbitType");
 CREATE INDEX "idx_collection_eoSpectralRange" ON collection ("eoSpectralRange");
-CREATE INDEX "idx_collection_eoWavelenght" ON collection ("eoWavelenght");
+CREATE INDEX "idx_collection_eoWavelength" ON collection ("eoWavelength");
 CREATE INDEX "idx_collection_eoSecurityConstraints" ON collection ("eoSecurityConstraints");
 CREATE INDEX "idx_collection_eoDissemination" ON collection ("eoDissemination");
 CREATE INDEX "idx_collection_eoAcquisitionStation" ON collection ("eoAcquisitionStation");

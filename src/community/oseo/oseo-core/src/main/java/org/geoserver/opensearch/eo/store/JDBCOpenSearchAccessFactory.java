@@ -13,7 +13,6 @@ import java.util.Map;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.Repository;
-import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.util.Converters;
 import org.geotools.util.KVP;
 import org.opengis.feature.Feature;
@@ -33,9 +32,14 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
 
     public static final Param STORE_PARAM = new Param("store", String.class, "Delegate data store",
             false, null, new KVP(Param.ELEMENT, String.class));
-    
+
     /** parameter for database type */
-    public static final Param DBTYPE = new Param("dbtype", String.class, "Type", true, "opensearch-eo-jdbc");
+    public static final Param DBTYPE = new Param("dbtype", String.class, "Type", true,
+            "opensearch-eo-jdbc");
+
+    /** parameter for namespace of the datastore */
+    public static final Param NAMESPACE = new Param("namespace", String.class, "Namespace prefix",
+            false);
 
     @Override
     public Map<Key, ?> getImplementationHints() {
@@ -48,8 +52,9 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
             Map<String, Serializable> params) throws IOException {
         Repository repository = (Repository) REPOSITORY_PARAM.lookUp(params);
         String flatStoreName = (String) STORE_PARAM.lookUp(params);
+        String ns = (String) NAMESPACE.lookUp(params);
         Name name = Converters.convert(flatStoreName, Name.class);
-        return new JDBCOpenSearchAccess(repository, name);
+        return new JDBCOpenSearchAccess(repository, name, ns);
     }
 
     @Override
@@ -64,7 +69,7 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
 
     @Override
     public Param[] getParametersInfo() {
-        return new Param[] { DBTYPE, REPOSITORY_PARAM, STORE_PARAM };
+        return new Param[] { DBTYPE, REPOSITORY_PARAM, STORE_PARAM, NAMESPACE };
     }
 
     @Override
@@ -109,7 +114,7 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
                 }
             }
         }
-        
+
         // dbtype specific check
         String type;
         try {

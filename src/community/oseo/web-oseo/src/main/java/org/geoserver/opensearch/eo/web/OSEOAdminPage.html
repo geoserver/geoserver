@@ -2,6 +2,21 @@
 <html xmlns:wicket="http://wicket.apache.org/">
    <body>
       <wicket:extend>
+        <fieldset>
+            <legend>
+               <span>
+                  <wicket:message key="productMetadataSource">metadataSource</wicket:message>
+               </span>
+            </legend>
+            <ul>
+               <li>
+                  <label>
+                     <wicket:message key="openSearchAccessId">openSearchAccessId</wicket:message>
+                  </label>
+                  <select wicket:id="openSearchAccessId"/>
+               </li>
+            </ul>
+         </fieldset>
       </wicket:extend>
    </body>
 </html>

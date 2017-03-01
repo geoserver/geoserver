@@ -47,10 +47,10 @@ public class JDBCOpenSearchAccessTest {
     public static void setupStore() throws IOException, SQLException {
         Map<String, Serializable> params = new HashMap<>();
         params.put("dbtype", "h2");
-        File dbFolder = new File("./target/oseo_db");
+        File dbFolder = new File("./target/oseo_db_store_test");
         FileUtils.deleteQuietly(dbFolder);
         dbFolder.mkdir();
-        File dbFile = new File(dbFolder, "oseo_db");
+        File dbFile = new File(dbFolder, "oseo_db_store_test");
         params.put("database", dbFile.getAbsolutePath());
         h2 = (JDBCDataStore) DataStoreFinder.getDataStore(params);
         JDBCOpenSearchAccessTest.createTables(h2);

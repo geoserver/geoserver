@@ -47,7 +47,9 @@ class JDBCConfigurationStorage implements ApplicationContextAware, SecurityManag
 
     public JDBCConfigurationStorage(ResourceStore store,
             GeoServerSecurityManager securityManager) {
-        this.configDir = store.get(GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME);
+        GeoserverXMLResourceProvider configProvider = (GeoserverXMLResourceProvider)
+                GeoServerExtensions.bean("jdbcDiskQuotaConfigResourceProvider");
+        this.configDir = configProvider.getConfigDirectory();
         this.passwordHelper = new JDBCPasswordEncryptionHelper(securityManager);
         securityManager.addListener(this);
     }

@@ -110,7 +110,7 @@ create table product (
   "sarMaximumIncidenceAngle" float,
   "sarDopplerFrequency" float,
   "sarIncidenceAngleVariation" float,
-  "eoResolution" float,
+  "eoResolution" float
 );
 -- index all (really, this is a search engine)
 -- manually generated indexes
@@ -172,7 +172,7 @@ create table collection_ogclink (
   code varchar,
   "type" varchar,
   href varchar
-) 
+);
 
 -- links for products
 create table product_ogclink (
@@ -183,7 +183,7 @@ create table product_ogclink (
   code varchar,
   "type" varchar,
   href varchar
-) 
+); 
 
 -- the granules table (might be abstract, and we can use partitioning)
 create table granule (

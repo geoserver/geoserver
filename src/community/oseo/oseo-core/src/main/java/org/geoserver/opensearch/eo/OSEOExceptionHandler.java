@@ -4,11 +4,17 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.geoserver.config.GeoServer;
+import org.geoserver.opensearch.eo.response.RSSExceptionTransformer;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.ServiceExceptionHandler;
+import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.ServiceException;
 
 /**
@@ -19,6 +25,8 @@ import org.geoserver.platform.ServiceException;
  */
 public class OSEOExceptionHandler extends ServiceExceptionHandler {
 
+    static final String RSS_MIME = "application/rss+xml";
+
     private GeoServer geoServer;
 
     public OSEOExceptionHandler(List services, GeoServer geoServer) {
@@ -28,7 +36,32 @@ public class OSEOExceptionHandler extends ServiceExceptionHandler {
 
     @Override
     public void handleServiceException(ServiceException exception, Request request) {
-        throw new UnsupportedOperationException();
+        HttpServletResponse response = request.getHttpResponse();
+        response.setContentType(RSS_MIME);
+
+        if (exception instanceof OWS20Exception) {
+            OWS20Exception ex = (OWS20Exception) exception;
+            if(ex.getHttpCode() != null) {
+                response.setStatus(ex.getHttpCode());
+            } else {
+                response.setStatus(500);
+            }
+        } else {
+            response.setStatus(500);
+        }
+
+        try {
+            new RSSExceptionTransformer(geoServer.getGlobal(), request).transform(exception,
+                    response.getOutputStream());
+        } catch (Exception ex) {
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:",
+                    ex);
+        } finally {
+            try {
+                request.getHttpResponse().getOutputStream().flush();
+            } catch (IOException ioe) {
+            }
+        }
     }
 
 }

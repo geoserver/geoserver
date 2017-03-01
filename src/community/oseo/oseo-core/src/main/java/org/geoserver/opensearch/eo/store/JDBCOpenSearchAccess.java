@@ -36,9 +36,9 @@ import org.opengis.feature.type.Name;
  */
 public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
-    static final String COLLECTION = "COLLECTION";
+    static final String COLLECTION = "collection";
 
-    static final String PRODUCT = "PRODUCT";
+    static final String PRODUCT = "product";
 
     static final String EO_PREFIX = "eo";
 
@@ -65,8 +65,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
         // TODO: check the expected feature types are available
         DataStore delegate = getDelegateStore();
-        verifyRequiredTables(delegate, COLLECTION, PRODUCT);
-
+        List<String> missingTables = getMissingRequiredTables(delegate, COLLECTION, PRODUCT);
         
         collectionFeatureType = buildCollectionFeatureType(delegate);
         // TODO: build the complex feature type for product here
@@ -106,23 +105,22 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         return collectionTypeBuilder.feature();
     }
 
-    private void verifyRequiredTables(DataStore delegate, String... tables) throws IOException {
+    private List<String> getMissingRequiredTables(DataStore delegate, String... tables) throws IOException {
         Set<String> availableNames = new HashSet<>(Arrays.asList(delegate.getTypeNames()));
-        List<String> missingTables = Arrays.stream(tables)
+        return Arrays.stream(tables)
                 .filter(table -> !availableNames.contains(table)).collect(Collectors.toList());
-        if (!missingTables.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "OpenSearch source data store does not contain some required tables: " + Arrays.asList(missingTables));
-        }
     }
 
     /**
      * Returns the store from the repository (which is based on GeoServer own resource pool)
      * 
      * @return
+     * @throws IOException 
      */
-    DataStore getDelegateStore() {
-        return repository.dataStore(delegateStoreName);
+    DataStore getDelegateStore() throws IOException {
+        DataStore store = repository.dataStore(delegateStoreName);
+        return new LowercasingDataStore(store);
+        
     }
 
     @Override

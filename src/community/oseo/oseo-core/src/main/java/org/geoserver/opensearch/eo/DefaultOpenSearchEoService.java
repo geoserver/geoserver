@@ -12,7 +12,8 @@ import java.util.List;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
-import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.OWS20Exception;
+import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
 import org.geotools.data.DataAccess;
 import org.geotools.data.Parameter;
 import org.geotools.feature.FeatureCollection;
@@ -46,6 +47,13 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
         if (request.getParentId() == null) {
             searchParameters.addAll(getCollectionEoSearchParameters());
+        } else {
+            // product search for a given collection, figure out what parameters apply to it
+
+            // HACK, for the moment just throw an exception to allow for testing
+            throw new OWS20Exception("Unknown parentId '" + request.getParentId() + "'",
+                    OWSExceptionCode.InvalidParameterValue);
+
         }
 
         return new OSEODescription(request, service, geoServer.getGlobal(), searchParameters);
@@ -70,30 +78,30 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
     @Override
     public FeatureCollection search(SearchRequest request) {
-        throw new UnsupportedOperationException();
+        throw new OWS20Exception("Not implemented yet");
     }
 
     OpenSearchAccess getOpenSearchAccess() throws IOException {
         OSEOInfo service = getService();
         String openSearchAccessStoreId = service.getOpenSearchAccessStoreId();
         if (openSearchAccessStoreId == null) {
-            throw new NullPointerException("OpenSearchAccess is not configured in the"
+            throw new OWS20Exception("OpenSearchAccess is not configured in the"
                     + " OpenSearch for EO panel, please do so");
         }
         DataStoreInfo dataStore = this.geoServer.getCatalog().getDataStore(openSearchAccessStoreId);
         if (dataStore == null) {
-            throw new ServiceException("Could not locate OpenSearch data access with identifier "
+            throw new OWS20Exception("Could not locate OpenSearch data access with identifier "
                     + openSearchAccessStoreId
                     + ", please correct the configuration in the OpenSearch for EO panel");
         }
 
         DataAccess result = dataStore.getDataStore(null);
         if (result == null) {
-            throw new ServiceException("Failed to locate OpenSearch data access with identifier "
+            throw new OWS20Exception("Failed to locate OpenSearch data access with identifier "
                     + openSearchAccessStoreId
                     + ", please correct the configuration in the OpenSearch for EO panel");
         } else if (!(result instanceof OpenSearchAccess)) {
-            throw new ServiceException("Data access with identifier " + openSearchAccessStoreId
+            throw new OWS20Exception("Data access with identifier " + openSearchAccessStoreId
                     + " does not point to a valid OpenSearchDataAccess, "
                     + "please correct the configuration in the OpenSearch for EO panel");
         }

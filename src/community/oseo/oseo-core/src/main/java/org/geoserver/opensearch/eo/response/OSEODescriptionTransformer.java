@@ -20,64 +20,25 @@ import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geotools.data.Parameter;
-import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
-import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Encodes a {@link OSEODescriptionResponse} into a OSDD document
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class OSEODescriptionTransformer extends TransformerBase {
+public class OSEODescriptionTransformer extends LambdaTransformerBase {
 
     @Override
     public Translator createTranslator(ContentHandler handler) {
         return new OSEODescriptionTranslator(handler);
     }
 
-    private static class OSEODescriptionTranslator extends TranslatorSupport {
-
-        static final Runnable NO_CONTENTS = () -> {
-        };
+    private class OSEODescriptionTranslator extends LambdaTranslatorSupport {
 
         public OSEODescriptionTranslator(ContentHandler contentHandler) {
             super(contentHandler, null, null);
-        }
-
-        void element(String elementName, Runnable contentsEncoder, Attributes attributes) {
-            if (attributes != null) {
-                start(elementName, attributes);
-            } else {
-                start(elementName);
-            }
-            if (contentsEncoder != null) {
-                contentsEncoder.run();
-            }
-            end(elementName);
-        }
-
-        private Attributes attributes(Map<String, String> map) {
-            AttributesImpl attributes = new AttributesImpl();
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                String name = entry.getKey();
-                String value = entry.getValue();
-                attributes.addAttribute("", name, name, "", value);
-            }
-            return attributes;
-        }
-
-        private AttributesImpl attributes(String... kvp) {
-            String[] atts = kvp;
-            AttributesImpl attributes = new AttributesImpl();
-            for (int i = 0; i < atts.length; i += 2) {
-                String name = atts[i];
-                String value = atts[i + 1];
-                attributes.addAttribute("", name, name, "", value);
-            }
-            return attributes;
         }
 
         @Override
@@ -186,12 +147,13 @@ public class OSEODescriptionTransformer extends TransformerBase {
                         }
                     }
                 }
-                if(!map.containsKey("pattern")) {
+                if (!map.containsKey("pattern")) {
                     Class type = param.getType();
-                    if(Integer.class == type) {
+                    if (Integer.class == type) {
                         map.put("pattern", "[0-9]+");
-                    } else if(Date.class.isAssignableFrom(type)) {
-                        map.put("pattern", "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[\\+\\-][0-9]{2}:[0-9]{2})$");
+                    } else if (Date.class.isAssignableFrom(type)) {
+                        map.put("pattern",
+                                "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[\\+\\-][0-9]{2}:[0-9]{2})$");
                     }
                 }
                 element("param:Parameter", contentsEncoder, attributes(map));

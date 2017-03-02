@@ -37,26 +37,40 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
     @Override
     public OSEODescription description(OSEODescriptionRequest request) throws IOException {
-        OpenSearchAccess openSearchAccess = getOpenSearchAccess();
-
         final OSEOInfo service = getService();
+        final String parentId = request.getParentId();
 
-        List<Parameter> searchParameters = new ArrayList<>();
-        searchParameters.addAll(OpenSearchParameters.getBasicOpensearch(service));
-        searchParameters.addAll(OpenSearchParameters.getGeoTimeOpensearch());
-
-        if (request.getParentId() == null) {
-            searchParameters.addAll(getCollectionEoSearchParameters());
+        List<Parameter<?>> searchParameters;
+        if (parentId != null) {
+            searchParameters = getProductSearchParameters(parentId);
         } else {
-            // product search for a given collection, figure out what parameters apply to it
-
-            // HACK, for the moment just throw an exception to allow for testing
-            throw new OWS20Exception("Unknown parentId '" + request.getParentId() + "'",
-                    OWSExceptionCode.InvalidParameterValue);
-
+            searchParameters = getCollectionSearchParameters();
         }
 
         return new OSEODescription(request, service, geoServer.getGlobal(), searchParameters);
+    }
+
+    public List<Parameter<?>> getProductSearchParameters(final String parentId) throws IOException {
+        OSEOInfo service = getService();
+        List<Parameter<?>> searchParameters = new ArrayList<>();
+        searchParameters.addAll(OpenSearchParameters.getBasicOpensearch(service));
+        searchParameters.addAll(OpenSearchParameters.getGeoTimeOpensearch());
+        // product search for a given collection, figure out what parameters apply to it
+
+        // HACK, for the moment just throw an exception to allow for testing
+        throw new OWS20Exception("Unknown parentId '" + parentId + "'",
+                OWSExceptionCode.InvalidParameterValue);
+
+        // return searchParameters;
+    }
+
+    public List<Parameter<?>> getCollectionSearchParameters() throws IOException {
+        OSEOInfo service = getService();
+        List<Parameter<?>> searchParameters = new ArrayList<>();
+        searchParameters.addAll(OpenSearchParameters.getBasicOpensearch(service));
+        searchParameters.addAll(OpenSearchParameters.getGeoTimeOpensearch());
+        searchParameters.addAll(getCollectionEoSearchParameters());
+        return searchParameters;
     }
 
     private Collection<? extends Parameter<?>> getCollectionEoSearchParameters()

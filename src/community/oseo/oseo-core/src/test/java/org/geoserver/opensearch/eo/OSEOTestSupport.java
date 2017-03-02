@@ -22,6 +22,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.jdbc.JDBCDataStore;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
@@ -68,7 +69,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
 
         Map params = jdbcDs.getConnectionParameters();
         params.put("dbtype", "h2");
-        File dbFolder = new File("./target/oseo_db");
+        File dbFolder = new File(testData.getDataDirectoryRoot(), "oseo_db");
         FileUtils.deleteQuietly(dbFolder);
         dbFolder.mkdir();
         File dbFile = new File(dbFolder, "oseo_db");
@@ -104,7 +105,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         namespaceContext.bindNamespaceUri("os", "http://a9.com/-/spec/opensearch/1.1/");
         namespaceContext.bindNamespaceUri("param", "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/");
     }
-
+    
     protected Matcher<Node> hasXPath(String xPath) {
         return Matchers.hasXPath(xPath, namespaceContext);
     }

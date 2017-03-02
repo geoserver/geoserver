@@ -7,9 +7,14 @@ package org.geoserver.opensearch.eo.kvp;
 import org.geoserver.opensearch.eo.OSEODescriptionRequest;
 import org.geoserver.ows.KvpRequestReader;
 
-public class OSEODescriptionRequestKvpReader extends KvpRequestReader {
+/**
+ * Reads a "description" request
+ *
+ * @author Andrea Aime - GeoSolutions
+ */
+public class DescriptionRequestKvpReader extends KvpRequestReader {
 
-    public OSEODescriptionRequestKvpReader() {
+    public DescriptionRequestKvpReader() {
         super(OSEODescriptionRequest.class);
     }
 

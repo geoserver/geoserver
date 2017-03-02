@@ -27,10 +27,10 @@ public class OSEODescription {
 
     GeoServerInfo geoserverInfo;
 
-    List<Parameter> searchParameters;
+    List<Parameter<?>> searchParameters;
 
     public OSEODescription(OSEODescriptionRequest request, OSEOInfo serviceInfo,
-            GeoServerInfo geoserverInfo, List<Parameter> searchParameters) {
+            GeoServerInfo geoserverInfo, List<Parameter<?>> searchParameters) {
         this.baseURL = request.getBaseUrl();
         this.parentId = request.getParentId();
         this.serviceInfo = serviceInfo;
@@ -54,7 +54,7 @@ public class OSEODescription {
         return geoserverInfo;
     }
     
-    public List<Parameter> getSearchParameters() {
+    public List<Parameter<?>> getSearchParameters() {
         return searchParameters;
     }
 

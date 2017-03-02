@@ -79,7 +79,10 @@
   <bean id="oseoDispatcherCallback" class="org.geoserver.opensearch.eo.OSEODispatcherCallback"/>
   
   <!-- kvp request readers -->
-  <bean id="oseoDescriptionRequestKvpParser" class="org.geoserver.opensearch.eo.kvp.OSEODescriptionRequestKvpReader"/>
+  <bean id="oseoDescriptionRequestKvpParser" class="org.geoserver.opensearch.eo.kvp.DescriptionRequestKvpReader"/>
+  <bean id="oseoSearchRequestKvpParser" class="org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader">
+    <constructor-arg ref="openSearchEoService"/>
+  </bean>
 
   <!-- responses -->
   <bean id="oseoDescriptionResponse" class="org.geoserver.opensearch.eo.response.OSEODescriptionResponse"/>

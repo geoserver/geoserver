@@ -5,7 +5,9 @@
 package org.geoserver.opensearch.eo;
 
 import java.io.IOException;
+import java.util.Collection;
 
+import org.geotools.data.Parameter;
 import org.geotools.feature.FeatureCollection;
 
 public interface OpenSearchEoService {
@@ -15,7 +17,7 @@ public interface OpenSearchEoService {
      * 
      * @param request
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     public OSEODescription description(OSEODescriptionRequest request) throws IOException;
 
@@ -26,4 +28,23 @@ public interface OpenSearchEoService {
      * @return
      */
     public FeatureCollection search(SearchRequest request);
+
+    /**
+     * Returns the search parameters applicable to collections
+     * 
+     * @param service
+     * @return
+     * @throws IOException
+     */
+    Collection<Parameter<?>> getCollectionSearchParameters() throws IOException;
+
+    /**
+     * Returns the search parameters applicable to products of a certain collection
+     * 
+     * @param service
+     * @param parentId
+     * @return
+     * @throws IOException
+     */
+    Collection<Parameter<?>> getProductSearchParameters(String parentId) throws IOException;
 }

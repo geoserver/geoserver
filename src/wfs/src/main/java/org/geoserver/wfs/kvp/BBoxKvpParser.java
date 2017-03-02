@@ -39,8 +39,8 @@ public class BBoxKvpParser extends KvpParser {
         }
         
         int countco = 4;
-        if (unparsed.size() == 6) { //3d-coordinates 
-        	countco = 6;        	
+        if (unparsed.size() == 6 || unparsed.size() == 7) { // 3d-coordinates
+            countco = 6;
         }
 
         //if it does, store them in an array of doubles

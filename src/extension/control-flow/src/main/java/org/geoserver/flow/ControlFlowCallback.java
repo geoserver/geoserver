@@ -26,6 +26,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
@@ -34,6 +35,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Callback that controls the flow of OWS requests based on user specified rules and makes sure
@@ -42,8 +44,7 @@ import org.springframework.context.ApplicationContextAware;
  * 
  * @author Andrea Aime - OpenGeo
  */
-public class ControlFlowCallback extends AbstractDispatcherCallback implements
-    BeanDefinitionRegistryPostProcessor, ApplicationContextAware, GeoServerFilter {
+public class ControlFlowCallback extends AbstractDispatcherCallback implements ApplicationContextAware, GeoServerFilter {
 
     /**
      * Header added to all responses to make it visible how much deplay was applied going thorough
@@ -187,51 +188,43 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-    }
-
-    @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        if (GeoServerExtensions.bean(FlowControllerProvider.class) == null) {
-            beanFactory.initializeBean(provider, "defaultFlowControllerProvider");
+        if (applicationContext instanceof ConfigurableApplicationContext) {
+            // register default beans if needed
+            registDefaultBeansIfNeeded((ConfigurableApplicationContext) applicationContext);
+        } else {
+            // we cannot regist default beans, there is nothing else we can do about this
+            LOGGER.warning("Application context not configurable, control-flow default beans will not be registered.");
         }
-        
-        // look for a ControlFlowConfigurator in the application context, if none is found, use the
-        // default one
         provider = GeoServerExtensions.bean(FlowControllerProvider.class, applicationContext);
+        // default beans may have not been registered
         if (provider == null) {
             provider = new DefaultFlowControllerProvider(applicationContext);
         }
     }
 
-    @Override
-    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-            throws BeansException {
-        // Inject DefaultFlowControllerProvider definition it not defined
-        if (GeoServerExtensions.bean(FlowControllerProvider.class, applicationContext) == null) {
-            
-            ConstructorArgumentValues args = new ConstructorArgumentValues();
-            args.addGenericArgumentValue(applicationContext);
-            
-            RootBeanDefinition beanDefinition = 
-                    new RootBeanDefinition(DefaultFlowControllerProvider.class, args, null); //The service implementation
-            
-            beanDefinition.setTargetType(FlowControllerProvider.class); //The service interface
-            beanDefinition.setRole(BeanDefinition.ROLE_APPLICATION);
-            beanDefinition.setScope(BeanDefinition.SCOPE_SINGLETON);
-            
-            registry.registerBeanDefinition("defaultFlowControllerProvider", beanDefinition);
-        }
-        
-        // Inject DefaultControlFlowConfigurator definition it not defined
-        if (GeoServerExtensions.bean(ControlFlowConfigurator.class, applicationContext) == null) {
-            RootBeanDefinition beanDefinition = 
-                    new RootBeanDefinition(DefaultControlFlowConfigurator.class); //The service implementation
-            
-            beanDefinition.setTargetType(ControlFlowConfigurator.class); //The service interface
-            beanDefinition.setRole(BeanDefinition.ROLE_APPLICATION);
-            beanDefinition.setScope(BeanDefinition.SCOPE_SINGLETON);
-            
-            registry.registerBeanDefinition("defaultControlFlowConfigurator", beanDefinition);
+    /**
+     * Register default beans for control flow configurator and flow controller.
+     */
+    private void registDefaultBeansIfNeeded(ConfigurableApplicationContext applicationContext) {
+        ConfigurableListableBeanFactory factory = applicationContext.getBeanFactory();
+        // make sure defautl beans are only registered once
+        synchronized (ControlFlowCallback.class) {
+            // first handle the configurator bean
+            try {
+                applicationContext.getBean(ControlFlowConfigurator.class, applicationContext);
+            } catch (NoSuchBeanDefinitionException exception) {
+                // we need to use the default configurator
+                factory.registerSingleton("defaultControlFlowConfigurator", new DefaultControlFlowConfigurator());
+                LOGGER.fine("Defautl flow configurator bean dynamically registered.");
+            }
+            // handle the flow controller provider bean
+            try {
+                applicationContext.getBean(FlowControllerProvider.class, applicationContext);
+            } catch (NoSuchBeanDefinitionException exception) {
+                // we need to use the default flow controller provider
+                factory.registerSingleton("defaultFlowControllerProvider", new DefaultFlowControllerProvider(applicationContext));
+                LOGGER.fine("Defautl flow controller provider bean dynamically registered.");
+            }
         }
     }
     

@@ -158,7 +158,7 @@ create index "idx_product_footprint" on product using GIST(footprint);
 
  -- the eo metadata storage (large files, not used for search, thus separate table)
 create table product_metadata (
-  id int primary key references collection(id),
+  id int primary key references product(id),
   metadata text
 );
 

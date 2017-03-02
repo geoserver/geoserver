@@ -39,6 +39,7 @@ public class OSEODescriptionResponse extends Response {
 
         try {
             OSEODescriptionTransformer transformer = new OSEODescriptionTransformer();
+            transformer.setIndentation(2);
             transformer.transform(description, output);
         } catch (TransformerException e) {
             throw new ServiceException(e);

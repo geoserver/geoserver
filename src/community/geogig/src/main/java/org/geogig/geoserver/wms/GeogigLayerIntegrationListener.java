@@ -14,6 +14,7 @@ import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.REPOS
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geogig.geoserver.config.RepositoryInfo;
@@ -83,12 +84,13 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
 
     public static final String AUTHORITY_URL = "http://geogig.org";
 
-    private GeoServer geoserver;
+    private final GeoServer geoserver;
 
+    private final GeoGigCatalogVisitor visitor = new GeoGigCatalogVisitor();
     /**
      */
     public GeogigLayerIntegrationListener(GeoServer geoserver) {
-        LOGGER.fine("Initialized " + getClass().getName());
+        LOGGER.log(Level.FINE, "Initialized {0}", getClass().getName());
         this.geoserver = geoserver;
         this.geoserver.getCatalog().addListener(this);
     }
@@ -102,6 +104,7 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
         if (!isGeogigLayer(layer)) {
             return;
         }
+        event.getSource().accept(visitor);
         if (!forceServiceRootLayerHaveGeogigAuthURL()) {
             return;
         }
@@ -114,10 +117,10 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
     @Override
     public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
         if (PRE_MOFIFY_EVENT.get() != null) {
-            LOGGER.fine("pre-modify event exists, ignoring handleModifyEvent ("
-                    + PRE_MOFIFY_EVENT.get() + ")");
+            LOGGER.log(Level.FINE, "pre-modify event exists, ignoring handleModifyEvent ({0})", PRE_MOFIFY_EVENT.get());
             return;
         }
+        event.getSource().accept(visitor);
 
         final CatalogInfo source = event.getSource();
         final boolean isGeogigStore = isGeogigStore(source);
@@ -128,7 +131,7 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
                 || propertyNames.contains("connectionParameters");
 
         if (tryPostUpdate) {
-            LOGGER.fine("Storing event for post-handling on " + source);
+            LOGGER.log(Level.FINE, "Storing event for post-handling on {0}", source);
             PRE_MOFIFY_EVENT.set(source);
         }
     }
@@ -143,7 +146,8 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
             return;
         }
         PRE_MOFIFY_EVENT.remove();
-        LOGGER.fine("handing post-modify event for " + preModifySource);
+        LOGGER.log(Level.FINE, "handing post-modify event for {0}", preModifySource);
+        event.getSource().accept(visitor);
 
         CatalogInfo source = event.getSource();
 
@@ -196,7 +200,6 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
             return false;
         }
 
-        GeoServer geoserver = this.geoserver;
         List<AuthorityURLInfo> authorityURLs = serviceInfo.getAuthorityURLs();
         for (AuthorityURLInfo urlInfo : authorityURLs) {
             if (AUTHORITY_URL_NAME.equals(urlInfo.getName())) {
@@ -233,7 +236,7 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
     }
 
     private void setIdentifier(LayerInfo layer) {
-        LOGGER.fine("Updating geogig auth identifier for layer " + layer.prefixedName());
+        LOGGER.log(Level.FINE, "Updating geogig auth identifier for layer {0}", layer.prefixedName());
         final String layerIdentifier = buildLayerIdentifier(layer);
         updateIdentifier(layer, layerIdentifier);
     }
@@ -263,8 +266,8 @@ public class GeogigLayerIntegrationListener implements CatalogListener {
         layerIdentifiers.add(newId);
         Catalog catalog = geoserver.getCatalog();
         catalog.save(geogigLayer);
-        LOGGER.info("Updated geogig auth identifier for layer " + geogigLayer.prefixedName()
-                + " as " + newIdentifier);
+        LOGGER.log(Level.INFO, "Updated geogig auth identifier for layer {0} as {1}",
+                new Object[]{geogigLayer.prefixedName(), newIdentifier});
     }
 
     private String buildLayerIdentifier(LayerInfo geogigLayer) {

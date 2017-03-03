@@ -19,16 +19,17 @@ import org.geoserver.opensearch.eo.OSEODescription;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.data.Parameter;
 import org.geotools.xml.transform.Translator;
 import org.xml.sax.ContentHandler;
 
 /**
- * Encodes a {@link OSEODescriptionResponse} into a OSDD document
+ * Encodes a {@link DescriptionResponse} into a OSDD document
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class OSEODescriptionTransformer extends LambdaTransformerBase {
+public class DescriptionTransformer extends LambdaTransformerBase {
 
     @Override
     public Translator createTranslator(ContentHandler handler) {
@@ -38,7 +39,7 @@ public class OSEODescriptionTransformer extends LambdaTransformerBase {
     private class OSEODescriptionTranslator extends LambdaTranslatorSupport {
 
         public OSEODescriptionTranslator(ContentHandler contentHandler) {
-            super(contentHandler, null, null);
+            super(contentHandler);
         }
 
         @Override
@@ -72,7 +73,7 @@ public class OSEODescriptionTransformer extends LambdaTransformerBase {
             element("Url", () -> describeParameters(description),
                     attributes( //
                             "rel", "results", //
-                            "template", buildResultsUrl(description), //
+                            "template", buildResultsUrl(description, "atom"), //
                             "type", "application/atom+xml"));
             element("LongName", oseo.getTitle());
             element("Developer", oseo.getMaintainer());
@@ -99,14 +100,14 @@ public class OSEODescriptionTransformer extends LambdaTransformerBase {
             return params;
         }
 
-        public String buildResultsUrl(OSEODescription description) {
+        public String buildResultsUrl(OSEODescription description, String format) {
             String baseURL = description.getBaseURL();
             Map<String, String> params = buildParentIdParams(description);
-            String base = buildURL(baseURL, "oseo/description", params, URLType.SERVICE);
+            String base = buildURL(baseURL, "oseo/search", params, URLType.SERVICE);
             // the template must not be url encoded instead
             String paramSpec = description.getSearchParameters().stream().map(p -> {
                 String spec = p.key + "={";
-                spec += getQualifiedParamName(p);
+                spec += OpenSearchParameters.getQualifiedParamName(p);
                 if (!p.required) {
                     spec += "?";
                 }
@@ -114,17 +115,7 @@ public class OSEODescriptionTransformer extends LambdaTransformerBase {
                 return spec;
             }).collect(Collectors.joining("&"));
 
-            return appendQueryString(base, paramSpec);
-        }
-
-        private String getQualifiedParamName(Parameter p) {
-            String prefix = p.metadata == null ? null
-                    : (String) p.metadata.get(OpenSearchParameters.PARAM_PREFIX);
-            if (prefix != null) {
-                return prefix + ":" + p.key;
-            } else {
-                return p.key;
-            }
+            return appendQueryString(base, paramSpec + "&httpAccept=" + ResponseUtils.urlEncode(format));
         }
 
         private void describeParameters(OSEODescription description) {
@@ -133,7 +124,7 @@ public class OSEODescriptionTransformer extends LambdaTransformerBase {
 
                 final Map<String, String> map = new LinkedHashMap<>();
                 map.put("name", param.key);
-                map.put("value", "{" + getQualifiedParamName(param) + "}");
+                map.put("value", "{" + OpenSearchParameters.getQualifiedParamName(param) + "}");
                 if (!param.isRequired()) {
                     map.put("minimum", "0");
                 }

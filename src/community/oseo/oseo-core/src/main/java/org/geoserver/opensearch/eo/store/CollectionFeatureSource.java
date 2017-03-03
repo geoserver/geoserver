@@ -202,7 +202,6 @@ public class CollectionFeatureSource implements FeatureSource<FeatureType, Featu
      * @return
      */
     Feature mapToComplexFeature(PushbackFeatureIterator<SimpleFeature> it) {
-
         return it.next();
     }
 

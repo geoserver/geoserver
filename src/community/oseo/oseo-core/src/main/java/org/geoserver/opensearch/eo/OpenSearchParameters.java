@@ -37,8 +37,8 @@ public class OpenSearchParameters {
 
     private static List<Parameter<?>> basicOpenSearchParameters() {
         return Arrays.asList( //
-                new Parameter<>("searchTerms", String.class, 0, 1),
-                new ParameterBuilder("startIndex", Integer.class).minimumInclusive(0).build());
+                new ParameterBuilder("searchTerms", String.class).prefix("os").build(),
+                new ParameterBuilder("startIndex", Integer.class).prefix("os").build());
     }
 
     private static List<Parameter<?>> geoTimeOpenSearchParameters() {
@@ -64,7 +64,7 @@ public class OpenSearchParameters {
     public static List<Parameter<?>> getBasicOpensearch(OSEOInfo info) {
         List<Parameter<?>> result = new ArrayList<>(BASIC_OPENSEARCH);
 
-        ParameterBuilder count = new ParameterBuilder("count", Integer.class);
+        ParameterBuilder count = new ParameterBuilder("count", Integer.class).prefix("os");
         count.minimumInclusive(0);
         if (info.getMaximumRecords() > 0) {
             count.maximumInclusive(info.getMaximumRecords());
@@ -81,5 +81,20 @@ public class OpenSearchParameters {
      */
     public static List<Parameter<?>> getGeoTimeOpensearch() {
         return GEO_TIME_OPENSEARCH;
+    }
+
+    /**
+     * Returns the qualified name of a parameter, in case the parameter has a PARAM_PREFIX among its metadata, or the simple parameter key other
+     * 
+     * @param p
+     * @return
+     */
+    public static String getQualifiedParamName(Parameter p) {
+        String prefix = p.metadata == null ? null : (String) p.metadata.get(PARAM_PREFIX);
+        if (prefix != null) {
+            return prefix + ":" + p.key;
+        } else {
+            return p.key;
+        }
     }
 }

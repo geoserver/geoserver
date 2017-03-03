@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.geotools.data.Parameter;
-import org.geotools.feature.FeatureCollection;
 
 public interface OpenSearchEoService {
 
@@ -26,8 +25,9 @@ public interface OpenSearchEoService {
      * 
      * @param request
      * @return
+     * @throws IOException 
      */
-    public FeatureCollection search(SearchRequest request);
+    public SearchResults search(SearchRequest request) throws IOException;
 
     /**
      * Returns the search parameters applicable to collections

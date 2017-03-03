@@ -700,6 +700,8 @@
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
+    <!-- Allow EO extensions -->
+    <xs:anyAttribute/>
   </xs:complexType>
 
 </xs:schema>

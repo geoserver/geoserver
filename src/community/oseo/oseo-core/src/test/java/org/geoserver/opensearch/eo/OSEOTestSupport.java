@@ -22,7 +22,6 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.jdbc.JDBCDataStore;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
@@ -37,6 +36,8 @@ import org.xml.sax.SAXException;
 public class OSEOTestSupport extends GeoServerSystemTestSupport {
 
     private static Schema OS_SCHEMA;
+    
+    private static Schema ATOM_SCHEMA;
 
     private SimpleNamespaceContext namespaceContext;
 
@@ -45,6 +46,8 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         try {
             OS_SCHEMA = factory
                     .newSchema(OSEOTestSupport.class.getResource("/schemas/OpenSearch.xsd"));
+            ATOM_SCHEMA = factory
+                    .newSchema(OSEOTestSupport.class.getResource("/schemas/searchResults.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the OpenSearch schemas", e);
         }
@@ -116,5 +119,10 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
 
     protected void checkValidOSDD(Document d) throws SAXException, IOException {
         checkValidationErrors(d, OS_SCHEMA);
+    }
+    
+    protected void checkValidAtomFeed(Document d) throws SAXException, IOException {
+        // TODO: we probably need to enrich this with EO specific elements check
+        checkValidationErrors(d, ATOM_SCHEMA);
     }
 }

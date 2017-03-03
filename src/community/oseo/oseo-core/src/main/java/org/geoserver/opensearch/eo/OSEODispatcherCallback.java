@@ -4,6 +4,9 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.util.Map;
+
+import org.geoserver.opensearch.eo.response.AtomSearchResponse;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.Service;
@@ -18,10 +21,19 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
 
     @Override
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
-        if("oseo".equals(request.getService()) && "description".equals(request.getRequest()) && request.getKvp().isEmpty()) {
-            request.getKvp().put("service", "oseo");
-            // the raw kvp is normally not even initialized
-            request.setRawKvp(request.getKvp());
+        final Map kvp = request.getKvp();
+        if("oseo".equals(request.getService()) && kvp.isEmpty()) {
+            if("description".equals(request.getRequest())) {
+                kvp.put("service", "oseo");
+                // the raw kvp is normally not even initialized
+                request.setRawKvp(kvp);
+            } else if("search".equals(request.getRequest())) {
+                kvp.put("service", "oseo");
+                kvp.put("httpAccept", AtomSearchResponse.MIME);
+            }
+            // make sure the raw kvp is not empty, ever (the current code
+            // leaves it empty if the request has no search params)
+            request.setRawKvp(kvp);
         }
         return service;
     }

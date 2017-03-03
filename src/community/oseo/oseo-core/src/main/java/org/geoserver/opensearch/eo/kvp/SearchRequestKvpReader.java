@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 import org.geoserver.catalog.Predicates;
 import org.geoserver.opensearch.eo.OpenSearchEoService;
+import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.platform.OWS20Exception;
@@ -43,7 +45,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     public static final String START_INDEX = "startIndex";
 
     public static final String COUNT = "count";
-    
+
     private Set<String> NOT_FILTERS = new HashSet<>(Arrays.asList(START_INDEX, COUNT));
 
     private OpenSearchEoService oseo;
@@ -57,12 +59,16 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     public Object read(Object requestObject, Map kvp, Map rawKvp) throws Exception {
         SearchRequest request = (SearchRequest) super.read(requestObject, kvp, rawKvp);
 
+        // collect the valid search parameters
+        Collection<Parameter<?>> parameters = getSearchParameters(request);
+        Map<String, String> parameterValues = getSearchParameterValues(rawKvp, parameters);
+        request.setSearchParameters(parameterValues);
+
         // prepare query
         Query query = new Query();
         request.setQuery(query);
 
         // get filters
-        Collection<Parameter<?>> parameters = getSearchParameters(request);
         Filter filter = readFilter(rawKvp, parameters);
         query.setFilter(filter);
 
@@ -87,6 +93,21 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         }
 
         return request;
+    }
+
+    private Map<String, String> getSearchParameterValues(Map rawKvp,
+            Collection<Parameter<?>> parameters) {
+        Map<String, String> result = new LinkedHashMap<>();
+        for (Parameter<?> parameter : parameters) {
+            Object value = rawKvp.get(parameter.key);
+            if (value != null) {
+                final String sv = Converters.convert(value, String.class);
+                final String qn = OpenSearchParameters.getQualifiedParamName(parameter);
+                result.put(qn, sv);
+            }
+        }
+
+        return result;
     }
 
     private Filter readFilter(Map rawKvp, Collection<Parameter<?>> parameters) {

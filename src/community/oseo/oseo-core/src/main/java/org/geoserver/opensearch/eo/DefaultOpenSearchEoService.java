@@ -15,9 +15,13 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
 import org.geotools.data.DataAccess;
+import org.geotools.data.FeatureSource;
 import org.geotools.data.Parameter;
+import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -91,8 +95,29 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
     }
 
     @Override
-    public FeatureCollection search(SearchRequest request) {
-        throw new OWS20Exception("Not implemented yet");
+    public SearchResults search(SearchRequest request) throws IOException {
+        if (request.getParentId() != null) {
+            throw new OWS20Exception("Product search not implemented yet");
+        }
+
+        // feature request
+        final OpenSearchAccess access = getOpenSearchAccess();
+        Name collectionName = access.getCollectionName();
+        final FeatureSource<FeatureType, Feature> collectionSource = access.getFeatureSource(collectionName);
+        
+        // count
+        final Query resultsQuery = request.getQuery();
+        Query countQuery = new Query(resultsQuery);
+        countQuery.setMaxFeatures(Query.DEFAULT_MAX);
+        countQuery.setStartIndex(null);
+        int totalResults = collectionSource.getCount(countQuery);
+        
+        // get actual features
+        FeatureCollection features = collectionSource
+                .getFeatures(resultsQuery);
+        SearchResults results = new SearchResults(request, features, totalResults);
+
+        return results;
     }
 
     OpenSearchAccess getOpenSearchAccess() throws IOException {

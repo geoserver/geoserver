@@ -4,21 +4,27 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.util.Map;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.geotools.data.Parameter;
 import org.geotools.data.Query;
 
 /**
  * A OpenSearch EO query, for either collections (no parent id) or products (with parent id)
  * 
  * @author Andrea Aime - GeoSolutions
- *
  */
 public class SearchRequest {
 
     String parentId;
 
     Query query;
+
+    String httpAccept;
+
+    private Map<String, String> searchParameters;
 
     public String getParentId() {
         return parentId;
@@ -34,6 +40,22 @@ public class SearchRequest {
 
     public void setQuery(Query query) {
         this.query = query;
+    }
+
+    public String getHttpAccept() {
+        return httpAccept;
+    }
+
+    public void setHttpAccept(String httpAccept) {
+        this.httpAccept = httpAccept;
+    }
+
+    public void setSearchParameters(Map<String, String> searchParameters) {
+        this.searchParameters = searchParameters;
+    }
+    
+    public Map<String, String> getSearchParameters() {
+        return searchParameters;
     }
 
     @Override

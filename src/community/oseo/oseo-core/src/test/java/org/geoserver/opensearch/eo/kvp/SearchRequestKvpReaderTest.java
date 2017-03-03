@@ -7,8 +7,10 @@ package org.geoserver.opensearch.eo.kvp;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.SEARCH_TERMS;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.START_INDEX;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +22,7 @@ import org.geoserver.platform.OWS20Exception;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.ecql.ECQL;
+import org.hamcrest.collection.IsMapContaining;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
@@ -52,13 +55,17 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
 
     @Test
     public void testParseSearchTerms() throws Exception {
-        Map<String, String> map = toMap(SEARCH_TERMS, "a b \"c and d\"");
+        final String searchTermsValue = "a b \"c and d\"";
+        Map<String, String> map = toMap(SEARCH_TERMS, searchTermsValue);
         SearchRequest request = parseSearchRequest(map);
         assertEquals(null, request.getParentId());
         final Query query = request.getQuery();
         assertNotNull(query);
         final String expectedCql = "htmlDescription ILIKE '%a%' OR htmlDescription ILIKE '%b%' OR htmlDescription ILIKE '%c and d%'";
         assertEquals(expectedCql, ECQL.toCQL(query.getFilter()));
+        Map<String, String> searchParameters = request.getSearchParameters();
+        assertEquals(1, searchParameters.size());
+        assertThat(searchParameters, hasEntry("os:searchTerms", searchTermsValue));
     }
 
     /**
@@ -83,6 +90,11 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertEquals(Filter.INCLUDE, query.getFilter());
         assertEquals(10, (int) query.getStartIndex());
         assertEquals(5, query.getMaxFeatures());
+        
+        Map<String, String> searchParameters = request.getSearchParameters();
+        assertEquals(2, searchParameters.size());
+        assertThat(searchParameters, hasEntry("os:startIndex", "10"));
+        assertThat(searchParameters, hasEntry("os:count", "5"));
     }
 
     @Test

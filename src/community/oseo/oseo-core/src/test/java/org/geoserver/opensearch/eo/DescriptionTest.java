@@ -15,7 +15,7 @@ import java.io.ByteArrayInputStream;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.opensearch.eo.response.OSEODescriptionResponse;
+import org.geoserver.opensearch.eo.response.DescriptionResponse;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -98,14 +98,14 @@ public class DescriptionTest extends OSEOTestSupport {
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
         // print(dom);
 
-        assertThat(dom, hasXPath("/rss/channel/item/title", equalTo(
-                "Unknown parentId 'IAmNotThere'")));
+        assertThat(dom,
+                hasXPath("/rss/channel/item/title", equalTo("Unknown parentId 'IAmNotThere'")));
     }
 
     @Test
     public void testGlobalDescription() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("oseo/description");
-        assertEquals(OSEODescriptionResponse.OS_DESCRIPTION_MIME, response.getContentType());
+        assertEquals(DescriptionResponse.OS_DESCRIPTION_MIME, response.getContentType());
         assertEquals(200, response.getStatus());
 
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
@@ -142,15 +142,16 @@ public class DescriptionTest extends OSEOTestSupport {
         assertThat(dom, hasXPath(resultsBase));
         assertThat(dom,
                 hasXPath(resultsBase + "/@template",
-                        allOf(containsString("searchTerms={searchTerms?}"), //
+                        allOf(containsString("/oseo/search?"), //
+                                containsString("searchTerms={os:searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
                                 containsString("start={time:start?}"))));
         // check some parameters have been described
         String paramBase = resultsBase + "/param:Parameter";
-        assertThat(dom, hasXPath(
-                paramBase + "[@name='searchTerms' and @value='{searchTerms}' and @minimum='0']"));
         assertThat(dom, hasXPath(paramBase
-                + "[@name='count' and @value='{count}' and @minimum='0' and  @minInclusive='0' and @maxInclusive='50']"));
+                + "[@name='searchTerms' and @value='{os:searchTerms}' and @minimum='0']"));
+        assertThat(dom, hasXPath(paramBase
+                + "[@name='count' and @value='{os:count}' and @minimum='0' and  @minInclusive='0' and @maxInclusive='50']"));
 
         // check some EO parameter
         assertThat(dom, hasXPath(

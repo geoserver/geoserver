@@ -10,41 +10,40 @@ import java.io.OutputStream;
 import javax.xml.transform.TransformerException;
 
 import org.geoserver.opensearch.eo.OSEODescription;
+import org.geoserver.opensearch.eo.SearchResults;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 
-/**
- * Writes out a OSDD with the help of OSEODescriptionTransformer
- *
- * @author Andrea Aime - GeoSolutions
- */
-public class OSEODescriptionResponse extends Response {
-    
-    public static final String OS_DESCRIPTION_MIME = "application/opensearchdescription+xml";
-    
-    public OSEODescriptionResponse() {
-        super(OSEODescription.class, OS_DESCRIPTION_MIME);
+public class AtomSearchResponse extends Response {
+
+    public static final String MIME = "application/atom+xml";
+
+    public AtomSearchResponse() {
+        super(SearchResults.class, MIME);
     }
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return OS_DESCRIPTION_MIME;
+        return MIME;
     }
 
     @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
-        OSEODescription description = (OSEODescription) value;
+        SearchResults results = (SearchResults) value;
 
         try {
-            OSEODescriptionTransformer transformer = new OSEODescriptionTransformer();
+            AtomResultsTransformer transformer = new AtomResultsTransformer();
             transformer.setIndentation(2);
-            transformer.transform(description, output);
+            transformer.transform(results, output);
         } catch (TransformerException e) {
             throw new ServiceException(e);
         }
-
     }
 
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
+        return "search.xml";
+    }
 }

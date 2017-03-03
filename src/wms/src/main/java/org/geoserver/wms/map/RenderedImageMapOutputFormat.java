@@ -90,11 +90,15 @@ import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
+import org.opengis.coverage.grid.Format;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.expression.Expression;
 import org.opengis.geometry.BoundingBox;
+import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterDescriptorGroup;
+import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
@@ -1069,13 +1073,20 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                             readGG.getGridRange2D(), interpolation, readerBgColor, bandIndices);
 
                     // If reader supports band selection, symbolizer channels should be reordered.
-                    if (reader.getFormat().getReadParameters().getDescriptor().descriptors().
-                    		contains(AbstractGridFormat.BANDS) && params!=null){
-            	        // if bands are selected, alter the symbolizer to use bands in order 0,1,2,...
-                    	// since the channel order defined by it previously is taken care of the reader
-						if (bandIndices != null) {
-							symbolizer = GridCoverageRenderer.setupSymbolizerForBandsSelection(symbolizer);
-						}
+                    if (params != null && reader != null) {
+                        Format format = reader.getFormat();
+                        ParameterValueGroup readParameters = null;
+                        ParameterDescriptorGroup descriptorGroup = null;
+                        List<GeneralParameterDescriptor> descriptors = null;
+                        if (format != null && ((readParameters = format.getReadParameters()) != null)
+                            && ((descriptorGroup = readParameters.getDescriptor()) != null)
+                            && ((descriptors = descriptorGroup.descriptors()) != null)
+                            && (descriptors.contains(AbstractGridFormat.BANDS))
+                            && bandIndices != null){
+                        // if bands are selected, alter the symbolizer to use bands in order 0,1,2,...
+                        // since the channel order defined by it previously is taken care of the reader
+                               symbolizer = GridCoverageRenderer.setupSymbolizerForBandsSelection(symbolizer);
+                        }
                     }
 
                 }

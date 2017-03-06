@@ -5,13 +5,42 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.geoserver.config.GeoServer;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSCascadeTestSupport;
+import org.geoserver.wms.WMSInfo;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
-
+@RunWith(Parameterized.class)
 public class WMSCascadeTest extends WMSCascadeTestSupport {
+    
+    private final boolean aphEnabled;
+
+    @Parameters(name = "{index} APH enabled: {0}")
+    public static Collection<Object[]> getParameters(){ 
+        return Arrays.asList(new Object[]{true},new Object[]{false});
+    }
+    
+    public WMSCascadeTest(boolean aphEnabled) {
+        this.aphEnabled = aphEnabled;
+    }
+    
+    @Before
+    public void setupAdvancedProjectionHandling() {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.getMetadata().put(WMS.ADVANCED_PROJECTION_KEY, aphEnabled);
+        gs.save(wms);
+    }
 
     @Test
     public void testCascadeGetMapOnto130() throws Exception {

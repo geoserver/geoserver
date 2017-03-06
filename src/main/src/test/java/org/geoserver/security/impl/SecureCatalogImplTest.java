@@ -1447,6 +1447,29 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     }
     
     @Test
+    public void testWmsNamedTreeAMilitaryOnlyGroupContents() throws Exception {
+        // prepare the stage
+        setupRequestThreadLocal("WMS");
+        buildManager("lockDownStates.properties");
+
+        // try with read only user
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        final LayerGroupInfo group = sc.getLayerGroupByName(namedTreeA.getName());
+        assertNotNull(group);
+        // the group should not contain states any more
+        final List<LayerInfo> layers = group.layers();
+        assertEquals(2, layers.size());
+        final List<StyleInfo> styles = group.styles();
+        assertEquals(2, styles.size());
+        // check the layers and styles are not mis-aligned
+        assertEquals("roads", layers.get(0).getName());
+        assertEquals("topp-roads-style", styles.get(0).getName());
+        assertEquals("cities", layers.get(1).getName());
+        assertEquals("nurc-cities-style", styles.get(1).getName());
+
+    }
+    
+    @Test
     public void testWfsNamedTreeAMilitaryOnly() throws Exception {
         // prepare the stage, this time for a WFS test, the containment rules won't apply anymore
         setupRequestThreadLocal("WFS");

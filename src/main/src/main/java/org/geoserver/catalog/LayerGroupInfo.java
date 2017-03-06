@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -262,10 +263,13 @@ public interface LayerGroupInfo extends PublishedInfo {
                 return false;
         } else if (!lg.getWorkspace().equals(other.getWorkspace()))
             return false;
-        if (lg.getStyles() == null) {
-            if (other.getStyles() != null)
+        
+        List<StyleInfo> styles = canonicalStyles(lg.getStyles(), lg.getLayers());
+        List<StyleInfo> otherStyles = canonicalStyles(other.getStyles(), other.getLayers());
+        if (styles == null) {
+            if (otherStyles != null)
                 return false;
-        } else if (!lg.getStyles().equals(other.getStyles()))
+        } else if (!styles.equals(otherStyles))
             return false;
         if(lg.getAuthorityURLs() == null){
             if (other.getAuthorityURLs() != null)
@@ -307,6 +311,44 @@ public interface LayerGroupInfo extends PublishedInfo {
             return false;
         
         return true;
+    }
+
+    /**
+     * Styles, especially when using defaults, can be represented in too many ways (null, list
+     * of nulls, and so on). This returns a single canonical representation for those cases,
+     * trying not to allocate new objects.
+     * 
+     * @param styles
+     * @param layers
+     * @return
+     */
+    static List<StyleInfo> canonicalStyles(List<StyleInfo> styles, List<PublishedInfo> layers) {
+        if(styles == null || styles.isEmpty()) {
+            return null;
+        }
+        boolean allNull = true;
+        for (StyleInfo s : styles) {
+            if(s != null) {
+                allNull = false;
+                break;
+            }
+        }
+        if (allNull) {
+            return null;
+        }
+        
+        // at least one non null element, are they at least aligned with layers?
+        if(styles.size() == layers.size()) {
+            return styles;
+        }
+        
+        // not aligned, build a new representation
+        List<StyleInfo> canonical = new ArrayList<>(layers.size());
+        for (int i = 0; i < layers.size(); i++) {
+            StyleInfo s = styles.size() > i ? styles.get(i) : null;
+            canonical.add(s);
+        }
+        return canonical;
     }
 
     /**

@@ -645,17 +645,22 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         extendedContainers.add(group);
         
         final List<PublishedInfo> layers = group.getLayers();
-        ArrayList<PublishedInfo> wrapped = new ArrayList<PublishedInfo>(layers.size());        
-        for (PublishedInfo layer : layers) {
+        final List<StyleInfo> styles = group.getStyles();
+        final List<StyleInfo> selectedStyles = new ArrayList<>(layers.size());
+        ArrayList<PublishedInfo> wrapped = new ArrayList<>(layers.size());
+        for (int i = 0; i < layers.size(); i++) {
+            PublishedInfo layer = layers.get(i);
+            StyleInfo style = (styles != null && styles.size() > i) ? styles.get(i) : null;
             // for nested layers, hide in mixed mode, the inner layers were not explicitly requested
             PublishedInfo checked = checkAccess(user, layer, MixedModeBehavior.HIDE, extendedContainers);
             if (checked != null) {
                 wrapped.add(checked);
+                selectedStyles.add(style);
             }
         }
         
-        //always wrap layergroups (secured layers could be added later)
-        return new SecuredLayerGroupInfo(group, rootLayer, wrapped);            
+        // always wrap layergroups (secured layers could be added later)
+        return new SecuredLayerGroupInfo(group, rootLayer, wrapped, selectedStyles);
     }
 
     /**
@@ -1252,7 +1257,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             @Override 
             public LayerGroupInfo createLayerGroup() {
                 //always wrap layergroups (secured layers could be added later)
-                return new SecuredLayerGroupInfo(delegate.createLayerGroup(), null, new ArrayList<PublishedInfo>());
+                return new SecuredLayerGroupInfo(delegate.createLayerGroup(), null, new ArrayList<>(), new ArrayList<>());
             }
             
         };

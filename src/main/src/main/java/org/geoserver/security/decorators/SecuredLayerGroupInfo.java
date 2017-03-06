@@ -11,12 +11,14 @@ import java.util.List;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
 
 public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
 
     private LayerInfo rootLayer;
     private List<PublishedInfo> layers;
+    private List<StyleInfo> styles;
 
     /**
      * Overrides the layer group layer list with the one provided (which is
@@ -26,10 +28,11 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
      * @param delegate
      * @param layers
      */
-    public SecuredLayerGroupInfo(LayerGroupInfo delegate, LayerInfo rootLayer, List<PublishedInfo> layers) {
+    public SecuredLayerGroupInfo(LayerGroupInfo delegate, LayerInfo rootLayer, List<PublishedInfo> layers, List<StyleInfo> styles) {
         super(delegate);
         this.rootLayer = rootLayer;
         this.layers = layers;
+        this.styles = styles;
     }
 
     @Override
@@ -80,6 +83,44 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
                 return layers.remove(o);
             }
 
+        };
+    }
+    
+    @Override
+    public List<StyleInfo> getStyles() {
+        // keep synchronised
+        return new AbstractList<StyleInfo>() {
+            @Override
+            public StyleInfo get(int index) {
+                return styles.get(index);
+            }
+
+            @Override
+            public int size() {
+                return styles.size();
+            }
+
+            @Override
+            public void add(int index, StyleInfo element) {
+                delegate.getStyles().add(index, element);
+                styles.add(index, element);
+            }
+
+            public StyleInfo set(int index, StyleInfo element) {
+                delegate.getStyles().set(index, element);
+                return styles.set(index, element);
+            }
+
+            public StyleInfo remove(int index) {
+                delegate.getStyles().remove(index);
+                return styles.remove(index);
+            }
+
+            @Override
+            public boolean remove(Object o) {
+                delegate.getStyles().remove(o);
+                return styles.remove(o);
+            }
         };
     }
     

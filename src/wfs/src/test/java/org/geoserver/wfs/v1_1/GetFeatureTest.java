@@ -5,18 +5,24 @@
  */
 package org.geoserver.wfs.v1_1;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.util.Collections;
 
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLAssert;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -27,9 +33,7 @@ import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.gml3.GML;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -637,4 +641,36 @@ public class GetFeatureTest extends WFSTestSupport {
         }
     }
 
+    /**
+     * Test GetFeature operation invocations using virtual services end points.
+     * A common issue was XSD caches created only with the types of a certain
+     * workspace and reuse the same cache for other workspaces. The principal
+     * consequence was NULL namespaces in the GetFeature result, e.g null:Buildings.
+     */
+    @Test
+    public void testVirtualServicesInvocation() throws Exception {
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        // get rid of the current WFS schema
+        org.geotools.wfs.v1_1.WFS.getInstance().dispose();
+        // perform a GetFeature request using virtual service for workspace CGF
+        String response = getAsServletResponse(String.format(
+                "%s/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=%s",
+                SystemTestData.CGF_PREFIX, getLayerId(SystemTestData.MLINES)))
+                .getContentAsString();
+        assertThat(response, notNullValue());
+        assertThat(response.contains("null:MLines"), is(false));
+        Document document = dom(new ByteArrayInputStream(response.getBytes()), true);
+        String count = xpath.evaluate("count(//gml:featureMembers/cgf:MLines)", document);
+        assertThat(Integer.parseInt(count), greaterThan(0));
+        // now perform a GetFeature request using virtual service for workspace CITE
+        response = getAsServletResponse(String.format(
+                "%s/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=%s",
+                SystemTestData.CITE_PREFIX, getLayerId(SystemTestData.BUILDINGS)))
+                .getContentAsString();
+        assertThat(response, notNullValue());
+        assertThat(response.contains("null:Buildings"), is(false));
+        document = dom(new ByteArrayInputStream(response.getBytes()), true);
+        count = xpath.evaluate("count(//gml:featureMembers/cite:Buildings)", document);
+        assertThat(Integer.parseInt(count), greaterThan(0));
+    }
 }

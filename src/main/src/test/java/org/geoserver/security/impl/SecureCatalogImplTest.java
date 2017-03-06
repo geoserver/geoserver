@@ -1398,4 +1398,5 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertThat(wmsLayerInfo.getResource(), not(instanceOf(SecuredWMSLayerInfo.class)));
         assertThat(wmsLayerInfo.getResource(), instanceOf(WMSLayerInfo.class));
     }
+
 }

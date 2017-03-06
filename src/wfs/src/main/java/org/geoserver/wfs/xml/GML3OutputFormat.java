@@ -288,9 +288,30 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         }
     }
 
-    protected Encoder createEncoder(Configuration configuration, 
-        Map<String, Set<ResourceInfo>> featureTypes, Object request ) {
-        return new Encoder(configuration, configuration.schema());
+    protected Encoder createEncoder(Configuration configuration,
+                                    Map<String, Set<ResourceInfo>> resources, Object request ) {
+        // reuse the WFS configuration feature builder, otherwise build a new one
+        FeatureTypeSchemaBuilder schemaBuilder;
+        if (configuration instanceof WFSConfiguration) {
+            schemaBuilder = ((WFSConfiguration) configuration).getSchemaBuilder();
+        } else {
+            schemaBuilder = new FeatureTypeSchemaBuilder.GML3(geoServer);
+        }
+        // create this request specific schema
+        ApplicationSchemaXSD1 schema = new ApplicationSchemaXSD1(schemaBuilder);
+        schema.setBaseURL(GetFeatureRequest.adapt(request).getBaseURL());
+        schema.setResources(resources);
+        if (schema.getFeatureTypes().isEmpty()) {
+            // no feature types so let's use the base WFS schema
+            return new Encoder(configuration, configuration.schema());
+        }
+        try {
+            // let's just instantiate the encoder
+            return new Encoder(configuration, schema.getSchema());
+        } catch (IOException exception) {
+            throw new RuntimeException(
+                    "Error generating the XSD schema during the encoder instantiation.", exception);
+        }
     }
 
     protected void setAdditionalSchemaLocations(Encoder encoder, GetFeatureRequest request, WFSInfo wfs) {

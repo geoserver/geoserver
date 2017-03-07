@@ -146,7 +146,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         };
         form.add(submit);
 
-        Button cancel = new Button( "cancel", new StringResourceModel( "cancel", (Component)null, null) ) {
+        Button cancel = new Button( "cancel" ) {
             public void onSubmit() {
                 doReturn();
             }

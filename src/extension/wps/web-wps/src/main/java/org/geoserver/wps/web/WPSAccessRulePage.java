@@ -172,7 +172,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         };
         form.add(submit);
 
-        Button cancel = new Button( "cancel", new StringResourceModel( "cancel", (Component)null, null) ) {
+        Button cancel = new Button( "cancel" ) {
             public void onSubmit() {
                 doReturn();
             }

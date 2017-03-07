@@ -48,6 +48,7 @@ public class WMSLoader extends LegacyServiceLoader<WMSInfo> {
         wm.setTransparency((Integer) props.get("globalWatermarkingTransparency"));
         wm.setPosition(Position.get((Integer) props.get("globalWatermarkingPosition")));
         wms.setWatermark(wm);
+        wms.setDynamicStylingDisabled(props.containsKey("dynamicStylingDisabled") ? (Boolean)props.get("dynamicStylingDisabled") : false);
 
         try {
             wms.setInterpolation(WMSInterpolation.valueOf((String) props.get("allowInterpolation")));

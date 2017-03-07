@@ -777,4 +777,21 @@ public class TransactionTest extends WFSTestSupport {
         print(dom);
        XMLAssert.assertXpathExists("//gs:bar[@gml:id = 'bar.1234']",dom);
    }
+
+   @Test
+   public void testEmptyUpdate() throws Exception {
+       String xml =
+           "<wfs:Transaction service=\"WFS\" version=\"1.1.0\"" +
+               " xmlns:cite=\"http://www.opengis.net/cite\"" +
+               " xmlns:ogc=\"http://www.opengis.net/ogc\"" +
+               " xmlns:gml=\"http://www.opengis.net/gml\"" +
+               " xmlns:wfs=\"http://www.opengis.net/wfs\">" +
+               " <wfs:Update typeName=\"cite:RoadSegments\">" +
+               " </wfs:Update>" +
+               "</wfs:Transaction>";
+
+       Document dom = postAsDOM( "wfs", xml );
+       assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
+       assertEquals( "0", getFirstElementByTagName(dom, "wfs:totalUpdated").getFirstChild().getNodeValue());
+   }
 }

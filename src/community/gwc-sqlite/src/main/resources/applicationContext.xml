@@ -12,7 +12,8 @@
     <mvc:annotation-driven/>
     <context:annotation-config/>
     <context:component-scan base-package="org.geowebcache.sqlite"/>
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+    <bean id="filterMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+    <bean id="sqliteMultipartFilter" class="org.geoserver.gwc.web.blob.SqliteMultipartFilter"/>
     <bean id="MbtilesConfigurationProvider" class="org.geowebcache.sqlite.MbtilesConfigurationProvider"/>
     <bean class="org.geoserver.gwc.web.blob.MbtilesBlobStoreType"/>
 </beans>

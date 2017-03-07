@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.geoserver.catalog.Predicates;
+import org.geoserver.config.GeoServer;
+import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchEoService;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.SearchRequest;
@@ -50,9 +52,12 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
     private OpenSearchEoService oseo;
 
-    public SearchRequestKvpReader(OpenSearchEoService service) {
+    private GeoServer gs;
+
+    public SearchRequestKvpReader(GeoServer gs, OpenSearchEoService service) {
         super(SearchRequest.class);
         this.oseo = service;
+        this.gs = gs;
     }
 
     @Override
@@ -61,7 +66,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
         // collect the valid search parameters
         Collection<Parameter<?>> parameters = getSearchParameters(request);
-        Map<String, String> parameterValues = getSearchParameterValues(rawKvp, parameters);
+        Map<Parameter, String> parameterValues = getSearchParameterValues(rawKvp, parameters);
         request.setSearchParameters(parameterValues);
 
         // prepare query
@@ -80,7 +85,14 @@ public class SearchRequestKvpReader extends KvpRequestReader {
                 throw new OWS20Exception("Invalid 'count' value, should be positive or zero",
                         OWSExceptionCode.InvalidParameterValue);
             }
+            int configuredMaxFeatures = getConfiguredMaxFeatures();
+            if (ic > configuredMaxFeatures) {
+                throw new OWS20Exception("Invalid 'count' value, should not be greater than "
+                        + configuredMaxFeatures, OWSExceptionCode.InvalidParameterValue);
+            }
             query.setMaxFeatures(ic);
+        } else {
+            query.setMaxFeatures(getDefaultRecords());
         }
         Integer startIndex = getParameter(START_INDEX, rawKvp, Integer.class);
         if (startIndex != null) {
@@ -95,15 +107,32 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         return request;
     }
 
-    private Map<String, String> getSearchParameterValues(Map rawKvp,
+    private int getDefaultRecords() {
+        OSEOInfo info = gs.getService(OSEOInfo.class);
+        if (info == null) {
+            return OSEOInfo.DEFAULT_RECORDS_PER_PAGE;
+        } else {
+            return info.getRecordsPerPage();
+        }
+    }
+
+    private int getConfiguredMaxFeatures() {
+        OSEOInfo info = gs.getService(OSEOInfo.class);
+        if (info == null) {
+            return OSEOInfo.DEFAULT_MAXIMUM_RECORDS;
+        } else {
+            return info.getMaximumRecords();
+        }
+    }
+
+    private Map<Parameter, String> getSearchParameterValues(Map rawKvp,
             Collection<Parameter<?>> parameters) {
-        Map<String, String> result = new LinkedHashMap<>();
+        Map<Parameter, String> result = new LinkedHashMap<>();
         for (Parameter<?> parameter : parameters) {
             Object value = rawKvp.get(parameter.key);
             if (value != null) {
                 final String sv = Converters.convert(value, String.class);
-                final String qn = OpenSearchParameters.getQualifiedParamName(parameter);
-                result.put(qn, sv);
+                result.put(parameter, sv);
             }
         }
 

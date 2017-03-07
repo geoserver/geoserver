@@ -4,18 +4,23 @@
  */
 package org.geoserver.opensearch.eo.response;
 
-import static org.geoserver.ows.util.ResponseUtils.baseURL;
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.opensearch.eo.OpenSearchParameters;
+import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.opensearch.eo.SearchResults;
 import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.ServiceException;
+import org.geotools.data.Parameter;
+import org.geotools.data.Query;
 import org.geotools.xml.transform.Translator;
+import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 
 /**
@@ -24,6 +29,15 @@ import org.xml.sax.ContentHandler;
  * @author Andrea Aime - GeoSolutions
  */
 public class AtomResultsTransformer extends LambdaTransformerBase {
+
+    private OSEOInfo info;
+
+    private GeoServerInfo gs;
+
+    public AtomResultsTransformer(GeoServerInfo gs, OSEOInfo info) {
+        this.info = info;
+        this.gs = gs;
+    }
 
     @Override
     public Translator createTranslator(ContentHandler handler) {
@@ -57,20 +71,105 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
         }
 
         private void feedContents(SearchResults results) {
+            final SearchRequest request = results.getRequest();
+
             element("os:totalResults", "" + results.getTotalResults());
+            Integer startIndex = getStartIndex(results);
+            element("os:startIndex", "" + startIndex);
+            element("os:itemsPerPage", "" + request.getQuery().getMaxFeatures());
+            element("os:Query", NO_CONTENTS, getQueryAttributes(request));
+            String organization = gs.getSettings().getContact().getContactOrganization();
+            if (organization != null) {
+                element("author", () -> {
+                    element("name", organization);
+                });
+            }
+            String title = info.getTitle();
+            if (title != null) {
+                element("title", title);
+            }
+            String updated = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
+            element("updated", updated);
+            buildPaginationLinks(results);
+        }
+
+        private int getStartIndex(SearchResults results) {
             Integer startIndex = results.getRequest().getQuery().getStartIndex();
             if (startIndex == null) {
                 startIndex = 1;
             }
-            element("os:startIndex", "" + startIndex);
+            return startIndex;
         }
 
-//        
-//
-//        private String buildSelfUrl() {
-//            String baseURL = baseURL(request.getHttpRequest());
-//            return buildURL(baseURL, "oseo/description", null, URLType.SERVICE);
-//        }
+        private void buildPaginationLinks(SearchResults results) {
+            final SearchRequest request = results.getRequest();
+            int total = results.getTotalResults();
+            int startIndex = getStartIndex(results);
+            int itemsPerPage = request.getQuery().getMaxFeatures();
+
+            // self
+            encodePaginationLink("self", startIndex, itemsPerPage, request);
+            encodePaginationLink("first", Math.max(startIndex - itemsPerPage, 1), itemsPerPage,
+                    request);
+            if (startIndex > 1) {
+                encodePaginationLink("previous", Math.max(startIndex - itemsPerPage, 1),
+                        itemsPerPage, request);
+            }
+            if (startIndex + itemsPerPage < total) {
+                encodePaginationLink("next", startIndex + itemsPerPage, itemsPerPage, request);
+            }
+            encodePaginationLink("last", total - (total % itemsPerPage) + 1, itemsPerPage, request);
+        }
+
+        private void encodePaginationLink(String rel, int startIndex, int itemsPerPage,
+                SearchRequest request) {
+            String baseURL = request.getBaseUrl();
+            Map<String, String> kvp = new LinkedHashMap<String, String>();
+            for (Map.Entry<Parameter, String> entry : request.getSearchParameters().entrySet()) {
+                Parameter parameter = entry.getKey();
+                String value = entry.getValue();
+                String key = OpenSearchParameters.getQualifiedParamName(parameter, false);
+                kvp.put(key, value);
+            }
+            kvp.put("startIndex", "" + startIndex);
+            kvp.put("count", "" + itemsPerPage);
+            kvp.put("httpAccept", AtomSearchResponse.MIME);
+            String href = ResponseUtils.buildURL(baseURL, "oseo/search", kvp, URLType.SERVICE);
+            element("link", NO_CONTENTS,
+                    attributes("rel", rel, "href", href, "type", AtomSearchResponse.MIME));
+        }
+
+        public Attributes getQueryAttributes(SearchRequest request) {
+            // turn each request parameter into an attribute for os:Query
+            Map<String, String> parameters = new LinkedHashMap<>();
+            for (Map.Entry<Parameter, String> entry : request.getSearchParameters().entrySet()) {
+                Parameter parameter = entry.getKey();
+                String value = entry.getValue();
+                String key = OpenSearchParameters.getQualifiedParamName(parameter, false);
+                parameters.put(key, value);
+            }
+            // fill in defaults
+            final Query query = request.getQuery();
+            if (parameters.get("count") == null) {
+                parameters.put("count", "" + query.getMaxFeatures());
+            }
+            if (parameters.get("startIndex") == null) {
+                Integer startIndex = query.getStartIndex();
+                if (startIndex == null) {
+                    startIndex = 1;
+                }
+                parameters.put("startIndex", "" + startIndex);
+            }
+            parameters.put("role", "request");
+            return attributes(parameters);
+        }
+
+        //
+        //
+        // private String buildSelfUrl() {
+        // String baseURL = baseURL(request.getHttpRequest());
+        // return buildURL(baseURL, "oseo/description", null, URLType.SERVICE);
+        // }
 
     }
 

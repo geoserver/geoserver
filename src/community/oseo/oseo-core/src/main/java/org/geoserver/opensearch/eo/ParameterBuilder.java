@@ -4,6 +4,7 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ class ParameterBuilder {
             metadata.put(OpenSearchParameters.MAX_INCLUSIVE, max);
         }
         return new Parameter<>(key, type, null, null, required, required ? 1 : 0, 1, null,
-                metadata);
+                Collections.unmodifiableMap(metadata));
     }
 
     public ParameterBuilder minimumInclusive(int min) {

@@ -9,7 +9,8 @@ import org.geotools.util.Version;
 
 public interface OSEOInfo extends ServiceInfo {
     
-    public static int DEFAULT_MAXIMUM_RECORDS = 50;
+    public static int DEFAULT_MAXIMUM_RECORDS = 100;
+    public static int DEFAULT_RECORDS_PER_PAGE = 10;
 
     /**
      * Version 1.0.0
@@ -38,5 +39,18 @@ public interface OSEOInfo extends ServiceInfo {
      * @param maximumRecords
      */
     void setMaximumRecords(int maximumRecords);
+    
+    /**
+     * Returns the default records per page when no "count" parameter is provided
+     * @return
+     */
+    public int getRecordsPerPage();
+    
+    /**
+     * Sets the records per page, when no record is provided
+     * @param recordsPerPage
+     */
+    public void setRecordsPerPage(int recordsPerPage);
+
 
 }

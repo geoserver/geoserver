@@ -5,7 +5,9 @@
 package org.geoserver.opensearch.eo;
 
 import static org.hamcrest.Matchers.equalToIgnoringCase;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +56,7 @@ public class JDBCOpenSearchAccessTest {
         params.put("database", dbFile.getAbsolutePath());
         h2 = (JDBCDataStore) DataStoreFinder.getDataStore(params);
         JDBCOpenSearchAccessTest.createTables(h2);
+        JDBCOpenSearchAccessTest.populateCollections(h2);
 
         Name name = new NameImpl("test", "jdbcStore");
         SerializableDefaultRepository repository = new SerializableDefaultRepository();
@@ -74,14 +77,10 @@ public class JDBCOpenSearchAccessTest {
         h2.dispose();
     }
 
-    /**
-     * Takes the postgis.sql creation script, adapts it and runs it on H2
-     */
-    static void createTables(JDBCDataStore h2) throws SQLException, IOException {
+    private static List<String> loadScriptCommands(String scriptLocation) throws IOException {
         // grab all non comment, non empty lines
-        List<String> lines = Files.lines(Paths.get("src/test/resources/postgis.sql"))
-                .map(l -> l.trim()).filter(l -> !l.startsWith("--") && !l.isEmpty())
-                .collect(Collectors.toList());
+        List<String> lines = Files.lines(Paths.get(scriptLocation)).map(l -> l.trim())
+                .filter(l -> !l.startsWith("--") && !l.isEmpty()).collect(Collectors.toList());
         // regroup them into statements
         List<String> statements = new ArrayList<String>();
         String buffer = null;
@@ -96,6 +95,14 @@ public class JDBCOpenSearchAccessTest {
                 buffer = null;
             }
         }
+        return statements;
+    }
+
+    /**
+     * Takes the postgis.sql creation script, adapts it and runs it on H2
+     */
+    static void createTables(JDBCDataStore h2) throws SQLException, IOException {
+        List<String> statements = loadScriptCommands("src/test/resources/postgis.sql");
         try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT);
                 Statement st = conn.createStatement();) {
             for (String statement : statements) {
@@ -118,6 +125,19 @@ public class JDBCOpenSearchAccessTest {
         }
     }
 
+    /**
+     * Takes the postgis.sql creation script, adapts it and runs it on H2
+     */
+    static void populateCollections(JDBCDataStore h2) throws SQLException, IOException {
+        List<String> statements = loadScriptCommands("src/test/resources/collection_h2_data.sql");
+        try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT);
+                Statement st = conn.createStatement();) {
+            for (String statement : statements) {
+                st.execute(statement);
+            }
+        }
+    }
+
     @Test
     public void testCollectionFeatureType() throws Exception {
         // check expected name
@@ -129,7 +149,7 @@ public class JDBCOpenSearchAccessTest {
         FeatureType schema = osAccess.getSchema(name);
         PropertyDescriptor wl = schema.getDescriptor("wavelength");
         assertNotNull(wl);
-        assertEquals(OpenSearchAccess.EO_NAMESPACE, wl.getName().getNamespaceURI()); 
+        assertEquals(OpenSearchAccess.EO_NAMESPACE, wl.getName().getNamespaceURI());
 
     }
 }

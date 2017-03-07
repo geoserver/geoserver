@@ -13,6 +13,16 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
     String openSearchAccessStoreId;
 
     int maximumRecords = OSEOInfo.DEFAULT_MAXIMUM_RECORDS;
+    
+    int recordsPerPage = OSEOInfo.DEFAULT_RECORDS_PER_PAGE;
+
+    public int getRecordsPerPage() {
+        return recordsPerPage;
+    }
+
+    public void setRecordsPerPage(int defaultRecords) {
+        this.recordsPerPage = defaultRecords;
+    }
 
     public int getMaximumRecords() {
         return maximumRecords;

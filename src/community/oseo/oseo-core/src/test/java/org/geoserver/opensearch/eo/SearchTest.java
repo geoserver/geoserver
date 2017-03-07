@@ -5,6 +5,8 @@
 package org.geoserver.opensearch.eo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
 
 import java.io.ByteArrayInputStream;
 
@@ -24,7 +26,30 @@ public class SearchTest extends OSEOTestSupport {
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
         print(dom);
         
+        // basics
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("3")));
+        assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
+        assertThat(dom, hasXPath("/at:feed/os:Query"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@count='10']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
+        assertThat(dom, hasXPath("/at:feed/at:author/at:name", equalTo("GeoServer")));
+        assertThat(dom, hasXPath("/at:feed/at:updated"));
+        
+        // pagination links (all the same)
+        assertHasLink(dom, "self", 1, 10);
+        assertHasLink(dom, "first", 1, 10);
+        assertHasLink(dom, "last", 1, 10);
+        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
+        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
+        
         checkValidAtomFeed(dom);
+    }
+
+    private void assertHasLink(Document dom, String rel, int startIndex, int count) {
+        assertThat(dom, hasXPath("/at:feed/at:link[@rel='" + rel + "']"));
+        assertThat(dom, hasXPath("/at:feed/at:link[@rel='" + rel + "']/@href", containsString("startIndex=" + startIndex)));
+        assertThat(dom, hasXPath("/at:feed/at:link[@rel='" + rel + "']/@href", containsString("count=" + count)));
     }
 
 }

@@ -24,7 +24,17 @@ public class SearchRequest {
 
     String httpAccept;
 
-    private Map<String, String> searchParameters;
+    private Map<Parameter, String> searchParameters;
+
+    transient String baseUrl;
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
 
     public String getParentId() {
         return parentId;
@@ -50,11 +60,11 @@ public class SearchRequest {
         this.httpAccept = httpAccept;
     }
 
-    public void setSearchParameters(Map<String, String> searchParameters) {
+    public void setSearchParameters(Map<Parameter, String> searchParameters) {
         this.searchParameters = searchParameters;
     }
-    
-    public Map<String, String> getSearchParameters() {
+
+    public Map<Parameter, String> getSearchParameters() {
         return searchParameters;
     }
 

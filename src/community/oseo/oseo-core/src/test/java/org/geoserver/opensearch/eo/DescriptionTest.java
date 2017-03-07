@@ -109,7 +109,7 @@ public class DescriptionTest extends OSEOTestSupport {
         assertEquals(200, response.getStatus());
 
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-        // print(dom);
+         print(dom);
 
         // generic contents check
         assertThat(dom, hasXPath("/os:OpenSearchDescription"));
@@ -151,7 +151,7 @@ public class DescriptionTest extends OSEOTestSupport {
         assertThat(dom, hasXPath(paramBase
                 + "[@name='searchTerms' and @value='{os:searchTerms}' and @minimum='0']"));
         assertThat(dom, hasXPath(paramBase
-                + "[@name='count' and @value='{os:count}' and @minimum='0' and  @minInclusive='0' and @maxInclusive='50']"));
+                + "[@name='count' and @value='{os:count}' and @minimum='0' and  @minInclusive='0' and @maxInclusive='100']"));
 
         // check some EO parameter
         assertThat(dom, hasXPath(

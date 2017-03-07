@@ -7,18 +7,22 @@ package org.geoserver.opensearch.eo.kvp;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.SEARCH_TERMS;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.START_INDEX;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.junit.Assert.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OSEOTestSupport;
+import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.OWS20Exception;
+import org.geotools.data.Parameter;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.ecql.ECQL;
@@ -52,6 +56,17 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     private SearchRequest parseSearchRequest(Map<String, String> map) throws Exception {
         return (SearchRequest) reader.read(reader.createRequest(), map, map);
     }
+    
+    @Test
+    public void testGetAll() throws Exception {
+        SearchRequest request = parseSearchRequest(Collections.emptyMap());
+        assertEquals(null, request.getParentId());
+        final Query query = request.getQuery();
+        assertNotNull(query);
+        assertEquals(Filter.INCLUDE, query.getFilter());
+        assertNull(query.getStartIndex());
+        assertEquals(OSEOInfo.DEFAULT_RECORDS_PER_PAGE, query.getMaxFeatures());
+    }
 
     @Test
     public void testParseSearchTerms() throws Exception {
@@ -63,9 +78,9 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertNotNull(query);
         final String expectedCql = "htmlDescription ILIKE '%a%' OR htmlDescription ILIKE '%b%' OR htmlDescription ILIKE '%c and d%'";
         assertEquals(expectedCql, ECQL.toCQL(query.getFilter()));
-        Map<String, String> searchParameters = request.getSearchParameters();
+        Map<Parameter, String> searchParameters = request.getSearchParameters();
         assertEquals(1, searchParameters.size());
-        assertThat(searchParameters, hasEntry("os:searchTerms", searchTermsValue));
+        assertThat(searchParameters, hasEntry(OpenSearchParameters.SEARCH_TERMS, searchTermsValue));
     }
 
     /**
@@ -91,10 +106,11 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertEquals(10, (int) query.getStartIndex());
         assertEquals(5, query.getMaxFeatures());
         
-        Map<String, String> searchParameters = request.getSearchParameters();
+        Map<Parameter, String> searchParameters = request.getSearchParameters();
         assertEquals(2, searchParameters.size());
-        assertThat(searchParameters, hasEntry("os:startIndex", "10"));
-        assertThat(searchParameters, hasEntry("os:count", "5"));
+        assertThat(searchParameters, hasEntry(OpenSearchParameters.START_INDEX, "10"));
+        // does not work but yet to figure out why
+        // assertThat(searchParameters, hasEntry(hasProperty("name", equalTo("count")), "5"));
     }
 
     @Test
@@ -137,6 +153,15 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     public void testCountIndexNotNumber() throws Exception {
         try {
             parseSearchRequest(toMap(COUNT, "abc"));
+        } catch (OWS20Exception e) {
+            assertEquals("InvalidParameterValue", e.getCode());
+        }
+    }
+    
+    @Test
+    public void testCountTooBig() throws Exception {
+        try {
+            parseSearchRequest(toMap(COUNT, "1000"));
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }

@@ -17,6 +17,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.jdbc.JDBCDataStore;
@@ -81,6 +82,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
 
         JDBCDataStore h2 = (JDBCDataStore) jdbcDs.getDataStore(null);
         JDBCOpenSearchAccessTest.createTables(h2);
+        JDBCOpenSearchAccessTest.populateCollections(h2);
         
         // create the OpenSeach wrapper store
         DataStoreInfo osDs = cat.getFactory().createDataStore();
@@ -100,6 +102,11 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         OSEOInfo service  = gs.getService(OSEOInfo.class);
         service.setOpenSearchAccessStoreId(osDs.getId());
         gs.save(service);
+        
+        // configure contact info
+        GeoServerInfo global = gs.getGlobal();
+        global.getSettings().getContact().setContactOrganization("GeoServer");
+        gs.save(global);
     }
 
     @Before
@@ -107,6 +114,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         this.namespaceContext = new SimpleNamespaceContext();
         namespaceContext.bindNamespaceUri("os", "http://a9.com/-/spec/opensearch/1.1/");
         namespaceContext.bindNamespaceUri("param", "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/");
+        namespaceContext.bindNamespaceUri("at", "http://www.w3.org/2005/Atom");
     }
     
     protected Matcher<Node> hasXPath(String xPath) {

@@ -36,6 +36,8 @@ public class OSEOXStreamLoader extends XStreamServiceLoader<OSEOInfo> {
         oseo.setName("OSEO");
         oseo.setAbstract("Provides interoperable access, following ISO/OGC interface guidelines, to Earth Observation metadata.");
         oseo.setTitle("OpenSearch for Earth Observation");
+        oseo.setMaximumRecords(OSEOInfo.DEFAULT_MAXIMUM_RECORDS);
+        oseo.setRecordsPerPage(OSEOInfo.DEFAULT_RECORDS_PER_PAGE);
         final List<KeywordInfo> keywords = oseo.getKeywords();
         keywords.add(new Keyword("EarthObservation"));
         keywords.add(new Keyword("OGC"));

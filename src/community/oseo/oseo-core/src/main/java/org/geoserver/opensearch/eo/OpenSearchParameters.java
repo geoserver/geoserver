@@ -20,11 +20,15 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class OpenSearchParameters {
 
-    public static String PARAM_PREFIX = "parameterPrefix";
+    public static final Parameter<?> SEARCH_TERMS = new ParameterBuilder("searchTerms", String.class).prefix("os").build();
 
-    public static String MIN_INCLUSIVE = "minInclusive";
+    public static final Parameter<?> START_INDEX = new ParameterBuilder("startIndex", Integer.class).prefix("os").build();
 
-    public static String MAX_INCLUSIVE = "maxInclusive";
+    public static final String PARAM_PREFIX = "parameterPrefix";
+
+    public static final String MIN_INCLUSIVE = "minInclusive";
+
+    public static final String MAX_INCLUSIVE = "maxInclusive";
 
     private static final List<Parameter<?>> BASIC_OPENSEARCH;
 
@@ -37,8 +41,8 @@ public class OpenSearchParameters {
 
     private static List<Parameter<?>> basicOpenSearchParameters() {
         return Arrays.asList( //
-                new ParameterBuilder("searchTerms", String.class).prefix("os").build(),
-                new ParameterBuilder("startIndex", Integer.class).prefix("os").build());
+                SEARCH_TERMS,
+                START_INDEX);
     }
 
     private static List<Parameter<?>> geoTimeOpenSearchParameters() {
@@ -90,8 +94,18 @@ public class OpenSearchParameters {
      * @return
      */
     public static String getQualifiedParamName(Parameter p) {
+        return getQualifiedParamName(p, true);
+    }
+
+    /**
+     * Returns the qualified name of a parameter, in case the parameter has a PARAM_PREFIX among its metadata, or the simple parameter key other
+     * 
+     * @param p
+     * @return
+     */
+    public static String getQualifiedParamName(Parameter p, boolean qualifyOpenSearchNative) {
         String prefix = p.metadata == null ? null : (String) p.metadata.get(PARAM_PREFIX);
-        if (prefix != null) {
+        if (prefix != null && (!"os".equals(prefix) || qualifyOpenSearchNative)) {
             return prefix + ":" + p.key;
         } else {
             return p.key;

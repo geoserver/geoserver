@@ -9,7 +9,8 @@ import java.io.OutputStream;
 
 import javax.xml.transform.TransformerException;
 
-import org.geoserver.opensearch.eo.OSEODescription;
+import org.geoserver.config.GeoServer;
+import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.SearchResults;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
@@ -18,9 +19,11 @@ import org.geoserver.platform.ServiceException;
 public class AtomSearchResponse extends Response {
 
     public static final String MIME = "application/atom+xml";
+    private GeoServer gs;
 
-    public AtomSearchResponse() {
+    public AtomSearchResponse(GeoServer gs) {
         super(SearchResults.class, MIME);
+        this.gs = gs;
     }
 
     @Override
@@ -34,7 +37,7 @@ public class AtomSearchResponse extends Response {
         SearchResults results = (SearchResults) value;
 
         try {
-            AtomResultsTransformer transformer = new AtomResultsTransformer();
+            AtomResultsTransformer transformer = new AtomResultsTransformer(gs.getGlobal(), gs.getService(OSEOInfo.class));
             transformer.setIndentation(2);
             transformer.transform(results, output);
         } catch (TransformerException e) {

@@ -4,6 +4,10 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_UID;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.SEARCH_TERMS;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.START_INDEX;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,14 +25,15 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchEoService;
-import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.SearchRequest;
+import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
 import org.geotools.data.Parameter;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.NameImpl;
 import org.geotools.util.Converters;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -42,13 +47,9 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    public static final String SEARCH_TERMS = "searchTerms";
+    public static final String COUNT_KEY = "count";
 
-    public static final String START_INDEX = "startIndex";
-
-    public static final String COUNT = "count";
-
-    private Set<String> NOT_FILTERS = new HashSet<>(Arrays.asList(START_INDEX, COUNT));
+    private Set<String> NOT_FILTERS = new HashSet<>(Arrays.asList(START_INDEX.key, COUNT_KEY));
 
     private OpenSearchEoService oseo;
 
@@ -78,7 +79,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         query.setFilter(filter);
 
         // look at paging
-        Integer count = getParameter(COUNT, rawKvp, Integer.class);
+        Integer count = getParameter(COUNT_KEY, rawKvp, Integer.class);
         if (count != null) {
             int ic = count.intValue();
             if (ic < 0) {
@@ -94,7 +95,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         } else {
             query.setMaxFeatures(getDefaultRecords());
         }
-        Integer startIndex = getParameter(START_INDEX, rawKvp, Integer.class);
+        Integer startIndex = getParameter(START_INDEX.key, rawKvp, Integer.class);
         if (startIndex != null) {
             int is = startIndex.intValue();
             if (is <= 0) {
@@ -146,8 +147,10 @@ public class SearchRequestKvpReader extends KvpRequestReader {
             if (value != null && !NOT_FILTERS.contains(parameter.key)) {
                 // special handling for search terms
                 Filter filter;
-                if (SEARCH_TERMS.equals(parameter.key)) {
+                if (SEARCH_TERMS.key.equals(parameter.key)) {
                     filter = buildSearchTermsFilter(value);
+                } else if(GEO_UID.key.equals(parameter.key)) {
+                    filter = FF.equals(FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier")), FF.literal(value));
                 } else {
                     filter = buildGenericFilter(parameter, value);
                 }
@@ -160,7 +163,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     }
 
     private Filter buildSearchTermsFilter(Object value) {
-        String converted = getParameter(SEARCH_TERMS, value, String.class);
+        String converted = getParameter(SEARCH_TERMS.key, value, String.class);
         // split into parts separated by spaces, but not bits in double quotes
         Pattern MATCH_TERMS_SPLITTER = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
         Matcher m = MATCH_TERMS_SPLITTER.matcher(converted);

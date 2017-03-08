@@ -19,6 +19,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.jdbc.JDBCDataStore;
 import org.hamcrest.Matcher;
@@ -117,6 +118,8 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         namespaceContext.bindNamespaceUri("at", "http://www.w3.org/2005/Atom");
         namespaceContext.bindNamespaceUri("gml", "http://www.opengis.net/gml");
         namespaceContext.bindNamespaceUri("georss", "http://www.georss.org/georss");
+        namespaceContext.bindNamespaceUri("eo", OpenSearchAccess.EO_NAMESPACE);
+        namespaceContext.bindNamespaceUri("geo", OpenSearchAccess.GEO_NAMESPACE);
     }
     
     protected Matcher<Node> hasXPath(String xPath) {

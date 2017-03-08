@@ -16,7 +16,9 @@ import org.opengis.feature.type.Name;
  */
 public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
 
-    String EO_NAMESPACE = "http://a9.com/-/opensearch/extensions/eo/1.0/";
+    public static String EO_NAMESPACE = "http://a9.com/-/opensearch/extensions/eo/1.0/";
+    
+    public static String GEO_NAMESPACE = "http://a9.com/-/opensearch/extensions/geo/1.0/";
 
     /**
      * Returns the name of the feature type backing EO collections

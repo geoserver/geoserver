@@ -24,7 +24,7 @@ public class SearchTest extends OSEOTestSupport {
         assertEquals(200, response.getStatus());
         
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-        print(dom);
+        // print(dom);
         
         // basics
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("3")));
@@ -119,7 +119,34 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("LANDSAT8")));
     }
     
-    
+    @Test
+    public void testGeoUidQuery() throws Exception {
+        Document dom = getAsDOM("oseo/search?uid=LANDSAT8&httpAccept=" + AtomSearchResponse.MIME);
+        print(dom);
+        
+        // basics
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
+        assertThat(dom, hasXPath("/at:feed/os:Query"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@count='10']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@geo:uid='LANDSAT8']"));
+        
+        // pagination links (all the same)
+        assertHasLink(dom, "self", 1, 10);
+        assertHasLink(dom, "first", 1, 10);
+        assertHasLink(dom, "last", 1, 10);
+        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
+        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
+        
+        // check entries
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("LANDSAT8")));
+        
+        // overall schema validation for good measure
+        checkValidAtomFeed(dom);
+    }
 
     private void assertHasLink(Document dom, String rel, int startIndex, int count) {
         assertThat(dom, hasXPath("/at:feed/at:link[@rel='" + rel + "']"));

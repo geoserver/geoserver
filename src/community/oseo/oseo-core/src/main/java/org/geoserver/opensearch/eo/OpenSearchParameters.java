@@ -31,7 +31,7 @@ public class OpenSearchParameters {
     public static final String TIME_PREFIX = "time";
 
     public static final String GEO_PREFIX = "geo";
-    
+
     public static final String EO_PREFIX = "eo";
 
     public static final Parameter<?> SEARCH_TERMS = new ParameterBuilder("searchTerms",
@@ -39,6 +39,8 @@ public class OpenSearchParameters {
 
     public static final Parameter<?> START_INDEX = new ParameterBuilder("startIndex", Integer.class)
             .prefix(OS_PREFIX).build();
+    
+    public static final Parameter<?> GEO_UID = new ParameterBuilder("uid", String.class).prefix(GEO_PREFIX).build();
 
     public static final String PARAM_PREFIX = "parameterPrefix";
 
@@ -67,7 +69,7 @@ public class OpenSearchParameters {
 
     private static List<Parameter<?>> geoTimeOpenSearchParameters() {
         return Arrays.asList( //
-                new ParameterBuilder("uid", String.class).prefix(GEO_PREFIX).build(),
+                GEO_UID,
                 new ParameterBuilder("box", Envelope.class).prefix(GEO_PREFIX).build(),
                 new ParameterBuilder("name", String.class).prefix(GEO_PREFIX).build(),
                 new ParameterBuilder("lat", Double.class).prefix(GEO_PREFIX).minimumInclusive(-90)

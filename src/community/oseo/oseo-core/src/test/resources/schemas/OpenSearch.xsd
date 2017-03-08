@@ -700,7 +700,7 @@
         </xs:documentation>
       </xs:annotation>
     </xs:attribute>
-    <xs:anyAttribute/>
+    <xs:anyAttribute processContents="lax"/>
   </xs:complexType>
 
 </xs:schema>

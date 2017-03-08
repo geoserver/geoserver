@@ -4,9 +4,9 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
-import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT;
-import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.SEARCH_TERMS;
-import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.START_INDEX;
+import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT_KEY;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
+
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -71,7 +71,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     @Test
     public void testParseSearchTerms() throws Exception {
         final String searchTermsValue = "a b \"c and d\"";
-        Map<String, String> map = toMap(SEARCH_TERMS, searchTermsValue);
+        Map<String, String> map = toMap(SEARCH_TERMS.key, searchTermsValue);
         SearchRequest request = parseSearchRequest(map);
         assertEquals(null, request.getParentId());
         final Query query = request.getQuery();
@@ -88,16 +88,30 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
      */
     @Test
     public void testParseSearchTermsWrongCase() throws Exception {
-        Map<String, String> map = toMap(SEARCH_TERMS.toUpperCase(), "a b \"c and d\"");
+        Map<String, String> map = toMap(SEARCH_TERMS.key.toUpperCase(), "a b \"c and d\"");
         SearchRequest request = parseSearchRequest(map);
         assertEquals(null, request.getParentId());
         final Query query = request.getQuery();
         assertEquals(Filter.INCLUDE, query.getFilter());
     }
+    
+    @Test
+    public void testParseGeoUid() throws Exception {
+        Map<String, String> map = toMap(GEO_UID.key, "abcd");
+        SearchRequest request = parseSearchRequest(map);
+        assertEquals(null, request.getParentId());
+        final Query query = request.getQuery();
+        assertNotNull(query);
+        final String expectedCql = "identifier = 'abcd'";
+        assertEquals(expectedCql, ECQL.toCQL(query.getFilter()));
+        Map<Parameter, String> searchParameters = request.getSearchParameters();
+        assertEquals(1, searchParameters.size());
+        assertThat(searchParameters, hasEntry(OpenSearchParameters.GEO_UID, "abcd"));
+    }
 
     @Test
     public void testPaging() throws Exception {
-        Map<String, String> map = toMap(START_INDEX, "10", COUNT, "5");
+        Map<String, String> map = toMap(START_INDEX.key, "10", COUNT_KEY, "5");
         SearchRequest request = parseSearchRequest(map);
         assertEquals(null, request.getParentId());
         final Query query = request.getQuery();
@@ -116,7 +130,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     @Test
     public void testStartIndexNegative() throws Exception {
         try {
-            parseSearchRequest(toMap(START_INDEX, "-10"));
+            parseSearchRequest(toMap(START_INDEX.key, "-10"));
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -125,7 +139,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     @Test
     public void testStartIndexNotNumber() throws Exception {
         try {
-            parseSearchRequest(toMap(START_INDEX, "abc"));
+            parseSearchRequest(toMap(START_INDEX.key, "abc"));
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -134,7 +148,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     @Test
     public void testStartIndexFloat() throws Exception {
         try {
-            parseSearchRequest(toMap(START_INDEX, "1.23"));
+            parseSearchRequest(toMap(START_INDEX.key, "1.23"));
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -143,7 +157,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     @Test
     public void testCountIndexNegative() throws Exception {
         try {
-            parseSearchRequest(toMap(COUNT, "-10"));
+            parseSearchRequest(toMap(COUNT_KEY, "-10"));
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -152,7 +166,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     @Test
     public void testCountIndexNotNumber() throws Exception {
         try {
-            parseSearchRequest(toMap(COUNT, "abc"));
+            parseSearchRequest(toMap(COUNT_KEY, "abc"));
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -161,7 +175,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     @Test
     public void testCountTooBig() throws Exception {
         try {
-            parseSearchRequest(toMap(COUNT, "1000"));
+            parseSearchRequest(toMap(COUNT_KEY, "1000"));
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -170,7 +184,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     @Test
     public void testcountIndexFloat() throws Exception {
         try {
-            parseSearchRequest(toMap(COUNT, "1.23"));
+            parseSearchRequest(toMap(COUNT_KEY, "1.23"));
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }

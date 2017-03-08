@@ -17,7 +17,7 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
     int recordsPerPage = OSEOInfo.DEFAULT_RECORDS_PER_PAGE;
 
     public int getRecordsPerPage() {
-        return recordsPerPage;
+        return recordsPerPage == 0 ? OSEOInfo.DEFAULT_RECORDS_PER_PAGE : recordsPerPage;
     }
 
     public void setRecordsPerPage(int defaultRecords) {

@@ -43,6 +43,21 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
         
+        // check entries
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("3")));
+        // ... sorted by date
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[3]/at:title", equalTo("LANDSAT8")));
+        
+        // check the sentinel2 one
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:id", equalTo("http://localhost:8080/geoserver/oseo/search?uid=SENTINEL2&httpAccept=application%2Fatom%2Bxml")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:updated", equalTo("2016-02-26T09:20:21Z")));
+        // ... mind the lat/lon order
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/georss:where/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
+                equalTo("89.0 -179.0 89.0 179.0 -89.0 179.0 -89.0 -179.0 89.0 -179.0")));
+        
+        // overall schema validation for good measure
         checkValidAtomFeed(dom);
     }
 
@@ -55,6 +70,8 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "next", 2, 1);
         assertHasLink(dom, "last", 3, 1);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
         
         // second page
         dom = getAsDOM("oseo/search?count=1&startIndex=2");
@@ -63,6 +80,9 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "previous", 1, 1);
         assertHasLink(dom, "next", 3, 1);
         assertHasLink(dom, "last", 3, 1);
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));
+
         
         // third and last page
         dom = getAsDOM("oseo/search?count=1&startIndex=3");
@@ -71,6 +91,8 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "previous", 2, 1);
         assertHasLink(dom, "last", 3, 1);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("LANDSAT8")));
     }
     
     @Test
@@ -82,6 +104,9 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "next", 3, 2);
         assertHasLink(dom, "last", 3, 2);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL1")));
         
         // second page
         dom = getAsDOM("oseo/search?count=2&startIndex=3");
@@ -90,6 +115,8 @@ public class SearchTest extends OSEOTestSupport {
         assertHasLink(dom, "previous", 1, 2);
         assertHasLink(dom, "last", 3, 2);
         assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("LANDSAT8")));
     }
     
     

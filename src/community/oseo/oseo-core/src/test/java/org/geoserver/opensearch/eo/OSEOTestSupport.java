@@ -115,6 +115,8 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         namespaceContext.bindNamespaceUri("os", "http://a9.com/-/spec/opensearch/1.1/");
         namespaceContext.bindNamespaceUri("param", "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/");
         namespaceContext.bindNamespaceUri("at", "http://www.w3.org/2005/Atom");
+        namespaceContext.bindNamespaceUri("gml", "http://www.opengis.net/gml");
+        namespaceContext.bindNamespaceUri("georss", "http://www.georss.org/georss");
     }
     
     protected Matcher<Node> hasXPath(String xPath) {

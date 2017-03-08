@@ -97,11 +97,11 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         Integer startIndex = getParameter(START_INDEX, rawKvp, Integer.class);
         if (startIndex != null) {
             int is = startIndex.intValue();
-            if (is < 0) {
+            if (is <= 0) {
                 throw new OWS20Exception("Invalid 'startIndex' value, should be positive or zero",
                         OWSExceptionCode.InvalidParameterValue);
             }
-            query.setStartIndex(is);
+            query.setStartIndex(is - 1); // OS is 1 based, GeoTools is 0 based
         }
 
         return request;

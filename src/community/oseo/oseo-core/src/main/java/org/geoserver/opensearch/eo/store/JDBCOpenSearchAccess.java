@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Repository;
@@ -24,7 +25,11 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.Name;
+
+import freemarker.template.utility.StringUtil;
 
 /**
  * A data store building OpenSearch for EO records based on a wrapped data store providing all expected tables in form of simple features (and
@@ -36,7 +41,7 @@ import org.opengis.feature.type.Name;
  */
 public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
-    static final String COLLECTION = "collection";
+    public static final String COLLECTION = "collection";
 
     static final String PRODUCT = "product";
 
@@ -47,16 +52,17 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     Repository repository;
 
     Name delegateStoreName;
-    
+
     String namespaceURI;
 
     FeatureType collectionFeatureType;
 
     FeatureType productFeatureType;
-    
+
     List<Name> typeNames;
 
-    public JDBCOpenSearchAccess(Repository repository, Name delegateStoreName, String namespaceURI) throws IOException {
+    public JDBCOpenSearchAccess(Repository repository, Name delegateStoreName, String namespaceURI)
+            throws IOException {
         // TODO: maybe get a direct Catalog reference so that we can lookup by store id, which is
         // stable though renames?
         this.repository = repository;
@@ -66,23 +72,24 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         // TODO: check the expected feature types are available
         DataStore delegate = getDelegateStore();
         List<String> missingTables = getMissingRequiredTables(delegate, COLLECTION, PRODUCT);
-        
+
         collectionFeatureType = buildCollectionFeatureType(delegate);
         // TODO: build the complex feature type for product here
         productFeatureType = delegate.getSchema(PRODUCT);
-        
+
     }
 
     private FeatureType buildCollectionFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(COLLECTION);
 
-        TypeBuilder collectionTypeBuilder = new TypeBuilder(CommonFactoryFinder.getFeatureTypeFactory(null));
-        
+        TypeBuilder collectionTypeBuilder = new TypeBuilder(
+                CommonFactoryFinder.getFeatureTypeFactory(null));
+
         // map the source attributes
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
         for (AttributeDescriptor ad : flatSchema.getAttributeDescriptors()) {
             String name = ad.getLocalName();
-            String namespaceURI = delegateStoreName.getNamespaceURI();
+            String namespaceURI = this.namespaceURI;
             if (name.startsWith(EO_PREFIX)) {
                 name = name.substring(EO_PREFIX.length());
                 char c[] = name.toCharArray();
@@ -90,14 +97,27 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
                 name = new String(c);
                 namespaceURI = EO_NAMESPACE;
             }
+            // get a more predictable name structure (will have to do something for oracle
+            // like names too I guess)
+            if (StringUtils.isAllUpperCase(name)) {
+                name = name.toLowerCase();
+            }
             // map into output type
             ab.init(ad);
             ab.name(name).namespaceURI(namespaceURI).userData(SOURCE_ATTRIBUTE, ad.getLocalName());
-            AttributeType at = ab.buildType();
-            AttributeDescriptor mappedDescriptor = ab.buildDescriptor(new NameImpl(namespaceURI, name), at);
+            AttributeDescriptor mappedDescriptor;
+            if (ad instanceof GeometryDescriptor) {
+                GeometryType at = ab.buildGeometryType();
+                ab.setCRS(((GeometryDescriptor) ad).getCoordinateReferenceSystem());
+                mappedDescriptor = ab.buildDescriptor(new NameImpl(namespaceURI, name), at);
+            } else {
+                AttributeType at = ab.buildType();
+                mappedDescriptor = ab.buildDescriptor(new NameImpl(namespaceURI, name), at);
+            }
+
             collectionTypeBuilder.add(mappedDescriptor);
         }
-        
+
         // TODO: map OGC links and extra attributes
 
         collectionTypeBuilder.setName(COLLECTION);
@@ -105,22 +125,23 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         return collectionTypeBuilder.feature();
     }
 
-    private List<String> getMissingRequiredTables(DataStore delegate, String... tables) throws IOException {
+    private List<String> getMissingRequiredTables(DataStore delegate, String... tables)
+            throws IOException {
         Set<String> availableNames = new HashSet<>(Arrays.asList(delegate.getTypeNames()));
-        return Arrays.stream(tables)
-                .filter(table -> !availableNames.contains(table)).collect(Collectors.toList());
+        return Arrays.stream(tables).filter(table -> !availableNames.contains(table))
+                .collect(Collectors.toList());
     }
 
     /**
      * Returns the store from the repository (which is based on GeoServer own resource pool)
      * 
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     DataStore getDelegateStore() throws IOException {
         DataStore store = repository.dataStore(delegateStoreName);
         return new LowercasingDataStore(store);
-        
+
     }
 
     @Override
@@ -152,7 +173,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     @Override
     public FeatureType getSchema(Name name) throws IOException {
         for (FeatureType ft : Arrays.asList(collectionFeatureType, productFeatureType)) {
-            if(name.equals(ft.getName())) {
+            if (name.equals(ft.getName())) {
                 return ft;
             }
         }
@@ -161,11 +182,11 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
     @Override
     public FeatureSource<FeatureType, Feature> getFeatureSource(Name typeName) throws IOException {
-        if(typeName.getLocalPart().equals(COLLECTION)) {
+        if (typeName.getLocalPart().equals(COLLECTION)) {
             return new CollectionFeatureSource(this, collectionFeatureType);
         }
         return null;
-        
+
     }
 
     @Override

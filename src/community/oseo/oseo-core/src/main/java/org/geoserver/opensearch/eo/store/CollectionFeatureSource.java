@@ -21,16 +21,23 @@ import org.geotools.data.ResourceInfo;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.AttributeBuilder;
+import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
 
 public class CollectionFeatureSource implements FeatureSource<FeatureType, Feature> {
 
@@ -44,11 +51,22 @@ public class CollectionFeatureSource implements FeatureSource<FeatureType, Featu
 
     private SourcePropertyMapper propertyMapper;
 
+    private SortBy[] defaultSort;
+
     public CollectionFeatureSource(JDBCOpenSearchAccess openSearchAccess,
-            FeatureType collectionFeatureType) {
+            FeatureType collectionFeatureType) throws IOException {
         this.openSearchAccess = openSearchAccess;
         this.schema = collectionFeatureType;
         this.propertyMapper = new SourcePropertyMapper(schema);
+        this.defaultSort = buildDefaultSort(schema);
+    }
+
+    private SortBy[] buildDefaultSort(FeatureType schema) {
+        // workaround for "name" not being quoted in the sql schema... might want to fix it,
+        // but at the same time we'll eventually need some mapping going to Oracle or some such 
+        String timeStart = propertyMapper.getSourceName("timeStart");
+        String name = propertyMapper.getSourceName("name");
+        return new SortBy[] {FF.sort(timeStart, SortOrder.DESCENDING), FF.sort(name, SortOrder.ASCENDING)};
     }
 
     @Override
@@ -180,7 +198,12 @@ public class CollectionFeatureSource implements FeatureSource<FeatureType, Featu
                 }
             }).toArray(size -> new SortBy[size]);
             result.setSortBy(mappedSortBy);
+        } else {
+            // get stable results for paging
+            result.setSortBy(defaultSort);
         }
+        result.setStartIndex(query.getStartIndex());
+        result.setMaxFeatures(query.getMaxFeatures());
 
         return result;
     }
@@ -202,7 +225,29 @@ public class CollectionFeatureSource implements FeatureSource<FeatureType, Featu
      * @return
      */
     Feature mapToComplexFeature(PushbackFeatureIterator<SimpleFeature> it) {
-        return it.next();
+        SimpleFeature fi = it.next();
+
+        ComplexFeatureBuilder builder = new ComplexFeatureBuilder(schema);
+        AttributeBuilder ab = new AttributeBuilder(CommonFactoryFinder.getFeatureFactory(null));
+        for (PropertyDescriptor pd : schema.getDescriptors()) {
+            if (!(pd instanceof AttributeDescriptor)) {
+                continue;
+            }
+            String localName = (String) pd.getUserData().get(JDBCOpenSearchAccess.SOURCE_ATTRIBUTE);
+            if(localName == null) {
+                continue;
+            }
+            Object value = fi.getAttribute(localName);
+            if(value == null) {
+                continue;
+            }
+            ab.setDescriptor((AttributeDescriptor) pd);
+            Attribute attribute = ab.buildSimple(null, value);
+            builder.append(pd.getName(), attribute);
+        }
+        //
+        Feature feature = builder.buildFeature(fi.getID());
+        return feature;
     }
 
 }

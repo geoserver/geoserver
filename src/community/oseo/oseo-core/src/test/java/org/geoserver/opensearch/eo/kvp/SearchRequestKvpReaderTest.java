@@ -7,10 +7,11 @@ package org.geoserver.opensearch.eo.kvp;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.SEARCH_TERMS;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.START_INDEX;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +27,6 @@ import org.geotools.data.Parameter;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.ecql.ECQL;
-import org.hamcrest.collection.IsMapContaining;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
@@ -103,7 +103,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         final Query query = request.getQuery();
         assertNotNull(query);
         assertEquals(Filter.INCLUDE, query.getFilter());
-        assertEquals(10, (int) query.getStartIndex());
+        assertEquals(9, (int) query.getStartIndex()); // from 1 based to 0 based
         assertEquals(5, query.getMaxFeatures());
         
         Map<Parameter, String> searchParameters = request.getSearchParameters();

@@ -6,7 +6,6 @@ package org.geoserver.opensearch.eo.response;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -107,18 +106,26 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             int startIndex = getStartIndex(results);
             int itemsPerPage = request.getQuery().getMaxFeatures();
 
-            // self
+            // warning, 1-based logic follows
             encodePaginationLink("self", startIndex, itemsPerPage, request);
-            encodePaginationLink("first", Math.max(startIndex - itemsPerPage, 1), itemsPerPage,
-                    request);
+            encodePaginationLink("first", 1, itemsPerPage, request);
             if (startIndex > 1) {
                 encodePaginationLink("previous", Math.max(startIndex - itemsPerPage, 1),
                         itemsPerPage, request);
             }
-            if (startIndex + itemsPerPage < total) {
+            if (startIndex + itemsPerPage <= total) {
                 encodePaginationLink("next", startIndex + itemsPerPage, itemsPerPage, request);
             }
-            encodePaginationLink("last", total - (total % itemsPerPage) + 1, itemsPerPage, request);
+            encodePaginationLink("last", getLastPageStart(total, itemsPerPage), itemsPerPage, request);
+        }
+
+        private int getLastPageStart(int total, int itemsPerPage) {
+            // check how many items in the last page, is the last page partial or full?
+            int lastPageItems = total % itemsPerPage;
+            if(lastPageItems == 0) {
+                lastPageItems = itemsPerPage;
+            }
+            return total - lastPageItems + 1;
         }
 
         private void encodePaginationLink(String rel, int startIndex, int itemsPerPage,

@@ -46,10 +46,57 @@ public class SearchTest extends OSEOTestSupport {
         checkValidAtomFeed(dom);
     }
 
+    @Test
+    public void testPagingFullPages() throws Exception {
+        // first page
+        Document dom = getAsDOM("oseo/search?count=1");
+        assertHasLink(dom, "self", 1, 1);
+        assertHasLink(dom, "first", 1, 1);
+        assertHasLink(dom, "next", 2, 1);
+        assertHasLink(dom, "last", 3, 1);
+        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
+        
+        // second page
+        dom = getAsDOM("oseo/search?count=1&startIndex=2");
+        assertHasLink(dom, "self", 2, 1);
+        assertHasLink(dom, "first", 1, 1);
+        assertHasLink(dom, "previous", 1, 1);
+        assertHasLink(dom, "next", 3, 1);
+        assertHasLink(dom, "last", 3, 1);
+        
+        // third and last page
+        dom = getAsDOM("oseo/search?count=1&startIndex=3");
+        assertHasLink(dom, "self", 3, 1);
+        assertHasLink(dom, "first", 1, 1);
+        assertHasLink(dom, "previous", 2, 1);
+        assertHasLink(dom, "last", 3, 1);
+        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
+    }
+    
+    @Test
+    public void testPagingPartialPages() throws Exception {
+        // first page
+        Document dom = getAsDOM("oseo/search?count=2");
+        assertHasLink(dom, "self", 1, 2);
+        assertHasLink(dom, "first", 1, 2);
+        assertHasLink(dom, "next", 3, 2);
+        assertHasLink(dom, "last", 3, 2);
+        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
+        
+        // second page
+        dom = getAsDOM("oseo/search?count=2&startIndex=3");
+        assertHasLink(dom, "self", 3, 2);
+        assertHasLink(dom, "first", 1, 2);
+        assertHasLink(dom, "previous", 1, 2);
+        assertHasLink(dom, "last", 3, 2);
+        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
+    }
+    
+    
+
     private void assertHasLink(Document dom, String rel, int startIndex, int count) {
         assertThat(dom, hasXPath("/at:feed/at:link[@rel='" + rel + "']"));
         assertThat(dom, hasXPath("/at:feed/at:link[@rel='" + rel + "']/@href", containsString("startIndex=" + startIndex)));
         assertThat(dom, hasXPath("/at:feed/at:link[@rel='" + rel + "']/@href", containsString("count=" + count)));
     }
-
 }

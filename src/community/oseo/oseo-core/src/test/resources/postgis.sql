@@ -162,7 +162,12 @@ create table product_metadata (
   metadata text
 );
 
- 
+-- the eo thumbs storage (small binary files, not used for search, thus separate table)
+create table product_thumb (
+	id int primary key references product(id),
+	thumb bytea
+);
+
 -- links for collections
 create table collection_ogclink (
   id serial primary key,

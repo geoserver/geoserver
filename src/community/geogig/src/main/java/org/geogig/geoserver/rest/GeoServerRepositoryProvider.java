@@ -20,6 +20,7 @@ import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.repository.Repository;
 import org.locationtech.geogig.repository.impl.GeoGIG;
 import org.locationtech.geogig.rest.RestletException;
+import org.locationtech.geogig.rest.repository.InitRequestUtil;
 import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -181,4 +182,17 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         }
     }
 
+    private static class InitRequestHandler {
+
+        private static Optional<Repository> createGeoGIG(Request request) {
+            try {
+                final Hints hints = InitRequestUtil.createHintsFromRequest(request);
+                // now build the repo with the Hints
+                return Optional.fromNullable(RepositoryManager.get().createRepo(hints));
+            } catch (Exception ex) {
+                Throwables.propagate(ex);
+            }
+            return Optional.absent();
+        }
+    }
 }

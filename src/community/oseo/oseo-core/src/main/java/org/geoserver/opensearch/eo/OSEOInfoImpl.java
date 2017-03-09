@@ -24,11 +24,11 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
         this.recordsPerPage = defaultRecords;
     }
 
-    public int getMaximumRecords() {
+    public int getMaximumRecordsPerPage() {
         return maximumRecords;
     }
 
-    public void setMaximumRecords(int maximumRecords) {
+    public void setMaximumRecordsPerPage(int maximumRecords) {
         this.maximumRecords = maximumRecords;
     }
 

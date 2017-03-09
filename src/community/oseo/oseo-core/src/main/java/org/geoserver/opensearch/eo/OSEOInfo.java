@@ -7,6 +7,11 @@ package org.geoserver.opensearch.eo;
 import org.geoserver.config.ServiceInfo;
 import org.geotools.util.Version;
 
+/**
+ * OpenSearch for EO service descriptor
+ *
+ * @author Andrea Aime - GeoSolutions
+ */
 public interface OSEOInfo extends ServiceInfo {
     
     public static int DEFAULT_MAXIMUM_RECORDS = 100;
@@ -31,14 +36,14 @@ public interface OSEOInfo extends ServiceInfo {
      * 
      * @return
      */
-    int getMaximumRecords();
+    int getMaximumRecordsPerPage();
 
     /**
      * Sets the maximum amount of records returned in a search
      * 
      * @param maximumRecords
      */
-    void setMaximumRecords(int maximumRecords);
+    void setMaximumRecordsPerPage(int maximumRecords);
     
     /**
      * Returns the default records per page when no "count" parameter is provided

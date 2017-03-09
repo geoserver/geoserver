@@ -6,13 +6,18 @@ package org.geoserver.opensearch.eo.web;
 
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.web.data.store.StoreListChoiceRenderer;
 import org.geoserver.web.services.BaseServiceAdminPage;
+import org.geoserver.web.wicket.ParamResourceModel;
 
 public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
 
@@ -36,7 +41,7 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         return OSEOInfo.class;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "rawtypes", "unchecked", "serial" })
     protected void build(final IModel info, Form form) {
         OSEOInfo model = (OSEOInfo) info.getObject();
 
@@ -48,6 +53,32 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
                 "openSearchAccessId", new PropertyModel<DataStoreInfo>(this, "backend"),
                 new OpenSearchAccessListModel(), new StoreListChoiceRenderer());
         form.add(openSearchAccessReference);
+        
+        final TextField<Integer> recordsPerPage = new TextField<>("recordsPerPage", Integer.class);
+        recordsPerPage.add(RangeValidator.minimum(0));
+        recordsPerPage.setRequired(true);
+        form.add(recordsPerPage);
+        final TextField<Integer> maximumRecordsPerPage = new TextField<>("maximumRecordsPerPage", Integer.class);
+        maximumRecordsPerPage.add(RangeValidator.minimum(0));
+        maximumRecordsPerPage.setRequired(true);
+        form.add(maximumRecordsPerPage);
+        // check that records is lower or equal than maximum
+        form.add(new AbstractFormValidator() {
+            
+            @Override
+            public void validate(Form<?> form) {
+                Integer records = recordsPerPage.getConvertedInput();
+                Integer maximum = maximumRecordsPerPage.getConvertedInput();
+                if(recordsPerPage != null && maximum != null && records > maximum) {
+                    form.error(new ParamResourceModel("recordsGreaterThanMaximum", form, records, maximum));
+                }
+            }
+            
+            @Override
+            public FormComponent<?>[] getDependentFormComponents() {
+                return new FormComponent<?>[] {recordsPerPage, maximumRecordsPerPage};
+            }
+        });
     }
 
     protected String getServiceName() {

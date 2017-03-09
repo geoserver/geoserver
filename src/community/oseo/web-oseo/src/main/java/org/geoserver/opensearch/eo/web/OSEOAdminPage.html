@@ -17,6 +17,24 @@
                </li>
             </ul>
          </fieldset>
+         <fieldset>
+            <legend>
+               <span>
+                  <wicket:message key="paging">paging</wicket:message>
+               </span>
+            </legend>
+            <ul>
+               <li>
+                  <label><wicket:message key="recordsPerPage">recordsPerPage</wicket:message></label>
+                  <input type="text" wicket:id="recordsPerPage" class="field text"/>
+               </li>
+               <li>
+                  <label><wicket:message key="maximumRecordsPerPage">maxRecordsPerPage</wicket:message></label>
+                  <input type="text" wicket:id="maximumRecordsPerPage" class="field text"/>
+               </li>
+            </ul>
+         </fieldset>
+         
       </wicket:extend>
    </body>
 </html>

@@ -6,6 +6,7 @@ package org.geoserver.opensearch.eo;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
@@ -64,8 +65,19 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         
+        setupBasicOpenSearch(testData, getCatalog(), getGeoServer());
+    }
+
+    /**
+     * Sets up a H2 based OpenSearchAccess and configures OpenSearch for EO to use it
+     * @param testData
+     * @param cat
+     * @param gs
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void setupBasicOpenSearch(SystemTestData testData, Catalog cat, GeoServer gs) throws IOException, SQLException {
         // create the plain database
-        Catalog cat = getCatalog();
         DataStoreInfo jdbcDs = cat.getFactory().createDataStore();
         jdbcDs.setName("oseo_jdbc");
         WorkspaceInfo ws = cat.getDefaultWorkspace();
@@ -99,7 +111,6 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         cat.add(osDs);
         
         // configure opensearch for EO to use it
-        final GeoServer gs = getGeoServer();
         OSEOInfo service  = gs.getService(OSEOInfo.class);
         service.setOpenSearchAccessStoreId(osDs.getId());
         gs.save(service);

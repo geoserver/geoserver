@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -24,6 +25,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geotools.data.DataAccessFinder;
 import org.geotools.data.DataStoreFinder;
@@ -79,30 +82,33 @@ public class JDBCOpenSearchAccessTest {
 
     private static List<String> loadScriptCommands(String scriptLocation) throws IOException {
         // grab all non comment, non empty lines
-        List<String> lines = Files.lines(Paths.get(scriptLocation)).map(l -> l.trim())
-                .filter(l -> !l.startsWith("--") && !l.isEmpty()).collect(Collectors.toList());
-        // regroup them into statements
-        List<String> statements = new ArrayList<String>();
-        String buffer = null;
-        for (String line : lines) {
-            if (buffer == null) {
-                buffer = line;
-            } else {
-                buffer = buffer + "\n" + line;
+        try(InputStream is = JDBCOpenSearchAccess.class.getResourceAsStream(scriptLocation)) {
+            List<String> lines = IOUtils.readLines(is).stream().map(l -> l.trim())
+                    .filter(l -> !l.startsWith("--") && !l.isEmpty()).collect(Collectors.toList());
+            // regroup them into statements
+            List<String> statements = new ArrayList<String>();
+            String buffer = null;
+            for (String line : lines) {
+                if (buffer == null) {
+                    buffer = line;
+                } else {
+                    buffer = buffer + "\n" + line;
+                }
+                if (line.contains(";")) {
+                    statements.add(buffer);
+                    buffer = null;
+                }
             }
-            if (line.contains(";")) {
-                statements.add(buffer);
-                buffer = null;
-            }
+            return statements;
+            
         }
-        return statements;
     }
 
     /**
      * Takes the postgis.sql creation script, adapts it and runs it on H2
      */
     static void createTables(JDBCDataStore h2) throws SQLException, IOException {
-        List<String> statements = loadScriptCommands("src/test/resources/postgis.sql");
+        List<String> statements = loadScriptCommands("/postgis.sql");
         try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT);
                 Statement st = conn.createStatement();) {
             for (String statement : statements) {
@@ -129,7 +135,7 @@ public class JDBCOpenSearchAccessTest {
      * Takes the postgis.sql creation script, adapts it and runs it on H2
      */
     static void populateCollections(JDBCDataStore h2) throws SQLException, IOException {
-        List<String> statements = loadScriptCommands("src/test/resources/collection_h2_data.sql");
+        List<String> statements = loadScriptCommands("/collection_h2_data.sql");
         try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT);
                 Statement st = conn.createStatement();) {
             for (String statement : statements) {

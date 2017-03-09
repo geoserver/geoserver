@@ -92,8 +92,8 @@ public class OpenSearchParameters {
 
         ParameterBuilder count = new ParameterBuilder("count", Integer.class).prefix(OS_PREFIX);
         count.minimumInclusive(0);
-        if (info.getMaximumRecords() > 0) {
-            count.maximumInclusive(info.getMaximumRecords());
+        if (info.getMaximumRecordsPerPage() > 0) {
+            count.maximumInclusive(info.getMaximumRecordsPerPage());
         }
         result.add(count.build());
 

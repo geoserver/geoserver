@@ -122,7 +122,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         if (info == null) {
             return OSEOInfo.DEFAULT_MAXIMUM_RECORDS;
         } else {
-            return info.getMaximumRecords();
+            return info.getMaximumRecordsPerPage();
         }
     }
 

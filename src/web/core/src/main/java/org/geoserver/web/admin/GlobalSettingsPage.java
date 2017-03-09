@@ -110,7 +110,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         ListView extensions = SettingsPluginPanelInfo.createExtensions("extensions", settingsModel, getGeoServerApplication());
         form.add(extensions);
 
-        Button submit = new Button("submit", new StringResourceModel("submit", this, null)) {
+        Button submit = new Button("submit") {
             @Override
             public void onSubmit() {
                 GeoServer gs = getGeoServer();

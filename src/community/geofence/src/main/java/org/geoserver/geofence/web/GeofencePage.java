@@ -145,8 +145,7 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(new TextField<String>("acceptedRoles", new PropertyModel<String>(
                 configModel, "acceptedRoles")));
 
-        Button submit = new Button("submit", new StringResourceModel("submit",
-                this, null)) {
+        Button submit = new Button("submit") {
             private static final long serialVersionUID = 1L;
 
             @Override

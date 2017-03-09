@@ -5,8 +5,10 @@
 package org.geoserver.opensearch.eo;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -88,7 +90,7 @@ public class DescriptionTest extends OSEOTestSupport {
     }
 
     @Test
-    public void testExceptionNullParentId() throws Exception {
+    public void testExceptionInvalidParentId() throws Exception {
         // run a request that's going to fail
         MockHttpServletResponse response = getAsServletResponse(
                 "oseo/description?parentId=IAmNotThere");
@@ -109,7 +111,7 @@ public class DescriptionTest extends OSEOTestSupport {
         assertEquals(200, response.getStatus());
 
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-         print(dom);
+        // print(dom);
 
         // generic contents check
         assertThat(dom, hasXPath("/os:OpenSearchDescription"));
@@ -161,6 +163,98 @@ public class DescriptionTest extends OSEOTestSupport {
 
         // general validation
         checkValidOSDD(dom);
+    }
+
+    @Test
+    public void testOpticalCollectionDescription() throws Exception {
+        Document dom = getAsDOM("oseo/description?parentId=SENTINEL2");
+        // print(dom);
+
+        // we got a opensearch descriptor
+        assertThat(dom, hasXPath("/os:OpenSearchDescription"));
+
+        // self is there and uses the right parentId
+        assertThat(dom, hasXPath("/os:OpenSearchDescription/os:Url[@rel='self' "
+                + "and @type='application/opensearchdescription+xml']"));
+        assertThat(dom,
+                hasXPath(
+                        "/os:OpenSearchDescription/os:Url[@rel='self' "
+                                + "and @type='application/opensearchdescription+xml']/@template",
+                        containsString("/oseo/description?parentId=SENTINEL2")));
+
+        // check the results link is there
+        String resultsBase = "/os:OpenSearchDescription/os:Url[@rel='results'and @type='application/atom+xml']";
+        assertThat(dom, hasXPath(resultsBase));
+        // ... and has the right parentId, and basic search params
+        assertThat(dom,
+                hasXPath(resultsBase + "/@template",
+                        allOf(containsString("/oseo/search?"), //
+                                containsString("parentId=SENTINEL2"), //
+                                containsString("searchTerms={os:searchTerms?}"), //
+                                containsString("lat={geo:lat?}"), //
+                                containsString("start={time:start?}"))));
+        // ... and has generic EOP parameters
+        assertThat(dom,
+                hasXPath(resultsBase + "/@template",
+                        allOf(containsString("productQualityStatus={eo:productQualityStatus?}"), //
+                                containsString("processorName={eo:processorName?}"), //
+                                containsString("modificationDate={eo:modificationDate?}"))));
+        // ... and has OPT parameters
+        assertThat(dom,
+                hasXPath(resultsBase + "/@template",
+                        allOf(containsString("cloudCover={opt:cloudCover?}"), //
+                                containsString("snowCover={opt:snowCover?}"))));
+        // ... but no SAR parameters
+        assertThat(dom,
+                hasXPath(resultsBase + "/@template", not(anyOf(
+                        containsString("polarisationMode={sar:polarisationMode?}"), //
+                        containsString("polarisationChannels={sar:polarisationChannels?}")))));
+    }
+
+    @Test
+    public void testRadarCollectionDescription() throws Exception {
+        Document dom = getAsDOM("oseo/description?parentId=SENTINEL1");
+        // print(dom);
+
+        // we got a opensearch descriptor
+        assertThat(dom, hasXPath("/os:OpenSearchDescription"));
+
+        // self is there and uses the right parentId
+        assertThat(dom, hasXPath("/os:OpenSearchDescription/os:Url[@rel='self' "
+                + "and @type='application/opensearchdescription+xml']"));
+        assertThat(dom,
+                hasXPath(
+                        "/os:OpenSearchDescription/os:Url[@rel='self' "
+                                + "and @type='application/opensearchdescription+xml']/@template",
+                        containsString("/oseo/description?parentId=SENTINEL1")));
+
+        // check the results link is there
+        String resultsBase = "/os:OpenSearchDescription/os:Url[@rel='results'and @type='application/atom+xml']";
+        assertThat(dom, hasXPath(resultsBase));
+        // ... and has the right parentId, and basic search params
+        assertThat(dom,
+                hasXPath(resultsBase + "/@template",
+                        allOf(containsString("/oseo/search?"), //
+                                containsString("parentId=SENTINEL1"), //
+                                containsString("searchTerms={os:searchTerms?}"), //
+                                containsString("lat={geo:lat?}"), //
+                                containsString("start={time:start?}"))));
+        // ... and has generic EOP parameters
+        assertThat(dom,
+                hasXPath(resultsBase + "/@template",
+                        allOf(containsString("productQualityStatus={eo:productQualityStatus?}"), //
+                                containsString("processorName={eo:processorName?}"), //
+                                containsString("modificationDate={eo:modificationDate?}"))));
+        // ... and SAR parameters
+        assertThat(dom,
+                hasXPath(resultsBase + "/@template", allOf(
+                        containsString("polarisationMode={sar:polarisationMode?}"), //
+                        containsString("polarisationChannels={sar:polarisationChannels?}"))));
+        // ... but no OPT parameters
+        assertThat(dom,
+                hasXPath(resultsBase + "/@template",
+                        not(anyOf(containsString("cloudCover={opt:cloudCover?}"), //
+                                containsString("snowCover={opt:snowCover?}")))));
     }
 
 }

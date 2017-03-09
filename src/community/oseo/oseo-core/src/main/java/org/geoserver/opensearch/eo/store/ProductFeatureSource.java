@@ -10,26 +10,23 @@ import java.util.logging.Logger;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 
 /**
  * Maps joined simple features up to a complex Collection feature
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class CollectionFeatureSource extends AbstractMappingSource {
+public class ProductFeatureSource extends AbstractMappingSource {
 
-    static final Logger LOGGER = Logging.getLogger(CollectionFeatureSource.class);
+    static final Logger LOGGER = Logging.getLogger(ProductFeatureSource.class);
 
-    public CollectionFeatureSource(JDBCOpenSearchAccess openSearchAccess,
+    public ProductFeatureSource(JDBCOpenSearchAccess openSearchAccess,
             FeatureType collectionFeatureType) throws IOException {
         super(openSearchAccess, collectionFeatureType);
     }
 
     protected SimpleFeatureSource getDelegateCollectionSource() throws IOException {
-        return openSearchAccess.getDelegateStore()
-                .getFeatureSource(JDBCOpenSearchAccess.COLLECTION);
+        return openSearchAccess.getDelegateStore().getFeatureSource(JDBCOpenSearchAccess.PRODUCT);
     }
 
 }

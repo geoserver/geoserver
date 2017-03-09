@@ -96,7 +96,7 @@ create table product (
   "eoArchivingCenter" varchar,
   "eoProcessingMode" varchar,
   "eoAvailabilityTime" timestamp,
-  "eoAcquisitionStation" timestamp,
+  "eoAcquisitionStation" varchar,
   "eoAcquisitionSubtype" varchar,
   "eoStartTimeFromAscendingNode" int,
   "eoCompletionTimeFromAscendingNode" int,

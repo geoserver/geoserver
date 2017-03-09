@@ -4,6 +4,8 @@
  */
 package org.geoserver.opensearch.eo;
 
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_NAMESPACE;
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass.*;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -13,8 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -82,7 +82,7 @@ public class JDBCOpenSearchAccessTest {
 
     private static List<String> loadScriptCommands(String scriptLocation) throws IOException {
         // grab all non comment, non empty lines
-        try(InputStream is = JDBCOpenSearchAccess.class.getResourceAsStream(scriptLocation)) {
+        try (InputStream is = JDBCOpenSearchAccess.class.getResourceAsStream(scriptLocation)) {
             List<String> lines = IOUtils.readLines(is).stream().map(l -> l.trim())
                     .filter(l -> !l.startsWith("--") && !l.isEmpty()).collect(Collectors.toList());
             // regroup them into statements
@@ -100,7 +100,7 @@ public class JDBCOpenSearchAccessTest {
                 }
             }
             return statements;
-            
+
         }
     }
 
@@ -147,15 +147,34 @@ public class JDBCOpenSearchAccessTest {
     @Test
     public void testCollectionFeatureType() throws Exception {
         // check expected name
-        Name name = osAccess.getCollectionName();
+        FeatureType schema = osAccess.getCollectionSource().getSchema();
+        Name name = schema.getName();
         assertEquals(TEST_NAMESPACE, name.getNamespaceURI());
         assertThat(name.getLocalPart(), equalToIgnoringCase("collection"));
 
-        // get the schema
-        FeatureType schema = osAccess.getSchema(name);
-        PropertyDescriptor wl = schema.getDescriptor("wavelength");
-        assertNotNull(wl);
-        assertEquals(OpenSearchAccess.EO_NAMESPACE, wl.getName().getNamespaceURI());
-
+        // test the schema
+        assertPropertyNamespace(schema, "wavelength", EO_NAMESPACE);
     }
+
+    @Test
+    public void testProductFeatureType() throws Exception {
+        // check expected name
+        FeatureType schema = osAccess.getProductSource().getSchema();
+        Name name = schema.getName();
+
+        assertEquals(TEST_NAMESPACE, name.getNamespaceURI());
+        assertThat(name.getLocalPart(), equalToIgnoringCase("product"));
+
+        // get the schema
+        assertPropertyNamespace(schema, "cloudCover", OPTICAL.getNamespace());
+        assertPropertyNamespace(schema, "track", EO_GENERIC.getNamespace());
+        assertPropertyNamespace(schema, "polarisationMode", RADAR.getNamespace());
+    }
+
+    private void assertPropertyNamespace(FeatureType schema, String name, String namespaceURI) {
+        PropertyDescriptor wl = schema.getDescriptor(name);
+        assertNotNull(wl);
+        assertEquals(namespaceURI, wl.getName().getNamespaceURI());
+    }
+
 }

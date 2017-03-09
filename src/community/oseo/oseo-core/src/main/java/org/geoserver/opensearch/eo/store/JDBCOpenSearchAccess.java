@@ -6,8 +6,10 @@ package org.geoserver.opensearch.eo.store;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,8 +31,6 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.Name;
 
-import freemarker.template.utility.StringUtil;
-
 /**
  * A data store building OpenSearch for EO records based on a wrapped data store providing all expected tables in form of simple features (and
  * leveraging joins to put them together into complex features as needed).
@@ -46,6 +46,8 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     static final String PRODUCT = "product";
 
     static final String EO_PREFIX = "eo";
+
+    static final String SAR_PREFIX = "sar";
 
     static final String SOURCE_ATTRIBUTE = "sourceAttribute";
 
@@ -69,14 +71,15 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         this.delegateStoreName = delegateStoreName;
         this.namespaceURI = namespaceURI;
 
-        // TODO: check the expected feature types are available
+        // check the expected feature types are available
         DataStore delegate = getDelegateStore();
         List<String> missingTables = getMissingRequiredTables(delegate, COLLECTION, PRODUCT);
+        if (!missingTables.isEmpty()) {
+            throw new IOException("Missing required tables in the backing store " + missingTables);
+        }
 
         collectionFeatureType = buildCollectionFeatureType(delegate);
-        // TODO: build the complex feature type for product here
-        productFeatureType = delegate.getSchema(PRODUCT);
-
+        productFeatureType = buildProductFeatureType(delegate);
     }
 
     private FeatureType buildCollectionFeatureType(DataStore delegate) throws IOException {
@@ -125,11 +128,62 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         return collectionTypeBuilder.feature();
     }
 
+    private FeatureType buildProductFeatureType(DataStore delegate) throws IOException {
+        SimpleFeatureType flatSchema = delegate.getSchema(PRODUCT);
+
+        TypeBuilder collectionTypeBuilder = new TypeBuilder(
+                CommonFactoryFinder.getFeatureTypeFactory(null));
+
+        // map the source attributes
+        AttributeTypeBuilder ab = new AttributeTypeBuilder();
+        for (AttributeDescriptor ad : flatSchema.getAttributeDescriptors()) {
+            String name = ad.getLocalName();
+            String namespaceURI = this.namespaceURI;
+            for (ProductClass pc : ProductClass.values()) {
+                String prefix = pc.getPrefix();
+                if (name.startsWith(prefix)) {
+                    name = name.substring(prefix.length());
+                    char c[] = name.toCharArray();
+                    c[0] = Character.toLowerCase(c[0]);
+                    name = new String(c);
+                    namespaceURI = pc.getNamespace();
+                    break;
+                }
+            }
+
+            // get a more predictable name structure (will have to do something for oracle
+            // like names too I guess)
+            if (StringUtils.isAllUpperCase(name)) {
+                name = name.toLowerCase();
+            }
+            // map into output type
+            ab.init(ad);
+            ab.name(name).namespaceURI(namespaceURI).userData(SOURCE_ATTRIBUTE, ad.getLocalName());
+            AttributeDescriptor mappedDescriptor;
+            if (ad instanceof GeometryDescriptor) {
+                GeometryType at = ab.buildGeometryType();
+                ab.setCRS(((GeometryDescriptor) ad).getCoordinateReferenceSystem());
+                mappedDescriptor = ab.buildDescriptor(new NameImpl(namespaceURI, name), at);
+            } else {
+                AttributeType at = ab.buildType();
+                mappedDescriptor = ab.buildDescriptor(new NameImpl(namespaceURI, name), at);
+            }
+
+            collectionTypeBuilder.add(mappedDescriptor);
+        }
+
+        // TODO: map OGC links and extra attributes
+
+        collectionTypeBuilder.setName(PRODUCT);
+        collectionTypeBuilder.setNamespaceURI(namespaceURI);
+        return collectionTypeBuilder.feature();
+    }
+
     private List<String> getMissingRequiredTables(DataStore delegate, String... tables)
             throws IOException {
         Set<String> availableNames = new HashSet<>(Arrays.asList(delegate.getTypeNames()));
-        return Arrays.stream(tables).filter(table -> !availableNames.contains(table))
-                .collect(Collectors.toList());
+        return Arrays.stream(tables).map(String::toLowerCase)
+                .filter(table -> !availableNames.contains(table)).collect(Collectors.toList());
     }
 
     /**
@@ -182,21 +236,26 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
     @Override
     public FeatureSource<FeatureType, Feature> getFeatureSource(Name typeName) throws IOException {
-        if (typeName.getLocalPart().equals(COLLECTION)) {
-            return new CollectionFeatureSource(this, collectionFeatureType);
+        if (collectionFeatureType.getName().equals(typeName)) {
+            return getCollectionSource();
+        } else if (productFeatureType.getName().equals(typeName)) {
+            return getProductSource();
         }
         return null;
 
     }
 
-    @Override
-    public void dispose() {
-        // nothing to dispose, the delegate store is managed by the resource pool
+    public FeatureSource<FeatureType, Feature> getProductSource() throws IOException {
+        return new ProductFeatureSource(this, productFeatureType);
+    }
+
+    public FeatureSource<FeatureType, Feature> getCollectionSource() throws IOException {
+        return new CollectionFeatureSource(this, collectionFeatureType);
     }
 
     @Override
-    public Name getCollectionName() {
-        return collectionFeatureType.getName();
+    public void dispose() {
+        // nothing to dispose, the delegate store is managed by the resource pool
     }
 
 }

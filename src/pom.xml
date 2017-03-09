@@ -1200,6 +1200,11 @@
       <artifactId>java-vector-tile</artifactId>
       <version>1.0.9</version>
     </dependency>
+    <dependency>
+      <groupId>com.ning</groupId>
+      <artifactId>compress-lzf</artifactId>
+      <version>${compress-lzf.version}</version>
+    </dependency>
   </dependencies>
  </dependencyManagement>
 
@@ -1824,6 +1829,7 @@
   <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
   <jackson1.version>1.9.13</jackson1.version>
   <jackson2.version>2.3.2</jackson2.version>
+  <compress-lzf.version>1.0.3</compress-lzf.version>
  </properties>
 
  <profiles>

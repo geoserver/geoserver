@@ -9,7 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.apache.commons.lang.NullArgumentException;
-import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.cluster.events.ToggleSwitch;
 import org.geoserver.cluster.impl.events.configuration.JMSServiceModifyEvent;
 import org.geoserver.cluster.impl.utils.BeanUtils;
@@ -17,10 +16,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 
 import com.thoughtworks.xstream.XStream;
-
-import static org.geoserver.cluster.impl.events.configuration.JMSServiceModifyEvent.Type.ADDED;
-import static org.geoserver.cluster.impl.events.configuration.JMSServiceModifyEvent.Type.MODIFIED;
-import static org.geoserver.cluster.impl.events.configuration.JMSServiceModifyEvent.Type.REMOVED;
 
 /**
  * 
@@ -64,8 +59,9 @@ public class JMSServiceHandler extends JMSConfigurationHandler<JMSServiceModifyE
                 case ADDED:
                     // checking that this service is not already present, we don't synchronize this check
                     // if two threads add the same service well one of them will fail and throw an exception
-                    if (geoServer.getService(ev.getSource().getId(), ev.getSource().getClass()) == null) {
-                        // this is a new service so let's add it to this geoserver
+                    // this event may be generated for a service that already exists
+                    if (geoServer.getService(ev.getSource().getId(), ServiceInfo.class) == null) {
+                        // this is a new service so let's add it to this GeoServer instance
                         geoServer.add(ev.getSource());
                     }
                     break;

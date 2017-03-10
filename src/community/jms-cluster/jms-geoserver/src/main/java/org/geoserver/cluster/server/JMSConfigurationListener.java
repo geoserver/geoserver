@@ -124,17 +124,15 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer imple
 
     @Override
     public void handlePostServiceChange(ServiceInfo service) {
-        // this handler is invoked when a new service is added
-        ServiceInfo finalService = ModificationProxy.unwrap(service);
-        JMSServiceModifyEvent event = new JMSServiceModifyEvent(finalService, JMSServiceModifyEvent.Type.ADDED);
+        // this handler is invoked when a new service is added or modified
+        JMSServiceModifyEvent event = new JMSServiceModifyEvent(service, JMSEventType.ADDED);
         handleServiceEvent(event);
     }
 
     @Override
     public void handleServiceRemove(ServiceInfo service) {
         // this handler is invoked when a service is removed
-        ServiceInfo finalService = ModificationProxy.unwrap(service);
-        JMSServiceModifyEvent event = new JMSServiceModifyEvent(finalService, JMSServiceModifyEvent.Type.REMOVED);
+        JMSServiceModifyEvent event = new JMSServiceModifyEvent(service, JMSEventType.REMOVED);
         handleServiceEvent(event);
     }
 
@@ -142,8 +140,7 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer imple
     public void handleServiceChange(ServiceInfo service, List<String> propertyNames,
                                     List<Object> oldValues, List<Object> newValues) {
         // this handler is invoked when a service configuration is modified
-        ServiceInfo finalService = ModificationProxy.unwrap(service);
-        JMSServiceModifyEvent event = new JMSServiceModifyEvent(finalService, propertyNames, oldValues, newValues);
+        JMSServiceModifyEvent event = new JMSServiceModifyEvent(service, propertyNames, oldValues, newValues);
         handleServiceEvent(event);
     }
 

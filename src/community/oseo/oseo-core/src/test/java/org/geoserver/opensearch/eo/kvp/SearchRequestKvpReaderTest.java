@@ -5,6 +5,7 @@
 package org.geoserver.opensearch.eo.kvp;
 
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT_KEY;
+import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.PARENT_ID_KEY;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
 
 import static org.hamcrest.Matchers.hasEntry;
@@ -182,12 +183,23 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     }
 
     @Test
-    public void testcountIndexFloat() throws Exception {
+    public void testountIndexFloat() throws Exception {
         try {
             parseSearchRequest(toMap(COUNT_KEY, "1.23"));
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
+    }
+    
+    @Test
+    public void testParentId() throws Exception {
+        Map<String, String> map = toMap(PARENT_ID_KEY, "SENTINEL2");
+        SearchRequest request = parseSearchRequest(map);
+        assertEquals("SENTINEL2", request.getParentId());
+        final Query query = request.getQuery();
+        assertNotNull(query);
+        // no filter here, the parent id needs to be translate to an internal identifier
+        assertEquals(Filter.INCLUDE, query.getFilter());
     }
 
 }

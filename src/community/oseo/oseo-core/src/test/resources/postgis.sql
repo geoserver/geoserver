@@ -13,7 +13,7 @@ drop table if exists collection;
 -- the collections and the attributes describing them
 create table collection (
   id serial primary key,
-  name varchar,
+  "name" varchar,
   "primary" boolean,
   "htmlDescription" text,
   footprint geography(Polygon, 4326),
@@ -67,7 +67,7 @@ create table collection_metadata (
 -- the products and attributes describing them
 create table product (
   id serial primary key,
-  name varchar,
+  "name" varchar,
   "htmlDescription" text,
   footprint geography(Polygon, 4326),
   "timeStart" timestamp,

@@ -43,7 +43,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
     public static final String COLLECTION = "collection";
 
-    static final String PRODUCT = "product";
+    public static final String PRODUCT = "product";
 
     static final String EO_PREFIX = "eo";
 

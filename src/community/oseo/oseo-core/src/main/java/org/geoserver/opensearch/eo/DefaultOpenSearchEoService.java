@@ -4,6 +4,8 @@
  */
 package org.geoserver.opensearch.eo;
 
+import static org.geoserver.opensearch.eo.ComplexFeatureAccessor.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess.ProductClass;
@@ -32,6 +35,7 @@ import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.expression.PropertyName;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -74,13 +78,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         searchParameters.addAll(OpenSearchParameters.getGeoTimeOpensearch());
 
         // product search for a given collection, figure out what parameters apply to it
-        OpenSearchAccess access = getOpenSearchAccess();
-        final FeatureSource<FeatureType, Feature> collectionSource = access.getCollectionSource();
-        Feature match = getCollectionByParentId(parentId, collectionSource);
-        if (match == null) {
-            throw new OWS20Exception("Unknown parentId '" + parentId + "'",
-                    OWSExceptionCode.InvalidParameterValue);
-        }
+        Feature match = getCollectionByParentIdentifier(parentId);
         Property sensorTypeProperty = match
                 .getProperty(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "sensorType"));
         if (sensorTypeProperty == null || !(sensorTypeProperty.getValue() instanceof String)) {
@@ -96,13 +94,40 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
                     + ", will only return generic product properties");
         }
 
+        OpenSearchAccess access = getOpenSearchAccess();
         FeatureType productSchema = access.getProductSource().getSchema();
         searchParameters.addAll(getSearchParametersByClass(ProductClass.EO_GENERIC, productSchema));
-        if(collectionClass != null) {
+        if (collectionClass != null) {
             searchParameters.addAll(getSearchParametersByClass(collectionClass, productSchema));
         }
 
         return searchParameters;
+    }
+
+    /**
+     * Returns the complex feature representing a collection by parentId
+     * @param parentId
+     * @return
+     * @throws IOException
+     */
+    private Feature getCollectionByParentIdentifier(final String parentId) throws IOException {
+        OpenSearchAccess access = getOpenSearchAccess();
+        final FeatureSource<FeatureType, Feature> collectionSource = access.getCollectionSource();
+        
+        // build the query
+        final NameImpl identifier = new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier");
+        final PropertyIsEqualTo filter = FF.equal(FF.property(identifier), FF.literal(parentId),
+                true);
+        Query query = new Query(collectionSource.getName().getLocalPart(), filter);
+        FeatureCollection<FeatureType, Feature> features = collectionSource.getFeatures(query);
+        
+        // get the expected maching feature
+        Feature match = DataUtilities.first(features);
+        if (match == null) {
+            throw new OWS20Exception("Unknown parentId '" + parentId + "'",
+                    OWSExceptionCode.InvalidParameterValue);
+        }
+        return match;
     }
 
     private List<Parameter<?>> getSearchParametersByClass(ProductClass pc,
@@ -120,17 +145,6 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         }
 
         return result;
-    }
-
-    private Feature getCollectionByParentId(final String parentId,
-            final FeatureSource<FeatureType, Feature> collectionSource) throws IOException {
-        final NameImpl identifier = new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier");
-        final PropertyIsEqualTo filter = FF.equal(FF.property(identifier), FF.literal(parentId),
-                true);
-        Query query = new Query(collectionSource.getName().getLocalPart(), filter);
-        FeatureCollection<FeatureType, Feature> features = collectionSource.getFeatures(query);
-        Feature match = DataUtilities.first(features);
-        return match;
     }
 
     public List<Parameter<?>> getCollectionSearchParameters() throws IOException {
@@ -161,23 +175,40 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
     @Override
     public SearchResults search(SearchRequest request) throws IOException {
-        if (request.getParentId() != null) {
-            throw new OWS20Exception("Product search not implemented yet");
-        }
-
-        // feature request
+        // grab the right feature source for the request
         final OpenSearchAccess access = getOpenSearchAccess();
-        final FeatureSource<FeatureType, Feature> collectionSource = access.getCollectionSource();
-
+        final FeatureSource<FeatureType, Feature> featureSource;
+        Query resultsQuery = request.getQuery();
+        final String parentId = request.getParentId();
+        if (parentId == null) {
+            featureSource = access.getCollectionSource();
+        } else {
+            featureSource = access.getProductSource();
+            
+            // need to determine if the collection is primary or virtual
+            Feature collection = getCollectionByParentIdentifier(parentId);
+            if(Boolean.FALSE.equals(value(collection, "primary"))) {
+                // TODO: parse and integrate virtual collection filter
+                throw new OWS20Exception("Virtual collection support not implemented yet");
+            } else {
+                // adding parent id filter for primary collections
+                final PropertyName parentIdProperty = FF
+                        .property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "parentIdentifier"));
+                PropertyIsEqualTo parentIdFilter = FF.equal(parentIdProperty, FF.literal(parentId),
+                        true);
+                resultsQuery = new Query(resultsQuery);
+                resultsQuery.setFilter(Predicates.and(resultsQuery.getFilter(), parentIdFilter));
+            }
+        }
+        
         // count
-        final Query resultsQuery = request.getQuery();
         Query countQuery = new Query(resultsQuery);
         countQuery.setMaxFeatures(Query.DEFAULT_MAX);
         countQuery.setStartIndex(null);
-        int totalResults = collectionSource.getCount(countQuery);
+        int totalResults = featureSource.getCount(countQuery);
 
         // get actual features
-        FeatureCollection features = collectionSource.getFeatures(resultsQuery);
+        FeatureCollection<FeatureType, Feature> features = featureSource.getFeatures(resultsQuery);
         SearchResults results = new SearchResults(request, features, totalResults);
 
         return results;

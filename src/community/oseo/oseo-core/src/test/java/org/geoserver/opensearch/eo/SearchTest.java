@@ -60,6 +60,18 @@ public class SearchTest extends OSEOTestSupport {
         // overall schema validation for good measure
         checkValidAtomFeed(dom);
     }
+    
+    @Test
+    public void testPagingNoResults() throws Exception {
+        // first page
+        Document dom = getAsDOM("oseo/search?uid=UnknownIdentifier");
+        assertHasLink(dom, "self", 1, 10);
+        assertHasLink(dom, "first", 1, 10);
+        assertHasLink(dom, "last", 1, 10);
+        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
+        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
+    }
+
 
     @Test
     public void testPagingFullPages() throws Exception {
@@ -120,7 +132,7 @@ public class SearchTest extends OSEOTestSupport {
     }
     
     @Test
-    public void testGeoUidQuery() throws Exception {
+    public void testGeoUidCollectionQuery() throws Exception {
         Document dom = getAsDOM("oseo/search?uid=LANDSAT8&httpAccept=" + AtomSearchResponse.MIME);
         print(dom);
         
@@ -153,4 +165,16 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:link[@rel='" + rel + "']/@href", containsString("startIndex=" + startIndex)));
         assertThat(dom, hasXPath("/at:feed/at:link[@rel='" + rel + "']/@href", containsString("count=" + count)));
     }
+    
+    @Test
+    public void testAllSentinel2() throws Exception {
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&httpAccept=" + AtomSearchResponse.MIME);
+        print(dom);
+        
+        // check that filtering worked
+        assertThat(dom, hasXPath("/at:feed/at:entry/at:title", startsWith("S2A")));
+        assertThat(dom, not(hasXPath("/at:feed/at:entry[at:title='S1A']")));
+        assertThat(dom, not(hasXPath("/at:feed/at:entry[at:title='LS08']")));
+    }
+
 }

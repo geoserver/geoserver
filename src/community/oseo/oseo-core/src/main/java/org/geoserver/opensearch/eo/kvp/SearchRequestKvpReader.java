@@ -48,6 +48,8 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     public static final String COUNT_KEY = "count";
+    
+    public static final String PARENT_ID_KEY = "parentId";
 
     private Set<String> NOT_FILTERS = new HashSet<>(Arrays.asList(START_INDEX.key, COUNT_KEY));
 

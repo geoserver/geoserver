@@ -60,6 +60,7 @@ public class JDBCOpenSearchAccessTest {
         h2 = (JDBCDataStore) DataStoreFinder.getDataStore(params);
         JDBCOpenSearchAccessTest.createTables(h2);
         JDBCOpenSearchAccessTest.populateCollections(h2);
+        JDBCOpenSearchAccessTest.populateProducts(h2);
 
         Name name = new NameImpl("test", "jdbcStore");
         SerializableDefaultRepository repository = new SerializableDefaultRepository();
@@ -94,7 +95,7 @@ public class JDBCOpenSearchAccessTest {
                 } else {
                     buffer = buffer + "\n" + line;
                 }
-                if (line.contains(";")) {
+                if (line.trim().endsWith(";")) {
                     statements.add(buffer);
                     buffer = null;
                 }
@@ -132,10 +133,21 @@ public class JDBCOpenSearchAccessTest {
     }
 
     /**
-     * Takes the postgis.sql creation script, adapts it and runs it on H2
+     * Adds the collection data into the H2 database 
      */
     static void populateCollections(JDBCDataStore h2) throws SQLException, IOException {
-        List<String> statements = loadScriptCommands("/collection_h2_data.sql");
+        runScript("/collection_h2_data.sql", h2);
+    }
+    
+    /**
+     * Adds the product data into the H2 database
+     */
+    static void populateProducts(JDBCDataStore h2) throws SQLException, IOException {
+        runScript("/product_h2_data.sql", h2);
+    }
+
+    private static void runScript(String script, JDBCDataStore h2) throws IOException, SQLException {
+        List<String> statements = loadScriptCommands(script);
         try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT);
                 Statement st = conn.createStatement();) {
             for (String statement : statements) {
@@ -143,6 +155,7 @@ public class JDBCOpenSearchAccessTest {
             }
         }
     }
+    
 
     @Test
     public void testCollectionFeatureType() throws Exception {

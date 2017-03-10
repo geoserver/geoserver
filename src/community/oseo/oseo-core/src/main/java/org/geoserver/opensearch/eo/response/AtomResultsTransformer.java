@@ -169,9 +169,12 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             BiConsumer<Feature, SearchRequest> entryEncoder;
             if (JDBCOpenSearchAccess.COLLECTION.equals(schemaName)) {
                 entryEncoder = this::encodeCollectionEntry;
+            } else if (JDBCOpenSearchAccess.PRODUCT.equals(schemaName)) {
+                entryEncoder = this::encodeProductEntry;
             } else {
                 throw new IllegalArgumentException("Unrecognized feature type " + schemaName);
             }
+
             try (FeatureIterator<Feature> fi = results.features()) {
                 while (fi.hasNext()) {
                     Feature feature = fi.next();
@@ -181,9 +184,21 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
         }
 
         private void encodeCollectionEntry(Feature feature, SearchRequest request) {
-            final String buildCollectionIdentifierLink = buildCollectionIdentifierLink(value(feature, EO_NAMESPACE, "identifier"),
-                    request);
-            element("id", buildCollectionIdentifierLink);
+            final String identifierLink = buildCollectionIdentifierLink(
+                    value(feature, EO_NAMESPACE, "identifier"), request);
+            encodeGenericEntryContents(feature, identifierLink);
+
+        }
+
+        private void encodeProductEntry(Feature feature, SearchRequest request) {
+            final String buildCollectionIdentifierLink = buildProductIdentifierLink(
+                    value(feature, EO_NAMESPACE, "identifier"), request);
+            encodeGenericEntryContents(feature, buildCollectionIdentifierLink);
+
+        }
+
+        private void encodeGenericEntryContents(Feature feature, final String identifierLink) {
+            element("id", identifierLink);
             element("title", (String) value(feature, "name"));
             // TODO: need an actual update column
             Date updated = (Date) value(feature, "timeStart");
@@ -200,9 +215,8 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
                 element("summary", () -> cdata(htmlDescription), attributes("type", "html"));
             }
             // self link
-            element("link", NO_CONTENTS,
-                    attributes("rel", "alternate", "href", buildCollectionIdentifierLink, "type", AtomSearchResponse.MIME));
-
+            element("link", NO_CONTENTS, attributes("rel", "alternate", "href", identifierLink,
+                    "type", AtomSearchResponse.MIME));
         }
 
         private void encodeGmlRssGeometry(Geometry g) {
@@ -236,6 +250,16 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             return href;
         }
 
+        private String buildProductIdentifierLink(Object identifier, SearchRequest request) {
+            String baseURL = request.getBaseUrl();
+            Map<String, String> kvp = new LinkedHashMap<String, String>();
+            kvp.put("parentId", request.getParentId());
+            kvp.put("uid", String.valueOf(identifier));
+            kvp.put("httpAccept", AtomSearchResponse.MIME);
+            String href = ResponseUtils.buildURL(baseURL, "oseo/search", kvp, URLType.SERVICE);
+            return href;
+        }
+
         private Object value(Feature feature, String attribute) {
             String prefix = feature.getType().getName().getNamespaceURI();
             return value(feature, prefix, attribute);
@@ -247,17 +271,21 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
                 return null;
             } else {
                 Object value = property.getValue();
-                if(value instanceof Geometry) {
+                if (value instanceof Geometry) {
                     // cheap reprojection support since there is no reprojecting collection
                     // wrapper for complex features
-                    CoordinateReferenceSystem nativeCRS = ((GeometryDescriptor) property.getDescriptor()).getCoordinateReferenceSystem();
-                    if(nativeCRS != null && !CRS.equalsIgnoreMetadata(nativeCRS, OpenSearchParameters.OUTPUT_CRS)) {
+                    CoordinateReferenceSystem nativeCRS = ((GeometryDescriptor) property
+                            .getDescriptor()).getCoordinateReferenceSystem();
+                    if (nativeCRS != null && !CRS.equalsIgnoreMetadata(nativeCRS,
+                            OpenSearchParameters.OUTPUT_CRS)) {
                         Geometry g = (Geometry) value;
                         try {
-                            return JTS.transform(g, CRS.findMathTransform(nativeCRS, OpenSearchParameters.OUTPUT_CRS));
+                            return JTS.transform(g, CRS.findMathTransform(nativeCRS,
+                                    OpenSearchParameters.OUTPUT_CRS));
                         } catch (MismatchedDimensionException | TransformException
                                 | FactoryException e) {
-                            throw new OWS20Exception("Failed to reproject geometry to EPSG:4326 lat/lon", e);
+                            throw new OWS20Exception(
+                                    "Failed to reproject geometry to EPSG:4326 lat/lon", e);
                         }
                     }
                 }
@@ -266,6 +294,10 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
         }
 
         private int getLastPageStart(int total, int itemsPerPage) {
+            // all in one page?
+            if(total <= itemsPerPage) {
+                return 1;
+            }
             // check how many items in the last page, is the last page partial or full?
             int lastPageItems = total % itemsPerPage;
             if (lastPageItems == 0) {

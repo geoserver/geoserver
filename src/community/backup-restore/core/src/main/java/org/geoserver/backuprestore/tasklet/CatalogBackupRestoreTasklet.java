@@ -835,19 +835,17 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             throws Exception {
         // Restore configuration files form source and Test that everything went well
         try {
+
             // - Prepare folder
-            Files.delete(
-                    baseDir.get(GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME).dir());
+            GeoserverXMLResourceProvider gwcConfigProvider = (GeoserverXMLResourceProvider) GeoServerExtensions.bean("gwcXmlConfigResourceProvider");
+            Resource targetGWCProviderRestoreDir = gwcConfigProvider.getConfigDirectory();
+            Files.delete(targetGWCProviderRestoreDir.dir());
 
             // Restore GWC Providers Configurations
-            Resource targetGWCProviderRestoreDir = BackupUtils.dir(baseDir,
-                    GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME);
-
             for (GeoserverXMLResourceProvider gwcProvider : GeoServerExtensions
                     .extensions(GeoserverXMLResourceProvider.class)) {
-                final File gwcProviderConfigFile = new File(gwcProvider.getLocation());
                 Resource providerConfigFile = sourceRestoreFolder.get(Paths
-                        .path(gwcProviderConfigFile.getParent(), gwcProviderConfigFile.getName()));
+                        .path(GeoserverXMLResourceProvider.DEFAULT_CONFIGURATION_DIR_NAME, gwcProvider.getConfigFileName()));
                 if (Resources.exists(providerConfigFile)
                         && FileUtils.sizeOf(providerConfigFile.file()) > 0) {
                     Resources.copy(providerConfigFile.in(), targetGWCProviderRestoreDir,

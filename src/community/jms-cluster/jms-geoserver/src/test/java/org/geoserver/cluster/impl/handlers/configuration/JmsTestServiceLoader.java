@@ -11,19 +11,19 @@ import org.geoserver.platform.GeoServerResourceLoader;
 /**
  * Loader for the test service.
  */
-public class JmsTestServiceLoader extends XStreamServiceLoader<JmsTestService> {
+public class JmsTestServiceLoader extends XStreamServiceLoader<JmsTestServiceInfo> {
 
     public JmsTestServiceLoader(GeoServerResourceLoader resourceLoader) {
         super(resourceLoader, null);
     }
 
     @Override
-    public Class<JmsTestService> getServiceClass() {
-        return JmsTestService.class;
+    public Class<JmsTestServiceInfo> getServiceClass() {
+        return JmsTestServiceInfo.class;
     }
 
     @Override
-    protected JmsTestService createServiceFromScratch(GeoServer gs) {
-        return new JmsTestService();
+    protected JmsTestServiceInfo createServiceFromScratch(GeoServer gs) {
+        return new JmsTestServiceInfoImpl();
     }
 }

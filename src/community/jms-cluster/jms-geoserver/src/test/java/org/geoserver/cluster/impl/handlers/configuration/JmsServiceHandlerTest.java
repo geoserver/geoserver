@@ -48,7 +48,7 @@ public class JmsServiceHandlerTest extends GeoServerSystemTestSupport {
         Collection<? extends ServiceInfo> services = getGeoServer().getServices();
         for (ServiceInfo service : services) {
             ServiceInfo finalService = ModificationProxy.unwrap(service);
-            if (finalService instanceof JmsTestService) {
+            if (finalService instanceof JmsTestServiceInfoImpl) {
                 getGeoServer().remove(finalService);
             }
         }
@@ -137,7 +137,7 @@ public class JmsServiceHandlerTest extends GeoServerSystemTestSupport {
     private JMSServiceModifyEvent createNewServiceEvent(String serviceId, String serviceName,
                                                         String serviceAbstract, String workspaceName) {
         // our virtual service information
-        JmsTestService serviceInfo = new JmsTestService();
+        JmsTestServiceInfoImpl serviceInfo = new JmsTestServiceInfoImpl();
         serviceInfo.setName(serviceName);
         serviceInfo.setId(serviceId);
         if (workspaceName != null) {

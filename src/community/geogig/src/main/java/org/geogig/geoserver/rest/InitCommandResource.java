@@ -34,7 +34,7 @@ public class InitCommandResource extends org.locationtech.geogig.rest.repository
 
     private RepositoryInfo saveRepository() {
         // repo was just created, need to register it with an ID in the manager
-        // cretae a RepositoryInfo object
+        // create a RepositoryInfo object
         RepositoryInfo repoInfo = new RepositoryInfo();
         URI location = geogig.get().getLocation().normalize();
         if ("file".equals(location.getScheme())) {

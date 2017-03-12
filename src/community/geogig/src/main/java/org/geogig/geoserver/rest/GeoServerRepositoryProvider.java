@@ -43,6 +43,11 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
      */
     public static final String INIT_CMD = "init";
 
+    /**
+     * Import Existing Repository command string.
+     */
+    public static final String IMPORT_CMD = "importExistingRepo";
+
     private Optional<String> getRepositoryName(Request request) {
         final String repo = getStringAttribute(request, "repository");
         return Optional.fromNullable(repo);
@@ -140,6 +145,20 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         return false;
     }
 
+    private boolean isImportRequest(Request request) {
+        // if the request is a POST, and the request path ends in "importExistingRepo"
+        if (Method.POST.equals(request.getMethod())) {
+            Map<String, Object> attributes = request.getAttributes();
+            if (attributes != null && attributes.containsKey("command")) {
+                return IMPORT_CMD.equals(attributes.get("command"));
+            } else if (request.getResourceRef() != null) {
+                String path = request.getResourceRef().getPath();
+                return path != null && path.contains(IMPORT_CMD);
+            }
+        }
+        return false;
+    }
+
     @Override
     public Optional<Repository> getGeogig(Request request) {
         Optional<String> repositoryName = getRepositoryName(request);
@@ -148,9 +167,14 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         }
         // look for one with the provided name first
         Optional<Repository> geogig = getGeogig(repositoryName.get());
-        if (!geogig.isPresent() && isInitRequest(request)) {
-            // special handling of INIT requests
-            geogig = InitRequestHandler.createGeoGIG(request);
+        if (!geogig.isPresent()) {
+            if (isInitRequest(request)) {
+                // special handling of INIT requests
+                geogig = AddRepoRequestHandler.createGeoGIG(request);
+            } else if (isImportRequest(request)){
+                // handles IMPORT requests
+                geogig = AddRepoRequestHandler.importGeogig(request);
+            }
         }
         if (!geogig.isPresent()) {
             // if it's still not present, just generate one.

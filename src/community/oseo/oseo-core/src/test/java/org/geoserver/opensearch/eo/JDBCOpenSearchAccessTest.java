@@ -124,11 +124,11 @@ public class JDBCOpenSearchAccessTest {
             }
             // add spatial indexes
             st.execute(
-                    "CALL AddGeometryColumn(SCHEMA(), 'COLLECTION', 'FOOTPRINT', 4326, 'POLYGON', 2)");
-            st.execute("CALL CreateSpatialIndex(SCHEMA(), 'COLLECTION', 'FOOTPRINT', 4326)");
+                    "CALL AddGeometryColumn(SCHEMA(), 'COLLECTION', 'footprint', 4326, 'POLYGON', 2)");
+            st.execute("CALL CreateSpatialIndex(SCHEMA(), 'COLLECTION', 'footprint', 4326)");
             st.execute(
-                    "CALL AddGeometryColumn(SCHEMA(), 'PRODUCT', 'FOOTPRINT', 4326, 'POLYGON', 2)");
-            st.execute("CALL CreateSpatialIndex(SCHEMA(), 'PRODUCT', 'FOOTPRINT', 4326)");
+                    "CALL AddGeometryColumn(SCHEMA(), 'PRODUCT', 'footprint', 4326, 'POLYGON', 2)");
+            st.execute("CALL CreateSpatialIndex(SCHEMA(), 'PRODUCT', 'footprint', 4326)");
         }
     }
 

@@ -15,6 +15,7 @@ import org.geotools.data.DataAccess;
 import org.geotools.data.DefaultResourceInfo;
 import org.geotools.data.FeatureListener;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.Join;
 import org.geotools.data.Query;
 import org.geotools.data.QueryCapabilities;
 import org.geotools.data.ResourceInfo;
@@ -35,9 +36,15 @@ import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 
+/**
+ * Base class for the collection and product specific feature source wrappers
+ *
+ * @author Andrea Aime - GeoSolutions
+ */
 public abstract class AbstractMappingSource implements FeatureSource<FeatureType, Feature> {
 
     static final Logger LOGGER = Logging.getLogger(AbstractMappingSource.class);
@@ -67,12 +74,10 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
      * @return
      */
     protected SortBy[] buildDefaultSort(FeatureType schema) {
-        // workaround for "name" not being quoted in the sql schema... might want to fix it,
-        // but at the same time we'll eventually need some mapping going to Oracle or some such
         String timeStart = propertyMapper.getSourceName("timeStart");
-        String name = propertyMapper.getSourceName("name");
+        String identifier = propertyMapper.getSourceName("identifier");
         return new SortBy[] { FF.sort(timeStart, SortOrder.DESCENDING),
-                FF.sort(name, SortOrder.ASCENDING) };
+                FF.sort(identifier, SortOrder.ASCENDING) };
     }
 
     @Override
@@ -95,8 +100,8 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
         }
     }
 
-    /*+
-     * Returns the underlying delegate source
+    /*
+     * + Returns the underlying delegate source
      */
     protected abstract SimpleFeatureSource getDelegateCollectionSource() throws IOException;
 
@@ -179,10 +184,11 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
     }
 
     /**
-     * Maps query back the main underlying feature source 
+     * Maps query back the main underlying feature source
+     * 
      * @param query
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     protected Query mapToSimpleCollectionQuery(Query query) throws IOException {
         Query result = new Query(getDelegateCollectionSource().getSchema().getTypeName());
@@ -195,7 +201,11 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
             String[] mappedPropertyNames = Arrays.stream(query.getPropertyNames())
                     .map(name -> propertyMapper.getSourceName(name)).filter(name -> name != null)
                     .toArray(size -> new String[size]);
-            result.setPropertyNames(mappedPropertyNames);
+            if (mappedPropertyNames.length == 0) {
+                result.setPropertyNames(Query.ALL_NAMES);
+            } else {
+                result.setPropertyNames(mappedPropertyNames);
+            }
         }
         if (query.getSortBy() != null && query.getSortBy().length > 0) {
             SortBy[] mappedSortBy = Arrays.stream(query.getSortBy()).map(sb -> {
@@ -218,7 +228,44 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
         result.setStartIndex(query.getStartIndex());
         result.setMaxFeatures(query.getMaxFeatures());
 
+        // join to metadata table if necessary
+        if (hasOutputProperty(query, OpenSearchAccess.METADATA_PROPERTY_NAME)) {
+            Filter filter = FF.equal(FF.property("id"), FF.property("metadata.id"), true);
+            final String metadataTable = getMetadataTable();
+            Join join = new Join(metadataTable, filter);
+            join.setAlias("metadata");
+            result.getJoins().add(join);
+        }
+
         return result;
+    }
+
+    /**
+     * Name of the metadata table to join in case the {@link OpenSearchAccess#METADATA_PROPERTY_NAME} property is requested
+     * 
+     * @return
+     */
+    protected abstract String getMetadataTable();
+
+    /**
+     * Searches for an optional property among the query attributes. Returns true only if the property is explicitly listed
+     * 
+     * @param query
+     * @param property
+     * @return
+     */
+    protected boolean hasOutputProperty(Query query, Name property) {
+        if (query.getProperties() == null) {
+            return false;
+        }
+
+        for (PropertyName pn : query.getProperties()) {
+            if (property.getLocalPart().equals(pn.getPropertyName()) && property.getNamespaceURI().equals(pn.getNamespaceContext().getURI(""))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -234,6 +281,7 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
 
     /**
      * Maps the underlying features (eventually joined) to the output complex feature
+     * 
      * @param it
      * @return
      */
@@ -247,16 +295,24 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
                 continue;
             }
             String localName = (String) pd.getUserData().get(JDBCOpenSearchAccess.SOURCE_ATTRIBUTE);
-            if(localName == null) {
+            if (localName == null) {
                 continue;
             }
             Object value = fi.getAttribute(localName);
-            if(value == null) {
+            if (value == null) {
                 continue;
             }
             ab.setDescriptor((AttributeDescriptor) pd);
             Attribute attribute = ab.buildSimple(null, value);
             builder.append(pd.getName(), attribute);
+        }
+        // handle joined metadata
+        Object metadataValue = fi.getAttribute("metadata");
+        if(metadataValue instanceof SimpleFeature) {
+            SimpleFeature metadataFeature = (SimpleFeature) metadataValue;
+            ab.setDescriptor((AttributeDescriptor) schema.getDescriptor(OpenSearchAccess.METADATA_PROPERTY_NAME));
+            Attribute attribute = ab.buildSimple(null, metadataFeature.getAttribute("metadata"));
+            builder.append(OpenSearchAccess.METADATA_PROPERTY_NAME, attribute);
         }
         //
         Feature feature = builder.buildFeature(fi.getID());

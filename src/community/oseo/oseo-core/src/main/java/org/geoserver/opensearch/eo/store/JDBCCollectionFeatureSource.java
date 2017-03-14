@@ -16,17 +16,23 @@ import org.opengis.feature.type.FeatureType;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class ProductFeatureSource extends AbstractMappingSource {
+public class JDBCCollectionFeatureSource extends AbstractMappingSource {
 
-    static final Logger LOGGER = Logging.getLogger(ProductFeatureSource.class);
+    static final Logger LOGGER = Logging.getLogger(JDBCCollectionFeatureSource.class);
 
-    public ProductFeatureSource(JDBCOpenSearchAccess openSearchAccess,
+    public JDBCCollectionFeatureSource(JDBCOpenSearchAccess openSearchAccess,
             FeatureType collectionFeatureType) throws IOException {
         super(openSearchAccess, collectionFeatureType);
     }
 
     protected SimpleFeatureSource getDelegateCollectionSource() throws IOException {
-        return openSearchAccess.getDelegateStore().getFeatureSource(JDBCOpenSearchAccess.PRODUCT);
+        return openSearchAccess.getDelegateStore()
+                .getFeatureSource(JDBCOpenSearchAccess.COLLECTION);
+    }
+
+    @Override
+    protected String getMetadataTable() {
+        return "collection_metadata";
     }
 
 }

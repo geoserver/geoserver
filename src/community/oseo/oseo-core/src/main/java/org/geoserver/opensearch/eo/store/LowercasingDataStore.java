@@ -10,7 +10,7 @@ import org.geoserver.feature.retype.RetypingDataStore;
 import org.geotools.data.DataStore;
 
 /**
- * Handles idiosyncrasies in database table naming, for the moment only lowecase vs uppercase, later we could extend it to handle property names and
+ * Handles idiosyncrasies in database table naming, for the moment only lowercase vs uppercase, later we could extend it to handle property names and
  * the like
  */
 class LowercasingDataStore extends RetypingDataStore {
@@ -24,4 +24,5 @@ class LowercasingDataStore extends RetypingDataStore {
         return originalName.toLowerCase();
     }
 
+    
 }

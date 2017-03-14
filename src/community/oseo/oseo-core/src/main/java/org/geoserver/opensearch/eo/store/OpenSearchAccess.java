@@ -8,8 +8,10 @@ import java.io.IOException;
 
 import org.geotools.data.DataAccess;
 import org.geotools.data.FeatureSource;
+import org.geotools.feature.NameImpl;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 
 /**
  * Provides access to OpenSearch for EO collections and products as an extension of {@link DataAccess} with well known feature types
@@ -21,6 +23,11 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
     public static String EO_NAMESPACE = "http://a9.com/-/opensearch/extensions/eo/1.0/";
 
     public static String GEO_NAMESPACE = "http://a9.com/-/opensearch/extensions/geo/1.0/";
+
+    /**
+     * The optional property in collection and product containing the metadata (ISO or O&M)
+     */
+    public static Name METADATA_PROPERTY_NAME = new NameImpl(EO_NAMESPACE, "metadata");
 
     /**
      * Classes of products

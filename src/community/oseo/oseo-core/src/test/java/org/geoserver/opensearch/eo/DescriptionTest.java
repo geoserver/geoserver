@@ -35,11 +35,7 @@ public class DescriptionTest extends OSEOTestSupport {
             gs.save(service);
 
             // run a request that's going to fail
-            MockHttpServletResponse response = getAsServletResponse("oseo/description");
-            assertEquals(OSEOExceptionHandler.RSS_MIME, response.getContentType());
-            assertEquals(500, response.getStatus());
-
-            Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+            Document dom = getAsOpenSearchException("oseo/description", 500);
             // print(dom);
 
             assertThat(dom, hasXPath("/rss/channel/item/title", equalTo(
@@ -67,11 +63,7 @@ public class DescriptionTest extends OSEOTestSupport {
             gs.save(service);
 
             // run a request that's going to fail
-            MockHttpServletResponse response = getAsServletResponse("oseo/description");
-            assertEquals(OSEOExceptionHandler.RSS_MIME, response.getContentType());
-            assertEquals(500, response.getStatus());
-
-            Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+            Document dom = getAsOpenSearchException("oseo/description", 500);
             // print(dom);
 
             assertThat(dom, hasXPath("/rss/channel/item/title", equalTo(
@@ -92,12 +84,7 @@ public class DescriptionTest extends OSEOTestSupport {
     @Test
     public void testExceptionInvalidParentId() throws Exception {
         // run a request that's going to fail
-        MockHttpServletResponse response = getAsServletResponse(
-                "oseo/description?parentId=IAmNotThere");
-        assertEquals(OSEOExceptionHandler.RSS_MIME, response.getContentType());
-        assertEquals(400, response.getStatus());
-
-        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        Document dom = getAsOpenSearchException("oseo/description?parentId=IAmNotThere", 400);
         // print(dom);
 
         assertThat(dom,

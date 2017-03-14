@@ -28,6 +28,15 @@ public interface OpenSearchEoService {
      * @throws IOException 
      */
     public SearchResults search(SearchRequest request) throws IOException;
+    
+    /**
+     * Retrieves a product/collection metadata in a particular format
+     * 
+     * @param request
+     * @return
+     * @throws IOException 
+     */
+    public MetadataResults metadata(MetadataRequest request) throws IOException;
 
     /**
      * Returns the search parameters applicable to collections

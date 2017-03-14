@@ -16,11 +16,14 @@ import java.util.function.BiConsumer;
 import javax.xml.namespace.QName;
 
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.opensearch.eo.MetadataRequest;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.opensearch.eo.SearchResults;
+import org.geoserver.opensearch.eo.kvp.MetadataRequestKvpReader;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess;
+import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.OWS20Exception;
@@ -184,22 +187,38 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
         }
 
         private void encodeCollectionEntry(Feature feature, SearchRequest request) {
-            final String identifierLink = buildCollectionIdentifierLink(
-                    value(feature, EO_NAMESPACE, "identifier"), request);
-            encodeGenericEntryContents(feature, identifierLink);
+            final String identifier = (String) value(feature, EO_NAMESPACE, "identifier");
+            final String name = (String) value(feature, "name");
+
+            // generic contents
+            String identifierLink = buildCollectionIdentifierLink(identifier, request);
+            encodeGenericEntryContents(feature, name, identifierLink);
+
+            // build links to the metadata
+            String metadataLink = buildMetadataLink(null, identifier, MetadataRequest.ISO_METADATA,
+                    request);
+            element("link", NO_CONTENTS, attributes("rel", "alternate", "href", metadataLink,
+                    "type", MetadataRequest.ISO_METADATA, "title", "ISO metadata"));
 
         }
 
         private void encodeProductEntry(Feature feature, SearchRequest request) {
-            final String buildCollectionIdentifierLink = buildProductIdentifierLink(
-                    value(feature, EO_NAMESPACE, "identifier"), request);
-            encodeGenericEntryContents(feature, buildCollectionIdentifierLink);
+            final String identifier = (String) value(feature, OpenSearchAccess.ProductClass.EO_GENERIC.getNamespace(), "identifier");
 
+            // encode the generic contents
+            String buildCollectionIdentifierLink = buildProductIdentifierLink(identifier, request);
+            encodeGenericEntryContents(feature, identifier, buildCollectionIdentifierLink);
+
+            // build links to the metadata
+            String metadataLink = buildMetadataLink(request.getParentId(), identifier,
+                    MetadataRequest.OM_METADATA, request);
+            element("link", NO_CONTENTS, attributes("rel", "alternate", "href", metadataLink,
+                    "type", MetadataRequest.OM_METADATA, "title", "O&M metadata"));
         }
 
-        private void encodeGenericEntryContents(Feature feature, final String identifierLink) {
+        private void encodeGenericEntryContents(Feature feature, String name, final String identifierLink) {
             element("id", identifierLink);
-            element("title", (String) value(feature, "name"));
+            element("title", name);
             // TODO: need an actual update column
             Date updated = (Date) value(feature, "timeStart");
             if (updated != null) {
@@ -215,8 +234,8 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
                 element("summary", () -> cdata(htmlDescription), attributes("type", "html"));
             }
             // self link
-            element("link", NO_CONTENTS, attributes("rel", "alternate", "href", identifierLink,
-                    "type", AtomSearchResponse.MIME));
+            element("link", NO_CONTENTS, attributes("rel", "self", "href", identifierLink,
+                    "type", AtomSearchResponse.MIME, "title", "self"));
         }
 
         private void encodeGmlRssGeometry(Geometry g) {
@@ -260,6 +279,21 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             return href;
         }
 
+        private String buildMetadataLink(String parentIdentifier, Object identifier,
+                String mimeType, SearchRequest request) {
+            String baseURL = request.getBaseUrl();
+            Map<String, String> kvp = new LinkedHashMap<String, String>();
+            if (parentIdentifier != null) {
+                kvp.put("parentId", String.valueOf(parentIdentifier));
+            }
+            kvp.put("uid", String.valueOf(identifier));
+            if (mimeType != null) {
+                kvp.put("httpAccept", mimeType);
+            }
+            String href = ResponseUtils.buildURL(baseURL, "oseo/metadata", kvp, URLType.SERVICE);
+            return href;
+        }
+
         private Object value(Feature feature, String attribute) {
             String prefix = feature.getType().getName().getNamespaceURI();
             return value(feature, prefix, attribute);
@@ -295,7 +329,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
 
         private int getLastPageStart(int total, int itemsPerPage) {
             // all in one page?
-            if(total <= itemsPerPage) {
+            if (total <= itemsPerPage) {
                 return 1;
             }
             // check how many items in the last page, is the last page partial or full?

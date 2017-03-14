@@ -6,10 +6,8 @@ package org.geoserver.opensearch.eo.store;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -85,12 +83,12 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     private FeatureType buildCollectionFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(COLLECTION);
 
-        TypeBuilder collectionTypeBuilder = new TypeBuilder(
+        TypeBuilder typeBuilder = new TypeBuilder(
                 CommonFactoryFinder.getFeatureTypeFactory(null));
 
         // map the source attributes
-        AttributeTypeBuilder ab = new AttributeTypeBuilder();
         for (AttributeDescriptor ad : flatSchema.getAttributeDescriptors()) {
+            AttributeTypeBuilder ab = new AttributeTypeBuilder();
             String name = ad.getLocalName();
             String namespaceURI = this.namespaceURI;
             if (name.startsWith(EO_PREFIX)) {
@@ -118,20 +116,33 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
                 mappedDescriptor = ab.buildDescriptor(new NameImpl(namespaceURI, name), at);
             }
 
-            collectionTypeBuilder.add(mappedDescriptor);
+            typeBuilder.add(mappedDescriptor);
         }
+        
+        // adding the metadata property
+        AttributeDescriptor metadataDescriptor = buildSimpleDescriptor(METADATA_PROPERTY_NAME, String.class);
+        typeBuilder.add(metadataDescriptor);
 
         // TODO: map OGC links and extra attributes
 
-        collectionTypeBuilder.setName(COLLECTION);
-        collectionTypeBuilder.setNamespaceURI(namespaceURI);
-        return collectionTypeBuilder.feature();
+        typeBuilder.setName(COLLECTION);
+        typeBuilder.setNamespaceURI(namespaceURI);
+        return typeBuilder.feature();
+    }
+
+    private AttributeDescriptor buildSimpleDescriptor(Name name, Class binding ) {
+        AttributeTypeBuilder ab = new AttributeTypeBuilder();
+        ab.name(name.getLocalPart()).namespaceURI(name.getNamespaceURI());
+        ab.setBinding(String.class);
+        AttributeDescriptor descriptor = ab.buildDescriptor(name, ab.buildType());
+        return descriptor;
+
     }
 
     private FeatureType buildProductFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(PRODUCT);
 
-        TypeBuilder collectionTypeBuilder = new TypeBuilder(
+        TypeBuilder typeBuilder = new TypeBuilder(
                 CommonFactoryFinder.getFeatureTypeFactory(null));
 
         // map the source attributes
@@ -169,14 +180,17 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
                 mappedDescriptor = ab.buildDescriptor(new NameImpl(namespaceURI, name), at);
             }
 
-            collectionTypeBuilder.add(mappedDescriptor);
+            typeBuilder.add(mappedDescriptor);
         }
+        // adding the metadata property
+        AttributeDescriptor metadataDescriptor = buildSimpleDescriptor(METADATA_PROPERTY_NAME, String.class);
+        typeBuilder.add(metadataDescriptor);
 
         // TODO: map OGC links and extra attributes
 
-        collectionTypeBuilder.setName(PRODUCT);
-        collectionTypeBuilder.setNamespaceURI(namespaceURI);
-        return collectionTypeBuilder.feature();
+        typeBuilder.setName(PRODUCT);
+        typeBuilder.setNamespaceURI(namespaceURI);
+        return typeBuilder.feature();
     }
 
     private List<String> getMissingRequiredTables(DataStore delegate, String... tables)
@@ -246,11 +260,11 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     }
 
     public FeatureSource<FeatureType, Feature> getProductSource() throws IOException {
-        return new ProductFeatureSource(this, productFeatureType);
+        return new JDBCProductFeatureSource(this, productFeatureType);
     }
 
     public FeatureSource<FeatureType, Feature> getCollectionSource() throws IOException {
-        return new CollectionFeatureSource(this, collectionFeatureType);
+        return new JDBCCollectionFeatureSource(this, collectionFeatureType);
     }
 
     @Override

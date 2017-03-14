@@ -4,10 +4,11 @@
  */
 package org.geoserver.opensearch.eo;
 
-import static org.geoserver.opensearch.eo.ComplexFeatureAccessor.*;
+import static org.geoserver.opensearch.eo.ComplexFeatureAccessor.value;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
@@ -106,6 +107,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
     /**
      * Returns the complex feature representing a collection by parentId
+     * 
      * @param parentId
      * @return
      * @throws IOException
@@ -113,14 +115,14 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
     private Feature getCollectionByParentIdentifier(final String parentId) throws IOException {
         OpenSearchAccess access = getOpenSearchAccess();
         final FeatureSource<FeatureType, Feature> collectionSource = access.getCollectionSource();
-        
+
         // build the query
         final NameImpl identifier = new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier");
         final PropertyIsEqualTo filter = FF.equal(FF.property(identifier), FF.literal(parentId),
                 true);
         Query query = new Query(collectionSource.getName().getLocalPart(), filter);
         FeatureCollection<FeatureType, Feature> features = collectionSource.getFeatures(query);
-        
+
         // get the expected maching feature
         Feature match = DataUtilities.first(features);
         if (match == null) {
@@ -184,10 +186,10 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
             featureSource = access.getCollectionSource();
         } else {
             featureSource = access.getProductSource();
-            
+
             // need to determine if the collection is primary or virtual
             Feature collection = getCollectionByParentIdentifier(parentId);
-            if(Boolean.FALSE.equals(value(collection, "primary"))) {
+            if (Boolean.FALSE.equals(value(collection, "primary"))) {
                 // TODO: parse and integrate virtual collection filter
                 throw new OWS20Exception("Virtual collection support not implemented yet");
             } else {
@@ -200,7 +202,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
                 resultsQuery.setFilter(Predicates.and(resultsQuery.getFilter(), parentIdFilter));
             }
         }
-        
+
         // count
         Query countQuery = new Query(resultsQuery);
         countQuery.setMaxFeatures(Query.DEFAULT_MAX);
@@ -244,5 +246,41 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
     private OSEOInfo getService() {
         return this.geoServer.getService(OSEOInfo.class);
+    }
+
+    @Override
+    public MetadataResults metadata(MetadataRequest request) throws IOException {
+        OpenSearchAccess access = getOpenSearchAccess();
+
+        // build the query
+        Query query = new Query();
+        PropertyName idProperty = FF
+                .property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier"));
+        query.setProperties(Arrays.asList(FF.property(OpenSearchAccess.METADATA_PROPERTY_NAME)));
+        final PropertyIsEqualTo idFilter = FF.equal(idProperty, FF.literal(request.getId()), true);
+        query.setFilter(idFilter);
+        
+        // run it
+        FeatureSource<FeatureType, Feature> source;
+        if (request.getParentId() == null) {
+            // collection request
+            source = access.getCollectionSource();
+        } else {
+            source = access.getProductSource();
+        }
+        FeatureCollection<FeatureType, Feature> features = source.getFeatures(query);
+        
+        // get the metadata from the feature
+        Feature feature = DataUtilities.first(features);
+        Property property;
+        String metadata;
+        if (feature == null || //
+                ((property = feature.getProperty(OpenSearchAccess.METADATA_PROPERTY_NAME)) == null) || //
+                ((metadata = (String) property.getValue()) == null)) {
+            throw new OWS20Exception("Could not locate the requested metadata for uid = "
+                    + request.getId() + " and parentId = " + request.getParentId());
+        }
+
+        return new MetadataResults(request, metadata);
     }
 }

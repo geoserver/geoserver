@@ -61,6 +61,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
     private GeoServerRepositoryProvider repoProvider = null;
 
+    private GeoGigTestData testData;
     /**
      * Helper class for running mock http requests.
      */
@@ -184,6 +185,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected void setUp() throws Exception {
+        testData = new GeoGigTestData(this.tempFolder);
         if (helper == null) {
             helper = new TestHelper();
             helper.doSetup();
@@ -204,6 +206,9 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
             if (helper != null) {
                 RepositoryManager.close();
                 helper.doTearDown();
+            }
+            if (testData != null) {
+                testData.tearDown();
             }
         } finally {
             helper = null;
@@ -234,7 +239,6 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected TestData createRepo(String name) throws Exception {
-        GeoGigTestData testData = new GeoGigTestData(RunWebAPIFunctionalTest.TEMP_ROOT.getRoot());
         testData.setUp(name);
         testData.init().config("user.name", "John").config("user.email", "John.Doe@example.com");
         GeoGIG geogig = testData.getGeogig();
@@ -264,35 +268,6 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         RepositoryInfo repositoryInfo = RepositoryManager.get().getByRepoName(repoName);
         assertNotNull(repositoryInfo);
         catalog.dispose();
-        return new TestData(geogig);
-    }
-
-    /**
-     * Create a repository with the given name for testing.
-     * Repository is not saved to GeoServer context.
-     *
-     * @param name the repository name
-     *
-     * @return a newly created {@link TestData} for the repository.
-     *
-     * @throws Exception
-     */
-    protected TestData createRepoNoImport(String name) throws Exception {
-        GeoGigTestData testData = new GeoGigTestData(RunWebAPIFunctionalTest.TEMP_ROOT.getRoot());
-        testData.setUp(name);
-        testData.init().config("user.name", "John").config("user.email", "John.Doe@example.com");
-        GeoGIG geogig = testData.getGeogig();
-
-        Catalog catalog = helper.getCatalog();
-        CatalogBuilder catalogBuilder = testData.newCatalogBuilder(catalog);
-        int i = rnd.nextInt();
-        catalogBuilder.namespace("geogig.org/" + i).workspace("geogigws" + i)
-                .store("geogigstore" + i);
-        catalogBuilder.addAllRepoLayers().build();
-
-        // resolve the repo
-        catalog.dispose();
-
         return new TestData(geogig);
     }
 

@@ -92,16 +92,23 @@ public class GeoGigTestData extends ExternalResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GeoGigTestData.class);
 
-    private TemporaryFolder tmpFolder;
+    private final TemporaryFolder tmpFolder;
 
     private GeoGIG geogig;
 
     private File repoDir;
 
-    private final File tempRoot;
-
-    public GeoGigTestData(File tempRoot) {
-        this.tempRoot = tempRoot;
+    public GeoGigTestData(TemporaryFolder tmpFolder) {
+        if (tmpFolder == null) {
+            this.tmpFolder = new TemporaryFolder();
+            try {
+                this.tmpFolder.create();
+            } catch (IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        } else {
+            this.tmpFolder = tmpFolder;
+        }
     }
 
     public GeoGigTestData() {
@@ -114,8 +121,6 @@ public class GeoGigTestData extends ExternalResource {
     }
 
     public void setUp(String repoName) throws Exception {
-        tmpFolder = new TemporaryFolder(tempRoot);
-        tmpFolder.create();
         this.geogig = createRepository(repoName);
     }
 
@@ -132,7 +137,9 @@ public class GeoGigTestData extends ExternalResource {
             }
         } finally {
             RepositoryManager.close();
-            tmpFolder.delete();
+            if (tmpFolder != null) {
+                tmpFolder.delete();
+            }
         }
     }
 

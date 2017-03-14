@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.geotools.org/test" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:test="http://www.geotools.org/test" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified">
+    <!-- Portions taken from WXXM 2 -->
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+    <import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.w3.org/1999/xlink.xsd"/>
+
+    <element name="DiscreteCoverage" type="test:DiscreteCoverageType" substitutionGroup="gml:AbstractDiscreteCoverage"/>
+    <complexType name="DiscreteCoverageType">
+        <complexContent>
+            <extension base="gml:DiscreteCoverageType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="DiscreteCoveragePropertyType">
+        <sequence minOccurs="0">
+            <element ref="test:DiscreteCoverage"/>
+        </sequence>
+        <attributeGroup ref="gml:AssociationAttributeGroup"/>
+        <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+    </complexType>
+
+    <element name="DomainObject" type="test:DomainObjectType" substitutionGroup="gml:AbstractFeature"/>
+    <complexType name="DomainObjectType">
+        <complexContent>
+            <extension base="gml:AbstractFeatureType">
+                <sequence>
+                    <element name="elements" type="test:SpatioTemporalElementsPropertyType" minOccurs="0" maxOccurs="1"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="DomainObjectPropertyType">
+        <sequence minOccurs="0">
+            <element ref="test:DomainObject"/>
+        </sequence>
+        <attributeGroup ref="gml:AssociationAttributeGroup"/>
+        <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+    </complexType>
+
+    <element name="domainSet" type="test:DomainSetType" substitutionGroup="gml:domainSet"/>
+    <complexType name="DomainSetType">
+        <complexContent>
+            <extension base="gml:DomainSetType">
+                <sequence>
+                    <element ref="test:DomainObject" minOccurs="0" maxOccurs="unbounded"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="SpatioTemporalElementsPropertyType">
+        <sequence minOccurs="1" maxOccurs="unbounded">
+            <choice>
+                <element ref="gml:AbstractGeometry"/>
+                <element ref="gml:AbstractTimeObject"/>
+            </choice>
+        </sequence>
+        <attributeGroup ref="gml:OwnershipAttributeGroup"/>
+        <attributeGroup ref="gml:AssociationAttributeGroup"/>
+    </complexType>
+
+</schema>

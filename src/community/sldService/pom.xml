@@ -11,7 +11,7 @@
  <parent>
    <groupId>org.geoserver</groupId>
    <artifactId>community</artifactId>
-   <version>2.11-SNAPSHOT</version>
+   <version>2.12-SNAPSHOT</version>
  </parent>
   
  <groupId>org.geoserver.community</groupId>
@@ -23,22 +23,22 @@
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-main</artifactId>
-   <version>2.11-SNAPSHOT</version>
+   <version>2.12-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-rest</artifactId>
-   <version>2.11-SNAPSHOT</version>
+   <version>2.12-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-restconfig</artifactId>
-   <version>2.11-SNAPSHOT</version>
+   <version>2.12-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-wms</artifactId>
-   <version>2.11-SNAPSHOT</version>
+   <version>2.12-SNAPSHOT</version>
   </dependency>
   <dependency>
     <groupId>jdom</groupId>

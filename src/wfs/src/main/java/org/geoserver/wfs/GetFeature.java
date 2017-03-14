@@ -387,7 +387,7 @@ public class GetFeature {
                             primaryMeta = extractor.getPrimaryFeatureType();
                             metas = extractor.getFeatureTypes();
                             primaryTypeName = new QName(primaryMeta.getNamespace().getURI(),
-                                    primaryMeta.getNativeName());
+                                    primaryMeta.getName());
                             joins = extractor.getJoins();
                             if (joins.size() != metas.size()-1) {
                                 throw new WFSException(request, String.format("Query specified %d types but %d " +

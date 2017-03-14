@@ -178,10 +178,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource{
         
         //GEOS-3210, if the query specifies a subset of property names we need to take that into 
         // account
-        SimpleFeatureType target = typeMap.getFeatureType();
-        if ( query.getPropertyNames() != Query.ALL_NAMES ) {
-            target = SimpleFeatureTypeBuilder.retype(target, query.getPropertyNames());
-        }
+        SimpleFeatureType target = typeMap.getFeatureType(query);
         return new RetypingFeatureCollection(wrapped.getFeatures(store.retypeQuery(query, typeMap)),
                 target);
     }

@@ -33,6 +33,7 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.wfs.v2_0.WFS;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
@@ -451,6 +452,77 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
        
        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
        XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+    }
+    
+    @Test
+    public void testStandardJoinMainTypeRenamed() throws Exception {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo forestsInfo = catalog.getFeatureTypeByName("gs:Forests");
+        String oldName = forestsInfo.getName(); 
+        forestsInfo.setName("ForestsRenamed");
+        try {
+            catalog.save(forestsInfo);
+            String xml = 
+                "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+                  " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
+                   "<wfs:Query typeNames='gs:ForestsRenamed gs:Lakes' aliases='c d'>" +
+                    "<fes:Filter> " +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>c/FID</ValueReference>" +
+                          "<ValueReference>d/FID</ValueReference>" + 
+                        "</PropertyIsEqualTo>" +
+                    "</fes:Filter> " + 
+                   "</wfs:Query>" + 
+                 "</wfs:GetFeature>";
+    
+           Document dom = postAsDOM("wfs", xml);
+           // print(dom);
+           XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
+           
+           XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:ForestsRenamed/gs:NAME[text() = 'Foo Forest']", dom);
+           XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+        } finally {
+            forestsInfo.setName(oldName);
+            catalog.save(forestsInfo);
+        }
+    }
+    
+    /**
+     * See [GEOS-8032] WFS 2.0 feature joins fails when the joined feature type is renamed
+     * @throws Exception
+     */
+    @Test
+    @Ignore
+    public void testStandardJoinSecondaryTypeRenamed() throws Exception {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo forestsInfo = catalog.getFeatureTypeByName("gs:Lakes");
+        String oldName = forestsInfo.getName(); 
+        forestsInfo.setName("LakesRenamed");
+        try {
+            catalog.save(forestsInfo);
+            String xml = 
+                "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+                  " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
+                   "<wfs:Query typeNames='gs:Forests gs:LakesRenamed' aliases='c d'>" +
+                    "<fes:Filter> " +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>c/FID</ValueReference>" +
+                          "<ValueReference>d/FID</ValueReference>" + 
+                        "</PropertyIsEqualTo>" +
+                    "</fes:Filter> " + 
+                   "</wfs:Query>" + 
+                 "</wfs:GetFeature>";
+    
+           Document dom = postAsDOM("wfs", xml);
+           print(dom);
+           XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
+           
+           XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Renamed/gs:NAME[text() = 'Foo Forest']", dom);
+           XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:LakesRenamed/gs:NAME[text() = 'Black Lake']", dom);
+        } finally {
+            forestsInfo.setName(oldName);
+            catalog.save(forestsInfo);
+        }
     }
     
     @Test

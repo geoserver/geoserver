@@ -100,7 +100,10 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
             if(!oldName.equals(newName)) {
                 Map<Name, LayerInfo> nameMap = getMapForValue(nameMultiMap, LayerInfoImpl.class);
                 LayerInfo value = nameMap.remove(oldName);
-                nameMap.put(newName, value);
+                // handle case of feature type without a corresponding layer
+                if(value != null) {
+                    nameMap.put(newName, value);
+                }
             }
         }
         

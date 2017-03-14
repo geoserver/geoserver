@@ -48,7 +48,7 @@ public class PluginWebAPICucumberHooks {
 
     @Given("^A repository named \"([^\"]*)\" is initialized$")
     public void initEmptyRepo(String repoName) throws Exception {
-        context.createRepoNoImport(repoName);
+        context.createRepo(repoName);
     }
 
     @When("^A JSON POST request is made to \"([^\"]*)\"$")

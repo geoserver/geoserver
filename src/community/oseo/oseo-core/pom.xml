@@ -85,5 +85,11 @@
       <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.10.2</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

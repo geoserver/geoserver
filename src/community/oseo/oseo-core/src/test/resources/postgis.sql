@@ -164,30 +164,30 @@ create table product_metadata (
 
 -- the eo thumbs storage (small binary files, not used for search, thus separate table)
 create table product_thumb (
-	id int primary key references product("id"),
-	thumb bytea
+	"id" int primary key references product("id"),
+	"thumb" bytea
 );
 
 -- links for collections
 create table collection_ogclink (
   "id" serial primary key,
-  collection_id int references collection("id"),
-  offering varchar,
-  method varchar,
-  code varchar,
+  "collection_id" int references collection("id"),
+  "offering" varchar,
+  "method" varchar,
+  "code" varchar,
   "type" varchar,
-  href varchar
+  "href" varchar
 );
 
 -- links for products
 create table product_ogclink (
   "id" serial primary key,
-  product_id int references product("id"),
-  offering varchar,
-  method varchar,
-  code varchar,
+  "product_id" int references product("id"),
+  "offering" varchar,
+  "method" varchar,
+  "code" varchar,
   "type" varchar,
-  href varchar
+  "href" varchar
 ); 
 
 -- the granules table (might be abstract, and we can use partitioning)

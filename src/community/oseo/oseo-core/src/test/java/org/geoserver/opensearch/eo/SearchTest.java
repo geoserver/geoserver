@@ -13,8 +13,12 @@ import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 import org.geoserver.opensearch.eo.response.AtomSearchResponse;
 import org.hamcrest.Matchers;
+import org.jsoup.Jsoup;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.xml.SimpleNamespaceContext;
@@ -74,8 +78,25 @@ public class SearchTest extends OSEOTestSupport {
                 "/at:feed/at:entry[1]/at:link[@rel='alternate' and @type='application/vnd.iso.19139+xml']/@href",
                 equalTo("http://localhost:8080/geoserver/oseo/metadata?uid=SENTINEL2&httpAccept=application%2Fvnd.iso.19139%2Bxml")));
 
+        // check the html description (right one, and param substitution in links
+        XPath xPath = getXPath();
+        String summary = xPath.compile("/at:feed/at:entry[1]/at:summary").evaluate(dom);
+        assertThat(summary, containsString("Sentinel-2"));
+        // parse html using JSoup (DOM not usable, HTML is not valid/well formed XML in general
+        org.jsoup.nodes.Document sd = Jsoup.parse(summary);
+        String isoHRef = sd.select("a[title=ISO format]").attr("href");
+        assertThat(isoHRef, equalTo("http://localhost:8080/geoserver/oseo/metadata?uid=SENTINEL2&httpAccept=application%2Fvnd.iso.19139%2Bxml"));
+        String atomHRef = sd.select("a[title=ATOM format]").attr("href");
+        assertThat(atomHRef, equalTo("http://localhost:8080/geoserver/oseo/search?uid=SENTINEL2&httpAccept=application%2Fatom%2Bxml"));
+
         // overall schema validation for good measure
         checkValidAtomFeed(dom);
+    }
+
+    protected XPath getXPath() {
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        xPath.setNamespaceContext(namespaceContext);
+        return xPath;
     }
 
     @Test
@@ -194,18 +215,20 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, not(hasXPath("/at:feed/at:entry[at:title='S1A']")));
         assertThat(dom, not(hasXPath("/at:feed/at:entry[at:title='LS08']")));
     }
-    
+
     @Test
     public void testSpecificProduct() throws Exception {
         // S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04
         Document dom = getAsDOM(
-                "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=" + AtomSearchResponse.MIME);
+                "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept="
+                        + AtomSearchResponse.MIME);
         print(dom);
-        
+
         // check basics
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
-        assertThat(dom, hasXPath("/at:feed/at:entry/at:title", equalTo("S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04")));
-        
+        assertThat(dom, hasXPath("/at:feed/at:entry/at:title",
+                equalTo("S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04")));
+
         // ... the links (self, metadata)
         assertThat(dom, hasXPath(
                 "/at:feed/at:entry/at:link[@rel='self' and  @type='application/atom+xml']/@href",
@@ -213,6 +236,16 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath(
                 "/at:feed/at:entry/at:link[@rel='alternate' and @type='application/gml+xml']/@href",
                 equalTo("http://localhost:8080/geoserver/oseo/metadata?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fgml%2Bxml")));
+
+        // check the HTML
+        String summary = getXPath().compile("/at:feed/at:entry[1]/at:summary").evaluate(dom);
+        System.out.println(summary);
+        // parse html using JSoup (DOM not usable, HTML is not valid/well formed XML in general
+        org.jsoup.nodes.Document sd = Jsoup.parse(summary);
+        String isoHRef = sd.select("a[title=O&M format]").attr("href");
+        assertThat(isoHRef, equalTo("http://localhost:8080/geoserver/oseo/metadata?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fgml%2Bxml"));
+        String atomHRef = sd.select("a[title=ATOM format]").attr("href");
+        assertThat(atomHRef, equalTo("http://localhost:8080/geoserver/oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fatom%2Bxml"));
 
     }
 
@@ -235,7 +268,7 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/gmi:MI_Metadata/gmd:fileIdentifier/gco:CharacterString",
                 equalTo("EOP:CNES:PEPS:S1")));
     }
-    
+
     @Test
     public void testProductMetadata() throws Exception {
         String path = "oseo/metadata?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04&httpAccept=application/gml%2Bxml";
@@ -243,13 +276,15 @@ public class SearchTest extends OSEOTestSupport {
         // print(dom);
 
         // just check we got the right one (the namespaces used here are different than the ones
-        // used 
+        // used
         SimpleNamespaceContext ctx = new SimpleNamespaceContext();
         ctx.bindNamespaceUri("gml", "http://www.opengis.net/gml/3.2");
         ctx.bindNamespaceUri("opt", "http://www.opengis.net/opt/2.1");
         ctx.bindNamespaceUri("om", "http://www.opengis.net/om/2.0");
-        assertThat(dom, Matchers.hasXPath("/opt:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition", ctx, 
-                equalTo("2016-09-29T10:20:22.026Z")));
+        assertThat(dom,
+                Matchers.hasXPath(
+                        "/opt:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition",
+                        ctx, equalTo("2016-09-29T10:20:22.026Z")));
     }
 
     @Test

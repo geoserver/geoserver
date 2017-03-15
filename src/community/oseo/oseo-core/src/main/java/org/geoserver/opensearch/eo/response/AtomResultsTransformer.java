@@ -8,7 +8,9 @@ import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_NAMESPACE;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -21,7 +23,6 @@ import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.opensearch.eo.SearchResults;
-import org.geoserver.opensearch.eo.kvp.MetadataRequestKvpReader;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.URLMangler.URLType;
@@ -59,6 +60,14 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author Andrea Aime - GeoSolutions
  */
 public class AtomResultsTransformer extends LambdaTransformerBase {
+
+    static final String QUICKLOOK_URL_KEY = "${QUICKLOOK_URL}";
+
+    static final String ATOM_URL_KEY = "${ATOM_URL}";
+
+    static final String OM_METADATA_KEY = "${OM_METADATA_URL}";
+
+    static final String ISO_METADATA_KEY = "${ISO_METADATA_LINK}";
 
     static final GMLConfiguration GML_CONFIGURATION = new GMLConfiguration();
 
@@ -190,33 +199,46 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             final String identifier = (String) value(feature, EO_NAMESPACE, "identifier");
             final String name = (String) value(feature, "name");
 
-            // generic contents
+            // build links and description replacement variables
             String identifierLink = buildCollectionIdentifierLink(identifier, request);
-            encodeGenericEntryContents(feature, name, identifierLink);
-
-            // build links to the metadata
             String metadataLink = buildMetadataLink(null, identifier, MetadataRequest.ISO_METADATA,
                     request);
+            Map<String, String> descriptionVariables = new HashMap<>();
+            descriptionVariables.put(ISO_METADATA_KEY, metadataLink);
+            descriptionVariables.put(ATOM_URL_KEY, identifierLink);
+
+            // generic contents
+            encodeGenericEntryContents(feature, identifier, identifierLink, descriptionVariables);
+
+            // build links to the metadata
             element("link", NO_CONTENTS, attributes("rel", "alternate", "href", metadataLink,
                     "type", MetadataRequest.ISO_METADATA, "title", "ISO metadata"));
 
         }
 
         private void encodeProductEntry(Feature feature, SearchRequest request) {
-            final String identifier = (String) value(feature, OpenSearchAccess.ProductClass.EO_GENERIC.getNamespace(), "identifier");
+            final String identifier = (String) value(feature,
+                    OpenSearchAccess.ProductClass.EO_GENERIC.getNamespace(), "identifier");
 
             // encode the generic contents
-            String buildCollectionIdentifierLink = buildProductIdentifierLink(identifier, request);
-            encodeGenericEntryContents(feature, identifier, buildCollectionIdentifierLink);
-
-            // build links to the metadata
+            String productIdentifierLink = buildProductIdentifierLink(identifier, request);
             String metadataLink = buildMetadataLink(request.getParentId(), identifier,
                     MetadataRequest.OM_METADATA, request);
+            String quicklookLink = buildQuicklookLink(identifier, request);
+            Map<String, String> descriptionVariables = new HashMap<>();
+            descriptionVariables.put(QUICKLOOK_URL_KEY, quicklookLink);
+            descriptionVariables.put(ATOM_URL_KEY, productIdentifierLink);
+            descriptionVariables.put(OM_METADATA_KEY, metadataLink);
+            encodeGenericEntryContents(feature, identifier, productIdentifierLink,
+                    descriptionVariables);
+
+            // build links to the metadata
             element("link", NO_CONTENTS, attributes("rel", "alternate", "href", metadataLink,
                     "type", MetadataRequest.OM_METADATA, "title", "O&M metadata"));
         }
 
-        private void encodeGenericEntryContents(Feature feature, String name, final String identifierLink) {
+        private void encodeGenericEntryContents(Feature feature, String name,
+                final String identifierLink, Map<String, String> descriptionVariables) {
             element("id", identifierLink);
             element("title", name);
             // TODO: need an actual update column
@@ -231,11 +253,13 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             }
             String htmlDescription = (String) value(feature, "htmlDescription");
             if (htmlDescription != null) {
-                element("summary", () -> cdata(htmlDescription), attributes("type", "html"));
+                String expanded = QuickTemplate.replaceVariables(htmlDescription,
+                        descriptionVariables);
+                element("summary", () -> cdata(expanded), attributes("type", "html"));
             }
             // self link
-            element("link", NO_CONTENTS, attributes("rel", "self", "href", identifierLink,
-                    "type", AtomSearchResponse.MIME, "title", "self"));
+            element("link", NO_CONTENTS, attributes("rel", "self", "href", identifierLink, "type",
+                    AtomSearchResponse.MIME, "title", "self"));
         }
 
         private void encodeGmlRssGeometry(Geometry g) {
@@ -276,6 +300,15 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             kvp.put("uid", String.valueOf(identifier));
             kvp.put("httpAccept", AtomSearchResponse.MIME);
             String href = ResponseUtils.buildURL(baseURL, "oseo/search", kvp, URLType.SERVICE);
+            return href;
+        }
+
+        private String buildQuicklookLink(String identifier, SearchRequest request) {
+            String baseURL = request.getBaseUrl();
+            Map<String, String> kvp = new LinkedHashMap<String, String>();
+            kvp.put("parentId", request.getParentId());
+            kvp.put("uid", String.valueOf(identifier));
+            String href = ResponseUtils.buildURL(baseURL, "oseo/quicklook", kvp, URLType.SERVICE);
             return href;
         }
 

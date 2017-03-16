@@ -4,13 +4,13 @@
  */
 package org.geogig.geoserver.wms;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -97,9 +97,14 @@ public class GeoGigCatalogVisitor implements CatalogVisitor {
             final StoreInfo store = resource.getStore();
             if (GeoGigDataStoreFactory.DISPLAY_NAME.equals(store.getType())) {
                 // it's a GeoGig dataStore
+                GeoGigDataStore geogigDataStore = null;
                 try {
-                    final GeoGigDataStore geogigDataStore = GeoGigDataStore.class.cast(
+                    geogigDataStore = GeoGigDataStore.class.cast(
                             ((DataStoreInfo) store).getDataStore(null));
+                } catch (Exception ex) {
+                    throw new CatalogException("Error accessing GeoGig DataStore", ex);
+                }
+                try {
                     if (!geogigDataStore.getAutoIndexing()) {
                         if (LOGGER.isLoggable(Level.FINE)) {
                             LOGGER.fine(String.format("GeoGig DataStore is not configured for automatic indexing."));
@@ -114,9 +119,11 @@ public class GeoGigCatalogVisitor implements CatalogVisitor {
                     String[] dimensions = Stream.concat(Arrays.stream(timeAttr), Arrays.stream(elevationAttr))
                             .toArray(String[]::new);
                     // create the indexes
-                    geogigDataStore.createOrUpdateIndex(resource.getNativeName(), dimensions);
-                } catch (IOException ioe) {
-                    throw new RuntimeException(ioe);
+                    geogigDataStore.createOrUpdateIndex(resource.getName(), dimensions);
+                } catch (Exception ex) {
+                    // Something went wrong creating the index, log it and move on
+                    LOGGER.log(Level.WARNING, "Index could not be created or updated on Layer: " +
+                            resource.getNativeName(), ex);
                 }
             }
         }

@@ -30,6 +30,7 @@ import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -57,6 +58,8 @@ import org.springframework.web.client.ResourceAccessException;
 public abstract class GeoServerOAuthAuthenticationFilter
         extends GeoServerPreAuthenticatedUserNameFilter
         implements GeoServerAuthenticationFilter, LogoutHandler {
+
+    static final String GEONODE_COOKIE_NAME = "sessionid";
 
     OAuth2FilterConfig filterConfig;
 
@@ -109,11 +112,43 @@ public abstract class GeoServerOAuthAuthenticationFilter
         if (accessToken != null && token != null && !token.getValue().equals(accessToken)) {
             restTemplate.getOAuth2ClientContext().setAccessToken(null);
         }
+        
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        
+        /*
+         * This cookie works only locally, when accessing the GeoServer GUI and on the same domain.
+         * For remote access you need to logout from the GeoServer GUI.
+         */
+        final String gnCookie = getGeoNodeCookieValue(httpRequest);
 
         final Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
         final Collection<? extends GrantedAuthority> authorities = (authentication != null
                 ? authentication.getAuthorities() : null);
+
+        if (accessToken == null && gnCookie == null && 
+                (authentication != null && (authentication instanceof PreAuthenticatedAuthenticationToken) &&  
+                !(authorities.size() == 1 && authorities.contains(GeoServerRole.ANONYMOUS_ROLE)))) {
+            final AccessTokenRequest accessTokenRequest = restTemplate.getOAuth2ClientContext()
+                    .getAccessTokenRequest();
+            if (accessTokenRequest != null && accessTokenRequest.getStateKey() != null) {
+                restTemplate.getOAuth2ClientContext()
+                        .removePreservedState(accessTokenRequest.getStateKey());
+            }
+            
+            try {
+                accessTokenRequest.remove("access_token");
+            } finally {
+                SecurityContextHolder.clearContext();
+                httpRequest.getSession(false).invalidate();
+                try {
+                    httpRequest.logout();
+                } catch (ServletException e) {
+                    LOGGER.fine(e.getLocalizedMessage());
+                }
+                LOGGER.fine("Cleaned out Session Access Token Request!");
+            }
+        }
 
         if (accessToken != null || authentication == null || (authentication != null
                 && authorities.size() == 1 && authorities.contains(GeoServerRole.ANONYMOUS_ROLE))) {
@@ -169,6 +204,32 @@ public abstract class GeoServerOAuthAuthenticationFilter
         return retval;
     }
 
+    private String getGeoNodeCookieValue(HttpServletRequest request) {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Inspecting the http request looking for the GeoNode Session ID.");
+        }
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Found " + cookies.length + " cookies!");
+            }
+            for (Cookie c : cookies) {
+                if (GEONODE_COOKIE_NAME.equals(c.getName())) {
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine("Found GeoNode cookie: " + c.getValue());
+                    }
+                    return c.getValue();
+                }
+            }
+        } else {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Found no cookies!");
+            }
+        }
+
+        return null;
+    }
+    
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) {
@@ -176,8 +237,6 @@ public abstract class GeoServerOAuthAuthenticationFilter
         OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
         if ((token != null && token.getTokenType().equalsIgnoreCase(OAuth2AccessToken.BEARER_TYPE))
                 || request.getRequestURI().endsWith(filterConfig.getLogoutEndpoint())) {
-
-            restTemplate.getOAuth2ClientContext().setAccessToken(null);
 
             final AccessTokenRequest accessTokenRequest = restTemplate.getOAuth2ClientContext()
                     .getAccessTokenRequest();
@@ -189,10 +248,16 @@ public abstract class GeoServerOAuthAuthenticationFilter
             try {
                 accessTokenRequest.remove("access_token");
             } finally {
+                SecurityContextHolder.clearContext();
+                request.getSession(false).invalidate();
+                try {
+                    request.logout();
+                } catch (ServletException e) {
+                    LOGGER.fine(e.getLocalizedMessage());
+                }
                 LOGGER.fine("Cleaned out Session Access Token Request!");
             }
 
-            request.getSession().invalidate();
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             Cookie[] allCookies = request.getCookies();
 
@@ -206,7 +271,6 @@ public abstract class GeoServerOAuthAuthenticationFilter
                     response.addCookie(cookieToDelete);
                 }
             }
-            SecurityContextHolder.getContext().setAuthentication(null);
 
             request.setAttribute(GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR,
                     filterConfig.getLogoutUri());

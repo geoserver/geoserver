@@ -260,7 +260,8 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
         }
 
         for (PropertyName pn : query.getProperties()) {
-            if (property.getLocalPart().equals(pn.getPropertyName()) && property.getNamespaceURI().equals(pn.getNamespaceContext().getURI(""))) {
+            if (property.getLocalPart().equals(pn.getPropertyName())
+                    && property.getNamespaceURI().equals(pn.getNamespaceContext().getURI(""))) {
                 return true;
             }
         }
@@ -289,6 +290,22 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
         SimpleFeature fi = it.next();
 
         ComplexFeatureBuilder builder = new ComplexFeatureBuilder(schema);
+
+        // allow subclasses to perform custom mappings while reusing the common ones
+        mapProperties(builder, fi);
+
+        //
+        Feature feature = builder.buildFeature(fi.getID());
+        return feature;
+    }
+
+    /**
+     * Performs the common mappings, subclasses can override to add more
+     * 
+     * @param builder
+     * @param fi
+     */
+    protected void mapProperties(ComplexFeatureBuilder builder, SimpleFeature fi) {
         AttributeBuilder ab = new AttributeBuilder(CommonFactoryFinder.getFeatureFactory(null));
         for (PropertyDescriptor pd : schema.getDescriptors()) {
             if (!(pd instanceof AttributeDescriptor)) {
@@ -308,15 +325,14 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
         }
         // handle joined metadata
         Object metadataValue = fi.getAttribute("metadata");
-        if(metadataValue instanceof SimpleFeature) {
+        if (metadataValue instanceof SimpleFeature) {
             SimpleFeature metadataFeature = (SimpleFeature) metadataValue;
-            ab.setDescriptor((AttributeDescriptor) schema.getDescriptor(OpenSearchAccess.METADATA_PROPERTY_NAME));
+            ab.setDescriptor((AttributeDescriptor) schema
+                    .getDescriptor(OpenSearchAccess.METADATA_PROPERTY_NAME));
             Attribute attribute = ab.buildSimple(null, metadataFeature.getAttribute("metadata"));
             builder.append(OpenSearchAccess.METADATA_PROPERTY_NAME, attribute);
         }
-        //
-        Feature feature = builder.buildFeature(fi.getID());
-        return feature;
+
     }
 
 }

@@ -28,6 +28,11 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
      * The optional property in collection and product containing the metadata (ISO or O&M)
      */
     public static Name METADATA_PROPERTY_NAME = new NameImpl(EO_NAMESPACE, "metadata");
+    
+    /**
+     * The optional property in product containing the quicklook
+     */
+    public static Name QUICKLOOK_PROPERTY_NAME = new NameImpl(EO_NAMESPACE, "quicklook");
 
     /**
      * Classes of products
@@ -74,5 +79,7 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
      * 
      */
     FeatureSource<FeatureType, Feature> getProductSource() throws IOException;
+    
+    
 
 }

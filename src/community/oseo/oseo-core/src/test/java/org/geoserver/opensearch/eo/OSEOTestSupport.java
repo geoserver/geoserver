@@ -102,9 +102,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         cat.add(jdbcDs);
 
         JDBCDataStore h2 = (JDBCDataStore) jdbcDs.getDataStore(null);
-        JDBCOpenSearchAccessTest.createTables(h2);
-        JDBCOpenSearchAccessTest.populateCollections(h2);
-        JDBCOpenSearchAccessTest.populateProducts(h2);
+        JDBCOpenSearchAccessTest.populateTestDatabase(h2);
 
         // create the OpenSeach wrapper store
         DataStoreInfo osDs = cat.getFactory().createDataStore();

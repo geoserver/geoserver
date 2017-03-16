@@ -185,6 +185,11 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         // adding the metadata property
         AttributeDescriptor metadataDescriptor = buildSimpleDescriptor(METADATA_PROPERTY_NAME, String.class);
         typeBuilder.add(metadataDescriptor);
+        
+        // adding the quicklook property
+        AttributeDescriptor quicklookDescriptor = buildSimpleDescriptor(QUICKLOOK_PROPERTY_NAME, byte[].class);
+        typeBuilder.add(quicklookDescriptor);
+
 
         // TODO: map OGC links and extra attributes
 

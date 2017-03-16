@@ -8,7 +8,6 @@ import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_NAMESPACE;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -62,6 +61,8 @@ import com.vividsolutions.jts.geom.Polygon;
 public class AtomResultsTransformer extends LambdaTransformerBase {
 
     static final String QUICKLOOK_URL_KEY = "${QUICKLOOK_URL}";
+    
+    static final String THUMB_URL_KEY = "${THUMB_URL}";
 
     static final String ATOM_URL_KEY = "${ATOM_URL}";
 
@@ -227,6 +228,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             String quicklookLink = buildQuicklookLink(identifier, request);
             Map<String, String> descriptionVariables = new HashMap<>();
             descriptionVariables.put(QUICKLOOK_URL_KEY, quicklookLink);
+            descriptionVariables.put(THUMB_URL_KEY, quicklookLink);
             descriptionVariables.put(ATOM_URL_KEY, productIdentifierLink);
             descriptionVariables.put(OM_METADATA_KEY, metadataLink);
             encodeGenericEntryContents(feature, identifier, productIdentifierLink,

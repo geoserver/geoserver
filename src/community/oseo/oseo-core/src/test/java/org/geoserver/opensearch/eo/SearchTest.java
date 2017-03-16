@@ -8,9 +8,9 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
+import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 
 import javax.xml.xpath.XPath;
@@ -246,7 +246,8 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(isoHRef, equalTo("http://localhost:8080/geoserver/oseo/metadata?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fgml%2Bxml"));
         String atomHRef = sd.select("a[title=ATOM format]").attr("href");
         assertThat(atomHRef, equalTo("http://localhost:8080/geoserver/oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fatom%2Bxml"));
-
+        String quickLookRef = sd.select("a[title='View browse image'").attr("href");
+        assertThat(quickLookRef, equalTo("http://localhost:8080/geoserver/oseo/quicklook?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04"));
     }
 
     @Test
@@ -301,6 +302,13 @@ public class SearchTest extends OSEOTestSupport {
                 "oseo/metadata?parentId=SENTINEL2&uid=123&httpAccept=foo/bar", 400);
         assertThat(dom,
                 hasXPath("/rss/channel/item/title", containsString(MetadataRequest.OM_METADATA)));
+    }
+    
+    @Test
+    public void testQuicklook() throws Exception {
+        String path = "oseo/quicklook?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01";
+        RenderedImage image = getAsImage(path, "image/jpeg");
+        assertNotNull(image);
     }
 
 }

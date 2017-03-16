@@ -51,6 +51,13 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
+    /* Some mime types for quicklooks */
+    private static String JPEG_MIME = "image/jpeg";
+
+    private static String PNG_MIME = "image/png";
+
+    private static String BINARY_MIME = "application/octet-stream ";
+
     GeoServer geoServer;
 
     public DefaultOpenSearchEoService(GeoServer geoServer) {
@@ -253,13 +260,9 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         OpenSearchAccess access = getOpenSearchAccess();
 
         // build the query
-        Query query = new Query();
-        PropertyName idProperty = FF
-                .property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier"));
+        Query query = queryByIdentifier(request.getId());
         query.setProperties(Arrays.asList(FF.property(OpenSearchAccess.METADATA_PROPERTY_NAME)));
-        final PropertyIsEqualTo idFilter = FF.equal(idProperty, FF.literal(request.getId()), true);
-        query.setFilter(idFilter);
-        
+
         // run it
         FeatureSource<FeatureType, Feature> source;
         if (request.getParentId() == null) {
@@ -269,18 +272,89 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
             source = access.getProductSource();
         }
         FeatureCollection<FeatureType, Feature> features = source.getFeatures(query);
-        
+
         // get the metadata from the feature
-        Feature feature = DataUtilities.first(features);
-        Property property;
-        String metadata;
-        if (feature == null || //
-                ((property = feature.getProperty(OpenSearchAccess.METADATA_PROPERTY_NAME)) == null) || //
-                ((metadata = (String) property.getValue()) == null)) {
+        String metadata = (String) getPropertyFromFirstFeature(features,
+                OpenSearchAccess.METADATA_PROPERTY_NAME);
+        if (metadata == null) {
             throw new OWS20Exception("Could not locate the requested metadata for uid = "
                     + request.getId() + " and parentId = " + request.getParentId());
         }
 
         return new MetadataResults(request, metadata);
+    }
+
+    @Override
+    public QuicklookResults quicklook(QuicklookRequest request) throws IOException {
+        OpenSearchAccess access = getOpenSearchAccess();
+
+        // build the query
+        Query query = queryByIdentifier(request.getId());
+        query.setProperties(Arrays.asList(FF.property(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME)));
+
+        // run it
+        FeatureSource<FeatureType, Feature> source;
+        if (request.getParentId() == null) {
+            // collection request
+            source = access.getCollectionSource();
+        } else {
+            source = access.getProductSource();
+        }
+        FeatureCollection<FeatureType, Feature> features = source.getFeatures(query);
+
+        byte[] payload = (byte[]) getPropertyFromFirstFeature(features,
+                OpenSearchAccess.QUICKLOOK_PROPERTY_NAME);
+        if (payload == null) {
+            throw new OWS20Exception("Could not locate the quicklook for uid = " + request.getId()
+                    + " and parentId = " + request.getParentId());
+        }
+
+        return new QuicklookResults(request, payload, guessImageMimeType(payload));
+    }
+
+    private String guessImageMimeType(byte[] payload) {
+        // guesses jpeg and png by the magic number
+        if (payload.length >= 4 && //
+                (payload[0] == (byte) 0xFF) && //
+                (payload[1] == (byte) 0xD8) && //
+                (payload[2] == (byte) 0xFF) && //
+                (payload[3] == (byte) 0xE0)) {
+            return JPEG_MIME;
+        } else if (payload.length >= 8 && //
+                (payload[0] == (byte) 0x89) && //
+                (payload[1] == (byte) 0x50) && //
+                (payload[2] == (byte) 0x4E) && //
+                (payload[3] == (byte) 0x47) && //
+                (payload[4] == (byte) 0x0D) && //
+                (payload[5] == (byte) 0x0A) && //
+                (payload[6] == (byte) 0x1A) && //
+                (payload[7] == (byte) 0x0A)) {
+            return PNG_MIME;
+        } else {
+            return BINARY_MIME;
+        }
+    }
+
+    private Object getPropertyFromFirstFeature(FeatureCollection<FeatureType, Feature> features,
+            Name propertyName) {
+        Feature feature = DataUtilities.first(features);
+        Property property;
+        Object value;
+        if (feature == null || //
+                ((property = feature.getProperty(propertyName)) == null) || //
+                ((value = property.getValue()) == null)) {
+            return null;
+        }
+
+        return value;
+    }
+
+    private Query queryByIdentifier(String identifier) {
+        Query query = new Query();
+        PropertyName idProperty = FF
+                .property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier"));
+        final PropertyIsEqualTo idFilter = FF.equal(idProperty, FF.literal(identifier), true);
+        query.setFilter(idFilter);
+        return query;
     }
 }

@@ -58,9 +58,7 @@ public class JDBCOpenSearchAccessTest {
         File dbFile = new File(dbFolder, "oseo_db_store_test");
         params.put("database", dbFile.getAbsolutePath());
         h2 = (JDBCDataStore) DataStoreFinder.getDataStore(params);
-        JDBCOpenSearchAccessTest.createTables(h2);
-        JDBCOpenSearchAccessTest.populateCollections(h2);
-        JDBCOpenSearchAccessTest.populateProducts(h2);
+        JDBCOpenSearchAccessTest.populateTestDatabase(h2);
 
         Name name = new NameImpl("test", "jdbcStore");
         SerializableDefaultRepository repository = new SerializableDefaultRepository();
@@ -73,6 +71,21 @@ public class JDBCOpenSearchAccessTest {
         params.put("namespace", TEST_NAMESPACE);
         params.put("repository", repository);
         osAccess = (OpenSearchAccess) DataAccessFinder.getDataStore(params);
+    }
+
+    public static void populateTestDatabase(JDBCDataStore h2) throws SQLException, IOException {
+        try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT); Statement st = conn.createStatement()) {
+            // setup for fast import
+            
+            // SET CACHE_SIZE (a large cache is faster)
+            st.execute("SET LOG 0");
+            st.execute("SET LOCK_MODE 0 ");
+            st.execute("SET UNDO_LOG 0");
+            st.execute("SET CACHE_SIZE 512000");
+            JDBCOpenSearchAccessTest.createTables(conn);
+            JDBCOpenSearchAccessTest.populateCollections(conn);
+            JDBCOpenSearchAccessTest.populateProducts(conn);
+        }
     }
 
     @AfterClass
@@ -108,10 +121,9 @@ public class JDBCOpenSearchAccessTest {
     /**
      * Takes the postgis.sql creation script, adapts it and runs it on H2
      */
-    static void createTables(JDBCDataStore h2) throws SQLException, IOException {
+    static void createTables(Connection conn) throws SQLException, IOException {
         List<String> statements = loadScriptCommands("/postgis.sql");
-        try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT);
-                Statement st = conn.createStatement();) {
+        try (Statement st = conn.createStatement();) {
             for (String statement : statements) {
                 /* Skip statements H2 does not support */
                 if (statement.contains("GIST") || statement.contains("create extension")) {
@@ -135,21 +147,20 @@ public class JDBCOpenSearchAccessTest {
     /**
      * Adds the collection data into the H2 database 
      */
-    static void populateCollections(JDBCDataStore h2) throws SQLException, IOException {
-        runScript("/collection_h2_data.sql", h2);
+    static void populateCollections(Connection conn) throws SQLException, IOException {
+        runScript("/collection_h2_data.sql", conn);
     }
     
     /**
      * Adds the product data into the H2 database
      */
-    static void populateProducts(JDBCDataStore h2) throws SQLException, IOException {
-        runScript("/product_h2_data.sql", h2);
+    static void populateProducts(Connection conn) throws SQLException, IOException {
+        runScript("/product_h2_data.sql", conn);
     }
 
-    private static void runScript(String script, JDBCDataStore h2) throws IOException, SQLException {
+    private static void runScript(String script, Connection conn) throws IOException, SQLException {
         List<String> statements = loadScriptCommands(script);
-        try (Connection conn = h2.getConnection(Transaction.AUTO_COMMIT);
-                Statement st = conn.createStatement();) {
+        try (Statement st = conn.createStatement();) {
             for (String statement : statements) {
                 st.execute(statement);
             }

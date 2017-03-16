@@ -7,7 +7,6 @@ package org.geoserver.opensearch.eo.kvp;
 import java.util.Map;
 
 import org.geoserver.opensearch.eo.MetadataRequest;
-import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.platform.OWS20Exception;
 
 /**
@@ -15,23 +14,15 @@ import org.geoserver.platform.OWS20Exception;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class MetadataRequestKvpReader extends KvpRequestReader {
+public class MetadataRequestKvpReader extends AbstractProductRequestKvpReader {
 
     public MetadataRequestKvpReader() {
-        super(MetadataRequest.class);
+        super(MetadataRequest.class, false);
     }
 
     @Override
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         MetadataRequest mr = (MetadataRequest) super.read(request, kvp, rawKvp);
-
-        // map uid
-        String uid = (String) rawKvp.get("uid");
-        if (uid == null) {
-            throw new OWS20Exception("Missing mandatory uid parameter",
-                    OWS20Exception.OWSExceptionCode.MissingParameterValue, "uid");
-        }
-        mr.setId(uid);
 
         // check httpAccept
         if (mr.getParentId() == null) {

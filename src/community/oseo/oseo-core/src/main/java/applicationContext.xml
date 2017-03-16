@@ -53,6 +53,7 @@
         <value>description</value>
         <value>search</value>
         <value>metadata</value>
+        <value>quicklook</value>
       </list>
     </constructor-arg>
   </bean>
@@ -89,6 +90,7 @@
     <constructor-arg ref="openSearchEoService" />
   </bean>
   <bean id="oseoMetadataRequestKvpParser" class="org.geoserver.opensearch.eo.kvp.MetadataRequestKvpReader" />
+  <bean id="oseoQuicklookRequestKvpParser" class="org.geoserver.opensearch.eo.kvp.QuicklookRequestKvpReader" />
 
   <!-- responses -->
   <bean id="oseoDescriptionResponse" class="org.geoserver.opensearch.eo.response.DescriptionResponse" />
@@ -96,5 +98,6 @@
     <constructor-arg ref="geoServer" />
   </bean>
   <bean id="oseoMetadataResponse" class="org.geoserver.opensearch.eo.response.MetadataResponse"/>
+  <bean id="oseoQuicklookResponse" class="org.geoserver.opensearch.eo.response.QuicklookResponse"/>
 
 </beans>

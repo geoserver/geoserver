@@ -68,7 +68,7 @@ public class GeoGigCatalogVisitorTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testGetAttribute3() throws Exception {
+    public void testGetAttribute_SapitalIndexOnly() throws Exception {
         addAvailableGeogigLayers();
         Catalog catalog = getCatalog();
         GeoGigTestData.CatalogBuilder catalogBuilder = geogigData.newCatalogBuilder(catalog);
@@ -87,7 +87,7 @@ public class GeoGigCatalogVisitorTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testGetAttribute2() throws Exception {
+    public void testGetAttribute_SpatialIndexWithExtraAttributes() throws Exception {
         addAvailableGeogigLayers();
         Catalog catalog = getCatalog();
         GeoGigTestData.CatalogBuilder catalogBuilder = geogigData.newCatalogBuilder(catalog);

@@ -391,7 +391,7 @@ public class GeoGigTestData extends ExternalResource {
                 context.command(RevObjectParse.class).setObjectId(featureRef.getObjectId()));
 
         String id = featureRef.name();
-        Feature feature = new FeatureBuilder(type).build(id, revFeature.get());
+        Feature feature = new FeatureBuilder(RevFeatureTypeBuilder.build(type)).build(id, revFeature.get());
         return (SimpleFeature) feature;
     }
 

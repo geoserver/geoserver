@@ -483,18 +483,21 @@
     <profile>
       <id>oauth2-google</id>
       <modules>
+        <module>security/oauth2</module>
         <module>security/oauth2-google</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-github</id>
       <modules>
+        <module>security/oauth2</module>
         <module>security/oauth2-github</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-geonode</id>
       <modules>
+        <module>security/oauth2</module>
         <module>security/oauth2-geonode</module>
       </modules>
     </profile>

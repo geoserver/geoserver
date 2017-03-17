@@ -20,12 +20,14 @@ import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.cluster.JMSApplicationListener;
 import org.geoserver.cluster.JMSPublisher;
 import org.geoserver.cluster.impl.handlers.DocumentFile;
+import org.geoserver.cluster.impl.utils.BeanUtils;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
@@ -166,33 +168,54 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
         // update properties
         Properties options = getProperties();
 
-        try {
-            // check if we may publish also the file
-            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            final CatalogInfo info = event.getSource();
-            if (info instanceof StyleInfo) {
-                // build local datadir file style path
-                Resource styleFile = loader.get("styles").get(((StyleInfo) info).getFilename());
+        // check if we may publish also the file
+        CatalogInfo info = event.getSource();
 
-                if (!Resources.exists(styleFile)) {
-                    final String workspace = ((StyleInfo) info).getWorkspace().getName();
-                    styleFile = loader.get(Paths.path("workspaces", workspace, "styles",
-                            ((StyleInfo) info).getFilename()));
+        // if the modified object was a style we need to send the style file too
+        if (info instanceof StyleInfo) {
+            // we need to get the associated resource file, for this we need to look
+            // at the final object we use a proxy to preserver the original object
+            StyleInfo styleInfo = ModificationProxy.create((StyleInfo) info, StyleInfo.class);
+            // updated the proxy object with the new values
+            try {
+                BeanUtils.smartUpdate(styleInfo, event.getPropertyNames(), event.getNewValues());
+            } catch (Exception exception) {
+                // there is nothing we can do about this
+                throw new RuntimeException(String.format(
+                        "Error setting proxy of style '%s' new values.", styleInfo.getName()));
+            }
+            // get style associated resource
+            GeoServerDataDirectory dataDirectory = GeoServerExtensions.bean(GeoServerDataDirectory.class);
+            Resource resource = dataDirectory.get(styleInfo, styleInfo.getFilename());
+            if (!resource.file().exists()) {
+                // this should never happen we throw an exception
+                throw new RuntimeException(String.format(
+                        "Style file '%s' for style '%s' could not be found.",
+                        styleInfo.getFilename(), styleInfo.getName()));
+            }
+            // publish the style associated file
+            try {
+                DocumentFile documentFile = new DocumentFile(resource);
+                // set the style information
+                documentFile.setStyleName(styleInfo.getName());
+                if (styleInfo.getWorkspace() != null) {
+                    documentFile.setWorkspaceName(styleInfo.getWorkspace().getName());
                 }
-
-                // publish the style xml document
-                jmsPublisher.publish(getTopic(), getJmsTemplate(), options, new DocumentFile(styleFile));
+                jmsPublisher.publish(getTopic(), getJmsTemplate(), options, documentFile);
+            } catch (Exception exception) {
+                throw new RuntimeException(String.format(
+                        "Error publishing file associated with style '%s'.",
+                        styleInfo.getName()), exception);
             }
+        }
 
-            // propagate the event
+        // propagate the catalog modified event
+        try {
             jmsPublisher.publish(getTopic(), getJmsTemplate(), options, event);
-
-        } catch (Exception e) {
-            if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) {
-                LOGGER.severe(e.getLocalizedMessage());
-            }
-            final CatalogException ex = new CatalogException(e);
-            throw ex;
+        } catch (Exception exception) {
+            throw new RuntimeException(String.format(
+                    "Error publishing catalog modified event of type '%s'.",
+                    info.getClass().getSimpleName()), exception);
         }
     }
 

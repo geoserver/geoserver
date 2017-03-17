@@ -6,10 +6,14 @@ package org.geoserver.cluster;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.cluster.impl.handlers.DocumentFile;
 import org.geoserver.cluster.impl.handlers.catalog.JMSCatalogAddEventHandlerSPI;
+import org.geoserver.cluster.impl.handlers.catalog.JMSCatalogModifyEventHandler;
+import org.geoserver.cluster.impl.handlers.catalog.JMSCatalogModifyEventHandlerSPI;
 import org.geoserver.cluster.impl.handlers.catalog.JMSCatalogStylesFileHandlerSPI;
+import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.After;
@@ -21,6 +25,7 @@ import java.util.List;
 
 import static org.geoserver.cluster.JmsEventsListener.getMessagesForHandler;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -33,10 +38,12 @@ public final class JmsStylesTest extends GeoServerSystemTestSupport {
     private static final String TEST_STYLE_FILE = "/test_style.sld";
 
     private static final String CATALOG_ADD_EVENT_HANDLER_KEY = "JMSCatalogAddEventHandlerSPI";
+    private static final String CATALOG_MODIFY_EVENT_HANDLER_KEY = "JMSCatalogModifyEventHandlerSPI";
     private static final String CATALOG_STYLES_FILE_EVENT_HANDLER_KEY = "JMSCatalogStylesFileHandlerSPI";
 
     private static JMSEventHandler<String, DocumentFile> styleFileHandler;
     private static JMSEventHandler<String, CatalogEvent> addEventHandler;
+    private static JMSEventHandler<String, CatalogEvent> modifyEventHandler;
 
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
@@ -50,6 +57,7 @@ public final class JmsStylesTest extends GeoServerSystemTestSupport {
         // initiate the handlers related to styles
         styleFileHandler = GeoServerExtensions.bean(JMSCatalogStylesFileHandlerSPI.class).createHandler();
         addEventHandler = GeoServerExtensions.bean(JMSCatalogAddEventHandlerSPI.class).createHandler();
+        modifyEventHandler = GeoServerExtensions.bean(JMSCatalogModifyEventHandlerSPI.class).createHandler();
     }
 
     @After
@@ -85,5 +93,40 @@ public final class JmsStylesTest extends GeoServerSystemTestSupport {
         assertThat(styleAddEvent.get(0).getSource(), instanceOf(StyleInfo.class));
         StyleInfo style = (StyleInfo) styleAddEvent.get(0).getSource();
         assertThat(style.getName(), is(TEST_STYLE_NAME));
+    }
+
+    @Test
+    public void testModifyStyle() throws Exception {
+        // add the test to the style catalog
+        getTestData().addStyle(TEST_STYLE_NAME, TEST_STYLE_FILE, this.getClass(), getCatalog());
+        // waiting for a catalog add event and a style file event
+        List<Message> messages = JmsEventsListener.getMessagesByHandlerKey(5000,
+                (selected) -> selected.size() >= 2,
+                CATALOG_ADD_EVENT_HANDLER_KEY, CATALOG_STYLES_FILE_EVENT_HANDLER_KEY);
+        assertThat(messages.size(), is(2));
+        // modify the style workspace
+        StyleInfo style = getCatalog().getStyleByName(TEST_STYLE_NAME);
+        assertThat(style, notNullValue());
+        WorkspaceInfo workspace = getCatalog().getWorkspaceByName(MockData.DEFAULT_PREFIX);
+        assertThat(workspace, notNullValue());
+        style.setWorkspace(workspace);
+        getCatalog().save(style);
+        // waiting for a catalog modify event and a style file event
+        messages = JmsEventsListener.getMessagesByHandlerKey(5000,
+                (selected) -> selected.size() >= 2,
+                CATALOG_MODIFY_EVENT_HANDLER_KEY, CATALOG_STYLES_FILE_EVENT_HANDLER_KEY);
+        assertThat(messages.size(), is(2));
+        // check if the modified style was correctly published
+        List<DocumentFile> styleFile = getMessagesForHandler(messages, CATALOG_STYLES_FILE_EVENT_HANDLER_KEY, styleFileHandler);
+        assertThat(styleFile.size(), is(1));
+        assertThat(styleFile.get(0).getStyleName(), is(TEST_STYLE_NAME));
+        assertThat(styleFile.get(0).getWorkspaceName(), is(workspace.getName()));
+        assertThat(styleFile.get(0).getResourceName(), is("test_style.sld"));
+        // checking that the correct catalog style was published
+        List<CatalogEvent> styleModifiedEvent = getMessagesForHandler(messages, CATALOG_MODIFY_EVENT_HANDLER_KEY, addEventHandler);
+        assertThat(styleModifiedEvent.size(), is(1));
+        assertThat(styleModifiedEvent.get(0).getSource(), instanceOf(StyleInfo.class));
+        StyleInfo modifiedStyle = (StyleInfo) styleModifiedEvent.get(0).getSource();
+        assertThat(modifiedStyle.getName(), is(TEST_STYLE_NAME));
     }
 }

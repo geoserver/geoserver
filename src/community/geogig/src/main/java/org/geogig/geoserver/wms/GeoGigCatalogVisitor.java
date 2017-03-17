@@ -5,6 +5,11 @@
 package org.geogig.geoserver.wms;
 
 import java.util.Arrays;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -30,6 +35,9 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.util.logging.Logging;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
+import org.locationtech.geogig.model.ObjectId;
+
+import com.google.common.base.Optional;
 
 /**
  * CatalogListener to ensure GeoGig indexes are created when Time or Elevation dimensions are enabled on GeoGig layers.
@@ -37,6 +45,10 @@ import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 public class GeoGigCatalogVisitor implements CatalogVisitor {
 
     private static final Logger LOGGER = Logging.getLogger(GeoGigCatalogVisitor.class);
+
+    private static final ExecutorService INDEX_SERVICE = Executors.newSingleThreadExecutor();
+
+    private static final ExecutorService FUTURE_SERVICE = Executors.newFixedThreadPool(4);
 
     private String[] getAttribute(final MetadataMap metadata, final String attributeName) {
         if (metadata != null && metadata.containsKey(attributeName)) {
@@ -88,6 +100,40 @@ public class GeoGigCatalogVisitor implements CatalogVisitor {
         // do nothing
     }
 
+    private void createOrUpdateIndex(final GeoGigDataStore dataStore, final String layerName,
+            final String[] extraAttribues) {
+        // schedule the index creation
+        final Future<Optional<ObjectId>> indexId = INDEX_SERVICE.submit(
+                new Callable<Optional<ObjectId>>() {
+
+            @Override
+            public Optional<ObjectId> call() throws Exception {
+                return dataStore.createOrUpdateIndex(layerName, extraAttribues);
+            }
+        });
+        // handle the Future and generate an error log if the index create/update fails
+        FUTURE_SERVICE.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Optional<ObjectId> objId = indexId.get();
+                    if (!objId.isPresent()) {
+                        LOGGER.log(Level.WARNING,
+                                "Index creation or update finished, but resulted in no Index on Layer: {0}",
+                                layerName);
+                    }
+                } catch (ExecutionException eex) {
+                    LOGGER.log(Level.WARNING, "Index could not be created or updated on Layer: " +
+                            layerName, eex);
+                } catch (InterruptedException iex) {
+                    LOGGER.log(Level.WARNING,
+                            "Index may not have been created or updated on Layer: " +
+                                    layerName, iex);
+                }
+            }
+        });
+    }
+
     @Override
     public void visit(LayerInfo layer) {
         // get the Resource for this layer
@@ -104,27 +150,22 @@ public class GeoGigCatalogVisitor implements CatalogVisitor {
                 } catch (Exception ex) {
                     throw new CatalogException("Error accessing GeoGig DataStore", ex);
                 }
-                try {
-                    if (!geogigDataStore.getAutoIndexing()) {
-                        if (LOGGER.isLoggable(Level.FINE)) {
-                            LOGGER.fine(String.format("GeoGig DataStore is not configured for automatic indexing."));
-                        }
-                        // skip it
-                        return;
+                if (!geogigDataStore.getAutoIndexing()) {
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine(String.format(
+                                "GeoGig DataStore is not configured for automatic indexing."));
                     }
-                    // get the metadata for the layer resource
-                    final MetadataMap metadata = resource.getMetadata();
-                    final String[] timeAttr = getAttribute(metadata, "time");
-                    final String[] elevationAttr = getAttribute(metadata, "elevation");
-                    String[] dimensions = Stream.concat(Arrays.stream(timeAttr), Arrays.stream(elevationAttr))
-                            .toArray(String[]::new);
-                    // create the indexes
-                    geogigDataStore.createOrUpdateIndex(resource.getName(), dimensions);
-                } catch (Exception ex) {
-                    // Something went wrong creating the index, log it and move on
-                    LOGGER.log(Level.WARNING, "Index could not be created or updated on Layer: " +
-                            resource.getNativeName(), ex);
+                    // skip it
+                    return;
                 }
+                // get the metadata for the layer resource
+                final MetadataMap metadata = resource.getMetadata();
+                final String[] timeAttr = getAttribute(metadata, "time");
+                final String[] elevationAttr = getAttribute(metadata, "elevation");
+                String[] dimensions = Stream.concat(Arrays.stream(timeAttr),
+                        Arrays.stream(elevationAttr)).toArray(String[]::new);
+                // create the indexes
+                createOrUpdateIndex(geogigDataStore, resource.getName(), dimensions);
             }
         }
     }

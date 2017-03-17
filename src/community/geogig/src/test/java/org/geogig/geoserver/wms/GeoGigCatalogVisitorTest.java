@@ -67,6 +67,28 @@ public class GeoGigCatalogVisitorTest extends GeoServerSystemTestSupport {
         RepositoryManager.close();
     }
 
+    private List<IndexInfo> waitForIndexes(final IndexDatabase indexDb, final String layerName,
+            final int expectedSize) throws InterruptedException {
+        assertNotNull("Expected a non null Layer Name", layerName);
+        List<IndexInfo> indexInfos = indexDb.getIndexInfos(layerName);
+        assertNotNull("Expected IndexInfo objects from Index database", indexInfos);
+        int infoSize = indexInfos.size();
+        final int maxWaitInSeconds = 10;
+        int waitCount = 0;
+        while (infoSize < expectedSize && waitCount++ < maxWaitInSeconds) {
+            // wait a second for the index
+            Thread.sleep(1_000);
+            // get the infos again
+            indexInfos = indexDb.getIndexInfos(layerName);
+            infoSize = indexInfos.size();
+        }
+        // make sure the ocunt matches
+        assertEquals(String.format("Expected exactly %s IndexInfo", expectedSize),
+                expectedSize,
+                indexInfos.size());
+        return indexInfos;
+    }
+
     @Test
     public void testGetAttribute_SapitalIndexOnly() throws Exception {
         addAvailableGeogigLayers();
@@ -78,9 +100,7 @@ public class GeoGigCatalogVisitorTest extends GeoServerSystemTestSupport {
         visitor.visit(lineLayerInfo);
         GeoGIG geoGig = geogigData.getGeogig();
         IndexDatabase indexDatabase = geoGig.getRepository().indexDatabase();
-        List<IndexInfo> indexInfos = indexDatabase.getIndexInfos("lines");
-        assertNotNull("Expected IndexInfo objects from Index database", indexInfos);
-        assertEquals("Expected exactly 1 IndexInfo", 1, indexInfos.size());
+        List<IndexInfo> indexInfos = waitForIndexes(indexDatabase, "lines", 1);
         IndexInfo indexInfo = indexInfos.get(0);
         Set<String> materializedAttributeNames = IndexInfo.getMaterializedAttributeNames(indexInfo);
         assertTrue("Expected empty extra Attributes set", materializedAttributeNames.isEmpty());
@@ -107,9 +127,7 @@ public class GeoGigCatalogVisitorTest extends GeoServerSystemTestSupport {
         visitor.visit(lineLayerInfo);
         GeoGIG geoGig = geogigData.getGeogig();
         IndexDatabase indexDatabase = geoGig.getRepository().indexDatabase();
-        List<IndexInfo> indexInfos = indexDatabase.getIndexInfos("lines");
-        assertNotNull("Expected IndexInfo objects from Index database", indexInfos);
-        assertEquals("Expected exactly 1 IndexInfo", 1, indexInfos.size());
+        List<IndexInfo> indexInfos = waitForIndexes(indexDatabase, "lines", 1);
         IndexInfo indexInfo = indexInfos.get(0);
         Set<String> materializedAttributeNames = IndexInfo.getMaterializedAttributeNames(indexInfo);
         assertFalse("Expected non-empty extra Attributes set", materializedAttributeNames.isEmpty());

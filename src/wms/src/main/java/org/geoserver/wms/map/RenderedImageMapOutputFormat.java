@@ -1102,6 +1102,14 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             return null;
         }
         
+        // check if the image intersects the requested area at all return null and be done with it
+        final Rectangle imageBounds = PlanarImage.wrapRenderedImage(image).getBounds();
+        Rectangle intersection = imageBounds.intersection(mapRasterArea);
+        if(intersection.isEmpty()) {
+            return null;
+        }
+
+        
         ////
         //
         // Final Touch 
@@ -1113,7 +1121,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // since it does not support changing the bkg color.
         //
         ////        
-        final Rectangle imageBounds = PlanarImage.wrapRenderedImage(image).getBounds(); 
         
         // we need to do a mosaic, let's prepare a layout
         // prepare a final image layout should we need to perform a mosaic or a crop
@@ -1294,30 +1301,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         if (!(imageBounds.contains(mapRasterArea) || imageBounds.equals(mapRasterArea)) 
                 || transparencyType != Transparency.OPAQUE
                 || iw.getNoData() != null || roiCandidate instanceof ROI) {
-            ROI roi;
-            if (roiCandidate instanceof ROI) {
-                ROI imageROI = (ROI) roiCandidate;
-                roi = imageROI.intersect(new ROIShape(mapRasterArea));
-            } else {
-                Rectangle intersection = imageBounds.intersection(mapRasterArea);
-                roi = new ROIShape(!intersection.isEmpty() ? intersection : mapRasterArea);
-            }
-            ROI[] rois = new ROI[] {roi};
-
-            // build the transparency thresholds
-            double[][] thresholds = new double[][] { { ColorUtilities.getThreshold(image
-                    .getSampleModel().getDataType()) } };
-            // apply the mosaic
-            
-            iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
-            iw.setBackground(bgValues);
-            iw.mosaic(new RenderedImage[] { image }, 
-                    alphaChannels != null && transparencyType==Transparency.TRANSLUCENT ? MosaicDescriptor.MOSAIC_TYPE_BLEND: MosaicDescriptor.MOSAIC_TYPE_OVERLAY, 
-                    alphaChannels, 
-                    rois, 
-                    thresholds, 
-                    null);
-            image = iw.getRenderedImage();
+            image = applyBackgroundTransparency(mapRasterArea, image, intersection, layout,
+                    bgValues, alphaChannels, transparencyType, iw, roiCandidate);
         } else {
             // Check if we need to crop a subset of the produced image, else return it right away
             if (imageBounds.contains(mapRasterArea) && !imageBounds.equals(mapRasterArea)) { // the produced image does not need a final mosaicking operation but a crop!
@@ -1327,6 +1312,48 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
         }
         
+        return image;
+    }
+
+    private RenderedImage applyBackgroundTransparency(final Rectangle mapRasterArea,
+            RenderedImage image, Rectangle intersection, final ImageLayout layout,
+            double[] bgValues, PlanarImage[] alphaChannels, final int transparencyType,
+            ImageWorker iw, Object roiCandidate) {
+        ROI roi;
+        if (roiCandidate instanceof ROI) {
+            ROI imageROI = (ROI) roiCandidate;
+            try {
+                roi = imageROI.intersect(new ROIShape(mapRasterArea));
+            } catch(IllegalArgumentException e) {
+                // in the unlikely event that the ROI does not intersect the target map
+                // area an exception will be thrown. Catching the exception instead of checking
+                // every time a full intersects test is less expensive, a ROI based image
+                // will allocate the full ROI as a single byte[] and then scan it posing
+                // memory boundness concerns
+                if(LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "Failed to intersect image ROI with target bounds, returning empty result", e);
+                }
+                return null;
+            }
+        } else {
+            roi = new ROIShape(!intersection.isEmpty() ? intersection : mapRasterArea);
+        }
+        ROI[] rois = new ROI[] {roi};
+
+        // build the transparency thresholds
+        double[][] thresholds = new double[][] { { ColorUtilities.getThreshold(image
+                .getSampleModel().getDataType()) } };
+        // apply the mosaic
+        
+        iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
+        iw.setBackground(bgValues);
+        iw.mosaic(new RenderedImage[] { image }, 
+                alphaChannels != null && transparencyType==Transparency.TRANSLUCENT ? MosaicDescriptor.MOSAIC_TYPE_BLEND: MosaicDescriptor.MOSAIC_TYPE_OVERLAY, 
+                alphaChannels, 
+                rois, 
+                thresholds, 
+                null);
+        image = iw.getRenderedImage();
         return image;
     }
 

@@ -22,14 +22,32 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Andrea Aime - GeoSolutions
  */
 public class OpenSearchParameters {
-    
+
     public static final CoordinateReferenceSystem OUTPUT_CRS;
 
     public static final String OS_PREFIX = "os";
 
     public static final String TIME_PREFIX = "time";
 
+    private static final Parameter<?> TIME_END = new ParameterBuilder("end", Date.class)
+            .prefix(TIME_PREFIX).build();
+
+    private static final Parameter<?> TIME_START = new ParameterBuilder("start", Date.class)
+            .prefix(TIME_PREFIX).build();
+
     public static final String GEO_PREFIX = "geo";
+
+    private static final Parameter<?> GEO_RADIUS = new ParameterBuilder("radius", Double.class)
+            .prefix(GEO_PREFIX).minimumInclusive(0).build();
+
+    private static final Parameter<?> GEO_LON = new ParameterBuilder("lon", Double.class)
+            .prefix(GEO_PREFIX).minimumInclusive(-180).maximumInclusive(180).build();
+
+    private static final Parameter<?> GEO_LAT = new ParameterBuilder("lat", Double.class)
+            .prefix(GEO_PREFIX).minimumInclusive(-90).maximumInclusive(90).build();
+
+    private static final Parameter<?> GEO_NAME = new ParameterBuilder("name", String.class)
+            .prefix(GEO_PREFIX).build();
 
     public static final String EO_PREFIX = "eo";
 
@@ -38,8 +56,12 @@ public class OpenSearchParameters {
 
     public static final Parameter<?> START_INDEX = new ParameterBuilder("startIndex", Integer.class)
             .prefix(OS_PREFIX).build();
-    
-    public static final Parameter<?> GEO_UID = new ParameterBuilder("uid", String.class).prefix(GEO_PREFIX).build();
+
+    public static final Parameter<?> GEO_UID = new ParameterBuilder("uid", String.class)
+            .prefix(GEO_PREFIX).build();
+
+    public static final Parameter<?> GEO_BOX = new ParameterBuilder("box", Envelope.class)
+            .prefix(GEO_PREFIX).build();
 
     public static final String PARAM_PREFIX = "parameterPrefix";
 
@@ -68,17 +90,7 @@ public class OpenSearchParameters {
 
     private static List<Parameter<?>> geoTimeOpenSearchParameters() {
         return Arrays.asList( //
-                GEO_UID,
-                new ParameterBuilder("box", Envelope.class).prefix(GEO_PREFIX).build(),
-                new ParameterBuilder("name", String.class).prefix(GEO_PREFIX).build(),
-                new ParameterBuilder("lat", Double.class).prefix(GEO_PREFIX).minimumInclusive(-90)
-                        .maximumInclusive(90).build(),
-                new ParameterBuilder("lon", Double.class).prefix(GEO_PREFIX).minimumInclusive(-180)
-                        .maximumInclusive(180).build(),
-                new ParameterBuilder("radius", Double.class).prefix(GEO_PREFIX).minimumInclusive(0)
-                        .build(),
-                new ParameterBuilder("start", Date.class).prefix(TIME_PREFIX).build(),
-                new ParameterBuilder("end", Date.class).prefix(TIME_PREFIX).build());
+                GEO_UID, GEO_BOX, GEO_NAME, GEO_LAT, GEO_LON, GEO_RADIUS, TIME_START, TIME_END);
     }
 
     /**

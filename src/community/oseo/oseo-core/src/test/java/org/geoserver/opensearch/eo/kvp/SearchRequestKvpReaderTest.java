@@ -109,6 +109,20 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertEquals(1, searchParameters.size());
         assertThat(searchParameters, hasEntry(OpenSearchParameters.GEO_UID, "abcd"));
     }
+    
+    @Test
+    public void testParseTimeBox() throws Exception {
+        Map<String, String> map = toMap(GEO_BOX.key, "10,20,30,40");
+        SearchRequest request = parseSearchRequest(map);
+        assertEquals(null, request.getParentId());
+        final Query query = request.getQuery();
+        assertNotNull(query);
+        final String expectedCql = "BBOX(, 10.0,20.0,30.0,40.0)";
+        assertEquals(expectedCql, ECQL.toCQL(query.getFilter()));
+        Map<Parameter, String> searchParameters = request.getSearchParameters();
+        assertEquals(1, searchParameters.size());
+        assertThat(searchParameters, hasEntry(OpenSearchParameters.GEO_BOX, "10,20,30,40"));
+    }
 
     @Test
     public void testPaging() throws Exception {
@@ -183,7 +197,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     }
 
     @Test
-    public void testountIndexFloat() throws Exception {
+    public void testCountIndexFloat() throws Exception {
         try {
             parseSearchRequest(toMap(COUNT_KEY, "1.23"));
         } catch (OWS20Exception e) {
@@ -201,5 +215,5 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         // no filter here, the parent id needs to be translate to an internal identifier
         assertEquals(Filter.INCLUDE, query.getFilter());
     }
-
+    
 }

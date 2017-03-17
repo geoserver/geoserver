@@ -4,6 +4,7 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_BOX;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_UID;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.SEARCH_TERMS;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.START_INDEX;
@@ -30,13 +31,20 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
+import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geotools.data.Parameter;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.Converters;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.MultiValuedFilter.MatchAction;
+import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Reads a "description" request
@@ -48,7 +56,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     public static final String COUNT_KEY = "count";
-    
+
     public static final String PARENT_ID_KEY = "parentId";
 
     private Set<String> NOT_FILTERS = new HashSet<>(Arrays.asList(START_INDEX.key, COUNT_KEY));
@@ -142,17 +150,18 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         return result;
     }
 
-    private Filter readFilter(Map rawKvp, Collection<Parameter<?>> parameters) {
+    private Filter readFilter(Map rawKvp, Collection<Parameter<?>> parameters) throws Exception {
         List<Filter> filters = new ArrayList<>();
         for (Parameter<?> parameter : parameters) {
             Object value = rawKvp.get(parameter.key);
             if (value != null && !NOT_FILTERS.contains(parameter.key)) {
-                // special handling for search terms
                 Filter filter;
                 if (SEARCH_TERMS.key.equals(parameter.key)) {
                     filter = buildSearchTermsFilter(value);
-                } else if(GEO_UID.key.equals(parameter.key)) {
-                    filter = FF.equals(FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier")), FF.literal(value));
+                } else if (GEO_UID.key.equals(parameter.key)) {
+                    filter = buildUidFilter(value);
+                } else if (GEO_BOX.key.equals(parameter.key)) {
+                    filter = buildBoundingBoxFilter(value);
                 } else {
                     filter = buildGenericFilter(parameter, value);
                 }
@@ -162,6 +171,24 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
         Filter filter = Predicates.and(filters);
         return filter;
+    }
+
+    private Filter buildBoundingBoxFilter(Object value) throws Exception {
+        Filter filter;
+        ReferencedEnvelope box = (ReferencedEnvelope) new BBoxKvpParser().parse((String) value);
+        final CoordinateReferenceSystem crs = box.getCoordinateReferenceSystem();
+        if (crs != null && !CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, crs)) {
+            throw new OWS20Exception(
+                    "OpenSearch for EO requests only support boundig boxes in WGS84",
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, "box");
+        }
+        filter = FF.bbox(FF.property(""), box, MatchAction.ANY);
+        return filter;
+    }
+
+    private PropertyIsEqualTo buildUidFilter(Object value) {
+        return FF.equals(FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier")),
+                FF.literal(value));
     }
 
     private Filter buildSearchTermsFilter(Object value) {

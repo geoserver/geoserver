@@ -218,11 +218,10 @@ public class SearchTest extends OSEOTestSupport {
 
     @Test
     public void testSpecificProduct() throws Exception {
-        // S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04
         Document dom = getAsDOM(
                 "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept="
                         + AtomSearchResponse.MIME);
-        print(dom);
+        // print(dom);
 
         // check basics
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
@@ -248,6 +247,17 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(atomHRef, equalTo("http://localhost:8080/geoserver/oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fatom%2Bxml"));
         String quickLookRef = sd.select("a[title='View browse image'").attr("href");
         assertThat(quickLookRef, equalTo("http://localhost:8080/geoserver/oseo/quicklook?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04"));
+    }
+    
+    @Test
+    public void testSearchByBox() throws Exception {
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&box=-118,33,-117,34");
+        // print(dom);
+        
+        // only one feature should be matching
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry/at:title",
+                equalTo("S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04")));
     }
 
     @Test

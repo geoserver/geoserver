@@ -59,8 +59,9 @@ public class JMSServiceHandler extends JMSConfigurationHandler<JMSServiceModifyE
                 case ADDED:
                     // checking that this service is not already present, we don't synchronize this check
                     // if two threads add the same service well one of them will fail and throw an exception
-                    if (geoServer.getService(ev.getSource().getId(), ev.getSource().getClass()) == null) {
-                        // this is a new service so let's add it to this geoserver
+                    // this event may be generated for a service that already exists
+                    if (geoServer.getService(ev.getSource().getId(), ServiceInfo.class) == null) {
+                        // this is a new service so let's add it to this GeoServer instance
                         geoServer.add(ev.getSource());
                     }
                     break;

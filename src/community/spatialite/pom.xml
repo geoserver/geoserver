@@ -61,6 +61,13 @@
       <artifactId>gt-jdbc-spatialite</artifactId>
       <version>${gt.version}</version>
    </dependency>
+   <!-- used for testing the REST api -->
+   <dependency>
+     <groupId>org.geoserver</groupId>
+     <artifactId>gs-restconfig</artifactId>
+     <version>${gs.version}</version>
+     <scope>test</scope>
+   </dependency>
   </dependencies>
 
 </project>

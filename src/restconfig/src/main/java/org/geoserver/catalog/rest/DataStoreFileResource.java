@@ -16,6 +16,10 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -46,6 +50,7 @@ import org.geotools.data.FileDataStoreFactorySpi;
 import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
@@ -57,6 +62,8 @@ import org.restlet.data.Status;
 import org.vfny.geoserver.util.DataStoreUtils;
 
 public class DataStoreFileResource extends StoreFileResource {
+
+    private static final Pattern H2_FILE_PATTERN = Pattern.compile("(.*?)\\.(?:data.db)");
 
     protected static final HashMap<String,String> formatToDataStoreFactory = new HashMap();
     static {
@@ -509,11 +516,20 @@ public class DataStoreFileResource extends StoreFileResource {
     }
 
     @Override
+    protected List<Resource> doFileUpload(String method, String workspaceName, String storeName, String format) {
+        if ("h2".equalsIgnoreCase(format)) {
+            // H2 database files use data.bd has extension
+            format = "data.db";
+        }
+        return super.doFileUpload(method, workspaceName, storeName, format);
+    }
+
+    @Override
     protected Resource findPrimaryFile(Resource directory, String format) {
-        if ("shp".equalsIgnoreCase(format)) {
-            //special case for shapefiles, since shapefile datastore can handle directories just 
+        if ("shp".equalsIgnoreCase(format) || "data.db".equalsIgnoreCase(format)) {
+            // special case for shapefiles, since shapefile datastore can handle directories just
             // return the directory, this handles the case of a user uploading a zip with multiple
-            // shapefiles in it
+            // shapefiles in it and the same happens for H2
             return directory;
         }
         else {
@@ -534,11 +550,10 @@ public class DataStoreFileResource extends StoreFileResource {
     }
     
     void updateParameters(Map connectionParameters, DataAccessFactory factory, Resource uploadedFile) {
-
+        File f = Resources.find(uploadedFile);
         for ( Param p : factory.getParametersInfo() ) {
             //the nasty url / file hack
             if ( File.class == p.type || URL.class == p.type ) {
-                File f = Resources.find(uploadedFile);
                 
                 if ( "directory".equals( p.key ) ) {
                     //set the value to be the directory
@@ -574,6 +589,35 @@ public class DataStoreFileResource extends StoreFileResource {
                     connectionParameters.put( p.key, p.sample );
                 }    
             }
+        }
+
+        // handle H2 and SpatiaLite special cases
+        if (factory.getDisplayName().equalsIgnoreCase("SpatiaLite")) {
+            connectionParameters.put(JDBCDataStoreFactory.DATABASE.getName(), f.getAbsolutePath());
+        } else if (factory.getDisplayName().equalsIgnoreCase("H2")) {
+            // we need to extract the H2 database name
+            String databaseFile = f.getAbsolutePath();
+            if (f.isDirectory()) {
+                // if the user uploaded a ZIP file we need to get the database file inside
+                Optional<Resource> found = Resources.list(uploadedFile, resource ->
+                        resource.name().endsWith("data.db"))
+                        .stream().findFirst();
+                if (!found.isPresent()) {
+                    // ouch no database file found just throw an exception
+                    throw new RestletException(String.format("H2 database file could not be found in directory '%s'.",
+                            f.getAbsolutePath()), Status.SERVER_ERROR_INTERNAL);
+                }
+                // we found the database file get the absolute path
+                databaseFile = found.get().file().getAbsolutePath();
+            }
+            // apply the H2 file regex pattern
+            Matcher matcher = H2_FILE_PATTERN.matcher(databaseFile);
+            if (!matcher.matches()) {
+                // strange the database file is not ending in data.db
+                throw new RestletException(String.format("Invalid H2 database file '%s'.",
+                        databaseFile), Status.SERVER_ERROR_INTERNAL);
+            }
+            connectionParameters.put(JDBCDataStoreFactory.DATABASE.getName(), matcher.group(1));
         }
     }
     

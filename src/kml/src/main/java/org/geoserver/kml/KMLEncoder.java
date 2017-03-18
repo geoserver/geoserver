@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -10,6 +10,13 @@ import java.io.OutputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.util.JAXBSource;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.geoserver.platform.ServiceException;
 
@@ -25,15 +32,26 @@ public class KMLEncoder {
     
     private JAXBContext context;
 
-    public KMLEncoder() throws JAXBException {
+    private Templates templates;
+
+    public KMLEncoder() throws JAXBException, TransformerException {
         // this creation is expensive, do it once and cache it
         context = JAXBContext.newInstance((Kml.class));
+        String xslt = getClass().getResource("icon_style_patch.xsl").toString();
+        templates = TransformerFactory.newInstance().newTemplates(new StreamSource(xslt));
     }
 
     public void encode(Kml kml, OutputStream output, KmlEncodingContext context) {
         try {
-            createMarshaller().marshal(kml, output);
-        } catch (JAXBException e) {
+            if ((context != null) && (context.getWms() == null)) {
+                // No need to transform WFS KML.
+                createMarshaller().marshal(kml, output);
+            } else {
+                Transformer transformer = templates.newTransformer();
+                JAXBSource source = new JAXBSource(createMarshaller(), kml);
+                transformer.transform(source, new StreamResult(output));
+            }
+        } catch (JAXBException | TransformerException e) {
             throw new ServiceException(e);
         } finally {
             if(context != null) {

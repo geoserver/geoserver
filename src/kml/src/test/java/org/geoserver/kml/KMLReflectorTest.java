@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -33,7 +33,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
+import javax.xml.validation.SchemaFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
@@ -66,6 +70,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import de.micromata.opengis.kml.v_2_2_0.Kml;
 
 /**
  * Some functional tests for kml reflector
@@ -852,6 +858,42 @@ public class KMLReflectorTest extends WMSTestSupport {
         // print(document);
 
         assertEquals(3, document.getElementsByTagName("Placemark").getLength());
+    }
+
+    @Test
+    public void testValidKML() throws Exception {
+        GetMapRequest req = createGetMapRequest(MockData.STREAMS);
+        req.setWidth(256);
+        req.setHeight(256);
+
+        WMSMapContent mapContent = new WMSMapContent(req);
+        mapContent.addLayer(createMapLayer(MockData.STREAMS, "big-local-image"));
+
+        mapContent.getViewport().setBounds(new ReferencedEnvelope(-180, 0, -90, 90,
+                DefaultGeographicCRS.WGS84));
+        mapContent.setMapHeight(256);
+        mapContent.setMapWidth(256);
+
+        KMLMapOutputFormat of = new KMLMapOutputFormat(getWMS());
+        KMLMap map = of.produceMap(mapContent);
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        new KMLEncoder().encode(map.getKml(), bout, null);
+
+        // Explicitly check for known bugs in the JavaAPIforKml library.
+        // https://osgeo-org.atlassian.net/browse/GEOS-7963
+        // https://github.com/micromata/javaapiforkml/issues/9
+        Document document = dom(new ByteArrayInputStream(bout.toByteArray()));
+        // print(document);
+        XMLAssert.assertXpathNotExists("//kml:IconStyle/kml:Icon/kml:refreshInterval", document);
+        XMLAssert.assertXpathNotExists("//kml:IconStyle/kml:Icon/kml:viewRefreshTime", document);
+        XMLAssert.assertXpathNotExists("//kml:IconStyle/kml:Icon/kml:viewBoundScale", document);
+
+        // Validate against the KML 2.2 schema.
+        Unmarshaller unmarshaller = JAXBContext.newInstance(Kml.class).createUnmarshaller();
+        unmarshaller.setSchema(SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+            .newSchema(getClass().getResource("/schema/ogckml/ogckml22.xsd")));
+        unmarshaller.unmarshal(document);
     }
 
     @Test

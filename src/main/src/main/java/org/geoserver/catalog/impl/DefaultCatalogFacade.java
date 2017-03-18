@@ -882,7 +882,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
             }
             
             for (Map.Entry<String, DataStoreInfo> e : defaultStores.entrySet()) {
-                WorkspaceInfo ws = workspaces.findByName(new NameImpl(e.getKey()), WorkspaceInfo.class);
+                WorkspaceInfo ws = workspaces.findById(e.getKey(), WorkspaceInfo.class);
                 if (null != ws) {
                     dao.setDefaultDataStore(ws, e.getValue());
                 }

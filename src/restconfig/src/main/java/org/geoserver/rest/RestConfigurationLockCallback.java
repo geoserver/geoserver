@@ -24,15 +24,13 @@ public class RestConfigurationLockCallback implements DispatcherCallback {
 
     GeoServerConfigurationLock locker;
 
-    static ThreadLocal<LockType> THREAD_LOCK = new ThreadLocal<GeoServerConfigurationLock.LockType>();
-
     public RestConfigurationLockCallback(GeoServerConfigurationLock locker) {
         this.locker = locker;
     }
 
     @Override
     public void init(Request request, Response response) {
-        LockType type = THREAD_LOCK.get();
+        LockType type = locker.getCurrentLock();
         if (type != null) {
             throw new RuntimeException("The previous lock was not released: " + type);
         }
@@ -53,16 +51,13 @@ public class RestConfigurationLockCallback implements DispatcherCallback {
         if (restlet != null) {
             // these are the restlets we have to lock
             if (restlet.getClass().getPackage().getName().startsWith("org.geoserver.catalog.rest")) {
-                // choose a lok type based on the method
-                LockType type;
-                if ((m == Method.DELETE || m == Method.COPY || m == Method.MKCOL
-                        || m == Method.MOVE || m == Method.PROPPATCH || m == Method.POST || m == Method.PUT)) {
-                    type = LockType.WRITE;
+                if("CatalogReloader".equals(restlet.getClass().getSimpleName())) {
+                    // this requires a full lock, it affects part of GeoTools that are not 
+                    // thread safe
+                    locker.lock(LockType.WRITE);
                 } else {
-                    type = LockType.READ;
+                    locker.lock(LockType.READ);
                 }
-                THREAD_LOCK.set(type);
-                locker.lock(type);
             }
         }
 
@@ -75,10 +70,9 @@ public class RestConfigurationLockCallback implements DispatcherCallback {
 
     @Override
     public void finished(Request request, Response response) {
-        LockType type = THREAD_LOCK.get();
+        LockType type = locker.getCurrentLock();
         if (type != null) {
-            THREAD_LOCK.remove();
-            locker.unlock(type);
+            locker.unlock();
         }
 
     }

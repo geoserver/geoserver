@@ -333,7 +333,7 @@ public class JMSActiveMQFactory extends JMSFactory implements
 
 					} else {
 						if (LOGGER.isLoggable(Level.SEVERE)) {
-							LOGGER.severe("Started the embedded brokerURI: "
+							LOGGER.info("Started the embedded brokerURI: "
 									+ brokerService.toString());
 						}
 					}

@@ -5,6 +5,8 @@
  */
 package org.geoserver.cluster.impl.events;
 
+import org.geoserver.cluster.impl.events.configuration.JMSEventType;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -26,12 +28,25 @@ public class JMSModifyEvent<S extends Serializable> {
 
     private final S source;
 
+    // identifies the type of event (added, removed or modified)
+    private final JMSEventType eventType;
+
     public JMSModifyEvent(final S source, final List<String> propertyNames,
             final List<Object> oldValues, final List<Object> newValues) {
         this.source = source;
         this.propertyNames = propertyNames;
         this.oldValues = oldValues;
         this.newValues = newValues;
+        this.eventType = JMSEventType.MODIFIED;
+    }
+
+    public JMSModifyEvent(final S source, final List<String> propertyNames,
+            final List<Object> oldValues, final List<Object> newValues, JMSEventType eventType) {
+        this.source = source;
+        this.propertyNames = propertyNames;
+        this.oldValues = oldValues;
+        this.newValues = newValues;
+        this.eventType = eventType;
     }
 
     /**
@@ -59,9 +74,7 @@ public class JMSModifyEvent<S extends Serializable> {
         return (S) source;
     }
 
-    /**
-	 * 
-	 */
-    private static final long serialVersionUID = 1L;
-
+    public JMSEventType getEventType() {
+        return eventType;
+    }
 }

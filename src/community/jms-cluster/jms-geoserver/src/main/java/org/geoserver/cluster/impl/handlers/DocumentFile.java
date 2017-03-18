@@ -28,6 +28,9 @@ public class DocumentFile {
 
     private final String body;
 
+    private String styleName;
+    private String workspaceName;
+
     /**
      * @return the body containing the parsed file
      */
@@ -69,6 +72,22 @@ public class DocumentFile {
 
     public String getResourcePath() {
         return resourcePath;
+    }
+
+    public String getStyleName() {
+        return styleName;
+    }
+
+    public void setStyleName(String styleName) {
+        this.styleName = styleName;
+    }
+
+    public String getWorkspaceName() {
+        return workspaceName;
+    }
+
+    public void setWorkspaceName(String workspaceName) {
+        this.workspaceName = workspaceName;
     }
 
     /**

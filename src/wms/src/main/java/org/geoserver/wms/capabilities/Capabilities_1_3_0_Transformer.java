@@ -673,7 +673,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             element("Abstract", serviceInfo.getAbstract());
 
             List<String> srsList = serviceInfo.getSRS();
-            Set<String> srs = new HashSet<String>();
+            Set<String> srs = new LinkedHashSet<String>();
             if (srsList != null) {
                 srs.addAll(srsList);
             }
@@ -752,7 +752,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 capabilitiesCrsIdentifiers.addAll(CRS.getSupportedCodes("EPSG"));
             } else {
                 comment("Limited list of EPSG projections:");
-                capabilitiesCrsIdentifiers = new TreeSet<String>(epsgCodes);
+                capabilitiesCrsIdentifiers = new LinkedHashSet<String>(epsgCodes);
             }
 
             try {

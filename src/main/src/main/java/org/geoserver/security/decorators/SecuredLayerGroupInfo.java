@@ -5,7 +5,6 @@
  */
 package org.geoserver.security.decorators;
 
-import java.util.AbstractList;
 import java.util.List;
 
 import org.geoserver.catalog.LayerGroupInfo;
@@ -13,6 +12,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
+import org.geoserver.catalog.impl.FilteredList;
 
 public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
 
@@ -48,74 +48,18 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
     }
     
     @Override
-    public List<PublishedInfo> getLayers() {        
-        // keep synchronised
-        return new AbstractList<PublishedInfo>() {
+    public List<PublishedInfo> getLayers() {
+        return new FilteredList<PublishedInfo>(layers, delegate.getLayers()) {
             @Override
-            public PublishedInfo get(int index) {
-                return layers.get(index);
+            protected PublishedInfo unwrap(PublishedInfo element) {
+                return SecuredLayerGroupInfo.unwrap(element);
             }
-
-            @Override
-            public int size() {
-                return layers.size();
-            }
-
-            @Override
-            public void add(int index, PublishedInfo element) {
-                delegate.getLayers().add(index, unwrap(element));
-                layers.add(index, element);
-            }
-
-            public PublishedInfo set(int index, PublishedInfo element) {
-                delegate.getLayers().set(index, unwrap(element));
-                return layers.set(index, element);                
-            }
-
-            public PublishedInfo remove(int index) {
-                delegate.getLayers().remove(index);
-                return layers.remove(index);
-            }
-
         };
     }
     
     @Override
     public List<StyleInfo> getStyles() {
-        // keep synchronised
-        return new AbstractList<StyleInfo>() {
-            @Override
-            public StyleInfo get(int index) {
-                return styles.get(index);
-            }
-
-            @Override
-            public int size() {
-                return styles.size();
-            }
-
-            @Override
-            public void add(int index, StyleInfo element) {
-                delegate.getStyles().add(index, element);
-                styles.add(index, element);
-            }
-
-            public StyleInfo set(int index, StyleInfo element) {
-                delegate.getStyles().set(index, element);
-                return styles.set(index, element);
-            }
-
-            public StyleInfo remove(int index) {
-                delegate.getStyles().remove(index);
-                return styles.remove(index);
-            }
-
-            @Override
-            public boolean remove(Object o) {
-                delegate.getStyles().remove(o);
-                return styles.remove(o);
-            }
-        };
+        return new FilteredList<StyleInfo>(styles, delegate.getStyles());
     }
     
     private static PublishedInfo unwrap(PublishedInfo pi) {

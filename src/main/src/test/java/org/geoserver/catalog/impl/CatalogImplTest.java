@@ -35,6 +35,7 @@ import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -1413,6 +1414,27 @@ public class CatalogImplTest {
         // l3 = catalog.getLayerByName( "changed" );
         l3 = catalog.getLayerByName( ft.getName() );
         assertNotNull(l3);
+    }
+    
+    @Test
+    public void testModifyDefaultStyle() {
+        // create new style
+        CatalogFactory factory = catalog.getFactory();
+        StyleInfo s2 = factory.createStyle();
+        s2.setName("styleName2");
+        s2.setFilename("styleFilename2");
+        catalog.add(s2);
+
+        // change the layer style
+        addLayer();
+        LayerInfo l2 = catalog.getLayerByName( l.getName() );
+        l2.setDefaultStyle(catalog.getStyleByName("styleName2"));
+        catalog.save(l2);
+        
+        // get back and compare with itself
+        LayerInfo l3 = catalog.getLayerByName( l.getName() );
+        LayerInfo l4 = catalog.getLayerByName( l.getName() );
+        assertEquals(l3, l4);
     }
     
     @Test
@@ -2927,6 +2949,50 @@ public class CatalogImplTest {
         ft2.setName(name);
         ft2.setStore(ds);
         return ft2;
+    }
+
+    @Test
+    public void testChangeLayerGroupOrder() {
+        addLayerGroup();
+        
+        // create second layer
+        FeatureTypeInfo ft2 = catalog.getFactory().createFeatureType();
+        ft2.setName("ft2Name");
+        ft2.setStore( ds );
+        ft2.setNamespace(ns);
+        catalog.add( ft2 );
+        LayerInfo l2 = catalog.getFactory().createLayer();
+        l2.setResource( ft2 );
+        l2.setDefaultStyle( s );
+        catalog.add(l2);
+        
+        // add to the group
+        LayerGroupInfo group = catalog.getLayerGroupByName(lg.getName());
+        group.getLayers().add(l2);
+        group.getStyles().add(null);
+        catalog.save(group);
+        
+        // change the layer group order
+        group = catalog.getLayerGroupByName(lg.getName());
+        PublishedInfo pi = group.getLayers().remove(1);
+        group.getLayers().add(0, pi);
+        catalog.save(group);
+        
+        // create a new style
+        StyleInfo s2 = catalog.getFactory().createStyle();
+        s2.setName( "s2Name");
+        s2.setFilename( "s2Filename");
+        catalog.add( s2 );
+        
+        // change the default style of l
+        LayerInfo ll = catalog.getLayerByName(l.prefixedName());
+        ll.setDefaultStyle(catalog.getStyleByName(s2.getName()));
+        catalog.save(ll);
+        
+        // now check that the facade can be compared to itself
+        LayerGroupInfo g1 = catalog.getFacade().getLayerGroupByName(lg.getName());
+        LayerGroupInfo g2 = catalog.getFacade().getLayerGroupByName(lg.getName());
+        assertTrue(LayerGroupInfo.equals(g1, g2));
     }
 
 }

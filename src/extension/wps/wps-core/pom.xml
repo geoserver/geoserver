@@ -137,6 +137,11 @@
            <classifier>tests</classifier>
            <scope>test</scope>
         </dependency>
+        <dependency>
+        	<groupId>org.geotools</groupId>
+        	<artifactId>gt-csv</artifactId>
+        	<version>${gt.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -9,6 +9,7 @@ import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LAT;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LON;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_RADIUS;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_UID;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_NAME;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.SEARCH_TERMS;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.START_INDEX;
 
@@ -180,6 +181,8 @@ public class SearchRequestKvpReader extends KvpRequestReader {
                     filter = buildBoundingBoxFilter(value);
                 } else if (GEO_LAT.key.equals(parameter.key)) {
                     filter = buildLatLonDistanceFilter(rawKvp);
+                } else if (GEO_NAME.key.equals(parameter.key)) {
+                    filter = buildNameDistanceFilter(rawKvp);
                 } else if (isProductParameter(parameter)) {
                     filter = buildProductFilter(parameter, value);
                 } else {
@@ -202,10 +205,23 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         if (lat == null || lon == null || radius == null) {
             throw new OWS20Exception(
                     "When specifying a distance search, lat, lon and radius must all be specified at the same time",
-                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, "box");
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue);
         }
 
         return buildDistanceWithin(lon, lat, radius);
+    }
+    
+    private Filter buildNameDistanceFilter(Map rawKvp) {
+        String name = Converters.convert(rawKvp.get(GEO_NAME.key), String.class);
+        Double radius = Converters.convert(rawKvp.get(GEO_RADIUS.key), Double.class);
+
+        if (name == null || radius == null) {
+            throw new OWS20Exception(
+                    "When specifying a distance search, name and radius must both be specified",
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue);
+        }
+        
+        throw new UnsupportedOperationException("Still have to code or or more ways to geocode a name");
     }
 
     private Filter buildDistanceWithin(double lon, double lat, double radius) {

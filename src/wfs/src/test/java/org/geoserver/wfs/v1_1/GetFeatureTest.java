@@ -650,7 +650,7 @@ public class GetFeatureTest extends WFSTestSupport {
     @Test
     public void testVirtualServicesInvocation() throws Exception {
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        // get ride of the current WFS schema
+        // get rid of the current WFS schema
         org.geotools.wfs.v1_1.WFS.getInstance().dispose();
         // perform a GetFeature request using virtual service for workspace CGF
         String response = getAsServletResponse(String.format(

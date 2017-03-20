@@ -19,31 +19,20 @@ package org.geoserver.wps.ppio;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.IOUtils;
-import org.geoserver.wps.process.AbstractRawData;
-import org.geoserver.wps.process.RawData;
-import org.geoserver.wps.process.ResourceRawData;
-import org.geoserver.wps.resource.WPSResource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.DataStoreFinder;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.csv.CSVDataStore;
 import org.geotools.data.csv.CSVDataStoreFactory;
 import org.geotools.data.csv.CSVFeatureStore;
-import org.geotools.data.csv.parse.CSVStrategy;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
-import org.springframework.core.io.FileSystemResource;
-
-import net.opengis.wcs11.validation.CoverageSummaryTypeValidator;
 
 /**
  * @author ian
@@ -62,13 +51,6 @@ public class CSVPPIO extends CDataPPIO {
 
     @Override
     public Object decode(String input) throws Exception {
-        if(input.contains("\\r")) {
-            System.out.println("contains \\r");
-        }
-        if(input.contains("\\n")) {
-            System.out.println("contains \\n");
-        }
-
         return decode(new ByteArrayInputStream(input.getBytes()));
     }
 
@@ -81,7 +63,6 @@ public class CSVPPIO extends CDataPPIO {
     public Object decode(InputStream input) throws Exception {
         // this will be deleted for us when the process finishes
         Resource tmp = resourceManager.getTemporaryResource(".csv");
-        
         IOUtils.copy(input, tmp.out());
         HashMap<String, Object> params = new HashMap<>();
         params.put(CSVDataStoreFactory.FILE_PARAM.key,tmp.file().getAbsoluteFile());

@@ -46,12 +46,7 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:author/at:name", equalTo("GeoServer")));
         assertThat(dom, hasXPath("/at:feed/at:updated"));
 
-        // pagination links (all the same)
-        assertHasLink(dom, "self", 1, 10);
-        assertHasLink(dom, "first", 1, 10);
-        assertHasLink(dom, "last", 1, 10);
-        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
-        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
+        assertNoResults(dom);
 
         // check entries
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("3")));
@@ -103,6 +98,10 @@ public class SearchTest extends OSEOTestSupport {
     public void testPagingNoResults() throws Exception {
         // first page
         Document dom = getAsDOM("oseo/search?uid=UnknownIdentifier");
+        assertNoResults(dom);
+    }
+
+    private void assertNoResults(Document dom) {
         assertHasLink(dom, "self", 1, 10);
         assertHasLink(dom, "first", 1, 10);
         assertHasLink(dom, "last", 1, 10);
@@ -181,12 +180,7 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
         assertThat(dom, hasXPath("/at:feed/os:Query[@geo:uid='LANDSAT8']"));
 
-        // pagination links (all the same)
-        assertHasLink(dom, "self", 1, 10);
-        assertHasLink(dom, "first", 1, 10);
-        assertHasLink(dom, "last", 1, 10);
-        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='previous']")));
-        assertThat(dom, not(hasXPath("/at:feed/at:link[@rel='next']")));
+        assertNoResults(dom);
 
         // check entries
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
@@ -258,6 +252,34 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry/at:title",
                 equalTo("S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04")));
+    }
+    
+    @Test
+    public void testSearchByBoxOutsideData() throws Exception {
+        // look for data close to the south pole
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&box=0,-89,1,-88");
+        // print(dom);
+        
+        assertNoResults(dom);
+    }
+    
+    @Test
+    public void testSearchByDistance() throws Exception {
+        // test distance search, this distance is just good enough
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&lon=-117&lat=33&radius=150000");
+
+        // only one feature should be matching
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry/at:title",
+                equalTo("S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04")));
+    }
+    
+    @Test
+    public void testSearchByDistanceWhereNoDataIsAvailable() throws Exception {
+        // since H2 does not support well distance searches, use a point inside the data area
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&lon=0&lat=-89&radius=10000");
+
+        assertNoResults(dom);
     }
 
     @Test

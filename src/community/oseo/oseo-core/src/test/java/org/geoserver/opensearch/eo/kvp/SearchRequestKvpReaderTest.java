@@ -9,10 +9,7 @@ import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.PARENT_ID_K
 import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
 
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -146,6 +143,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     public void testStartIndexNegative() throws Exception {
         try {
             parseSearchRequest(toMap(START_INDEX.key, "-10"));
+            fail("Should have failed");
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -155,6 +153,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     public void testStartIndexNotNumber() throws Exception {
         try {
             parseSearchRequest(toMap(START_INDEX.key, "abc"));
+            fail("Should have failed");
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -164,6 +163,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     public void testStartIndexFloat() throws Exception {
         try {
             parseSearchRequest(toMap(START_INDEX.key, "1.23"));
+            fail("Should have failed");
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -173,6 +173,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     public void testCountIndexNegative() throws Exception {
         try {
             parseSearchRequest(toMap(COUNT_KEY, "-10"));
+            fail("Should have failed");
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -182,6 +183,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     public void testCountIndexNotNumber() throws Exception {
         try {
             parseSearchRequest(toMap(COUNT_KEY, "abc"));
+            fail("Should have failed");
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -191,6 +193,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     public void testCountTooBig() throws Exception {
         try {
             parseSearchRequest(toMap(COUNT_KEY, "1000"));
+            fail("Should have failed");
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -200,6 +203,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
     public void testCountIndexFloat() throws Exception {
         try {
             parseSearchRequest(toMap(COUNT_KEY, "1.23"));
+            fail("Should have failed");
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
         }
@@ -214,6 +218,28 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertNotNull(query);
         // no filter here, the parent id needs to be translate to an internal identifier
         assertEquals(Filter.INCLUDE, query.getFilter());
+    }
+    
+    @Test
+    public void testDistanceFromPoint() throws Exception {
+        Map<String, String> map = toMap(GEO_LON.key, "12", GEO_LAT.key, "45", GEO_RADIUS.key, "20000");
+        SearchRequest request = parseSearchRequest(map);
+        final Query query = request.getQuery();
+        assertNotNull(query);
+        final String expectedCql = "DWITHIN(\"\", POINT (12 45), 20000.0, m)";
+        assertEquals(expectedCql, ECQL.toCQL(query.getFilter()));
+    }
+    
+    @Test
+    public void testNegativeDistanceFromPoint() throws Exception {
+        try {
+            Map<String, String> map = toMap(GEO_LON.key, "12", GEO_LAT.key, "45", GEO_RADIUS.key, "-10");
+            parseSearchRequest(map);
+            fail("Should have failed");
+        } catch (OWS20Exception e) {
+            e.printStackTrace();
+            assertEquals("InvalidParameterValue", e.getCode());
+        }
     }
     
 }

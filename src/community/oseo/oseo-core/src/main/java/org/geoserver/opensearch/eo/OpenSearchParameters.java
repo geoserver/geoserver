@@ -37,16 +37,16 @@ public class OpenSearchParameters {
 
     public static final String GEO_PREFIX = "geo";
 
-    private static final Parameter<?> GEO_RADIUS = new ParameterBuilder("radius", Double.class)
+    public static final Parameter<?> GEO_RADIUS = new ParameterBuilder("radius", Double.class)
             .prefix(GEO_PREFIX).minimumInclusive(0).build();
 
-    private static final Parameter<?> GEO_LON = new ParameterBuilder("lon", Double.class)
+    public static final Parameter<?> GEO_LON = new ParameterBuilder("lon", Double.class)
             .prefix(GEO_PREFIX).minimumInclusive(-180).maximumInclusive(180).build();
 
-    private static final Parameter<?> GEO_LAT = new ParameterBuilder("lat", Double.class)
+    public static final Parameter<?> GEO_LAT = new ParameterBuilder("lat", Double.class)
             .prefix(GEO_PREFIX).minimumInclusive(-90).maximumInclusive(90).build();
 
-    private static final Parameter<?> GEO_NAME = new ParameterBuilder("name", String.class)
+    public static final Parameter<?> GEO_NAME = new ParameterBuilder("name", String.class)
             .prefix(GEO_PREFIX).build();
 
     public static final String EO_PREFIX = "eo";
@@ -137,11 +137,21 @@ public class OpenSearchParameters {
      * @return
      */
     public static String getQualifiedParamName(Parameter p, boolean qualifyOpenSearchNative) {
-        String prefix = p.metadata == null ? null : (String) p.metadata.get(PARAM_PREFIX);
+        String prefix = getParameterPrefix(p);
         if (prefix != null && (!OS_PREFIX.equals(prefix) || qualifyOpenSearchNative)) {
             return prefix + ":" + p.key;
         } else {
             return p.key;
         }
+    }
+
+    /**
+     * Returns the PARAM_PREFIX entry found in the parameter metadata, if any
+     * @param p
+     * @return
+     */
+    public static String getParameterPrefix(Parameter p) {
+        String prefix = p.metadata == null ? null : (String) p.metadata.get(PARAM_PREFIX);
+        return prefix;
     }
 }

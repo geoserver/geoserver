@@ -5,6 +5,9 @@
 package org.geoserver.opensearch.eo.kvp;
 
 import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_BOX;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LAT;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LON;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_RADIUS;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_UID;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.SEARCH_TERMS;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.START_INDEX;
@@ -18,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -26,6 +30,7 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchEoService;
+import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.KvpRequestReader;
@@ -35,16 +40,23 @@ import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geotools.data.Parameter;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.Hints;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.ConverterFactory;
 import org.geotools.util.Converters;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.spatial.DWithin;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * Reads a "description" request
@@ -52,6 +64,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Andrea Aime - GeoSolutions
  */
 public class SearchRequestKvpReader extends KvpRequestReader {
+
+    private static final Hints SAFE_CONVERSION_HINTS = new Hints(ConverterFactory.SAFE_CONVERSION, true);
+
+    private static final GeometryFactory GF = new GeometryFactory();
 
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
@@ -162,8 +178,13 @@ public class SearchRequestKvpReader extends KvpRequestReader {
                     filter = buildUidFilter(value);
                 } else if (GEO_BOX.key.equals(parameter.key)) {
                     filter = buildBoundingBoxFilter(value);
+                } else if (GEO_LAT.key.equals(parameter.key)) {
+                    filter = buildLatLonDistanceFilter(rawKvp);
+                } else if (isProductParameter(parameter)) {
+                    filter = buildProductFilter(parameter, value);
                 } else {
-                    filter = buildGenericFilter(parameter, value);
+                    LOGGER.log(Level.FINE, "Skipping parameter " + parameter.key);
+                    continue;
                 }
                 filters.add(filter);
             }
@@ -171,6 +192,30 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
         Filter filter = Predicates.and(filters);
         return filter;
+    }
+
+    private Filter buildLatLonDistanceFilter(Map rawKvp) {
+        Double lat = Converters.convert(rawKvp.get(GEO_LAT.key), Double.class);
+        Double lon = Converters.convert(rawKvp.get(GEO_LON.key), Double.class);
+        Double radius = Converters.convert(rawKvp.get(GEO_RADIUS.key), Double.class);
+
+        if (lat == null || lon == null || radius == null) {
+            throw new OWS20Exception(
+                    "When specifying a distance search, lat, lon and radius must all be specified at the same time",
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, "box");
+        }
+
+        return buildDistanceWithin(lon, lat, radius);
+    }
+
+    private Filter buildDistanceWithin(double lon, double lat, double radius) {
+        if (radius <= 0) {
+            throw new OWS20Exception("Search radius must be positive",
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, "radius");
+        }
+        final Point point = GF.createPoint(new Coordinate(lon, lat));
+        DWithin dwithin = FF.dwithin(FF.property(""), FF.literal(point), radius, "m");
+        return dwithin;
     }
 
     private Filter buildBoundingBoxFilter(Object value) throws Exception {
@@ -224,7 +269,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     }
 
     private <T> T getParameter(String key, Object value, Class<T> targetClass) {
-        T converted = Converters.convert(value, targetClass);
+        T converted = Converters.convert(value, targetClass, SAFE_CONVERSION_HINTS);
         if (converted == null) {
             throw new OWS20Exception(
                     key + " is empty of cannot be converted to a " + targetClass.getSimpleName(),
@@ -233,8 +278,23 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         return converted;
     }
 
-    private Filter buildGenericFilter(Parameter<?> parameter, Object value) {
-        return Filter.INCLUDE;
+    private boolean isProductParameter(Parameter parameter) {
+        String prefix = OpenSearchParameters.getParameterPrefix(parameter);
+        if (prefix == null) {
+            return false;
+        }
+
+        for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
+            if (pc.getPrefix().equals(prefix)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private Filter buildProductFilter(Parameter<?> parameter, Object value) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     private Collection<Parameter<?>> getSearchParameters(SearchRequest request) throws IOException {

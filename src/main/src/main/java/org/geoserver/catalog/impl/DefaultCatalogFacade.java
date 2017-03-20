@@ -27,6 +27,7 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LockingCatalogFacade;
 import org.geoserver.catalog.MapInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
@@ -857,6 +858,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     }
 
     public void syncTo(CatalogFacade dao) {
+        dao = ProxyUtils.unwrap(dao, LockingCatalogFacade.class);
         if (dao instanceof DefaultCatalogFacade) {
             //do an optimized sync
             DefaultCatalogFacade other = (DefaultCatalogFacade) dao;

@@ -10,14 +10,14 @@ import java.lang.reflect.Method;
 import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.GeoServerConfigurationLock.LockType;
 import org.geoserver.catalog.impl.ProxyUtils;
-import org.springframework.context.annotation.ConfigurationCondition.ConfigurationPhase;
+import org.geoserver.catalog.impl.WrappingProxy;
 
 /**
  * Performs lock upgrades on the fly
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class LockingCatalogFacade implements InvocationHandler {
+public class LockingCatalogFacade implements InvocationHandler, WrappingProxy {
 
     GeoServerConfigurationLock configurationLock;
     CatalogFacade delegate;
@@ -54,5 +54,10 @@ public class LockingCatalogFacade implements InvocationHandler {
             GeoServerConfigurationLock configurationLock) {
         return ProxyUtils.createProxy(facade, CatalogFacade.class,
                 new LockingCatalogFacade(facade, configurationLock));
+    }
+
+    @Override
+    public Object getProxyObject() {
+        return delegate;
     }
 }

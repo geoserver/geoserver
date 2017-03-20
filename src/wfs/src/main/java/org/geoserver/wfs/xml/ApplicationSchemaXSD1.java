@@ -13,17 +13,8 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.xml.XSD;
-import org.geotools.xs.XSSchema;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-import org.w3c.dom.Document;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ApplicationSchemaXSD1 extends XSD {
 
@@ -97,7 +87,7 @@ public class ApplicationSchemaXSD1 extends XSD {
                 sb.append(ft.getPrefixedName()).append(",");
             }
         }
-        sb.setLength(sb.length()-1);
+        sb.setLength(sb.length() - 1);
         
         HashMap kvp = new HashMap();
         kvp.putAll(schemaBuilder.getDescribeFeatureTypeParams());

@@ -1322,7 +1322,7 @@
       <id>ysld</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-ysld</artifactId>
           <version>${project.version}</version>
         </dependency>

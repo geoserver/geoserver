@@ -453,6 +453,9 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
 
                 styles.add(s);
             } else {
+                if (wms.isDynamicStylingDisabled()) {
+                    throw new ServiceException("Dynamic style usage is forbidden");
+                }
                 layers.add(currLayer);
                 styles.add(layerStyles[t]);
             }

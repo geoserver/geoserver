@@ -227,6 +227,17 @@
         </ul>
       </fieldset>
     </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="dynamicStylingDisabledTitle"></wicket:message></span></legend>
+        <ul class="choiceList">
+          <li>
+            <input type="checkbox" wicket:id="dynamicStyling.disabled"></input>
+            <label for="dynamicStyling.disabled"><wicket:message key="dynamicStylingDisabled">Disable usage of SLD and SLD_BODY parameters in requests</wicket:message></label>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
     <div wicket:id="modal"></div>
   </wicket:extend>
 </body>

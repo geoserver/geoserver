@@ -39,7 +39,6 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
     private String servicesUrl;    
     private String instanceName;    
     private boolean allowRemoteAndInlineLayers;    
-    private boolean allowDynamicStyles;
     private boolean grantWriteToWorkspacesToAuthenticatedUsers;
     private boolean useRolesToFilter;
     private String acceptedRoles = "";
@@ -90,29 +89,11 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
     }
     
     /**
-     * Flag to allow usage of SLD and/or SLD_BODY params in GetMap requests.
-     * 
-     * @param allowDynamicStyles
-     */
-    public void setAllowDynamicStyles(boolean allowDynamicStyles) {
-        this.allowDynamicStyles = allowDynamicStyles;
-    }
-    
-    /**
      * Flag to allow usage of remote and inline layers in SLDs.
      *
      */
     public boolean isAllowRemoteAndInlineLayers() {
         return allowRemoteAndInlineLayers;
-    }
-
-    /**
-     * Flag to allow usage of SLD and/or SLD_BODY params in GetMap requests.
-     * 
-     *
-     */
-    public boolean isAllowDynamicStyles() {
-        return allowDynamicStyles;
     }
 
     /**

@@ -146,4 +146,16 @@ public interface WMSInfo extends ServiceInfo {
      * @return the list of identifiers for the WMS root layer
      */
     List<LayerIdentifierInfo> getIdentifiers();
+
+    /**
+     * Sets the status of dynamic styling (SLD and SLD_BODY params) allowance
+     *
+     * @param dynamicStylesEnabled
+     */
+    void setDynamicStylingDisabled(Boolean dynamicStylesDisabled);
+
+    /**
+     * @return the status of dynamic styling (SLD and SLD_BODY params) allowance
+     */
+    Boolean isDynamicStylingDisabled();
 }

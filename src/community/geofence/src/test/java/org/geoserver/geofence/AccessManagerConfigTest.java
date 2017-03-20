@@ -87,7 +87,6 @@ public class AccessManagerConfigTest extends GeoServerTestSupport {
         GeoFenceConfiguration config = new GeoFenceConfiguration();
         config.setInstanceName("TEST_INSTANCE");
         config.setServicesUrl("http://fakeservice");
-        config.setAllowDynamicStyles(true);
         config.setAllowRemoteAndInlineLayers(true);
         config.setGrantWriteToWorkspacesToAuthenticatedUsers(true);
         config.setUseRolesToFilter(true);

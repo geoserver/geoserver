@@ -1,9 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
-
 package org.geoserver.ows;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -48,18 +47,36 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
                 "styles/smileyface.png");
         paths.add(new String[] { "styles", "smileyface.png" });
 
+        // add style - global in subdirectory
+        resourceLoader.copyFromClassPath("org/geoserver/ows/smileyface.png",
+                "styles/icons/smileyface.png");
+        paths.add(new String[] { "styles", "icons", "smileyface.png" });
+
         // add style - workspaced
         resourceLoader.copyFromClassPath("org/geoserver/ows/house.svg",
                 "workspaces/cite/styles/house.svg");
         paths.add(new String[] { "styles", "cite", "house.svg" });
 
+        // add style - workspaced in subdirectory
+        resourceLoader.copyFromClassPath("org/geoserver/ows/house.svg",
+                "workspaces/cite/styles/icons/house.svg");
+        paths.add(new String[] { "styles", "cite", "icons", "house.svg" });
+
         // add style - workspaced style with global image
         paths.add(new String[] { "styles", "cite", "smileyface.png" });
+
+        // add style - workspaced style with global image in subdirectory
+        paths.add(new String[] { "styles", "cite", "icons", "smileyface.png" });
 
         // testing over-riding global image with workspaced image
         resourceLoader.copyFromClassPath("org/geoserver/ows/smileyface.png", "styles/override.png");
         resourceLoader.copyFromClassPath("org/geoserver/ows/grass_fill.png",
                 "workspaces/cite/styles/override.png");
+
+        // testing over-riding global image with workspaced image in subdirectory
+        resourceLoader.copyFromClassPath("org/geoserver/ows/smileyface.png", "styles/icons/override.png");
+        resourceLoader.copyFromClassPath("org/geoserver/ows/grass_fill.png",
+                "workspaces/cite/styles/icons/override.png");
     }
 
     private MockHttpServletResponse request(String[] path, String modifiedSince) throws Exception {
@@ -113,6 +130,23 @@ public class StylePublisherTest extends GeoServerSystemTestSupport {
                         .getResourceAsStream("org/geoserver/ows/grass_fill.png")),
                 response.getContentAsByteArray());
 
+        path = new String[] { "styles", "icons", "override.png" };
+        response = request(path, null);
+        assertEquals(Arrays.toString(path), 200, response.getStatus());
+
+        assertArrayEquals(
+                IOUtils.toByteArray(this.getClass().getClassLoader()
+                        .getResourceAsStream("org/geoserver/ows/smileyface.png")),
+                response.getContentAsByteArray());
+
+        path = new String[] { "styles", "cite", "icons", "override.png" };
+        response = request(path, null);
+        assertEquals(Arrays.toString(path), 200, response.getStatus());
+
+        assertArrayEquals(
+                IOUtils.toByteArray(this.getClass().getClassLoader()
+                        .getResourceAsStream("org/geoserver/ows/grass_fill.png")),
+                response.getContentAsByteArray());
     }
 
     @Test

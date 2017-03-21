@@ -4,25 +4,18 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_BOX;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LAT;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LON;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_RADIUS;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_UID;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_NAME;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.SEARCH_TERMS;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.START_INDEX;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -32,9 +25,11 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchEoService;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
+import org.geoserver.opensearch.eo.OpenSearchParameters.DateRelation;
 import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.KvpRequestReader;
+import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
 import org.geoserver.wfs.kvp.BBoxKvpParser;
@@ -52,6 +47,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.spatial.DWithin;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -66,7 +62,8 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class SearchRequestKvpReader extends KvpRequestReader {
 
-    private static final Hints SAFE_CONVERSION_HINTS = new Hints(ConverterFactory.SAFE_CONVERSION, true);
+    private static final Hints SAFE_CONVERSION_HINTS = new Hints(ConverterFactory.SAFE_CONVERSION,
+            true);
 
     private static final GeometryFactory GF = new GeometryFactory();
 
@@ -81,6 +78,8 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     private OpenSearchEoService oseo;
 
     private GeoServer gs;
+    
+    private TimeParser timeParser = new TimeParser();
 
     public SearchRequestKvpReader(GeoServer gs, OpenSearchEoService service) {
         super(SearchRequest.class);
@@ -172,7 +171,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         for (Parameter<?> parameter : parameters) {
             Object value = rawKvp.get(parameter.key);
             if (value != null && !NOT_FILTERS.contains(parameter.key)) {
-                Filter filter;
+                Filter filter = null;
                 if (SEARCH_TERMS.key.equals(parameter.key)) {
                     filter = buildSearchTermsFilter(value);
                 } else if (GEO_UID.key.equals(parameter.key)) {
@@ -185,16 +184,138 @@ public class SearchRequestKvpReader extends KvpRequestReader {
                     filter = buildNameDistanceFilter(rawKvp);
                 } else if (isProductParameter(parameter)) {
                     filter = buildProductFilter(parameter, value);
-                } else {
-                    LOGGER.log(Level.FINE, "Skipping parameter " + parameter.key);
-                    continue;
                 }
-                filters.add(filter);
+                if (filter != null) {
+                    filters.add(filter);
+                }
             }
+        }
+        // handle time filters (can go between 1 to 3 params)
+        Filter timeFilter = buildTimeFilter(rawKvp);
+        if (timeFilter != null) {
+            filters.add(timeFilter);
         }
 
         Filter filter = Predicates.and(filters);
         return filter;
+    }
+
+    private Filter buildTimeFilter(Map rawKvp) {
+        final Object rawStart = rawKvp.get(TIME_START.key);
+        Date start = Converters.convert(rawStart, Date.class);
+        final Object rawEnd = rawKvp.get(TIME_END.key);
+        Date end = Converters.convert(rawEnd, Date.class);
+        final Object rawRelation = rawKvp.get(TIME_RELATION.key);
+
+        // some validation
+        DateRelation relation = Converters.convert(rawRelation, DateRelation.class);
+        if (relation == null && rawRelation != null) {
+            final List<String> dateRelationNames = Arrays.stream(DateRelation.values())
+                    .map(k -> k.name()).collect(Collectors.toList());
+            throw new OWS20Exception(
+                    "Invalid value for relation, possible values are " + dateRelationNames,
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, "relation");
+        }
+        if (start == null && rawStart != null) {
+            throw new OWS20Exception(
+                    "Invalid expression for start time, use a ISO time or date instead: " + rawStart,
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, TIME_START.key);
+        }
+        if (end == null && rawEnd != null) {
+            throw new OWS20Exception(
+                    "Invalid expression for end time, use a ISO time or date instead: " + rawStart,
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, TIME_END.key);
+        }
+        if (start == null && end == null) {
+            if (relation == null) {
+                // nothing specified
+                return null;
+            } else {
+                throw new OWS20Exception(
+                        "Time relation specified, but start and end time values are missing",
+                        OWS20Exception.OWSExceptionCode.InvalidParameterValue, "relation");
+            }
+        }
+        
+        // default if null
+        if(relation == null) {
+            relation = DateRelation.intersects;
+        }
+
+        // build the filter
+        final PropertyName startProperty = FF.property("timeStart");
+        final PropertyName endProperty = FF.property("timeEnd");
+        switch (relation) {
+        case contains:
+            // the resource contains the specified range
+            Filter fStart;
+            if (start == null) {
+                fStart = FF.isNull(startProperty);
+            } else {
+                fStart = FF.lessOrEqual(startProperty, FF.literal(start));
+            }
+            Filter fEnd;
+            if (end == null) {
+                fEnd = FF.isNull(endProperty);
+            } else {
+                fEnd = FF.greaterOrEqual(endProperty, FF.literal(end));
+            }
+
+            return FF.and(fStart, fEnd);
+        case during:
+            // the resource is contained in the specified range
+            fStart = FF.greaterOrEqual(startProperty, FF.literal(start));
+            fEnd = FF.lessOrEqual(endProperty, FF.literal(end));
+            if (start == null) {
+                return fEnd;
+            } else if (end == null) {
+                return fStart;
+            } else {
+                return FF.and(fStart, fEnd);
+            }
+
+        case disjoint:
+            // the resource is not overlapping the specified range
+            fStart = FF.less(endProperty, FF.literal(start));
+            fEnd = FF.greater(startProperty, FF.literal(end));
+            if (start == null) {
+                return fEnd;
+            } else if (end == null) {
+                return fStart;
+            } else {
+                return FF.or(fStart, fEnd);
+            }
+
+        case intersects:
+            // the resource overlaps the specified range
+            fStart = FF.or(FF.greaterOrEqual(endProperty, FF.literal(start)), FF.isNull(endProperty));
+            fEnd = FF.or(FF.lessOrEqual(startProperty, FF.literal(end)), FF.isNull(startProperty));
+            
+            if(start == null) {
+                return fEnd;
+            } else if(end == null) {
+                return fStart;
+            } else {
+                return FF.and(fStart, fEnd);
+            }
+            
+        case equals:
+            // the resource has the same range as requested
+            if(start == null) {
+                fStart = FF.isNull(startProperty);
+            } else {
+                fStart = FF.equals(startProperty, FF.literal(start));
+            }
+            if(end == null) {
+                fEnd = FF.isNull(endProperty);
+            } else {
+                fEnd = FF.equals(endProperty, FF.literal(end));
+            }
+            return FF.and(fStart, fEnd);
+            
+        default:
+            throw new RuntimeException("Time relation of type " + relation + " not covered yet");
+        }
     }
 
     private Filter buildLatLonDistanceFilter(Map rawKvp) {
@@ -210,7 +331,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
         return buildDistanceWithin(lon, lat, radius);
     }
-    
+
     private Filter buildNameDistanceFilter(Map rawKvp) {
         String name = Converters.convert(rawKvp.get(GEO_NAME.key), String.class);
         Double radius = Converters.convert(rawKvp.get(GEO_RADIUS.key), Double.class);
@@ -220,8 +341,9 @@ public class SearchRequestKvpReader extends KvpRequestReader {
                     "When specifying a distance search, name and radius must both be specified",
                     OWS20Exception.OWSExceptionCode.InvalidParameterValue);
         }
-        
-        throw new UnsupportedOperationException("Still have to code or or more ways to geocode a name");
+
+        throw new UnsupportedOperationException(
+                "Still have to code or or more ways to geocode a name");
     }
 
     private Filter buildDistanceWithin(double lon, double lat, double radius) {

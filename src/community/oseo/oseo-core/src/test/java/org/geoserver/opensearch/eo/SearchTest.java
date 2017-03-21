@@ -281,7 +281,75 @@ public class SearchTest extends OSEOTestSupport {
 
         assertNoResults(dom);
     }
+    
+    @Test
+    public void testSearchCollectionByTimeRange() throws Exception {
+        // only LANDSAT matches
+        Document dom = getAsDOM("oseo/search?start=1988-01-01&end=2000-01-01");
+        // print(dom);
+        
+        // basics
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
+        assertThat(dom, hasXPath("/at:feed/os:Query"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@count='10']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@time:end='2000-01-01']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@time:start='1988-01-01']"));
+        assertThat(dom, hasXPath("/at:feed/at:updated"));
 
+        // check entries, only landsat
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("LANDSAT8")));
+    }
+    
+    @Test
+    public void testSearchCollectionByTimeRangeDuring() throws Exception {
+        // only SENTINEL-* matches
+        Document dom = getAsDOM("oseo/search?start=2012-01-01&relation=during");
+        // print(dom);
+        
+        // basics
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("2")));
+        assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
+        assertThat(dom, hasXPath("/at:feed/os:Query"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@count='10']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@time:start='2012-01-01']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@time:relation='during']"));
+        assertThat(dom, hasXPath("/at:feed/at:updated"));
+
+        // check entries, only SENTINEL ones match
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL1")));
+    }
+    
+    @Test
+    public void testProductByTimeRange() throws Exception {
+        // only LANDSAT matches
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&start=2017-03-08&end=2017-03-09");
+        // print(dom);
+        
+        // basics
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
+        assertThat(dom, hasXPath("/at:feed/os:Query"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@count='10']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@time:start='2017-03-08']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@time:end='2017-03-09']"));
+        assertThat(dom, hasXPath("/at:feed/at:updated"));
+
+        // check entries, only one feature matching
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry/at:title",
+                equalTo("S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04")));
+    }
+    
     @Test
     public void testGetSentinel2Metadata() throws Exception {
         Document dom = getAsDOM("oseo/metadata?uid=SENTINEL2", 200, MetadataRequest.ISO_METADATA);

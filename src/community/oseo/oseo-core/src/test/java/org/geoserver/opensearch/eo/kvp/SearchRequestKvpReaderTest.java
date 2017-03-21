@@ -237,9 +237,143 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
             parseSearchRequest(map);
             fail("Should have failed");
         } catch (OWS20Exception e) {
-            e.printStackTrace();
             assertEquals("InvalidParameterValue", e.getCode());
         }
+    }
+    
+    @Test
+    public void testTimeRelationInvalid() throws Exception {
+        try {
+            Map<String, String> map = toMap(TIME_RELATION.key, "abcd");
+            parseSearchRequest(map);
+            fail("Should have failed");
+        } catch (OWS20Exception e) {
+            assertEquals("InvalidParameterValue", e.getCode());
+            assertEquals("relation", e.getLocator());
+        }
+    }
+    
+    @Test
+    public void testTimeRelationAlone() throws Exception {
+        try {
+            Map<String, String> map = toMap(TIME_RELATION.key, "intersects");
+            parseSearchRequest(map);
+            fail("Should have failed");
+        } catch (OWS20Exception e) {
+            assertEquals("InvalidParameterValue", e.getCode());
+            assertEquals("relation", e.getLocator());
+        }
+    }
+    
+    @Test
+    public void testTimeStartInvalid() throws Exception {
+        try {
+            Map<String, String> map = toMap(TIME_START.key, "abcd");
+            parseSearchRequest(map);
+            fail("Should have failed");
+        } catch (OWS20Exception e) {
+            assertEquals("InvalidParameterValue", e.getCode());
+            assertEquals(TIME_START.key, e.getLocator());
+        }
+    }
+    
+    @Test
+    public void testTimeEndInvalid() throws Exception {
+        try {
+            Map<String, String> map = toMap(TIME_END.key, "abcd");
+            parseSearchRequest(map);
+            fail("Should have failed");
+        } catch (OWS20Exception e) {
+            assertEquals("InvalidParameterValue", e.getCode());
+            assertEquals(TIME_END.key, e.getLocator());
+        }
+    }
+    
+    @Test
+    public void testTimeFilterStartOnly() throws Exception {
+        Map<String, String> map;
+        // intersection behavior, the features must overlap the provided range 
+        map = toMap(TIME_START.key, "2010-09-01T00:00:00Z");
+        assertEquals(ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z OR timeEnd IS NULL"), parseAndGetFilter(map));
+        // intersection behavior again, explicit
+        map = toMap(TIME_START.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "intersects");
+        assertEquals(ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z OR timeEnd IS NULL"), parseAndGetFilter(map));
+        // contains (the feature must contain the requested interval)
+        map = toMap(TIME_START.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "contains");
+        assertEquals(ECQL.toFilter("timeStart <= 2010-09-01T00:00:00Z and timeEnd IS NULL"), parseAndGetFilter(map));
+        // during (the features are inside the requested interval)
+        map = toMap(TIME_START.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "during");
+        assertEquals(ECQL.toFilter("timeStart >= 2010-09-01T00:00:00Z"), parseAndGetFilter(map));
+        // disjoint (the features are outside the requested interval)
+        map = toMap(TIME_START.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "disjoint");
+        assertEquals(ECQL.toFilter("timeEnd < 2010-09-01T00:00:00Z"), parseAndGetFilter(map));
+        // equal (the features have the same interval of validity
+        map = toMap(TIME_START.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "equals");
+        assertEquals(ECQL.toFilter("timeStart = 2010-09-01T00:00:00Z and timeEnd IS NULL"), parseAndGetFilter(map));
+    }
+    
+    @Test
+    public void testTimeFilterEndOnly() throws Exception {
+        Map<String, String> map;
+        // intersection behavior, the features must overlap the provided range 
+        map = toMap(TIME_END.key, "2010-09-01T00:00:00Z");
+        assertEquals(ECQL.toFilter("timeStart <= 2010-09-01T00:00:00Z OR timeStart IS NULL"), parseAndGetFilter(map));
+        // intersection behavior again, explicit
+        map = toMap(TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "intersects");
+        assertEquals(ECQL.toFilter("timeStart <= 2010-09-01T00:00:00Z OR timeStart IS NULL"), parseAndGetFilter(map));
+        // contains (the feature must contain the requested interval)
+        map = toMap(TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "contains");
+        assertEquals(ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z and timeStart IS NULL"), parseAndGetFilter(map));
+        // during (the features are inside the requested interval)
+        map = toMap(TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "during");
+        assertEquals(ECQL.toFilter("timeEnd <= 2010-09-01T00:00:00Z"), parseAndGetFilter(map));
+        // disjoint (the features are outside the requested interval)
+        map = toMap(TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "disjoint");
+        assertEquals(ECQL.toFilter("timeStart > 2010-09-01T00:00:00Z"), parseAndGetFilter(map));
+        // equal (the features have the same interval of validity
+        map = toMap(TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "equals");
+        assertEquals(ECQL.toFilter("timeEnd = 2010-09-01T00:00:00Z and timeStart IS NULL"), parseAndGetFilter(map));
+    }
+    
+    @Test
+    public void testTimeFilterStartEndOnly() throws Exception {
+        Map<String, String> map;
+        // intersection behavior, the features must overlap the provided range 
+        map = toMap(TIME_START.key, "2010-08-01T00:00:00Z", TIME_END.key, "2010-09-01T00:00:00Z");
+        assertEquals(ECQL.toFilter("(timeStart <= 2010-09-01T00:00:00Z or timeStart IS NULL) AND (timeEnd >= 2010-08-01T00:00:00Z or timeEnd IS NULL)"), parseAndGetFilter(map));
+        // intersection behavior again, explicit
+        map = toMap(TIME_START.key, "2010-08-01T00:00:00Z", TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "intersects");
+        assertEquals(ECQL.toFilter("(timeStart <= 2010-09-01T00:00:00Z or timeStart IS NULL) AND (timeEnd >= 2010-08-01T00:00:00Z or timeEnd IS NULL)"), parseAndGetFilter(map));
+        // contains (the feature must contain the requested interval)
+        map = toMap(TIME_START.key, "2010-08-01T00:00:00Z", TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "contains");
+        assertEquals(ECQL.toFilter("timeStart <= 2010-08-01T00:00:00Z and timeEnd >= 2010-09-01T00:00:00Z"), parseAndGetFilter(map));
+        // during (the features are inside the requested interval)
+        map = toMap(TIME_START.key, "2010-08-01T00:00:00Z", TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "during");
+        assertEquals(ECQL.toFilter("timeStart >= 2010-08-01T00:00:00Z and timeEnd <= 2010-09-01T00:00:00Z"), parseAndGetFilter(map));
+        // disjoint (the features are outside the requested interval)
+        map = toMap(TIME_START.key, "2010-08-01T00:00:00Z", TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "disjoint");
+        assertEquals(ECQL.toFilter("timeStart > 2010-09-01T00:00:00Z or timeEnd < 2010-08-01T00:00:00Z"), parseAndGetFilter(map));
+        // equal (the features have the same interval of validity
+        map = toMap(TIME_START.key, "2010-08-01T00:00:00Z", TIME_END.key, "2010-09-01T00:00:00Z", TIME_RELATION.key, "equals");
+        assertEquals(ECQL.toFilter("timeStart = 2010-08-01T00:00:00Z and timeEnd = 2010-09-01T00:00:00Z"), parseAndGetFilter(map));
+    }
+    
+    @Test
+    public void testTimeStartOnlyDate() throws Exception {
+        Map<String, String> map;
+        // intersection behavior, the features must overlap the provided range 
+        map = toMap(TIME_START.key, "2010-09-01");
+        assertEquals(ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z OR timeEnd IS NULL"), parseAndGetFilter(map));
+    }
+    
+    
+
+    private Filter parseAndGetFilter(Map<String, String> map) throws Exception {
+        SearchRequest request = parseSearchRequest(map);
+        final Query query = request.getQuery();
+        assertNotNull(query);
+        Filter filter = query.getFilter();
+        return filter;
     }
     
 }

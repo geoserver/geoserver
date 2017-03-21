@@ -25,15 +25,27 @@ public class OpenSearchParameters {
 
     public static final CoordinateReferenceSystem OUTPUT_CRS;
 
+    /**
+     * Possible relationships between data time validity and query one
+     *
+     * @author Andrea Aime - GeoSolutions
+     */
+    public static enum DateRelation {
+        intersects, contains, during, disjoint, equals
+    };
+
     public static final String OS_PREFIX = "os";
 
     public static final String TIME_PREFIX = "time";
 
-    private static final Parameter<?> TIME_END = new ParameterBuilder("end", Date.class)
+    public static final Parameter<?> TIME_END = new ParameterBuilder("end", Date.class)
             .prefix(TIME_PREFIX).build();
 
-    private static final Parameter<?> TIME_START = new ParameterBuilder("start", Date.class)
+    public static final Parameter<?> TIME_START = new ParameterBuilder("start", Date.class)
             .prefix(TIME_PREFIX).build();
+
+    public static final Parameter<?> TIME_RELATION = new ParameterBuilder("relation",
+            DateRelation.class).prefix(TIME_PREFIX).build();
 
     public static final String GEO_PREFIX = "geo";
 
@@ -90,7 +102,7 @@ public class OpenSearchParameters {
 
     private static List<Parameter<?>> geoTimeOpenSearchParameters() {
         return Arrays.asList( //
-                GEO_UID, GEO_BOX, GEO_NAME, GEO_LAT, GEO_LON, GEO_RADIUS, TIME_START, TIME_END);
+                GEO_UID, GEO_BOX, GEO_NAME, GEO_LAT, GEO_LON, GEO_RADIUS, TIME_START, TIME_END, TIME_RELATION);
     }
 
     /**
@@ -147,6 +159,7 @@ public class OpenSearchParameters {
 
     /**
      * Returns the PARAM_PREFIX entry found in the parameter metadata, if any
+     * 
      * @param p
      * @return
      */

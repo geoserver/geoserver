@@ -134,7 +134,7 @@ public class DescriptionTest extends OSEOTestSupport {
                         allOf(containsString("/oseo/search?"), //
                                 containsString("searchTerms={os:searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
-                                containsString("start={time:start?}"))));
+                                containsString("timeStart={time:start?}"))));
         // check some parameters have been described
         String paramBase = resultsBase + "/param:Parameter";
         assertThat(dom, hasXPath(paramBase
@@ -179,7 +179,7 @@ public class DescriptionTest extends OSEOTestSupport {
                                 containsString("parentId=SENTINEL2"), //
                                 containsString("searchTerms={os:searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
-                                containsString("start={time:start?}"))));
+                                containsString("timeStart={time:start?}"))));
         // ... and has generic EOP parameters
         assertThat(dom,
                 hasXPath(resultsBase + "/@template",
@@ -225,7 +225,9 @@ public class DescriptionTest extends OSEOTestSupport {
                                 containsString("parentId=SENTINEL1"), //
                                 containsString("searchTerms={os:searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
-                                containsString("start={time:start?}"))));
+                                containsString("timeStart={time:start?}"), //
+                                containsString("timeEnd={time:end?}"), //
+                                containsString("timeRelation={time:relation?}"))));
         // ... and has generic EOP parameters
         assertThat(dom,
                 hasXPath(resultsBase + "/@template",

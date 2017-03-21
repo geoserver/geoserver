@@ -285,7 +285,7 @@ public class SearchTest extends OSEOTestSupport {
     @Test
     public void testSearchCollectionByTimeRange() throws Exception {
         // only LANDSAT matches
-        Document dom = getAsDOM("oseo/search?start=1988-01-01&end=2000-01-01");
+        Document dom = getAsDOM("oseo/search?timeStart=1988-01-01&timeEnd=2000-01-01");
         // print(dom);
         
         // basics
@@ -307,7 +307,7 @@ public class SearchTest extends OSEOTestSupport {
     @Test
     public void testSearchCollectionByTimeRangeDuring() throws Exception {
         // only SENTINEL-* matches
-        Document dom = getAsDOM("oseo/search?start=2012-01-01&relation=during");
+        Document dom = getAsDOM("oseo/search?timeStart=2012-01-01&timeRelation=during");
         // print(dom);
         
         // basics
@@ -330,7 +330,7 @@ public class SearchTest extends OSEOTestSupport {
     @Test
     public void testProductByTimeRange() throws Exception {
         // only LANDSAT matches
-        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&start=2017-03-08&end=2017-03-09");
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&timeStart=2017-03-08&timeEnd=2017-03-09");
         // print(dom);
         
         // basics

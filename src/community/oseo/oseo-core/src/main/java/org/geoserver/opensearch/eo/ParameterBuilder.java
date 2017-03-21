@@ -29,6 +29,8 @@ class ParameterBuilder {
 
     Integer max;
 
+    String name;
+
     ParameterBuilder(String key, Class type) {
         this.key = key;
         this.type = type;
@@ -43,11 +45,19 @@ class ParameterBuilder {
         this.prefix = prefix;
         return this;
     }
+    
+    public ParameterBuilder name(String name) {
+        this.name = name;
+        return this;
+    }
 
     public Parameter build() {
         Map<String, Object> metadata = new HashMap<>(2);
         if (prefix != null) {
             metadata.put(OpenSearchParameters.PARAM_PREFIX, prefix);
+        }
+        if (name != null) {
+            metadata.put(OpenSearchParameters.PARAM_NAME, name);
         }
         if (min != null) {
             metadata.put(OpenSearchParameters.MIN_INCLUSIVE, min);

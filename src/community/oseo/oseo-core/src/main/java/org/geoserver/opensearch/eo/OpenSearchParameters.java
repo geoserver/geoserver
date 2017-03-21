@@ -17,7 +17,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
- * Container/provider for common OpenSearch parameters
+ * Container/provider for common OpenSearch parameters. Parameter keys are used as the Kvp keys in URLs,
+ * an optional prefix associates them to a namespace, an optional name can be used to build the fully
+ * qualified name of the parameter, otherwise the key will be used (the difference between the two
+ * is used to resolve some conflicts like "relation" used by both time and geo namespaces):
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -38,14 +41,14 @@ public class OpenSearchParameters {
 
     public static final String TIME_PREFIX = "time";
 
-    public static final Parameter<?> TIME_END = new ParameterBuilder("end", Date.class)
-            .prefix(TIME_PREFIX).build();
+    public static final Parameter<?> TIME_END = new ParameterBuilder("timeEnd", Date.class)
+            .prefix(TIME_PREFIX).name("end").build();
 
-    public static final Parameter<?> TIME_START = new ParameterBuilder("start", Date.class)
-            .prefix(TIME_PREFIX).build();
+    public static final Parameter<?> TIME_START = new ParameterBuilder("timeStart", Date.class)
+            .prefix(TIME_PREFIX).name("start").build();
 
-    public static final Parameter<?> TIME_RELATION = new ParameterBuilder("relation",
-            DateRelation.class).prefix(TIME_PREFIX).build();
+    public static final Parameter<?> TIME_RELATION = new ParameterBuilder("timeRelation",
+            DateRelation.class).prefix(TIME_PREFIX).name("relation").build();
 
     public static final String GEO_PREFIX = "geo";
 
@@ -76,6 +79,11 @@ public class OpenSearchParameters {
             .prefix(GEO_PREFIX).build();
 
     public static final String PARAM_PREFIX = "parameterPrefix";
+    
+    /**
+     * Name of the parameter in the URLs, if missing it's the same as key
+     */
+    public static final String PARAM_NAME = "parameterName";
 
     public static final String MIN_INCLUSIVE = "minInclusive";
 
@@ -149,11 +157,13 @@ public class OpenSearchParameters {
      * @return
      */
     public static String getQualifiedParamName(Parameter p, boolean qualifyOpenSearchNative) {
+        String name = getParameterName(p);
+        
         String prefix = getParameterPrefix(p);
         if (prefix != null && (!OS_PREFIX.equals(prefix) || qualifyOpenSearchNative)) {
-            return prefix + ":" + p.key;
+            return prefix + ":" + name;
         } else {
-            return p.key;
+            return name;
         }
     }
 
@@ -166,5 +176,19 @@ public class OpenSearchParameters {
     public static String getParameterPrefix(Parameter p) {
         String prefix = p.metadata == null ? null : (String) p.metadata.get(PARAM_PREFIX);
         return prefix;
+    }
+    
+    /**
+     * Returns the PARAM_NAME entry found in the parameter metadata, if any, or the key otherwise
+     * 
+     * @param p
+     * @return
+     */
+    public static String getParameterName(Parameter p) {
+        String name = p.metadata == null ? null : (String) p.metadata.get(PARAM_NAME);
+        if(name == null) {
+            name = p.key;
+        }
+        return name;
     }
 }

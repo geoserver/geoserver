@@ -34,11 +34,13 @@ import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureStore;
+import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.Hints;
 import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.PointOutsideEnvelopeException;
@@ -95,11 +97,11 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
             for (Iterator f = featureList.iterator(); f.hasNext();) {
                 SimpleFeature feature = (SimpleFeature) f.next();
                 SimpleFeatureType schema = feature.getFeatureType();
-                DefaultFeatureCollection collection = 
-                    (DefaultFeatureCollection) schema2features.get(schema);
+                ListFeatureCollection collection =
+                    (ListFeatureCollection) schema2features.get(schema);
 
                 if (collection == null) {
-                    collection = new DefaultFeatureCollection(null, schema);
+                    collection = new ListFeatureCollection(schema);
                     schema2features.put(schema, collection);
                 }
 

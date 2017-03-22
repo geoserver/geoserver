@@ -13,6 +13,7 @@ import org.geoserver.data.test.CiteTestData;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 /**
  * This test must be run with the server configured with the wfs 1.0 cite
@@ -438,4 +439,94 @@ public class TransactionTest extends WFSTestSupport {
               .getFirstChild().getNodeValue());
    }
 
+    @Test
+    public void testInsert11Features() throws Exception {
+        String features = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:gml=\"http://www.opengis.net/gml\"> "
+                + "<wfs:Insert > " + "<cgf:Lines>" + "<cgf:lineStringProperty>"
+                + "<gml:LineString>" + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056415,5433016.8189323 494982.70115662,5435041.95096618"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>"
+                + "<wfs:Insert > " + "<cgf:Lines>" + "<cgf:lineStringProperty>"
+                + "<gml:LineString>" + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056417,5433016.8189329 494982.70115662,5435041.95096618"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>"
+                + "<wfs:Insert > " + "<cgf:Lines>" + "<cgf:lineStringProperty>"
+                + "<gml:LineString>" + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056415,5433016.8189329 494982.70115665,5435041.95096618"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>"
+                + "<wfs:Insert > " + "<cgf:Lines>" + "<cgf:lineStringProperty>"
+                + "<gml:LineString>" + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056423,5433016.8189323 494982.70115669,5435041.95096618"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>"
+                + "<wfs:Insert > " + "<cgf:Lines>" + "<cgf:lineStringProperty>"
+                + "<gml:LineString>" + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056415,5433016.8189323 494982.701156621,5435041.95096620"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>"
+                + "<wfs:Insert > " + "<cgf:Lines>" + "<cgf:lineStringProperty>"
+                + "<gml:LineString>" + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056411,5433016.8189320 494982.70115667,5435041.95096619"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>"
+                + "<wfs:Insert > " + "<cgf:Lines>" + "<cgf:lineStringProperty>"
+                + "<gml:LineString>" + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056417,5433016.8189320 494982.70115668,5435041.95096615"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>"
+                + "<wfs:Insert > " + "<cgf:Lines>" + "<cgf:lineStringProperty>"
+                + "<gml:LineString>" + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056414,5433016.8189327 494982.70115660,5435041.95096615"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>"
+                + "<wfs:Insert > " + "<cgf:Lines>" + "<cgf:lineStringProperty>"
+                + "<gml:LineString>" + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056419,5433016.8189327 494982.70115666,5435041.95096611"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>"
+                + "<wfs:Insert > " + "<cgf:Lines>" + "<cgf:lineStringProperty>"
+                + "<gml:LineString>" + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056417,5433016.8189329 494982.70115667,5435041.95096610"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>"
+                + "<wfs:Insert > " + "<cgf:Lines>" + "<cgf:lineStringProperty>"
+                + "<gml:LineString>" + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056419,5433016.8189329 494982.70115665,5435041.95096620"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>"
+                + "<wfs:Insert > " + "<cgf:Lines>" + "<cgf:lineStringProperty>"
+                + "<gml:LineString>" + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.710564120,5433016.8189323 494982.70115655,5435041.95096670"
+                + "</gml:coordinates>" + "</gml:LineString>"
+                + "</cgf:lineStringProperty>" + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>" + "</wfs:Insert>"
+                + "</wfs:Transaction>";
+
+            // get elements from dom and loop through list
+            Document dom = postAsDOM("wfs", features);
+            NodeList elementsByTagName = dom.getElementsByTagName("ogc:FeatureId");
+            for (int i=0; i<elementsByTagName.getLength(); i++) {
+                    String id = elementsByTagName.item(i).getAttributes().item(0).getNodeValue();
+                    assertEquals(id, "new"+i);
+            }
+
+    }
 }

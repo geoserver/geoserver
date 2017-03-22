@@ -13,18 +13,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.InsertElementType;
-import net.opengis.wfs.InsertedFeatureType;
-import net.opengis.wfs.TransactionResponseType;
-import net.opengis.wfs.TransactionType;
-import net.opengis.wfs.WfsFactory;
-
-import org.eclipse.emf.ecore.EObject;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.feature.ReprojectingFeatureCollection;
@@ -39,10 +31,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.Hints;
-import org.geotools.feature.DefaultFeatureCollection;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.PointOutsideEnvelopeException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -84,7 +73,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
         TransactionResponse response, TransactionListener listener) throws WFSTransactionException {
         
         Insert insert = (Insert) element;
-        LOGGER.finer("Transasction Insert:" + insert);
+        LOGGER.finer("Transaction Insert:" + insert);
 
         long inserted = response.getTotalInserted().longValue();
 
@@ -271,7 +260,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                 typeNames.add(new QName(namespaceURI, name));
             }
         } else {
-            LOGGER.finer("Insert was empty - does not need a FeatuerSoruce");
+            LOGGER.finer("Insert was empty - does not need a FeatureSource");
         }
 
         return (QName[]) typeNames.toArray(new QName[typeNames.size()]);

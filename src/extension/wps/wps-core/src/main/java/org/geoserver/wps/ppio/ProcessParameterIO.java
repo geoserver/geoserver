@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -184,8 +184,12 @@ public abstract class ProcessParameterIO {
         }
 
         // load by factory
-        List<PPIOFactory> ppioFactories = GeoServerExtensions
-                .extensions(PPIOFactory.class, context);
+        List<PPIOFactory> ppioFactories;
+        if (context != null) {
+            ppioFactories = GeoServerExtensions.extensions(PPIOFactory.class, context);
+        } else {
+            ppioFactories = GeoServerExtensions.extensions(PPIOFactory.class);
+        }
         for (PPIOFactory factory : ppioFactories) {
             l.addAll(factory.getProcessParameterIO());
         }

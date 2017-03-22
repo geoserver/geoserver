@@ -11,22 +11,31 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
+import org.geotools.data.DataStore;
+import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import org.springframework.mock.web.MockHttpServletResponse;
+import com.vividsolutions.jts.geom.Point;
 
 public class TransactionTest extends WFS20TestSupport {
 
@@ -751,8 +760,8 @@ public class TransactionTest extends WFS20TestSupport {
        String xml =
            "<wfs:Transaction service=\"WFS\" version=\"2.0.0\"" + 
             " xmlns:fes='" + FES.NAMESPACE + "' " +  
-            " xmlns:wfs='" + WFS.NAMESPACE + "' " + 
-            " xmlns:gml='" + GML.NAMESPACE + "' " + 
+            " xmlns:wfs='" + WFS.NAMESPACE + "' " +
+            " xmlns:gml='" + GML.NAMESPACE + "' " +
             " xmlns:cite='http://www.opengis.net/cite'>" + 
            " <wfs:Replace>" + 
            "  <cite:RoadSegments gml:id='RoadSegments.1107532045088'> " + 
@@ -824,4 +833,95 @@ public class TransactionTest extends WFS20TestSupport {
        assertEquals("soap:Envelope", dom.getDocumentElement().getNodeName());
        assertEquals(1, dom.getElementsByTagName("wfs:TransactionResponse").getLength());
    }
+
+    @Test
+    public void elementHandlerOrder() throws Exception {
+        Catalog cat = getCatalog();
+        DataStoreInfo ds = cat.getFactory().createDataStore();
+        ds.setName("foo");
+        ds.setWorkspace(cat.getDefaultWorkspace());
+        ds.setEnabled(true);
+
+        Map params = ds.getConnectionParameters();
+        params.put("dbtype", "h2");
+        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
+        cat.add(ds);
+
+        DataStore store = (DataStore) ds.getDataStore(null);
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+        tb.setName("bar");
+        tb.add("name", String.class);
+        tb.add("geom", Point.class);
+
+        store.createSchema(tb.buildFeatureType());
+
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(ds);
+
+        SimpleFeatureStore fs = (SimpleFeatureStore) store.getFeatureSource("bar");
+
+        FeatureTypeInfo ft = cb.buildFeatureType(fs);
+        cat.add(ft);
+
+        String xml = "<wfs:Transaction service=\"WFS\" version=\"2.0.0\""
+                + " xmlns:fes='" + FES.NAMESPACE + "' "
+                + " xmlns:wfs='" + WFS.NAMESPACE + "' "
+                + " xmlns:gml='" + GML.NAMESPACE + "' "
+                + " xmlns:cite='http://www.opengis.net/cite'"
+                + " xmlns:gs='" + SystemTestData.DEFAULT_URI + "'>"
+                + "<wfs:Insert idgen='UseExisting'>"
+                + " <gs:bar gml:id='1'>"
+                + "    <gs:name>acme</gs:name>"
+                + " </gs:bar>"
+                + " <gs:bar gml:id='2'>"
+                + "    <gs:name>wiley</gs:name>"
+                + " </gs:bar>"
+                + " <gs:bar gml:id='3'>"
+                + "    <gs:name>bugs</gs:name>"
+                + " </gs:bar>"
+                + " <gs:bar gml:id='4'>"
+                + "    <gs:name>roadrunner</gs:name>"
+                + " </gs:bar>"
+                + " <gs:bar gml:id='5'>"
+                + "    <gs:name>daffy</gs:name>"
+                + " </gs:bar>"
+                + " <gs:bar gml:id='6'>"
+                + "    <gs:name>elmer</gs:name>"
+                + " </gs:bar>"
+                + " <gs:bar gml:id='7'>"
+                + "    <gs:name>tweety</gs:name>"
+                + " </gs:bar>"
+                + " <gs:bar gml:id='8'>"
+                + "    <gs:name>sylvester</gs:name>"
+                + " </gs:bar>"
+                + " <gs:bar gml:id='9'>"
+                + "    <gs:name>marvin</gs:name>"
+                + " </gs:bar>"
+                + " <gs:bar gml:id='10'>"
+                + "    <gs:name>yosemite</gs:name>"
+                + " </gs:bar>"
+                + " <gs:bar gml:id='11'>"
+                + "    <gs:name>porky</gs:name>"
+                + " </gs:bar>"
+                + " <gs:bar gml:id='12'>"
+                + "    <gs:name>speedy</gs:name>"
+                + " </gs:bar>"
+                + " <gs:bar gml:id='13'>"
+                + "    <gs:name>taz</gs:name>"
+                + " </gs:bar>"
+                + "</wfs:Insert>"
+                + "</wfs:Transaction>";
+
+        Document dom = postAsDOM("wfs", xml);
+        dom = getAsDOM("wfs?request=GetFeature&service=wfs&version=2.0.0&typeNames=gs:bar");
+
+        NodeList elementsByTagName = dom.getElementsByTagName("gs:bar");
+        for (int i=1; i<=elementsByTagName.getLength(); i++) {
+            String id = elementsByTagName.item(i-1).getAttributes().item(0).getNodeValue();
+            assertEquals("bar."+i, id );
+        }
+
+        dom = getAsDOM("wfs?request=GetFeature&version=2.0.0&service=wfs&typeNames=gs:bar&featureId=bar.5");
+        XMLAssert.assertXpathEvaluatesTo("daffy", "//gml:name/text()", dom);
+    }
 }

@@ -7,6 +7,7 @@ package org.geoserver.wfs.v1_1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
@@ -772,11 +773,9 @@ public class TransactionTest extends WFSTestSupport {
        Document dom = postAsDOM("wfs", xml);
        assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
        XMLAssert.assertXpathExists("//ogc:FeatureId[@fid = 'bar.1234']", dom);
-
        dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&featureId=bar.1234");
-        print(dom);
        XMLAssert.assertXpathExists("//gs:bar[@gml:id = 'bar.1234']",dom);
-   }
+    }
 
    @Test
    public void testEmptyUpdate() throws Exception {
@@ -794,4 +793,94 @@ public class TransactionTest extends WFSTestSupport {
        assertEquals("wfs:TransactionResponse", dom.getDocumentElement().getNodeName());
        assertEquals( "0", getFirstElementByTagName(dom, "wfs:totalUpdated").getFirstChild().getNodeValue());
    }
+
+    @Test
+    public void elementHandlerOrder() throws Exception {
+        Catalog cat = getCatalog();
+        DataStoreInfo ds = cat.getFactory().createDataStore();
+        ds.setName("foo1");
+        ds.setWorkspace(cat.getDefaultWorkspace());
+        ds.setEnabled(true);
+
+        Map params = ds.getConnectionParameters();
+        params.put("dbtype", "h2");
+        params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
+        cat.add(ds);
+
+        DataStore store = (DataStore) ds.getDataStore(null);
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+        tb.setName("baz");
+        tb.add("name", String.class);
+        tb.add("geom", Point.class);
+
+        store.createSchema(tb.buildFeatureType());
+
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(ds);
+
+        SimpleFeatureStore fs = (SimpleFeatureStore) store.getFeatureSource("baz");
+
+        FeatureTypeInfo ft = cb.buildFeatureType(fs);
+        cat.add(ft);
+
+        String xml = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
+            + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+            + " xmlns:gml=\"http://www.opengis.net/gml\" "
+            + " xmlns:gs='" + SystemTestData.DEFAULT_URI + "'>"
+            + "<wfs:Insert idgen='UseExisting'>"
+            + " <gs:baz gml:id='1'>"
+            + "    <gs:name>acme</gs:name>"
+            + " </gs:baz>"
+            + " <gs:baz gml:id='2'>"
+            + "    <gs:name>wiley</gs:name>"
+            + " </gs:baz>"
+            + " <gs:baz gml:id='3'>"
+            + "    <gs:name>bugs</gs:name>"
+            + " </gs:baz>"
+            + " <gs:baz gml:id='4'>"
+            + "    <gs:name>roadrunner</gs:name>"
+            + " </gs:baz>"
+            + " <gs:baz gml:id='5'>"
+            + "    <gs:name>daffy</gs:name>"
+            + " </gs:baz>"
+            + " <gs:baz gml:id='6'>"
+            + "    <gs:name>elmer</gs:name>"
+            + " </gs:baz>"
+            + " <gs:baz gml:id='7'>"
+            + "    <gs:name>tweety</gs:name>"
+            + " </gs:baz>"
+            + " <gs:baz gml:id='8'>"
+            + "    <gs:name>sylvester</gs:name>"
+            + " </gs:baz>"
+            + " <gs:baz gml:id='9'>"
+            + "    <gs:name>marvin</gs:name>"
+            + " </gs:baz>"
+            + " <gs:baz gml:id='10'>"
+            + "    <gs:name>yosemite</gs:name>"
+            + " </gs:baz>"
+            + " <gs:baz gml:id='11'>"
+            + "    <gs:name>porky</gs:name>"
+            + " </gs:baz>"
+            + " <gs:baz gml:id='12'>"
+            + "    <gs:name>speedy</gs:name>"
+            + " </gs:baz>"
+            + " <gs:baz gml:id='13'>"
+            + "    <gs:name>taz</gs:name>"
+            + " </gs:baz>"
+            + "</wfs:Insert>"
+            + "</wfs:Transaction>";
+
+        Document dom = postAsDOM("wfs", xml);
+        dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&typeNames=gs:baz");
+
+        NodeList elementsByTagName = dom.getElementsByTagName("gml:id");
+        for (int i=0; i < elementsByTagName.getLength(); i++) {
+            String id = elementsByTagName.item(i).getAttributes().item(0).getNodeValue();
+            assertEquals("baz"+i, id);
+        }
+
+        dom = getAsDOM("wfs?request=GetFeature&version=1.1.0&service=wfs&featureId=baz.5");
+        XMLAssert.assertXpathEvaluatesTo("daffy", "//gml:name/text()", dom);
+    }
 }
+

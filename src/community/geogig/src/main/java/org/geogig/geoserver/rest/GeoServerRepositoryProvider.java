@@ -232,6 +232,9 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
                 RepositoryInfo repoInfo = new RepositoryInfo();
 
                 // set the repo location from the URI
+                if (!hint.get(Hints.REPOSITORY_URL).isPresent()) {
+                	return Optional.absent();
+                }
                 URI uri = new URI(hint.get(Hints.REPOSITORY_URL).get().toString());
                 repoInfo.setLocation(uri);
 

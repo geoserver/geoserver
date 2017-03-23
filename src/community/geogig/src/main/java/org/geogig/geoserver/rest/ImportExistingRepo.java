@@ -16,9 +16,9 @@ import java.net.URI;
 
 public class ImportExistingRepo extends AbstractWebAPICommand {
 
-    public ImportExistingRepo(ParameterSet options) {
-        super(options);
-    }
+	@Override
+	protected void setParametersInternal(ParameterSet options) {
+	}
 
     @Override
     public boolean supports(final Method method) {

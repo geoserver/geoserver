@@ -50,25 +50,4 @@ public class PluginWebAPICucumberHooks {
     public void initEmptyRepo(String repoName) throws Exception {
         context.createRepo(repoName);
     }
-
-    @When("^A JSON POST request is made to \"([^\"]*)\"$")
-    public void callURLWithJSONPayload(final String methodAndURL) throws JsonException, IOException {
-        // build JSON payload
-        JsonObject payload = Json.createObjectBuilder().add("parentDirectory", systemTempPath())
-                .add("leafDirectory", "geogigRepo")
-                .add("authorName", "GeoGig User")
-                .add("authorEmail", "geogig@geogig.org")
-                .build();
-        callURLWithJSONPayload(methodAndURL, payload);
-    }
-
-    private void callURLWithJSONPayload(final String methodAndURL, JsonObject payload)
-            throws JsonException {
-        final int idx = methodAndURL.indexOf(' ');
-        checkArgument(idx > 0, "No METHOD given in URL definition: '%s'", methodAndURL);
-        final String httpMethod = methodAndURL.substring(0, idx);
-        String resourceUri = methodAndURL.substring(idx + 1).trim();
-        Method method = Method.valueOf(httpMethod);
-        context.call(method, resourceUri, payload.toString(), MediaType.APPLICATION_JSON.getName());
-    }
 }

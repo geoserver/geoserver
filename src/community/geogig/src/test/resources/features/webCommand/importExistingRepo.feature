@@ -10,23 +10,18 @@ Feature: Import an Existing GeoGig repository
   an href URL.
 
   @newtest
-  Scenario: No provided "Content Type" returns "Bad Request" code (400)
-    Given There is a default multirepo server
-    When I post to "/repos/nonExistentRepo/importExistingRepo" with
-      """
-      {
-        "parentDirectory":"data/geogig/config",
-        "leafDirectory"="geogigRepo"
-      }
-      """
-    Then the response status should be '400'
-    Then there should be no "nonExistentRepo" created
-
-  @newtest
   Scenario: Import of non existent repository fails
     Given There is a default multirepo server
     Given A repository named "geogigRepo" is initialized
-    When A JSON POST request is made to "POST /repos/nonExistentRepo/importExistingRepo"
+    When I post content-type "application/json" to "/repos/nonExistentRepo/importExistingRepo" with
+      """
+      {
+        "parentDirectory":"{@systemTempPath}",
+        "leafDirectory":"nonExistentRepo",
+        "authorName":"GeoGig User",
+        "authorEmail":"geogig@geogig.org"
+      }
+      """
     Then there should be no "nonExistentRepo" created
     And the response body should contain "Repository not found"
 
@@ -34,7 +29,15 @@ Feature: Import an Existing GeoGig repository
   Scenario: Import of existent repository succeeds with an XML response
     Given There is a default multirepo server
     Given A repository named "geogigRepo" is initialized
-    When A JSON POST request is made to "POST /repos/geogigRepo/importExistingRepo"
+    When I post content-type "application/json" to "/repos/geogigRepo/importExistingRepo" with
+      """
+      {
+        "parentDirectory":"{@systemTempPath}",
+        "leafDirectory":"geogigRepo",
+        "authorName":"GeoGig User",
+        "authorEmail":"geogig@geogig.org"
+      }
+      """
     Then the response status should be '200'
     And the response body should contain "http://localhost:8080/geoserver/geogig/repos/geogigRepo.xml"
 
@@ -42,6 +45,14 @@ Feature: Import an Existing GeoGig repository
   Scenario: Import of existent repository succeeds with a JSON response
     Given There is a default multirepo server
     Given A repository named "geogigRepo" is initialized
-    When A JSON POST request is made to "POST /repos/geogigRepo/importExistingRepo.json"
+    When I post content-type "application/json" to "/repos/geogigRepo/importExistingRepo.json" with
+      """
+      {
+        "parentDirectory":"{@systemTempPath}",
+        "leafDirectory":"geogigRepo",
+        "authorName":"GeoGig User",
+        "authorEmail":"geogig@geogig.org"
+      }
+      """
     Then the response status should be '200'
     And the response body should contain "http://localhost:8080/geoserver/geogig/repos/geogigRepo.json"

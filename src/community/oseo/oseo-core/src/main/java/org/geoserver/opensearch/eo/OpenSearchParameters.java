@@ -14,12 +14,12 @@ import org.geotools.data.Parameter;
 import org.geotools.feature.NameImpl;
 import org.geotools.referencing.CRS;
 import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Container/provider for common OpenSearch parameters. Parameter keys are used as the Kvp keys in URLs,
@@ -33,6 +33,10 @@ public class OpenSearchParameters {
 
     public static final CoordinateReferenceSystem OUTPUT_CRS;
 
+    public static enum GeometryRelation {
+        intersects, disjoint, contains
+    }
+    
     /**
      * Possible relationships between data time validity and query one
      *
@@ -59,6 +63,12 @@ public class OpenSearchParameters {
 
     public static final Parameter<?> GEO_RADIUS = new ParameterBuilder("radius", Double.class)
             .prefix(GEO_PREFIX).minimumInclusive(0).build();
+    
+    public static final Parameter<?> GEO_RELATION = new ParameterBuilder("geoRelation",
+            DateRelation.class).prefix(GEO_PREFIX).name("relation").build();
+    
+    public static final Parameter<?> GEO_GEOMETRY = new ParameterBuilder("geometry", Geometry.class)
+            .prefix(GEO_PREFIX).build();
 
     public static final Parameter<?> GEO_LON = new ParameterBuilder("lon", Double.class)
             .prefix(GEO_PREFIX).minimumInclusive(-180).maximumInclusive(180).build();
@@ -115,7 +125,7 @@ public class OpenSearchParameters {
 
     private static List<Parameter<?>> geoTimeOpenSearchParameters() {
         return Arrays.asList( //
-                GEO_UID, GEO_BOX, GEO_NAME, GEO_LAT, GEO_LON, GEO_RADIUS, TIME_START, TIME_END, TIME_RELATION);
+                GEO_UID, GEO_BOX, GEO_NAME, GEO_LAT, GEO_LON, GEO_RADIUS, GEO_GEOMETRY, GEO_RELATION, TIME_START, TIME_END, TIME_RELATION);
     }
 
     /**

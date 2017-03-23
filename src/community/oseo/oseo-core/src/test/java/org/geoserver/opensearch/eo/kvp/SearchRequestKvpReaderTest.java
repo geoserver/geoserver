@@ -4,25 +4,12 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_BOX;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LAT;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LON;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_RADIUS;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_UID;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.SEARCH_TERMS;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.START_INDEX;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_END;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_RELATION;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_START;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT_KEY;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.PARENT_ID_KEY;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.Collections;
 import java.util.Date;
@@ -56,6 +43,13 @@ import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.filter.PropertyIsLessThanOrEqualTo;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.spatial.BinarySpatialOperator;
+import org.opengis.filter.spatial.Contains;
+import org.opengis.filter.spatial.Disjoint;
+import org.opengis.filter.spatial.Intersects;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 
 public class SearchRequestKvpReaderTest extends OSEOTestSupport {
 
@@ -276,7 +270,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
             fail("Should have failed");
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
-            assertEquals("relation", e.getLocator());
+            assertEquals("timeRelation", e.getLocator());
         }
     }
     
@@ -288,7 +282,7 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
             fail("Should have failed");
         } catch (OWS20Exception e) {
             assertEquals("InvalidParameterValue", e.getCode());
-            assertEquals("relation", e.getLocator());
+            assertEquals("timeRelation", e.getLocator());
         }
     }
     
@@ -471,6 +465,44 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertThat(op2, instanceOf(PropertyIsLessThan.class));
         assertBinaryFilter(op2, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 40);
     }
+    
+    @Test
+    public void testGeometryFilter() throws Exception {
+        String wkt = "POINT(0 0)";
+        Geometry point = new WKTReader().read(wkt);
+        // implicit relation
+        Filter filter = parseAndGetFilter(toMap("geometry", wkt));
+        assertThat(filter,  instanceOf(Intersects.class));
+        assertBinarySpatialFilter(filter, "", point);
+        // explicit intersects
+        filter = parseAndGetFilter(toMap("geometry", wkt, "geoRelation", "intersects"));
+        assertThat(filter,  instanceOf(Intersects.class));
+        assertBinarySpatialFilter(filter, "", point);
+        // explicit contains
+        filter = parseAndGetFilter(toMap("geometry", wkt, "geoRelation", "contains"));
+        assertThat(filter,  instanceOf(Contains.class));
+        // ... expressions are inverted here, the attribute is contained in the search area
+        Contains bso = (Contains) filter;
+        assertThat(bso.getExpression2(), instanceOf(PropertyName.class));
+        PropertyName pn = (PropertyName) bso.getExpression2();
+        assertEquals("", pn.getPropertyName());
+        assertThat(bso.getExpression1(), instanceOf(Literal.class));
+        assertEquals(point, bso.getExpression1().evaluate(null));
+        // explict disjoint
+        filter = parseAndGetFilter(toMap("geometry", wkt, "geoRelation", "disjoint"));
+        assertThat(filter,  instanceOf(Disjoint.class));
+        assertBinarySpatialFilter(filter, "", point);
+    }
+    
+    private void assertBinarySpatialFilter(Filter filter, String expectedName, Object expectedValue) {
+        BinarySpatialOperator bso = (BinarySpatialOperator) filter;
+        assertThat(bso.getExpression1(), instanceOf(PropertyName.class));
+        PropertyName pn = (PropertyName) bso.getExpression1();
+        assertEquals(expectedName, pn.getPropertyName());
+        assertThat(bso.getExpression2(), instanceOf(Literal.class));
+        assertEquals(expectedValue, bso.getExpression2().evaluate(null));
+    }
+
     
     @Test
     public void testEopCreationDate() throws Exception {

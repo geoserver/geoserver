@@ -4,17 +4,7 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_BOX;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LAT;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LON;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_NAME;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_RADIUS;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_UID;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.SEARCH_TERMS;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.START_INDEX;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_END;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_RELATION;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_START;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +26,7 @@ import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchEoService;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.OpenSearchParameters.DateRelation;
+import org.geoserver.opensearch.eo.OpenSearchParameters.GeometryRelation;
 import org.geoserver.opensearch.eo.SearchRequest;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.KvpRequestReader;
@@ -63,8 +54,10 @@ import org.opengis.filter.spatial.DWithin;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Reads a "description" request
@@ -89,6 +82,8 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
+    private static final PropertyName DEFAULT_GEOMETRY = FF.property("");
+
     public static final String COUNT_KEY = "count";
 
     public static final String PARENT_ID_KEY = "parentId";
@@ -98,8 +93,6 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     private OpenSearchEoService oseo;
 
     private GeoServer gs;
-
-    private TimeParser timeParser = new TimeParser();
 
     public SearchRequestKvpReader(GeoServer gs, OpenSearchEoService service) {
         super(SearchRequest.class);
@@ -215,6 +208,12 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         if (timeFilter != null) {
             filters.add(timeFilter);
         }
+        
+        // handle geometry filter (2 params)
+        Filter geoFilter = buildGeometryFilter(rawKvp);
+        if(geoFilter != null) {
+            filters.add(geoFilter);
+        }
 
         Filter filter = Predicates.and(filters);
         return filter;
@@ -234,7 +233,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
                     .map(k -> k.name()).collect(Collectors.toList());
             throw new OWS20Exception(
                     "Invalid value for relation, possible values are " + dateRelationNames,
-                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, "relation");
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, TIME_RELATION.key);
         }
         if (start == null && rawStart != null) {
             throw new OWS20Exception(
@@ -254,7 +253,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
             } else {
                 throw new OWS20Exception(
                         "Time relation specified, but start and end time values are missing",
-                        OWS20Exception.OWSExceptionCode.InvalidParameterValue, "relation");
+                        OWS20Exception.OWSExceptionCode.InvalidParameterValue, TIME_RELATION.key);
             }
         }
 
@@ -374,7 +373,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
                     OWS20Exception.OWSExceptionCode.InvalidParameterValue, "radius");
         }
         final Point point = GF.createPoint(new Coordinate(lon, lat));
-        DWithin dwithin = FF.dwithin(FF.property(""), FF.literal(point), radius, "m");
+        DWithin dwithin = FF.dwithin(DEFAULT_GEOMETRY, FF.literal(point), radius, "m");
         return dwithin;
     }
 
@@ -387,8 +386,52 @@ public class SearchRequestKvpReader extends KvpRequestReader {
                     "OpenSearch for EO requests only support boundig boxes in WGS84",
                     OWS20Exception.OWSExceptionCode.InvalidParameterValue, "box");
         }
-        filter = FF.bbox(FF.property(""), box, MatchAction.ANY);
+        filter = FF.bbox(DEFAULT_GEOMETRY, box, MatchAction.ANY);
         return filter;
+    }
+    
+    private Filter buildGeometryFilter(Map rawKvp) {
+        String rawGeometry = (String) rawKvp.get(GEO_GEOMETRY.key);
+        String rawRelation = Converters.convert(rawKvp.get(GEO_RELATION.key), String.class);
+        
+        if(rawGeometry == null && rawRelation == null) {
+            return null;
+        }
+        
+        Geometry geometry;
+        try {
+            geometry = new WKTReader().read(rawGeometry);
+        } catch(Exception e) {
+            throw new OWS20Exception(
+                    "Could not parse geometry parameter, expecting valid WKT syntax: " + e.getMessage(), e,
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, "geometry");
+        }
+
+        // handle relation
+        GeometryRelation relation = Converters.convert(rawRelation, GeometryRelation.class);
+        if (relation == null && rawRelation != null) {
+            final List<String> geoRelationNames = Arrays.stream(GeometryRelation.values())
+                    .map(k -> k.name()).collect(Collectors.toList());
+            throw new OWS20Exception(
+                    "Invalid value for relation, possible values are " + geoRelationNames,
+                    OWS20Exception.OWSExceptionCode.InvalidParameterValue, GEO_RELATION.key);
+        }
+        if(relation == null) {
+            relation = GeometryRelation.intersects;
+        }
+
+        // build the filter
+        switch(relation) {
+        case intersects:
+            return FF.intersects(DEFAULT_GEOMETRY, FF.literal(geometry));
+        case contains:
+            return FF.contains(FF.literal(geometry), DEFAULT_GEOMETRY);
+        case disjoint:
+            return FF.disjoint(DEFAULT_GEOMETRY, FF.literal(geometry));
+        default:
+            throw new RuntimeException("Geometry relation of type " + relation + " not covered yet"); 
+        }
+        
     }
 
     private PropertyIsEqualTo buildUidFilter(Object value) {

@@ -44,22 +44,31 @@ public class RemoteEditPanel extends Panel {
         feedback.setOutputMarkupId(true);
         form.add(feedback);
 
-        final boolean isNew = model.getObject().getId() == null;
+        boolean isNew = true;
+        for (RemoteInfo config : table.getRemotes()) {
+            if (config.equals(model.getObject())) {
+                isNew = false;
+                break;
+            }
+        }
+        final boolean isInTable = !isNew;
         name = new TextField<>("name", new PropertyModel<>(model, "name"));
         name.setRequired(true);
         name.add(new PatternValidator("[^\\s]+"));
         name.add(new IValidator<String>() {
             private static final long serialVersionUID = 2927770353770055054L;
 
-            final String previousName = isNew ? null : form.getModelObject().getName();
+            final String previousName = isInTable ? form.getModelObject().getName() : null;
 
             @Override
             public void validate(IValidatable<String> validatable) {
                 String name = validatable.getValue();
                 for (RemoteInfo ri : table.getRemotes()) {
-                    String newName = ri.getName();
-                    if (newName != null && !newName.equals(previousName) && newName.equals(name)) {
-                        form.error(String.format("A remote named %s already exists", name));
+                    if (!ri.equals(model.getObject())) {
+                        String newName = ri.getName();
+                        if (newName != null && !newName.equals(previousName) && newName.equals(name)) {
+                            form.error(String.format("A remote named %s already exists", name));
+                        }
                     }
                 }
             }
@@ -90,8 +99,7 @@ public class RemoteEditPanel extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 RemoteInfo newRemote = (RemoteInfo) form.getModelObject();
-                boolean isNew = newRemote.getId() == null;
-                if (isNew) {
+                if (!isInTable) {
                     table.add(newRemote);
                 }
                 parentWindow.close(target);

@@ -104,7 +104,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
         OpenSearchAccess access = getOpenSearchAccess();
         FeatureType productSchema = access.getProductSource().getSchema();
-        searchParameters.addAll(getSearchParametersByClass(ProductClass.EO_GENERIC, productSchema));
+        searchParameters.addAll(getSearchParametersByClass(ProductClass.EOP_GENERIC, productSchema));
         if (collectionClass != null) {
             searchParameters.addAll(getSearchParametersByClass(collectionClass, productSchema));
         }

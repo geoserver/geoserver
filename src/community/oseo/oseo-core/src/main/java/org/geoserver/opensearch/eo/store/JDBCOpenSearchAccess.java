@@ -150,6 +150,10 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         for (AttributeDescriptor ad : flatSchema.getAttributeDescriptors()) {
             String name = ad.getLocalName();
             String namespaceURI = this.namespaceURI;
+            // hack to avoid changing the whole product attributes prefixes from eo to eop
+            if (name.startsWith(EO_PREFIX)) {
+                name = "eop" + name.substring(2);
+            }
             for (ProductClass pc : ProductClass.values()) {
                 String prefix = pc.getPrefix();
                 if (name.startsWith(prefix)) {

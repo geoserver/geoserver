@@ -191,7 +191,7 @@ public class JDBCOpenSearchAccessTest {
 
         // get the schema
         assertPropertyNamespace(schema, "cloudCover", OPTICAL.getNamespace());
-        assertPropertyNamespace(schema, "track", EO_GENERIC.getNamespace());
+        assertPropertyNamespace(schema, "track", EOP_GENERIC.getNamespace());
         assertPropertyNamespace(schema, "polarisationMode", RADAR.getNamespace());
     }
 

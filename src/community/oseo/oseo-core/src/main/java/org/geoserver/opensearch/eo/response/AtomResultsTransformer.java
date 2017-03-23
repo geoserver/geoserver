@@ -219,7 +219,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
 
         private void encodeProductEntry(Feature feature, SearchRequest request) {
             final String identifier = (String) value(feature,
-                    OpenSearchAccess.ProductClass.EO_GENERIC.getNamespace(), "identifier");
+                    OpenSearchAccess.ProductClass.EOP_GENERIC.getNamespace(), "identifier");
 
             // encode the generic contents
             String productIdentifierLink = buildProductIdentifierLink(identifier, request);

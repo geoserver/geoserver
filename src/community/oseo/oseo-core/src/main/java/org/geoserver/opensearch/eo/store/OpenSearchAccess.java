@@ -40,7 +40,7 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
      * @author Andrea Aime - GeoSolutions
      */
     enum ProductClass {
-        EO_GENERIC("eo", "http://www.opengis.net/eop/2.1"), //
+        EOP_GENERIC("eop", "http://www.opengis.net/eop/2.1"), //
         OPTICAL("opt", "http://www.opengis.net/opt/2.1"), //
         RADAR("sar", "http://www.opengis.net/sar/2.1"), //
         ALTIMETRIC("atm", "http://www.opengis.net/atm/2.1"), //

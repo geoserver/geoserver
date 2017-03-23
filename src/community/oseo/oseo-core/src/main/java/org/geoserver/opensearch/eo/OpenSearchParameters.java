@@ -9,8 +9,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geotools.data.Parameter;
+import org.geotools.feature.NameImpl;
 import org.geotools.referencing.CRS;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -190,5 +195,31 @@ public class OpenSearchParameters {
             name = p.key;
         }
         return name;
+    }
+
+    /**
+     * Builds the {@link PropertyName} for the given OpenSearch parameter
+     * 
+     * @param parameter
+     * @return
+     */
+    public static PropertyName getFilterPropertyFor(FilterFactory2 ff, Parameter<?> parameter) {
+        String prefix = getParameterPrefix(parameter);
+        String namespace = null;
+        
+        if(EO_PREFIX.equals(prefix)) {
+            namespace = OpenSearchAccess.EO_NAMESPACE;
+        } else {
+            // product parameter maybe?
+            for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
+                if (pc.getPrefix().equals(prefix)) {
+                    namespace = pc.getNamespace();
+                }
+            }
+        }
+        
+        // the name
+        String name = getParameterName(parameter);
+        return ff.property(new NameImpl(namespace, name));
     }
 }

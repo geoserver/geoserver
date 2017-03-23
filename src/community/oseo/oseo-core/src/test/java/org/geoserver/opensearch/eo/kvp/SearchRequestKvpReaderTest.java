@@ -4,31 +4,58 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_BOX;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LAT;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LON;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_RADIUS;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_UID;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.SEARCH_TERMS;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.START_INDEX;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_END;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_RELATION;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_START;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT_KEY;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.PARENT_ID_KEY;
-import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
-
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OSEOTestSupport;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.SearchRequest;
+import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.OWS20Exception;
 import org.geotools.data.Parameter;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.util.Converters;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.filter.And;
+import org.opengis.filter.BinaryComparisonOperator;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.Or;
+import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.PropertyIsGreaterThan;
+import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
+import org.opengis.filter.PropertyIsLessThan;
+import org.opengis.filter.PropertyIsLessThanOrEqualTo;
+import org.opengis.filter.expression.Literal;
+import org.opengis.filter.expression.PropertyName;
 
 public class SearchRequestKvpReaderTest extends OSEOTestSupport {
 
@@ -366,7 +393,93 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertEquals(ECQL.toFilter("timeEnd >= 2010-09-01T00:00:00Z OR timeEnd IS NULL"), parseAndGetFilter(map));
     }
     
+    @Test
+    public void testCollectionSensorTypeSingle() throws Exception {
+        Map<String, String> map = toMap("sensorType", "OPTICAL");
+        Filter filter = parseAndGetFilter(map);
+        assertThat(filter, instanceOf(PropertyIsEqualTo.class));
+        assertBinaryFilter(filter, OpenSearchAccess.EO_NAMESPACE, "sensorType", "OPTICAL");
+    }
+
+    private void assertBinaryFilter(Filter filter, String expectedNamespace, String expectedName, Object expectedValue) {
+        BinaryComparisonOperator bce = (BinaryComparisonOperator) filter;
+        assertThat(bce.getExpression1(), instanceOf(PropertyName.class));
+        PropertyName pn = (PropertyName) bce.getExpression1();
+        assertEquals(expectedName, pn.getPropertyName());
+        assertEquals(expectedNamespace, pn.getNamespaceContext().getURI(""));
+        assertThat(bce.getExpression2(), instanceOf(Literal.class));
+        assertEquals(expectedValue, bce.getExpression2().evaluate(null));
+    }
     
+    @Test
+    public void testCollectionSensorTypeList() throws Exception {
+        Map<String, String> map = toMap("sensorType", "OPTICAL,RADAR,ALTIMETRIC");
+        Filter filter = parseAndGetFilter(map);
+        assertThat(filter, instanceOf(Or.class));
+        Or or = (Or) filter;
+        final List<Filter> children = or.getChildren();
+        assertEquals(3, children.size());
+        assertBinaryFilter(children.get(0), OpenSearchAccess.EO_NAMESPACE, "sensorType", "OPTICAL");
+        assertBinaryFilter(children.get(1), OpenSearchAccess.EO_NAMESPACE, "sensorType", "RADAR");
+        assertBinaryFilter(children.get(2), OpenSearchAccess.EO_NAMESPACE, "sensorType", "ALTIMETRIC");
+    }
+    
+    @Test
+    public void testCloudCoverGreater() throws Exception {
+        Map<String, String> map = toMap("parentId", "SENTINEL2", "cloudCover", "[30");
+        Filter filter = parseAndGetFilter(map);
+        assertThat(filter, instanceOf(PropertyIsGreaterThanOrEqualTo.class));
+        assertBinaryFilter(filter, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 30);        
+    }
+    
+    @Test
+    public void testCloudCoverSmaller() throws Exception {
+        Map<String, String> map = toMap("parentId", "SENTINEL2", "cloudCover", "20]");
+        Filter filter = parseAndGetFilter(map);
+        assertThat(filter, instanceOf(PropertyIsLessThanOrEqualTo.class));
+        assertBinaryFilter(filter, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 20);        
+    }
+    
+    @Test
+    public void testCloudCoverClosedRange() throws Exception {
+        Map<String, String> map = toMap("parentId", "SENTINEL2", "cloudCover", "[20,40]");
+        Filter filter = parseAndGetFilter(map);
+        assertThat(filter, instanceOf(And.class));
+        And and = (And) filter;
+        final List<Filter> children = and.getChildren();
+        assertEquals(2, children.size());
+        BinaryComparisonOperator op1 = (BinaryComparisonOperator) children.get(0);
+        assertThat(op1, instanceOf(PropertyIsGreaterThanOrEqualTo.class));
+        assertBinaryFilter(op1, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 20);        
+        BinaryComparisonOperator op2 = (BinaryComparisonOperator) children.get(1);
+        assertThat(op2, instanceOf(PropertyIsLessThanOrEqualTo.class));
+        assertBinaryFilter(op2, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 40);
+    }
+    
+    @Test
+    public void testCloudCoverOpenRange() throws Exception {
+        Map<String, String> map = toMap("parentId", "SENTINEL2", "cloudCover", "]20,40[");
+        Filter filter = parseAndGetFilter(map);
+        assertThat(filter, instanceOf(And.class));
+        And and = (And) filter;
+        final List<Filter> children = and.getChildren();
+        assertEquals(2, children.size());
+        BinaryComparisonOperator op1 = (BinaryComparisonOperator) children.get(0);
+        assertThat(op1, instanceOf(PropertyIsGreaterThan.class));
+        assertBinaryFilter(op1, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 20);        
+        BinaryComparisonOperator op2 = (BinaryComparisonOperator) children.get(1);
+        assertThat(op2, instanceOf(PropertyIsLessThan.class));
+        assertBinaryFilter(op2, OpenSearchAccess.ProductClass.OPTICAL.getNamespace(), "cloudCover", 40);
+    }
+    
+    @Test
+    public void testEopCreationDate() throws Exception {
+        Map<String, String> map = toMap("parentId", "SENTINEL2", "creationDate", "]2016-01-01");
+        Filter filter = parseAndGetFilter(map);
+        BinaryComparisonOperator op = (BinaryComparisonOperator) filter;
+        assertThat(op, instanceOf(PropertyIsGreaterThan.class));
+        assertBinaryFilter(op, OpenSearchAccess.ProductClass.EOP_GENERIC.getNamespace(), "creationDate", Converters.convert("2016-01-01", Date.class));        
+    }
 
     private Filter parseAndGetFilter(Map<String, String> map) throws Exception {
         SearchRequest request = parseSearchRequest(map);

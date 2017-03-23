@@ -351,6 +351,64 @@ public class SearchTest extends OSEOTestSupport {
     }
     
     @Test
+    public void testSearchOptical() throws Exception {
+        // sentinel-2 and landsat8 match, sentinel1 does not
+        Document dom = getAsDOM("oseo/search?sensorType=OPTICAL");
+        // print(dom);
+        
+        // basics
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("2")));
+        assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
+        assertThat(dom, hasXPath("/at:feed/os:Query"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@eo:sensorType='OPTICAL']"));
+        assertThat(dom, hasXPath("/at:feed/at:updated"));
+
+        // check entries, only one feature matching
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("LANDSAT8")));
+    }
+    
+    @Test
+    public void testSearchRadar() throws Exception {
+        Document dom = getAsDOM("oseo/search?sensorType=RADAR");
+        // print(dom);
+        
+        // basics
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
+        assertThat(dom, hasXPath("/at:feed/os:Query"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@eo:sensorType='RADAR']"));
+        assertThat(dom, hasXPath("/at:feed/at:updated"));
+
+        // check entries, only one feature matching
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));
+    }
+    
+    @Test
+    public void testSearchOpticalRadar() throws Exception {
+        Document dom = getAsDOM("oseo/search?sensorType=OPTICAL,RADAR");
+        // print(dom);
+        
+        // basics
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("3")));
+        assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
+        assertThat(dom, hasXPath("/at:feed/os:Query"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@eo:sensorType='OPTICAL,RADAR']"));
+        assertThat(dom, hasXPath("/at:feed/at:updated"));
+
+        // check entries, only one feature matching
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("3")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[3]/at:title", equalTo("LANDSAT8")));
+    }
+    
+    @Test
     public void testGetSentinel2Metadata() throws Exception {
         Document dom = getAsDOM("oseo/metadata?uid=SENTINEL2", 200, MetadataRequest.ISO_METADATA);
         // print(dom);

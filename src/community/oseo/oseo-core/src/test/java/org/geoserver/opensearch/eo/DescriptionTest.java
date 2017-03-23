@@ -183,9 +183,9 @@ public class DescriptionTest extends OSEOTestSupport {
         // ... and has generic EOP parameters
         assertThat(dom,
                 hasXPath(resultsBase + "/@template",
-                        allOf(containsString("productQualityStatus={eo:productQualityStatus?}"), //
-                                containsString("processorName={eo:processorName?}"), //
-                                containsString("modificationDate={eo:modificationDate?}"))));
+                        allOf(containsString("productQualityStatus={eop:productQualityStatus?}"), //
+                                containsString("processorName={eop:processorName?}"), //
+                                containsString("modificationDate={eop:modificationDate?}"))));
         // ... and has OPT parameters
         assertThat(dom,
                 hasXPath(resultsBase + "/@template",
@@ -231,9 +231,9 @@ public class DescriptionTest extends OSEOTestSupport {
         // ... and has generic EOP parameters
         assertThat(dom,
                 hasXPath(resultsBase + "/@template",
-                        allOf(containsString("productQualityStatus={eo:productQualityStatus?}"), //
-                                containsString("processorName={eo:processorName?}"), //
-                                containsString("modificationDate={eo:modificationDate?}"))));
+                        allOf(containsString("productQualityStatus={eop:productQualityStatus?}"), //
+                                containsString("processorName={eop:processorName?}"), //
+                                containsString("modificationDate={eop:modificationDate?}"))));
         // ... and SAR parameters
         assertThat(dom,
                 hasXPath(resultsBase + "/@template", allOf(

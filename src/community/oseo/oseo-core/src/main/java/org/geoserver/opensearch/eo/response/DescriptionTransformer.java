@@ -18,6 +18,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.opensearch.eo.OSEODescription;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
+import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.data.Parameter;
@@ -45,14 +46,18 @@ public class DescriptionTransformer extends LambdaTransformerBase {
         @Override
         public void encode(Object o) throws IllegalArgumentException {
             OSEODescription description = (OSEODescription) o;
-            element("OpenSearchDescription", () -> describeOpenSearch(description), //
-                    attributes("xmlns", "http://a9.com/-/spec/opensearch/1.1/", //
-                            "xmlns:param",
-                            "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/", //
-                            "xmlns:geo", "http://a9.com/-/opensearch/extensions/geo/1.0/", //
-                            "xmlns:time", "http://a9.com/-/opensearch/extensions/time/1.0/", //
-                            "xmlns:eo", "http://a9.com/-/opensearch/extensions/eo/1.0/" //
-                    ));
+            Map<String, String> namespaces = new LinkedHashMap<>();
+            namespaces.put("xmlns", "http://a9.com/-/spec/opensearch/1.1/");
+            namespaces.put("xmlns:param",
+                    "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/");
+            namespaces.put("xmlns:geo", "http://a9.com/-/opensearch/extensions/geo/1.0/");
+            namespaces.put("xmlns:time", "http://a9.com/-/opensearch/extensions/time/1.0/");
+            namespaces.put("xmlns:eo", "http://a9.com/-/opensearch/extensions/eo/1.0/");
+            for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
+                namespaces.put("xmlns:" + pc.getPrefix(), pc.getNamespace());
+            }
+            element("OpenSearchDescription", () -> describeOpenSearch(description),
+                    attributes(namespaces));
         }
 
         private void describeOpenSearch(OSEODescription description) {
@@ -115,7 +120,8 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                 return spec;
             }).collect(Collectors.joining("&"));
 
-            return appendQueryString(base, paramSpec + "&httpAccept=" + ResponseUtils.urlEncode(format));
+            return appendQueryString(base,
+                    paramSpec + "&httpAccept=" + ResponseUtils.urlEncode(format));
         }
 
         private void describeParameters(OSEODescription description) {
@@ -142,7 +148,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                     Class type = param.getType();
                     if (Integer.class == type) {
                         map.put("pattern", "[+-][0-9]+");
-                    } else if(Float.class == type || Double.class == type) {
+                    } else if (Float.class == type || Double.class == type) {
                         map.put("pattern", "[-+]?[0-9]*\\.?[0-9]+");
                     } else if (Date.class.isAssignableFrom(type)) {
                         map.put("pattern",

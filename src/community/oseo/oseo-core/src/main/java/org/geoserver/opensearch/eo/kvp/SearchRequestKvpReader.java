@@ -4,7 +4,17 @@
  */
 package org.geoserver.opensearch.eo.kvp;
 
-import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_BOX;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LAT;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_LON;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_NAME;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_RADIUS;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.GEO_UID;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.SEARCH_TERMS;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.START_INDEX;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_END;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_RELATION;
+import static org.geoserver.opensearch.eo.OpenSearchParameters.TIME_START;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,6 +57,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.spatial.DWithin;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -61,6 +72,15 @@ import com.vividsolutions.jts.geom.Point;
  * @author Andrea Aime - GeoSolutions
  */
 public class SearchRequestKvpReader extends KvpRequestReader {
+
+    static final Pattern FULL_RANGE_PATTERN = Pattern
+            .compile("^(\\[|\\])([^,\\[\\]]+),([^,\\\\[\\\\]]+)(\\[|\\])$");
+
+    static final Pattern LEFT_RANGE_PATTERN = Pattern.compile("^(\\[|\\])([^,\\[\\]]+)$");
+
+    static final Pattern RIGHT_RANGE_PATTERN = Pattern.compile("^([^,\\\\[\\\\]]+)(\\[|\\])$");
+
+    static final Pattern COMMA_SEPARATED = Pattern.compile("\\s*,\\s*");
 
     private static final Hints SAFE_CONVERSION_HINTS = new Hints(ConverterFactory.SAFE_CONVERSION,
             true);
@@ -78,7 +98,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     private OpenSearchEoService oseo;
 
     private GeoServer gs;
-    
+
     private TimeParser timeParser = new TimeParser();
 
     public SearchRequestKvpReader(GeoServer gs, OpenSearchEoService service) {
@@ -182,8 +202,8 @@ public class SearchRequestKvpReader extends KvpRequestReader {
                     filter = buildLatLonDistanceFilter(rawKvp);
                 } else if (GEO_NAME.key.equals(parameter.key)) {
                     filter = buildNameDistanceFilter(rawKvp);
-                } else if (isProductParameter(parameter)) {
-                    filter = buildProductFilter(parameter, value);
+                } else if (isEoParameter(parameter)) {
+                    filter = buildEoFilter(parameter, value);
                 }
                 if (filter != null) {
                     filters.add(filter);
@@ -218,7 +238,8 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         }
         if (start == null && rawStart != null) {
             throw new OWS20Exception(
-                    "Invalid expression for start time, use a ISO time or date instead: " + rawStart,
+                    "Invalid expression for start time, use a ISO time or date instead: "
+                            + rawStart,
                     OWS20Exception.OWSExceptionCode.InvalidParameterValue, TIME_START.key);
         }
         if (end == null && rawEnd != null) {
@@ -236,9 +257,9 @@ public class SearchRequestKvpReader extends KvpRequestReader {
                         OWS20Exception.OWSExceptionCode.InvalidParameterValue, "relation");
             }
         }
-        
+
         // default if null
-        if(relation == null) {
+        if (relation == null) {
             relation = DateRelation.intersects;
         }
 
@@ -288,31 +309,32 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
         case intersects:
             // the resource overlaps the specified range
-            fStart = FF.or(FF.greaterOrEqual(endProperty, FF.literal(start)), FF.isNull(endProperty));
+            fStart = FF.or(FF.greaterOrEqual(endProperty, FF.literal(start)),
+                    FF.isNull(endProperty));
             fEnd = FF.or(FF.lessOrEqual(startProperty, FF.literal(end)), FF.isNull(startProperty));
-            
-            if(start == null) {
+
+            if (start == null) {
                 return fEnd;
-            } else if(end == null) {
+            } else if (end == null) {
                 return fStart;
             } else {
                 return FF.and(fStart, fEnd);
             }
-            
+
         case equals:
             // the resource has the same range as requested
-            if(start == null) {
+            if (start == null) {
                 fStart = FF.isNull(startProperty);
             } else {
                 fStart = FF.equals(startProperty, FF.literal(start));
             }
-            if(end == null) {
+            if (end == null) {
                 fEnd = FF.isNull(endProperty);
             } else {
                 fEnd = FF.equals(endProperty, FF.literal(end));
             }
             return FF.and(fStart, fEnd);
-            
+
         default:
             throw new RuntimeException("Time relation of type " + relation + " not covered yet");
         }
@@ -410,18 +432,24 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         T converted = Converters.convert(value, targetClass, SAFE_CONVERSION_HINTS);
         if (converted == null) {
             throw new OWS20Exception(
-                    key + " is empty of cannot be converted to a " + targetClass.getSimpleName(),
-                    OWSExceptionCode.InvalidParameterValue);
+                    key + " cannot be converted to a " + targetClass.getSimpleName(),
+                    OWSExceptionCode.InvalidParameterValue, key);
         }
         return converted;
     }
 
-    private boolean isProductParameter(Parameter parameter) {
+    private boolean isEoParameter(Parameter parameter) {
         String prefix = OpenSearchParameters.getParameterPrefix(parameter);
         if (prefix == null) {
             return false;
         }
 
+        // collectin parameter?
+        if (prefix.equals(OpenSearchParameters.EO_PREFIX)) {
+            return true;
+        }
+
+        // product parameter?
         for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
             if (pc.getPrefix().equals(prefix)) {
                 return true;
@@ -431,8 +459,101 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         return false;
     }
 
-    private Filter buildProductFilter(Parameter<?> parameter, Object value) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    private Filter buildEoFilter(Parameter<?> parameter, Object value) {
+        // support two types of filters, equality and range filters
+        Class<?> type = parameter.getType();
+
+        PropertyName pn = OpenSearchParameters.getFilterPropertyFor(FF, parameter);
+
+        // for numeric and range parameters check the range syntax
+        String input = (String) value;
+        if (Date.class.isAssignableFrom(type) || Number.class.isAssignableFrom(type)) {
+            Matcher matcher;
+            if ((matcher = FULL_RANGE_PATTERN.matcher(input)).matches()) {
+                String opening = matcher.group(1);
+                String s1 = matcher.group(2);
+                String s2 = matcher.group(3);
+                String closing = matcher.group(4);
+
+                // parse and check they are actually valid numbers/dates
+                Object v1 = parseParameter(parameter, s1);
+                Object v2 = parseParameter(parameter, s2);
+
+                Filter f1, f2;
+                Literal l1 = FF.literal(v1);
+                Literal l2 = FF.literal(v2);
+                if ("[".equals(opening)) {
+                    f1 = FF.greaterOrEqual(pn, l1);
+                } else {
+                    f1 = FF.greater(pn, l1);
+                }
+                if ("]".equals(closing)) {
+                    f2 = FF.lessOrEqual(pn, l2);
+                } else {
+                    f2 = FF.less(pn, l2);
+                }
+
+                return FF.and(f1, f2);
+            } else if ((matcher = LEFT_RANGE_PATTERN.matcher(input)).matches()) {
+                String opening = matcher.group(1);
+                String s1 = matcher.group(2);
+
+                // parse and check they are actually valid numbers/dates
+                Object v1 = parseParameter(parameter, s1);
+
+                Literal l1 = FF.literal(v1);
+                if ("[".equals(opening)) {
+                    return FF.greaterOrEqual(pn, l1);
+                } else {
+                    return FF.greater(pn, l1);
+                }
+            } else if ((matcher = RIGHT_RANGE_PATTERN.matcher(input)).matches()) {
+                String s2 = matcher.group(1);
+                String closing = matcher.group(2);
+
+                // parse and check they are actually valid numbers/dates
+                Object v2 = parseParameter(parameter, s2);
+
+                Literal l2 = FF.literal(v2);
+                if ("]".equals(closing)) {
+                    return FF.lessOrEqual(pn, l2);
+                } else {
+                    return FF.less(pn, l2);
+                }
+            }
+        }
+
+        // we got here, it's not a valid range, see if it's a comma separated list vs single value then
+        if (input.contains(",")) {
+            String[] splits = COMMA_SEPARATED.split(input);
+            List<Filter> filters = new ArrayList<>();
+            for (String split : splits) {
+                Filter filter = buildEqualityFilter(parameter, pn, split);
+                filters.add(filter);
+            }
+
+            return FF.or(filters);
+        } else {
+            // ok, single equality filter then
+            Filter filter = buildEqualityFilter(parameter, pn, input);
+            return filter;
+        }
+    }
+
+    private Filter buildEqualityFilter(Parameter<?> parameter, PropertyName pn, String input) {
+        Object converted = parseParameter(parameter, input);
+        return FF.equal(pn, FF.literal(converted), true);
+    }
+
+    private Object parseParameter(Parameter<?> parameter, String value) {
+        Object converted = Converters.convert(value, parameter.getType(), SAFE_CONVERSION_HINTS);
+        if (converted == null) {
+            throw new OWS20Exception(
+                    value + " of key " + parameter.key + " cannot be converted to a "
+                            + parameter.getType().getSimpleName(),
+                    OWSExceptionCode.InvalidParameterValue, parameter.key);
+        }
+        return converted;
     }
 
     private Collection<Parameter<?>> getSearchParameters(SearchRequest request) throws IOException {

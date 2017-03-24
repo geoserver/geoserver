@@ -143,6 +143,9 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         namespaceContext.bindNamespaceUri("gmd", "http://www.isotc211.org/2005/gmd"); 
         namespaceContext.bindNamespaceUri("gco", "http://www.isotc211.org/2005/gco");
         namespaceContext.bindNamespaceUri("time", "http://a9.com/-/opensearch/extensions/time/1.0");
+        for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
+            namespaceContext.bindNamespaceUri(pc.getPrefix(), pc.getNamespace());
+        }
     }
 
     protected Matcher<Node> hasXPath(String xPath) {

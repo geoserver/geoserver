@@ -112,6 +112,10 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             mapNamespacePrefix("xlink", "http://www.w3.org/1999/xlink");
             mapNamespacePrefix("xs", "http://www.w3.org/2001/XMLSchema");
             mapNamespacePrefix("sch", "http://www.ascc.net/xml/schematron");
+            for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
+                mapNamespacePrefix(pc.getPrefix(), pc.getNamespace());
+            }
+
             element("feed", () -> feedContents(results));
         }
 

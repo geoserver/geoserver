@@ -409,6 +409,22 @@ public class SearchTest extends OSEOTestSupport {
     }
     
     @Test
+    public void testProductByCloudCover() throws Exception {
+        // match cloud cover < 2
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&cloudCover=2]");
+        print(dom);
+        
+        // basics
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("12")));
+        assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/os:itemsPerPage", equalTo("10")));
+        assertThat(dom, hasXPath("/at:feed/os:Query"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@count]"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
+        assertThat(dom, hasXPath("/at:feed/os:Query[@opt:cloudCover='2]']"));
+    }
+    
+    @Test
     public void testGetSentinel2Metadata() throws Exception {
         Document dom = getAsDOM("oseo/metadata?uid=SENTINEL2", 200, MetadataRequest.ISO_METADATA);
         // print(dom);

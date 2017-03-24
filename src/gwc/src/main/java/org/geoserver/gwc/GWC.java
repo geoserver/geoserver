@@ -119,6 +119,7 @@ import org.geowebcache.seed.GWCTask;
 import org.geowebcache.seed.GWCTask.TYPE;
 import org.geowebcache.seed.SeedRequest;
 import org.geowebcache.seed.TileBreeder;
+import org.geowebcache.seed.TruncateBboxRequest;
 import org.geowebcache.service.Service;
 import org.geowebcache.storage.BlobStore;
 import org.geowebcache.storage.CompositeBlobStore;
@@ -394,9 +395,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
             if (intersectingBounds == null) {
                 continue;
             }
-            String styleName = null;// all of them
-            String format = null;// all of them
-            truncate(layerName, styleName, gridSetId, intersectingBounds, format);
+            try {
+                // This iterates over all cached parameters and all formats
+                new TruncateBboxRequest(layerName, intersectingBounds, gridSetId).doTruncate(storageBroker, tileBreeder);
+            } catch (StorageException | GeoWebCacheException e) {
+                log.log(Level.WARNING, e, ()->String.format("Error while truncating modified bounds for layer %s gridset %s",layerName, gridSetId));
+            }
         }
     }
 

@@ -13,6 +13,7 @@
   <bean id="gwcMassTruncateRestlet" class="org.geowebcache.rest.seed.MassTruncateRestlet">
     <property name="xmlConfig" ref="gwcXmlConfig"/>
     <property name="storageBroker" ref="gwcStorageBroker"/>
+    <property name="tileBreeder" ref="gwcTileBreeder"/>
   </bean>
   
   <bean id="gwcSeedFormRestlet" class="org.geowebcache.rest.seed.SeedFormRestlet">

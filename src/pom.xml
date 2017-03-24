@@ -1784,7 +1784,8 @@
   <module>web</module>
   <module>community</module>
   <module>extension</module>
-</modules>
+  <module>rest-ng</module>
+ </modules>
 
  <properties>
   <gs.version>2.12-SNAPSHOT</gs.version>

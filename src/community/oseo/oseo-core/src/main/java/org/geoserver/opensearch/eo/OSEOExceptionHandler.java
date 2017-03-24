@@ -37,7 +37,7 @@ public class OSEOExceptionHandler extends ServiceExceptionHandler {
     @Override
     public void handleServiceException(ServiceException exception, Request request) {
         HttpServletResponse response = request.getHttpResponse();
-        response.setContentType(RSS_MIME);
+        response.setContentType("application/xml");
 
         if (exception instanceof OWS20Exception) {
             OWS20Exception ex = (OWS20Exception) exception;

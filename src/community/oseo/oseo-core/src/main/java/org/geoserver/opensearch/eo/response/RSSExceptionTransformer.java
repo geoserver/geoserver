@@ -58,6 +58,21 @@ public class RSSExceptionTransformer extends LambdaTransformerBase {
     public Translator createTranslator(ContentHandler handler) {
         return new ExceptionTranslator(handler);
     }
+    
+    public static String getDescription(GeoServerInfo geoServer, ServiceException e) {
+        StringBuffer sb = new StringBuffer();
+        OwsUtils.dumpExceptionMessages(e, sb, true);
+
+        if (geoServer.getSettings().isVerboseExceptions()) {
+            ByteArrayOutputStream stackTrace = new ByteArrayOutputStream();
+            e.printStackTrace(new PrintStream(stackTrace));
+
+            sb.append("\nDetails:\n");
+            sb.append(ResponseUtils.encodeXML(new String(stackTrace.toByteArray())));
+        }
+
+        return sb.toString();
+    }
 
     class ExceptionTranslator extends LambdaTranslatorSupport {
 
@@ -86,22 +101,7 @@ public class RSSExceptionTransformer extends LambdaTransformerBase {
 
         private void itemContents(ServiceException e) {
             element("title", e.getMessage());
-            element("description", getDescription(e));
-        }
-
-        private String getDescription(ServiceException e) {
-            StringBuffer sb = new StringBuffer();
-            OwsUtils.dumpExceptionMessages(e, sb, true);
-
-            if (geoServer.getSettings().isVerboseExceptions()) {
-                ByteArrayOutputStream stackTrace = new ByteArrayOutputStream();
-                e.printStackTrace(new PrintStream(stackTrace));
-
-                sb.append("\nDetails:\n");
-                sb.append(ResponseUtils.encodeXML(new String(stackTrace.toByteArray())));
-            }
-
-            return sb.toString();
+            element("description", getDescription(geoServer, e));
         }
 
         private String buildSelfUrl() {

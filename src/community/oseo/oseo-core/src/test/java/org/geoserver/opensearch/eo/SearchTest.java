@@ -169,7 +169,7 @@ public class SearchTest extends OSEOTestSupport {
     @Test
     public void testGeoUidCollectionQuery() throws Exception {
         Document dom = getAsDOM("oseo/search?uid=LANDSAT8&httpAccept=" + AtomSearchResponse.MIME);
-        print(dom);
+        // print(dom);
 
         // basics
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));

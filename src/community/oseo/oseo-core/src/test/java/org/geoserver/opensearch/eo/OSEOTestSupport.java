@@ -174,7 +174,7 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
      * @throws Exception
      */
     protected Document getAsOpenSearchException(String path, int expectedStatus) throws Exception {
-        return getAsDOM(path, expectedStatus, OSEOExceptionHandler.RSS_MIME);
+        return getAsDOM(path, expectedStatus, "application/xml"); // OSEOExceptionHandler.RSS_MIME);
     }
 
     /**

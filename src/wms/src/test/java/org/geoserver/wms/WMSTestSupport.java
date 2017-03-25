@@ -30,12 +30,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -67,6 +72,8 @@ import org.junit.Assert;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -98,6 +105,14 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final Color COLOR_PLACES_GRAY = new Color(170, 170, 170);
     protected static final Color COLOR_LAKES_BLUE = new Color(64, 64, 192);
+
+    // Matches ISO timestamps;
+    // see http://stackoverflow.com/questions/3143070/javascript-regex-iso-datetime
+    protected static final String timestampRegex =
+            "(\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d+([+-][0-2]\\d:[0-5]\\d|Z))"
+            + "|(\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d([+-][0-2]\\d:[0-5]\\d|Z))"
+            + "|(\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d([+-][0-2]\\d:[0-5]\\d|Z))";
+
     /**
      * @return The global wms singleton from the application context.
      */
@@ -674,5 +689,31 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         // compare the parsed double value with the expected one
         double difference = Math.abs(expected - value);
         assertThat(difference <= precision, is(true));
+    }
+    
+    /**
+     * Filter a document in-place, removing nodes containing timestamps in their text, and return
+     * the document.
+     * 
+     * @param document DOcument to filter
+     * @return The same document (which is now filtered)
+     * @throws XPathExpressionException If the document can not be filtered for any reason
+     */
+    protected Document filterTimestamps(Document document) throws XPathExpressionException {
+        XPathExpression expression = XPathFactory.newInstance().newXPath()
+                .compile("//*[text()]");
+        
+        Pattern p = Pattern.compile(timestampRegex);
+        
+        NodeList nodes = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            // If the node contains a timestamp, excise it
+            if (p.matcher(node.getTextContent()).matches()) {
+                node.getParentNode().removeChild(node);
+            }
+        }
+        
+        return document;
     }
 }

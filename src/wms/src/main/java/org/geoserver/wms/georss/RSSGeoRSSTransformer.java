@@ -12,6 +12,7 @@ import java.util.logging.Level;
 
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.xml.transform.Translator;
@@ -41,13 +42,17 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
     }
 
     class RSSGeoRSSTranslator extends GeoRSSTranslatorSupport {
+
         private WMS wms;
+
+        private FeatureTemplate featureTemplate;
 
         public RSSGeoRSSTranslator(WMS wms, ContentHandler contentHandler) {
             super(contentHandler, null, null);
             this.wms = wms;
             nsSupport.declarePrefix("georss", "http://www.georss.org/georss");
             nsSupport.declarePrefix("atom", "http://www.w3.org/2005/Atom");
+            featureTemplate = new FeatureTemplate();
         }
 
         public void encode(Object o) throws IllegalArgumentException {
@@ -118,9 +123,9 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
             String description = "[Error while loading description]";
 
             try {
-                title = AtomUtils.getFeatureTitle(feature);
-                link = AtomUtils.getEntryURL(wms, feature, map);
-                description = AtomUtils.getFeatureDescription(feature);
+                title = AtomUtils.getFeatureTitle(feature, featureTemplate);
+                link = AtomUtils.getEntryURL(wms, feature, featureTemplate, map);
+                description = AtomUtils.getFeatureDescription(feature, featureTemplate);
             } catch (Exception e) {
                 String msg = "Error occured executing title template for: " + feature.getID();
                 LOGGER.log(Level.WARNING, msg, e);
@@ -138,7 +143,7 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
             end("guid");
 
             start("description");
-            cdata(AtomUtils.getFeatureDescription(feature));
+            cdata(AtomUtils.getFeatureDescription(feature, featureTemplate));
             end("description");
 
             GeometryCollection col = feature.getDefaultGeometry() instanceof GeometryCollection

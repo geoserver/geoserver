@@ -13,6 +13,7 @@ import java.util.logging.Level;
 
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
+import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.xml.transform.Translator;
@@ -39,10 +40,13 @@ public class AtomGeoRSSTransformer extends GeoRSSTransformerBase {
 
         private WMS wms;
 
+        private FeatureTemplate featureTemplate;
+
         public AtomGeoRSSTranslator(WMS wms, ContentHandler contentHandler) {
             super(contentHandler, null, "http://www.w3.org/2005/Atom");
             this.wms = wms;
             nsSupport.declarePrefix("georss", "http://www.georss.org/georss");
+            featureTemplate = new FeatureTemplate();
         }
 
         public void encode(Object o) throws IllegalArgumentException {
@@ -112,9 +116,9 @@ public class AtomGeoRSSTransformer extends GeoRSSTransformerBase {
             end("author");
 
             // id
-            element("id", AtomUtils.getEntryURI(wms, feature, map));
+            element("id", AtomUtils.getEntryURI(wms, feature, featureTemplate, map));
 
-            String link = AtomUtils.getEntryURL(wms, feature, map);
+            String link = AtomUtils.getEntryURL(wms, feature, featureTemplate, map);
             AttributesImpl atts = new AttributesImpl();
             atts.addAttribute(null, "href", "href", null, link);
             atts.addAttribute(null, "rel", "rel", null, "self");
@@ -126,7 +130,7 @@ public class AtomGeoRSSTransformer extends GeoRSSTransformerBase {
             // content
             atts = new AttributesImpl();
             atts.addAttribute(null, "type", "type", null, "html");
-            element("content", AtomUtils.getFeatureDescription(feature), atts);
+            element("content", AtomUtils.getFeatureDescription(feature, featureTemplate), atts);
 
             // where
             if (geometryEncoding == GeometryEncoding.LATLONG

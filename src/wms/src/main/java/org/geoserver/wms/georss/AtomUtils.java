@@ -45,13 +45,6 @@ public final class AtomUtils {
     private static NumberFormat doubleDigit = new DecimalFormat("00");
 
     /**
-     * A FeatureTemplate used for formatting feature info.
-     * 
-     * @TODO: Are these things threadsafe?
-     */
-    private static FeatureTemplate featureTemplate = new FeatureTemplate();
-
-    /**
      * This is a utility class so don't allow instantiation.
      */
     private AtomUtils() {
@@ -83,7 +76,8 @@ public final class AtomUtils {
     }
 
     // TODO: use an html based output format
-    public static String getEntryURL(WMS wms, SimpleFeature feature, WMSMapContent context) {
+    public static String getEntryURL(WMS wms, SimpleFeature feature,
+            FeatureTemplate featureTemplate, WMSMapContent context) {
         try {
             return featureTemplate.link(feature);
         } catch (IOException ioe) {
@@ -100,11 +94,12 @@ public final class AtomUtils {
         }
     }
 
-    public static String getEntryURI(WMS wms, SimpleFeature feature, WMSMapContent context) {
-        return getEntryURL(wms, feature, context);
+    public static String getEntryURI(WMS wms, SimpleFeature feature,
+            FeatureTemplate featureTemplate, WMSMapContent context) {
+        return getEntryURL(wms, feature, featureTemplate, context);
     }
 
-    public static String getFeatureTitle(SimpleFeature feature) {
+    public static String getFeatureTitle(SimpleFeature feature, FeatureTemplate featureTemplate) {
         try {
             return featureTemplate.title(feature);
         } catch (IOException ioe) {
@@ -112,7 +107,8 @@ public final class AtomUtils {
         }
     }
 
-    public static String getFeatureDescription(SimpleFeature feature) {
+    public static String getFeatureDescription(SimpleFeature feature,
+            FeatureTemplate featureTemplate) {
         try {
             return featureTemplate.description(feature);
         } catch (IOException ioe) {

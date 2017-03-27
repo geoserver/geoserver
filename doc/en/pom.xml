@@ -27,18 +27,27 @@
         <version>2.2.2</version>
         <executions>
           <execution>
-            <id>swagger</id>
+            <id>styles</id>
             <phase>process-resources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/api.yaml</inputSpec>
+              <inputSpec>src/main/resources/api/styles.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/</output>
-              <configOptions>
-                <sourceFolder>src/gen/java/main</sourceFolder>
-              </configOptions>
+              <output>${project.build.directory}/api/styles</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>workspace</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/workspaces/api.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/workspaces</output>
             </configuration>
           </execution>
         </executions>

@@ -1,5 +1,12 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Styles
+  description: A workspace is a group or folder of data stores for publishing. A workspace can be accessed as a virtual open webservice, or simply used to group related information.
+
 paths:
-  StylesPath:
+  /styles:
     get:
       operationId: getStyles
       summary: Get a list of styles
@@ -88,7 +95,7 @@ paths:
         405:
           description: Method Not Allowed
   
-  StylePath:
+  /style/{styleName}:
     get:
       operationId: getStyle
       summary: Retrieve a style

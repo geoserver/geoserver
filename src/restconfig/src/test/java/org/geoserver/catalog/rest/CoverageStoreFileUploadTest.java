@@ -24,6 +24,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -48,7 +49,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
     @Before
-    public void cleanup() {
+    public void cleanup() throws IOException {
         // wipe out everything under "mosaic"
         CoverageInfo coverage = getCatalog().getResourceByName("mosaic", CoverageInfo.class);
         if(coverage != null) {
@@ -176,6 +177,34 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         assertEquals("true", reader.getMetadataValue("HAS_TIME_DOMAIN"));
         assertEquals("2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z,2008-11-02T00:00:00.000Z", 
                 reader.getMetadataValue(metadataNames[0]));
+    }
+    
+    @Test
+    public void testHarvestNotAllowedOnSimpleCoverageStore() throws Exception {
+        // add bluemarble
+        getTestData().addDefaultRasterLayer(SystemTestData.TASMANIA_BM, getCatalog());
+        
+        // Harvesting of the Mosaic
+        URL zipHarvest = MockData.class.getResource("harvesting.zip");
+        // Extract a Byte array from the zip file
+        InputStream is = null;
+        byte[] bytes;
+        try  {
+            is = zipHarvest.openStream();
+            bytes = IOUtils.toByteArray(is);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+        // Create the POST request
+        MockHttpServletRequest request = createRequest( "/rest/workspaces/wcs/coveragestores/BlueMarble" ); 
+        request.setMethod( "POST" );
+        request.setContentType("application/zip" );
+        request.setContent(bytes);
+        request.addHeader("Content-type", "application/zip");
+        // Get The response
+        MockHttpServletResponse response = dispatch( request );
+        // not allowed
+        assertEquals(405, response.getStatus());
     }
 
     @Test

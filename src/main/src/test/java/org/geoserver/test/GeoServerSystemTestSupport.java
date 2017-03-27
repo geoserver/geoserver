@@ -1063,7 +1063,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         request.setMethod("PUT");
         request.setContentType(contentType);
         request.setContent(body);
-        request.addHeader("Content-type", contentType);
 
         return dispatch(request);
     }
@@ -1152,7 +1151,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         request.setMethod("POST");
         request.setContentType(contentType);
         request.setContent(body.getBytes("UTF-8"));
-        request.addHeader("Content-type", contentType);
 
         return dispatch(request);
     }
@@ -1162,7 +1160,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         request.setMethod("POST");
         request.setContentType(contentType);
         request.setContent(body.getBytes("UTF-8"));
-        request.addHeader("Content-type", contentType);
         return dispatch(request, charset);
     }
 
@@ -1173,7 +1170,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         request.setMethod("POST");
         request.setContentType(contentType);
         request.setContent(body);
-        request.addHeader("Content-type", contentType);
 
         return dispatch(request);
     }

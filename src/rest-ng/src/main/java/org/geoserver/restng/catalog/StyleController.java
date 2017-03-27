@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -28,9 +27,9 @@ import org.geoserver.rest.util.IOUtils;
 import org.geoserver.restng.ResourceNotFoundException;
 import org.geoserver.restng.RestException;
 import org.geoserver.restng.catalog.wrapper.XStreamListWrapper;
+import org.geoserver.restng.wrapper.FreemarkerConfigurationWrapper;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
-import org.geoserver.restng.wrapper.FreemarkerConfigurationWrapper;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +37,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,7 +72,7 @@ public class StyleController extends CatalogController {
         super(catalog);
     }
 
-    @RequestMapping(value = "/styles", method = RequestMethod.GET,
+    @GetMapping(value = "/styles",
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public XStreamListWrapper getStyles() {
 
@@ -78,33 +80,33 @@ public class StyleController extends CatalogController {
         return toXStreamList(styles, StyleInfo.class);
     }
 
-    @RequestMapping(value = "/workspaces/{workspaceName}/styles", method = RequestMethod.GET,
+    @GetMapping(value = "/workspaces/{workspaceName}/styles", 
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public XStreamListWrapper getStylesFromWorkspace(@PathVariable String workspaceName) {
         LOGGER.fine("GET styles for workspace " + workspaceName);
         return toXStreamList(catalog.getStylesByWorkspace(workspaceName), StyleInfo.class);
     }
 
-    @RequestMapping(value = "/styles", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+    @GetMapping(value = "/styles", produces = {MediaType.TEXT_HTML_VALUE})
     public FreemarkerConfigurationWrapper getStylesFreemarker() {
         List<StyleInfo> styles = catalog.getStylesByWorkspace(CatalogFacade.NO_WORKSPACE);
         return toFreemarkerList(styles, StyleInfo.class);
     }
 
-    @RequestMapping(value = "/workspaces/{workspaceName}/styles", method = RequestMethod.GET,
+    @GetMapping(value = "/workspaces/{workspaceName}/styles",
             produces = {MediaType.TEXT_HTML_VALUE})
     public FreemarkerConfigurationWrapper getStylesFromWorkspaceFreemarker(@PathVariable String workspaceName) {
         LOGGER.fine("GET styles for workspace " + workspaceName);
         return toFreemarkerList(catalog.getStylesByWorkspace(workspaceName));
     }
 
-    @RequestMapping(value = "/styles", method = RequestMethod.POST, consumes = { "text/xml", "application/xml" })
+    @PostMapping(value = "/styles", consumes = { "text/xml", "application/xml" })
     @ResponseStatus(HttpStatus.CREATED)
     public String postStyle(@RequestBody StyleInfo style) {
         return postStyleInfoInternal(style, null, null, false);
     }
 
-    @RequestMapping(value = "/layers/{layerName}/styles", method = RequestMethod.POST, consumes = { "text/xml", "application/xml" })
+    @PostMapping(value = "/layers/{layerName}/styles", consumes = { "text/xml", "application/xml" })
     @ResponseStatus(HttpStatus.CREATED)
     public String postStyle(@RequestBody StyleInfo style, @PathVariable String layerName,
         @RequestParam(defaultValue = "false", name = "default") boolean makeDefault)
@@ -112,7 +114,7 @@ public class StyleController extends CatalogController {
         return postStyleInfoInternal(style, null, layerName, makeDefault);
     }
 
-    @RequestMapping(value = "/styles", method = RequestMethod.POST,
+    @PostMapping(value = "/styles",
         consumes = {SLDHandler.MIMETYPE_11, SLDHandler.MIMETYPE_10})
     public ResponseEntity<String> postStyle(@RequestBody Style style, @RequestParam(required = false) String name,
         @RequestHeader("Content-Type") String contentType, UriComponentsBuilder builder)
@@ -121,9 +123,8 @@ public class StyleController extends CatalogController {
         return postStyleInternal(style, name, null, handler, contentType, builder);
     }
 
-    @RequestMapping(
+    @PostMapping(
         value = "/workspaces/{workspaceName}/styles",
-        method = RequestMethod.POST,
         consumes = {SLDHandler.MIMETYPE_11, SLDHandler.MIMETYPE_10})
     public ResponseEntity<String> postStyle(
         @RequestBody Style style,
@@ -248,8 +249,8 @@ public class StyleController extends CatalogController {
         return uriComponents;
     }
 
-    @RequestMapping(value = "/workspaces/{workspaceName}/styles",
-        method = RequestMethod.POST, consumes = { "text/xml", "application/xml" })
+    @PostMapping(value = "/workspaces/{workspaceName}/styles",
+        consumes = { "text/xml", "application/xml" })
     @ResponseStatus(HttpStatus.CREATED)
     public String postStyleInfoToWorkspace(@RequestBody StyleInfo styleInfo,
         @PathVariable String workspaceName) {
@@ -286,7 +287,7 @@ public class StyleController extends CatalogController {
         return style.getName();
     }
 
-    @RequestMapping(path = "/workspaces/{workspaceName}/styles/{styleName}", method = RequestMethod.GET,
+    @GetMapping(path = "/workspaces/{workspaceName}/styles/{styleName}",
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
             SLDHandler.MIMETYPE_10, SLDHandler.MIMETYPE_11})
     protected StyleInfo getStyleFromWorkspace(
@@ -295,7 +296,7 @@ public class StyleController extends CatalogController {
         return getStyleInternal(styleName, workspaceName);
     }
 
-    @RequestMapping(path = "/styles/{styleName}", method = RequestMethod.GET,
+    @GetMapping(path = "/styles/{styleName}",
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
             SLDHandler.MIMETYPE_10, SLDHandler.MIMETYPE_11})
     protected StyleInfo getStyle(
@@ -303,14 +304,14 @@ public class StyleController extends CatalogController {
         return getStyleInternal(styleName, null);
     }
 
-    @RequestMapping(path = "/workspaces/{workspaceName}/styles/{styleName}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+    @GetMapping(path = "/workspaces/{workspaceName}/styles/{styleName}", produces = {MediaType.TEXT_HTML_VALUE})
     protected FreemarkerConfigurationWrapper getStyleFromWorkspaceFreemarker(
             @PathVariable String styleName,
             @PathVariable String workspaceName) {
         return toFreemarkerMap(getStyleInternal(styleName, workspaceName));
     }
 
-    @RequestMapping(path = "/styles/{styleName}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+    @GetMapping(path = "/styles/{styleName}", produces = {MediaType.TEXT_HTML_VALUE})
     protected FreemarkerConfigurationWrapper getStyleFreemarker(
             @PathVariable String styleName) {
         return toFreemarkerMap(getStyleInternal(styleName, null));
@@ -333,9 +334,8 @@ public class StyleController extends CatalogController {
         }
     }
 
-    @RequestMapping(
-        path = "/workspaces/{workspaceName}/styles/{styleName}",
-        method = RequestMethod.DELETE)
+    @DeleteMapping(
+        path = "/workspaces/{workspaceName}/styles/{styleName}")
     protected void deleteStyleWithWorkspace(
         @PathVariable String styleName,
         @PathVariable String workspaceName,
@@ -345,7 +345,7 @@ public class StyleController extends CatalogController {
         deleteStyleInternal(styleName, recurse, purge, workspaceName);
     }
 
-    @RequestMapping(path = "/styles/{styleName}", method = RequestMethod.DELETE)
+    @DeleteMapping(path = "/styles/{styleName}")
     protected void deleteStyle(
         @PathVariable String styleName,
         @RequestParam(required = false, defaultValue = "false") boolean recurse,
@@ -401,24 +401,20 @@ public class StyleController extends CatalogController {
         return name;
     }
 
-    @RequestMapping(value = "/styles/{styleName}", method = RequestMethod.PUT,
-        consumes = { "text/xml", "application/xml" })
+    @PutMapping(value = "/styles/{styleName}", consumes = { "text/xml", "application/xml" })
     public void
     putStyleInfo(@RequestBody StyleInfo info, @PathVariable String styleName) {
         handleStyleInfoPutInternal(info, null, styleName);
     }
 
-    @RequestMapping(value = "/styles", method = RequestMethod.POST,
-        consumes = {"application/zip"})
+    @PostMapping(value = "/styles", consumes = {"application/zip"})
     public ResponseEntity<String> postStyle(InputStream stream,
         @RequestParam(required = false) String name, UriComponentsBuilder builder)
         throws IOException {
         return postStylePackageInternal(stream, null, name, builder);
     }
 
-    @RequestMapping(
-        value = "/workspaces/{workspaceName}/styles",
-        method = RequestMethod.POST,
+    @PostMapping(value = "/workspaces/{workspaceName}/styles",
         consumes = {"application/zip"})
     public ResponseEntity<String> postStyleToWorkspace(
         InputStream stream,
@@ -430,9 +426,8 @@ public class StyleController extends CatalogController {
         return postStylePackageInternal(stream, workspaceName, name, builder);
     }
 
-    @RequestMapping(
+    @PutMapping(
         value = "/workspaces/{workspaceName}/styles/{styleName}",
-        method = RequestMethod.PUT,
         consumes = {"application/zip"})
     public void putStyleInfo(
         InputStream is,
@@ -443,9 +438,8 @@ public class StyleController extends CatalogController {
         putZipInternal(is, workspaceName, name, styleName);
     }
 
-    @RequestMapping(
+    @PutMapping(
         value = "/styles/{styleName}",
-        method = RequestMethod.PUT,
         consumes = {"application/zip"})
     public void putStyleInfoToWorkspace(
         InputStream is,
@@ -455,14 +449,14 @@ public class StyleController extends CatalogController {
         putZipInternal(is, null, name, styleName);
     }
 
-    @RequestMapping(value = "/workspaces/{workspaceName}/styles/{styleName}",
-        method = RequestMethod.PUT, consumes = { "text/xml", "application/xml" })
+    @PutMapping(value = "/workspaces/{workspaceName}/styles/{styleName}",
+        consumes = { "text/xml", "application/xml" })
     public void putStyleInfoToWorkspace(@RequestBody StyleInfo info, @PathVariable String styleName,
         @PathVariable String workspaceName) {
         handleStyleInfoPutInternal(info, workspaceName, styleName);
     }
 
-    @RequestMapping(value = "/styles/{styleName}", method = RequestMethod.PUT,
+    @PutMapping(value = "/styles/{styleName}",
         consumes = {SLDHandler.MIMETYPE_11, SLDHandler.MIMETYPE_10})
     public void putStyleInfo(@RequestBody Style style, @PathVariable String styleName)
         throws IOException {

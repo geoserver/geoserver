@@ -1791,7 +1791,7 @@
   <gs.version>2.12-SNAPSHOT</gs.version>
   <gt.version>18-SNAPSHOT</gt.version>
   <gwc.version>1.12-SNAPSHOT</gwc.version>
-  <spring.version>4.2.5.RELEASE</spring.version>
+  <spring.version>4.3.7.RELEASE</spring.version>
   <spring.security.version>4.0.4.RELEASE</spring.security.version> 
   <servlet-api.version>3.0.1</servlet-api.version>
   <jetty.version>9.2.13.v20150730</jetty.version>

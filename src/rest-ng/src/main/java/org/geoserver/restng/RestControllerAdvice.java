@@ -3,10 +3,13 @@ package org.geoserver.restng;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -36,9 +39,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RestControllerAdvice extends ResponseEntityExceptionHandler {
 
+    static final Logger LOGGER = Logging.getLogger(RestControllerAdvice.class);
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public void handleResourceNotFound(ResourceNotFoundException e, HttpServletResponse response, WebRequest request, OutputStream os)
         throws IOException {
+        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        
         String quietOnNotFound = request.getParameter("quietOnNotFound"); //yes this is seriously a thing
         String message = e.getMessage();
         if (Boolean.parseBoolean(quietOnNotFound)) {
@@ -51,6 +58,8 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RestException.class)
     public void handleRestException(RestException e, HttpServletResponse response, WebRequest request, OutputStream os)
         throws IOException {
+        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+
         response.setStatus(e.getStatus().value());
         StreamUtils.copy(e.getMessage(), Charset.forName("UTF-8"), os);
     }
@@ -59,6 +68,8 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handleGeneralException(Exception e, HttpServletRequest request,
         HttpServletResponse response, OutputStream os) throws IOException {
+        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        
         response.setStatus(500);
         StreamUtils.copy(e.getMessage(), Charset.forName("UTF-8"), os);
     }

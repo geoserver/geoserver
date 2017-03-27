@@ -39,14 +39,21 @@ public class ConfigEditPanel extends Panel {
         feedback.setOutputMarkupId(true);
         form.add(feedback);
 
-        final boolean isNew = model.getObject().getId() == null;
+        boolean isNew = true;
+        for (ConfigEntry config : table.getConfigs()) {
+            if (config.equals(model.getObject())) {
+                isNew = false;
+                break;
+            }
+        }
+        final boolean isInTable = !isNew;
         name = new TextField<>("name", new PropertyModel<>(model, "name"));
         name.setRequired(true);
         name.add(new PatternValidator("[^\\s]+"));
         name.add(new IValidator<String>() {
             private static final long serialVersionUID = 2927770353770055054L;
 
-            final String previousName = isNew ? null : form.getModelObject().getName();
+            final String previousName = isInTable ? form.getModelObject().getName() : null;
 
             @Override
             public void validate(IValidatable<String> validatable) {
@@ -54,12 +61,14 @@ public class ConfigEditPanel extends Panel {
                 if (ConfigEntry.isRestricted(name)) {
                 	form.error(String.format("Modifying %s through this interface can have unintended consequences and is not allowed.", name));
                 } else {
-	                for (ConfigEntry config : table.getConfigs()) {
-	                    String newName = config.getName();
-	                    if (newName != null && !newName.equals(previousName) && newName.equals(name)) {
-	                    	form.error(String.format("A config entry called %s already exists", name));
-	                    }
-	                }
+                    for (ConfigEntry config : table.getConfigs()) {
+                        if (!config.equals(model.getObject())) {
+                            String newName = config.getName();
+                            if (newName != null && !newName.equals(previousName) && newName.equals(name)) {
+                                form.error(String.format("A config entry called %s already exists", name));
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -81,8 +90,7 @@ public class ConfigEditPanel extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
             	ConfigEntry newConfig = (ConfigEntry) form.getModelObject();
-                boolean isNew = newConfig.getId() == null;
-                if (isNew) {
+                if (!isInTable) {
                     table.add(newConfig);
                 }
                 parentWindow.close(target);

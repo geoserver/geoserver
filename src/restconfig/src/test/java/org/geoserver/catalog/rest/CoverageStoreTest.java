@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -201,6 +202,20 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         
         assertNotNull(newCoverageStore.getFormat());
     }
+    
+    @Test
+    public void testRoundTripCoverageStoreXML() throws Exception {
+        CoverageInfo before = catalog.getCoverageByName(getLayerId(MockData.TASMANIA_BM));
+        
+        // get and re-write, does not go boom
+        String xml = getAsString( "/rest/workspaces/wcs/coveragestores/BlueMarble.xml");
+        MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+        
+        // check nothing actually changed
+        CoverageInfo after = catalog.getCoverageByName(getLayerId(MockData.TASMANIA_BM));
+        assertEquals(before, after);
+    }
 
     @Test
     public void testGetAsJSON() throws Exception {
@@ -214,7 +229,7 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         assertNotNull( coverageStore.get( "type") );
         assertNotNull( coverageStore.get( "url") );
     }
-
+    
     @Test
     public void testPostAsJSON() throws Exception {
         removeStore("wcs", "newCoverageStore");
@@ -237,6 +252,20 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         CoverageStoreInfo newCoverageStore = catalog.getCoverageStoreByName( "newCoverageStore" );
         assertNotNull( newCoverageStore );
         assertNotNull( newCoverageStore.getFormat() );
+    }
+    
+    @Test
+    public void testRoundTripCoverageStoreJSON() throws Exception {
+        CoverageInfo before = catalog.getCoverageByName(getLayerId(MockData.TASMANIA_BM));
+        
+        // get and re-write, does not go boom
+        String xml = getAsString( "/rest/workspaces/wcs/coveragestores/BlueMarble.json");
+        MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/wcs/coveragestores/BlueMarble", xml, "application/json");
+        assertEquals(200, response.getStatus());
+        
+        // check nothing actually changed
+        CoverageInfo after = catalog.getCoverageByName(getLayerId(MockData.TASMANIA_BM));
+        assertEquals(before, after);
     }
 
     @Test

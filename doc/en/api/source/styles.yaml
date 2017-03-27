@@ -8,6 +8,7 @@ info:
 paths:
   /styles:
     get:
+      operationId: getStyleList
       summary: Get a list of styles
       description: Displays a list of all styles on the server. Use the "Accept:" header to specify format, or append an extension to the endpoint (example "/styles.xml" for XML)    
       produces:
@@ -48,6 +49,7 @@ paths:
         401:
           description: Full authentication is required to access this resource
     post:
+      operationId: postStyle
       summary: Add a new style
       description: Adds a new style to the server.
       parameters:
@@ -85,6 +87,7 @@ paths:
         description: The purge parameter specifies whether the underlying SLD file for the style should be deleted on disk. Allowable values for this parameter are “true” or “false”. When set to “true” the underlying file will be deleted.
         type: boolean                         
     get:
+      operationId: getStyle
       summary: Get a single style
       description: Controls a given style.
       produces:
@@ -152,6 +155,7 @@ paths:
         401:
           description: Full authentication is required to access this resource        
     delete:
+      operationId: deleteStyle
       summary: Delete a style
       description: Delete a style
       parameters:
@@ -166,6 +170,7 @@ paths:
         401:
           description: Full authentication is required to access this resource              
     put:
+      operationId: putStyle
       summary: Modify a single style
       description: Modify a single style
       parameters:
@@ -187,7 +192,7 @@ paths:
       responses:
         200:
           description: The style was successfully updated.
-          
+
 definitions:
   StyleInfoPost:
     type: object
@@ -216,13 +221,11 @@ definitions:
   StylePutBody:
     type: String
     description: The style body.
-    example: {"text/css": "/* @title gold point */
-                          * {
-                              mark: symbol(square);
-                              mark-size: 6px;
-                              :mark {
-                                  fill: #ffcc00;
-                              }
-                          }"}    
-    
-    
+    example: "/* @title gold point */
+              * {
+                  mark: symbol(square);
+                  mark-size: 6px;
+                  :mark {
+                      fill: #ffcc00;
+                  }
+              }"

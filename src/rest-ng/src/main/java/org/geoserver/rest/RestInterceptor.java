@@ -16,7 +16,7 @@ public class RestInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        RequestContextHolder.getRequestAttributes().setAttribute( RequestInfo.KEY, new RequestInfo(request), RequestAttributes.SCOPE_REQUEST );
+        RequestInfo.set(new RequestInfo(request));
 
         return true;
     }

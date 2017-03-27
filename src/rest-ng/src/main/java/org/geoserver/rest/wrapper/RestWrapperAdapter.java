@@ -1,7 +1,9 @@
 package org.geoserver.rest.wrapper;
 
-import freemarker.template.Template;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.converters.XStreamMessageConverter;
+
+import freemarker.template.Template;
 
 /**
  * Default implementation of {@link RestWrapper}
@@ -36,7 +38,7 @@ public class RestWrapperAdapter<T> implements RestWrapper<T> {
      * Default (empty) implementation. Subclasses should override this to implement custom functionality
      */
     @Override
-    public void configurePersister(XStreamPersister persister) { }
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) { }
 
     /**
      * @return freemarker template
@@ -45,4 +47,5 @@ public class RestWrapperAdapter<T> implements RestWrapper<T> {
     public Template getTemplate() {
         return template;
     }
+   
 }

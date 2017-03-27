@@ -74,7 +74,7 @@ public class RestController {
             if(template == null)
                 template = tryLoadTemplate(configuration, templateName + ".ftl");
         }
-        final RequestInfo requestInfo = (RequestInfo) RequestContextHolder.getRequestAttributes().getAttribute( RequestInfo.KEY, RequestAttributes.SCOPE_REQUEST );
+        final RequestInfo requestInfo = RequestInfo.get();
 
         //next look up by the resource being requested
         if ( template == null && requestInfo != null ) {
@@ -246,7 +246,7 @@ public class RestController {
          * @throws TemplateModelException
          */
         protected void setRequestInfo(SimpleHash model) throws TemplateModelException {
-            final RequestInfo requestInfo = (RequestInfo) RequestContextHolder.getRequestAttributes().getAttribute( RequestInfo.KEY, RequestAttributes.SCOPE_REQUEST );
+            final RequestInfo requestInfo = RequestInfo.get();
 
             if (model.get("page") == null) {
                 if (requestInfo != null) {

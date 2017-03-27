@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.wrapper.RestListWrapper;
 import org.geoserver.rest.wrapper.RestWrapper;
@@ -14,10 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+
 /**
  * Message converter implementation for XML serialization via XStream
  */
-public class XStreamXMLMessageConverter extends BaseMessageConverter {
+public class XStreamXMLMessageConverter extends XStreamMessageConverter {
 
     public XStreamXMLMessageConverter(ApplicationContext applicationContext) {
         super(applicationContext);
@@ -57,9 +61,34 @@ public class XStreamXMLMessageConverter extends BaseMessageConverter {
         xmlPersister.setReferenceByName(true);
         xmlPersister.setExcludeIds();
         if (o instanceof RestWrapper) {
-            ((RestWrapper) o).configurePersister(xmlPersister);
+            ((RestWrapper) o).configurePersister(xmlPersister, this);
             o = ((RestWrapper) o).getObject();
         }
         xmlPersister.save(o, outputMessage.getBody());
+    }
+    
+    @Override
+    protected String getMediaType() {
+        return MediaType.APPLICATION_ATOM_XML_VALUE;
+    }
+
+    @Override
+    protected String getExtension() {
+        return "xml";
+    }
+    
+    @Override
+    protected XStream createXStreamInstance() {
+        return new SecureXStream();
+    }
+
+    @Override
+    public void encodeLink(String link, HierarchicalStreamWriter writer) {
+        encodeAlternateAtomLink(link, writer);
+    }
+    
+    @Override
+    public void encodeCollectionLink(String link, HierarchicalStreamWriter writer) {
+        encodeAlternateAtomLink(link, writer);
     }
 }

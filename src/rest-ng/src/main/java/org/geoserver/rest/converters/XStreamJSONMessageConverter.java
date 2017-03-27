@@ -14,13 +14,27 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+
 /**
  * Message converter implementation for JSON serialization via XStream
  */
-public class XStreamJSONMessageConverter extends BaseMessageConverter {
+public class XStreamJSONMessageConverter extends XStreamMessageConverter {
 
     public XStreamJSONMessageConverter(ApplicationContext applicationContext) {
         super(applicationContext);
+    }
+    
+    @Override
+    protected String getExtension() {
+        return "json";
+    }
+    
+    @Override
+    protected String getMediaType() {
+        return MediaType.APPLICATION_JSON_VALUE;
     }
 
     @Override
@@ -66,10 +80,27 @@ public class XStreamJSONMessageConverter extends BaseMessageConverter {
         xmlPersister.setReferenceByName(true);
         xmlPersister.setExcludeIds();
         if (o instanceof RestWrapper) {
-            ((RestWrapper) o).configurePersister(xmlPersister);
+            ((RestWrapper) o).configurePersister(xmlPersister, this);
             o = ((RestWrapper) o).getObject();
         }
         xmlPersister.save(o, outputMessage.getBody());
+    }
+    
+    @Override
+    public void encodeLink(String link, HierarchicalStreamWriter writer) {
+        writer.startNode( "href" );
+        writer.setValue(href(link));
+        writer.endNode();
+    }
+    
+    @Override
+    public void encodeCollectionLink(String link, HierarchicalStreamWriter writer) {
+        writer.setValue(href(link));
+    }
+
+    @Override
+    protected XStream createXStreamInstance() {
+        return new XStream(new JettisonMappedXmlDriver());
     }
 
 }

@@ -1,7 +1,9 @@
 package org.geoserver.rest.wrapper;
 
-import freemarker.template.Template;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.converters.XStreamMessageConverter;
+
+import freemarker.template.Template;
 
 /**
  * Wrapper for objects returned by MVC Rest endpoints
@@ -27,9 +29,10 @@ public interface RestWrapper<T> {
      * Apply configuration to the XStreamPersister based on the data format
      *
      * @param persister The XStream persister
+     * @param xStreamMessageConverter 
      * @param format Format of data
      */
-    void configurePersister(XStreamPersister persister);
+    void configurePersister(XStreamPersister persister, XStreamMessageConverter xStreamMessageConverter);
 
     /**
      * Get the freemarker template associated with this response

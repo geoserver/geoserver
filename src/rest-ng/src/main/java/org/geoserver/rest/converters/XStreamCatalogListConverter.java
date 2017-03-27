@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
  * Converter to handle the serialization of lists of catalog resources, which need some special
  * handling
  */
-public abstract class XStreamCatalogListConverter extends BaseMessageConverter {
+public abstract class XStreamCatalogListConverter extends XStreamMessageConverter {
 
     public XStreamCatalogListConverter(ApplicationContext applicationContext) {
         super(applicationContext);
@@ -128,49 +128,6 @@ public abstract class XStreamCatalogListConverter extends BaseMessageConverter {
     }
 
     /**
-     * Encode the given link
-     * @param link
-     * @param writer
-     */
-    protected abstract void encodeLink( String link, HierarchicalStreamWriter writer);
-
-
-    /**
-     * Create the instance of XStream needed to do encoding
-     * @return
-     */
-    protected abstract XStream createXStreamInstance();
-
-    protected void encodeAlternateAtomLink(String link, HierarchicalStreamWriter writer) {
-        writer.startNode( "atom:link");
-        writer.addAttribute("xmlns:atom", "http://www.w3.org/2005/Atom");
-        writer.addAttribute("rel", "alternate");
-        writer.addAttribute("href", href(link));
-        writer.addAttribute("type", getMediaType());
-
-        writer.endNode();
-    }
-
-    protected String href( String link) {
-
-        final RequestInfo pg = (RequestInfo) RequestContextHolder
-            .getRequestAttributes().getAttribute( RequestInfo.KEY, RequestAttributes.SCOPE_REQUEST );
-        String ext = getExtension();
-
-        if(ext != null && ext.length() > 0)
-            link = link+ "." + ext;
-
-        // encode as relative or absolute depending on the link type
-        if ( link.startsWith( "/") ) {
-            // absolute, encode from "root"
-            return pg.servletURI(link);
-        } else {
-            //encode as relative
-            return pg.pageURI(link);
-        }
-    }
-
-    /**
      * Template method to alias the type of the collection.
      * <p>
      * The default works with list, subclasses may override for instance
@@ -183,29 +140,8 @@ public abstract class XStreamCatalogListConverter extends BaseMessageConverter {
         xstream.alias(alias + "s", Collection.class, data.getClass());
     }
 
-    /**
-     * The extension used for resources of the type being encoded
-     * @return
-     */
-    protected abstract String getExtension();
-
-    /**
-     * Get the text representation of the mime type being encoded. Only used in link encoding for
-     * xml
-     * @return
-     */
-    protected abstract String getMediaType();
-
     protected String getItemName(XStreamPersister xp, Class clazz) {
         return xp.getClassAliasingMapper().serializedClass( clazz );
-    }
-
-    protected String encode(String component) {
-        try {
-            return URLEncoder.encode(component, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return component;
-        }
     }
 
     /**
@@ -223,7 +159,12 @@ public abstract class XStreamCatalogListConverter extends BaseMessageConverter {
         }
 
         @Override
-        protected void encodeLink(String link, HierarchicalStreamWriter writer) {
+        public void encodeLink(String link, HierarchicalStreamWriter writer) {
+            encodeAlternateAtomLink(link, writer);
+        }
+        
+        @Override
+        public void encodeCollectionLink(String link, HierarchicalStreamWriter writer) {
             encodeAlternateAtomLink(link, writer);
         }
 
@@ -250,10 +191,15 @@ public abstract class XStreamCatalogListConverter extends BaseMessageConverter {
         }
 
         @Override
-        protected void encodeLink(String link, HierarchicalStreamWriter writer) {
+        public void encodeLink(String link, HierarchicalStreamWriter writer) {
             writer.startNode( "href" );
             writer.setValue(href(link));
             writer.endNode();
+        }
+        
+        @Override
+        public void encodeCollectionLink(String link, HierarchicalStreamWriter writer) {
+            writer.setValue(href(link));
         }
 
         @Override

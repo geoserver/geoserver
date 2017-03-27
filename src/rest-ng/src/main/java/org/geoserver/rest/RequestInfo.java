@@ -1,9 +1,11 @@
 package org.geoserver.rest;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
-
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * An object which contains information about the "page" or "resource" being accessed
@@ -124,5 +126,25 @@ public class RequestInfo {
         }
 
         return ResponseUtils.buildURL(baseURL, path, null, URLMangler.URLType.SERVICE);
+    }
+    
+    /**
+     * Returns the RequestInfo from the current {@link RequestContextHolder}
+     * 
+     * @return
+     */
+    public static RequestInfo get() {
+        return (RequestInfo) RequestContextHolder.getRequestAttributes()
+                .getAttribute(RequestInfo.KEY, RequestAttributes.SCOPE_REQUEST);
+    }
+
+    /**
+     * Sets the provided RequestInfo into the {@link RequestContextHolder}
+     * 
+     * @param requestInfo
+     */
+    public static void set(RequestInfo requestInfo) {
+        RequestContextHolder.getRequestAttributes().setAttribute(RequestInfo.KEY, requestInfo,
+                RequestAttributes.SCOPE_REQUEST);
     }
 }

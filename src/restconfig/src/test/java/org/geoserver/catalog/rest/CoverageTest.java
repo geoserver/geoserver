@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog.rest;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -19,6 +20,7 @@ import java.net.URL;
 import java.util.List;
 
 import net.sf.json.JSON;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.FileUtils;
@@ -31,6 +33,7 @@ import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
 import org.geotools.util.NumberRange;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
@@ -53,11 +56,18 @@ public class CoverageTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    public void testGetAllByWorkspace() throws Exception {
+    public void testGetAllByWorkspaceXML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/wcs/coverages.xml");
         assertEquals( 
             catalog.getCoveragesByNamespace( catalog.getNamespaceByPrefix( "wcs") ).size(), 
             dom.getElementsByTagName( "coverage").getLength() );
+    }
+
+    @Test
+    public void testGetAllByWorkspaceJSON() throws Exception {
+        JSONObject json = (JSONObject) getAsJSON("/rest/workspaces/wcs/coverages.json");
+        JSONArray coverages = json.getJSONObject("coverages").getJSONArray("coverage");
+        assertEquals(catalog.getCoveragesByNamespace( catalog.getNamespaceByPrefix( "wcs")).size(), coverages.size());
     }
     
     void addCoverageStore(boolean autoConfigureCoverage) throws Exception {
@@ -244,9 +254,65 @@ public class CoverageTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("-130.85168", "/coverage/latLonBoundingBox/minx", dom);
         assertXpathEvaluatesTo("983 598", "/coverage/grid/range/high", dom);
 
+        dom = getAsDOM( "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        assertEquals( 1, dom.getElementsByTagName( "coverage").getLength() );
     }
-  
-  
+
+    @Test
+    public void testPostAsJSON() throws Exception {
+        // remove the test store and test that the layer is not available
+        removeStore("gs", "usaWorldImage");
+        String request = "wcs?service=wcs&request=getcoverage&version=1.1.1&identifier=gs:usa" +
+                "&boundingbox=-100,30,-80,44,EPSG:4326&format=image/tiff&gridbasecrs=EPSG:4326&store=true";
+        Document document = getAsDOM(request);
+        assertEquals( "ows:ExceptionReport", document.getDocumentElement().getNodeName());
+        // add the test store, no coverages should be available
+        addCoverageStore(false);
+        JSONObject json = (JSONObject) getAsJSON("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.json");
+        assertThat(json.getString("coverages").isEmpty(), is(true));
+        // content for the POST request
+        String content = "{" +
+                "    \"coverage\": {" +
+                "        \"description\": \"Generated from WorldImage\"," +
+                "        \"name\": \"usa\"," +
+                "        \"namespace\": \"gs\"," +
+                "        \"requestSRS\": {" +
+                "            \"string\": [" +
+                "                \"EPSG:4326\"" +
+                "            ]" +
+                "        }," +
+                "        \"responseSRS\": {" +
+                "            \"string\": [" +
+                "                \"EPSG:4326\"" +
+                "            ]" +
+                "        }," +
+                "        \"srs\": \"EPSG:4326\"," +
+                "        \"store\": \"usaWorldImage\"," +
+                "        \"supportedFormats\": {" +
+                "            \"string\": [" +
+                "                \"PNG\"," +
+                "                \"GEOTIFF\"" +
+                "            ]" +
+                "        }," +
+                "        \"title\": \"usa is a A raster file accompanied by a spatial data file\"" +
+                "    }" +
+                "}";
+        // perform the POST request that will create the USA coverage
+        MockHttpServletResponse response = postAsServletResponse(
+                "/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/", content, "application/json");
+        assertEquals(201, response.getStatus());
+        assertNotNull(response.getHeader( "Location"));
+        assertTrue(response.getHeader("Location").endsWith("/workspaces/gs/coveragestores/usaWorldImage/coverages/usa" ));
+        // check that the coverage exists using the WCS service
+        document = getAsDOM(request);
+        assertEquals("wcs:Coverages", document.getDocumentElement().getNodeName());
+        // check that the coverage is listed
+        json = (JSONObject) getAsJSON("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.json");
+        JSONArray coverages = json.getJSONObject("coverages").getJSONArray("coverage");
+        assertThat(coverages.size(), is(1));
+        assertThat(coverages.getJSONObject(0).getString("name"), is("usa"));
+    }
+
     @Test
     public void testPostAsXMLWithNativeName() throws Exception {
         removeStore("gs", "usaWorldImage");

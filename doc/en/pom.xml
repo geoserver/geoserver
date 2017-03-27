@@ -26,7 +26,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>api/source/styles.yaml</inputSpec>
+              <inputSpec>src/main/resources/api/styles.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/</output>
               <configOptions>
@@ -64,6 +64,22 @@
             </configuration>
             <goals>
               <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.5.3</version>
+        <configuration>
+          <descriptor>src/assembly/dep.xml</descriptor>
+        </configuration>
+        <executions>
+          <execution>
+            <id>create-archive</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
             </goals>
           </execution>
         </executions>

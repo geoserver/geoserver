@@ -18,8 +18,8 @@ public abstract class XStreamMessageConverter extends BaseMessageConverter {
 
     static final Logger LOGGER = Logging.getLogger(XStreamMessageConverter.class);
     
-    public XStreamMessageConverter(ApplicationContext applicationContext) {
-        super(applicationContext);
+    public XStreamMessageConverter() {
+        super();
     }
 
 

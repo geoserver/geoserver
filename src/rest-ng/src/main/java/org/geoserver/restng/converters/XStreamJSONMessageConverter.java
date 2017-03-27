@@ -5,7 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.restng.catalog.wrapper.XStreamListWrapper;
+import org.geoserver.restng.wrapper.RestListWrapper;
+import org.geoserver.restng.wrapper.RestWrapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -24,7 +25,7 @@ public class XStreamJSONMessageConverter extends BaseMessageConverter {
 
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
-        return !XStreamListWrapper.class.isAssignableFrom(clazz) &&
+        return !RestListWrapper.class.isAssignableFrom(clazz) &&
             MediaType.APPLICATION_JSON.equals(mediaType);
     }
 
@@ -39,7 +40,7 @@ public class XStreamJSONMessageConverter extends BaseMessageConverter {
          * - So, you can't actually rely on media type not being null
          * - BUT, this method is only called anyway if they requested media type (via Accepts header) is in the list of getSupportedMediaTypes
          */
-        return !XStreamListWrapper.class.isAssignableFrom(clazz) &&
+        return !RestListWrapper.class.isAssignableFrom(clazz) && RestWrapper.class.isAssignableFrom(clazz) &&
             MediaType.APPLICATION_JSON.equals(mediaType);
     }
 
@@ -64,6 +65,10 @@ public class XStreamJSONMessageConverter extends BaseMessageConverter {
         xmlPersister.setCatalog(catalog);
         xmlPersister.setReferenceByName(true);
         xmlPersister.setExcludeIds();
+        if (o instanceof RestWrapper) {
+            ((RestWrapper) o).configurePersister(xmlPersister);
+            o = ((RestWrapper) o).getObject();
+        }
         xmlPersister.save(o, outputMessage.getBody());
     }
 

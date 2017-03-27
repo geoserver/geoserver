@@ -26,8 +26,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.util.IOUtils;
 import org.geoserver.restng.ResourceNotFoundException;
 import org.geoserver.restng.RestException;
-import org.geoserver.restng.catalog.wrapper.XStreamListWrapper;
-import org.geoserver.restng.wrapper.FreemarkerConfigurationWrapper;
+import org.geoserver.restng.wrapper.RestWrapper;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
@@ -63,8 +62,6 @@ import com.google.common.io.Files;
     MediaType.TEXT_HTML_VALUE})
 public class StyleController extends CatalogController {
 
-
-
     private static final Logger LOGGER = Logging.getLogger(StyleController.class);
 
     @Autowired
@@ -73,31 +70,18 @@ public class StyleController extends CatalogController {
     }
 
     @GetMapping(value = "/styles",
-        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public XStreamListWrapper getStyles() {
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
+    public RestWrapper getStyles() {
 
         List<StyleInfo> styles = catalog.getStylesByWorkspace(CatalogFacade.NO_WORKSPACE);
-        return toXStreamList(styles, StyleInfo.class);
-    }
-
-    @GetMapping(value = "/workspaces/{workspaceName}/styles", 
-        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    public XStreamListWrapper getStylesFromWorkspace(@PathVariable String workspaceName) {
-        LOGGER.fine("GET styles for workspace " + workspaceName);
-        return toXStreamList(catalog.getStylesByWorkspace(workspaceName), StyleInfo.class);
-    }
-
-    @GetMapping(value = "/styles", produces = {MediaType.TEXT_HTML_VALUE})
-    public FreemarkerConfigurationWrapper getStylesFreemarker() {
-        List<StyleInfo> styles = catalog.getStylesByWorkspace(CatalogFacade.NO_WORKSPACE);
-        return toFreemarkerList(styles, StyleInfo.class);
+        return wrapList(styles, StyleInfo.class);
     }
 
     @GetMapping(value = "/workspaces/{workspaceName}/styles",
-            produces = {MediaType.TEXT_HTML_VALUE})
-    public FreemarkerConfigurationWrapper getStylesFromWorkspaceFreemarker(@PathVariable String workspaceName) {
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
+    public RestWrapper getStylesFromWorkspace(@PathVariable String workspaceName) {
         LOGGER.fine("GET styles for workspace " + workspaceName);
-        return toFreemarkerList(catalog.getStylesByWorkspace(workspaceName));
+        return wrapList(catalog.getStylesByWorkspace(workspaceName), StyleInfo.class);
     }
 
     @PostMapping(value = "/styles", consumes = { "text/xml", "application/xml" })
@@ -288,33 +272,34 @@ public class StyleController extends CatalogController {
     }
 
     @GetMapping(path = "/workspaces/{workspaceName}/styles/{styleName}",
-        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
-            SLDHandler.MIMETYPE_10, SLDHandler.MIMETYPE_11})
-    protected StyleInfo getStyleFromWorkspace(
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
+    protected RestWrapper<StyleInfo> getStyleFromWorkspace(
         @PathVariable String styleName,
         @PathVariable String workspaceName) {
+        return wrapObject(getStyleInternal(styleName, workspaceName), StyleInfo.class);
+    }
+
+
+    @GetMapping(path = "/styles/{styleName}",
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
+    protected RestWrapper<StyleInfo> getStyle(
+        @PathVariable String styleName) {
+        return wrapObject(getStyleInternal(styleName, null), StyleInfo.class);
+    }
+
+    @GetMapping(path = "/workspaces/{workspaceName}/styles/{styleName}",
+            produces = {SLDHandler.MIMETYPE_10, SLDHandler.MIMETYPE_11})
+    protected StyleInfo getStyleContentFromWorkspace(
+            @PathVariable String styleName,
+            @PathVariable String workspaceName) {
         return getStyleInternal(styleName, workspaceName);
     }
 
     @GetMapping(path = "/styles/{styleName}",
-        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
-            SLDHandler.MIMETYPE_10, SLDHandler.MIMETYPE_11})
-    protected StyleInfo getStyle(
-        @PathVariable String styleName) {
-        return getStyleInternal(styleName, null);
-    }
-
-    @GetMapping(path = "/workspaces/{workspaceName}/styles/{styleName}", produces = {MediaType.TEXT_HTML_VALUE})
-    protected FreemarkerConfigurationWrapper getStyleFromWorkspaceFreemarker(
-            @PathVariable String styleName,
-            @PathVariable String workspaceName) {
-        return toFreemarkerMap(getStyleInternal(styleName, workspaceName));
-    }
-
-    @GetMapping(path = "/styles/{styleName}", produces = {MediaType.TEXT_HTML_VALUE})
-    protected FreemarkerConfigurationWrapper getStyleFreemarker(
+            produces = {SLDHandler.MIMETYPE_10, SLDHandler.MIMETYPE_11})
+    protected StyleInfo getStyleContent(
             @PathVariable String styleName) {
-        return toFreemarkerMap(getStyleInternal(styleName, null));
+        return getStyleInternal(styleName, null);
     }
 
     protected StyleInfo getStyleInternal(String styleName, String workspace) {

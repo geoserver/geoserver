@@ -2,7 +2,7 @@ package org.geoserver.restng.converters;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.geoserver.restng.wrapper.FreemarkerConfigurationWrapper;
+import org.geoserver.restng.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpInputMessage;
@@ -45,7 +45,7 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
         return MediaType.TEXT_HTML.equals(mediaType)
-            && FreemarkerConfigurationWrapper.class.isAssignableFrom(clazz);
+            && RestWrapper.class.isAssignableFrom(clazz);
     }
 
     @Override
@@ -61,18 +61,18 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
     /**
      * Write an given object to the given output message as HTML.
      *
-     * @param o Object to serialize. Must be an instance of {@link FreemarkerConfigurationWrapper}
+     * @param o Object to serialize. Must be an instance of {@link RestWrapper}
      * @param contentType the content type to use when writing
      * @param outputMessage the message to write to
      * @throws IOException in case of I/O errors
      * @throws HttpMessageNotWritableException in case of conversion errors
-     * @throws IllegalArgumentException if o is not an instance of {@link FreemarkerConfigurationWrapper}
+     * @throws IllegalArgumentException if o is not an instance of {@link RestWrapper}
      */
     @Override
     public void write(Object o, MediaType contentType, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
         Writer tmplWriter = null;
-        if (o instanceof FreemarkerConfigurationWrapper) {
-            FreemarkerConfigurationWrapper wrapper = (FreemarkerConfigurationWrapper) o;
+        if (o instanceof RestWrapper) {
+            RestWrapper wrapper = (RestWrapper) o;
 
             try {
                 Object object = wrapper.getObject();
@@ -98,7 +98,7 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
                 }
             }
         } else {
-            throw new IllegalArgumentException("Object must be an instance of FreemarkerConfigurationWrapper. Was: "+o.getClass());
+            throw new IllegalArgumentException("Object must be an instance of RestWrapper. Was: "+o.getClass());
         }
     }
 }

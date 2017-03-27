@@ -11,7 +11,7 @@ import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.restng.RequestInfo;
-import org.geoserver.restng.catalog.wrapper.XStreamListWrapper;
+import org.geoserver.restng.wrapper.RestListWrapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -47,7 +47,7 @@ public abstract class XStreamCatalogListConverter extends BaseMessageConverter {
 
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
-        return XStreamListWrapper.class.isAssignableFrom(clazz) &&
+        return RestListWrapper.class.isAssignableFrom(clazz) &&
             this.getSupportedMediaTypes().contains(mediaType);
     }
 
@@ -62,7 +62,7 @@ public abstract class XStreamCatalogListConverter extends BaseMessageConverter {
         throws IOException, HttpMessageNotWritableException {
 
         XStream xstream = this.createXStreamInstance();
-        XStreamListWrapper wrapper = (XStreamListWrapper)o;
+        RestListWrapper wrapper = (RestListWrapper)o;
         Class targetClass = wrapper.getObjectClass();
         Collection data = wrapper.getCollection();
         this.aliasCollection(data, xstream, targetClass);

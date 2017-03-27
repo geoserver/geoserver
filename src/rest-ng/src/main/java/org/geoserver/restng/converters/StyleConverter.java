@@ -4,18 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.restng.wrapper.RestWrapper;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
@@ -73,6 +71,9 @@ public class StyleConverter implements HttpMessageConverter {
     @Override
     public void write(Object object, MediaType contentType, HttpOutputMessage outputMessage)
         throws IOException, HttpMessageNotWritableException {
+        if (object instanceof RestWrapper) {
+            object = ((RestWrapper) object).getObject();
+        }
         if (object instanceof StyleInfo) {
             StyleInfo style = (StyleInfo) object;
             // optimization, if the requested format is the same as the native format

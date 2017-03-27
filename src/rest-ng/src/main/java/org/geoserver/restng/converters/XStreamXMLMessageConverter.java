@@ -5,7 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.restng.catalog.wrapper.XStreamListWrapper;
+import org.geoserver.restng.wrapper.RestListWrapper;
+import org.geoserver.restng.wrapper.RestWrapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -24,14 +25,14 @@ public class XStreamXMLMessageConverter extends BaseMessageConverter {
 
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
-        return !XStreamListWrapper.class.isAssignableFrom(clazz) &&
+        return !RestListWrapper.class.isAssignableFrom(clazz) &&
             MediaType.APPLICATION_XML.equals(mediaType) || MediaType.TEXT_XML.equals(mediaType);
     }
 
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
-        return !XStreamListWrapper.class.isAssignableFrom(clazz)
-            && MediaType.APPLICATION_XML.equals(mediaType) || MediaType.TEXT_XML.equals(mediaType);
+        return !RestListWrapper.class.isAssignableFrom(clazz) && RestWrapper.class.isAssignableFrom(clazz) &&
+            MediaType.APPLICATION_XML.equals(mediaType) || MediaType.TEXT_XML.equals(mediaType);
     }
 
     @Override
@@ -55,6 +56,10 @@ public class XStreamXMLMessageConverter extends BaseMessageConverter {
         xmlPersister.setCatalog(catalog);
         xmlPersister.setReferenceByName(true);
         xmlPersister.setExcludeIds();
+        if (o instanceof RestWrapper) {
+            ((RestWrapper) o).configurePersister(xmlPersister);
+            o = ((RestWrapper) o).getObject();
+        }
         xmlPersister.save(o, outputMessage.getBody());
     }
 }

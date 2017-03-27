@@ -7,8 +7,9 @@ import freemarker.ext.beans.MapModel;
 import freemarker.template.*;
 import org.geoserver.ows.util.ClassProperties;
 import org.geoserver.ows.util.OwsUtils;
-import org.geoserver.restng.catalog.wrapper.XStreamListWrapper;
-import org.geoserver.restng.wrapper.FreemarkerConfigurationWrapper;
+import org.geoserver.restng.wrapper.RestWrapper;
+import org.geoserver.restng.wrapper.RestListWrapper;
+import org.geoserver.restng.wrapper.RestWrapperAdapter;
 import org.geotools.util.logging.Logging;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -38,54 +39,6 @@ public class RestController {
      * Name of the folder containing freemarker templates
      */
     protected String pathPrefix = "";
-
-    /**
-     * Wrapes the passed object in a {@link FreemarkerConfigurationWrapper}
-     *
-     * @param object
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    protected <T> FreemarkerConfigurationWrapper toFreemarkerMap(Object object) {
-        return toFreemarkerMap((T) object, (Class<T>) object.getClass());
-    }
-
-    /**
-     * Wraps the passed object in a {@link FreemarkerConfigurationWrapper}
-     *
-     * @param object The object to wrap
-     * @param clazz The advertised class to use for the object
-     * @return
-     */
-    protected <T> FreemarkerConfigurationWrapper toFreemarkerMap(T object, Class<T> clazz) {
-        return new FreemarkerConfigurationWrapper(object, getTemplate(object, clazz));
-    }
-
-    /**
-     * Wraps the passed collection in a {@link FreemarkerConfigurationWrapper}
-     *
-     * @param list The collection to wrap
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    protected FreemarkerConfigurationWrapper toFreemarkerList(Collection list) {
-        if (!list.isEmpty()) {
-            Object o = list.iterator().next();
-            return toFreemarkerList(list, o.getClass());
-        }
-        return toFreemarkerList(list, Object.class);
-    }
-
-    /**
-     * Wraps the passed collection in a {@link FreemarkerConfigurationWrapper}
-     *
-     * @param list The collection to wrap
-     * @param clazz The advertised class to use for the collection contents
-     * @return
-     */
-    protected <T> FreemarkerConfigurationWrapper toFreemarkerList(Collection<T> list, Class<T> clazz) {
-        return new FreemarkerConfigurationWrapper(list, getTemplate(list, clazz));
-    }
 
     /**
      * Constructs the freemarker {@link Configuration}
@@ -201,14 +154,25 @@ public class RestController {
     }
 
     /**
-     * Wraps the passed collection in a {@link XStreamListWrapper}
+     * Wraps the passed collection in a {@link RestListWrapper}
      *
      * @param list The collection to wrap
      * @param clazz The advertised class to use for the collection contents
      * @return
      */
-    protected <T> XStreamListWrapper<T> toXStreamList(Collection<T> list, Class<T> clazz) {
-        return new XStreamListWrapper<>(list, clazz);
+    protected <T> RestWrapper<T> wrapList(Collection<T> list, Class<T> clazz) {
+        return new RestListWrapper<>(list, clazz, getTemplate(list, clazz));
+    }
+
+    /**
+     * Wraps the passed object in a {@link RestWrapperAdapter}
+     *
+     * @param object The object to wrap
+     * @param clazz The advertised class to use for the collection contents
+     * @return
+     */
+    protected <T> RestWrapper<T> wrapObject(T object, Class<T> clazz) {
+        return new RestWrapperAdapter<>(object, clazz, getTemplate(object, clazz));
     }
 
     /**

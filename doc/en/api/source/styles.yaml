@@ -8,9 +8,9 @@ info:
 paths:
   /styles:
     get:
-      operationId: getStyleList
+      operationId: getStyles
       summary: Get a list of styles
-      description: Displays a list of all styles on the server. Use the "Accept:" header to specify format, or append an extension to the endpoint (example "/styles.xml" for XML)    
+      description: Displays a list of all styles on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles.xml" for XML)
       produces:
         - text/html
         - application/json
@@ -21,7 +21,8 @@ paths:
           schema:
             $ref: "#/definitions/StyleList"
           examples:
-            application/json: {
+            application/json: '
+            {
                 "styles": {
                     "style": [
                         {
@@ -35,6 +36,7 @@ paths:
                     ]
                 }
             }
+            '
             application/xml: '
               <styles>
                   <style>
@@ -47,9 +49,10 @@ paths:
                   </style>    
               </styles>'
         401:
-          description: Full authentication is required to access this resource
+          description: Unauthorized
+
     post:
-      operationId: postStyle
+      operationId: postStyles
       summary: Add a new style
       description: Adds a new style to the server.
       parameters:
@@ -73,29 +76,48 @@ paths:
           schema:
             type: string
         401:
+          description: Unauthorized
+
+    put:
+      operationId: putStyles
+      description: Invalid. Use POST for adding a new style, or PUT on /styles/{style} to edit an existing style.
+      responses:
+        401:
           description: Unauthorized    
-  /styles/{styleName}:   
-    parameters:
-      - name: styleName
-        in: Path
-        required: true
-        description: The name of the style to retrieve
-        type: string
-      - name: purge
-        in: Query
-        required: false
-        description: The purge parameter specifies whether the underlying SLD file for the style should be deleted on disk. Allowable values for this parameter are “true” or “false”. When set to “true” the underlying file will be deleted.
-        type: boolean                         
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteStyles
+      description: Invalid. Use /styles/{style} instead.
+      responses:
+        401:
+          description: Unauthorized    
+        405:
+          description: Method Not Allowed
+
+  /styles/{styleName}:
+
     get:
       operationId: getStyle
-      summary: Get a single style
-      description: Controls a given style.
+      summary: Retrieve a style
+      description: Retrieves a single style. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles/{style}.xml" for XML).
       produces:
         - text/html
         - application/json
         - application/xml
         - application/vnd.ogc.sld+xml
       parameters:
+        - name: styleName
+          in: Path
+          required: true
+          description: The name of the style to retrieve.
+          type: string
+        - name: purge
+          in: Query
+          required: false
+          description: The purge parameter specifies whether the underlying SLD file for the style should be deleted on disk. Allowable values for this parameter are "true" or "false". When set to "true" the underlying file will be deleted.
+          type: boolean        
         - name: quietOnNotFound 
           in: Query
           required: false
@@ -110,93 +132,139 @@ paths:
         200:
           description: OK
           examples:
-            application/json: { "style": {
-                                  "name": "rain",
-                                  "format": "sld",
-                                  "languageVersion": {
-                                    "version": "1.0.0"
-                                  },
-                                  "filename": "rain.sld"
-                                }
-                              }
-            application/xml: '<style>
-                                  <name>rain</name>
-                                  <format>sld</format>
-                                  <languageVersion>
-                                      <version>1.0.0</version>
-                                  </languageVersion>
-                                  <filename>rain.sld</filename>
-                              </style>' 
-            application/vnd.ogc.sld+xml: '<?xml version="1.0" encoding="UTF-8"?>
-                                <StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
-                                  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                  xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
-                                    <NamedLayer>
-                                        <Name>rain</Name>
-                                        <UserStyle>
-                                            <Name>rain</Name>
-                                            <Title>Rain distribution</Title>
-                                            <FeatureTypeStyle>
-                                                <Rule>
-                                                    <RasterSymbolizer>
-                                                        <Opacity>1.0</Opacity>
-                                                        <ColorMap>
-                                                            <ColorMapEntry color="#FF0000" quantity="0" />
-                                                            <ColorMapEntry color="#FFFFFF" quantity="100"/>
-                                                            <ColorMapEntry color="#00FF00" quantity="2000"/>
-                                                            <ColorMapEntry color="#0000FF" quantity="5000"/>
-                                                        </ColorMap>
-                                                    </RasterSymbolizer>
-                                                </Rule>
-                                            </FeatureTypeStyle>
-                                        </UserStyle>
-                                    </NamedLayer>
-                                </StyledLayerDescriptor>'
+            text/html: '
+              <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+              <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+              <head>
+                  <title>GeoServer Configuration</title>
+                  <meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
+              </head>
+              <body>
+
+              Style "rain"
+              <a href="http://localhost:8080/geoserver/rest/styles/rain.sld">rain.sld</a>
+              </body>
+              </html>
+              '
+            application/json: '
+              {"style":{"name":"rain","format":"sld","languageVersion":{"version":"1.0.0"},"filename":"rain.sld"}}
+              '
+            application/xml: '
+              <style>
+                <name>rain</name>
+                <format>sld</format>
+                <languageVersion>
+                  <version>1.0.0</version>
+                </languageVersion>
+                <filename>rain.sld</filename>
+              </style>
+              ' 
+            application/vnd.ogc.sld+xml: '
+              <?xml version="1.0" encoding="UTF-8"?>
+              <StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+                xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+                <NamedLayer>
+                  <Name>rain</Name>
+                  <UserStyle>
+                    <Name>rain</Name>
+                    <Title>Rain distribution</Title>
+                    <FeatureTypeStyle>
+                      <Rule>
+                        <RasterSymbolizer>
+                          <Opacity>1.0</Opacity>
+                          <ColorMap>
+                            <ColorMapEntry color="#FF0000" quantity="0" />
+                            <ColorMapEntry color="#FFFFFF" quantity="100"/>
+                            <ColorMapEntry color="#00FF00" quantity="2000"/>
+                            <ColorMapEntry color="#0000FF" quantity="5000"/>
+                          </ColorMap>
+                        </RasterSymbolizer>
+                      </Rule>
+                    </FeatureTypeStyle>
+                  </UserStyle>
+                </NamedLayer>
+              </StyledLayerDescriptor>
+              '
         401:
-          description: Full authentication is required to access this resource        
-    delete:
-      operationId: deleteStyle
-      summary: Delete a style
-      description: Delete a style
-      parameters:
-        - name: recurse
-          in: Query
-          required: false
-          description: The recurse parameter removes references to the specified style in existing layers. Allowed values for this parameter are “true” or “false”. The default value is “false”.
-          type: boolean  
+          description: Unauthorized
+
+    post:
+      operationId: postStyle
+      description: Invalid. Use PUT to edit a style, or POST with /styles to add a new style.
       responses:
-        200:
-          description: The style was successfully deleted.
         401:
-          description: Full authentication is required to access this resource              
+          description: Unauthorized    
+        405:
+          description: Method Not Allowed
+
     put:
       operationId: putStyle
-      summary: Modify a single style
-      description: Modify a single style
+      summary: Modify a single style.
+      description: Modifies a single style. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles/{style}.xml" for XML).
       parameters:
+        - name: styleName
+          in: Path
+          required: true
+          description: The name of the style to retrieve.
+          type: string
+        - name: styleBody
+          in: Body
+          description: The updated style body.
+          required: true
+          schema:
+            $ref: "#/definitions/StylePutBody"
+        - name: purge
+          in: Query
+          required: false
+          description: The purge parameter specifies whether the underlying SLD file for the style should be deleted on disk. Allowable values for this parameter are "true" or "false". When set to "true" the underlying file will be deleted.
+          type: boolean      
         - name: raw
           in: query
           description: The raw parameter specifies whether to forgo parsing and encoding of the uploaded style content. When set to true the style payload will be streamed directly to GeoServer configuration. Use this setting if the content and formatting of the style is to be preserved exactly. Use this setting with care as it may result in an invalid and unusable style. The default is false.
           type: boolean
           required: false
-        - name: styleBody
-          in: body
-          description: The updated style body.
-          required: true
-          schema:
-            $ref: "#/definitions/StylePutBody"
       consumes:
-        - application/json
-        - application/xml
         - application/vnd.ogc.sld+xml
+        - application/vnd.ogc.se+xml
+        - application/zip
       responses:
         200:
           description: The style was successfully updated.
+        401:
+          description: Unauthorized
+
+    delete:
+      operationId: deleteStyle
+      summary: Delete style
+      description: Deletes a style.
+      parameters:
+        - name: styleName
+          in: Path
+          required: true
+          description: The name of the style to delete.
+          type: string
+        - name: purge
+          in: Query
+          required: false
+          description: The purge parameter specifies whether the underlying SLD file for the style should be deleted on disk. Allowable values for this parameter are "true" or "false". When set to "true" the underlying file will be deleted.
+          type: boolean
+        - name: recurse
+          in: Query
+          required: false
+          description: The recurse parameter removes references to the specified style in existing layers. Allowed values for this parameter are "true" or "false". The default value is "false".
+          type: boolean
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
 
 definitions:
   StyleInfoPost:
     type: object
-    example: {"text/xml": "<style><name>roads_style</name><afilename>roads.sld</filename></style>"}
+    example: {"text/xml": "<style><name>roads_style</name><filename>roads.sld</filename></style>"}
     required: [name, filename]
     properties:
       name:
@@ -204,28 +272,20 @@ definitions:
         description: Name of style
       filename:
         type: string
-        description: name of filename
+        description: Name of filename
   StyleListItem:
     type: object
     properties:
       name:
         type: string
-        description: ""
+        description: Name of style
       href:
         type: string
-        description: ""
+        description: URL to style definition
   StyleList:
     type: array
     items:
       $ref: '#/definitions/StyleListItem'
   StylePutBody:
     type: String
-    description: The style body.
-    example: "/* @title gold point */
-              * {
-                  mark: symbol(square);
-                  mark-size: 6px;
-                  :mark {
-                      fill: #ffcc00;
-                  }
-              }"
+    description: The style code.

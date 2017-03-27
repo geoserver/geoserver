@@ -10,4 +10,5 @@ paths:
     $ref: "./styles/styles.yaml#/paths/StylesPath"
   /styles/{styleName}:
     $ref: "./styles/styles.yaml#/paths/StylePath"
-
+  /workspaces:
+    $ref: "./workspaces/workspaces.yaml#/paths/WorkspacesPath"

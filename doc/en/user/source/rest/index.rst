@@ -13,7 +13,10 @@ For further information about the REST API, refer to the :ref:`rest_api` section
 
 API Reference:
 
-* `API Reference <../api/index.html>`__
+* `Styles API Reference <../api/styles/index.html>`__
+* `Workspaces API Reference <../api/workspaces/index.html>`__
+
+REST Examples:
 
 .. toctree::
    :maxdepth: 2

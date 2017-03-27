@@ -26,6 +26,7 @@
         <artifactId>swagger-codegen-maven-plugin</artifactId>
         <version>2.2.2</version>
         <executions>
+          <!-- one execution per page -->
           <execution>
             <id>styles</id>
             <phase>process-resources</phase>

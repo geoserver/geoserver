@@ -84,6 +84,13 @@ public class StyleController extends CatalogController {
         return wrapList(catalog.getStylesByWorkspace(workspaceName), StyleInfo.class);
     }
 
+    @GetMapping(value = "/layers/{layerName}/styles",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
+    public RestWrapper getStylesFromLayer(@PathVariable String layerName) {
+        LOGGER.fine("GET styles for layer " + layerName);
+        return wrapList(catalog.getLayerByName(layerName).getStyles(), StyleInfo.class);
+    }
+
     @PostMapping(value = "/styles", consumes = { "text/xml", "application/xml" })
     @ResponseStatus(HttpStatus.CREATED)
     public String postStyle(@RequestBody StyleInfo style) {

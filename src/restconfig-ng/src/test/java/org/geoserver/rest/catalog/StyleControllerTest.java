@@ -1,19 +1,7 @@
 package org.geoserver.rest.catalog;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.URL;
-import java.util.List;
-import java.util.Properties;
-
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -24,8 +12,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PropertyStyleHandler;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.rest.CatalogRESTTestSupport;
-import org.geoserver.catalog.rest.StyleFormat;
+import org.geoserver.catalog.Styles;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -35,15 +22,25 @@ import org.geotools.styling.Style;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.restlet.resource.Representation;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONObject;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.List;
+import java.util.Properties;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.*;
 
 /**
  * Just ripped these tests from the existing rest test
@@ -328,8 +325,8 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         Style s = catalog.getStyleByName( "Ponds" ).getStyle();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        Representation representation = new StyleFormat(SLDHandler.MIMETYPE_10, SLDHandler.VERSION_10, false, new SLDHandler(), null, getCatalog().getResourcePool().getEntityResolver()).toRepresentation(s);
-        representation.write(out);
+        SLDHandler handler = new SLDHandler();
+        handler.encode(Styles.sld(s), SLDHandler.VERSION_10, false, out);
         xml = new String(out.toByteArray());
         assertTrue(xml.contains("<sld:Name>foo</sld:Name>"));
     }
@@ -490,7 +487,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllByLayer() throws Exception {
-        Document dom = getAsDOM( "/rest/layers/cite:BasicPolygons/styles.xml");
+        Document dom = getAsDOM( "/restng/layers/cite:BasicPolygons/styles.xml");
         LayerInfo layer = catalog.getLayerByName( "cite:BasicPolygons" );
 
         assertXpathEvaluatesTo(layer.getStyles().size()+"", "count(//style)", dom );
@@ -548,7 +545,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                 "<name>Ponds</name>" +
                 "</style>";
         MockHttpServletResponse response =
-            postAsServletResponse( "/rest/layers/cite:BasicPolygons/styles?default=true", xml, "text/xml");
+            postAsServletResponse( "/restng/layers/cite:BasicPolygons/styles?default=true", xml, "text/xml");
         assertEquals( 201, response.getStatus() );
 
         LayerInfo l2 = catalog.getLayerByName("cite:BasicPolygons");

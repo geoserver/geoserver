@@ -8,9 +8,17 @@
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>gs-docs</artifactId>
+  <packaging>pom</packaging>
   <name>GeoServer English Documentation</name>
   <description>GeoServer English documentation</description>
 
+  <licenses>
+    <license>
+      <name>Creative Commmons Attribution 4.0 International</name>
+      <url>https://creativecommons.org/licenses/by/4.0/</url>
+    </license>
+  </licenses>
+  
   <dependencies>
   </dependencies>
 
@@ -70,29 +78,23 @@
           </execution>
         </executions>
       </plugin>
-      <!--plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.5.3</version>
         <configuration>
-          <descriptor>src/assembly/user.xml</descriptor>
+          <descriptors>
+            <descriptor>src/assembly/user.xml</descriptor>
+          </descriptors>
         </configuration>
-        <executions>
-          <execution>
-            <id>create-archive</id>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin-->
+      </plugin>
     </plugins>
   </build>
   
+  <!-- sphinx build targets - default to full -->
   <properties>
      <target>full</target>
   </properties>
-
-
   <profiles>
     <profile>
       <id>docguide</id>

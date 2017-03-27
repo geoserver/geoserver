@@ -7,6 +7,9 @@ package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.*;
+
+import java.net.URL;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
@@ -16,15 +19,18 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.TestHttpClientRule;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.RemoteOWSTestSupport;
+import org.geoserver.test.http.MockHttpClient;
+import org.geoserver.test.http.MockHttpResponse;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
@@ -32,24 +38,28 @@ import org.w3c.dom.Document;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WMSLayerTest extends CatalogRESTTestSupport {
+    @Rule
+    public TestHttpClientRule clientMocker = new TestHttpClientRule();
+    private String capabilities;
     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        
         // we need to add a wms store
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.setWorkspace(catalog.getWorkspaceByName("sf"));
         WMSStoreInfo wms = cb.buildWMSStore("demo");
-        wms.setCapabilitiesURL("http://demo.opengeo.org/geoserver/wms?");
+        wms.setCapabilitiesURL(clientMocker.getServer()+"/geoserver/wms?REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS");
         catalog.add(wms);
         
         // and a wms layer as well (cannot use the builder, would turn this test into an online one
         addStatesWmsLayer();
+        
     } 
 
     @Before
     public void addStatesWmsLayer() throws Exception {
+        capabilities = clientMocker.getServer()+"/geoserver/wms?REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS";
         WMSLayerInfo wml = catalog.getResourceByName("sf", "states", WMSLayerInfo.class);
         if (wml == null) {
             wml = catalog.getFactory().createWMSLayer();
@@ -66,6 +76,13 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
             
             catalog.add(wml);
         }
+        
+        MockHttpClient client = new MockHttpClient();
+        client.expectGet(
+                new URL(capabilities), 
+                new MockHttpResponse(getClass().getResource("caps130.xml"), "text/xml"));
+        clientMocker.bind(client, capabilities);
+
     }
     
     @After
@@ -106,10 +123,6 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     
     @Test
     public void testGetAllAvailable() throws Exception {
-        if(!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
-            LOGGER.warning("Skipping layer availability test as remote server is not available");
-            return;
-        }
         
         Document dom = getAsDOM( "/rest/workspaces/sf/wmsstores/demo/wmslayers.xml?list=available");
         // print(dom);
@@ -131,17 +144,13 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
  
     @Test
     public void testPostAsXML() throws Exception {
-        if(!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
-            LOGGER.warning("Skipping layer posting test as remote server is not available");
-            return;
-        }
         
         assertNull(catalog.getResourceByName("sf", "bugsites", WMSLayerInfo.class));
         
         String xml = 
           "<wmsLayer>"+
             "<name>bugsites</name>"+
-            "<nativeName>og:bugsites</nativeName>"+
+            "<nativeName>world4326</nativeName>"+
             "<srs>EPSG:4326</srs>" + 
             "<nativeCRS>EPSG:4326</nativeCRS>" + 
             "<store>demo</store>" + 
@@ -159,10 +168,6 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     
     @Test
     public void testPostAsJSON() throws Exception {
-        if(!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
-            LOGGER.warning("Skipping layer posting test as remote server is not available");
-            return;
-        }
         
         assertNull(catalog.getResourceByName("sf", "bugsites", WMSLayerInfo.class));
         
@@ -170,7 +175,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
           "{" + 
            "'wmsLayer':{" + 
               "'name':'bugsites'," +
-              "'nativeName':'og:bugsites'," +
+              "'nativeName':'world4326'," +
               "'srs':'EPSG:4326'," +
               "'nativeCRS':'EPSG:4326'," +
               "'store':'demo'" +

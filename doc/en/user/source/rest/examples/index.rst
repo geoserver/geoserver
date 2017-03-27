@@ -23,5 +23,6 @@ But we're changing this to be based on endpoint:
    :maxdepth: 1
 
    styles
+   fonts
 
 So this section is under construction.

@@ -15,6 +15,7 @@ API Reference:
 
 * `Styles API Reference <../api/styles/index.html>`__
 * `Workspaces API Reference <../api/workspaces/index.html>`__
+* `Fonts API Reference <../api/fonts/index.html>`__
 
 REST Examples:
 

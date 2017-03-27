@@ -23,8 +23,8 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
  */
 public class XStreamXMLMessageConverter extends XStreamMessageConverter {
 
-    public XStreamXMLMessageConverter(ApplicationContext applicationContext) {
-        super(applicationContext);
+    public XStreamXMLMessageConverter() {
+        super();
     }
 
     @Override

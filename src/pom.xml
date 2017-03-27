@@ -1830,7 +1830,7 @@
   <git.commit.useNative>false</git.commit.useNative>
   <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
   <jackson1.version>1.9.13</jackson1.version>
-  <jackson2.version>2.3.2</jackson2.version>
+  <jackson2.version>2.5.0</jackson2.version>
   <compress-lzf.version>1.0.3</compress-lzf.version>
  </properties>
 

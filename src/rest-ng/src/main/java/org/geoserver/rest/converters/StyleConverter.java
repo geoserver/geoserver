@@ -20,7 +20,6 @@ import org.geotools.util.Version;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.xml.sax.EntityResolver;
@@ -28,7 +27,7 @@ import org.xml.sax.EntityResolver;
 /**
  * Style converters based on the old StyleFormat
  */
-public class StyleConverter implements HttpMessageConverter {
+public class StyleConverter extends BaseMessageConverter {
 
     private final List<MediaType> supportedMediaTypes;
 

@@ -4,11 +4,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.Styles;
-import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
-import org.geoserver.rest.converters.XStreamJSONMessageConverter;
-import org.geoserver.rest.converters.StyleConverter;
-import org.geoserver.rest.converters.XStreamXMLMessageConverter;
-import org.geoserver.rest.converters.XStreamCatalogListConverter;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.rest.converters.*;
 import org.geotools.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -21,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.xml.sax.EntityResolver;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -36,19 +34,28 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         Catalog catalog = (Catalog) applicationContext.getBean("catalog");
 
-        //Ordered according to priority (highest first)
-        converters.add(new FreemarkerHTMLMessageConverter(applicationContext, "UTF-8"));
-        converters.add(new XStreamXMLMessageConverter(applicationContext));
-        converters.add(new XStreamJSONMessageConverter(applicationContext));
-        converters.add(new XStreamCatalogListConverter.XMLXStreamListConverter(applicationContext));
-        converters.add(new XStreamCatalogListConverter.JSONXStreamListConverter(applicationContext));
+
+        List<BaseMessageConverter> gsConverters = GeoServerExtensions.extensions(BaseMessageConverter.class);
+
+        //Add default converters
+        gsConverters.add(new FreemarkerHTMLMessageConverter("UTF-8"));
+        gsConverters.add(new XStreamXMLMessageConverter());
+        gsConverters.add(new XStreamJSONMessageConverter());
+        gsConverters.add(new XStreamCatalogListConverter.XMLXStreamListConverter());
+        gsConverters.add(new XStreamCatalogListConverter.JSONXStreamListConverter());
 
         //Deal with the various Style handler
         EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
         for (StyleHandler sh : Styles.handlers()) {
             for (Version ver : sh.getVersions()) {
-                converters.add(new StyleConverter(sh.mimeType(ver), ver, sh, entityResolver));
+                gsConverters.add(new StyleConverter(sh.mimeType(ver), ver, sh, entityResolver));
             }
+        }
+
+        //Sort the converters based on ExtensionPriority
+        gsConverters.sort(Comparator.comparingInt(BaseMessageConverter::getPriority));
+        for (BaseMessageConverter converter : gsConverters) {
+            converters.add(converter);
         }
 
         //use the default ones as lowest priority

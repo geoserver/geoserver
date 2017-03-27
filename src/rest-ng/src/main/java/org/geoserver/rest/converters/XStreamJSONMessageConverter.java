@@ -23,8 +23,8 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
  */
 public class XStreamJSONMessageConverter extends XStreamMessageConverter {
 
-    public XStreamJSONMessageConverter(ApplicationContext applicationContext) {
-        super(applicationContext);
+    public XStreamJSONMessageConverter() {
+        super();
     }
     
     @Override

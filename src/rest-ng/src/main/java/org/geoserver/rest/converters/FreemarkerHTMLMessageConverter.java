@@ -2,6 +2,7 @@ package org.geoserver.rest.converters;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
@@ -28,12 +29,12 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
      */
     protected String encoding;
 
-    public FreemarkerHTMLMessageConverter(ApplicationContext applicationContext) {
-        super(applicationContext);
+    public FreemarkerHTMLMessageConverter() {
+        super();
     }
 
-    public FreemarkerHTMLMessageConverter(ApplicationContext applicationContext, String encoding) {
-        this(applicationContext);
+    public FreemarkerHTMLMessageConverter(String encoding) {
+        this();
         this.encoding = encoding;
     }
 
@@ -100,5 +101,10 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
         } else {
             throw new IllegalArgumentException("Object must be an instance of RestWrapper. Was: "+o.getClass());
         }
+    }
+
+    public int getPriority() {
+        //If no extension or content-type provided, return HTML;
+        return ExtensionPriority.LOWEST-1;
     }
 }

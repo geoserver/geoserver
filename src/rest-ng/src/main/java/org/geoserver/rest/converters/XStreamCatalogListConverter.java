@@ -36,8 +36,8 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
  */
 public abstract class XStreamCatalogListConverter extends XStreamMessageConverter {
 
-    public XStreamCatalogListConverter(ApplicationContext applicationContext) {
-        super(applicationContext);
+    public XStreamCatalogListConverter() {
+        super();
     }
 
     @Override
@@ -149,8 +149,8 @@ public abstract class XStreamCatalogListConverter extends XStreamMessageConverte
      */
     public static class XMLXStreamListConverter extends XStreamCatalogListConverter {
 
-        public XMLXStreamListConverter(ApplicationContext applicationContext) {
-            super(applicationContext);
+        public XMLXStreamListConverter() {
+            super();
         }
 
         @Override
@@ -186,8 +186,8 @@ public abstract class XStreamCatalogListConverter extends XStreamMessageConverte
 
     public static class JSONXStreamListConverter extends XStreamCatalogListConverter {
 
-        public JSONXStreamListConverter(ApplicationContext applicationContext) {
-            super(applicationContext);
+        public JSONXStreamListConverter() {
+            super();
         }
 
         @Override

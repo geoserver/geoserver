@@ -1,12 +1,5 @@
----
-swagger: '2.0'
-info:
-  version: 2.12.0
-  title: GeoServer Styles
-  description: A style describes how a resource is symbolized or rendered by the Web Map Service.
-
 paths:
-  /styles:
+  StylesPath:
     get:
       operationId: getStyles
       summary: Get a list of styles
@@ -94,9 +87,8 @@ paths:
           description: Unauthorized    
         405:
           description: Method Not Allowed
-
-  /styles/{styleName}:
-
+  
+  StylePath:
     get:
       operationId: getStyle
       summary: Retrieve a style
@@ -108,22 +100,22 @@ paths:
         - application/vnd.ogc.sld+xml
       parameters:
         - name: styleName
-          in: Path
+          in: path
           required: true
           description: The name of the style to retrieve.
           type: string
         - name: purge
-          in: Query
+          in: query
           required: false
           description: The purge parameter specifies whether the underlying SLD file for the style should be deleted on disk. Allowable values for this parameter are "true" or "false". When set to "true" the underlying file will be deleted.
           type: boolean        
         - name: quietOnNotFound 
-          in: Query
+          in: query
           required: false
           description: The quietOnNotFound parameter avoids to log an Exception when the style is not present. Note that 404 status code will be returned anyway.
           type: boolean             
         - name: pretty
-          in: Query
+          in: query
           required: false
           description: The pretty parameter returns the style in a human-readable format, with proper whitespace and indentation. This parameter has no effect if you request a style in its native format - in this case the API returns the exact content of the underlying file. The HTML, XML, and JSON formats do not support this parameter.
           type: boolean      
@@ -204,18 +196,18 @@ paths:
       description: Modifies a single style. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles/{style}.xml" for XML).
       parameters:
         - name: styleName
-          in: Path
+          in: path
           required: true
           description: The name of the style to retrieve.
           type: string
         - name: styleBody
-          in: Body
+          in: body
           description: The updated style body.
           required: true
           schema:
             $ref: "#/definitions/StylePutBody"
         - name: purge
-          in: Query
+          in: query
           required: false
           description: The purge parameter specifies whether the underlying SLD file for the style should be deleted on disk. Allowable values for this parameter are "true" or "false". When set to "true" the underlying file will be deleted.
           type: boolean      
@@ -240,17 +232,17 @@ paths:
       description: Deletes a style.
       parameters:
         - name: styleName
-          in: Path
+          in: path
           required: true
           description: The name of the style to delete.
           type: string
         - name: purge
-          in: Query
+          in: query
           required: false
           description: The purge parameter specifies whether the underlying SLD file for the style should be deleted on disk. Allowable values for this parameter are "true" or "false". When set to "true" the underlying file will be deleted.
           type: boolean
         - name: recurse
-          in: Query
+          in: query
           required: false
           description: The recurse parameter removes references to the specified style in existing layers. Allowed values for this parameter are "true" or "false". The default value is "false".
           type: boolean

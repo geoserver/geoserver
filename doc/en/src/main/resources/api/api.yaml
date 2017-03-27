@@ -1,0 +1,13 @@
+---
+swagger: '2.0'
+info:
+  version: 2.12.0
+  title: GeoServer Styles
+  description: A style describes how a resource is symbolized or rendered by the Web Map Service.
+
+paths:
+  /styles:
+    $ref: "./styles/styles.yaml#/paths/StylesPath"
+  /styles/{styleName}:
+    $ref: "./styles/styles.yaml#/paths/StylePath"
+

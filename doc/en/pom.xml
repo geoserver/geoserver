@@ -8,11 +8,10 @@
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>gs-docs</artifactId>
-  <name>GeoServer Documentation</name>
-  <description>GeoServer documentation</description>
+  <name>GeoServer English Documentation</name>
+  <description>GeoServer English documentation</description>
 
   <dependencies>
-
   </dependencies>
 
   <build>
@@ -29,7 +28,7 @@
             <configuration>
               <inputSpec>api/source/styles.yaml</inputSpec>
               <language>html</language>
-              <output>api/build/</output>
+              <output>${project.build.directory}/api/</output>
               <configOptions>
                 <sourceFolder>src/gen/java/main</sourceFolder>
               </configOptions>

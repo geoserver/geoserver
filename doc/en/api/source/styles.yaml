@@ -54,17 +54,16 @@ paths:
     post:
       operationId: postStyles
       summary: Add a new style
-      description: Adds a new style to the server.
+      description: Adds a new style entry to the server. Note that using the XML content only adds the entry to the catalog and does not upload style content. Use POST with a ZIP file to create and upload at once, or POST the XML content and then separately PUT the style info at /styles/{style}.
       parameters:
         - name: styleBody
-          description: The style body to upload.
+          description: The style body information to upload.
           in: body
           required: true          
           schema:
             $ref: "#/definitions/StyleInfoPost"
       consumes:
-        - application/vnd.ogc.sld+xml
-        - application/vnd.ogc.se+xml
+        - application/xml
         - application/zip
       produces:
         - application/xml
@@ -80,7 +79,7 @@ paths:
 
     put:
       operationId: putStyles
-      description: Invalid. Use POST for adding a new style, or PUT on /styles/{style} to edit an existing style.
+      description: Invalid. Use POST for adding a new style, or PUT on /styles/{style} to edit/upload an existing style.
       responses:
         401:
           description: Unauthorized    
@@ -141,7 +140,7 @@ paths:
                   <meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
               </head>
               <body>
-
+              
               Style "rain"
               <a href="http://localhost:8080/geoserver/rest/styles/rain.sld">rain.sld</a>
               </body>
@@ -264,15 +263,17 @@ paths:
 definitions:
   StyleInfoPost:
     type: object
-    example: {"text/xml": "<style><name>roads_style</name><filename>roads.sld</filename></style>"}
-    required: [name, filename]
+    example: '
+      {"text/xml": "<style><name>roads_style</name><filename>roads.sld</filename></style>"}
+      {"application/zip": <ZIP file containing SLD>}
+      '
     properties:
       name:
         type: string
         description: Name of style
       filename:
         type: string
-        description: Name of filename
+        description: Name of filename containing SLD code
   StyleListItem:
     type: object
     properties:

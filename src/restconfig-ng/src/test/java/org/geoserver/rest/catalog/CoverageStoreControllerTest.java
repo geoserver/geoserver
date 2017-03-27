@@ -38,7 +38,6 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-@Ignore // incomplete at the moment
 public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
 
     @Override

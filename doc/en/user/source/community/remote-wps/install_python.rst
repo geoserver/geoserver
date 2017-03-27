@@ -975,104 +975,104 @@ The examples above represents all the possible types of Outputs currently suppor
 
         *Sample* ``wmc_template.json``
 
-        .. code-block:: json
+        .. code-block:: text
 
-          {
-            "type": "FeatureCollection",
-            "id": "GeoServer OWC Map Context: version of 2015-07-14",
-            "geometry": {
-                        "type":"Polygon",
-                        "coordinates": ${renderingArea}
-              },
-              "features" : [
-                      <#list featureList?keys as key>
-                      {
-                          "type": "Feature",
-                          "id": "${featureList[key].name}",
-                          "geometry": 
-                          {
-                          "type" : "Polygon",
-                          "coordinates" : ${featureList[key].geometryCoords}
-                      },
-                      "properties": {
-                          <#if featureList[key].owcProperties != "">${featureList[key].owcProperties},</#if>
-                          "offerings" : [
-                              {
-                                "code" : "http://www.opengis.net/spec/owc-atom/1.0/req/wms",
-                                "operations" : [{
-                                    "code" : "GetCapabilities",
-                                    "method" : "GET",
-                                    "type" : "application/xml",
-                                    "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities",
-                                    "request":{},
-                                    "result":{}
-                                  },{
-                                    "code" : "GetMap",
-                                    "method" : "GET",
-                                    "type" : "image/png",
-                                    "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=${featureList[key].srs}&BBOX=${featureList[key].bbox}&WIDTH=500&HEIGHT=500&LAYERS=${featureList[key].layers}&STYLES=${featureList[key].styles}&FORMAT=image/png&BGCOLOR=0xffffff&TRANSPARENT=TRUE&EXCEPTIONS=application/vnd.ogc.se_xml",
-                                    "request":{},
-                                    "result":{}
-                                  }],
-                                "contents" : []
-                              }
-                          <#if featureList[key].type == "VECTOR">
-                              ,{
-                                "code" : "http://www.opengis.net/spec/owc-atom/1.0/req/wfs",
-                                "operations" : [{
-                                    "code" : "DescribeFeatureType",
-                                    "method" : "GET",
-                                    "type" : "application/xml",
-                                    "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WFS&VERSION=1.1.0&REQUEST=DescribeFeatureType&TYPENAME=${featureList[key].layers}",
-                                    "request":{},
-                                    "result":{}
-                                  },{
-                                    "code" : "GetFeature",
-                                    "method" : "GET",
-                                    "type" : "application/xml",
-                                    "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=${featureList[key].layers}",
-                                    "request":{},
-                                    "result":{}
-                                  }],
-                                "contents" : []
-                              }
-                      <#elseif featureList[key].type == "RASTER">
-                              ,{
-                                "code" : "http://www.opengis.net/spec/owc-atom/1.0/req/wcs",
-                                "operations" : [{
-                                    "code" : "DescribeCoverage",
-                                    "method" : "GET",
-                                    "type" : "application/xml",
-                                    "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WCS&VERSION=1.1.0&REQUEST=GetCapabilities&IDENTIFIER=${featureList[key].layers}",
-                                    "request":{},
-                                    "result":{}
-                                  },{
-                                    "code" : "GetCoverage",
-                                    "method" : "GET",
-                                    "type" : "image/tiff",
-                                    "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WCS&VERSION=1.1.0&REQUEST=GetCoverage&IDENTIFIER=${featureList[key].layers}&BOUNDINGBOX=${featureList[key].bbox}&FORMAT=GeoTIFF",
-                                    "request":{},
-                                    "result":{}
-                                  }],
-                                "contents" : []
-                              }
-                      </#if>
-                      ]
-                     }
-                   }<#if key_has_next>,</#if>
-               </#list>
-               ]
-            , 
+           {
+             "type": "FeatureCollection",
+             "id": "GeoServer OWC Map Context: version of 2015-07-14",
+             "geometry": {
+                         "type":"Polygon",
+                         "coordinates": ${renderingArea}
+               },
+               "features" : [
+                       <#list featureList?keys as key>
+                       {
+                           "type": "Feature",
+                           "id": "${featureList[key].name}",
+                           "geometry": 
+                           {
+                           "type" : "Polygon",
+                           "coordinates" : ${featureList[key].geometryCoords}
+                       },
+                       "properties": {
+                           <#if featureList[key].owcProperties != "">${featureList[key].owcProperties},</#if>
+                           "offerings" : [
+                               {
+                                 "code" : "http://www.opengis.net/spec/owc-atom/1.0/req/wms",
+                                 "operations" : [{
+                                     "code" : "GetCapabilities",
+                                     "method" : "GET",
+                                     "type" : "application/xml",
+                                     "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities",
+                                     "request":{},
+                                     "result":{}
+                                   },{
+                                     "code" : "GetMap",
+                                     "method" : "GET",
+                                     "type" : "image/png",
+                                     "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=${featureList[key].srs}&BBOX=${featureList[key].bbox}&WIDTH=500&HEIGHT=500&LAYERS=${featureList[key].layers}&STYLES=${featureList[key].styles}&FORMAT=image/png&BGCOLOR=0xffffff&TRANSPARENT=TRUE&EXCEPTIONS=application/vnd.ogc.se_xml",
+                                     "request":{},
+                                     "result":{}
+                                   }],
+                                 "contents" : []
+                               }
+                           <#if featureList[key].type == "VECTOR">
+                               ,{
+                                 "code" : "http://www.opengis.net/spec/owc-atom/1.0/req/wfs",
+                                 "operations" : [{
+                                     "code" : "DescribeFeatureType",
+                                     "method" : "GET",
+                                     "type" : "application/xml",
+                                     "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WFS&VERSION=1.1.0&REQUEST=DescribeFeatureType&TYPENAME=${featureList[key].layers}",
+                                     "request":{},
+                                     "result":{}
+                                   },{
+                                     "code" : "GetFeature",
+                                     "method" : "GET",
+                                     "type" : "application/xml",
+                                     "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=${featureList[key].layers}",
+                                     "request":{},
+                                     "result":{}
+                                   }],
+                                 "contents" : []
+                               }
+                       <#elseif featureList[key].type == "RASTER">
+                               ,{
+                                 "code" : "http://www.opengis.net/spec/owc-atom/1.0/req/wcs",
+                                 "operations" : [{
+                                     "code" : "DescribeCoverage",
+                                     "method" : "GET",
+                                     "type" : "application/xml",
+                                     "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WCS&VERSION=1.1.0&REQUEST=GetCapabilities&IDENTIFIER=${featureList[key].layers}",
+                                     "request":{},
+                                     "result":{}
+                                   },{
+                                     "code" : "GetCoverage",
+                                     "method" : "GET",
+                                     "type" : "image/tiff",
+                                     "href" : "${featureList[key].getMapBaseUrl}?SERVICE=WCS&VERSION=1.1.0&REQUEST=GetCoverage&IDENTIFIER=${featureList[key].layers}&BOUNDINGBOX=${featureList[key].bbox}&FORMAT=GeoTIFF",
+                                     "request":{},
+                                     "result":{}
+                                   }],
+                                 "contents" : []
+                               }
+                       </#if>
+                       ]
+                      }
+                    }<#if key_has_next>,</#if>
+                </#list>
+                ]
+             , 
               
-            "properties" : {
-                      ${owcProperties}
-                }      
+             "properties" : {
+                       ${owcProperties}
+                 }      
             
-          }
+           }
 
         *Sample* ``owc_json_ctx.json``
 
-        .. code-block:: json
+        .. code-block:: text
 
           "lang" : "en",
           "title" : "Sample Title goes here",
@@ -1101,7 +1101,7 @@ The examples above represents all the possible types of Outputs currently suppor
 
         *Sample* ``result#.json``
 
-        .. code-block:: json
+        .. code-block:: text
 
           "title" : "Result 2",
           "updated" : "${lastUpdated}",
@@ -1171,7 +1171,7 @@ Logging Section
     
     As an instance
     
-    .. code-block:: json
+    .. code-block:: text
     
       .*\[DEBUG\](.*)
       
@@ -1181,7 +1181,7 @@ Logging Section
     
     Another example
     
-    .. code-block:: json
+    .. code-block:: text
     
       .*\[INFO\] ProgressInfo\:([-+]?[0-9]*\.?[0-9]*)\%
       

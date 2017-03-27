@@ -9,7 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>gs-rest-ng</artifactId>
+  <artifactId>gs-restconfig-ng</artifactId>
 
   <dependencies>
     <dependency>
@@ -22,9 +22,9 @@
       <artifactId>gs-main</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>${jackson2.version}</version>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-rest-ng</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- Test dependencies -->

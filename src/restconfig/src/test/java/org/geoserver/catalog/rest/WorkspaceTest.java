@@ -6,13 +6,20 @@
 package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.StringWriter;
 import java.util.List;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.StoreInfo;
@@ -20,11 +27,14 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import org.springframework.mock.web.MockHttpServletResponse;
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 
 public class WorkspaceTest extends CatalogRESTTestSupport {
 
@@ -39,19 +49,20 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( "/rest/workspaces.xml");
         assertEquals( catalog.getNamespaces().size() , 
             dom.getElementsByTagName( "workspace").getLength() );
+        NodeList nodes = dom.getElementsByTagName( "workspace");
+        for(int i=0;i<nodes.getLength();i++){
+        	Node node = nodes.item(i);
+        	if(!(node instanceof Element)) {
+        		continue;
+        	}
+			String nodeValue = node.getTextContent().trim();
+			
+			if(nodeValue != null) {
+				assertNotNull(catalog.getWorkspaceByName(nodeValue));
+			}
+        }
+       
     }
-    
-    @Test
-    public void testGetAllAsJSON() throws Exception {
-        JSON json = getAsJSON( "/rest/workspaces.json");
-        assertTrue( json instanceof JSONObject );
-        
-        JSONArray workspaces = ((JSONObject)json).getJSONObject("workspaces").getJSONArray("workspace");
-        assertNotNull( workspaces );
-        
-        assertEquals( catalog.getNamespaces().size() , workspaces.size() ); 
-    }
-    
     @Test
     public void testGetAllAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces.html" );
@@ -143,6 +154,15 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         
         WorkspaceInfo ws = getCatalog().getWorkspaceByName( "foo" );
         assertNotNull(ws);
+        
+        
+        String xml2 = "<workspace>" + 
+                "<name>foo2</name>" + 
+                " <atom:link xmlns:atom=\"http://www.w3.org/2005/Atom\" "
+                + "rel=\"alternate\" "
+                + "href=\"http://localhost:4080/geoserver/rest/workspaces/topp.xml\" "
+                + "type=\"application/xml\"/>" +
+                "</workspace>";
     }
     
     @Test
@@ -316,4 +336,71 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
         def = getCatalog().getDefaultWorkspace(); 
         assertEquals( "sf", def.getName() );
     }
+    
+	@Test
+	public void testRoundTripXMLSerialization() throws Exception {
+		//we can do this round trip two ways - first upload/download and check
+		removeWorkspace("ian");
+		String xml = "<workspace>" + "<name>foo</name>" + "</workspace>";
+		MockHttpServletResponse response = postAsServletResponse("/rest/workspaces", xml, "text/xml");
+		assertEquals(201, response.getStatus());
+		assertNotNull(response.getHeader("Location"));
+		assertTrue(response.getHeader("Location").endsWith("/workspaces/foo"));
+
+		WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
+		assertNotNull(ws);
+		Document dom = getAsDOM("/rest/workspaces/foo.xml");
+		assertEquals("workspace", dom.getDocumentElement().getLocalName());
+		assertEquals(1, dom.getElementsByTagName("name").getLength());
+
+		Element name = (Element) dom.getElementsByTagName("name").item(0);
+		assertEquals("foo", name.getFirstChild().getTextContent());
+		
+		//second download/upload - this runs into GEOS-5603(?)
+		dom = getAsDOM("/rest/workspaces/"+SystemTestData.SF_PREFIX+".xml");
+		name = (Element) dom.getElementsByTagName("name").item(0);
+		
+		name.setTextContent("ian");
+		TransformerFactory tf = TransformerFactory.newInstance();
+		Transformer transformer = tf.newTransformer();
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+		StringWriter writer = new StringWriter();
+		transformer.transform(new DOMSource(dom), new StreamResult(writer));
+		String output = writer.getBuffer().toString();
+		
+		response = postAsServletResponse("/rest/workspaces", output, "text/xml");
+		assertEquals(201, response.getStatus());
+		assertNotNull(response.getHeader("Location"));
+		assertTrue(response.getHeader("Location").endsWith("/workspaces/ian"));
+	}
+	
+	@Test
+	public void testRoundTripJSONSerialization() throws Exception {
+		//we can do this round trip two ways - first upload/download and check
+		removeWorkspace("ian");
+		String json = "{'workspace':{'name':'foo'}}";
+		MockHttpServletResponse response = postAsServletResponse("/rest/workspaces", json, "application/json");
+		assertEquals(201, response.getStatus());
+		assertNotNull(response.getHeader("Location"));
+		assertTrue(response.getHeader("Location").endsWith("/workspaces/foo"));
+
+		WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
+		assertNotNull(ws);
+		JSON jsonObj = getAsJSON("/rest/workspaces/foo.json");
+		JSONObject workspace = ((JSONObject) jsonObj).getJSONObject("workspace");
+		assertEquals("foo", workspace.get("name"));
+
+		//second download/upload - this runs into GEOS-5603(?)
+		jsonObj = getAsJSON("/rest/workspaces/"+SystemTestData.SF_PREFIX+".json");
+		workspace = ((JSONObject) jsonObj).getJSONObject("workspace");
+		
+		workspace.put("name", "ian");
+		
+		String output = jsonObj.toString();
+		System.out.println(output);
+		response = postAsServletResponse("/rest/workspaces", output, "application/json");
+		assertEquals(201, response.getStatus());
+		assertNotNull(response.getHeader("Location"));
+		assertTrue(response.getHeader("Location").endsWith("/workspaces/ian"));
+	}
 }

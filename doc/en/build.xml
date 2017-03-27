@@ -1,0 +1,96 @@
+<project name="user" default="full">
+  <target name="init">
+    <property environment="env"/>
+
+    <condition property="sphinx.available">
+      <or>
+        <available file="sphinx-build" filepath="${env.PATH}"/>
+        <available file="sphinx-build.exe" filepath="${env.Path}"/>
+        <available file="sphinx-build.exe" filepath="${env.PATH}"/>
+      </or>
+    </condition>
+    <condition property="rst2pdf.available">
+      <or>
+        <available file="rst2pdf" filepath="${env.PATH}"/>
+        <available file="rst2pdf.exe" filepath="${env.Path}"/>
+        <available file="rst2pdf.exe" filepath="${env.PATH}"/>
+      </or>
+    </condition>
+    <condition property="latex.available">
+      <or>
+        <available file="latex" filepath="${env.PATH}"/>
+      </or>
+    </condition>
+
+    <condition property="build.directory" value="${build.directory}" else="${basedir}/target">
+      <isset property="build.directory" />
+    </condition>
+
+    <condition property="project.version" value="${project.version}" else="17-SNAPSHOT">
+      <isset property="project.version" />
+    </condition>
+
+    <echo message="Build directory is ${build.directory} and project version is ${project.version}"/>
+  </target>
+
+  <target name="clean" depends="init">
+    <delete includeemptydirs="true">
+      <fileset dir="${build.directory}" defaultexcludes="false">
+        <include name="**/" />
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="user" depends="init"
+    description="Generate user html documentation for GeoServer">
+    <antcall target="sphinx-ignore-warnings">
+      <param name="id" value="user" />
+      <param name="build" value="html" />
+    </antcall>
+  </target>
+
+  <target name="docguide" depends="init"
+    description="Generate instructions for editing GeoServer documentation">
+    <antcall target="sphinx">
+      <param name="id" value="docguide" />
+      <param name="build" value="html" />
+    </antcall>
+  </target>
+  
+  <target name="developer" depends="init"
+    description="Generate developers guide for GeoServer">
+    <antcall target="sphinx-ignore-warnings">
+      <param name="id" value="developer"/>
+      <param name="build" value="html"/>
+    </antcall>
+  </target>
+
+  <target name="full" depends="docguide,user,developer">
+  </target>
+
+  <target name="sphinx-ignore-warnings" if="sphinx.available">
+    <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}/source">
+      <arg line="-D release=${project.version} -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
+    </exec>
+  </target>
+    
+  <target name="sphinx" if="sphinx.available">
+                <echo message="Running sphinx-build -D release=${project.version} -W -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/> 
+    <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}/source">
+      <arg line="-D release=${project.version} -W -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
+    </exec>
+  </target>
+
+  <target name="latex" if="latex.available">
+    <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}">
+      <arg line="-D release=${project.version} -b latex -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
+    </exec>
+  </target>
+
+  <target name="pdf" if="rst2pdf.available">
+    <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}">
+      <arg line="-D release=${project.version} -c ${basedir}/${id}/pdf -b pdf -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
+    </exec>
+  </target>
+
+</project>

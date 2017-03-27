@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>gs-docs</artifactId>
+  <groupId>org.geoserver.en</groupId>
+  <version>2.12-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>GeoServer English Documentation</name>
+  <description>GeoServer English documentation</description>
+
+  <licenses>
+    <license>
+      <name>Creative Commmons Attribution 4.0 International</name>
+      <url>https://creativecommons.org/licenses/by/4.0/</url>
+    </license>
+  </licenses>
+  
+  <dependencies>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-codegen-maven-plugin</artifactId>
+        <version>2.2.2</version>
+        <executions>
+          <!-- one execution per page -->
+          <execution>
+            <id>styles</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/styles.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/styles</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>workspace</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/workspaces/api.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/workspaces</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>fonts</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/fonts.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/fonts</output>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.6.5</version>
+          </dependency>
+          <dependency>
+            <groupId>ant-contrib</groupId>
+            <artifactId>ant-contrib</artifactId>
+            <version>1.0b3</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <phase>compile</phase>
+            <configuration>
+              <tasks>
+                <ant antfile="build.xml" dir="${basedir}" target="${target}">
+                  <property name="build.directory" value="${project.build.directory}"/>
+                  <property name="project.version" value="${project.version}"/>
+                </ant>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.5.3</version>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/user.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <!-- sphinx build targets - default to full -->
+  <properties>
+     <target>full</target>
+  </properties>
+  <profiles>
+    <profile>
+      <id>docguide</id>
+      <properties>
+        <target>docguide</target>
+      </properties>
+    </profile>
+    <profile>
+      <id>user</id>
+      <properties>
+        <target>user</target>
+      </properties>
+    </profile>
+    <profile>
+      <id>developer</id>
+      <properties>
+        <target>developer</target>
+      </properties>
+    </profile>
+  </profiles>
+  
+</project>

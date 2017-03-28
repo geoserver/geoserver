@@ -29,10 +29,9 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.rest.WMSStoreController;
-import org.geoserver.catalog.rest.WMSStoreController2;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.rest.RestController;
+import org.geoserver.rest.RestBaseController;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -63,7 +62,7 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
     
     @Test
     public void testBeanPresent() throws Exception {
-        assertThat(GeoServerExtensions.extensions(RestController.class), 
+        assertThat(GeoServerExtensions.extensions(RestBaseController.class), 
             hasItem(instanceOf(WMSStoreController.class)));
     }
     

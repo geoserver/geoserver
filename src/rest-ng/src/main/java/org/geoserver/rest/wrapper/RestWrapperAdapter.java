@@ -1,6 +1,7 @@
 package org.geoserver.rest.wrapper;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 
 import freemarker.template.Template;
@@ -47,5 +48,11 @@ public class RestWrapperAdapter<T> implements RestWrapper<T> {
     public Template getTemplate() {
         return template;
     }
+
+    /**
+     * Default (empty) implementation. Subclasses should override this to implement custom functionality
+     */
+	@Override
+	public void configureFreemarker(FreemarkerHTMLMessageConverter converter) { }
    
 }

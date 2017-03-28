@@ -3,6 +3,7 @@ package org.geoserver.rest.converters;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.geoserver.platform.ExtensionPriority;
+import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
@@ -13,6 +14,9 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -74,7 +78,7 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
         Writer tmplWriter = null;
         if (o instanceof RestWrapper) {
             RestWrapper wrapper = (RestWrapper) o;
-
+            wrapper.configureFreemarker(this);
             try {
                 Object object = wrapper.getObject();
                 Template template = wrapper.getTemplate();
@@ -106,5 +110,37 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
     public int getPriority() {
         //If no extension or content-type provided, return HTML;
         return ExtensionPriority.LOWEST-1;
+    }
+
+	public List<URL> createCollectionLink(String link) {
+		// TODO Auto-generated method stub
+		try {
+			String href = href(link);
+			URL url2 = new URL(href);
+			return (List<URL>) Collections.singletonList(url2);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return new ArrayList<URL>();
+	}
+	
+    protected String href( String link) {
+
+        final RequestInfo pg = RequestInfo.get();
+        String ext = "html";
+
+        if(ext != null && ext.length() > 0)
+            link = link+ "." + ext;
+
+        // encode as relative or absolute depending on the link type
+        if ( link.startsWith( "/") ) {
+            // absolute, encode from "root"
+            return pg.servletURI(link);
+        } else {
+            //encode as relative
+            return pg.pageURI(link);
+        }
     }
 }

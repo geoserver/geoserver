@@ -17,6 +17,7 @@ import org.geoserver.rest.wrapper.RestWrapperAdapter;
 import org.geotools.util.logging.Logging;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdvice;
 
@@ -189,6 +190,23 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      * @return
      */
     protected <T> RestWrapper<T> wrapObject(T object, Class<T> clazz) {
+        return new RestWrapperAdapter<T>(object, clazz, this, getTemplate(object, clazz));
+    }
+
+    /**
+     * Wraps the passed object in a {@link RestWrapperAdapter}
+     *
+     * @param object The object to wrap
+     * @param clazz The advertised class to use for the collection contents
+     * @param errorMessage The error message to return if the object is null.
+     * @param quietOnNotFound The value of the quietOnNotFound parameter
+     * @return
+     */
+    protected <T> RestWrapper<T> wrapObject(T object, Class<T> clazz, String errorMessage, Boolean quietOnNotFound) {
+        errorMessage = quietOnNotFound != null && quietOnNotFound ? "" : errorMessage;
+        if (object == null){
+            throw new RestException(errorMessage, HttpStatus.NOT_FOUND);
+        }
         return new RestWrapperAdapter<T>(object, clazz, this, getTemplate(object, clazz));
     }
 

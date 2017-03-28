@@ -2,6 +2,7 @@ package org.geoserver.rest.wrapper;
 
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 
 import freemarker.template.Template;
@@ -38,7 +39,8 @@ public class RestWrapperAdapter<T> implements RestWrapper<T> {
     }
 
     /**
-     * Default implementation. Calls {@link RestBaseController#configurePersister(XStreamPersister, XStreamMessageConverter)}
+     * Default implementation.
+     * Calls {@link RestBaseController#configurePersister(XStreamPersister, XStreamMessageConverter)}
      */
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
@@ -53,6 +55,15 @@ public class RestWrapperAdapter<T> implements RestWrapper<T> {
     @Override
     public Template getTemplate() {
         return template;
+    }
+
+    /**
+     * Default implementation.
+     * Calls {@link RestBaseController#configureFreemarker(FreemarkerHTMLMessageConverter, Template)}
+     */
+    @Override
+    public void configureFreemarker(FreemarkerHTMLMessageConverter converter) {
+        controller.configureFreemarker(converter, getTemplate());
     }
    
 }

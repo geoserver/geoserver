@@ -1,6 +1,7 @@
 package org.geoserver.rest.wrapper;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 
 import freemarker.template.Template;
@@ -29,10 +30,19 @@ public interface RestWrapper<T> {
      * Apply configuration to the XStreamPersister based on the converter
      *
      * @param persister The XStream persister
-     * @param xStreamMessageConverter The XStream converter
+     * @param xStreamMessageConverter 
+     * 
      */
     void configurePersister(XStreamPersister persister, XStreamMessageConverter xStreamMessageConverter);
 
+    /**
+     * Apply configuration to the template based on the data format
+     *
+     * @param converter the {@link FreemarkerHTMLMessageConverter} to use 
+     * 
+     */
+    void configureFreemarker(FreemarkerHTMLMessageConverter converter);
+    
     /**
      * Get the freemarker template associated with this response
      *

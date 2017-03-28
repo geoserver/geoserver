@@ -226,11 +226,24 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      * {@link #wrapObject(Object, Class)}, {@link #wrapList(Collection, Class)}, and
      * {@link #beforeBodyRead(HttpInputMessage, MethodParameter, Type, Class)}
      *
-     * Override this method in subclasses to apply custom configuration.
+     * Subclasses should override this to implement custom functionality
      *
      * @param persister
      */
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) { }
+
+    /**
+     * Default (empty) implementation of configurePersister. This will be called by the default implementation of
+     * {@link RestWrapper#configurePersister(XStreamPersister, XStreamMessageConverter)}, constructed by
+     * {@link #wrapObject(Object, Class)}, and {@link #wrapList(Collection, Class)}
+     *
+     * Subclasses should override this to implement custom functionality
+     *
+     * @param converter
+     */
+    public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {
+
+    }
 
     /**
      * Wraps the object being serialized in a {@link SimpleHash} template model.

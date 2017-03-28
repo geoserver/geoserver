@@ -5,6 +5,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import org.geoserver.catalog.*;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestHttpInputWrapper;
@@ -36,7 +37,7 @@ import java.util.logging.Logger;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = "/restng/workspaces/{workspace}/coveragestores")
+@RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspace}/coveragestores")
 public class CoverageStoreController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageStoreController.class);
@@ -50,8 +51,12 @@ public class CoverageStoreController extends CatalogController {
             MediaType.TEXT_HTML_VALUE })
     public RestWrapper<CoverageStoreInfo> getCoverageStores(
             @PathVariable(name = "workspace") String workspaceName) {
+        WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
+        if(ws == null) {
+            throw new ResourceNotFoundException("No such workspace : " + workspaceName);
+        }
         List<CoverageStoreInfo> coverageStores = catalog
-                .getCoverageStoresByWorkspace(workspaceName);
+                .getCoverageStoresByWorkspace(ws);
         return wrapList(coverageStores, CoverageStoreInfo.class);
     }
 
@@ -149,22 +154,6 @@ public class CoverageStoreController extends CatalogController {
     void clear(CoverageStoreInfo info) {
         catalog.getResourcePool().clear(info);
     }
-
-    // @Override
-    // protected void handleObjectPut(Object object) throws Exception {
-    // String workspace = getAttribute("workspace");
-    // String coveragestore = getAttribute("coveragestore");
-    //
-    // CoverageStoreInfo cs = (CoverageStoreInfo) object;
-    // CoverageStoreInfo original = catalog.getCoverageStoreByName(workspace, coveragestore);
-    // new CatalogBuilder( catalog ).updateCoverageStore( original, cs );
-    //
-    // catalog.validate(original, false).throwIfInvalid();
-    // catalog.save( original );
-    // clear(original);
-    //
-    // LOGGER.info( "PUT coverage store " + workspace + "," + coveragestore );
-    // }
 
     RestWrapper<CoverageStoreInfo> wrapCoverageStore(CoverageStoreInfo store) {
         return new RestWrapperAdapter<CoverageStoreInfo>(store, CoverageStoreInfo.class,

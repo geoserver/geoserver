@@ -6,10 +6,12 @@
 package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -48,6 +50,13 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
     @Before
     public void addBlueMarbleCoverage() throws Exception {
         getTestData().addDefaultRasterLayer(SystemTestData.TASMANIA_BM, getCatalog());
+    }
+    
+    @Test
+    public void testGetAllOnMissingWorkspace() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("/restng/workspaces/abcde/coveragestores.xml");
+        assertEquals(404, response.getStatus());
+        assertThat(response.getContentAsString(), containsString("abcde"));
     }
     
     @Test

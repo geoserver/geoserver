@@ -1,6 +1,7 @@
 package org.geoserver.rest.wrapper;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
@@ -15,9 +16,11 @@ import java.io.InputStream;
 public class RestHttpInputWrapper implements HttpInputMessage {
 
     HttpInputMessage message;
+    RestBaseController controller;
 
-    public RestHttpInputWrapper(HttpInputMessage message) {
+    public RestHttpInputWrapper(HttpInputMessage message, RestBaseController controller) {
         this.message = message;
+        this.controller = controller;
     }
 
     /**
@@ -27,7 +30,7 @@ public class RestHttpInputWrapper implements HttpInputMessage {
      * @param xStreamMessageConverter The XStream converter
      */
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter xStreamMessageConverter) {
-
+        controller.configurePersister(persister, xStreamMessageConverter);
     }
 
     @Override

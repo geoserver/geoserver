@@ -1,6 +1,7 @@
 package org.geoserver.rest.wrapper;
 
 import freemarker.template.Template;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamCatalogListConverter;
 
@@ -17,8 +18,8 @@ import java.util.Collection;
 public class RestListWrapper<T> extends RestWrapperAdapter<T> {
 
 
-    public RestListWrapper(Collection<T> collection, Class<T> clazz, Template template) {
-        super(collection, clazz, template);
+    public RestListWrapper(Collection<T> collection, Class<T> clazz, RestBaseController controller, Template template) {
+        super(collection, clazz, controller, template);
     }
 
     /**

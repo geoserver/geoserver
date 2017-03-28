@@ -1,6 +1,7 @@
 package org.geoserver.rest.wrapper;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 
 import freemarker.template.Template;
@@ -13,15 +14,17 @@ public class RestWrapperAdapter<T> implements RestWrapper<T> {
     Object object;
     Class<T> clazz;
     Template template;
+    RestBaseController controller;
 
-    public RestWrapperAdapter(Object object, Class<T> advertisedClass) {
-        this(object, advertisedClass, null);
+    public RestWrapperAdapter(Object object, Class<T> advertisedClass, RestBaseController controller) {
+        this(object, advertisedClass, controller, null);
     }
 
-    public RestWrapperAdapter(Object object, Class<T> advertisedClass, Template template) {
+    public RestWrapperAdapter(Object object, Class<T> advertisedClass, RestBaseController controller, Template template) {
         this.object = object;
         this.clazz = advertisedClass;
         this.template = template;
+        this.controller = controller;
     }
 
     @Override
@@ -35,12 +38,16 @@ public class RestWrapperAdapter<T> implements RestWrapper<T> {
     }
 
     /**
-     * Default (empty) implementation. Subclasses should override this to implement custom functionality
+     * Default implementation. Calls {@link RestBaseController#configurePersister(XStreamPersister, XStreamMessageConverter)}
      */
     @Override
-    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) { }
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
+        controller.configurePersister(persister, converter);
+    }
 
     /**
+     * Default implementation.
+     * Subclasses should override this to implement custom functionality
      * @return freemarker template
      */
     @Override

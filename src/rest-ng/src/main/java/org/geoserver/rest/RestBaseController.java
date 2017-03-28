@@ -5,15 +5,23 @@ import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.CollectionModel;
 import freemarker.ext.beans.MapModel;
 import freemarker.template.*;
+import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.ClassProperties;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
+import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.wrapper.RestHttpInputWrapper;
 import org.geoserver.rest.wrapper.RestListWrapper;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.rest.wrapper.RestWrapperAdapter;
 import org.geotools.util.logging.Logging;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpInputMessage;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdvice;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,9 +31,14 @@ import java.util.logging.Logger;
 /**
  * Base class for all rest-ng controllers
  *
- * Provided various utilities for dealing with the {@link FreemarkerHTMLMessageConverter}
+ * Extending classes should be annotated with {@link org.springframework.web.bind.annotation.RestController} and
+ * {@link org.springframework.web.bind.annotation.ControllerAdvice}
+ *
+ * Provides basic logic for wrapper construction and persister configuration
+ *
+ * Also provides various utilities for dealing with the {@link FreemarkerHTMLMessageConverter}
  */
-public class RestBaseController {
+public abstract class RestBaseController implements RequestBodyAdvice {
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.rest");
 
@@ -165,7 +178,7 @@ public class RestBaseController {
      * @return
      */
     protected <T> RestWrapper<T> wrapList(Collection<T> list, Class<T> clazz) {
-        return new RestListWrapper<>(list, clazz, getTemplate(list, clazz));
+        return new RestListWrapper<T>(list, clazz, this, getTemplate(list, clazz));
     }
 
     /**
@@ -176,8 +189,44 @@ public class RestBaseController {
      * @return
      */
     protected <T> RestWrapper<T> wrapObject(T object, Class<T> clazz) {
-        return new RestWrapperAdapter<>(object, clazz, getTemplate(object, clazz));
+        return new RestWrapperAdapter<T>(object, clazz, this, getTemplate(object, clazz));
     }
+
+    @Override
+    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        return true;
+    }
+
+    @Override
+    public Object handleEmptyBody(Object body, HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        return body;
+    }
+
+    @Override
+    public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) throws IOException {
+        if (!(inputMessage instanceof RestHttpInputWrapper)) {
+            return new RestHttpInputWrapper(inputMessage, this);
+        }
+        return inputMessage;
+    }
+
+    @Override
+    public Object afterBodyRead(Object body, HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        return body;
+    }
+
+    /**
+     * Default (empty) implementation of configurePersister. This will be called by the default implementations of
+     * {@link RestWrapper#configurePersister(XStreamPersister, XStreamMessageConverter)} and
+     * {@link RestHttpInputWrapper#configurePersister(XStreamPersister, XStreamMessageConverter)} constructed by
+     * {@link #wrapObject(Object, Class)}, {@link #wrapList(Collection, Class)}, and
+     * {@link #beforeBodyRead(HttpInputMessage, MethodParameter, Type, Class)}
+     *
+     * Override this method in subclasses to apply custom configuration.
+     *
+     * @param persister
+     */
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) { }
 
     /**
      * Wraps the object being serialized in a {@link SimpleHash} template model.

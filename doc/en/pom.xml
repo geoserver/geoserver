@@ -75,6 +75,18 @@
               <output>${project.build.directory}/api/coverageStores</output>
             </configuration>
           </execution>
+          <execution>
+            <id>styles</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/layergroups.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/layerGroups</output>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>

@@ -12,18 +12,15 @@ paths:
       summary: Get a list of layer groups
       description: Displays a list of all layer groups on the server not otherwise in a workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layergroups.xml" for XML)
       produces:
-        - text/html
-        - application/json
         - application/xml
+        - application/json
+        - text/html
       responses:
         200:
           description: OK
           schema:
             $ref: "#/definitions/LayergroupResponse"
           examples:
-            application/json: '
-              {"layerGroups":{"layerGroup":[{"name":"spearfish","href":"http:\/\/localhost:8080\/geoserver\/rest\/layergroups\/spearfish.json"},{"name":"tasmania","href":"http:\/\/localhost:8080\/geoserver\/rest\/layergroups\/tasmania.json"},{"name":"tiger-ny","href":"http:\/\/localhost:8080\/geoserver\/rest\/layergroups\/tiger-ny.json"}]}}
-            '
             application/xml: '
               <layerGroups>
                 <layerGroup>
@@ -32,7 +29,9 @@ paths:
                 </layerGroup>
               </layerGroups>
             '
-
+            application/json: '
+              {"layerGroups":{"layerGroup":[{"name":"spearfish","href":"http:\/\/localhost:8080\/geoserver\/rest\/layergroups\/spearfish.json"},{"name":"tasmania","href":"http:\/\/localhost:8080\/geoserver\/rest\/layergroups\/tasmania.json"},{"name":"tiger-ny","href":"http:\/\/localhost:8080\/geoserver\/rest\/layergroups\/tiger-ny.json"}]}}
+            '
     post:
       operationId: postLayergroups
       summary: Add a new layer group
@@ -47,11 +46,10 @@ paths:
             $ref: "#/definitions/Layergroup"
       consumes:
         - application/xml
-        - application/zip
       produces:
         - application/xml
-        - text/html
         - application/json
+        - text/html
       responses:
         201:
           description: Created
@@ -82,14 +80,14 @@ paths:
       summary: Retrieve a layer group
       description: Retrieves a single layer group definition. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layergroups/{layergroup}.xml" for XML).
       produces:
-        - text/html
-        - application/json
         - application/xml
+        - application/json
+        - text/html
       parameters:
         - name: layergroupName
           in: path
           required: true
-          description: The name of the layergroup to retrieve.
+          description: The name of the layer group to retrieve.
           type: string
         - name: quietOnNotFound 
           in: query
@@ -102,29 +100,6 @@ paths:
           schema:
             $ref: "#/definitions/Layergroup"
           examples:
-            text/html: '
-              <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-              <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-              <head>
-                  <title>GeoServer Configuration</title>
-                  <meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
-              </head>
-              <body>
-              
-              Layer group "spearfish"
-              
-              <ul>
-                <li>Name: spearfish</li>
-                <li>Layers: [LayerInfoImpl[sfdem, resource:CoverageInfoImpl[sfdem]], LayerInfoImpl[streams, resource:FeatureTypeInfoImpl[streams]], i>Styles: [StyleInfoImpl[dem], null]</li>
-              </ul>
-              
-              </body>
-              </html>
-              '
-            application/json: '
-              {"layerGroup":{"name":"spearfish","mode":"SINGLE","title":"Spearfish","abstractTxt":"Spearfish City in Lawrence County, South Dakota","publishables":{"published":[{"@type":"layer","name":"sfdem","href":"http://localhost:8080/geoserver/rest/layers/sfdem.json"},{"@type":"layer","name":"streams","href":"http://localhost:8080/geoserver/rest/layers/streams.json"}]},"styles":{"style":[{"name":"dem","href":"http://localhost:8080/geoserver/rest/styles/dem.json"},"null"]},"bounds":{"minx":589425.9342365642,"maxx":609518.6719560538,"miny":4913959.224611808,"maxy":4928082.949945881,"crs":{"@class":"projected","$":"EPSG:26713"}},"metadata":{"entry":{"@key":"rawStyleList","$":""}}}}
-              '
             application/xml: '
               <layerGroup>
                 <name>spearfish</name>
@@ -159,7 +134,9 @@ paths:
                 </metadata>
               </layerGroup>
               '
-
+            application/json: '
+              {"layerGroup":{"name":"spearfish","mode":"SINGLE","title":"Spearfish","abstractTxt":"Spearfish City in Lawrence County, South Dakota","publishables":{"published":[{"@type":"layer","name":"sfdem","href":"http://localhost:8080/geoserver/rest/layers/sfdem.json"},{"@type":"layer","name":"streams","href":"http://localhost:8080/geoserver/rest/layers/streams.json"}]},"styles":{"style":[{"name":"dem","href":"http://localhost:8080/geoserver/rest/styles/dem.json"},"null"]},"bounds":{"minx":589425.9342365642,"maxx":609518.6719560538,"miny":4913959.224611808,"maxy":4928082.949945881,"crs":{"@class":"projected","$":"EPSG:26713"}},"metadata":{"entry":{"@key":"rawStyleList","$":""}}}}
+              '
     post:
       operationId: postLayergroup
       description: Invalid. Use PUT to edit a layer group definition, or POST with /layergroups to add a new definition.
@@ -175,7 +152,7 @@ paths:
         - name: layergroupName
           in: path
           required: true
-          description: The name of the layergroup to modify.
+          description: The name of the layer group to modify.
           type: string
         - name: layergroupBody
           in: body
@@ -204,27 +181,199 @@ paths:
         200:
           description: OK
 
+
+  /workspaces/{workspaces}/layergroups:
+    get:
+      operationId: getWorkspaceLayergroups
+      summary: Get a list of layer groups in a workspace
+      description: Displays a list of all layer groups in a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layergroups.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/LayergroupResponse"
+          examples:
+            application/xml: '
+              <layerGroups>
+                <layerGroup>
+                  <name>spearfish</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/layergroups/spearfish.xml" type="application/xml"/>
+                </layerGroup>
+              </layerGroups>
+            '
+            application/json: '
+              {"layerGroups":{"layerGroup":[{"name":"spearfish","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/sf\/layergroups\/spearfish.json"}]}}
+            '
+    post:
+      operationId: postWorkspaceLayergroups
+      summary: Add a new layer group
+      description: Adds a new layer group entry to the server in the specified workspace.
+
+      parameters:
+        - name: layergroupBody
+          description: The layer group body information to upload.
+          in: body
+          required: true          
+          schema:
+            $ref: "#/definitions/Layergroup"
+      consumes:
+        - application/xml
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        201:
+          description: Created
+          schema:
+            type: string
+          headers:
+            Location:
+              description: URL where the newly created layer group can be found
+              type: string
+
+    put:
+      operationId: putWorkspaceLayergroups
+      description: Invalid. Use POST for adding a new layer group to a workspace, or PUT on /workspaces/{workspace}/layergroups/{layergroup} to edit an existing layer group.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteLayergroups
+      description: Invalid. Use /workspaces/{workspace}/layergroups/{layergroup} instead.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /workspaces/{workspace}/layergroups/{layergroup}:
+    get:
+      operationId: getWorkspaceLayergroup
+      summary: Retrieve a layer group
+      description: Retrieves a single layer group definition. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/layergroups/{layergroup}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      parameters:
+        - name: layergroupName
+          in: path
+          required: true
+          description: The name of the layer group to retrieve.
+          type: string
+        - name: quietOnNotFound 
+          in: query
+          required: false
+          description: The quietOnNotFound parameter avoids logging an exception when the layer group is not present. Note that 404 status code will still be returned.
+          type: boolean             
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Layergroup"
+          examples:
+            application/json: '
+              {"layerGroup":{"name":"spearfish","mode":"SINGLE","title":"Spearfish","abstractTxt":"Spearfish City in Lawrence County, South Dakota","workspace":{"name":"sf"},"publishables":{"published":[{"@type":"layer","name":"sfdem","href":"http://localhost:8080/geoserver/rest/layers/sfdem.json"},{"@type":"layer","name":"streams","href":"http://localhost:8080/geoserver/rest/layers/streams.json"}]},"styles":{"style":[{"name":"dem","href":"http://localhost:8080/geoserver/rest/styles/dem.json"},"null"]},"bounds":{"minx":589425.9342365642,"maxx":609518.6719560538,"miny":4913959.224611808,"maxy":4928082.949945881,"crs":{"@class":"projected","$":"EPSG:26713"}},"metadata":{"entry":{"@key":"rawStyleList","$":""}}}}
+              '
+            application/xml: '
+              <layerGroup>
+                <name>spearfish</name>
+                <mode>SINGLE</mode>
+                <title>Spearfish</title>
+                <abstractTxt>Spearfish City in Lawrence County, South Dakota</abstractTxt>
+                <workspace>
+                  <name>sf</name>
+                </workspace>
+                <publishables>
+                  <published type="layer">
+                    <name>sfdem</name>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/sfdem.xml" type="application/xml"/>
+                  </published>
+                  <published type="layer">
+                    <name>streams</name>
+                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/streams.xml" type="application/xml"/>
+                  </published>
+                </publishables>
+                <styles>
+                  <style>
+                    <name>dem</name>
+                      <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/dem.xml" type="application/xml"/>
+                  <style/>
+                </styles>
+                <bounds>
+                  <minx>589425.9342365642</minx>
+                  <maxx>609518.6719560538</maxx>
+                  <miny>4913959.224611808</miny>
+                  <maxy>4928082.949945881</maxy>
+                  <crs class="projected">EPSG:26713</crs>
+                </bounds>
+                <metadata>
+                  <entry key="rawStyleList"></entry>
+                </metadata>
+              </layerGroup>
+              '
+
+    post:
+      operationId: postWorkspaceLayergroup
+      description: Invalid. Use PUT to edit a layer group definition, or POST with /workspaces/{workspace}/layergroups to add a new definition.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWorkspaceLayergroup
+      summary: Modify a layer group.
+      description: Modifies an existing layer group on the server in the given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/layergroups/{layergroup}.xml" for XML).
+      parameters:
+        - name: layergroupName
+          in: path
+          required: true
+          description: The name of the layer group to modify.
+          type: string
+        - name: layergroupBody
+          in: body
+          description: The updated layer group definition.
+          required: true
+          schema:
+            $ref: "#/definitions/Layergroup"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: The layer group was successfully updated.
+
+    delete:
+      operationId: deleteWorkspaceLayergroup
+      summary: Delete layer group
+      description: Deletes a layer group from the server in the given workspace.
+      parameters:
+        - name: layergroupName
+          in: path
+          required: true
+          description: The name of the layer group to delete.
+          type: string
+      responses:
+        200:
+          description: OK
+
+
 definitions:
 
   LayergroupResponse:
+    title: layerGroups
     type: object
     properties:
       layerGroups:
-        $ref: '#/definitions/Layergroups'
+        $ref: "#/definitions/Layergroups"
 
   Layergroups:
     title: layerGroup
-    type: object
-    properties:
-      layerGroup: 
-        $ref: '#/definitions/LayergroupWrapper'
-
-  LayergroupWrapper:
-    type: array
-    items:
-      $ref: '#/definitions/LayergroupListItem'
-
-  LayergroupListItem:
     type: object
     properties:
       name:
@@ -235,6 +384,7 @@ definitions:
         description: URL to layer group definition
 
   Layergroup:
+    title: layerGroup
     type: object
     properties:
       name:
@@ -254,18 +404,24 @@ definitions:
       abstractTxt:
         type: string
         description: Abstract of the layer group
+      workspace:
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of workspace that contains the layer group. Will only exist when request includes workspace name (/workspaces/{workspace}/...).
       publishables:
         type: array
         items:
-          $ref: '#/definitions/LayergroupPublished'
+          $ref: "#/definitions/LayergroupPublished"
       styles:
         type: array
         items:
-          $ref: '#/definitions/LayergroupStyle'
+          $ref: "#/definitions/LayergroupStyle"
       metadataLinks:
         type: array
         items:
-          $ref: '#/definitions/LayergroupMetadataLink'
+          $ref: "#/definitions/LayergroupMetadataLink"
       bounds:
         type: object
         properties:
@@ -309,6 +465,7 @@ definitions:
         description: URL of the style for the corresponding layer in the list
 
   LayergroupMetadataLink:
+    title: metadataLink
     type: object
     properties:
       type:
@@ -320,3 +477,4 @@ definitions:
       content:
         type: string
         description: URL of metadata link
+

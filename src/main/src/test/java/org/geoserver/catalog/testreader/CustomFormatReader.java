@@ -12,6 +12,7 @@ import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -52,14 +53,16 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     private static final String MY_DIMENSION_DOMAIN =
             CustomFormat.CUSTOM_DIMENSION_NAME + "_DOMAIN";
     private static final String HAS_MY_DIMENSION_DOMAIN = "HAS_" + MY_DIMENSION_DOMAIN;
-    
+    private static final String MY_DIMENSION_DATATYPE = MY_DIMENSION_DOMAIN + "_DATATYPE";
+
     private static final TIFFImageReaderSpi READER_SPI = new TIFFImageReaderSpi();
-    
+
     private static final double DEFAULT_NODATA = 9999.0;
-    
+
     private final File dataDirectory;
-    
-    
+
+    private String clazz;
+
     public CustomFormatReader(Object source, Hints hints)
             throws IOException {
         super(source, hints);
@@ -144,6 +147,9 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
         if (MY_DIMENSION_DOMAIN.equalsIgnoreCase(name)) {
             return dimensionValueList();
         }
+        if (MY_DIMENSION_DATATYPE.equalsIgnoreCase(name) && clazz != null) {
+            return clazz;
+        }
         return null;
     }
     
@@ -188,6 +194,11 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
             throw new IOException("No data file found");
         }
         
+        File clazzFile = new File(dataDirectory, "clazz");
+        if (clazzFile.exists()) {
+            clazz = new String(Files.readAllBytes(clazzFile.toPath())).trim();
+        }
+
         final GeoTiffReader geotiffReader = new GeoTiffReader(dataFile, hints);
         this.crs = geotiffReader.getCoordinateReferenceSystem();
         this.originalGridRange = geotiffReader.getOriginalGridRange();

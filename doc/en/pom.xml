@@ -76,7 +76,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>styles</id>
+            <id>layergroups</id>
             <phase>process-resources</phase>
             <goals>
               <goal>generate</goal>
@@ -88,7 +88,19 @@
             </configuration>
           </execution>
           <execution>
-            <id>styles</id>
+            <id>layers</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/layers.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/layers</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>settings</id>
             <phase>process-resources</phase>
             <goals>
               <goal>generate</goal>

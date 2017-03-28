@@ -1,0 +1,75 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Layers
+  description: A layer is a published resource (feature type or coverage).
+
+paths:
+  /layers:
+    get:
+      operationId: getLayers
+      summary: Get a list of layers
+      description: Displays a list of all layers on the server. You must use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers.xml" for XML)
+      produces:
+        - application/json
+        - application/xml
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/LayerResponse"
+          examples:
+            application/xml: '
+              <layers>
+                 <layer>
+                   <name>giant_polygon</name>
+                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate"
+                     href="http://localhost:8080/geoserver/rest/layers/giant_polygon.xml"
+                     type="application/xml"/>
+                 </layer>
+                 <layer>
+                   <name>bugsites</name>
+                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate"
+                     href="http://localhost:8080/geoserver/rest/layers/bugsites.xml"
+                     type="application/xml"/>
+                 </layer>
+               </layers>
+            '
+            application/json: '
+               {
+                 "layers": {
+                   "layer": [
+                     {
+                       "name": "giant_polygon",
+                       "href": "http:\/\/localhost:8080\/geoserver\/rest\/layers\/giant_polygon.json"
+                     },
+                     {
+                       "name": "bugsites",
+                       "href": "http:\/\/localhost:8080\/geoserver\/rest\/layers\/bugsites.json"
+                     },
+                   ]
+                 }
+               }
+            '
+definitions:
+
+  LayerResponse:
+    title: layers
+    type: object
+    properties:
+      layerGroups:
+        $ref: "#/definitions/Layers"
+        
+  Layers:
+    title: layers
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of layer
+      link:
+        type: string
+        description: URL to layer definition
+        

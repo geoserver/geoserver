@@ -7,22 +7,27 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.wrapper.RestHttpInputWrapper;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.rest.wrapper.RestWrapperAdapter;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 
@@ -30,6 +35,7 @@ import java.util.logging.Logger;
  * Coverage store controller
  */
 @RestController
+@ControllerAdvice
 @RequestMapping(path = "/restng/workspaces/{workspace}/coveragestores")
 public class CoverageStoreController extends CatalogController {
 
@@ -204,5 +210,37 @@ public class CoverageStoreController extends CatalogController {
             }
         };
 
+    }
+
+    @Override
+    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        return CoverageStoreInfo.class.isAssignableFrom(methodParameter.getParameterType());
+    }
+
+    @Override
+    public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) throws IOException {
+        return new RestHttpInputWrapper(inputMessage) {
+            @Override
+            public void configurePersister(XStreamPersister persister, XStreamMessageConverter xStreamMessageConverter) {
+                persister.setCallback(new XStreamPersister.Callback() {
+                    @Override
+                    protected Class<CoverageStoreInfo> getObjectClass() {
+                        return CoverageStoreInfo.class;
+                    }
+
+                    @Override
+                    protected CatalogInfo getCatalogObject() {
+                        Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+                        String workspace = uriTemplateVars.get("workspace");
+                        String coveragestore = uriTemplateVars.get("store");
+
+                        if (workspace == null || coveragestore == null) {
+                            return null;
+                        }
+                        return catalog.getCoverageStoreByName(workspace, coveragestore);
+                    }
+                });
+            }
+        };
     }
 }

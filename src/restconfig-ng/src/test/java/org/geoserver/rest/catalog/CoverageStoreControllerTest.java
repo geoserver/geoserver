@@ -311,7 +311,6 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
     }
     
     @Test
-    @Ignore
     public void testPutNonDestructive() throws Exception {
         CoverageStoreInfo cs = catalog.getCoverageStoreByName( "wcs", "BlueMarble");
         

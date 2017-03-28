@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.wrapper.RestHttpInputWrapper;
 import org.geoserver.rest.wrapper.RestListWrapper;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.http.HttpInputMessage;
@@ -70,6 +71,9 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter {
     {
         XStreamPersister p = xpf.createJSONPersister();
         p.setCatalog(catalog);
+        if (inputMessage instanceof RestHttpInputWrapper) {
+            ((RestHttpInputWrapper) inputMessage).configurePersister(p, this);
+        }
         return p.load(inputMessage.getBody(), clazz);
     }
 

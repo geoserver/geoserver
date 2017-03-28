@@ -52,7 +52,7 @@ public class RestWrapperAdapter<T> implements RestWrapper<T> {
     /**
      * Default (empty) implementation. Subclasses should override this to implement custom functionality
      */
-	@Override
-	public void configureFreemarker(FreemarkerHTMLMessageConverter converter) { }
+        @Override
+        public void configureFreemarker(FreemarkerHTMLMessageConverter converter) { }
    
 }

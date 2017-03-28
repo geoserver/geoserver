@@ -48,171 +48,208 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
 @RestController
-@RequestMapping(path = "/restng", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
-		MediaType.TEXT_HTML_VALUE })
+@RequestMapping(path = "/restng", produces = { MediaType.APPLICATION_JSON_VALUE,
+        MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
 public class WorkspaceController extends CatalogController {
 
-	private static final Logger LOGGER = Logging.getLogger(WorkspaceController.class);
+    private static final Logger LOGGER = Logging.getLogger(WorkspaceController.class);
 
-	@Autowired
-	public WorkspaceController(Catalog catalog) {
-		super(catalog);
-		// TODO Auto-generated constructor stub
-	}
+    @Autowired
+    public WorkspaceController(Catalog catalog) {
+        super(catalog);
+        // TODO Auto-generated constructor stub
+    }
 
-	@GetMapping(value = "/workspaces", produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
-			MediaType.TEXT_HTML_VALUE })
-	public RestWrapper getWorkspaces() {
+    @GetMapping(value = "/workspaces", produces = { MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
+    public RestWrapper getWorkspaces() {
 
-		List<WorkspaceInfo> wkspaces = catalog.getWorkspaces();
-		return wrapList(wkspaces, WorkspaceInfo.class);
-	}
+        List<WorkspaceInfo> wkspaces = catalog.getWorkspaces();
+        return wrapList(wkspaces, WorkspaceInfo.class);
+    }
 
-	@GetMapping(value = "/workspaces/{workspaceName}", produces = { MediaType.APPLICATION_JSON_VALUE,
-			MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE })
-	public RestWrapper<WorkspaceInfo> getWorkspace(@PathVariable String workspaceName) {
+    @GetMapping(value = "/workspaces/{workspaceName}", produces = {
+            MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE,
+            MediaType.APPLICATION_XML_VALUE })
+    public RestWrapper<WorkspaceInfo> getWorkspace(@PathVariable String workspaceName) {
 
-		WorkspaceInfo wkspace = catalog.getWorkspaceByName(workspaceName);
-		LOGGER.info("GET " + workspaceName);
-		LOGGER.info("got " + wkspace.getName());
+        WorkspaceInfo wkspace = catalog.getWorkspaceByName(workspaceName);
+        if (wkspace == null) {
+            throw new ResourceNotFoundException("No such workspace: '" + workspaceName + "' found");
+        }
 
-		if (wkspace == null) {
-			throw new ResourceNotFoundException("No such workspace: " + workspaceName + " found");
-		}
-		return wrapWorkspace(wkspace);
-	}
+        LOGGER.info("GET " + workspaceName);
+        LOGGER.info("got " + wkspace.getName());
 
-	@PostMapping(value = "/workspaces", consumes = { "text/xml", MediaType.APPLICATION_XML_VALUE })
-	@ResponseStatus(HttpStatus.CREATED)
-	public ResponseEntity<String> postWorkspace(@RequestBody WorkspaceInfo workspace,
-			@RequestParam(defaultValue = "false", name = "default") boolean makeDefault, UriComponentsBuilder builder) {
-		catalog.add(workspace);
-		String name = workspace.getName();
-		LOGGER.info("Added workspace " + name);
-		if (makeDefault) {
-			catalog.setDefaultWorkspace(workspace);
-			LOGGER.info("made workspace " + name + " default");
-		}
-		LOGGER.info("POST Style " + name);
+        return wrapWorkspace(wkspace);
+    }
 
-		// build the new path
-		UriComponents uriComponents = getUriComponents(name, builder);
-		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(uriComponents.toUri());
-		return new ResponseEntity<String>(name, headers, HttpStatus.CREATED);
-	}
+    @PostMapping(value = "/workspaces", consumes = { "text/xml", MediaType.APPLICATION_XML_VALUE })
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<String> postWorkspace(@RequestBody WorkspaceInfo workspace,
+            @RequestParam(defaultValue = "false", name = "default") boolean makeDefault,
+            UriComponentsBuilder builder) {
+        catalog.add(workspace);
+        String name = workspace.getName();
+        LOGGER.info("Added workspace " + name);
+        if (makeDefault) {
+            catalog.setDefaultWorkspace(workspace);
+            LOGGER.info("made workspace " + name + " default");
+        }
+        LOGGER.info("POST Style " + name);
 
-	private UriComponents getUriComponents(String name, UriComponentsBuilder builder) {
-		UriComponents uriComponents;
+        // build the new path
+        UriComponents uriComponents = getUriComponents(name, builder);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(uriComponents.toUri());
+        return new ResponseEntity<String>(name, headers, HttpStatus.CREATED);
+    }
 
-		uriComponents = builder.path("/workspaces/{id}").buildAndExpand(name);
+    private UriComponents getUriComponents(String name, UriComponentsBuilder builder) {
+        UriComponents uriComponents;
 
-		return uriComponents;
-	}
+        uriComponents = builder.path("/workspaces/{id}").buildAndExpand(name);
 
-	RestWrapper<WorkspaceInfo> wrapWorkspace(WorkspaceInfo wkspace) {
-		return new RestWrapperAdapter<WorkspaceInfo>(wkspace, WorkspaceInfo.class,
-				getTemplate(wkspace, WorkspaceInfo.class)) {
+        return uriComponents;
+    }
 
-			@SuppressWarnings("unchecked")
-			@Override
-			public void configureFreemarker(FreemarkerHTMLMessageConverter converter) {
+    RestWrapper<WorkspaceInfo> wrapWorkspace(WorkspaceInfo wkspace) {
+        return new RestWrapperAdapter<WorkspaceInfo>(wkspace, WorkspaceInfo.class,
+                getTemplate(wkspace, WorkspaceInfo.class)) {
 
-				getTemplate().getConfiguration().setObjectWrapper(new ObjectToMapWrapper(WorkspaceInfo.class) {
+            @SuppressWarnings("unchecked")
+            @Override
+            public void configureFreemarker(FreemarkerHTMLMessageConverter converter) {
 
-					@Override
-					protected void wrapInternal(Map properties, SimpleHash model, Object object) {
+                getTemplate().getConfiguration()
+                    .setObjectWrapper(new ObjectToMapWrapper(WorkspaceInfo.class) {
 
-						List<Map<String, Map<String, String>>> dsProps = new ArrayList<>();
+                    @Override
+                    protected void wrapInternal(Map properties, SimpleHash model,
+                            Object object) {
 
-						List<DataStoreInfo> datasources = catalog.getDataStoresByWorkspace(wkspace);
-						for (DataStoreInfo ds : datasources) {
-							Map<String, String> names = new HashMap<>();
-							names.put("name", ds.getName());
-							dsProps.add(Collections.singletonMap("properties", names));
-						}
-						if (!dsProps.isEmpty())
-							properties.putIfAbsent("dataStores", dsProps);
+                        List<Map<String, Map<String, String>>> dsProps = new ArrayList<>();
 
-						dsProps = new ArrayList<>();
+                        List<DataStoreInfo> datasources = catalog
+                                .getDataStoresByWorkspace(wkspace);
+                        for (DataStoreInfo ds : datasources) {
+                            Map<String, String> names = new HashMap<>();
+                            names.put("name", ds.getName());
+                            dsProps.add(Collections.singletonMap("properties", names));
+                        }
+                        if (!dsProps.isEmpty())
+                            properties.putIfAbsent("dataStores", dsProps);
 
-						List<CoverageStoreInfo> coverages = catalog.getCoverageStoresByWorkspace(wkspace);
-						for (CoverageStoreInfo ds : coverages) {
-							Map<String, String> names = new HashMap<>();
-							names.put("name", ds.getName());
-							dsProps.add(Collections.singletonMap("properties", names));
-						}
-						if (!dsProps.isEmpty())
-							properties.putIfAbsent("coverageStores", dsProps);
+                        dsProps = new ArrayList<>();
 
-						dsProps = new ArrayList<>();
+                        List<CoverageStoreInfo> coverages = catalog
+                                .getCoverageStoresByWorkspace(wkspace);
+                        for (CoverageStoreInfo ds : coverages) {
+                            Map<String, String> names = new HashMap<>();
+                            names.put("name", ds.getName());
+                            dsProps.add(Collections.singletonMap("properties", names));
+                        }
+                        if (!dsProps.isEmpty())
+                            properties.putIfAbsent("coverageStores", dsProps);
 
-						List<WMSStoreInfo> wmssources = catalog.getStoresByWorkspace(wkspace, WMSStoreInfo.class);
-						for (WMSStoreInfo ds : wmssources) {
-							Map<String, String> names = new HashMap<>();
-							names.put("name", ds.getName());
-							dsProps.add(Collections.singletonMap("properties", names));
-						}
-						if (!dsProps.isEmpty())
-							properties.putIfAbsent("wmsStores", dsProps);
+                        dsProps = new ArrayList<>();
 
-					}
+                        List<WMSStoreInfo> wmssources = catalog
+                                .getStoresByWorkspace(wkspace, WMSStoreInfo.class);
+                        for (WMSStoreInfo ds : wmssources) {
+                            Map<String, String> names = new HashMap<>();
+                            names.put("name", ds.getName());
+                            dsProps.add(Collections.singletonMap("properties", names));
+                        }
+                        if (!dsProps.isEmpty())
+                            properties.putIfAbsent("wmsStores", dsProps);
 
-				});
+                    }
 
-			}
+                    @Override
+                    protected void wrapInternal(SimpleHash model,
+                            @SuppressWarnings("rawtypes") Collection object) {
+                        WorkspaceInfo def = catalog.getDefaultWorkspace();
+                        SimpleHash props = null;
+                        try {
+                            props = (SimpleHash) model.get("properties");
+                        } catch (TemplateModelException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        if (props == null) {
+                            props = new SimpleHash();
+                        }
+                        for (Object w : object) {
+                            WorkspaceInfo wk = (WorkspaceInfo) w;
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put("name", wk.getName());
+                            if (def.equals(wk)) {
+                                map.put("isDefault", Boolean.TRUE);
+                            } else {
+                                map.put("isDefault", Boolean.FALSE);
+                            }
+                            props.put("properties", map);
+                        }
+                        model.put("properties", props);
+                    }
 
-			@Override
-			public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-				persister.setCallback(new XStreamPersister.Callback() {
-					@Override
-					protected Class<WorkspaceInfo> getObjectClass() {
-						return WorkspaceInfo.class;
-					}
+                });
 
-					@Override
-					protected CatalogInfo getCatalogObject() {
-						return wkspace;
-					}
+            }
 
-					@Override
-					protected void postEncodeWorkspace(WorkspaceInfo cs, HierarchicalStreamWriter writer,
-							MarshallingContext context) {
+            @Override
+            public void configurePersister(XStreamPersister persister,
+                    XStreamMessageConverter converter) {
+                persister.setCallback(new XStreamPersister.Callback() {
+                    @Override
+                    protected Class<WorkspaceInfo> getObjectClass() {
+                        return WorkspaceInfo.class;
+                    }
 
-						// add a link to the datastores
-						writer.startNode("dataStores");
-						converter.encodeCollectionLink("datastores", writer);
-						writer.endNode();
+                    @Override
+                    protected CatalogInfo getCatalogObject() {
+                        return wkspace;
+                    }
 
-						writer.startNode("coverageStores");
-						converter.encodeCollectionLink("coveragestores", writer);
-						writer.endNode();
+                    @Override
+                    protected void postEncodeWorkspace(WorkspaceInfo cs,
+                            HierarchicalStreamWriter writer, MarshallingContext context) {
 
-						writer.startNode("wmsStores");
-						converter.encodeCollectionLink("wmsstores", writer);
-						writer.endNode();
-					}
+                        // add a link to the datastores
+                        writer.startNode("dataStores");
+                        converter.encodeCollectionLink("datastores", writer);
+                        writer.endNode();
 
-					@Override
-					protected void postEncodeReference(Object obj, String ref, String prefix,
-							HierarchicalStreamWriter writer, MarshallingContext context) {
-						if (obj instanceof WorkspaceInfo) {
-							converter.encodeLink("/workspaces/" + converter.encode(ref), writer);
-						}
-					}
-				});
-			}
+                        writer.startNode("coverageStores");
+                        converter.encodeCollectionLink("coveragestores", writer);
+                        writer.endNode();
 
-		};
+                        writer.startNode("wmsStores");
+                        converter.encodeCollectionLink("wmsstores", writer);
+                        writer.endNode();
+                    }
 
-	}
+                    @Override
+                    protected void postEncodeReference(Object obj, String ref, String prefix,
+                            HierarchicalStreamWriter writer, MarshallingContext context) {
+                        if (obj instanceof WorkspaceInfo) {
+                            converter.encodeLink("/workspaces/" + converter.encode(ref), writer);
+                        }
+                    }
+                });
+            }
 
-	@Override
-	protected String getTemplateName(Object object) {
-		if (object instanceof WorkspaceInfo) {
-			return "WorkspaceInfo";
-		}
-		return null;
-	}
+        };
+
+    }
+
+    @Override
+    protected String getTemplateName(Object object) {
+        if (object instanceof WorkspaceInfo) {
+            return "WorkspaceInfo";
+        }
+        return null;
+    }
 
 }

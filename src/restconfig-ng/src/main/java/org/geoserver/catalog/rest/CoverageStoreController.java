@@ -5,6 +5,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import org.geoserver.catalog.*;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestHttpInputWrapper;
@@ -36,7 +37,7 @@ import java.util.logging.Logger;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = "/restng/workspaces/{workspace}/coveragestores")
+@RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspace}/coveragestores")
 public class CoverageStoreController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageStoreController.class);

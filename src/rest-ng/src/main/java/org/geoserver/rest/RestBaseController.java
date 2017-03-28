@@ -12,8 +12,6 @@ import org.geoserver.rest.wrapper.RestListWrapper;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.rest.wrapper.RestWrapperAdapter;
 import org.geotools.util.logging.Logging;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -27,9 +25,14 @@ import java.util.logging.Logger;
  *
  * Provided various utilities for dealing with the {@link FreemarkerHTMLMessageConverter}
  */
-public class RestController {
+public class RestBaseController {
 
-    private static final Logger LOGGER = Logging.getLogger("org.geoserver.restng");
+    private static final Logger LOGGER = Logging.getLogger("org.geoserver.rest");
+
+    /**
+     * Root path of the rest api
+     */
+    public static final String ROOT_PATH = "/restng";
 
     /**
      * Default encoding for the freemarker {@link Configuration}
@@ -39,7 +42,7 @@ public class RestController {
     /**
      * Name of the folder containing freemarker templates
      */
-    protected String pathPrefix = "";
+    protected String pathPrefix = "templates";
 
     /**
      * Constructs the freemarker {@link Configuration}
@@ -197,6 +200,9 @@ public class RestController {
         @SuppressWarnings("unchecked")
         @Override
         public TemplateModel wrap(Object object) throws TemplateModelException {
+            if ( object instanceof SimpleHash) {
+                return (SimpleHash) object;
+            }
             if ( object instanceof Collection) {
                 Collection c = (Collection) object;
                 if (c.isEmpty() || clazz.isAssignableFrom(c.iterator().next().getClass())) {

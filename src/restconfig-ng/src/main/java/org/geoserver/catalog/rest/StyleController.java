@@ -23,6 +23,7 @@ import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestException;
@@ -56,7 +57,7 @@ import com.google.common.io.Files;
 /**
  * Example style resource controller
  */
-@RestController @RequestMapping(path = "/restng", produces = {
+@RestController @RequestMapping(path = RestBaseController.ROOT_PATH, produces = {
     MediaType.APPLICATION_JSON_VALUE,
     MediaType.APPLICATION_XML_VALUE,
     MediaType.TEXT_HTML_VALUE})

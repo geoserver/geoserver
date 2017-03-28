@@ -50,8 +50,12 @@ public class CoverageStoreController extends CatalogController {
             MediaType.TEXT_HTML_VALUE })
     public RestWrapper<CoverageStoreInfo> getCoverageStores(
             @PathVariable(name = "workspace") String workspaceName) {
+        WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
+        if(ws == null) {
+            throw new ResourceNotFoundException("No such workspace : " + workspaceName);
+        }
         List<CoverageStoreInfo> coverageStores = catalog
-                .getCoverageStoresByWorkspace(workspaceName);
+                .getCoverageStoresByWorkspace(ws);
         return wrapList(coverageStores, CoverageStoreInfo.class);
     }
 
@@ -149,22 +153,6 @@ public class CoverageStoreController extends CatalogController {
     void clear(CoverageStoreInfo info) {
         catalog.getResourcePool().clear(info);
     }
-
-    // @Override
-    // protected void handleObjectPut(Object object) throws Exception {
-    // String workspace = getAttribute("workspace");
-    // String coveragestore = getAttribute("coveragestore");
-    //
-    // CoverageStoreInfo cs = (CoverageStoreInfo) object;
-    // CoverageStoreInfo original = catalog.getCoverageStoreByName(workspace, coveragestore);
-    // new CatalogBuilder( catalog ).updateCoverageStore( original, cs );
-    //
-    // catalog.validate(original, false).throwIfInvalid();
-    // catalog.save( original );
-    // clear(original);
-    //
-    // LOGGER.info( "PUT coverage store " + workspace + "," + coveragestore );
-    // }
 
     RestWrapper<CoverageStoreInfo> wrapCoverageStore(CoverageStoreInfo store) {
         return new RestWrapperAdapter<CoverageStoreInfo>(store, CoverageStoreInfo.class,

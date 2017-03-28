@@ -74,139 +74,87 @@ public class StyleController extends CatalogController {
         super(catalog);
     }
 
-    @GetMapping(value = "/styles",
+    @GetMapping(value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"},
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
-    public RestWrapper getStyles() {
+    public RestWrapper getStyles(
+            @PathVariable(required = false) String layerName,
+            @PathVariable(required = false) String workspaceName,
+            @RequestParam(value = "quietOnNotFound", required = false) boolean quietOnNotFound) {
 
+        if (layerName != null) {
+            return wrapList(catalog.getLayerByName(layerName).getStyles(), StyleInfo.class);
+        } else if (workspaceName != null) {
+            return wrapList(catalog.getStylesByWorkspace(workspaceName), StyleInfo.class);
+        }
         List<StyleInfo> styles = catalog.getStylesByWorkspace(CatalogFacade.NO_WORKSPACE);
         return wrapList(styles, StyleInfo.class);
     }
 
-    @GetMapping(value = "/workspaces/{workspaceName}/styles",
-        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
-    public RestWrapper getStylesFromWorkspace(@PathVariable String workspaceName) {
-        LOGGER.fine("GET styles for workspace " + workspaceName);
-        return wrapList(catalog.getStylesByWorkspace(workspaceName), StyleInfo.class);
-    }
-
-    @GetMapping(value = "/layers/{layerName}/styles",
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
-    public RestWrapper getStylesFromLayer(@PathVariable String layerName) {
-        LOGGER.fine("GET styles for layer " + layerName);
-        return wrapList(catalog.getLayerByName(layerName).getStyles(), StyleInfo.class);
-    }
-
-    @PostMapping(value = "/styles", consumes = {
+    @PostMapping(value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"}, consumes = {
             MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
     @ResponseStatus(HttpStatus.CREATED)
-    public String postStyle(@RequestBody StyleInfo style) {
-        return postStyleInfoInternal(style, null, null, false);
+    public String postStyle(
+            @RequestBody StyleInfo style,
+            @PathVariable( required = false) String layerName,
+            @PathVariable(required = false) String workspaceName,
+            @RequestParam(defaultValue = "false", name = "default") boolean makeDefault) {
+
+        if (layerName != null) {
+            StyleInfo existing = catalog.getStyleByName(style.getName());
+            if (existing == null) {
+                throw new ResourceNotFoundException();
+            }
+
+            LayerInfo l = catalog.getLayerByName(layerName);
+            l.getStyles().add(existing);
+
+            //check for default
+            if (makeDefault) {
+                l.setDefaultStyle(existing);
+            }
+            catalog.save(l);
+            LOGGER.info("POST style " + style.getName() + " to layer " + layerName);
+        } else {
+
+            if (workspaceName != null) {
+                style.setWorkspace(catalog.getWorkspaceByName(workspaceName));
+            }
+
+            catalog.add(style);
+            LOGGER.info("POST style " + style.getName());
+        }
+
+        return style.getName();
     }
 
-    @PostMapping(value = "/layers/{layerName}/styles", consumes = {
-            MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
-    @ResponseStatus(HttpStatus.CREATED)
-    public String postStyle(@RequestBody StyleInfo style, @PathVariable String layerName,
-        @RequestParam(defaultValue = "false", name = "default") boolean makeDefault)
-    {
-        return postStyleInfoInternal(style, null, layerName, makeDefault);
-    }
-
-    @PostMapping(value = "/styles",
+    @PostMapping(value = {"/styles", "/workspaces/{workspaceName}/styles"},
         consumes = {SLDHandler.MIMETYPE_11, SLDHandler.MIMETYPE_10})
-    public ResponseEntity<String> postStyle(@RequestBody Style style, @RequestParam(required = false) String name,
-        @RequestHeader("Content-Type") String contentType, UriComponentsBuilder builder)
+    public ResponseEntity<String> postStyleSLD(
+            @RequestBody Style style,
+            @PathVariable(required = false) String workspaceName,
+            @RequestParam(required = false) String name,
+            @RequestHeader("Content-Type") String contentType, UriComponentsBuilder builder)
     {
         StyleHandler handler = org.geoserver.catalog.Styles.handler(contentType);
-        return postStyleInternal(style, name, null, handler, contentType, builder);
-    }
-
-    @PostMapping(
-        value = "/workspaces/{workspaceName}/styles",
-        consumes = {SLDHandler.MIMETYPE_11, SLDHandler.MIMETYPE_10})
-    public ResponseEntity<String> postStyle(
-        @RequestBody Style style,
-        @RequestParam(required = false) String name,
-        @PathVariable String workspaceName,
-        @RequestHeader("Content-Type") String contentType,
-        UriComponentsBuilder builder)
-    {
-        StyleHandler handler = org.geoserver.catalog.Styles.handler(contentType);
-        return postStyleInternal(style, name, workspaceName, handler, contentType, builder);
-    }
-
-    public ResponseEntity<String> postStylePackageInternal(InputStream stream, String workspace,
-        String name, UriComponentsBuilder builder)
-        throws IOException
-    {
-        File directory = unzipSldPackage(stream);
-        File uploadedFile = retrieveSldFile(directory);
-
-        Style styleSld = parseSld(uploadedFile);
-
         if (name == null) {
-            name = findNameFromObject(styleSld);
+            name = findNameFromObject(style);
         }
 
         //ensure that the style does not already exist
-        if (catalog.getStyleByName(workspace, name) != null) {
-            throw new RestException("Style " + name + " already exists.", HttpStatus.FORBIDDEN);
-        }
-
-        // save image resources
-        saveImageResources(directory, workspace);
-
-        //create a style info object
-        StyleInfo styleInfo = catalog.getFactory().createStyle();
-        styleInfo.setName(name);
-        styleInfo.setFilename(name + ".sld");
-
-        if (workspace != null) {
-            styleInfo.setWorkspace(catalog.getWorkspaceByName(workspace));
-        }
-
-        Resource style = dataDir.style(styleInfo);
-        // ensure that a existing resource does not already exist, because we may not want to overwrite it
-        if (dataDir.style(styleInfo).getType() != Resource.Type.UNDEFINED) {
-            String msg = "Style resource " + styleInfo.getFilename() + " already exists.";
-            throw new RestException(msg, HttpStatus.FORBIDDEN);
-        }
-
-        serializeSldFileInCatalog(style, uploadedFile);
-
-        catalog.add(styleInfo);
-
-        LOGGER.info("POST Style Package: " + name + ", workspace: " + workspace);
-        UriComponents uriComponents = getUriComponents(name, workspace, builder);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(uriComponents.toUri());
-        return new ResponseEntity<String>(name, headers, HttpStatus.CREATED);
-    }
-
-    protected ResponseEntity<String> postStyleInternal(Object object, String name, String workspace,
-        StyleHandler styleFormat, String mediaType, UriComponentsBuilder builder)
-    {
-
-        if (name == null) {
-            name = findNameFromObject(object);
-        }
-
-        //ensure that the style does not already exist
-        if (catalog.getStyleByName(workspace, name) != null) {
+        if (catalog.getStyleByName(workspaceName, name) != null) {
             throw new RestException("Style " + name + " already exists.",
-                HttpStatus.FORBIDDEN);
+                    HttpStatus.FORBIDDEN);
         }
 
         StyleInfo sinfo = catalog.getFactory().createStyle();
         sinfo.setName(name);
-        sinfo.setFilename(name + "." + styleFormat.getFileExtension());
-        sinfo.setFormat(styleFormat.getFormat());
-        sinfo.setFormatVersion(styleFormat.versionForMimeType(mediaType));
+        sinfo.setFilename(name + "." + handler.getFileExtension());
+        sinfo.setFormat(handler.getFormat());
+        sinfo.setFormatVersion(handler.versionForMimeType(contentType));
 
-        if (workspace != null) {
-            sinfo.setWorkspace(catalog.getWorkspaceByName(workspace));
+        if (workspaceName != null) {
+            sinfo.setWorkspace(catalog.getWorkspaceByName(workspaceName));
         }
 
         // ensure that a existing resource does not already exist, because we may not want to overwrite it
@@ -219,10 +167,10 @@ public class StyleController extends CatalogController {
 
         ResourcePool resourcePool = catalog.getResourcePool();
         try {
-            if (object instanceof Style) {
-                resourcePool.writeStyle(sinfo, (Style) object);
+            if (style instanceof Style) {
+                resourcePool.writeStyle(sinfo, (Style) style);
             } else {
-                resourcePool.writeStyle(sinfo, (InputStream) object);
+                resourcePool.writeStyle(sinfo, (InputStream) style);
             }
         } catch (IOException e) {
             throw new RestException("Error writing style", HttpStatus.INTERNAL_SERVER_ERROR, e);
@@ -231,7 +179,7 @@ public class StyleController extends CatalogController {
         catalog.add(sinfo);
         LOGGER.info("POST Style " + name);
         //build the new path
-        UriComponents uriComponents = getUriComponents(name, workspace, builder);
+        UriComponents uriComponents = getUriComponents(name, workspaceName, builder);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
         return new ResponseEntity<String>(name, headers, HttpStatus.CREATED);
@@ -249,74 +197,20 @@ public class StyleController extends CatalogController {
         return uriComponents;
     }
 
-    @PostMapping(value = "/workspaces/{workspaceName}/styles", consumes = {
-            MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
-    @ResponseStatus(HttpStatus.CREATED)
-    public String postStyleInfoToWorkspace(@RequestBody StyleInfo styleInfo,
-        @PathVariable String workspaceName) {
-        return postStyleInfoInternal(styleInfo, workspaceName, null, false);
-    }
-
-    public String postStyleInfoInternal(StyleInfo style, String workspace, String layer, boolean makeDefault)
-    {
-        if (layer != null) {
-            StyleInfo existing = catalog.getStyleByName(style.getName());
-            if (existing == null) {
-                throw new ResourceNotFoundException();
-            }
-
-            LayerInfo l = catalog.getLayerByName(layer);
-            l.getStyles().add(existing);
-
-            //check for default
-            if (makeDefault) {
-                l.setDefaultStyle(existing);
-            }
-            catalog.save(l);
-            LOGGER.info("POST style " + style.getName() + " to layer " + layer);
-        } else {
-
-            if (workspace != null) {
-                style.setWorkspace(catalog.getWorkspaceByName(workspace));
-            }
-
-            catalog.add(style);
-            LOGGER.info("POST style " + style.getName());
-        }
-
-        return style.getName();
-    }
-
-    @GetMapping(path = "/workspaces/{workspaceName}/styles/{styleName}",
+    @GetMapping(path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
-    protected RestWrapper<StyleInfo> getStyleFromWorkspace(
+    protected RestWrapper<StyleInfo> getStyle(
         @PathVariable String styleName,
-        @PathVariable String workspaceName) {
+        @PathVariable(required = false) String workspaceName) {
         return wrapObject(getStyleInternal(styleName, workspaceName), StyleInfo.class);
     }
 
-
-    @GetMapping(path = "/styles/{styleName}",
-        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
-    protected RestWrapper<StyleInfo> getStyle(
-        @PathVariable String styleName) {
-        return wrapObject(getStyleInternal(styleName, null), StyleInfo.class);
-    }
-
-    @GetMapping(path = "/workspaces/{workspaceName}/styles/{styleName}",
+    @GetMapping(path = {"/styles/{styleName}","/workspaces/{workspaceName}/styles/{styleName}"},
             produces = {SLDHandler.MIMETYPE_10, SLDHandler.MIMETYPE_11})
-    protected StyleInfo getStyleContentFromWorkspace(
+    protected StyleInfo getStyleSLD(
             @PathVariable String styleName,
-            @PathVariable String workspaceName) {
+            @PathVariable(required = false) String workspaceName) {
         return getStyleInternal(styleName, workspaceName);
-    }
-
-    @GetMapping(path = "/styles/{styleName}",
-            produces = {SLDHandler.MIMETYPE_10, SLDHandler.MIMETYPE_11})
-    protected StyleInfo getStyleContent(
-            @PathVariable String styleName) {
-        return getStyleInternal(styleName, null);
     }
 
     protected StyleInfo getStyleInternal(String styleName, String workspace) {
@@ -337,31 +231,16 @@ public class StyleController extends CatalogController {
     }
 
     @DeleteMapping(
-        path = "/workspaces/{workspaceName}/styles/{styleName}")
-    protected void deleteStyleWithWorkspace(
-        @PathVariable String styleName,
-        @PathVariable String workspaceName,
-        @RequestParam(required = false, defaultValue = "false") boolean recurse,
-        @RequestParam(required = false, defaultValue = "false") boolean purge)
-        throws IOException {
-        deleteStyleInternal(styleName, recurse, purge, workspaceName);
-    }
-
-    @DeleteMapping(path = "/styles/{styleName}")
+        path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"})
     protected void deleteStyle(
         @PathVariable String styleName,
+        @PathVariable(required = false) String workspaceName,
         @RequestParam(required = false, defaultValue = "false") boolean recurse,
         @RequestParam(required = false, defaultValue = "false") boolean purge)
         throws IOException {
-        deleteStyleInternal(styleName, recurse, purge, null);
-    }
 
-    protected void deleteStyleInternal(String styleName, boolean recurse, boolean purge,
-        String workspace)
-        throws IOException {
-
-        StyleInfo style = workspace != null ? catalog.getStyleByName(workspace, styleName) :
-            catalog.getStyleByName(styleName);
+        StyleInfo style = workspaceName != null ? catalog.getStyleByName(workspaceName, styleName) :
+                catalog.getStyleByName(styleName);
 
         if (recurse) {
             new CascadeDeleteVisitor(catalog).visit(style);
@@ -403,79 +282,86 @@ public class StyleController extends CatalogController {
         return name;
     }
 
-    @PutMapping(value = "/styles/{styleName}", consumes = {
-            MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
-    public void
-    putStyleInfo(@RequestBody StyleInfo info, @PathVariable String styleName) {
-        handleStyleInfoPutInternal(info, null, styleName);
-    }
-
-    @PostMapping(value = "/styles", consumes = {CatalogController.APPLICATION_ZIP})
-    public ResponseEntity<String> postStyle(InputStream stream,
-        @RequestParam(required = false) String name, UriComponentsBuilder builder)
-        throws IOException {
-        return postStylePackageInternal(stream, null, name, builder);
-    }
-
-    @PostMapping(value = "/workspaces/{workspaceName}/styles",
+    @PostMapping(value = {"/styles", "/workspaces/{workspaceName}/styles"},
         consumes = {CatalogController.APPLICATION_ZIP})
-    public ResponseEntity<String> postStyleToWorkspace(
+    public ResponseEntity<String> postStyle(
         InputStream stream,
         @RequestParam(required = false) String name,
-        @PathVariable String workspaceName,
+        @PathVariable(required = false) String workspaceName,
         UriComponentsBuilder builder)
         throws IOException
     {
-        return postStylePackageInternal(stream, workspaceName, name, builder);
+        File directory = unzipSldPackage(stream);
+        File uploadedFile = retrieveSldFile(directory);
+
+        Style styleSld = parseSld(uploadedFile);
+
+        if (name == null) {
+            name = findNameFromObject(styleSld);
+        }
+
+        //ensure that the style does not already exist
+        if (catalog.getStyleByName(workspaceName, name) != null) {
+            throw new RestException("Style " + name + " already exists.", HttpStatus.FORBIDDEN);
+        }
+
+        // save image resources
+        saveImageResources(directory, workspaceName);
+
+        //create a style info object
+        StyleInfo styleInfo = catalog.getFactory().createStyle();
+        styleInfo.setName(name);
+        styleInfo.setFilename(name + ".sld");
+
+        if (workspaceName != null) {
+            styleInfo.setWorkspace(catalog.getWorkspaceByName(workspaceName));
+        }
+
+        Resource style = dataDir.style(styleInfo);
+        // ensure that a existing resource does not already exist, because we may not want to overwrite it
+        if (dataDir.style(styleInfo).getType() != Resource.Type.UNDEFINED) {
+            String msg = "Style resource " + styleInfo.getFilename() + " already exists.";
+            throw new RestException(msg, HttpStatus.FORBIDDEN);
+        }
+
+        serializeSldFileInCatalog(style, uploadedFile);
+
+        catalog.add(styleInfo);
+
+        LOGGER.info("POST Style Package: " + name + ", workspace: " + workspaceName);
+        UriComponents uriComponents = getUriComponents(name, workspaceName, builder);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(uriComponents.toUri());
+        return new ResponseEntity<String>(name, headers, HttpStatus.CREATED);
     }
 
     @PutMapping(
-        value = "/workspaces/{workspaceName}/styles/{styleName}",
+        value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
         consumes = {CatalogController.APPLICATION_ZIP})
-    public void putStyleInfo(
+    public void putStyleZip(
         InputStream is,
         @PathVariable String styleName,
-        @PathVariable String workspaceName,
+        @PathVariable(required = false) String workspaceName,
         @RequestParam(required = false) String name)
     {
         putZipInternal(is, workspaceName, name, styleName);
     }
 
-    @PutMapping(
-        value = "/styles/{styleName}",
-        consumes = {CatalogController.APPLICATION_ZIP})
-    public void putStyleInfoToWorkspace(
-        InputStream is,
-        @PathVariable String styleName,
-        @RequestParam(required = false) String name)
-    {
-        putZipInternal(is, null, name, styleName);
-    }
-
-    @PutMapping(value = "/workspaces/{workspaceName}/styles/{styleName}", consumes = {
+    @PutMapping(value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
             MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
-    public void putStyleInfoToWorkspace(@RequestBody StyleInfo info, @PathVariable String styleName,
-        @PathVariable String workspaceName) {
-        handleStyleInfoPutInternal(info, workspaceName, styleName);
-    }
+    public void putStyleInfo(
+            @RequestBody StyleInfo info,
+            @PathVariable String styleName,
+            @PathVariable(required = false) String workspaceName) {
 
-    @PutMapping(value = "/styles/{styleName}",
-        consumes = {SLDHandler.MIMETYPE_11, SLDHandler.MIMETYPE_10})
-    public void putStyleInfo(@RequestBody Style style, @PathVariable String styleName)
-        throws IOException {
-        handleStylePutInternal(style, null, styleName);
-    }
-
-    public void handleStyleInfoPutInternal(StyleInfo info, String workspace, String styleName) {
-        StyleInfo original = catalog.getStyleByName(workspace, styleName);
+        StyleInfo original = catalog.getStyleByName(workspaceName, styleName);
 
         //ensure no workspace change
         if (info.getWorkspace() != null) {
             if (!info.getWorkspace().equals(original.getWorkspace())) {
                 throw new RestException( "Can't change the workspace of a style, instead " +
-                    "DELETE from existing workspace and POST to new workspace", HttpStatus.FORBIDDEN);
+                        "DELETE from existing workspace and POST to new workspace", HttpStatus.FORBIDDEN);
             }
         }
 
@@ -483,16 +369,21 @@ public class StyleController extends CatalogController {
         catalog.save(original);
     }
 
-    public void handleStylePutInternal(Object object, String workspace, String style)
-        throws IOException {
-        StyleInfo s = catalog.getStyleByName( workspace, style );
+    @PutMapping(value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+        consumes = {SLDHandler.MIMETYPE_11, SLDHandler.MIMETYPE_10})
+    public void putStyleSLD(
+            @RequestBody Style style,
+            @PathVariable String styleName,
+            @PathVariable(required = false) String workspaceName) throws IOException {
+
+        StyleInfo s = catalog.getStyleByName( workspaceName, styleName );
 
         ResourcePool resourcePool = catalog.getResourcePool();
-        if (object instanceof Style) {
-            resourcePool.writeStyle(s, (Style) object, true);
+        if (style instanceof Style) {
+            resourcePool.writeStyle(s, (Style) style, true);
         }
         else {
-            resourcePool.writeStyle(s, (InputStream)object);
+            resourcePool.writeStyle(s, (InputStream)style);
         }
 
         catalog.save(s);

@@ -46,7 +46,7 @@ paths:
         405:
           description: Method Not Allowed
 
-     put:
+    put:
       operationId: putFonts
       description: Invalid. Fonts cannot be updated through the REST API.
       responses:
@@ -63,8 +63,6 @@ paths:
           description: Unauthorized    
         405:
           description: Method Not Allowed
-
-
 
 definitions:
   FontListItem:

@@ -6,10 +6,12 @@
 package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -38,7 +40,6 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-@Ignore // incomplete at the moment
 public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
 
     @Override
@@ -49,6 +50,13 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
     @Before
     public void addBlueMarbleCoverage() throws Exception {
         getTestData().addDefaultRasterLayer(SystemTestData.TASMANIA_BM, getCatalog());
+    }
+    
+    @Test
+    public void testGetAllOnMissingWorkspace() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("/restng/workspaces/abcde/coveragestores.xml");
+        assertEquals(404, response.getStatus());
+        assertThat(response.getContentAsString(), containsString("abcde"));
     }
     
     @Test
@@ -331,6 +339,7 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    @Ignore // needs store file controller
     public void testPutEmptyAndHarvest() throws Exception {
         File dir = new File( "./target/empty" );
         dir.mkdir();
@@ -346,8 +355,9 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
 
         final int length = (int) f.length();
         byte[] zipData = new byte[length];
-        FileInputStream fis = new FileInputStream(f);
-        fis.read(zipData);
+        try(FileInputStream fis = new FileInputStream(f)){
+            fis.read(zipData);
+        }
 
         MockHttpServletResponse response = 
             putAsServletResponse( "/restng/workspaces/wcs/coveragestores/empty/file.imagemosaic?configure=none", zipData, "application/zip");
@@ -391,8 +401,9 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
 
         final int length = (int) f.length();
         byte[] zipData = new byte[length];
-        FileInputStream fis = new FileInputStream(f);
-        fis.read(zipData);
+        try(FileInputStream fis = new FileInputStream(f)){
+            fis.read(zipData);
+        }
 
         MockHttpServletResponse response = 
             putAsServletResponse( "/restng/workspaces/wcs/coveragestores/mosaicfordelete/file.imagemosaic", zipData, "application/zip");
@@ -419,11 +430,13 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    @Ignore // needs store file controller
     public void testDeletePurgeMetadataAfterConfigure() throws Exception {
         purgeRequest("metadata", 1);
     }
 
     @Test
+    @Ignore // needs store file controller
     public void testDeletePurgeAllAfterConfigure() throws Exception {
         purgeRequest("all", 0);
     }

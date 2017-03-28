@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.wrapper.RestHttpInputWrapper;
 import org.geoserver.rest.wrapper.RestListWrapper;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.context.ApplicationContext;
@@ -48,6 +49,9 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter {
     public Object read(Class clazz, HttpInputMessage inputMessage)
         throws IOException, HttpMessageNotReadableException {
         XStreamPersister p = xpf.createXMLPersister();
+        if (inputMessage instanceof RestHttpInputWrapper) {
+            ((RestHttpInputWrapper) inputMessage).configurePersister(p, this);
+        }
         p.setCatalog(catalog);
         return p.load(inputMessage.getBody(), clazz);
     }

@@ -6,10 +6,12 @@
 package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -30,7 +32,6 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.geoserver.platform.resource.Resource;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -363,8 +364,12 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         // Getting the list of available coverages
         dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/empty/coverages.xml?list=all");
         assertXpathEvaluatesTo("index", "/list/coverageName", dom );
-        assertEquals( 200, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/empty?recurse=true&purge=all").getStatus());
 
+        // check the JSON output
+        JSONObject json = (JSONObject) getAsJSON( "/rest/workspaces/wcs/coveragestores/empty/coverages.json?list=all");
+        assertThat(json.getJSONObject("list").getJSONArray("string").getString(0), is("index"));
+
+        assertEquals( 200, deleteAsServletResponse("/rest/workspaces/wcs/coveragestores/empty?recurse=true&purge=all").getStatus());
     }
 
     private void purgeRequest(final String purge, final int expectedFiles) throws Exception {

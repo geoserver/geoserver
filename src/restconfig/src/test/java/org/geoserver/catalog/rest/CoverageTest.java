@@ -306,6 +306,11 @@ public class CoverageTest extends CatalogRESTTestSupport {
         // check that the coverage exists using the WCS service
         document = getAsDOM(request);
         assertEquals("wcs:Coverages", document.getDocumentElement().getNodeName());
+        // check create coverage attributes
+        json = (JSONObject) getAsJSON("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/usa.json");
+        assertThat(json.getJSONObject("coverage").getString("name"), is("usa"));
+        assertThat(json.getJSONObject("coverage").getJSONObject("latLonBoundingBox").getString("minx"), is("-130.85168"));
+        assertThat(json.getJSONObject("coverage").getJSONObject("grid").getJSONObject("range").getString("high"), is("983 598"));
         // check that the coverage is listed
         json = (JSONObject) getAsJSON("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages.json");
         JSONArray coverages = json.getJSONObject("coverages").getJSONArray("coverage");
@@ -520,7 +525,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    public void testPut() throws Exception {
+    public void testPutXML() throws Exception {
         String xml = 
           "<coverage>" + 
             "<title>new title</title>" +  
@@ -535,6 +540,25 @@ public class CoverageTest extends CatalogRESTTestSupport {
         CoverageInfo c = catalog.getCoverageByName( "wcs", "BlueMarble");
         assertEquals( "new title", c.getTitle() );
     }
+
+    @Test
+    public void testPutJSON() throws Exception {
+        // update the coverage title
+        String jsonPayload = "{\n" +
+                "    \"coverage\": {\n" +
+                "        \"title\": \"new title 2\"\n" +
+                "    }\n" +
+                "}";
+        MockHttpServletResponse response = putAsServletResponse(
+                "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", jsonPayload, "application/json");
+        assertEquals(200, response.getStatus());
+        // check that the coverage title was correctly updated
+        JSONObject json = (JSONObject) getAsJSON("/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.json");
+        assertThat(json.getJSONObject("coverage").getString("title"), is("new title 2"));
+        CoverageInfo coverage = catalog.getCoverageByName( "wcs", "BlueMarble");
+        assertEquals("new title 2", coverage.getTitle());
+    }
+
     @Test
     public void testPutNonDestructive() throws Exception {
         CoverageInfo c = catalog.getCoverageByName( "wcs", "BlueMarble");

@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.wrapper.RestHttpInputWrapper;
 import org.geoserver.rest.wrapper.RestListWrapper;
 import org.geoserver.rest.wrapper.RestWrapper;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -22,6 +22,8 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
  * Message converter implementation for JSON serialization via XStream
  */
 public class XStreamJSONMessageConverter extends XStreamMessageConverter {
+    
+    static final MediaType TEXT_JSON = MediaType.valueOf("text/json");
 
     public XStreamJSONMessageConverter() {
         super();
@@ -40,7 +42,7 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter {
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
         return !RestListWrapper.class.isAssignableFrom(clazz) &&
-            MediaType.APPLICATION_JSON.equals(mediaType);
+            (MediaType.APPLICATION_JSON.equals(mediaType) || TEXT_JSON.equals(mediaType));
     }
 
     @Override
@@ -60,7 +62,7 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter {
 
     @Override
     public List<MediaType> getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.APPLICATION_JSON);
+        return Arrays.asList(MediaType.APPLICATION_JSON, TEXT_JSON);
     }
 
     @Override
@@ -69,6 +71,9 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter {
     {
         XStreamPersister p = xpf.createJSONPersister();
         p.setCatalog(catalog);
+        if (inputMessage instanceof RestHttpInputWrapper) {
+            ((RestHttpInputWrapper) inputMessage).configurePersister(p, this);
+        }
         return p.load(inputMessage.getBody(), clazz);
     }
 

@@ -27,7 +27,7 @@ public interface RestWrapper<T> {
     Object getObject();
 
     /**
-     * Apply configuration to the XStreamPersister based on the data format
+     * Apply configuration to the XStreamPersister based on the converter
      *
      * @param persister The XStream persister
      * @param xStreamMessageConverter 

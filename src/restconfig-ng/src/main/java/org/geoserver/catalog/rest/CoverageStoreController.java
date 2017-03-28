@@ -4,22 +4,26 @@
  */
 package org.geoserver.catalog.rest;
 
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import freemarker.template.Template;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Logger;
+
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
-import org.geoserver.rest.wrapper.RestListWrapper;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.util.logging.Logging;
@@ -47,11 +51,8 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 
 /**
@@ -160,16 +161,29 @@ public class CoverageStoreController extends CatalogController {
     public RestWrapper<CoverageInfo> getCoverages(@PathVariable(name = "workspace") String workspaceName,
                                                   @PathVariable(name = "store") String storeName) {
         // find the coverage store
-        CoverageStoreInfo coverageStore = catalog.getCoverageStoreByName(workspaceName, storeName);
-        if (coverageStore == null) {
-            // desired coverage store no found
-            throw new RestException(String.format(
-                    "Coverage store with name '%s' in workspace '%s' not found.",
-                    workspaceName, storeName), HttpStatus.NOT_FOUND);
-        }
+        CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
         // get the store configured coverages
         List<CoverageInfo> coverages = catalog.getCoveragesByCoverageStore(coverageStore);
         return wrapList(coverages, CoverageInfo.class);
+    }
+    
+    @GetMapping(path = "{store}/coverages/{coverage}", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE,
+            TEXT_JSON})
+    public RestWrapper<CoverageInfo> getCoverage(@PathVariable(name = "workspace") String workspaceName,
+            @PathVariable(name = "store") String storeName,
+            @PathVariable(name = "coverage") String coverageName) {
+        CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
+        List<CoverageInfo> coverages = catalog.getCoveragesByCoverageStore(coverageStore);
+        Optional<CoverageInfo> optCoverage = coverages.stream()
+                .filter(si -> storeName.equals(si.getName())).findFirst();
+        if (!optCoverage.isPresent()) {
+            throw new ResourceNotFoundException("No such coverage in store: " + coverageName);
+        }
+        CoverageInfo coverage = optCoverage.get();
+        return wrapObject(coverage, CoverageInfo.class);
     }
 
     /**

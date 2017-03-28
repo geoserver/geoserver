@@ -355,8 +355,9 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
 
         final int length = (int) f.length();
         byte[] zipData = new byte[length];
-        FileInputStream fis = new FileInputStream(f);
-        fis.read(zipData);
+        try(FileInputStream fis = new FileInputStream(f)){
+            fis.read(zipData);
+        }
 
         MockHttpServletResponse response = 
             putAsServletResponse( "/restng/workspaces/wcs/coveragestores/empty/file.imagemosaic?configure=none", zipData, "application/zip");
@@ -400,8 +401,9 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
 
         final int length = (int) f.length();
         byte[] zipData = new byte[length];
-        FileInputStream fis = new FileInputStream(f);
-        fis.read(zipData);
+        try(FileInputStream fis = new FileInputStream(f)){
+            fis.read(zipData);
+        }
 
         MockHttpServletResponse response = 
             putAsServletResponse( "/restng/workspaces/wcs/coveragestores/mosaicfordelete/file.imagemosaic", zipData, "application/zip");

@@ -91,13 +91,17 @@ public class StyleController extends CatalogController {
         return wrapList(catalog.getLayerByName(layerName).getStyles(), StyleInfo.class);
     }
 
-    @PostMapping(value = "/styles", consumes = { "text/xml", "application/xml" })
+    @PostMapping(value = "/styles", consumes = {
+            MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
     @ResponseStatus(HttpStatus.CREATED)
     public String postStyle(@RequestBody StyleInfo style) {
         return postStyleInfoInternal(style, null, null, false);
     }
 
-    @PostMapping(value = "/layers/{layerName}/styles", consumes = { "text/xml", "application/xml" })
+    @PostMapping(value = "/layers/{layerName}/styles", consumes = {
+            MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
     @ResponseStatus(HttpStatus.CREATED)
     public String postStyle(@RequestBody StyleInfo style, @PathVariable String layerName,
         @RequestParam(defaultValue = "false", name = "default") boolean makeDefault)
@@ -240,8 +244,9 @@ public class StyleController extends CatalogController {
         return uriComponents;
     }
 
-    @PostMapping(value = "/workspaces/{workspaceName}/styles",
-        consumes = { "text/xml", "application/xml" })
+    @PostMapping(value = "/workspaces/{workspaceName}/styles", consumes = {
+            MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
     @ResponseStatus(HttpStatus.CREATED)
     public String postStyleInfoToWorkspace(@RequestBody StyleInfo styleInfo,
         @PathVariable String workspaceName) {
@@ -393,13 +398,15 @@ public class StyleController extends CatalogController {
         return name;
     }
 
-    @PutMapping(value = "/styles/{styleName}", consumes = { "text/xml", "application/xml" })
+    @PutMapping(value = "/styles/{styleName}", consumes = {
+            MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
     public void
     putStyleInfo(@RequestBody StyleInfo info, @PathVariable String styleName) {
         handleStyleInfoPutInternal(info, null, styleName);
     }
 
-    @PostMapping(value = "/styles", consumes = {"application/zip"})
+    @PostMapping(value = "/styles", consumes = {CatalogController.APPLICATION_ZIP})
     public ResponseEntity<String> postStyle(InputStream stream,
         @RequestParam(required = false) String name, UriComponentsBuilder builder)
         throws IOException {
@@ -407,7 +414,7 @@ public class StyleController extends CatalogController {
     }
 
     @PostMapping(value = "/workspaces/{workspaceName}/styles",
-        consumes = {"application/zip"})
+        consumes = {CatalogController.APPLICATION_ZIP})
     public ResponseEntity<String> postStyleToWorkspace(
         InputStream stream,
         @RequestParam(required = false) String name,
@@ -420,7 +427,7 @@ public class StyleController extends CatalogController {
 
     @PutMapping(
         value = "/workspaces/{workspaceName}/styles/{styleName}",
-        consumes = {"application/zip"})
+        consumes = {CatalogController.APPLICATION_ZIP})
     public void putStyleInfo(
         InputStream is,
         @PathVariable String styleName,
@@ -432,7 +439,7 @@ public class StyleController extends CatalogController {
 
     @PutMapping(
         value = "/styles/{styleName}",
-        consumes = {"application/zip"})
+        consumes = {CatalogController.APPLICATION_ZIP})
     public void putStyleInfoToWorkspace(
         InputStream is,
         @PathVariable String styleName,
@@ -441,8 +448,9 @@ public class StyleController extends CatalogController {
         putZipInternal(is, null, name, styleName);
     }
 
-    @PutMapping(value = "/workspaces/{workspaceName}/styles/{styleName}",
-        consumes = { "text/xml", "application/xml" })
+    @PutMapping(value = "/workspaces/{workspaceName}/styles/{styleName}", consumes = {
+            MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
     public void putStyleInfoToWorkspace(@RequestBody StyleInfo info, @PathVariable String styleName,
         @PathVariable String workspaceName) {
         handleStyleInfoPutInternal(info, workspaceName, styleName);

@@ -22,6 +22,10 @@ public class CatalogController extends RestController implements RequestBodyAdvi
      * Not an official MIME type, but GeoServer used to support it
      */
     public static final String TEXT_JSON = "text/json";
+    /**
+     * Not an official MIME type, but GeoServer used to support it
+     */
+    public static final String APPLICATION_ZIP = "application/zip";
 
     protected final Catalog catalog;
     protected final GeoServerDataDirectory dataDir;

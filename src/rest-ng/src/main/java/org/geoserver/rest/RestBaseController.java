@@ -193,8 +193,12 @@ public abstract class RestBaseController implements RequestBodyAdvice {
     }
 
     @Override
+    /**
+     * Any subclass that implements {@link #configurePersister(XStreamPersister, XStreamMessageConverter)} should
+     * override this method to return true when called from the appropriate controller
+     */
     public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return true;
+        return false;
     }
 
     @Override

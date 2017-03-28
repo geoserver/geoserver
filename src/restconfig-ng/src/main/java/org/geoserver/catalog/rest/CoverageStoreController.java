@@ -160,6 +160,11 @@ public class CoverageStoreController extends CatalogController {
     }
 
     @Override
+    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        return CoverageStoreInfo.class.isAssignableFrom(methodParameter.getParameterType());
+    }
+
+    @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         persister.setCallback(new XStreamPersister.Callback() {
             @Override

@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Base controller for catalog info requests
  */
-public class CatalogController extends RestBaseController {
+public abstract class CatalogController extends RestBaseController {
     
     /**
      * Not an official MIME type, but GeoServer used to support it

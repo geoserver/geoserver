@@ -38,7 +38,6 @@ import org.w3c.dom.Document;
 
 import org.springframework.mock.web.MockHttpServletResponse;
 
-@Ignore // TODO
 public class WMSLayerTest extends CatalogRESTTestSupport {
     @Rule
     public TestHttpClientRule clientMocker = new TestHttpClientRule();
@@ -109,7 +108,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     }
     @Test
     public void testGetAllByWorkspace() throws Exception {
-        Document dom = getAsDOM( "/rest/workspaces/sf/wmslayers.xml");
+        Document dom = getAsDOM( "/restng/workspaces/sf/wmslayers.xml");
         assertEquals( 
             catalog.getResourcesByNamespace( catalog.getNamespaceByPrefix( "sf"), WMSLayerInfo.class ).size(), 
             dom.getElementsByTagName( "wmsLayer").getLength() );
@@ -117,7 +116,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllByWMSStore() throws Exception {
-        Document dom = getAsDOM( "/rest/workspaces/sf/wmsstores/demo/wmslayers.xml");
+        Document dom = getAsDOM( "/restng/workspaces/sf/wmsstores/demo/wmslayers.xml");
         
         assertEquals( 1, dom.getElementsByTagName( "wmsLayer").getLength() );
         assertXpathEvaluatesTo( "1", "count(//wmsLayer/name[text()='states'])", dom );
@@ -126,7 +125,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAllAvailable() throws Exception {
         
-        Document dom = getAsDOM( "/rest/workspaces/sf/wmsstores/demo/wmslayers.xml?list=available");
+        Document dom = getAsDOM( "/restng/workspaces/sf/wmsstores/demo/wmslayers.xml?list=available");
         // print(dom);
         
         // can't control the demo server enough to check the type names, but it should have something
@@ -136,12 +135,12 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     
     @Test
     public void testPutAllUnauthorized() throws Exception {
-        assertEquals( 405, putAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers").getStatus() );
+        assertEquals( 405, putAsServletResponse("/restng/workspaces/sf/wmsstores/demo/wmslayers").getStatus() );
     }
     
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
-        assertEquals( 405, deleteAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers").getStatus() );
+        assertEquals( 405, deleteAsServletResponse("/restng/workspaces/sf/wmsstores/demo/wmslayers").getStatus() );
     }
  
     @Test
@@ -158,7 +157,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
             "<store>demo</store>" + 
           "</wmsLayer>";
         MockHttpServletResponse response = 
-            postAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/", xml, "text/xml");
+            postAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers/", xml, "text/xml");
         
         assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
@@ -184,7 +183,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
              "}" +
           "}";
         MockHttpServletResponse response =  
-            postAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/", json, "text/json");
+            postAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers/", json, "text/json");
         
         assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
@@ -202,13 +201,13 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
             "</wmsLayer>";
         
         MockHttpServletResponse response = 
-            postAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/states", xml, "text/xml");
+            postAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers/states", xml, "text/xml");
         assertEquals( 405, response.getStatus() );
     }
     
     @Test
     public void testGetAsXML() throws Exception {
-        Document dom = getAsDOM( "/rest/workspaces/sf/wmslayers/states.xml");
+        Document dom = getAsDOM( "/restng/workspaces/sf/wmslayers/states.xml");
         
         assertEquals( "wmsLayer", dom.getDocumentElement().getNodeName() );
         assertXpathEvaluatesTo("states", "/wmsLayer/name", dom);
@@ -226,7 +225,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     
     @Test
     public void testGetAsJSON() throws Exception {
-        JSON json = getAsJSON( "/rest/workspaces/sf/wmslayers/states.json");
+        JSON json = getAsJSON( "/restng/workspaces/sf/wmslayers/states.json");
         JSONObject featureType = ((JSONObject)json).getJSONObject("wmsLayer");
         assertNotNull(featureType);
         
@@ -238,7 +237,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     @Ignore // FIXME Enable when HTML is working
     @Test
     public void testGetAsHTML() throws Exception {
-        Document dom = getAsDOM( "/rest/workspaces/sf/wmslayers/states.html");
+        Document dom = getAsDOM( "/restng/workspaces/sf/wmslayers/states.html");
         // print(dom);
     }
     
@@ -249,8 +248,8 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         String wms = "demo";
         String wl = "statessssss";
         // Request path
-        String requestPath = "/rest/workspaces/" + ws + "/wmslayers/" + wl + ".html";
-        String requestPath2 = "/rest/workspaces/" + ws + "/wmsstores/" + wms + "/wmslayers/" + wl + ".html";
+        String requestPath = "/restng/workspaces/" + ws + "/wmslayers/" + wl + ".html";
+        String requestPath2 = "/restng/workspaces/" + ws + "/wmsstores/" + wms + "/wmslayers/" + wl + ".html";
         // Exception path
         String exception = "No such cascaded wms: "+ws+","+wl;
         String exception2 = "No such cascaded wms layer: "+ws+","+wms+","+wl;
@@ -295,10 +294,10 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
             "<title>Lots of states here</title>" +  
           "</wmsLayer>";
         MockHttpServletResponse response = 
-            putAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers/states", xml, "text/xml");
+            putAsServletResponse("/restng/workspaces/sf/wmsstores/demo/wmslayers/states", xml, "text/xml");
         assertEquals( 200, response.getStatus() );
         
-        Document dom = getAsDOM("/rest/workspaces/sf/wmsstores/demo/wmslayers/states.xml");
+        Document dom = getAsDOM("/restng/workspaces/sf/wmsstores/demo/wmslayers/states.xml");
         assertXpathEvaluatesTo("Lots of states here", "/wmsLayer/title", dom );
         
         WMSLayerInfo wli = catalog.getResourceByName( "sf", "states", WMSLayerInfo.class);
@@ -318,7 +317,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
             "<title>Lots of states here</title>" +  
           "</wmsLayer>";
         MockHttpServletResponse response = 
-            putAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers/states", xml, "text/xml");
+            putAsServletResponse("/restng/workspaces/sf/wmsstores/demo/wmslayers/states", xml, "text/xml");
         assertEquals( 200, response.getStatus() );
         
         wli = catalog.getResourceByName( "sf", "states", WMSLayerInfo.class);
@@ -333,7 +332,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
               "<title>new title</title>" +  
             "</wmsLayer>";
           MockHttpServletResponse response = 
-              putAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers/bugsites", xml, "text/xml");
+              putAsServletResponse("/restng/workspaces/sf/wmsstores/demo/wmslayers/bugsites", xml, "text/xml");
           assertEquals( 404, response.getStatus() );
     }
    
@@ -341,14 +340,14 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     public void testDelete() throws Exception {
         assertNotNull(catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
         assertEquals( 200,  
-            deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/states").getStatus());
+            deleteAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers/states").getStatus());
         assertNull( catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
     }
     
     @Test
     public void testDeleteNonExistant() throws Exception {
         assertEquals( 404,  
-            deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/NonExistent").getStatus());
+            deleteAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers/NonExistent").getStatus());
     }
     
     void addLayer() {
@@ -366,7 +365,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         
         assertNotNull(catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
         assertEquals( 403,  
-            deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/states").getStatus());
+            deleteAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers/states").getStatus());
     }
     
     @Test
@@ -377,7 +376,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
         
         assertEquals( 200,  
-            deleteAsServletResponse( "/rest/workspaces/sf/wmsstores/demo/wmslayers/states?recurse=true").getStatus());
+            deleteAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers/states?recurse=true").getStatus());
         
         assertNull( catalog.getLayerByName("sf:states"));
         assertNull( catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
@@ -387,7 +386,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     public void testResourceLink() throws Exception {
         addLayer();
          
-        Document doc = getAsDOM( "/rest/layers/states.xml");
+        Document doc = getAsDOM( "/restng/layers/states.xml");
         
         XpathEngine xpath = XMLUnit.newXpathEngine();
         String resourceUrl = xpath.evaluate("//resource/atom:link/@href", doc);

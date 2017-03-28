@@ -63,15 +63,17 @@ public abstract class XStreamCatalogListConverter extends XStreamMessageConverte
 
         XStream xstream = this.createXStreamInstance();
         RestListWrapper wrapper = (RestListWrapper)o;
+
         Class targetClass = wrapper.getObjectClass();
         Collection data = wrapper.getCollection();
         this.aliasCollection(data, xstream, targetClass);
-        this.configureXStream(xstream, targetClass);
+        this.configureXStream(xstream, targetClass, wrapper);
         xstream.toXML(data, outputMessage.getBody());
     }
 
-    private void configureXStream(XStream xstream, Class clazz) {
+    private void configureXStream(XStream xstream, Class clazz, RestListWrapper wrapper) {
         XStreamPersister xp = xpf.createXMLPersister();
+        wrapper.configurePersister(xp, this);
         final String name = getItemName(xp, clazz);
         xstream.alias( name, clazz );
 

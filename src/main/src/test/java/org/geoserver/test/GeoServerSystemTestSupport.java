@@ -86,6 +86,7 @@ import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
@@ -946,6 +947,29 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         MockHttpServletResponse response = getAsServletResponse(path);
         return new ByteArrayInputStream( response.getContentAsString().getBytes() );
     }
+    /**
+     * Executes an ows request using the GET method.
+     *
+     * @param path The porition of the request after hte context, 
+     *      example: 'wms?request=GetMap&version=1.1.1&..."
+     * 
+     * @param responseCode Expected HTTP code, will provide exception if not matched
+     * @return An input stream which is the result of the request.
+     */
+    protected InputStream get( String path, int responseCode ) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(path);
+        int status = response.getStatus();
+        if( responseCode != status ){
+            String content = response.getContentAsString();
+            if( content == null || content.length() == 0 ){
+                throw new ServiceException("expected status <"+responseCode+"> but was <"+status+">");
+            }
+            else {
+                throw new ServiceException("expected status <"+responseCode+"> but was <"+status+">:"+content);
+            }
+        }
+        return new ByteArrayInputStream( response.getContentAsString().getBytes() );
+    }
     
     /**
      * Executes an ows request using the GET method.
@@ -1205,6 +1229,23 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
     /**
      * Executes an ows request using the GET method and returns the result as an 
+     * xml document.
+     * 
+     * @param path The portion of the request after the context, 
+     *      example: 'wms?request=GetMap&version=1.1.1&..."
+     * @param statusCode Expected status code
+     * 
+     * @return A result of the request parsed into a dom.
+     */
+    protected Document getAsDOM(final String path, int statusCode)
+            throws Exception {
+        InputStream responseContent = get(path,statusCode);
+        return dom(responseContent, true);
+    }
+    
+    
+    /**
+     * Executes an ows request using the GET method and returns the result as an 
      * xml document, with the ability to override the XML document encoding. 
      * 
      * @param path The portion of the request after the context, 
@@ -1283,7 +1324,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      */
     protected Document getAsDOM(final String path, final boolean skipDTD)
     throws Exception {
-        return dom(get(path), skipDTD);
+        InputStream responseContent = get(path);
+        return dom(responseContent, skipDTD);
     }
 
     /**

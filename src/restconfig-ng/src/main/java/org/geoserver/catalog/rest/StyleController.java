@@ -185,7 +185,7 @@ public class StyleController extends CatalogController {
         return new ResponseEntity<String>(name, headers, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<String> postStyleInternal(Object object, String name, String workspace,
+    protected ResponseEntity<String> postStyleInternal(Object object, String name, String workspace,
         StyleHandler styleFormat, String mediaType, UriComponentsBuilder builder)
     {
 

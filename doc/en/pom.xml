@@ -87,6 +87,18 @@
               <output>${project.build.directory}/api/layerGroups</output>
             </configuration>
           </execution>
+          <execution>
+            <id>styles</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/settings.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/settings</output>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>

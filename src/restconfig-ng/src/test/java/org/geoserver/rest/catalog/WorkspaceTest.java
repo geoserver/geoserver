@@ -127,7 +127,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		// Request path
 		String requestPath = "/restng/workspaces/" + workspace + ".html";
 		// Exception path
-		String exception = "No such workspace: " + workspace;
+		String exception = "No such workspace: '" + workspace+"'";
 		// First request should thrown an exception
 		MockHttpServletResponse response = getAsServletResponse(requestPath);
 		assertEquals(404, response.getStatus());
@@ -154,7 +154,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
 		WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
 		assertNotNull(ws);
-
+		removeWorkspace("foo");
 	}
 
 	@Test
@@ -262,6 +262,8 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		Document dom = getAsDOM("/restng/workspaces/gs.xml");
 		assertXpathEvaluatesTo("1", "count(//name[text()='gs'])", dom);
 		assertXpathEvaluatesTo("1", "count(//entry[@key='foo' and text()='bar'])", dom);
+		
+		
 
 	}
 

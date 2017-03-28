@@ -49,8 +49,7 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
 
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
-        return MediaType.TEXT_HTML.equals(mediaType)
-            && RestWrapper.class.isAssignableFrom(clazz);
+        return MediaType.TEXT_HTML.equals(mediaType) && RestWrapper.class.isAssignableFrom(clazz);
     }
 
     @Override
@@ -59,7 +58,8 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
     }
 
     @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    public Object read(Class clazz, HttpInputMessage inputMessage)
+            throws IOException, HttpMessageNotReadableException {
         throw new UnsupportedOperationException();
     }
 
@@ -74,7 +74,8 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
      * @throws IllegalArgumentException if o is not an instance of {@link RestWrapper}
      */
     @Override
-    public void write(Object o, MediaType contentType, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    public void write(Object o, MediaType contentType, HttpOutputMessage outputMessage)
+            throws IOException, HttpMessageNotWritableException {
         Writer tmplWriter = null;
         if (o instanceof RestWrapper) {
             RestWrapper wrapper = (RestWrapper) o;
@@ -85,61 +86,61 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
                 OutputStream outputStream = outputMessage.getBody();
 
                 if (contentType.getCharSet() != null) {
-                    tmplWriter = new BufferedWriter(new OutputStreamWriter(
-                            outputStream, contentType.getCharSet().name()));
+                    tmplWriter = new BufferedWriter(
+                            new OutputStreamWriter(outputStream, contentType.getCharSet().name()));
                 } else {
-                    tmplWriter = new BufferedWriter(new OutputStreamWriter(
-                            outputStream, template.getEncoding()));
+                    tmplWriter = new BufferedWriter(
+                            new OutputStreamWriter(outputStream, template.getEncoding()));
                 }
 
                 template.process(object, tmplWriter);
                 tmplWriter.flush();
             } catch (TemplateException te) {
-                throw new IOException("Template processing error "
-                        + te.getMessage());
+                throw new IOException("Template processing error " + te.getMessage());
             } finally {
                 if (tmplWriter != null) {
                     tmplWriter.close();
                 }
             }
         } else {
-            throw new IllegalArgumentException("Object must be an instance of RestWrapper. Was: "+o.getClass());
+            throw new IllegalArgumentException(
+                    "Object must be an instance of RestWrapper. Was: " + o.getClass());
         }
     }
 
     public int getPriority() {
-        //If no extension or content-type provided, return HTML;
-        return ExtensionPriority.LOWEST-1;
+        // If no extension or content-type provided, return HTML;
+        return ExtensionPriority.LOWEST - 1;
     }
 
-	public List<URL> createCollectionLink(String link) {
-		// TODO Auto-generated method stub
-		try {
-			String href = href(link);
-			URL url2 = new URL(href);
-			return (List<URL>) Collections.singletonList(url2);
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return new ArrayList<URL>();
-	}
-	
-    protected String href( String link) {
+    public List<URL> createCollectionLink(String link) {
+        // TODO Auto-generated method stub
+        try {
+            String href = href(link);
+            URL url2 = new URL(href);
+            return (List<URL>) Collections.singletonList(url2);
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return new ArrayList<URL>();
+    }
+
+    protected String href(String link) {
 
         final RequestInfo pg = RequestInfo.get();
         String ext = "html";
 
-        if(ext != null && ext.length() > 0)
-            link = link+ "." + ext;
+        if (ext != null && ext.length() > 0)
+            link = link + "." + ext;
 
         // encode as relative or absolute depending on the link type
-        if ( link.startsWith( "/") ) {
+        if (link.startsWith("/")) {
             // absolute, encode from "root"
             return pg.servletURI(link);
         } else {
-            //encode as relative
+            // encode as relative
             return pg.pageURI(link);
         }
     }

@@ -49,7 +49,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         // check the layer name is actually the first child (GEOS-3336 risked modifying
         // the order)
         assertXpathEvaluatesTo("Buildings", "/layer/*[1]", dom );
-        assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/styles/Buildings.xml",
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver"+ROOT_PATH+"/styles/Buildings.xml",
                 "/layer/defaultStyle/atom:link/attribute::href", dom);
     }
     
@@ -159,8 +159,8 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testDelete() throws Exception {
         assertNotNull(catalog.getLayerByName( "cite:Buildings" ));
-        
         assertEquals(200, deleteAsServletResponse(ROOT_PATH + "/layers/cite:Buildings").getStatus());
+        assertNull(catalog.getLayerByName( "cite:Buildings" ));
     }
     
     @Test

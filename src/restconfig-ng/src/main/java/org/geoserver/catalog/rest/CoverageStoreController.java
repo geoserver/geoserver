@@ -20,16 +20,21 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
@@ -65,7 +70,25 @@ public class CoverageStoreController extends CatalogController {
         CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
         return wrapCoverageStore(coverageStore);
     }
+    
+    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+    public ResponseEntity<String> postCoverageStoreInfo(@RequestBody CoverageStoreInfo coverageStore,
+            @PathVariable(name = "workspace") String workspaceName,
+            UriComponentsBuilder builder) {
+        catalog.validate(coverageStore, true).throwIfInvalid();
+        catalog.add(coverageStore);
 
+        String storeName = coverageStore.getName();
+        LOGGER.info("POST coverage store " + storeName);
+        UriComponents uriComponents = builder.path("/workspaces/{workspaceName}/coveragestores/{storeName}")
+            .buildAndExpand(workspaceName, storeName);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(uriComponents.toUri());
+        return new ResponseEntity<String>(storeName, headers, HttpStatus.CREATED);
+    }
+
+    
     @PutMapping(value = "{store}", consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
     public void putCoverageStoreInfo(@RequestBody CoverageStoreInfo info,

@@ -59,7 +59,7 @@ public class WMSStoreController extends CatalogController {
             @PathVariable(name = "workspace") String workspaceName,
             @PathVariable(name = "store") String storeName) {
         WMSStoreInfo wmsStore = getExistingWMSStore(workspaceName, storeName);
-        return wrapWMSStore(wmsStore);
+        return wrapObject(wmsStore, WMSStoreInfo.class);
     }
     
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
@@ -86,7 +86,7 @@ public class WMSStoreController extends CatalogController {
             @PathVariable(name = "workspace") String workspaceName,
             @PathVariable(name = "store") String storeName) {
         WMSStoreInfo original = getExistingWMSStore(workspaceName, storeName);
-        if(!original.getWorkspace().equals(info.getWorkspace())) {
+        if(info.getWorkspace() != null && !original.getWorkspace().equals(info.getWorkspace())) {
             throw new RestException("Attempting to move "+storeName+" from "+original.getWorkspace().getName()+" to "+info.getWorkspace().getName()+" via PUT", HttpStatus.FORBIDDEN);
         }
         if(!original.getName().equals(info.getName())) {
@@ -133,81 +133,48 @@ public class WMSStoreController extends CatalogController {
         catalog.getResourcePool().clear(info);
     }
 
-    RestWrapper<WMSStoreInfo> wrapWMSStore(WMSStoreInfo store) {
-        return new RestWrapperAdapter<WMSStoreInfo>(store, WMSStoreInfo.class,
-                getTemplate(store, WMSStoreInfo.class)) {
-            @Override
-            public void configurePersister(XStreamPersister persister,
-                    XStreamMessageConverter converter) {
-                persister.setCallback(new XStreamPersister.Callback() {
-                    @Override
-                    protected Class<WMSStoreInfo> getObjectClass() {
-                        return WMSStoreInfo.class;
-                    }
-
-                    @Override
-                    protected CatalogInfo getCatalogObject() {
-                        WorkspaceInfo ws = store.getWorkspace();
-                        String name = store.getName();
-                        
-                        if(ws == null || name == null) {
-                            return null;
-                        }
-                        
-                        return catalog.getStoreByName(ws, name, WMSStoreInfo.class);
-                    }
-
-                    @Override
-                    protected void postEncodeWMSStore(WMSStoreInfo cs,
-                            HierarchicalStreamWriter writer, MarshallingContext context) {
-                        // add a link to the wmss
-                        writer.startNode("wmss");
-                        converter.encodeCollectionLink("wmss", writer);
-                        writer.endNode();
-                    }
-
-                    @Override
-                    protected void postEncodeReference(Object obj, String ref, String prefix,
-                            HierarchicalStreamWriter writer, MarshallingContext context) {
-                        if (obj instanceof WorkspaceInfo) {
-                            converter.encodeLink("/workspaces/" + converter.encode(ref), writer);
-                        }
-                    }
-                });
-            }
-        };
-
-    }
-
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return WMSStoreInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
-    public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) throws IOException {
-        return new RestHttpInputWrapper(inputMessage) {
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
+        persister.setCallback(new XStreamPersister.Callback() {
             @Override
-            public void configurePersister(XStreamPersister persister, XStreamMessageConverter xStreamMessageConverter) {
-                persister.setCallback(new XStreamPersister.Callback() {
-                    @Override
-                    protected Class<WMSStoreInfo> getObjectClass() {
-                        return WMSStoreInfo.class;
-                    }
-
-                    @Override
-                    protected CatalogInfo getCatalogObject() {
-                        Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-                        String workspace = uriTemplateVars.get("workspace");
-                        String wmsstore = uriTemplateVars.get("store");
-
-                        if (workspace == null || wmsstore == null) {
-                            return null;
-                        }
-                        return catalog.getStoreByName(workspace, wmsstore, WMSStoreInfo.class);
-                    }
-                });
+            protected Class<WMSStoreInfo> getObjectClass() {
+                return WMSStoreInfo.class;
             }
-        };
+
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+                String workspace = uriTemplateVars.get("workspace");
+                String store = uriTemplateVars.get("store");
+
+                if(workspace == null || store == null) {
+                    return null;
+                }
+
+                return catalog.getStoreByName(workspace, store, WMSStoreInfo.class);
+            }
+
+            @Override
+            protected void postEncodeWMSStore(WMSStoreInfo cs,
+                    HierarchicalStreamWriter writer, MarshallingContext context) {
+                // add a link to the wmss
+                writer.startNode("wmss");
+                converter.encodeCollectionLink("wmss", writer);
+                writer.endNode();
+            }
+
+            @Override
+            protected void postEncodeReference(Object obj, String ref, String prefix,
+                    HierarchicalStreamWriter writer, MarshallingContext context) {
+                if (obj instanceof WorkspaceInfo) {
+                    converter.encodeLink("/workspaces/" + converter.encode(ref), writer);
+                }
+            }
+        });
     }
 }

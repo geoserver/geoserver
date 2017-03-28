@@ -70,7 +70,7 @@ public class CoverageStoreController extends CatalogController {
             @PathVariable(name = "workspace") String workspaceName,
             @PathVariable(name = "store") String storeName) {
         CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
-        return wrapCoverageStore(coverageStore);
+        return wrapObject(coverageStore, CoverageStoreInfo.class);
     }
     
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
@@ -159,81 +159,47 @@ public class CoverageStoreController extends CatalogController {
         catalog.getResourcePool().clear(info);
     }
 
-    RestWrapper<CoverageStoreInfo> wrapCoverageStore(CoverageStoreInfo store) {
-        return new RestWrapperAdapter<CoverageStoreInfo>(store, CoverageStoreInfo.class,
-                getTemplate(store, CoverageStoreInfo.class)) {
-            @Override
-            public void configurePersister(XStreamPersister persister,
-                    XStreamMessageConverter converter) {
-                persister.setCallback(new XStreamPersister.Callback() {
-                    @Override
-                    protected Class<CoverageStoreInfo> getObjectClass() {
-                        return CoverageStoreInfo.class;
-                    }
-
-                    @Override
-                    protected CatalogInfo getCatalogObject() {
-                        WorkspaceInfo ws = store.getWorkspace();
-                        String name = store.getName();
-                        
-                        if(ws == null || name == null) {
-                            return null;
-                        }
-                        
-                        return catalog.getCoverageStoreByName(ws, name);
-                    }
-
-                    @Override
-                    protected void postEncodeCoverageStore(CoverageStoreInfo cs,
-                            HierarchicalStreamWriter writer, MarshallingContext context) {
-                        // add a link to the coverages
-                        writer.startNode("coverages");
-                        converter.encodeCollectionLink("coverages", writer);
-                        writer.endNode();
-                    }
-
-                    @Override
-                    protected void postEncodeReference(Object obj, String ref, String prefix,
-                            HierarchicalStreamWriter writer, MarshallingContext context) {
-                        if (obj instanceof WorkspaceInfo) {
-                            converter.encodeLink("/workspaces/" + converter.encode(ref), writer);
-                        }
-                    }
-                });
-            }
-        };
-
-    }
-
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return CoverageStoreInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
-    public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) throws IOException {
-        return new RestHttpInputWrapper(inputMessage) {
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
+        persister.setCallback(new XStreamPersister.Callback() {
             @Override
-            public void configurePersister(XStreamPersister persister, XStreamMessageConverter xStreamMessageConverter) {
-                persister.setCallback(new XStreamPersister.Callback() {
-                    @Override
-                    protected Class<CoverageStoreInfo> getObjectClass() {
-                        return CoverageStoreInfo.class;
-                    }
-
-                    @Override
-                    protected CatalogInfo getCatalogObject() {
-                        Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-                        String workspace = uriTemplateVars.get("workspace");
-                        String coveragestore = uriTemplateVars.get("store");
-
-                        if (workspace == null || coveragestore == null) {
-                            return null;
-                        }
-                        return catalog.getCoverageStoreByName(workspace, coveragestore);
-                    }
-                });
+            protected Class<CoverageStoreInfo> getObjectClass() {
+                return CoverageStoreInfo.class;
             }
-        };
+
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+                String workspace = uriTemplateVars.get("workspace");
+                String coveragestore = uriTemplateVars.get("store");
+
+                if (workspace == null || coveragestore == null) {
+                    return null;
+                }
+                return catalog.getCoverageStoreByName(workspace, coveragestore);
+            }
+
+            @Override
+            protected void postEncodeCoverageStore(CoverageStoreInfo cs,
+                    HierarchicalStreamWriter writer, MarshallingContext context) {
+                // add a link to the coverages
+                writer.startNode("coverages");
+                converter.encodeCollectionLink("coverages", writer);
+                writer.endNode();
+            }
+
+            @Override
+            protected void postEncodeReference(Object obj, String ref, String prefix,
+                    HierarchicalStreamWriter writer, MarshallingContext context) {
+                if (obj instanceof WorkspaceInfo) {
+                    converter.encodeLink("/workspaces/" + converter.encode(ref), writer);
+                }
+            }
+        });
     }
 }

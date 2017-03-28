@@ -193,9 +193,11 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
               "<name>foo</name>" +
               "<filename>foo.sld</filename>" + 
             "</style>";
-
+        
         MockHttpServletResponse response =
-            postAsServletResponse(ROOT_PATH + "workspaces/cite/styles", xml);
+            postAsServletResponse(ROOT_PATH + "/workspaces/cite/styles", xml);
+        
+        System.out.println( response.getContentAsString() );
         assertEquals(201, response.getStatus());
         assertNotNull(cat.getStyleByName("cite", "foo"));
 
@@ -219,7 +221,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM(ROOT_PATH + "/layers/cite:Buildings.xml",200);
         assertXpathExists("/layer/defaultStyle/name[text() = 'cite:foo']", dom);
         assertXpathExists("/layer/defaultStyle/workspace[text() = 'cite']", dom);
-        assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/workspaces/cite/styles/foo.xml", 
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver"+ROOT_PATH+"/workspaces/cite/styles/foo.xml", 
             "//defaultStyle/atom:link/@href", dom );
     }
     
@@ -236,7 +238,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
             "</style>";
 
         MockHttpServletResponse response =
-            postAsServletResponse(ROOT_PATH + "workspaces/cite/styles", xml);
+            postAsServletResponse(ROOT_PATH + "/workspaces/cite/styles", xml);
         assertEquals(201, response.getStatus());
         assertNotNull(cat.getStyleByName("cite", "foo"));
 
@@ -263,7 +265,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM(ROOT_PATH + "/layers/cite:Buildings.xml",200);
         assertXpathExists("/layer/styles/style/name[text() = 'cite:foo']", dom);
         assertXpathExists("/layer/styles/style/workspace[text() = 'cite']", dom);
-        assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/workspaces/cite/styles/foo.xml", 
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver"+ROOT_PATH+"/workspaces/cite/styles/foo.xml", 
             "//styles/style/atom:link/@href", dom );
     }
 }

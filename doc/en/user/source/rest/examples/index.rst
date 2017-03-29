@@ -22,7 +22,8 @@ But we're changing this to be based on endpoint:
 .. toctree::
    :maxdepth: 1
 
-   styles
    fonts
+   layers
+   styles
 
 So this section is under construction.

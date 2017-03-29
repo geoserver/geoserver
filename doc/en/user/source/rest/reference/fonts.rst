@@ -1,9 +1,13 @@
-.. _rest_examples_fonts:
+.. _rest_reference_fonts:
 
 Fonts
 =====
 
 The REST API allows you to list—but not modify—fonts available in GeoServer. It can be useful to use this operation to verify if a font used in a style file is available before uploading it.
+
+API Reference:
+
+* `Fonts API Reference <../../api/fonts/index.html>`__
 
 Getting a list of all fonts
 ---------------------------

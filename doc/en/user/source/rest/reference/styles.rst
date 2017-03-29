@@ -1,4 +1,4 @@
-.. _rest_examples_styles:
+.. _rest_reference_styles:
 
 Styles
 ======
@@ -7,6 +7,9 @@ The REST API allows you to list, create, upload, update, and delete styles in Ge
 
 Please see the API documentation for more details about the spec.
 
+API:
+
+* `Workspaces API Reference <../../api/workspaces/index.html>`__
 
 Listing all styles
 ------------------

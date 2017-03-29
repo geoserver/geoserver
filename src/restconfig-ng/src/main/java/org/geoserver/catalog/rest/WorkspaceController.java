@@ -97,6 +97,10 @@ public class WorkspaceController extends CatalogController {
     public ResponseEntity<String> postWorkspace(@RequestBody WorkspaceInfo workspace,
             @RequestParam(defaultValue = "false", name = "default") boolean makeDefault,
             UriComponentsBuilder builder) {
+        
+        if(catalog.getWorkspaceByName(workspace.getName())!=null) {
+            throw new RestException("Workspace '"+workspace.getName()+"' already exists", HttpStatus.UNAUTHORIZED);
+        }
         catalog.add(workspace);
         String name = workspace.getName();
         LOGGER.info("Added workspace " + name);
@@ -140,7 +144,7 @@ public class WorkspaceController extends CatalogController {
     }
 
     @DeleteMapping(path = "/workspaces/{workspaceName}")
-    protected void deleteStyle(@PathVariable String workspaceName,
+    protected void deleteWorkspace(@PathVariable String workspaceName,
             @RequestParam(defaultValue = "false", name = "recurse") boolean recurse) {
 
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);

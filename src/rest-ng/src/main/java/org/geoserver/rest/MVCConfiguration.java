@@ -70,6 +70,8 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         configurer.mediaType("sld", MediaType.valueOf(SLDHandler.MIMETYPE_11));
+        configurer.mediaType("html", MediaType.TEXT_HTML);
+        configurer.mediaType("xml", MediaType.APPLICATION_XML);
         configurer.mediaType("json", MediaType.APPLICATION_JSON);
 //        configurer.favorPathExtension(true);
         //todo properties files are only supported for test cases. should try to find a way to

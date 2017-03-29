@@ -20,10 +20,12 @@ import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +42,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -82,8 +85,8 @@ public class CoverageController extends CatalogController {
         NamespaceInfo nameSpace = catalog.getNamespaceByPrefix(workspaceName);
         if (nameSpace == null) {
             // could not find the namespace associated with the desired workspace
-            throw new RestException(String.format(
-                    "Name space not found for workspace '%s'.", workspaceName), HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException(String.format(
+                    "Name space not found for workspace '%s'.", workspaceName));
         }
         // get all the coverages of the workspace \ name space
         List<CoverageInfo> coverages = catalog.getCoveragesByNamespace(nameSpace);
@@ -102,11 +105,13 @@ public class CoverageController extends CatalogController {
         CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
         List<CoverageInfo> coverages = catalog.getCoveragesByCoverageStore(coverageStore);
         Optional<CoverageInfo> optCoverage = coverages.stream()
-                .filter(si -> storeName.equals(si.getName())).findFirst();
+                .filter(ci -> coverageName.equals(ci.getName())).findFirst();
         if (!optCoverage.isPresent()) {
-            throw new ResourceNotFoundException("No such coverage in store: " + coverageName);
+            throw new ResourceNotFoundException(String.format(
+                    "No such coverage: %s,%s,%s", workspaceName, storeName, coverageName));
         }
         CoverageInfo coverage = optCoverage.get();
+        checkCoverageExists(coverage, workspaceName, coverageName);
         return wrapObject(coverage, CoverageInfo.class);
     }
 
@@ -122,10 +127,11 @@ public class CoverageController extends CatalogController {
         NamespaceInfo nameSpace = catalog.getNamespaceByPrefix(workspaceName);
         if (nameSpace == null) {
             // could not find the namespace associated with the desired workspace
-            throw new RestException(String.format(
-                    "Name space not found for workspace '%s'.", workspaceName), HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException(String.format(
+                    "Name space not found for workspace '%s'.", workspaceName));
         }
         CoverageInfo coverage = catalog.getCoverageByName(nameSpace, coverageName);
+        checkCoverageExists(coverage, workspaceName, coverageName);
         return wrapObject(coverage, CoverageInfo.class);
     }
 
@@ -171,11 +177,8 @@ public class CoverageController extends CatalogController {
                             @RequestParam(name = "calculate", required = false) String calculate) throws Exception {
         CoverageStoreInfo cs = catalog.getCoverageStoreByName(workspaceName, storeName);
         CoverageInfo original = catalog.getCoverageByCoverageStore(cs, coverageName);
+        checkCoverageExists(original, workspaceName, coverageName);
         calculateOptionalFields(coverage, original, calculate);
-        if (original == null) {
-            throw new RestException(String.format(
-                    "Coverage '%s' not found.", coverageName), HttpStatus.NOT_FOUND);
-        }
         new CatalogBuilder(catalog).updateCoverage(original, coverage);
         catalog.validate(original, false).throwIfInvalid();
         catalog.save(original);
@@ -210,6 +213,16 @@ public class CoverageController extends CatalogController {
         catalog.remove(c);
         catalog.getResourcePool().clear(c.getStore());
         LOGGER.info("DELETE coverage " + storeName + "," + coverageName);
+    }
+
+    /**
+     * If the coverage doesn't exists throws a REST exception with HTTP 404 code.
+     */
+    private void checkCoverageExists(CoverageInfo coverage, String workspaceName, String coverageName) {
+        if (coverage == null) {
+            throw new ResourceNotFoundException(String.format(
+                    "No such coverage: %s,%s", workspaceName, coverageName));
+        }
     }
 
     /**
@@ -297,6 +310,11 @@ public class CoverageController extends CatalogController {
     }
 
     @Override
+    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        return CoverageInfo.class.isAssignableFrom(methodParameter.getParameterType());
+    }
+
+    @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         persister.setCallback(new XStreamPersister.Callback() {
             @Override
@@ -308,7 +326,7 @@ public class CoverageController extends CatalogController {
             protected CatalogInfo getCatalogObject() {
                 Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
                 String workspace = uriTemplateVars.get("workspace");
-                String coveragestore = uriTemplateVars.get("coveragestore");
+                String coveragestore = uriTemplateVars.get("store");
                 String coverage = uriTemplateVars.get("coverage");
 
                 if (workspace == null || coveragestore == null || coverage == null) {

@@ -117,7 +117,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         // todo: check there is a link to the index
         
         dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index.xml");
-        // print(dom);
+        print(dom);
         assertXpathEvaluatesTo("4", "count(//Schema/attributes/Attribute)", dom);
         assertXpathEvaluatesTo("com.vividsolutions.jts.geom.MultiPolygon", "/Schema/attributes/Attribute[name='the_geom']/binding", dom);
         assertXpathEvaluatesTo("java.lang.String", "/Schema/attributes/Attribute[name='location']/binding", dom);

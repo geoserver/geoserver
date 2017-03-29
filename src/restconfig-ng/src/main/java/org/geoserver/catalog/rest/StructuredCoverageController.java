@@ -92,7 +92,7 @@ public class StructuredCoverageController extends CatalogController {
         super(catalog);
     }
 
-    @GetMapping(produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+    @GetMapping(produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
     public RestWrapper<IndexSchema> getIndex(
             @PathVariable(name = "workspaceName") String workspaceName,
             @PathVariable(name = "storeName") String storeName,
@@ -204,7 +204,7 @@ public class StructuredCoverageController extends CatalogController {
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType,
             Class<? extends HttpMessageConverter<?>> converterType) {
-        return CoverageStoreInfo.class.isAssignableFrom(methodParameter.getParameterType());
+        return IndexSchema.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override

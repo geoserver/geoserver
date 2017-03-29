@@ -118,7 +118,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         // todo: check there is a link to the index
         
         dom = getAsDOM( "/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index.xml", 200);
-        print(dom);
+        // print(dom);
         assertXpathEvaluatesTo("4", "count(//Schema/attributes/Attribute)", dom);
         assertXpathEvaluatesTo("com.vividsolutions.jts.geom.MultiPolygon", "/Schema/attributes/Attribute[name='the_geom']/binding", dom);
         assertXpathEvaluatesTo("java.lang.String", "/Schema/attributes/Attribute[name='location']/binding", dom);
@@ -151,14 +151,30 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     
     @Test 
     public void testIndexResourcesJSON() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        JSONObject json = (JSONObject) getAsJSON("/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index.json");
         
-        // get the granules ids
-        String octoberId = xpath.evaluate("//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/@fid", dom);
+        // print(json);
+        JSONObject schema = json.getJSONObject("Schema");
+        JSONObject external = schema.getJSONObject("attributes");
+        JSONArray attributes = external.getJSONArray("Attribute");
+        assertEquals(4, attributes.size());
+        assertEquals("com.vividsolutions.jts.geom.MultiPolygon", attributes.getJSONObject(0).get("binding"));
         
-        JSONObject json = (JSONObject) getAsJSON( "/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/" + octoberId + ".json");
+        json = (JSONObject) getAsJSON("/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.json");
         print(json);
         JSONArray features = json.getJSONArray("features");
+        String octoberId = null;
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = features.getJSONObject(i);
+            String location = feature.getJSONObject("properties").getString("location");
+            if("NCOM_wattemp_000_20081031T0000000_12.tiff".equals(location)) {
+                octoberId = feature.getString("id");
+            }
+        }
+        
+        json = (JSONObject) getAsJSON( "/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/" + octoberId + ".json");
+        // print(json);
+        features = json.getJSONArray("features");
         assertEquals(1, features.size());
         JSONObject feature = features.getJSONObject(0);
         assertEquals(octoberId, feature.get("id"));

@@ -1,13 +1,8 @@
 package org.geoserver.rest;
 
 import freemarker.core.ParseException;
-import freemarker.ext.beans.BeansWrapper;
-import freemarker.ext.beans.CollectionModel;
-import freemarker.ext.beans.MapModel;
 import freemarker.template.*;
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.ows.util.ClassProperties;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestHttpInputWrapper;
@@ -24,8 +19,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdvice;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,12 +59,22 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      */
     protected <T> Configuration createConfiguration(Class<T> clazz) {
         Configuration cfg = new Configuration( );
-        cfg.setObjectWrapper(new ObjectToMapWrapper<>(clazz));
+        cfg.setObjectWrapper(createObjectWrapper(clazz));
         cfg.setClassForTemplateLoading(getClass(),pathPrefix);
         if (encoding != null) {
             cfg.setDefaultEncoding(encoding);
         }
         return cfg;
+    }
+
+    /**
+     * Constructs the freemarker {@link ObjectWrapper}
+     *
+     * @param clazz Class of the object being wrapped
+     * @return
+     */
+    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+        return new ObjectToMapWrapper<>(clazz);
     }
 
     /**
@@ -263,108 +266,4 @@ public abstract class RestBaseController implements RequestBodyAdvice {
 
     }
 
-    /**
-     * Wraps the object being serialized in a {@link SimpleHash} template model.
-     * <p>
-     * The method {@link #wrapInternal(Map, SimpleHash, Object)} may be overridden to customize
-     * the returned model.
-     * </p>
-     */
-    protected class ObjectToMapWrapper<T> extends BeansWrapper {
-
-        /**
-         * The class of object being serialized.
-         */
-        Class<T> clazz;
-
-        public ObjectToMapWrapper( Class<T> clazz ) {
-            this.clazz = clazz;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public TemplateModel wrap(Object object) throws TemplateModelException {
-            if ( object instanceof SimpleHash) {
-                return (SimpleHash) object;
-            }
-            if ( object instanceof Collection) {
-                Collection c = (Collection) object;
-                if (c.isEmpty() || clazz.isAssignableFrom(c.iterator().next().getClass())) {
-                    SimpleHash hash = new SimpleHash();
-                    hash.put("values", new CollectionModel(c, this));
-                    setRequestInfo(hash);
-                    wrapInternal(hash, (Collection<T>) object);
-                    return hash;
-                }
-            }
-            if ( object != null && clazz.isAssignableFrom( object.getClass() ) ) {
-                HashMap<String, Object> map = new HashMap<String, Object>();
-
-                ClassProperties cp = OwsUtils.getClassProperties(clazz);
-                for ( String p : cp.properties() ) {
-                    if ( "Class".equals( p ) ) continue;
-                    Object value = null;
-                    try {
-                        value = OwsUtils.get(object, p);
-                    } catch(Exception e) {
-                        LOGGER.log(Level.WARNING, "Could not resolve property " + p + " of bean " + object, e);
-                        value = "** Failed to retrieve value of property " + p + ". Error message is: " + e.getMessage() + "**";
-                    }
-                    if ( value == null ) {
-                        value = "null";
-                    }
-
-                    map.put( Character.toLowerCase(p.charAt(0)) + p.substring(1), value.toString());
-
-                }
-
-                SimpleHash model = new SimpleHash();
-                model.put( "properties", new MapModel(map, this) );
-                model.put( "className", clazz.getSimpleName() );
-                setRequestInfo(model);
-                wrapInternal(map, model, (T) object);
-                return model;
-            }
-
-            return super.wrap(object);
-        }
-
-        /**
-         * Add {@link RequestInfo} to the freemarker model
-         *
-         * @param model
-         * @throws TemplateModelException
-         */
-        protected void setRequestInfo(SimpleHash model) throws TemplateModelException {
-            final RequestInfo requestInfo = RequestInfo.get();
-
-            if (model.get("page") == null) {
-                if (requestInfo != null) {
-                    model.put("page", requestInfo);
-                }
-            }
-        }
-
-        /**
-         * Template method to customize the returned template model.
-         * Called in the case of a map model
-         *
-         * @param properties A map of properties obtained reflectively from the object being
-         * serialized.
-         * @param model The resulting template model.
-         * @param object The object being serialized.
-         */
-        protected void wrapInternal(Map<String, Object> properties, SimpleHash model, T object) {
-        }
-
-        /**
-         * Template method to customize the returned template model.
-         * Called in the case of a list model
-         *
-         * @param model The resulting template model.
-         * @param object The object being serialized.
-         */
-        protected void wrapInternal(SimpleHash model, Collection<T> object) {
-        }
-    }
 }

@@ -1,14 +1,10 @@
 <#include "head.ftl">
 
-<#if properties.workspaceName != 'NO_WORKSPACE'>
-    Workspace Name:  "${properties.workspaceName!}"
+<#if properties.workspace.name??>
+    Workspace Name:  "${properties.workspace.name!}"
 <#else>
     Local settings have not been configured for this workspace
 </#if>
-
-</br>
-</br>
-
 
 Contact Information: 
 

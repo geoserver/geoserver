@@ -14,6 +14,7 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;

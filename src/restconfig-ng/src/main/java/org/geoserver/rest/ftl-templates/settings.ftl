@@ -40,27 +40,27 @@ Settings:
 JAI Configuration:
 
 <ul>
-  <li>Interpolation:  "${properties.allowInterpolation}"</li>
-  <li>Recycling:  "${properties.recycling}"</li>
-  <li>Tile Priority:  "${properties.tilePriority}"</li>
-  <li>Tile Threads:  "${properties.tileThreads}"</li>
-  <li>Memory Capacity:  "${properties.memoryCapacity}"</li>
-  <li>Memory Threshold:  "${properties.memoryThreshold}"</li>
-  <li>ImageIO Cache:  "${properties.imageIOCache}"</li>
-  <li>PNG Encoder:  "${properties.pngEncoderType}"</li>
-  <li>PNG Acceleration:  "${properties.pngAcceleration}"</li>
-  <li>JPEG Acceleration:  "${properties.jpegAcceleration}"</li>
-  <li>Allow Native Mosaic:  "${properties.allowNativeMosaic}"</li>
+  <li>Interpolation:  "${properties.jAI.allowInterpolation}"</li>
+  <li>Recycling:  "${properties.jAI.recycling}"</li>
+  <li>Tile Priority:  "${properties.jAI.tilePriority}"</li>
+  <li>Tile Threads:  "${properties.jAI.tileThreads}"</li>
+  <li>Memory Capacity:  "${properties.jAI.memoryCapacity}"</li>
+  <li>Memory Threshold:  "${properties.jAI.memoryThreshold}"</li>
+  <li>ImageIO Cache:  "${properties.jAI.imageIOCache}"</li>
+  <li>PNG Encoder:  "${properties.jAI.pngEncoderType}"</li>
+  <li>PNG Acceleration:  "${properties.jAI.pngAcceleration}"</li>
+  <li>JPEG Acceleration:  "${properties.jAI.jpegAcceleration}"</li>
+  <li>Allow Native Mosaic:  "${properties.jAI.allowNativeMosaic}"</li>
 </ul>
 
 Coverage Access Settings:
 
 <ul>
-  <li>Core Pool Size:  "${properties.corePoolSize}"</li>
-  <li>Maximum Pool Size:  "${properties.maxPoolSize}"</li>
-  <li>Keep Alive Time:  "${properties.keepAliveTime}"</li>
-  <li>Queue Type:  "${properties.queueType}"</li>
-  <li>ImageIO Cache Memory Threshold(KB):  "${properties.imageIOCacheThreshold}"</li>
+  <li>Core Pool Size:  "${properties.coverageAccess.corePoolSize}"</li>
+  <li>Maximum Pool Size:  "${properties.coverageAccess.maxPoolSize}"</li>
+  <li>Keep Alive Time:  "${properties.coverageAccess.keepAliveTime}"</li>
+  <li>Queue Type:  "${properties.coverageAccess.queueType}"</li>
+  <li>ImageIO Cache Memory Threshold(KB):  "${properties.coverageAccess.imageIOCacheThreshold}"</li>
 </ul>
 
 <#include "tail.ftl">

@@ -19,6 +19,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;

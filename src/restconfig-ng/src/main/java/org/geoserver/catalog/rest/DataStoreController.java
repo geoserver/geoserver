@@ -11,6 +11,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateModelException;
 import org.geoserver.catalog.*;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;

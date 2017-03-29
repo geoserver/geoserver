@@ -1,11 +1,12 @@
-package org.geoserver.catalog.rest;
+package org.geoserver.rest;
 
 import org.geoserver.config.GeoServer;
+import org.geoserver.rest.RestBaseController;
 
 /**
  * Base controller implementation for geoserver info requests
  */
-public class GeoServerController {
+public class GeoServerController extends RestBaseController {
     protected final GeoServer geoServer;
 
     public GeoServerController(GeoServer geoServer) {

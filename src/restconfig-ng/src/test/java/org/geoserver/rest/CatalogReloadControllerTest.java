@@ -1,4 +1,4 @@
-package org.geoserver.rest.catalog;
+package org.geoserver.rest;
 
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
 import org.geoserver.data.test.SystemTestData;

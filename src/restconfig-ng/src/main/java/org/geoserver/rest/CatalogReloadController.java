@@ -1,7 +1,6 @@
-package org.geoserver.catalog.rest;
+package org.geoserver.rest;
 
 import org.geoserver.config.GeoServer;
-import org.geoserver.rest.RestBaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

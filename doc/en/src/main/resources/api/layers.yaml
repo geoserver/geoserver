@@ -130,21 +130,23 @@ definitions:
       defaultStyle:
         $ref: "#/definitions/StyleReference"
       styles:
-        type: array
+        type: object
         description: Avaialble styles for layer publication
-        items:
-          $ref: "#/definitions/StyleReference"
         properties:
           '@class':
             type: string
             enum:
             - linked-hash-set
             description: required value linked-hash-set.
+          style:
+            type: array
+            items:
+              $ref: "#/definitions/StyleReference"
 
   StyleReference:
       type: object
       title: style
-      description: Refernece to  style definition
+      description: Reference to style definition
       properties:
         name:
           type: string

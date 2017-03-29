@@ -5,29 +5,15 @@
  */
 package org.geoserver.wfs.xml.v1_1_0;
 
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import net.opengis.wfs.WfsFactory;
 
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourcePool;
-import org.geoserver.catalog.event.CatalogAddEvent;
-import org.geoserver.catalog.event.CatalogListener;
-import org.geoserver.catalog.event.CatalogModifyEvent;
-import org.geoserver.catalog.event.CatalogPostModifyEvent;
-import org.geoserver.catalog.event.CatalogRemoveEvent;
-import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.xml.v1_0.OWSConfiguration;
 import org.geoserver.wfs.CatalogFeatureTypeCache;
-import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.FeatureTypeSchemaBuilder;
 import org.geoserver.wfs.xml.PropertyTypePropertyExtractor;
 import org.geoserver.wfs.xml.WFSHandlerFactory;
@@ -36,7 +22,6 @@ import org.geoserver.wfs.xml.XSQNameBinding;
 import org.geoserver.wfs.xml.filter.v1_1.FilterTypeBinding;
 import org.geoserver.wfs.xml.filter.v1_1.PropertyNameTypeBinding;
 import org.geoserver.wfs.xml.gml3.CircleTypeBinding;
-import org.geotools.data.DataAccess;
 import org.geotools.filter.v1_0.OGCBBOXTypeBinding;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.filter.v1_1.OGCConfiguration;
@@ -49,8 +34,6 @@ import org.geotools.util.logging.Logging;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.OptionalComponentParameter;
 import org.geotools.xs.XS;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.Parameter;
@@ -77,59 +60,7 @@ public class WFSConfiguration extends Configuration {
 
         this.catalog = geoServer.getCatalog();
         this.schemaBuilder = schemaBuilder;
-        
-        catalog.addListener(new CatalogListener() {
 
-            public void handleAddEvent(CatalogAddEvent event) {
-                if (event.getSource() instanceof FeatureTypeInfo) {
-                    reloaded();
-                }
-            }
-
-            public void handleModifyEvent(CatalogModifyEvent event) {
-                if (event.getSource() instanceof DataStoreInfo ||
-                    event.getSource() instanceof FeatureTypeInfo || 
-                    event.getSource() instanceof NamespaceInfo) {
-                    reloaded();
-                }
-            }
-
-            public void handlePostModifyEvent(CatalogPostModifyEvent event) {
-            }
-
-            public void handleRemoveEvent(CatalogRemoveEvent event) {
-            }
-
-            public void reloaded() {
-                wfs.dispose();
-            }
-                
-        });
-        catalog.getResourcePool().addListener(new ResourcePool.Listener() {
-            
-            public void disposed(FeatureTypeInfo featureType, FeatureType ft) {
-            }
-            
-            public void disposed(CoverageStoreInfo coverageStore, GridCoverageReader gcr) {
-            }
-            
-            public void disposed(DataStoreInfo dataStore, DataAccess da) {
-                wfs.dispose();
-            }
-        });
-        geoServer.addListener(new ConfigurationListenerAdapter() {
-            
-            public void reloaded() {
-                wfs.dispose();
-            }
-            
-            public void handleServiceChange(ServiceInfo service, List<String> propertyNames,
-                    List<Object> oldValues, List<Object> newValues) {
-                if (service instanceof WFSInfo) {
-                    reloaded();
-                }
-            }
-        });
         addDependency(new OGCConfiguration());
         addDependency(new OWSConfiguration());
         addDependency(new GMLConfiguration());
@@ -277,5 +208,9 @@ public class WFSConfiguration extends Configuration {
         
         // override XSQName binding
         bindings.put(XS.QNAME, XSQNameBinding.class);
+    }
+
+    public FeatureTypeSchemaBuilder getSchemaBuilder() {
+        return schemaBuilder;
     }
 }

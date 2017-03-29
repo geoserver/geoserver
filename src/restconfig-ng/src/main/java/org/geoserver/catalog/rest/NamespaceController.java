@@ -2,7 +2,6 @@ package org.geoserver.catalog.rest;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,21 +10,15 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestException;
-import org.geoserver.rest.RestletException;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
-import org.restlet.data.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,7 +31,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestAttributes;
@@ -70,7 +62,7 @@ public class NamespaceController extends CatalogController {
     @GetMapping(value = "/namespaces/{namespaceName}", produces = {
             MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE,
             MediaType.APPLICATION_XML_VALUE })
-    public RestWrapper<NamespaceInfo> getWorkspace(@PathVariable String namespaceName) {
+    public RestWrapper<NamespaceInfo> getNamespace(@PathVariable String namespaceName) {
 
         NamespaceInfo namespace = catalog.getNamespaceByPrefix(namespaceName);
         if (namespace == null) {
@@ -132,7 +124,7 @@ public class NamespaceController extends CatalogController {
     }
 
     @DeleteMapping(path = "/namespaces/{prefix}")
-    protected void deleteStyle(@PathVariable String prefix) {
+    protected void deleteNamespace(@PathVariable String prefix) {
 
         NamespaceInfo ns = catalog.getNamespaceByPrefix(prefix);
         if (prefix.equals("default")) {
@@ -171,9 +163,18 @@ public class NamespaceController extends CatalogController {
                         e.printStackTrace();
                     }
                 }
-                List<Map<String, Map<String, String>>> dsProps = new ArrayList<>();
-
-                NamespaceInfo wkspace = (NamespaceInfo) object;
+                NamespaceInfo namespace = (NamespaceInfo)object;
+                properties.put("prefix", namespace.getPrefix());
+                properties.put("uRI", namespace.getURI());
+                properties.put("name", namespace.getName());
+                
+                List<Map<String, Map<String, String>>> resources = new ArrayList<>();
+                List<ResourceInfo> res = catalog.getResourcesByNamespace(namespace, ResourceInfo.class);
+                for(ResourceInfo r:res) {
+                    resources.add(new HashMap<>());
+                }
+                
+                
 
             }
 

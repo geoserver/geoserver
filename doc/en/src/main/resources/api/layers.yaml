@@ -128,20 +128,27 @@ definitions:
         - GROUP
         description: Type of published layer. Can be VECTOR, RASTER, REMOTE, WMS or GROUP. Must be consistent with resource definition.
       defaultStyle:
-        $ref: "#/definitions/LayerReference"
+        $ref: "#/definitions/StyleReference"
       styles:
-         type: array
-         description: A 'linked-hash-set' listing styles configured for layer.
-         items:
-           $ref: "#/definitions/LayerReference"
+        type: array
+        description: Avaialble styles for layer publication
+        items:
+          $ref: "#/definitions/StyleReference"
+        properties:
+          '@class':
+            type: string
+            enum:
+            - linked-hash-set
+            description: required value linked-hash-set.
 
-LayerReference:
-    type: object
-    title: style
-    properties:
-      name:
-        type: string
-        description: Name of style
-      link:
-        type: string
-        description: URL to style definition
+  StyleReference:
+      type: object
+      title: style
+      description: Refernece to  style definition
+      properties:
+        name:
+          type: string
+          description: Name of style
+        link:
+          type: string
+          description: URL to the style definition

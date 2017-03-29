@@ -52,7 +52,7 @@ public abstract class CatalogController extends RestBaseController {
      */
     protected void calculateOptionalFields(ResourceInfo message, ResourceInfo resource, String calculate) {
         List<String> fieldsToCalculate;
-        if (calculate == null) {
+        if (calculate == null || calculate.isEmpty()) {
             boolean changedProjection = message.getSRS() == null ||
                     !message.getSRS().equals(resource.getSRS());
             boolean changedProjectionPolicy = message.getProjectionPolicy() == null ||

@@ -8,7 +8,9 @@ import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -19,13 +21,15 @@ public class IndexControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAsHTML() throws Exception {
         //TODO: Add more endpoints as they are added;
-        ArrayList<String> linksToFind = new ArrayList<>(Arrays.asList(
+        List<String> linksToFind = new ArrayList<>(Arrays.asList(
                 "layers",
                 "layergroups",
-                "reload",
-                "reset",
                 "styles",
                 "workspaces"));
+
+        List<String> invalidLinks = Arrays.asList(
+                "reset",
+                "reload");
 
         Document dom = getAsDOM(RestBaseController.ROOT_PATH);
         print(dom);
@@ -34,7 +38,9 @@ public class IndexControllerTest extends CatalogRESTTestSupport {
 
         for ( int i = 0; i < links.getLength(); i++ ) {
             Element link = (Element) links.item( i );
-            linksToFind.remove(link.getTextContent());
+            String linkText = link.getTextContent();
+            linksToFind.remove(linkText);
+            assertFalse("Index should only contain GET endpoints. Found: " + linkText, invalidLinks.contains(linkText));
         }
         assertTrue("Could not find the following links in index: "+linksToFind.toString(), linksToFind.size() == 0);
     }

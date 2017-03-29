@@ -1,4 +1,4 @@
-.. _rest_refernece_layers:
+.. _rest_layers:
 
 Layers
 ======
@@ -7,7 +7,7 @@ The REST API allows you to list, create, upload, update, and delete layers in Ge
 
 API Reference:
 
-* `Layers API Reference <../../api/layers/index.html>`__
+* `Layers API Reference <../api/layers/index.html>`__
 
 Listing all layers
 ------------------

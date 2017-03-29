@@ -1,4 +1,4 @@
-.. _rest_reference_fonts:
+.. _rest_fonts:
 
 Fonts
 =====
@@ -7,7 +7,7 @@ The REST API allows you to list—but not modify—fonts available in GeoServer.
 
 API Reference:
 
-* `Fonts API Reference <../../api/fonts/index.html>`__
+* `Fonts API Reference <../api/fonts/index.html>`__
 
 Getting a list of all fonts
 ---------------------------

@@ -11,18 +11,26 @@ Operations on resources are implemented with the standard primitives of HTTP:  G
 
 The follow REST Reference provides both a REST API definition and examples of using each endpoint:
 
+* :doc:`fonts` - `API Reference <../api/styles/index.html>`__
+* :doc:`layers` - `API Reference <../api/layers/index.html>`__
+* :doc:`styles` - `API Reference <../api/styles/index.html>`__
+* :doc:`workspaces` - `API Reference <../api/workspaces/index.html>`__
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :hidden:
    
-   reference/index
+   fonts
+   layers
+   styles
 
 .. note::
 
-   For further information about the REST API, refer to the :ref:`rest_api` section. For practical examples, refer to the :ref:`rest_examples` section.
+   For further information about the refer to the original :ref:`rest_api` section. For practical examples, refer to the :ref:`rest_examples` section.
 
    .. toctree::
       :maxdepth: 1
-      
+      :hidden:
+
       api/index
       examples/index
-

@@ -1,4 +1,4 @@
-.. _rest_reference_styles:
+.. _rest_styles:
 
 Styles
 ======
@@ -9,7 +9,7 @@ Please see the API documentation for more details about the spec.
 
 API:
 
-* `Workspaces API Reference <../../api/workspaces/index.html>`__
+* `Styles API Reference <../api/workspaces/index.html>`__
 
 Listing all styles
 ------------------

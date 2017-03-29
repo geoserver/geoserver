@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -40,19 +41,22 @@ public class IndexController extends RestBaseController {
 
     private Set<String> getLinks() {
         final int rootSize = RestBaseController.ROOT_PATH.length()+1;
-        Set<String> s = new HashSet<>();
+        //Ensure sorted, unique keys
+        Set<String> s = new TreeSet<>();
 
         Map<RequestMappingInfo, HandlerMethod> handlerMethods =
                 this.requestMappingHandlerMapping.getHandlerMethods();
 
         for(Map.Entry<RequestMappingInfo, HandlerMethod> item : handlerMethods.entrySet()) {
             RequestMappingInfo mapping = item.getKey();
-            HandlerMethod method = item.getValue();
 
-            for (String pattern : mapping.getPatternsCondition().getPatterns()) {
-                if (!pattern.contains("{") && (pattern.length() > rootSize)) {
-                    //trim root path
-                    s.add(pattern.substring(rootSize));
+            //Only list "get" endpoints
+            if (mapping.getMethodsCondition().getMethods().contains(RequestMethod.GET)) {
+                for (String pattern : mapping.getPatternsCondition().getPatterns()) {
+                    if (!pattern.contains("{") && (pattern.length() > rootSize)) {
+                        //trim root path
+                        s.add(pattern.substring(rootSize));
+                    }
                 }
             }
         }

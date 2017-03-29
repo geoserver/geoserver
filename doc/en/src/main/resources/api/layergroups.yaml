@@ -411,13 +411,23 @@ definitions:
             type: string
             description: Name of workspace that contains the layer group. Will only exist when request includes workspace name (/workspaces/{workspace}/...).
       publishables:
-        type: array
-        items:
-          $ref: "#/definitions/LayergroupPublished"
+        type: object
+        description: Layers published by group (in draw order)
+        properties:
+          published:
+            type: array
+            description: Published layer 
+            items:
+              $ref: "#/definitions/LayergroupPublished"
       styles:
-        type: array
-        items:
-          $ref: "#/definitions/LayergroupStyle"
+        type: object
+        description: Styles used to render layers in group
+        properties:
+          style:
+            description: Style to render layer, or empty to use default style.
+            type: array
+            items:
+              $ref: "#/definitions/LayergroupStyle"
       metadataLinks:
         type: array
         items:
@@ -443,7 +453,7 @@ definitions:
 
   LayergroupPublished:
     type: object
-    title: published
+    title: layer
     properties:
       name:
         type: string
@@ -455,7 +465,7 @@ definitions:
   LayergroupStyle:
     title: style
     type: object
-    description: This object will not exist when default style is used
+    description: Style to use to render layer
     properties:
       name:
         type: string

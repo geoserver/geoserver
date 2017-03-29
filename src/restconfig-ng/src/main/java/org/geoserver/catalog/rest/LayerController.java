@@ -63,7 +63,7 @@ public class LayerController extends CatalogController {
      */
     @GetMapping(value = "/layers", produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<LayerInfo> getLayers() {
+    public RestWrapper<LayerInfo> layersGet() {
         List<LayerInfo> layers = catalog.getLayers();
         return wrapList(layers, LayerInfo.class);
     }
@@ -76,14 +76,14 @@ public class LayerController extends CatalogController {
      */
     @GetMapping(path = "/layers/{layerName}", produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<LayerInfo> getLayer(@PathVariable String layerName,
+    public RestWrapper<LayerInfo> layersNameGet(@PathVariable String layerName,
             @RequestParam (name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
         LayerInfo layer = catalog.getLayerByName(layerName);
         return wrapObject(layer, LayerInfo.class, "No such layer: "+layerName, quietOnNotFound );
     }
 
     @DeleteMapping(value = "/layers/{layerName}")
-    public void getDeleteLayer(
+    public void layersNameDelete(
             @PathVariable(name = "layerName") String layerName,
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse) throws IOException {
         
@@ -99,7 +99,7 @@ public class LayerController extends CatalogController {
     }
     
     @PutMapping(value = "/layers/{layerName}")
-    public void putLayer(@RequestBody LayerInfo layer,@PathVariable String layerName ){
+    public void layersNamePut(@RequestBody LayerInfo layer,@PathVariable String layerName ){
         LayerInfo original = catalog.getLayerByName(layerName);
         
         // ensure this is not a name change

@@ -5,11 +5,10 @@
  */
 package org.geoserver.rest.catalog;
 
-import static junit.framework.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,13 +31,14 @@ import org.geotools.data.DataUtilities;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
-@Ignore
 public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     
     protected static QName WATTEMP = new QName(MockData.WCS_PREFIX, "watertemp", MockData.WCS_PREFIX);
@@ -48,7 +48,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     private XpathEngine xpath;
 
     private File mosaic;
-
+    
     @BeforeClass
     public static void setupTimeZone() {
         System.setProperty("user.timezone", "GMT");
@@ -105,9 +105,8 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         testData.setUpSecurity();
     }
 
-
     @Test 
-    public void testIndexResources() throws Exception {
+    public void testIndexResourcesXML() throws Exception {
         Document dom = getAsDOM( "/restng/workspaces/wcs/coveragestores/watertemp.xml", 200);
         // print(dom);
         assertXpathEvaluatesTo("watertemp", "/coverageStore/name", dom);
@@ -118,8 +117,8 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("watertemp", "/coverage/nativeName", dom);
         // todo: check there is a link to the index
         
-        dom = getAsDOM( "/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index.xml");
-        // print(dom);
+        dom = getAsDOM( "/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index.xml", 200);
+        print(dom);
         assertXpathEvaluatesTo("4", "count(//Schema/attributes/Attribute)", dom);
         assertXpathEvaluatesTo("com.vividsolutions.jts.geom.MultiPolygon", "/Schema/attributes/Attribute[name='the_geom']/binding", dom);
         assertXpathEvaluatesTo("java.lang.String", "/Schema/attributes/Attribute[name='location']/binding", dom);
@@ -150,8 +149,27 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("0", "//gf:watertemp/gf:elevation", dom);
     }
     
+    @Test 
+    public void testIndexResourcesJSON() throws Exception {
+        Document dom = getAsDOM( "/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        
+        // get the granules ids
+        String octoberId = xpath.evaluate("//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/@fid", dom);
+        
+        JSONObject json = (JSONObject) getAsJSON( "/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/" + octoberId + ".json");
+        print(json);
+        JSONArray features = json.getJSONArray("features");
+        assertEquals(1, features.size());
+        JSONObject feature = features.getJSONObject(0);
+        assertEquals(octoberId, feature.get("id"));
+        JSONObject properties = feature.getJSONObject("properties");
+        assertEquals("NCOM_wattemp_000_20081031T0000000_12.tiff", properties.get("location"));
+        assertEquals(0, properties.get("elevation"));
+    }
+   
+    
     @Test
-    public void testMissingGrandule() throws Exception {
+    public void testMissingGranule() throws Exception {
         MockHttpServletResponse response = getAsServletResponse( "/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/notThere.xml");
         assertEquals(404, response.getStatus());
     }
@@ -161,21 +179,17 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         // Parameters for the request
         String ws = "wcs";
         String cs = "watertemp";
-        String g = "notThere.html";
+        String g = "notThere";
         // Request path
         String requestPath = "/restng/workspaces/" + ws + "/coveragestores/" + cs + "/coverages/" + cs + "/index/granules/" + g;
         // Exception path
-        String exception = "Could not find a granule with id " + g + " in coveage " + ws + ":" + cs;
         // First request should thrown an exception
         MockHttpServletResponse response = getAsServletResponse(requestPath);
         assertEquals(404, response.getStatus());
-        assertTrue(response.getContentAsString().contains(
-                exception));
+        assertThat(response.getContentAsString(), containsString(g));
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
         assertEquals(404, response.getStatus());
-        assertFalse(response.getContentAsString().contains(
-                exception));
         // No exception thrown
         assertTrue(response.getContentAsString().isEmpty());
     }

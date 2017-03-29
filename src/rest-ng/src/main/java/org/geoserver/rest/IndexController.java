@@ -40,7 +40,8 @@ public class IndexController extends RestBaseController {
 
     private Set<String> getLinks() {
         final int rootSize = RestBaseController.ROOT_PATH.length()+1;
-        Set<String> s = new HashSet<>();
+        //Ensure sorted, unique keys
+        Set<String> s = new TreeSet<>();
 
         Map<RequestMappingInfo, HandlerMethod> handlerMethods =
                 this.requestMappingHandlerMapping.getHandlerMethods();

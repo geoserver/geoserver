@@ -19,7 +19,13 @@ public class IndexControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAsHTML() throws Exception {
         //TODO: Add more endpoints as they are added;
-        ArrayList<String> linksToFind = new ArrayList<>(Arrays.asList("styles"));
+        ArrayList<String> linksToFind = new ArrayList<>(Arrays.asList(
+                "layers",
+                "layergroups",
+                "reload",
+                "reset",
+                "styles",
+                "workspaces"));
 
         Document dom = getAsDOM(RestBaseController.ROOT_PATH);
         print(dom);

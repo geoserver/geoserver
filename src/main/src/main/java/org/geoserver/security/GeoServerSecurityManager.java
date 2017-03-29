@@ -2152,7 +2152,8 @@ public class GeoServerSecurityManager implements ApplicationContextAware,
         
         
         String[][] allowedMethods = new String [][]{
-                {"org.geoserver.security.rest.MasterPasswordResource","getMap"}                
+                {"org.geoserver.security.rest.MasterPasswordResource","getMap"},
+                {"org.geoserver.security.rest.MasterPasswordController","getMasterPassword"}
         };
         
         String result = checkStackTrace(10, allowedMethods);

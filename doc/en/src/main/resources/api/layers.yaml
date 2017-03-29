@@ -53,6 +53,41 @@ paths:
                  }
                }
             '
+
+  /layers/{layerName}:
+    get:
+      operationId: getLayer
+      summary: Retrieve a layer 
+      description: Retrieves a single layer definition. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      parameters:
+        - name: layerName
+          in: path
+          required: true
+          description: The name of the layer to retrieve.
+          type: string
+        - name: quietOnNotFound 
+          in: query
+          required: false
+          description: The quietOnNotFound parameter avoids logging an exception when the layer  is not present. Note that 404 status code will still be returned.
+          type: boolean
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Layer"
+          examples:
+            application/xml: '
+              <layer>
+              </layer>
+              '
+            application/json: '
+              {"layer": "tbd"}
+              '
+
 definitions:
 
   LayerResponse:
@@ -73,3 +108,40 @@ definitions:
         type: string
         description: URL to layer definition
         
+  Layer:
+    title: layer
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the layer
+      path:
+        type: string
+        description: Location of the layer in the WMS capabilities layer tree
+      type:
+        type: string
+        enum: 
+        - VECTOR
+        - RASTER
+        - REMOTE
+        - WMS
+        - GROUP
+        description: Type of published layer. Can be VECTOR, RASTER, REMOTE, WMS or GROUP. Must be consistent with resource definition.
+      defaultStyle:
+        $ref: "#/definitions/LayerReference"
+      styles:
+         type: array
+         description: A 'linked-hash-set' listing styles configured for layer.
+         items:
+           $ref: "#/definitions/LayerReference"
+
+LayerReference:
+    type: object
+    title: style
+    properties:
+      name:
+        type: string
+        description: Name of style
+      link:
+        type: string
+        description: URL to style definition

@@ -111,6 +111,18 @@
               <output>${project.build.directory}/api/settings</output>
             </configuration>
           </execution>
+          <execution>
+            <id>featureTypes</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/featureTypes.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/featureTypes</output>
+            </configuration>
+          </execution>          
         </executions>
       </plugin>
       <plugin>

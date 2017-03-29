@@ -135,6 +135,30 @@
               <output>${project.build.directory}/api/security</output>
             </configuration>
           </execution>          
+          <execution>
+            <id>security</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/security.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/security</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>structuredCoverages</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/structuredCoverages.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/structuredCoverages</output>
+            </configuration>
+          </execution>          
         </executions>
       </plugin>
       <plugin>

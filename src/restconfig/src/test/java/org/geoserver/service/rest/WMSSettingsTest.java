@@ -5,6 +5,11 @@
  */
 package org.geoserver.service.rest;
 
+import java.io.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
+
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.*;
 import net.sf.json.JSON;
@@ -86,6 +91,40 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("false", "/wms/enabled", dom);
         assertXpathEvaluatesTo("WMS", "/wms/name", dom);
 
+    }
+
+    @Test
+    public void testRoundTripJSON() throws Exception {
+        JSONObject original = (JSONObject) getAsJSON("/rest/services/wms/settings.json");
+        assertNotNull(original);
+        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings/",
+                original.toString(), "text/json");
+        assertEquals(200, response.getStatus());
+        JSON updated = getAsJSON("/rest/services/wms/settings.json");
+        assertEquals(original, updated);
+    }
+
+    @Test
+    public void testRoundTripXML() throws Exception {
+        Document original = getAsDOM("/rest/services/wms/settings.xml");
+        assertEquals("wms", original.getDocumentElement().getLocalName());
+        String originalString = documentToString(original);
+
+        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings", originalString,
+                "text/xml");
+        assertEquals(200, response.getStatus());
+        Document updated = getAsDOM("/rest/services/wms/settings.xml");
+        assertEquals(originalString, documentToString(updated));
+    }
+
+    private String documentToString(Document doc) throws Exception{
+        DOMSource domSource = new DOMSource(doc);
+        StringWriter writer = new StringWriter();
+        StreamResult result = new StreamResult(writer);
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer transformer = tf.newTransformer();
+        transformer.transform(domSource, result);
+        return writer.toString();
     }
 
     @Test

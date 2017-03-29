@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import freemarker.template.ObjectWrapper;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;
@@ -151,12 +152,10 @@ public class NamespaceController extends CatalogController {
     }
 
     @Override
-    public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {
-
-        template.getConfiguration().setObjectWrapper(new ObjectToMapWrapper(NamespaceInfo.class) {
-
+    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+        return new ObjectToMapWrapper<NamespaceInfo>(NamespaceInfo.class) {
             @Override
-            protected void wrapInternal(Map properties, SimpleHash model, Object object) {
+            protected void wrapInternal(Map properties, SimpleHash model, NamespaceInfo namespace) {
                 if (properties == null) {
                     try {
                         properties = model.toMap();
@@ -167,7 +166,6 @@ public class NamespaceController extends CatalogController {
                 }
 
                 NamespaceInfo def = catalog.getDefaultNamespace();
-                NamespaceInfo namespace = (NamespaceInfo) object;
                 if (def.equals(namespace)) {
                     properties.put("isDefault", Boolean.TRUE);
                 } else {
@@ -185,21 +183,18 @@ public class NamespaceController extends CatalogController {
                 }
 
                 properties.put("resources", resources);
-
             }
 
             @Override
             protected void wrapInternal(SimpleHash model,
-                    @SuppressWarnings("rawtypes") Collection object) {
+                                        @SuppressWarnings("rawtypes") Collection object) {
 
                 for (Object w : object) {
                     NamespaceInfo ns = (NamespaceInfo) w;
                     wrapInternal(null, model, ns);
                 }
-
             }
-        });
-
+        };
     }
 
     @Override
@@ -239,5 +234,4 @@ public class NamespaceController extends CatalogController {
             }
         });
     }
-
 }

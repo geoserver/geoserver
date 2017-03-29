@@ -6,6 +6,7 @@ package org.geoserver.catalog.rest;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 import freemarker.template.TemplateModelException;
@@ -210,12 +211,11 @@ public class DataStoreController extends CatalogController {
     }
 
     @Override
-    public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {
-
-        template.getConfiguration().setObjectWrapper(new ObjectToMapWrapper(DataStoreInfo.class) {
+    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+        return new ObjectToMapWrapper<DataStoreInfo>(DataStoreInfo.class) {
 
             @Override
-            protected void wrapInternal(Map properties, SimpleHash model, Object object) {
+            protected void wrapInternal(Map properties, SimpleHash model, DataStoreInfo dataStoreInfo) {
                 if (properties == null) {
                     try {
                         properties = model.toMap();
@@ -225,8 +225,6 @@ public class DataStoreController extends CatalogController {
                     }
                 }
                 List<Map<String, Map<String, String>>> dsProps = new ArrayList<>();
-
-                DataStoreInfo dataStoreInfo = (DataStoreInfo) object;
 
                 List<FeatureTypeInfo> featureTypes = catalog.getFeatureTypesByDataStore(dataStoreInfo);
                 for (FeatureTypeInfo ft : featureTypes){
@@ -240,17 +238,13 @@ public class DataStoreController extends CatalogController {
             }
 
             @Override
-            protected void wrapInternal(SimpleHash model,
-                                        @SuppressWarnings("rawtypes") Collection object) {
-
+            protected void wrapInternal(SimpleHash model, @SuppressWarnings("rawtypes") Collection object) {
                 for (Object w : object) {
                     DataStoreInfo wk = (DataStoreInfo) w;
                     wrapInternal(null, model, wk);
                 }
 
             }
-        });
-
+        };
     }
-
 }

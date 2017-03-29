@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import freemarker.template.ObjectWrapper;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -504,6 +505,12 @@ public class FeatureTypeController extends CatalogController {
     }
 
     @Override
+    public boolean supports(MethodParameter methodParameter, Type targetType,
+                            Class<? extends HttpMessageConverter<?>> converterType) {
+        return FeatureTypeInfo.class.isAssignableFrom(methodParameter.getParameterType());
+    }
+
+    @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
 
         ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
@@ -572,26 +579,17 @@ public class FeatureTypeController extends CatalogController {
     }
 
     @Override
-    public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {
-
-        template.getConfiguration()
-                .setObjectWrapper(new ObjectToMapWrapper<FeatureTypeInfo>(FeatureTypeInfo.class) {
-                    @Override
-                    protected void wrapInternal(Map properties, SimpleHash model,
-                            FeatureTypeInfo object) {
-                        try {
-                            properties.put("boundingBox", object.boundingBox());
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
+    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+        return new ObjectToMapWrapper<FeatureTypeInfo>(FeatureTypeInfo.class) {
+            @Override
+            protected void wrapInternal(Map properties, SimpleHash model,
+                                        FeatureTypeInfo object) {
+                try {
+                    properties.put("boundingBox", object.boundingBox());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
     }
-
-    @Override
-    public boolean supports(MethodParameter methodParameter, Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
-        return FeatureTypeInfo.class.isAssignableFrom(methodParameter.getParameterType());
-    }
-
 }

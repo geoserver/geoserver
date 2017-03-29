@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import freemarker.template.ObjectWrapper;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -188,12 +189,10 @@ public class WorkspaceController extends CatalogController {
     }
 
     @Override
-    public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {
-
-        template.getConfiguration().setObjectWrapper(new ObjectToMapWrapper(WorkspaceInfo.class) {
-
+    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+        return new ObjectToMapWrapper<WorkspaceInfo>(WorkspaceInfo.class) {
             @Override
-            protected void wrapInternal(Map properties, SimpleHash model, Object object) {
+            protected void wrapInternal(Map<String, Object> properties, SimpleHash model, WorkspaceInfo wkspace) {
                 if (properties == null) {
                     try {
                         properties = model.toMap();
@@ -204,7 +203,6 @@ public class WorkspaceController extends CatalogController {
                 }
                 List<Map<String, Map<String, String>>> dsProps = new ArrayList<>();
 
-                WorkspaceInfo wkspace = (WorkspaceInfo) object;
                 List<DataStoreInfo> datasources = catalog.getDataStoresByWorkspace(wkspace);
                 for (DataStoreInfo ds : datasources) {
                     Map<String, String> names = new HashMap<>();
@@ -245,17 +243,14 @@ public class WorkspaceController extends CatalogController {
             }
 
             @Override
-            protected void wrapInternal(SimpleHash model,
-                    @SuppressWarnings("rawtypes") Collection object) {
-
+            protected void wrapInternal(SimpleHash model, @SuppressWarnings("rawtypes") Collection object) {
                 for (Object w : object) {
                     WorkspaceInfo wk = (WorkspaceInfo) w;
                     wrapInternal(null, model, wk);
                 }
 
             }
-        });
-
+        };
     }
 
     @Override

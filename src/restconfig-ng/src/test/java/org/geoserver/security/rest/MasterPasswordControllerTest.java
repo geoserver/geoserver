@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.text.MessageFormat;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -23,7 +22,6 @@ import net.sf.json.JSONObject;
  * @author christian
  *
  */
-@Ignore
 public class MasterPasswordControllerTest extends SecurityRESTTestSupport {
 
     final static String MP_URI_JSON = "/restng/security/masterpw.json";

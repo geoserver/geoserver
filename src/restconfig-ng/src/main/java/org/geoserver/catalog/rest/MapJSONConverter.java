@@ -34,13 +34,13 @@ public class MapJSONConverter extends BaseMessageConverter {
 
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
-        return NamedMap.class.isAssignableFrom(clazz)
+        return Map.class.isAssignableFrom(clazz)
                 && getSupportedMediaTypes().contains(mediaType);
     }
 
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
-        return NamedMap.class.isAssignableFrom(clazz)
+        return Map.class.isAssignableFrom(clazz)
                 && getSupportedMediaTypes().contains(mediaType);
     }
 

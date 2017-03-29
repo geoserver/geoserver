@@ -56,7 +56,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
     /**
      * Name of the folder containing freemarker templates
      */
-    protected String pathPrefix = "templates";
+    protected String pathPrefix = "ftl-templates";
 
     /**
      * Constructs the freemarker {@link Configuration}

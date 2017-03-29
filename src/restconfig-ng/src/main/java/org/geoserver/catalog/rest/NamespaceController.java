@@ -2,6 +2,7 @@ package org.geoserver.catalog.rest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,8 +135,8 @@ public class NamespaceController extends CatalogController {
         if (ns == null) {
             throw new RestException("Namespace '" + prefix + "' not found", HttpStatus.NOT_FOUND);
         }
-        if ( !catalog.getResourcesByNamespace(ns, ResourceInfo.class).isEmpty() ) {
-            throw new RestException( "Namespace not empty", HttpStatus.UNAUTHORIZED );
+        if (!catalog.getResourcesByNamespace(ns, ResourceInfo.class).isEmpty()) {
+            throw new RestException("Namespace not empty", HttpStatus.UNAUTHORIZED);
         }
         catalog.remove(ns);
     }
@@ -163,18 +164,26 @@ public class NamespaceController extends CatalogController {
                         e.printStackTrace();
                     }
                 }
-                NamespaceInfo namespace = (NamespaceInfo)object;
-                properties.put("prefix", namespace.getPrefix());
-                properties.put("uRI", namespace.getURI());
-                properties.put("name", namespace.getName());
-                
-                List<Map<String, Map<String, String>>> resources = new ArrayList<>();
-                List<ResourceInfo> res = catalog.getResourcesByNamespace(namespace, ResourceInfo.class);
-                for(ResourceInfo r:res) {
-                    resources.add(new HashMap<>());
+
+                NamespaceInfo def = catalog.getDefaultNamespace();
+                NamespaceInfo namespace = (NamespaceInfo) object;
+                if (def.equals(namespace)) {
+                    properties.put("isDefault", Boolean.TRUE);
+                } else {
+                    properties.put("isDefault", Boolean.FALSE);
                 }
-                
-                
+                List<Map<String, Map<String, String>>> resources = new ArrayList<>();
+                List<ResourceInfo> res = catalog.getResourcesByNamespace(namespace,
+                        ResourceInfo.class);
+                for (ResourceInfo r : res) {
+                    HashMap<String, String> props = new HashMap<>();
+                    props.put("name", r.getName());
+                    props.put("description", r.getDescription());
+                    resources.add(Collections.singletonMap("properties",
+                            props));
+                }
+
+                properties.put("resources", resources);
 
             }
 

@@ -3,8 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.catalog.rest;
-
+package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
@@ -31,8 +30,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.util.List;
 
-public class LayerGroupTest extends CatalogRESTTestSupport {
-
+public class LayerGroupControllerTest extends CatalogRESTTestSupport {
     @Before
     public void revertChanges() throws Exception {
         removeLayerGroup(null, "nestedLayerGroupTest");
@@ -76,25 +74,25 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllAsXML() throws Exception {
-        Document dom = getAsDOM( "/rest/layergroups.xml");
+        Document dom = getAsDOM( "/restng/layergroups.xml");
         assertEquals( catalog.getLayerGroups().size(), dom.getElementsByTagName( "layerGroup").getLength());
     }
 
     @Test
     public void testGetAllAsHTML() throws Exception {
-        getAsDOM( "/rest/layergroups.html");
+        getAsDOM( "/restng/layergroups.html");
     }
 
     @Test
     public void testGetAllFromWorkspace() throws Exception {
-        Document dom = getAsDOM( "/rest/workspaces/sf/layergroups.xml" );
+        Document dom = getAsDOM( "/restng/workspaces/sf/layergroups.xml" );
         assertEquals("layerGroups", dom.getDocumentElement().getNodeName());
 
         assertXpathEvaluatesTo("0", "count(//layerGroup)", dom);
 
         addLayerGroupToWorkspace();
 
-        dom = getAsDOM( "/rest/workspaces/sf/layergroups.xml" );
+        dom = getAsDOM( "/restng/workspaces/sf/layergroups.xml" );
         assertEquals("layerGroups", dom.getDocumentElement().getNodeName());
 
         assertXpathEvaluatesTo("1", "count(//layerGroup)", dom);
@@ -114,15 +112,15 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsXML() throws Exception {
-        print(get("/rest/layergroups/sfLayerGroup.xml"));
-        Document dom = getAsDOM( "/rest/layergroups/sfLayerGroup.xml");
+        print(get("/restng/layergroups/sfLayerGroup.xml"));
+        Document dom = getAsDOM( "/restng/layergroups/sfLayerGroup.xml");
         assertEquals( "layerGroup", dom.getDocumentElement().getNodeName() );
         assertXpathEvaluatesTo("sfLayerGroup", "/layerGroup/name", dom );
         assertXpathEvaluatesTo( "2", "count(//published)", dom );
         assertXpathEvaluatesTo( "2", "count(//style)", dom );
 
-        print(get("/rest/layergroups/citeLayerGroup.xml"));
-        dom = getAsDOM( "/rest/layergroups/citeLayerGroup.xml");
+        print(get("/restng/layergroups/citeLayerGroup.xml"));
+        dom = getAsDOM( "/restng/layergroups/citeLayerGroup.xml");
         assertEquals( "layerGroup", dom.getDocumentElement().getNodeName() );
         assertXpathEvaluatesTo("citeLayerGroup", "/layerGroup/name", dom );
         assertXpathEvaluatesTo( "6", "count(//published)", dom );
@@ -131,15 +129,15 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsJSON() throws Exception {
-        print(get("/rest/layergroups/sfLayerGroup.json"));
-        JSON json = getAsJSON( "/rest/layergroups/sfLayerGroup.json");
+        print(get("/restng/layergroups/sfLayerGroup.json"));
+        JSON json = getAsJSON( "/restng/layergroups/sfLayerGroup.json");
         JSONArray arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("publishables").getJSONArray("published");
         assertEquals(2, arr.size());
         arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("styles").getJSONArray("style");
         assertEquals(2, arr.size());
 
-        print(get("/rest/layergroups/citeLayerGroup.json"));
-        json = getAsJSON( "/rest/layergroups/citeLayerGroup.json");
+        print(get("/restng/layergroups/citeLayerGroup.json"));
+        json = getAsJSON( "/restng/layergroups/citeLayerGroup.json");
         arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("publishables").getJSONArray("published");
         assertEquals(6, arr.size());
         arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("styles").getJSONArray("style");
@@ -152,8 +150,8 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         styles.set(3, catalog.getStyleByName( StyleInfo.DEFAULT_POINT ) );
         catalog.save(lg2);
 
-        print(get("/rest/layergroups/citeLayerGroup.json"));
-        json = getAsJSON( "/rest/layergroups/citeLayerGroup.json");
+        print(get("/restng/layergroups/citeLayerGroup.json"));
+        json = getAsJSON( "/restng/layergroups/citeLayerGroup.json");
         arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("publishables").getJSONArray("published");
         assertEquals(6, arr.size());
         arr = ((JSONObject)json).getJSONObject("layerGroup").getJSONObject("styles").getJSONArray("style");
@@ -163,7 +161,7 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        getAsDOM( "/rest/layergroups/sfLayerGroup.html");
+        getAsDOM( "/restng/layergroups/sfLayerGroup.html");
     }
 
     @Test
@@ -171,8 +169,8 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         LayerGroupInfo before = getCatalog().getLayerGroupByName( "sfLayerGroup");
 
         // get and re-write, does not go boom
-        String xml = getAsString( "/rest/layergroups/sfLayerGroup.xml");
-        MockHttpServletResponse response = putAsServletResponse("/rest/layergroups/sfLayerGroup", xml, "text/xml");
+        String xml = getAsString( "/restng/layergroups/sfLayerGroup.xml");
+        MockHttpServletResponse response = putAsServletResponse("/restng/layergroups/sfLayerGroup", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         // check nothing actually changed
@@ -185,8 +183,8 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         LayerGroupInfo before = getCatalog().getLayerGroupByName( "sfLayerGroup");
 
         // get and re-write, does not go boom
-        String json = getAsString( "/rest/layergroups/sfLayerGroup.json");
-        MockHttpServletResponse response = putAsServletResponse("/rest/layergroups/sfLayerGroup", json, "application/json");
+        String json = getAsString( "/restng/layergroups/sfLayerGroup.json");
+        MockHttpServletResponse response = putAsServletResponse("/restng/layergroups/sfLayerGroup", json, "application/json");
         assertEquals(200, response.getStatus());
 
         // check nothing actually changed
@@ -200,8 +198,8 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         LayerGroupInfo before = getCatalog().getLayerGroupByName( "workspaceLayerGroup");
 
         // get and re-write, does not go boom
-        String xml = getAsString( "/rest/workspaces/sf/layergroups/workspaceLayerGroup.xml");
-        MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/sf/layergroups/workspaceLayerGroup", xml, "text/xml");
+        String xml = getAsString( "/restng/workspaces/sf/layergroups/workspaceLayerGroup.xml");
+        MockHttpServletResponse response = putAsServletResponse("/restng/workspaces/sf/layergroups/workspaceLayerGroup", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         // check nothing actually changed
@@ -215,35 +213,35 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         LayerGroupInfo before = getCatalog().getLayerGroupByName( "workspaceLayerGroup");
 
         // get and re-write, does not go boom
-        String json = getAsString( "/rest/workspaces/sf/layergroups/workspaceLayerGroup.json");
-        MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/sf/layergroups/workspaceLayerGroup", json, "application/json");
+        String json = getAsString( "/restng/workspaces/sf/layergroups/workspaceLayerGroup.json");
+        MockHttpServletResponse response = putAsServletResponse("/restng/workspaces/sf/layergroups/workspaceLayerGroup", json, "application/json");
         assertEquals(200, response.getStatus());
 
         // check nothing actually changed
         LayerGroupInfo after = getCatalog().getLayerGroupByName( "workspaceLayerGroup");
         assertEquals(before, after);
     }
-    
+
     @Test
     public void testGetWrongLayerGroup() throws Exception {
         // Parameters for the request
         String ws = "sf";
         String lg = "foooooo";
         // Request path
-        String requestPath = "/rest/layergroups/" + lg + ".html";
-        String requestPath2 = "/rest/workspaces/" + ws + "/layergroups/" + lg + ".html";
+        String requestPath = "/restng/layergroups/" + lg + ".html";
+        String requestPath2 = "/restng/workspaces/" + ws + "/layergroups/" + lg + ".html";
         // Exception path
         String exception = "No such layer group " + lg;
         String exception2 = "No such layer group "+ lg +" in workspace " + ws;
-        
+
         // CASE 1: No workspace set
-        
+
         // First request should thrown an exception
         MockHttpServletResponse response = getAsServletResponse(requestPath);
         assertEquals(404, response.getStatus());
         assertTrue(response.getContentAsString().contains(
                 exception));
-        
+
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
         assertEquals(404, response.getStatus());
@@ -251,15 +249,15 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
                 exception));
         // No exception thrown
         assertTrue(response.getContentAsString().isEmpty());
-        
+
         // CASE 2: workspace set
-        
+
         // First request should thrown an exception
         response = getAsServletResponse(requestPath2);
         assertEquals(404, response.getStatus());
         assertTrue(response.getContentAsString().contains(
                 exception2));
-        
+
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
         assertEquals(404, response.getStatus());
@@ -271,166 +269,166 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetFromWorkspace() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("/rest/workspaces/sf/layergroups/workspaceLayerGroup.xml");
+        MockHttpServletResponse resp = getAsServletResponse("/restng/workspaces/sf/layergroups/workspaceLayerGroup.xml");
         assertEquals(404, resp.getStatus());
 
         addLayerGroupToWorkspace();
 
-        resp = getAsServletResponse("/rest/workspaces/sf/layergroups/workspaceLayerGroup.xml");
+        resp = getAsServletResponse("/restng/workspaces/sf/layergroups/workspaceLayerGroup.xml");
         assertEquals(200, resp.getStatus());
 
-        Document dom = getAsDOM("/rest/workspaces/sf/layergroups/workspaceLayerGroup.xml");
+        Document dom = getAsDOM("/restng/workspaces/sf/layergroups/workspaceLayerGroup.xml");
         assertXpathEvaluatesTo("workspaceLayerGroup", "/layerGroup/name", dom);
         assertXpathEvaluatesTo("sf", "/layerGroup/workspace/name", dom);
     }
 
     @Test
     public void testPost() throws Exception {
-        String xml = 
-            "<layerGroup>" + 
-                "<name>newLayerGroup</name>" +
-                "<layers>" +
-                  "<layer>Ponds</layer>" +
-                  "<layer>Forests</layer>" +
-                "</layers>" +
-                "<styles>" +
-                  "<style>polygon</style>" +
-                  "<style>point</style>" +
-                "</styles>" +
-              "</layerGroup>";
-        
-        MockHttpServletResponse response = postAsServletResponse("/rest/layergroups", xml );
+        String xml =
+                "<layerGroup>" +
+                        "<name>newLayerGroup</name>" +
+                        "<layers>" +
+                        "<layer>Ponds</layer>" +
+                        "<layer>Forests</layer>" +
+                        "</layers>" +
+                        "<styles>" +
+                        "<style>polygon</style>" +
+                        "<style>point</style>" +
+                        "</styles>" +
+                        "</layerGroup>";
+
+        MockHttpServletResponse response = postAsServletResponse("/restng/layergroups", xml );
         assertEquals( 201, response.getStatus() );
-        
+
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/layergroups/newLayerGroup" ) );
 
         LayerGroupInfo lg = catalog.getLayerGroupByName( "newLayerGroup");
         assertNotNull( lg );
-        
+
         assertEquals( 2, lg.getLayers().size() );
         assertEquals( "Ponds", lg.getLayers().get( 0 ).getName() );
         assertEquals( "Forests", lg.getLayers().get( 1 ).getName() );
-        
+
         assertEquals( 2, lg.getStyles().size() );
         assertEquals( "polygon", lg.getStyles().get( 0 ).getName() );
         assertEquals( "point", lg.getStyles().get( 1 ).getName() );
-        
+
         assertNotNull( lg.getBounds() );
     }
 
     @Test
     public void testPostWithNestedGroups() throws Exception {
-        String xml = 
-                "<layerGroup>" + 
-                    "<name>nestedLayerGroupTest</name>" +
-                    "<publishables>" +
-                      "<published type=\"layer\">Ponds</published>" +
-                      "<published type=\"layer\">Forests</published>" +
-                      "<published type=\"layerGroup\">sfLayerGroup</published>" +
-                    "</publishables>" +
-                    "<styles>" +
-                      "<style>polygon</style>" +
-                      "<style>point</style>" +
-                      "<style></style>" +                      
-                    "</styles>" +
-                  "</layerGroup>";
-            
-            MockHttpServletResponse response = postAsServletResponse("/rest/layergroups", xml );
-            assertEquals( 201, response.getStatus() );
-            
-            assertNotNull( response.getHeader( "Location") );
-            assertTrue( response.getHeader("Location").endsWith( "/layergroups/nestedLayerGroupTest" ) );
+        String xml =
+                "<layerGroup>" +
+                        "<name>nestedLayerGroupTest</name>" +
+                        "<publishables>" +
+                        "<published type=\"layer\">Ponds</published>" +
+                        "<published type=\"layer\">Forests</published>" +
+                        "<published type=\"layerGroup\">sfLayerGroup</published>" +
+                        "</publishables>" +
+                        "<styles>" +
+                        "<style>polygon</style>" +
+                        "<style>point</style>" +
+                        "<style></style>" +
+                        "</styles>" +
+                        "</layerGroup>";
 
-            LayerGroupInfo lg = catalog.getLayerGroupByName( "nestedLayerGroupTest");
-            assertNotNull( lg );
-            
-            assertEquals( 3, lg.getLayers().size() );
-            assertEquals( "Ponds", lg.getLayers().get( 0 ).getName() );
-            assertEquals( "Forests", lg.getLayers().get( 1 ).getName() );
-            assertEquals( "sfLayerGroup", lg.getLayers().get( 2 ).getName() );
-            assertEquals( 3, lg.getStyles().size() );
-            assertEquals( "polygon", lg.getStyles().get( 0 ).getName() );
-            assertEquals( "point", lg.getStyles().get( 1 ).getName() );
-            assertNull( lg.getStyles().get( 2 ) );
-            
-            assertNotNull( lg.getBounds() );
+        MockHttpServletResponse response = postAsServletResponse("/restng/layergroups", xml );
+        assertEquals( 201, response.getStatus() );
+
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/layergroups/nestedLayerGroupTest" ) );
+
+        LayerGroupInfo lg = catalog.getLayerGroupByName( "nestedLayerGroupTest");
+        assertNotNull( lg );
+
+        assertEquals( 3, lg.getLayers().size() );
+        assertEquals( "Ponds", lg.getLayers().get( 0 ).getName() );
+        assertEquals( "Forests", lg.getLayers().get( 1 ).getName() );
+        assertEquals( "sfLayerGroup", lg.getLayers().get( 2 ).getName() );
+        assertEquals( 3, lg.getStyles().size() );
+        assertEquals( "polygon", lg.getStyles().get( 0 ).getName() );
+        assertEquals( "point", lg.getStyles().get( 1 ).getName() );
+        assertNull( lg.getStyles().get( 2 ) );
+
+        assertNotNull( lg.getBounds() );
     }
-    
+
     @Test
     public void testPostWithTypeContainer() throws Exception {
-        String xml = 
-            "<layerGroup>" + 
-                "<name>newLayerGroupWithTypeCONTAINER</name>" +
-                "<mode>CONTAINER</mode>" + 
-                "<layers>" +
-                  "<layer>Ponds</layer>" +
-                  "<layer>Forests</layer>" +
-                "</layers>" +
-                "<styles>" +
-                  "<style>polygon</style>" +
-                  "<style>point</style>" +
-                "</styles>" +
-              "</layerGroup>";
-        
-        MockHttpServletResponse response = postAsServletResponse("/rest/layergroups", xml);
+        String xml =
+                "<layerGroup>" +
+                        "<name>newLayerGroupWithTypeCONTAINER</name>" +
+                        "<mode>CONTAINER</mode>" +
+                        "<layers>" +
+                        "<layer>Ponds</layer>" +
+                        "<layer>Forests</layer>" +
+                        "</layers>" +
+                        "<styles>" +
+                        "<style>polygon</style>" +
+                        "<style>point</style>" +
+                        "</styles>" +
+                        "</layerGroup>";
+
+        MockHttpServletResponse response = postAsServletResponse("/restng/layergroups", xml);
         assertEquals(201, response.getStatus());
-        
+
         LayerGroupInfo lg = catalog.getLayerGroupByName("newLayerGroupWithTypeCONTAINER");
         assertNotNull(lg);
-        
+
         assertEquals(LayerGroupInfo.Mode.CONTAINER, lg.getMode());
-    }  
-    
+    }
+
     @Test
     public void testPostWithTypeEO() throws Exception {
-        String xml = 
-            "<layerGroup>" + 
-                "<name>newLayerGroupWithTypeEO</name>" +
-                "<mode>EO</mode>" + 
-                "<rootLayer>Ponds</rootLayer>" + 
-                "<rootLayerStyle>polygon</rootLayerStyle>" + 
-                "<layers>" +
-                  "<layer>Forests</layer>" +
-                "</layers>" +
-                "<styles>" +
-                  "<style>point</style>" +
-                "</styles>" +
-              "</layerGroup>";
-        
-        MockHttpServletResponse response = postAsServletResponse("/rest/layergroups", xml);
+        String xml =
+                "<layerGroup>" +
+                        "<name>newLayerGroupWithTypeEO</name>" +
+                        "<mode>EO</mode>" +
+                        "<rootLayer>Ponds</rootLayer>" +
+                        "<rootLayerStyle>polygon</rootLayerStyle>" +
+                        "<layers>" +
+                        "<layer>Forests</layer>" +
+                        "</layers>" +
+                        "<styles>" +
+                        "<style>point</style>" +
+                        "</styles>" +
+                        "</layerGroup>";
+
+        MockHttpServletResponse response = postAsServletResponse("/restng/layergroups", xml);
         assertEquals(201, response.getStatus());
-        
+
         LayerGroupInfo lg = catalog.getLayerGroupByName("newLayerGroupWithTypeEO");
         assertNotNull(lg);
-        
+
         assertEquals(LayerGroupInfo.Mode.EO, lg.getMode());
         assertEquals("Ponds", lg.getRootLayer().getName());
         assertEquals("polygon", lg.getRootLayerStyle().getName());
     }
-    
+
     @Test
     public void testPostNoStyles() throws Exception {
-        
-        String xml = 
-            "<layerGroup>" + 
-                "<name>newLayerGroup</name>" +
-                "<layers>" +
-                  "<layer>Ponds</layer>" +
-                  "<layer>Forests</layer>" +
-                "</layers>" +
-              "</layerGroup>";
-        
-        MockHttpServletResponse response = postAsServletResponse("/rest/layergroups", xml );
+
+        String xml =
+                "<layerGroup>" +
+                        "<name>newLayerGroup</name>" +
+                        "<layers>" +
+                        "<layer>Ponds</layer>" +
+                        "<layer>Forests</layer>" +
+                        "</layers>" +
+                        "</layerGroup>";
+
+        MockHttpServletResponse response = postAsServletResponse("/restng/layergroups", xml );
         assertEquals( 201, response.getStatus() );
-        
+
         LayerGroupInfo lg = catalog.getLayerGroupByName( "newLayerGroup");
         assertNotNull( lg );
-        
+
         assertEquals( 2, lg.getLayers().size() );
         assertEquals( "Ponds", lg.getLayers().get( 0 ).getName() );
         assertEquals( "Forests", lg.getLayers().get( 1 ).getName() );
-        
+
         assertEquals( 2, lg.getStyles().size() );
         assertNull(lg.getStyles().get( 0 ));
         assertNull(lg.getStyles().get( 1 ));
@@ -441,54 +439,54 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         Catalog cat = getCatalog();
         assertNull(cat.getLayerGroupByName("sf", "workspaceLayerGroup"));
 
-        String xml = 
-            "<layerGroup>" + 
-                "<name>workspaceLayerGroup</name>" +
-                "<layers>" +
-                  "<layer>PrimitiveGeoFeature</layer>" +
-                "</layers>" +
-              "</layerGroup>";
-            
+        String xml =
+                "<layerGroup>" +
+                        "<name>workspaceLayerGroup</name>" +
+                        "<layers>" +
+                        "<layer>PrimitiveGeoFeature</layer>" +
+                        "</layers>" +
+                        "</layerGroup>";
+
         MockHttpServletResponse response =
-            postAsServletResponse("/rest/workspaces/sf/layergroups", xml);
+                postAsServletResponse("/restng/workspaces/sf/layergroups", xml);
         assertEquals(201, response.getStatus());
         assertNotNull(cat.getLayerGroupByName("sf", "workspaceLayerGroup"));
     }
 
     @Test
     public void testPut() throws Exception {
-        String xml = 
-            "<layerGroup>" + 
-                "<name>sfLayerGroup</name>" +
-                "<styles>" +
-                  "<style>polygon</style>" +
-                  "<style>line</style>" +
-                "</styles>" +
-                "<attribution>" +
-                "  <logoWidth>101</logoWidth>" +
-                "  <logoHeight>102</logoHeight>" +
-                "</attribution>" +
-                "<metadataLinks>   " +
-                "<metadataLink>" +
-                "  <id>1</id>" +
-                "  <type>text/html</type>" +
-                "  <metadataType>FGDC</metadataType>" +
-                "  <content>http://my/metadata/link/1</content>" +
-                "</metadataLink>    " +
-                "<metadataLink>" +
-                "  <id>2</id>" +
-                "  <type>text/html</type>" +
-                "  <metadataType>FGDC</metadataType>" +
-                "  <content>http://my/metadata/link/2</content>" +
-                "</metadataLink>    " +
-                "</metadataLinks>" +
-              "</layerGroup>";
-        
-        MockHttpServletResponse response = putAsServletResponse("/rest/layergroups/sfLayerGroup", xml, "text/xml" );
+        String xml =
+                "<layerGroup>" +
+                        "<name>sfLayerGroup</name>" +
+                        "<styles>" +
+                        "<style>polygon</style>" +
+                        "<style>line</style>" +
+                        "</styles>" +
+                        "<attribution>" +
+                        "  <logoWidth>101</logoWidth>" +
+                        "  <logoHeight>102</logoHeight>" +
+                        "</attribution>" +
+                        "<metadataLinks>   " +
+                        "<metadataLink>" +
+                        "  <id>1</id>" +
+                        "  <type>text/html</type>" +
+                        "  <metadataType>FGDC</metadataType>" +
+                        "  <content>http://my/metadata/link/1</content>" +
+                        "</metadataLink>    " +
+                        "<metadataLink>" +
+                        "  <id>2</id>" +
+                        "  <type>text/html</type>" +
+                        "  <metadataType>FGDC</metadataType>" +
+                        "  <content>http://my/metadata/link/2</content>" +
+                        "</metadataLink>    " +
+                        "</metadataLinks>" +
+                        "</layerGroup>";
+
+        MockHttpServletResponse response = putAsServletResponse("/restng/layergroups/sfLayerGroup", xml, "text/xml" );
         assertEquals( 200, response.getStatus() );
-        
+
         LayerGroupInfo lg = catalog.getLayerGroupByName( "sfLayerGroup" );
-        
+
         assertEquals( 2, lg.getLayers().size() );
         assertEquals( 2, lg.getStyles().size() );
         assertEquals( "polygon", lg.getStyles().get( 0 ).getName() );
@@ -497,25 +495,25 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertEquals( 102, lg.getAttribution().getLogoHeight() );
         assertEquals( 2, lg.getMetadataLinks().size() );
     }
-    
+
     @Test
     public void testPutNonDestructive() throws Exception {
         LayerGroupInfo lg = catalog.getLayerGroupByName( "sfLayerGroup" );
         boolean isQueryDisabled = lg.isQueryDisabled();
-        
+
         lg.setQueryDisabled(true);
         catalog.save(lg);
-        
-        String xml = 
-            "<layerGroup>" + 
-              "<name>sfLayerGroup</name>" +
-            "</layerGroup>";
-        
-        MockHttpServletResponse response = putAsServletResponse("/rest/layergroups/sfLayerGroup", xml, "text/xml" );
+
+        String xml =
+                "<layerGroup>" +
+                        "<name>sfLayerGroup</name>" +
+                        "</layerGroup>";
+
+        MockHttpServletResponse response = putAsServletResponse("/restng/layergroups/sfLayerGroup", xml, "text/xml" );
         assertEquals( 200, response.getStatus() );
-        
+
         lg = catalog.getLayerGroupByName( "sfLayerGroup" );
-        
+
         assertTrue(lg.isQueryDisabled());
         lg.setQueryDisabled(isQueryDisabled);
         catalog.save(lg);
@@ -528,15 +526,15 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         Catalog cat = getCatalog();
         assertNull(cat.getLayerGroupByName("sf", "workspaceLayerGroup").getStyles().get(0));
 
-        String xml = 
-            "<layerGroup>" + 
-                "<styles>" +
-                  "<style>line</style>" +
-                "</styles>" +
-            "</layerGroup>";
-        
+        String xml =
+                "<layerGroup>" +
+                        "<styles>" +
+                        "<style>line</style>" +
+                        "</styles>" +
+                        "</layerGroup>";
+
         MockHttpServletResponse response =
-            putAsServletResponse("/rest/workspaces/sf/layergroups/workspaceLayerGroup", xml, "application/xml");
+                putAsServletResponse("/restng/workspaces/sf/layergroups/workspaceLayerGroup", xml, "application/xml");
         assertEquals(200, response.getStatus());
         assertEquals("line", cat.getLayerGroupByName("sf", "workspaceLayerGroup").getStyles().get(0).getName());
     }
@@ -545,23 +543,23 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
     public void testPutToWorkspaceChangeWorkspace() throws Exception {
         testPostToWorkspace();
 
-        String xml = 
+        String xml =
                 "<layerGroup>" +
-                  "<workspace>cite</workspace>" + 
-                "</layerGroup>";
-            
+                        "<workspace>cite</workspace>" +
+                        "</layerGroup>";
+
         MockHttpServletResponse response =
-            putAsServletResponse("/rest/workspaces/sf/layergroups/workspaceLayerGroup", xml, "application/xml");
+                putAsServletResponse("/restng/workspaces/sf/layergroups/workspaceLayerGroup", xml, "application/xml");
         assertEquals(403, response.getStatus());
     }
 
     @Test
     public void testDelete() throws Exception {
-        MockHttpServletResponse response = deleteAsServletResponse( "/rest/layergroups/sfLayerGroup");
+        MockHttpServletResponse response = deleteAsServletResponse( "/restng/layergroups/sfLayerGroup");
         assertEquals( 200, response.getStatus() );
-        response = deleteAsServletResponse( "/rest/layergroups/citeLayerGroup");
+        response = deleteAsServletResponse( "/restng/layergroups/citeLayerGroup");
         assertEquals( 200, response.getStatus() );
-        
+
         assertEquals( 0, catalog.getLayerGroups().size() );
     }
 
@@ -571,8 +569,8 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
 
         Catalog cat = getCatalog();
         assertNotNull(cat.getLayerGroupByName("sf", "workspaceLayerGroup"));
-        
-        MockHttpServletResponse response = deleteAsServletResponse("/rest/workspaces/sf/layergroups/workspaceLayerGroup");
+
+        MockHttpServletResponse response = deleteAsServletResponse("/restng/workspaces/sf/layergroups/workspaceLayerGroup");
         assertEquals(200, response.getStatus());
 
         assertNull(cat.getLayerGroupByName("sf", "workspaceLayerGroup"));
@@ -593,29 +591,29 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         s.setWorkspace(cat.getWorkspaceByName("sf"));
         s.setFilename("s2.sld");
         cat.add(s);
-        
-        String xml = 
+
+        String xml =
                 "<layerGroup>" +
-                    "<layers>" +
-                      "<layer>PrimitiveGeoFeature</layer>" +
-                      "<layer>AggregateGeoFeature</layer>" +
-                    "</layers>" + 
-                    "<styles>" +
-                      "<style>" + 
-                          "<name>s1</name>" + 
-                          "<workspace>sf</workspace>" + 
-                      "</style>" +
-                      "<style>" + 
-                          "<name>s2</name>" + 
-                          "<workspace>sf</workspace>" + 
-                      "</style>" +
-                    "</styles>" +
-                  "</layerGroup>";
-            
-        MockHttpServletResponse response = 
-            putAsServletResponse("/rest/workspaces/sf/layergroups/workspaceLayerGroup", xml, "text/xml" );
+                        "<layers>" +
+                        "<layer>PrimitiveGeoFeature</layer>" +
+                        "<layer>AggregateGeoFeature</layer>" +
+                        "</layers>" +
+                        "<styles>" +
+                        "<style>" +
+                        "<name>s1</name>" +
+                        "<workspace>sf</workspace>" +
+                        "</style>" +
+                        "<style>" +
+                        "<name>s2</name>" +
+                        "<workspace>sf</workspace>" +
+                        "</style>" +
+                        "</styles>" +
+                        "</layerGroup>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse("/restng/workspaces/sf/layergroups/workspaceLayerGroup", xml, "text/xml" );
         assertEquals( 200, response.getStatus() );
-        
+
         LayerGroupInfo lg = cat.getLayerGroupByName("sf", "workspaceLayerGroup");
         assertEquals(2, lg.getLayers().size());
         assertEquals(2, lg.getStyles().size());
@@ -626,16 +624,16 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertEquals("s1", lg.getStyles().get(0).getName());
         assertNotNull(lg.getStyles().get(0).getWorkspace());
         assertEquals("sf", lg.getStyles().get(0).getWorkspace().getName());
-        
+
         assertEquals("s2", lg.getStyles().get(1).getName());
         assertNotNull(lg.getStyles().get(1).getWorkspace());
         assertEquals("sf", lg.getStyles().get(1).getWorkspace().getName());
 
-        Document dom = getAsDOM("/rest/workspaces/sf/layergroups/workspaceLayerGroup.xml");
-        
-        assertXpathEvaluatesTo("http://localhost/geoserver/rest/workspaces/sf/styles/s1.xml", 
-           "//style[name = 's1']/atom:link/@href", dom );
-        assertXpathEvaluatesTo("http://localhost/geoserver/rest/workspaces/sf/styles/s2.xml", 
+        Document dom = getAsDOM("/restng/workspaces/sf/layergroups/workspaceLayerGroup.xml");
+
+        assertXpathEvaluatesTo("http://localhost/geoserver/restng/workspaces/sf/styles/s1.xml",
+                "//style[name = 's1']/atom:link/@href", dom );
+        assertXpathEvaluatesTo("http://localhost/geoserver/restng/workspaces/sf/styles/s2.xml",
                 "//style[name = 's2']/atom:link/@href", dom );
     }
 }

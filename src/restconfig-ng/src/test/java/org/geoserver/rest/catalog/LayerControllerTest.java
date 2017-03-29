@@ -74,8 +74,8 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
         assertEquals(404, response.getStatus());
-        assertFalse(response.getContentAsString().contains(
-                exception));
+        String message = response.getContentAsString();
+        assertFalse(message, message.contains(exception));
         // No exception thrown
         assertTrue(response.getContentAsString().isEmpty());
     }

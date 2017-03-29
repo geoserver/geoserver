@@ -6,15 +6,44 @@
 
 package org.geoserver.rest.util;
 
-import org.geotools.data.DataUtilities;
-
-import javax.xml.transform.stream.StreamSource;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.io.Reader;
 import java.net.URL;
-import java.nio.channels.*;
-import java.util.*;
+import java.nio.channels.Channel;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.commons.io.FilenameUtils;
+import org.geoserver.platform.resource.Resource;
+import org.geotools.data.DataUtilities;
+import org.springframework.http.HttpMethod;
 
 /**
  * Assorted IO related utilities
@@ -720,6 +749,79 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
             final Reader r = src.getReader();
             return getStringFromReader(r);
         }
+    }
+    
+    /**
+     * Inflate the provided {@link ZipFile} in the provided output directory.
+     * 
+     * @param archive the {@link ZipFile} to inflate.
+     * @param outputDirectory the directory where to inflate the archive.
+     * @throws IOException in case something bad happens.
+     * @throws FileNotFoundException in case something bad happens.
+     */
+    public static void inflate(ZipFile archive, Resource outputDirectory, String fileName)
+            throws IOException, FileNotFoundException {
+        inflate(archive, outputDirectory, fileName, null, null, null, false);
+    }
+
+    /**
+     * Inflate the provided {@link ZipFile} in the provided output directory.
+     * 
+     * @param archive the {@link ZipFile} to inflate.
+     * @param outputDirectory the directory where to inflate the archive.
+     * @param fileName name of the file if present.
+     * @param request HTTP request sent.
+     * @param external
+     * @param files empty list of the extracted files (or null if there is no desire to collect the list)
+     * @throws IOException in case something bad happens.
+     * @throws FileNotFoundException in case something bad happens.
+     */
+    public static void inflate(ZipFile archive, Resource outputDirectory, String fileName,
+            String workspace, String store, List<Resource> files,
+            boolean external) throws IOException, FileNotFoundException {
+
+        final Enumeration<? extends ZipEntry> entries = archive.entries();
+        try {
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = (ZipEntry) entries.nextElement();
+
+                if (!entry.isDirectory()) {
+                    final String name = entry.getName();
+                    final String ext = FilenameUtils.getExtension(name);
+                    final InputStream in = new BufferedInputStream(archive.getInputStream(entry));
+                    // Builder associated to the path for the item
+                    StringBuilder itemPath = fileName != null
+                            ? new StringBuilder(fileName).append(".").append(ext)
+                            : new StringBuilder(name);
+                    // String associated to the filename
+                    String initialFileName = fileName != null ? fileName + "." + ext
+                            : FilenameUtils.getName(name);
+                    // If the RESTUploadPathMapper are present then the output file position is changed
+                    if (!external) {
+                        Map<String, String> storeParams = new HashMap<String, String>();
+                        RESTUtils.remapping(workspace, store, itemPath, initialFileName,
+                                storeParams);
+                    }
+
+                    final Resource outFile = outputDirectory.get(itemPath.toString());
+                    final OutputStream out = new BufferedOutputStream(outFile.out());
+
+                    IOUtils.copyStream(in, out, true, true);
+                    // If the file must be listed, then the file is added to the list
+                    if (files != null) {
+                        files.add(outFile);
+                    }
+                }
+            }
+        } finally {
+            try {
+                archive.close();
+            } catch (Throwable e) {
+                if (LOGGER.isLoggable(Level.FINE))
+                    LOGGER.isLoggable(Level.FINE);
+            }
+        }
+
     }
 
     /**

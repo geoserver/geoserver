@@ -5,9 +5,17 @@
 package org.geoserver.catalog.rest;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.RestException;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.http.HttpStatus;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,5 +43,67 @@ public abstract class CatalogController extends RestBaseController {
         this.catalog = catalog;
         this.dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());
         this.validImageFileExtensions = Arrays.asList("svg", "png", "jpg");
+    }
+
+    /**
+     * Uses messages as a template to update resource.
+     * @param message Possibly incomplete ResourceInfo used to update resource
+     * @param resource Original resource (to be saved in catalog after modification)
+     */
+    protected void calculateOptionalFields(ResourceInfo message, ResourceInfo resource, String calculate) {
+        List<String> fieldsToCalculate;
+        if (calculate == null) {
+            boolean changedProjection = message.getSRS() == null ||
+                    !message.getSRS().equals(resource.getSRS());
+            boolean changedProjectionPolicy = message.getProjectionPolicy() == null ||
+                    !message.getProjectionPolicy().equals(resource.getProjectionPolicy());
+            boolean changedNativeBounds = message.getNativeBoundingBox() == null ||
+                    !message.getNativeBoundingBox().equals(resource.getNativeBoundingBox());
+            boolean changedLatLonBounds = message.getLatLonBoundingBox() == null ||
+                    !message.getLatLonBoundingBox().equals(resource.getLatLonBoundingBox());
+            boolean changedNativeInterpretation = changedProjectionPolicy || changedProjection;
+            fieldsToCalculate = new ArrayList<String>();
+            if (changedNativeInterpretation && !changedNativeBounds) {
+                fieldsToCalculate.add("nativebbox");
+            }
+            if ((changedNativeInterpretation || changedNativeBounds) && !changedLatLonBounds) {
+                fieldsToCalculate.add("latlonbbox");
+            }
+        } else {
+            fieldsToCalculate = Arrays.asList(calculate.toLowerCase().split(","));
+        }
+
+        if (fieldsToCalculate.contains("nativebbox")) {
+            CatalogBuilder builder = new CatalogBuilder(catalog);
+            try {
+                message.setNativeBoundingBox(builder.getNativeBounds(message));
+            } catch (IOException e) {
+                String errorMessage = "Error while calculating native bounds for layer: " + message;
+                throw new RestException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            }
+        }
+        if (fieldsToCalculate.contains("latlonbbox")) {
+            CatalogBuilder builder = new CatalogBuilder(catalog);
+            try {
+                message.setLatLonBoundingBox(builder.getLatLonBounds(
+                        message.getNativeBoundingBox(),
+                        resolveCRS(message.getSRS())));
+            } catch (IOException e) {
+                String errorMessage =
+                        "Error while calculating lat/lon bounds for featuretype: " + message;
+                throw new RestException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            }
+        }
+    }
+
+    private CoordinateReferenceSystem resolveCRS(String srs) {
+        if ( srs == null ) {
+            return null;
+        }
+        try {
+            return CRS.decode(srs);
+        } catch(Exception e) {
+            throw new RuntimeException("This is unexpected, the layer seems to be mis-configured", e);
+        }
     }
 }

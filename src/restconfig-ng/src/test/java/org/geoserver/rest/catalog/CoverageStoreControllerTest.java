@@ -6,7 +6,9 @@
 package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -41,7 +43,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
-
+    
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         testData.setUpDefaultRasterLayers();
@@ -233,7 +235,7 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAsJSON() throws Exception {
         JSON json = getAsJSON( "/restng/workspaces/wcs/coveragestores/BlueMarble.json" );
-        print(json);
+        // print(json);
         JSONObject coverageStore = ((JSONObject)json).getJSONObject("coverageStore");
         assertNotNull(coverageStore);
         
@@ -339,7 +341,7 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    @Ignore // needs store file controller
+    @Ignore
     public void testPutEmptyAndHarvest() throws Exception {
         File dir = new File( "./target/empty" );
         dir.mkdir();
@@ -417,7 +419,7 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
         
         final File storeDir = loader.url("data/wcs/mosaicfordelete");
         File[] content = storeDir.listFiles();
-        assertEquals(11, content.length);
+        assertThat(content.length, anyOf(equalTo(10), equalTo(11)));
 
         assertEquals( 200, deleteAsServletResponse("/restng/workspaces/wcs/coveragestores/mosaicfordelete?recurse=true&purge="
         +purge).getStatus());
@@ -430,13 +432,11 @@ public class CoverageStoreControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    @Ignore // needs store file controller
     public void testDeletePurgeMetadataAfterConfigure() throws Exception {
         purgeRequest("metadata", 1);
     }
 
     @Test
-    @Ignore // needs store file controller
     public void testDeletePurgeAllAfterConfigure() throws Exception {
         purgeRequest("all", 0);
     }

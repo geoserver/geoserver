@@ -76,9 +76,10 @@ public class LayerController extends CatalogController {
      */
     @GetMapping(path = "/layers/{layerName}", produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<LayerInfo> getLayer(@PathVariable String layerName) {
+    public RestWrapper<LayerInfo> getLayer(@PathVariable String layerName,
+            @RequestParam (name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
         LayerInfo layer = catalog.getLayerByName(layerName);
-        return wrapObject(layer, LayerInfo.class);
+        return wrapObject(layer, LayerInfo.class, "No such layer: "+layerName, quietOnNotFound );
     }
 
     @DeleteMapping(value = "/layers/{layerName}")

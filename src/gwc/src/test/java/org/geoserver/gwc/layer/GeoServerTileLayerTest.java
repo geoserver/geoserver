@@ -770,28 +770,28 @@ public class GeoServerTileLayerTest {
         GeoServerTileLayer tileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
         tileLayer.setLegendSample(legendSample);
         tileLayer.setWms(wms);
-        Map<String, TileLayer.LegendInfo> legendsInfo = tileLayer.getLegendsInfo();
+        Map<String, org.geowebcache.config.legends.LegendInfo> legendsInfo = tileLayer.getLayerLegendsInfo();
         assertThat(legendsInfo.size(), is(3));
         // default_style
         assertThat(legendsInfo.get("default_style"), notNullValue());
-        assertThat(legendsInfo.get("default_style").width, is(120));
-        assertThat(legendsInfo.get("default_style").height, is(150));
-        assertThat(legendsInfo.get("default_style").format, is("image/png"));
-        assertThat(legendsInfo.get("default_style").legendUrl, is("http://localhost:8080/geoserver/ows?service=" +
+        assertThat(legendsInfo.get("default_style").getWidth(), is(120));
+        assertThat(legendsInfo.get("default_style").getHeight(), is(150));
+        assertThat(legendsInfo.get("default_style").getFormat(), is("image/png"));
+        assertThat(legendsInfo.get("default_style").getLegendUrl(), is("http://localhost:8080/geoserver/ows?service=" +
                 "WMS&request=GetLegendGraphic&format=image%2Fpng&width=120&height=150&layer=workspace%3AMockLayerInfoName"));
         // alternateStyle-1
         assertThat(legendsInfo.get("alternateStyle-1"), notNullValue());
-        assertThat(legendsInfo.get("alternateStyle-1").width, is(120));
-        assertThat(legendsInfo.get("alternateStyle-1").height, is(150));
-        assertThat(legendsInfo.get("alternateStyle-1").format, is("image/png"));
-        assertThat(legendsInfo.get("alternateStyle-1").legendUrl, is("http://localhost:8080/geoserver/ows?service" +
+        assertThat(legendsInfo.get("alternateStyle-1").getWidth(), is(120));
+        assertThat(legendsInfo.get("alternateStyle-1").getHeight(), is(150));
+        assertThat(legendsInfo.get("alternateStyle-1").getFormat(), is("image/png"));
+        assertThat(legendsInfo.get("alternateStyle-1").getLegendUrl(), is("http://localhost:8080/geoserver/ows?service" +
                 "=WMS&request=GetLegendGraphic&format=image%2Fpng&width=120&height=150&layer=workspace%3AMockLayerInfoName&style=alternateStyle-1"));
         // alternateStyle-2
         assertThat(legendsInfo.get("alternateStyle-2"), notNullValue());
-        assertThat(legendsInfo.get("alternateStyle-2").width, is(150));
-        assertThat(legendsInfo.get("alternateStyle-2").height, is(200));
-        assertThat(legendsInfo.get("alternateStyle-2").format, is("image/png"));
-        assertThat(legendsInfo.get("alternateStyle-2").legendUrl.trim(), is("http://localhost:8080/geoserver/some-url"));
+        assertThat(legendsInfo.get("alternateStyle-2").getWidth(), is(150));
+        assertThat(legendsInfo.get("alternateStyle-2").getHeight(), is(200));
+        assertThat(legendsInfo.get("alternateStyle-2").getFormat(), is("image/png"));
+        assertThat(legendsInfo.get("alternateStyle-2").getLegendUrl().trim(), is("http://localhost:8080/geoserver/some-url"));
     }
 
     private void setupUrlContext() {

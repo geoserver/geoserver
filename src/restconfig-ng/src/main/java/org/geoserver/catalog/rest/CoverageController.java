@@ -19,6 +19,7 @@ import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
+import org.opengis.coverage.grid.GridCoverageReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -43,10 +44,12 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @RestController
 @ControllerAdvice
@@ -65,10 +68,15 @@ public class CoverageController extends CatalogController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE})
-    public RestWrapper<CoverageInfo> getCoverages(@PathVariable(name = "workspace") String workspaceName,
-                                                  @PathVariable(name = "store") String storeName) {
+    public RestWrapper getCoverages(@RequestParam(name = "list", required = false) String list,
+                                    @PathVariable(name = "workspace") String workspaceName,
+                                    @PathVariable(name = "store") String storeName) {
         // find the coverage store
         CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
+        if (list != null && list.equalsIgnoreCase("all")) {
+            // we need to ask the coverage reader which coverages are available
+            return wrapList(getStoreCoverages(coverageStore), String.class);
+        }
         // get the store configured coverages
         List<CoverageInfo> coverages = catalog.getCoveragesByCoverageStore(coverageStore);
         return wrapList(coverages, CoverageInfo.class);
@@ -80,13 +88,20 @@ public class CoverageController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
             TEXT_JSON})
-    public RestWrapper<CoverageInfo> getCoverages(@PathVariable(name = "workspace") String workspaceName) {
+    public RestWrapper getCoverages(@RequestParam(name = "list", required = false) String list,
+                                    @PathVariable(name = "workspace") String workspaceName) {
         // get the workspace name space
         NamespaceInfo nameSpace = catalog.getNamespaceByPrefix(workspaceName);
         if (nameSpace == null) {
             // could not find the namespace associated with the desired workspace
             throw new ResourceNotFoundException(String.format(
                     "Name space not found for workspace '%s'.", workspaceName));
+        }
+        if (list != null && list.equalsIgnoreCase("all")) {
+            // we need to ask the coverage reader of each available coverage store which coverages are available
+            List<String> coverages = catalog.getCoverageStores().stream()
+                    .flatMap(store -> getStoreCoverages(store).stream()).collect(Collectors.toList());
+            return wrapList(coverages, String.class);
         }
         // get all the coverages of the workspace \ name space
         List<CoverageInfo> coverages = catalog.getCoveragesByNamespace(nameSpace);
@@ -214,6 +229,18 @@ public class CoverageController extends CatalogController {
         catalog.getResourcePool().clear(c.getStore());
         LOGGER.info("DELETE coverage " + storeName + "," + coverageName);
     }
+
+    private List<String> getStoreCoverages(CoverageStoreInfo coverageStore) {
+        try {
+            GridCoverageReader reader = coverageStore.getGridCoverageReader(null, null);
+            return Arrays.stream(reader.getGridCoverageNames()).collect(Collectors.toList());
+        } catch (Exception exception) {
+            // the read failed to retrieve the available coverages for publishing
+            throw new RuntimeException(
+                    "Error getting coverages from coverage reader.", exception);
+        }
+    }
+
 
     /**
      * If the coverage doesn't exists throws a REST exception with HTTP 404 code.

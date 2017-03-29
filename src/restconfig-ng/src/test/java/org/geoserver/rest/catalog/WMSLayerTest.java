@@ -6,6 +6,13 @@
 package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.geoserver.rest.catalog.HttpTestUtils.hasStatus;
+import static org.geoserver.rest.catalog.HttpTestUtils.istream;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.*;
 
 import java.net.URL;
@@ -22,7 +29,10 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.TestHttpClientRule;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.rest.WMSLayerController;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
 import org.geotools.feature.NameImpl;
@@ -36,6 +46,9 @@ import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
+import org.hamcrest.Matchers;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WMSLayerTest extends CatalogRESTTestSupport {
@@ -106,9 +119,18 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
             catalog.remove(r);
         }
     }
+    
+    @Test
+    public void testBeanPresent() throws Exception {
+        assertThat(GeoServerExtensions.extensions(RestBaseController.class), 
+            hasItem(instanceOf(WMSLayerController.class)));
+    }
+    
     @Test
     public void testGetAllByWorkspace() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/sf/wmslayers.xml");
+        MockHttpServletResponse response = getAsServletResponse("/restng/workspaces/sf/wmslayers.xml");
+        assertThat(response, hasStatus(HttpStatus.OK));
+        Document dom = dom(istream(response));
         assertEquals( 
             catalog.getResourcesByNamespace( catalog.getNamespaceByPrefix( "sf"), WMSLayerInfo.class ).size(), 
             dom.getElementsByTagName( "wmsLayer").getLength() );
@@ -116,7 +138,9 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllByWMSStore() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/sf/wmsstores/demo/wmslayers.xml");
+        MockHttpServletResponse response = getAsServletResponse("/restng/workspaces/sf/wmsstores/demo/wmslayers.xml");
+        assertThat(response, hasStatus(HttpStatus.OK));
+        Document dom = dom(istream(response));
         
         assertEquals( 1, dom.getElementsByTagName( "wmsLayer").getLength() );
         assertXpathEvaluatesTo( "1", "count(//wmsLayer/name[text()='states'])", dom );
@@ -126,7 +150,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     public void testGetAllAvailable() throws Exception {
         
         Document dom = getAsDOM( "/restng/workspaces/sf/wmsstores/demo/wmslayers.xml?list=available");
-        // print(dom);
+        print(dom);
         
         // can't control the demo server enough to check the type names, but it should have something
         // more than just topp:states
@@ -207,7 +231,9 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     
     @Test
     public void testGetAsXML() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/sf/wmslayers/states.xml");
+        MockHttpServletResponse response = getAsServletResponse("/restng/workspaces/sf/wmslayers/states.xml");
+        assertThat(response, hasStatus(HttpStatus.OK));
+        Document dom = dom(istream(response));
         
         assertEquals( "wmsLayer", dom.getDocumentElement().getNodeName() );
         assertXpathEvaluatesTo("states", "/wmsLayer/name", dom);
@@ -258,33 +284,35 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         
         // First request should thrown an exception
         MockHttpServletResponse response = getAsServletResponse(requestPath);
-        assertEquals(404, response.getStatus());
-        assertTrue(response.getContentAsString().contains(
+        assertThat(response, hasStatus(HttpStatus.NOT_FOUND));
+        assertThat(response.getContentAsString(), containsString(
                 exception));
         
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
-        assertEquals(404, response.getStatus());
-        assertFalse(response.getContentAsString().contains(
-                exception));
+        assertThat(response, hasStatus(HttpStatus.NOT_FOUND));
+        assertThat(response.getContentAsString(), not(containsString(
+                exception)));
+
         // No exception thrown
-        assertTrue(response.getContentAsString().isEmpty());
+        assertThat(response.getContentAsString(), isEmptyString());
         
         // CASE 2: wmsstore set
         
         // First request should thrown an exception
         response = getAsServletResponse(requestPath2);
-        assertEquals(404, response.getStatus());
-        assertTrue(response.getContentAsString().contains(
-                exception2));
+        assertThat(response, hasStatus(HttpStatus.NOT_FOUND));
+        assertThat(response.getContentAsString(), containsString(
+                exception));
         
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
-        assertEquals(404, response.getStatus());
-        assertFalse(response.getContentAsString().contains(
-                exception2));
+        assertThat(response, hasStatus(HttpStatus.NOT_FOUND));
+        assertThat(response.getContentAsString(), not(containsString(
+                exception)));
+
         // No exception thrown
-        assertTrue(response.getContentAsString().isEmpty());
+        assertThat(response.getContentAsString(), isEmptyString());
     }
     
     @Test
@@ -295,7 +323,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
           "</wmsLayer>";
         MockHttpServletResponse response = 
             putAsServletResponse("/restng/workspaces/sf/wmsstores/demo/wmslayers/states", xml, "text/xml");
-        assertEquals( 200, response.getStatus() );
+        assertThat( response, hasStatus(HttpStatus.OK) );
         
         Document dom = getAsDOM("/restng/workspaces/sf/wmsstores/demo/wmslayers/states.xml");
         assertXpathEvaluatesTo("Lots of states here", "/wmsLayer/title", dom );

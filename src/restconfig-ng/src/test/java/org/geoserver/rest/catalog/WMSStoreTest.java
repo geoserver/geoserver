@@ -7,19 +7,14 @@ package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.geoserver.rest.catalog.HttpTestUtils.hasHeader;
+import static org.geoserver.rest.catalog.HttpTestUtils.hasStatus;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
@@ -38,11 +33,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 
@@ -167,53 +158,6 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         assertTrue(response.getContentAsString().isEmpty());
     }
     
-    Matcher<HttpServletResponse> hasStatus(int code) {
-        return hasProperty("status", is(code));
-    }
-    
-    Matcher<HttpServletResponse> hasHeader(String name, Matcher<String> valueMatcher) {
-        return new BaseMatcher<HttpServletResponse>(){
-            
-            @Override
-            public boolean matches(Object item) {
-                if(item instanceof HttpServletResponse) {
-                    String value = ((HttpServletResponse) item).getHeader(name);
-                    if(Objects.isNull(value)) {
-                        return false;
-                    } else {
-                        return valueMatcher.matches(value);
-                    }
-                } else {
-                    return false;
-                }
-            }
-            
-            @Override
-            public void describeTo(Description description) {
-                description
-                    .appendText("HTTP Response with header ")
-                    .appendValue(name)
-                    .appendText(" with value ")
-                    .appendDescriptionOf(valueMatcher);
-            }
-
-            @Override
-            public void describeMismatch(Object item, Description description) {
-                if(item instanceof HttpServletResponse) {
-                    String value = ((HttpServletResponse) item).getHeader(name);
-                    if(Objects.isNull(value)) {
-                        description.appendText("did not have header ").appendValue("name");
-                    } else {
-                        description.appendText("header ").appendValue(name).appendText(" ");
-                        valueMatcher.describeMismatch(value, description);
-                    }
-                } else {
-                    description.appendText("was not an HttpServeletResponse");
-                }
-            }
-        };
-    }
-    
     @Test
     public void testPostAsXML() throws Exception {
         
@@ -226,7 +170,7 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = 
             postAsServletResponse( "/restng/workspaces/sf/wmsstores", xml, "text/xml" );
         
-        assertThat(response, hasStatus(201) );
+        assertThat(response, hasStatus(HttpStatus.CREATED) );
         assertThat(response, hasHeader("Location", endsWith("/workspaces/sf/wmsstores/newWMSStore")) );
 
         WMSStoreInfo newStore = catalog.getStoreByName( "newWMSStore", WMSStoreInfo.class );
@@ -378,6 +322,6 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         "<workspace>gs</workspace>" + 
         "</wmsStore>";
         MockHttpServletResponse response = putAsServletResponse("/restng/workspaces/sf/wmsstores/demo", xml, "text/xml");
-        assertThat(response, hasStatus(403));
+        assertThat(response, hasStatus(HttpStatus.FORBIDDEN));
     }
 }

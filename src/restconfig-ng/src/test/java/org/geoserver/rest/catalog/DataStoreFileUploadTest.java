@@ -41,6 +41,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.junit.Assert.*;
 
 /**
@@ -94,7 +95,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         byte[] bytes = propertyFile();
         //p.store( output, null );
 
-        put( "/restng/workspaces/gs/datastores/pds/file.properties", bytes, "text/plain");
+        put( ROOT_PATH+"/workspaces/gs/datastores/pds/file.properties", bytes, "text/plain");
         Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
         assertFeatures( dom );
     }
@@ -103,7 +104,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     public void testPropertyFileUploadWithWorkspace() throws Exception {
         byte[] bytes = propertyFile();
 
-        put( "/restng/workspaces/sf/datastores/pds/file.properties", bytes, "text/plain");
+        put( ROOT_PATH+"/workspaces/sf/datastores/pds/file.properties", bytes, "text/plain");
         Document dom = getAsDOM( "wfs?request=getfeature&typename=sf:pds");
         assertFeatures( dom, "sf" );
     }
@@ -120,7 +121,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         zout.flush();
         zout.close();
 
-        put( "/restng/workspaces/gs/datastores/pds/file.properties", out.toByteArray(), "application/zip");
+        put( ROOT_PATH+"/workspaces/gs/datastores/pds/file.properties", out.toByteArray(), "application/zip");
 
         Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
         assertFeatures( dom );
@@ -149,7 +150,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     @Test
     public void testShapeFileUpload() throws Exception {
         byte[] bytes = shpZipAsBytes();
-        put( "/restng/workspaces/gs/datastores/pds/file.shp", bytes, "application/zip");
+        put( ROOT_PATH+"/workspaces/gs/datastores/pds/file.shp", bytes, "application/zip");
         Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
         assertFeatures( dom );
     }
@@ -159,7 +160,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         /* Requires that a zipped shapefile (chinese_poly.zip) be in test-data directory */
         byte[] bytes = shpChineseZipAsBytes();
         MockHttpServletResponse response =
-                putAsServletResponse("/restng/workspaces/gs/datastores/chinese_poly/file.shp?charset=UTF-8", bytes, "application/zip");
+                putAsServletResponse(ROOT_PATH+"/workspaces/gs/datastores/chinese_poly/file.shp?charset=UTF-8", bytes, "application/zip");
         assertEquals( 201, response.getStatus() );
 
         MockHttpServletResponse response2 =
@@ -206,7 +207,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
             org.geoserver.rest.util.IOUtils.inflate(new ZipFile(zip), Files.asResource(f), null);
 
             MockHttpServletResponse resp = putAsServletResponse(
-                    "/restng/workspaces/gs/datastores/pds/external.shp", new File(f, "pds.shp")
+                    ROOT_PATH+"/workspaces/gs/datastores/pds/external.shp", new File(f, "pds.shp")
                             .toURL().toString(), "text/plain");
             assertEquals(201, resp.getStatus());
 
@@ -216,7 +217,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
             // try to download it again after a full reload from disk (GEOS-4616)
             getGeoServer().reload();
 
-            resp = getAsServletResponse("/restng/workspaces/gs/datastores/pds/file.shp");
+            resp = getAsServletResponse(ROOT_PATH+"/workspaces/gs/datastores/pds/file.shp");
             assertEquals( 200, resp.getStatus() );
             assertEquals( "application/zip", resp.getContentType() );
 
@@ -244,7 +245,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
         URL url = DataUtilities.fileToURL(file.getCanonicalFile());
         String body = url.toExternalForm();
-        MockHttpServletResponse response = putAsServletResponse("/restng/workspaces/gs/datastores/pds/external.shp",
+        MockHttpServletResponse response = putAsServletResponse(ROOT_PATH+"/workspaces/gs/datastores/pds/external.shp",
                 body, "text/plain");
         assertEquals(400, response.getStatus());
     }
@@ -266,7 +267,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
                         "<workspace>gs</workspace>" +
                         "</dataStore>";
 
-        post("/restng/workspaces/gs/datastores", xml);
+        post(ROOT_PATH+"/workspaces/gs/datastores", xml);
 
         DataStoreInfo ds = cat.getDataStoreByName("gs", "foo_h2");
         assertNotNull(ds);
@@ -274,7 +275,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         assertTrue(cat.getFeatureTypesByDataStore(ds).isEmpty());
 
         byte[] bytes = shpZipAsBytes();
-        put( "/restng/workspaces/gs/datastores/foo_h2/file.shp", bytes, "application/zip");
+        put( ROOT_PATH+"/workspaces/gs/datastores/foo_h2/file.shp", bytes, "application/zip");
 
         assertFalse(cat.getFeatureTypesByDataStore(ds).isEmpty());
 
@@ -288,7 +289,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         assertNull(cat.getDataStoreByName("gs", "pds"));
 
         byte[] bytes = shpZipAsBytes();
-        put( "/restng/workspaces/gs/datastores/pds/file.shp?target=h2", bytes, "application/zip");
+        put( ROOT_PATH+"/workspaces/gs/datastores/pds/file.shp?target=h2", bytes, "application/zip");
 
         DataStoreInfo ds = cat.getDataStoreByName("gs", "pds");
         assertNotNull(ds);
@@ -307,7 +308,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         assertNull(cat.getDataStoreByName("gs", "store with spaces"));
 
         byte[] bytes = shpZipAsBytes();
-        put( "/restng/workspaces/gs/datastores/store%20with%20spaces/file.shp", bytes, "application/zip");
+        put( ROOT_PATH+"/workspaces/gs/datastores/store%20with%20spaces/file.shp", bytes, "application/zip");
 
         DataStoreInfo ds = cat.getDataStoreByName("gs", "store with spaces");
         assertNull(ds);
@@ -318,7 +319,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         Catalog cat = getCatalog();
         assertNull(cat.getDataStoreByName("gs", "pdst"));
 
-        put("/restng/workspaces/gs/datastores/pdst/file.shp?configure=all", shpMultiZipAsBytes(), "application/zip");
+        put(ROOT_PATH+"/workspaces/gs/datastores/pdst/file.shp?configure=all", shpMultiZipAsBytes(), "application/zip");
 
         DataStoreInfo ds = cat.getDataStoreByName("gs", "pdst");
         assertNotNull(ds);
@@ -328,13 +329,13 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetProperties() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse("/restng/workspaces/gs/datastores/pds/file.properties");
+        MockHttpServletResponse resp = getAsServletResponse(ROOT_PATH+"/workspaces/gs/datastores/pds/file.properties");
         assertEquals( 404, resp.getStatus() );
 
         byte[] bytes = propertyFile();
-        put( "/restng/workspaces/gs/datastores/pds/file.properties", bytes, "text/plain");
+        put( ROOT_PATH+"/workspaces/gs/datastores/pds/file.properties", bytes, "text/plain");
 
-        resp = getAsServletResponse("/restng/workspaces/gs/datastores/pds/file.properties");
+        resp = getAsServletResponse(ROOT_PATH+"/workspaces/gs/datastores/pds/file.properties");
         assertEquals( 200, resp.getStatus() );
         assertEquals( "application/zip", resp.getContentType() );
 
@@ -359,7 +360,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         loadAppSchemaTestData();
 
         // upload mapping file (datastore is created implicitly)
-        put( "/restng/workspaces/gsml/datastores/mappedPolygons/file.appschema", bytes, "text/xml");
+        put( ROOT_PATH+"/workspaces/gsml/datastores/mappedPolygons/file.appschema", bytes, "text/xml");
         Document dom = getAsDOM( "wfs?request=getfeature&typename=gsml:MappedFeature" );
 
         // print(dom);
@@ -375,7 +376,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
         // upload alternative mapping file
         bytes = appSchemaAlternativeMappingAsBytes();
-        put("/restng/workspaces/gsml/datastores/mappedPolygons/file.appschema?configure=none",
+        put(ROOT_PATH+"/workspaces/gsml/datastores/mappedPolygons/file.appschema?configure=none",
                 bytes, "text/xml");
         dom = getAsDOM( "wfs?request=getfeature&typename=gsml:MappedFeature" );
 

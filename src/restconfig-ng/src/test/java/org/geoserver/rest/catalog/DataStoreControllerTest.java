@@ -27,6 +27,7 @@ import java.util.Properties;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.junit.Assert.*;
 
 /**
@@ -49,14 +50,14 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllAsXML() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/sf/datastores.xml");
+        Document dom = getAsDOM( ROOT_PATH+"/workspaces/sf/datastores.xml");
         assertEquals( catalog.getStoresByWorkspace( "sf", DataStoreInfo.class ).size(),
                 dom.getElementsByTagName( "dataStore").getLength() );
     }
 
     @Test
     public void testGetAsJSON() throws Exception {
-        JSON json = getAsJSON( "/restng/workspaces/sf/datastores/sf.json" );
+        JSON json = getAsJSON( ROOT_PATH+"/workspaces/sf/datastores/sf.json" );
 
         JSONObject dataStore = ((JSONObject)json).getJSONObject("dataStore");
         assertNotNull(dataStore);
@@ -68,7 +69,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllAsJSON() throws Exception {
-        JSON json = getAsJSON( "/restng/workspaces/sf/datastores.json");
+        JSON json = getAsJSON( ROOT_PATH+"/workspaces/sf/datastores.json");
         assertTrue( json instanceof JSONObject );
 
         Object datastores = ((JSONObject)json).getJSONObject("dataStores").get("dataStore");
@@ -84,7 +85,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllAsHTML() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/sf/datastores.html");
+        Document dom = getAsDOM( ROOT_PATH+"/workspaces/sf/datastores.html");
         List<DataStoreInfo> datastores = catalog.getDataStoresByWorkspace("sf");
 
         NodeList links = xp.getMatchingNodes("//html:a", dom );
@@ -100,17 +101,17 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAllUnauthorized() throws Exception {
-        assertEquals( 405, putAsServletResponse("/restng/workspaces/sf/datastores").getStatus() );
+        assertEquals( 405, putAsServletResponse(ROOT_PATH+"/workspaces/sf/datastores").getStatus() );
     }
 
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
-        assertEquals( 405, deleteAsServletResponse("/restng/workspaces/sf/datastores").getStatus() );
+        assertEquals( 405, deleteAsServletResponse(ROOT_PATH+"/workspaces/sf/datastores").getStatus() );
     }
 
     @Test
     public void testGetAsXML() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/sf/datastores/sf.xml");
+        Document dom = getAsDOM( ROOT_PATH+"/workspaces/sf/datastores/sf.xml");
         assertEquals( "dataStore", dom.getDocumentElement().getNodeName() );
         assertEquals( "sf", xp.evaluate( "/dataStore/name", dom) );
         assertEquals( "sf", xp.evaluate( "/dataStore/workspace/name", dom) );
@@ -119,13 +120,13 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testRoundTripGetAsXML() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/sf/datastores/sf.xml");
+        Document dom = getAsDOM( ROOT_PATH+"/workspaces/sf/datastores/sf.xml");
         assertEquals( "dataStore", dom.getDocumentElement().getNodeName() );
         assertEquals( "sf", xp.evaluate( "/dataStore/name", dom) );
         assertEquals( "sf", xp.evaluate( "/dataStore/workspace/name", dom) );
         assertXpathExists( "/dataStore/connectionParameters", dom );
 
-        Document dom2 = getAsDOM( "/restng/workspaces/sf/datastores/sf.xml");
+        Document dom2 = getAsDOM( ROOT_PATH+"/workspaces/sf/datastores/sf.xml");
         assertXpathEvaluatesTo("true", "/dataStore/enabled", dom );
 
         String xml =
@@ -135,10 +136,10 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
                         "</dataStore>";
 
         MockHttpServletResponse response =
-                putAsServletResponse( "/restng/workspaces/sf/datastores/sf", xml, "text/xml");
+                putAsServletResponse( ROOT_PATH+"/workspaces/sf/datastores/sf", xml, "text/xml");
         assertEquals( 200, response.getStatus() );
 
-        dom = getAsDOM( "/restng/workspaces/sf/datastores/sf.xml");
+        dom = getAsDOM( ROOT_PATH+"/workspaces/sf/datastores/sf.xml");
         assertXpathEvaluatesTo("false", "/dataStore/enabled", dom );
 
         assertFalse( catalog.getDataStoreByName( "sf", "sf").isEnabled() );
@@ -146,7 +147,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/sf/datastores/sf.html");
+        Document dom = getAsDOM( ROOT_PATH+"/workspaces/sf/datastores/sf.html");
 
         DataStoreInfo ds = catalog.getDataStoreByName( "sf" );
         List<FeatureTypeInfo> featureTypes = catalog.getFeatureTypesByDataStore( ds );
@@ -168,7 +169,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         String ws = "sf";
         String ds = "sfssssss";
         // Request path
-        String requestPath = "/restng/workspaces/" + ws + "/datastores/" + ds + ".html";
+        String requestPath = ROOT_PATH+"/workspaces/" + ws + "/datastores/" + ds + ".html";
         // Exception path
         String exception = "No such datastore: " + ws + "," + ds;
         // First request should thrown an exception
@@ -218,7 +219,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
                         "<workspace>sf</workspace>" +
                         "</dataStore>";
         MockHttpServletResponse response =
-                postAsServletResponse( "/restng/workspaces/sf/datastores", xml, "text/xml" );
+                postAsServletResponse( ROOT_PATH+"/workspaces/sf/datastores", xml, "text/xml" );
         assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/sf/datastores/newDataStore" ) );
@@ -245,7 +246,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
                         "}" +
                         "}";
         MockHttpServletResponse response =
-                postAsServletResponse( "/restng/workspaces/sf/datastores", json, "text/json" );
+                postAsServletResponse( ROOT_PATH+"/workspaces/sf/datastores", json, "text/json" );
 
         assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
@@ -267,13 +268,13 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
                         "</dataStore>";
 
         MockHttpServletResponse response =
-                postAsServletResponse( "/restng/workspaces/sf/datastores/sf", xml, "text/xml");
+                postAsServletResponse( ROOT_PATH+"/workspaces/sf/datastores/sf", xml, "text/xml");
         assertEquals( 405, response.getStatus() );
     }
 
     @Test
     public void testPut() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/sf/datastores/sf.xml");
+        Document dom = getAsDOM( ROOT_PATH+"/workspaces/sf/datastores/sf.xml");
         assertXpathEvaluatesTo("true", "/dataStore/enabled", dom );
 
         String xml =
@@ -283,10 +284,10 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
                         "</dataStore>";
 
         MockHttpServletResponse response =
-                putAsServletResponse( "/restng/workspaces/sf/datastores/sf", xml, "text/xml");
+                putAsServletResponse( ROOT_PATH+"/workspaces/sf/datastores/sf", xml, "text/xml");
         assertEquals( 200, response.getStatus() );
 
-        dom = getAsDOM( "/restng/workspaces/sf/datastores/sf.xml");
+        dom = getAsDOM( ROOT_PATH+"/workspaces/sf/datastores/sf.xml");
         assertXpathEvaluatesTo("false", "/dataStore/enabled", dom );
 
         assertFalse( catalog.getDataStoreByName( "sf", "sf").isEnabled() );
@@ -294,7 +295,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPut2() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/sf/datastores/sf.xml");
+        Document dom = getAsDOM( ROOT_PATH+"/workspaces/sf/datastores/sf.xml");
         assertXpathEvaluatesTo("2", "count(//dataStore/connectionParameters/*)", dom );
 
         String xml =
@@ -311,7 +312,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
                         "</dataStore>";
 
         MockHttpServletResponse response =
-                putAsServletResponse( "/restng/workspaces/sf/datastores/sf", xml, "text/xml");
+                putAsServletResponse( ROOT_PATH+"/workspaces/sf/datastores/sf", xml, "text/xml");
         assertEquals( 200, response.getStatus() );
 
         DataStoreInfo ds = catalog.getDataStoreByName( "sf", "sf" );
@@ -331,7 +332,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
                         "</dataStore>";
 
         MockHttpServletResponse response =
-                putAsServletResponse( "/restng/workspaces/sf/datastores/sf", xml, "text/xml");
+                putAsServletResponse( ROOT_PATH+"/workspaces/sf/datastores/sf", xml, "text/xml");
         assertEquals( 200, response.getStatus() );
 
         assertTrue(ds.isEnabled());
@@ -345,13 +346,13 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
                         "</dataStore>";
 
         MockHttpServletResponse response =
-                putAsServletResponse("/restng/workspaces/sf/datastores/nonExistant", xml, "text/xml" );
+                putAsServletResponse(ROOT_PATH+"/workspaces/sf/datastores/nonExistant", xml, "text/xml" );
         assertEquals( 404, response.getStatus() );
     }
 
     @Test
     public void testDeleteNonExistant() throws Exception {
-        assertEquals( 404, deleteAsServletResponse("/restng/workspaces/sf/datastores/nonExistant").getStatus() );
+        assertEquals( 404, deleteAsServletResponse(ROOT_PATH+"/workspaces/sf/datastores/nonExistant").getStatus() );
     }
 
     @Test
@@ -374,24 +375,24 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
                         "<workspace>sf</workspace>" +
                         "</dataStore>";
         MockHttpServletResponse response =
-                postAsServletResponse( "/restng/workspaces/sf/datastores", xml, "text/xml" );
+                postAsServletResponse( ROOT_PATH+"/workspaces/sf/datastores", xml, "text/xml" );
         assertEquals( 201, response.getStatus() );
         assertNotNull( catalog.getDataStoreByName("sf", "newDataStore"));
 
-        assertEquals( 200, deleteAsServletResponse("/restng/workspaces/sf/datastores/newDataStore").getStatus());
+        assertEquals( 200, deleteAsServletResponse(ROOT_PATH+"/workspaces/sf/datastores/newDataStore").getStatus());
         assertNull( catalog.getDataStoreByName("sf", "newDataStore"));
     }
 
     @Test
     public void testDeleteNonEmptyForbidden() throws Exception {
-        assertEquals( 403, deleteAsServletResponse("/restng/workspaces/sf/datastores/sf").getStatus());
+        assertEquals( 403, deleteAsServletResponse(ROOT_PATH+"/workspaces/sf/datastores/sf").getStatus());
     }
 
     @Test
     public void testDeleteRecursive() throws Exception {
         assertNotNull(catalog.getDataStoreByName("sf", "sf"));
         MockHttpServletResponse response =
-                deleteAsServletResponse("/restng/workspaces/sf/datastores/sf?recurse=true");
+                deleteAsServletResponse(ROOT_PATH+"/workspaces/sf/datastores/sf?recurse=true");
         assertEquals(200, response.getStatus());
 
         assertNull(catalog.getDataStoreByName("sf", "sf"));
@@ -409,7 +410,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         String xml = "<dataStore>" +
                 "<name>newName</name>" +
                 "</dataStore>";
-        assertEquals( 403, putAsServletResponse("/restng/workspaces/sf/datastores/sf", xml, "text/xml").getStatus());
+        assertEquals( 403, putAsServletResponse(ROOT_PATH+"/workspaces/sf/datastores/sf", xml, "text/xml").getStatus());
     }
 
     @Test
@@ -417,6 +418,6 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         String xml = "<dataStore>" +
                 "<workspace>gs</workspace>" +
                 "</dataStore>";
-        assertEquals( 403, putAsServletResponse("/restng/workspaces/sf/datastores/sf", xml, "text/xml").getStatus());
+        assertEquals( 403, putAsServletResponse(ROOT_PATH+"/workspaces/sf/datastores/sf", xml, "text/xml").getStatus());
     }
 }

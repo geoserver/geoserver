@@ -7,9 +7,12 @@ package org.geoserver.rest.catalog;
 
 import static org.junit.Assert.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import javax.servlet.ServletResponse;
 
 import org.geoserver.data.test.SystemTestData;
 import org.junit.Before;
@@ -52,7 +55,7 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         String jsonIndexToken = "{\"name\":\"" + name + "\"";
 
         // GET
-        assertEquals("File Not Found", getAsString(path).trim());
+        assertNotFound(path);
         assertFalse(getIndexAsString(path, null).contains(htmlIndexToken));
         assertFalse(getIndexAsString(path, "html").contains(htmlIndexToken));
         assertFalse(getIndexAsString(path, "xml").contains(xmlIndexToken));
@@ -60,10 +63,13 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
 
         // PUT
         put(path, content).close();
-        assertTrue(getIndexAsString(path, null).contains(htmlIndexToken));
-        assertTrue(getIndexAsString(path, "html").contains(htmlIndexToken));
-        assertTrue(getIndexAsString(path, "xml").contains(xmlIndexToken));
-        assertTrue(getIndexAsString(path, "json").contains(jsonIndexToken));
+        String list = getIndexAsString(path,null);
+        if(!list.contains(htmlIndexToken)){
+            assertTrue("list "+path, list.contains(htmlIndexToken));
+        }
+        assertTrue("list "+path,getIndexAsString(path, "html").contains(htmlIndexToken));
+        assertTrue("list "+path,getIndexAsString(path, "xml").contains(xmlIndexToken));
+        assertTrue("list "+path,getIndexAsString(path, "json").contains(jsonIndexToken));
 
         // GET
         assertEquals(content, getAsString(path).trim());
@@ -72,7 +78,7 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         assertEquals(200, deleteAsServletResponse(path).getStatus());
 
         // GET
-        assertEquals("File Not Found", getAsString(path).trim());
+        assertNotFound(path);
         assertFalse(getIndexAsString(path, null).contains(htmlIndexToken));
         assertFalse(getIndexAsString(path, "html").contains(htmlIndexToken));
         assertFalse(getIndexAsString(path, "xml").contains(xmlIndexToken));
@@ -122,39 +128,34 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         }
     }
 
+    void assertNotFound(String path) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(path+"?quietOnNotFound=true");
+        assertEquals("404 expected for '" + path + "'", 404, response.getStatus());
+    }
     @Test
     public void testAllPaths() throws Exception {
         String contentHeader = "hello path ";
         List<String> paths = getAllPaths();
 
-        for (String path : paths) {
-            // GET
-            MockHttpServletResponse response = getAsServletResponse(path);
-            assertEquals( 404, response.getStatus() );
-            String string = response.getContentAsString();
-            if( !string.contains("not found")){
-                fail("Expected 'not found' for '"+ path+"':'"+string+"'");
-            }
+        for (String path : paths) { // GET - confirm template not there
+            assertNotFound(path);
         }
 
-        for (String path : paths) {
-            // PUT
+        for (String path : paths) { // PUT
             put(path, contentHeader + path).close();
         }
 
-        for (String path : paths) {
-            // GET
+        for (String path : paths) { // GET
             assertEquals(contentHeader + path, getAsString(path).trim());
         }
 
-        for (String path : paths) {
-            // DELETE
-            assertEquals(200, deleteAsServletResponse(path).getStatus());
+        for (String path : paths) { // DELETE
+            MockHttpServletResponse response = deleteAsServletResponse(path);
+            assertEquals(200, response.getStatus());
         }
 
-        for (String path : paths) {
-            // GET
-            assertEquals("File Not Found", getAsString(path).trim());
+        for (String path : paths) { // GET - confirm template removed
+            assertNotFound(path);
         }
     }
 

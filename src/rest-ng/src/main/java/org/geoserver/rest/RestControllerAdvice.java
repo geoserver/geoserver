@@ -44,12 +44,13 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public void handleResourceNotFound(ResourceNotFoundException e, HttpServletResponse response, WebRequest request, OutputStream os)
         throws IOException {
-        LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        
         String quietOnNotFound = request.getParameter("quietOnNotFound"); //yes this is seriously a thing
         String message = e.getMessage();
         if (Boolean.parseBoolean(quietOnNotFound)) {
             message = "";
+        }
+        else {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
         response.setStatus(404);
         StreamUtils.copy(message, Charset.forName("UTF-8"), os);

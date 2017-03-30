@@ -5,11 +5,10 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import org.geoserver.catalog.*;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
-import org.geoserver.rest.wrapper.RestHttpInputWrapper;
 import org.geoserver.rest.wrapper.RestWrapper;
-import org.geoserver.rest.wrapper.RestWrapperAdapter;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
@@ -34,7 +33,7 @@ import java.util.logging.Logger;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = "/restng/workspaces/{workspace}/wmsstores")
+@RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspace}/wmsstores")
 public class WMSStoreController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(WMSStoreController.class);
@@ -148,6 +147,7 @@ public class WMSStoreController extends CatalogController {
 
             @Override
             protected CatalogInfo getCatalogObject() {
+                @SuppressWarnings("unchecked")
                 Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
                 String workspace = uriTemplateVars.get("workspace");
                 String store = uriTemplateVars.get("store");
@@ -162,9 +162,9 @@ public class WMSStoreController extends CatalogController {
             @Override
             protected void postEncodeWMSStore(WMSStoreInfo cs,
                     HierarchicalStreamWriter writer, MarshallingContext context) {
-                // add a link to the wmss
-                writer.startNode("wmss");
-                converter.encodeCollectionLink("wmss", writer);
+                // add a link to the wmslayers
+                writer.startNode("wmslayers");
+                converter.encodeCollectionLink("wmslayers", writer);
                 writer.endNode();
             }
 

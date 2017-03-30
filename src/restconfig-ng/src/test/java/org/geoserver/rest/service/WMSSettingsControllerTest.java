@@ -128,16 +128,6 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
     }
 
     @Test
-    public void testGetNonExistentWorkspaceSettings() throws Exception {
-        String workspaceName = "fooooooo";
-        String exception = "Workspace " + workspaceName + " does not exist";
-        MockHttpServletResponse response = getAsServletResponse("/restng/services/wms/settings/workspaces/" + workspaceName + "/settings.xml");
-        assertEquals(404, response.getStatus());
-        assertTrue(response.getContentAsString().contains(
-                exception));
-    }
-
-    @Test
     public void testPutNonDestructive() throws Exception {
         GeoServer geoServer = getGeoServer();
         WMSInfo i = geoServer.getService(WMSInfo.class);

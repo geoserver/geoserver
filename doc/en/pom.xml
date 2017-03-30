@@ -158,7 +158,19 @@
               <language>html</language>
               <output>${project.build.directory}/api/structuredCoverages</output>
             </configuration>
-          </execution>          
+          </execution>
+          <execution>
+            <id>wmsstores</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/wmsstores.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/wmsstores</output>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>

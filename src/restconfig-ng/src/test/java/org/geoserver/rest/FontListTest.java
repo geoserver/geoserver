@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -38,13 +38,13 @@ public class FontListTest extends GeoServerSystemTestSupport {
         //make the request, parsing the result as a dom
         Document dom = getAsDOM("/restng/fonts.xml");
 
-        TransformerFactory tf = TransformerFactory.newInstance();
+        /*TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         StringWriter writer = new StringWriter();
         transformer.transform(new DOMSource(dom), new StreamResult(writer));
         String output = writer.toString();
-        System.out.println(output);
+        System.out.println(output);*/
         //make assertions
         Node fonts = getFirstElementByTagName(dom, "fonts");
         assertNotNull(fonts);

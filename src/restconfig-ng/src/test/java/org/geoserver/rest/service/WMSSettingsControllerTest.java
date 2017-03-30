@@ -3,37 +3,37 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.service.rest;
+package org.geoserver.rest.service;
 
-import java.io.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
-
-import org.geoserver.catalog.rest.CatalogRESTTestSupport;
 import org.geoserver.config.GeoServer;
+import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import org.springframework.mock.web.MockHttpServletResponse;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
 
-public class WMSSettingsTest extends CatalogRESTTestSupport {
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
+
+public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
     
-    @After 
+    @After
     public void revertChanges() {
         revertService(WMSInfo.class, null);
     }
 
     @Test
     public void testGetASJSON() throws Exception {
-        JSON json = getAsJSON("/rest/services/wms/settings.json");
+        JSON json = getAsJSON("/restng/services/wms/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject wmsinfo = (JSONObject) jsonObject.get("wms");
@@ -46,7 +46,7 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsXML() throws Exception {
-        Document dom = getAsDOM("/rest/services/wms/settings.xml");
+        Document dom = getAsDOM("/restng/services/wms/settings.xml");
         assertEquals("wms", dom.getDocumentElement().getLocalName());
         assertEquals(1, dom.getElementsByTagName("name").getLength());
         assertXpathEvaluatesTo("true", "/wms/enabled", dom);
@@ -57,16 +57,16 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        getAsDOM("/rest/services/wms/settings.html" );
+        getAsDOM("/restng/services/wms/settings.html" );
     }
 
     @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wms': {'id':'wms','enabled':'false','name':'WMS'}}";
-        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings/",
+        MockHttpServletResponse response = putAsServletResponse("/restng/services/wms/settings/",
                 json, "text/json");
         assertEquals(200, response.getStatus());
-        JSON jsonMod = getAsJSON("/rest/services/wms/settings.json");
+        JSON jsonMod = getAsJSON("/restng/services/wms/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
         JSONObject wmsinfo = (JSONObject) jsonObject.get("wms");
@@ -83,11 +83,11 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
                 + "<name>WMS</name><title>GeoServer Web Map Service</title>"
                 + "<maintainer>http://geoserver.org/comm</maintainer>"
                 + "</wms>";
-        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings", xml,
+        MockHttpServletResponse response = putAsServletResponse("/restng/services/wms/settings", xml,
                 "text/xml");
         assertEquals(200, response.getStatus());
 
-        Document dom = getAsDOM("/rest/services/wms/settings.xml");
+        Document dom = getAsDOM("/restng/services/wms/settings.xml");
         assertXpathEvaluatesTo("false", "/wms/enabled", dom);
         assertXpathEvaluatesTo("WMS", "/wms/name", dom);
 
@@ -95,25 +95,25 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
 
     @Test
     public void testRoundTripJSON() throws Exception {
-        JSONObject original = (JSONObject) getAsJSON("/rest/services/wms/settings.json");
+        JSONObject original = (JSONObject) getAsJSON("/restng/services/wms/settings.json");
         assertNotNull(original);
-        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings/",
+        MockHttpServletResponse response = putAsServletResponse("/restng/services/wms/settings/",
                 original.toString(), "text/json");
         assertEquals(200, response.getStatus());
-        JSON updated = getAsJSON("/rest/services/wms/settings.json");
+        JSON updated = getAsJSON("/restng/services/wms/settings.json");
         assertEquals(original, updated);
     }
 
     @Test
     public void testRoundTripXML() throws Exception {
-        Document original = getAsDOM("/rest/services/wms/settings.xml");
+        Document original = getAsDOM("/restng/services/wms/settings.xml");
         assertEquals("wms", original.getDocumentElement().getLocalName());
         String originalString = documentToString(original);
 
-        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings", originalString,
+        MockHttpServletResponse response = putAsServletResponse("/restng/services/wms/settings", originalString,
                 "text/xml");
         assertEquals(200, response.getStatus());
-        Document updated = getAsDOM("/rest/services/wms/settings.xml");
+        Document updated = getAsDOM("/restng/services/wms/settings.xml");
         assertEquals(originalString, documentToString(updated));
     }
 
@@ -128,6 +128,16 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
     }
 
     @Test
+    public void testGetNonExistentWorkspaceSettings() throws Exception {
+        String workspaceName = "fooooooo";
+        String exception = "Workspace " + workspaceName + " does not exist";
+        MockHttpServletResponse response = getAsServletResponse("/restng/services/wms/settings/workspaces/" + workspaceName + "/settings.xml");
+        assertEquals(404, response.getStatus());
+        assertTrue(response.getContentAsString().contains(
+                exception));
+    }
+
+    @Test
     public void testPutNonDestructive() throws Exception {
         GeoServer geoServer = getGeoServer();
         WMSInfo i = geoServer.getService(WMSInfo.class);
@@ -138,11 +148,11 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
                 + "<name>WMS</name><title>GeoServer Web Map Service</title>"
                 + "<maintainer>http://geoserver.org/comm</maintainer>"
                 + "</wms>";
-        MockHttpServletResponse response = putAsServletResponse("/rest/services/wms/settings", xml,
+        MockHttpServletResponse response = putAsServletResponse("/restng/services/wms/settings", xml,
                 "text/xml");
         assertEquals(200, response.getStatus());
         
-        Document dom = getAsDOM("/rest/services/wms/settings.xml");
+        Document dom = getAsDOM("/restng/services/wms/settings.xml");
         assertXpathEvaluatesTo("true", "/wms/enabled", dom);
         assertXpathEvaluatesTo("WMS", "/wms/name", dom);
         i = geoServer.getService(WMSInfo.class);
@@ -151,7 +161,7 @@ public class WMSSettingsTest extends CatalogRESTTestSupport {
 
     @Test
     public void testDelete() throws Exception {
-        assertEquals(405, deleteAsServletResponse("/rest/services/wms/settings").getStatus());
+        assertEquals(405, deleteAsServletResponse("/restng/services/wms/settings").getStatus());
     }
     
 }

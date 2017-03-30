@@ -14,5 +14,7 @@
   <!-- <mvc:annotation-driven/> -->
   <context:component-scan base-package="org.geoserver.catalog.rest"/>
   <context:component-scan base-package="org.geoserver.security.rest"/>
+  <context:component-scan base-package="org.geoserver.catalog.rest"/>
+  <context:component-scan base-package="org.geoserver.service.rest"/>
 
 </beans>

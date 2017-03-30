@@ -101,7 +101,7 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
         configurer.mediaType("xml", MediaType.APPLICATION_XML);
         configurer.mediaType("json", MediaType.APPLICATION_JSON);
 
-        configurer.defaultContentTypeStrategy( new DefaultContentNegotiation());
+        // configurer.defaultContentTypeStrategy( new DefaultContentNegotiation());
         
 //        configurer.favorPathExtension(true);
         //todo properties files are only supported for test cases. should try to find a way to

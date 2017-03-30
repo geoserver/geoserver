@@ -207,10 +207,13 @@ paths:
             '
     post:
       operationId: postWorkspaceSettings
-      description: Invalid. Use PUT to update settings.
+      summary: Create workspace-specific settings
+      description: Create new workspace-specific settings on the server.
       responses:
-        405:
-          description: Method Not Allowed
+        201:
+          description: Created
+        500:
+          description: "Internal Server Error: Settings already exist for workspace"
 
     put:
       operationId: putWorkspaceSettings

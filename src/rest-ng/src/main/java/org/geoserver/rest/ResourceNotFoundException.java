@@ -1,15 +1,20 @@
 package org.geoserver.rest;
 
+import org.springframework.http.HttpStatus;
+
 /**
- * Handling for 404 type exceptions
+ * Explicit exception for {@link HttpStatus#NOT_FOUND} (404) exceptions.
  */
-public class ResourceNotFoundException extends RuntimeException {
+public class ResourceNotFoundException extends RestException {
+
+    /** serialVersionUID */
+    private static final long serialVersionUID = 4656222203528783838L;
 
     public ResourceNotFoundException() {
-        super();
+        super("Not Found",HttpStatus.NOT_FOUND);
     }
 
-    public ResourceNotFoundException(String s) {
-        super(s);
+    public ResourceNotFoundException(String message) {
+        super(message, HttpStatus.NOT_FOUND);
     }
 }

@@ -1,26 +1,17 @@
 package org.geoserver.catalog.rest;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageStoreInfo;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestException;
-import org.geoserver.rest.util.RESTUploadPathMapper;
 import org.geoserver.rest.util.RESTUtils;
-import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;

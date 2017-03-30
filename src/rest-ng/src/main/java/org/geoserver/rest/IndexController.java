@@ -55,7 +55,11 @@ public class IndexController extends RestBaseController {
                 for (String pattern : mapping.getPatternsCondition().getPatterns()) {
                     if (!pattern.contains("{") && (pattern.length() > rootSize)) {
                         //trim root path
-                        s.add(pattern.substring(rootSize));
+                        String path = pattern.substring(rootSize);
+                        if (path.endsWith("/**")) {
+                            path = path.substring(0, path.length()-3);
+                        }
+                        s.add(path);
                     }
                 }
             }

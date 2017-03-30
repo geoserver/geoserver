@@ -13,6 +13,7 @@ import org.geoserver.rest.RestException;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,7 +38,11 @@ public abstract class CatalogController extends RestBaseController {
      * Not an official MIME type, but GeoServer used to support it
      */
     public static final String APPLICATION_ZIP = "application/zip";
-
+    
+    public static final String MEDIATYPE_FTL_EXTENSION = "ftl";
+    public static final String MEDIATYPE_FTL_VALUE = "text/plain";
+    public static final MediaType MEDIATYPE_FTL = new MediaType("text","plain");
+    
     protected final Catalog catalog;
     protected final GeoServerDataDirectory dataDir;
 

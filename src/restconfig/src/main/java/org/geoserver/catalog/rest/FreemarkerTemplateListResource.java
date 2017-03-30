@@ -58,8 +58,9 @@ public class FreemarkerTemplateListResource extends AbstractCatalogListResource 
         
     @Override
     protected Collection<FreemarkerTemplateInfo> handleListGet() throws Exception {
-        Resource directory = catalog.getResourceLoader().get(
-                Paths.path(FreemarkerTemplateResource.getDirectoryPath(getRequest())));        
+        String path = Paths.path(FreemarkerTemplateResource.getDirectoryPath(getRequest()));
+        Resource directory = catalog.getResourceLoader().get(path);
+
         List<Resource> files = Resources.list(directory, new Resources.ExtensionFilter("FTL"), false);
         
         List<FreemarkerTemplateInfo> list = new ArrayList<FreemarkerTemplateInfo>();

@@ -2,14 +2,29 @@
 swagger: '2.0'
 info:
   version: 1.0.0
-  title: GeoServer Layer Groups
+  title: GeoServer Feature Types
   description: A feature type is a vector based spatial resource or data set that originates from a data store. In some cases, such as with a shapefile, a feature type has a one-to-one relationship with its data store. In other cases, such as PostGIS, the relationship of feature type to data store is many-to-one, feature types corresponding to a table in the database.
 host: localhost:8080
 basePath: /geoserver/rest
+schemes:
+  - http
+  - https
+securityDefinitions:
+  basicAuth:
+    type: basic
+    name: basicAuth
+    flow: password
+    description: HTTP Basic Authentication. Works over `HTTP` and `HTTPS`
+    in: header
+    scopes: []
+    authorizationUrl: ""
+    tokenUrl: ""
+security:
+  - basicAuth: []  
 
 paths:
   /workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes:
-    get:  
+    get:           
       operationId: getFeatureTypes
       description: |
         Get a list of feature types for the workspace and datastore. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/featuretypes.xml" for XML)
@@ -149,7 +164,7 @@ paths:
           type: string    
         - name: quietOnNotFound
           in: query
-          description: The quietOnNotFound parameter avoids to log an Exception when the feature type is not present. Note that 404 status code will be returned anyway. Defaults to "false".
+          description: Prevents logging an Exception when the feature type is not present. Note that 404 status code will be returned anyway. Defaults to "false".
           type: boolean
           required: false
           default: false
@@ -798,26 +813,22 @@ definitions:
             }
   
   MetadataEntry:
-      type: object
-      title: entry
-      properties:
-        '@key':
-          title: key
-          type: string
-          enum:
-          - regionateStrategy
-          - regionateFeatureLimit
-          - cacheAgeMax
-          - cachingEnabled
-          - regionateAttribute
-          - indexingEnabled
-          - dirName
-          description: Key used for metadata entry, additional keys are added over time
-        '$':
-          title: text
-          type: string
-          description: Text value for provided key Valid text depends on key used. Example  {'@key'='cachingEnabled','$'='true'}.
-
-  MethodNotAllowed:
-    405:
-      description: Method not allowed.          
+    type: object
+    title: entry
+    properties:
+      '@key':
+        title: key
+        type: string
+        enum:
+        - regionateStrategy
+        - regionateFeatureLimit
+        - cacheAgeMax
+        - cachingEnabled
+        - regionateAttribute
+        - indexingEnabled
+        - dirName
+        description: Key used for metadata entry, additional keys are added over time
+      '$':
+        title: text
+        type: string
+        description: Text value for provided key Valid text depends on key used. Example  {'@key'='cachingEnabled','$'='true'}.

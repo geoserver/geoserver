@@ -5,49 +5,49 @@
 package org.geoserver.catalog.rest;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections.PredicateUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
-import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
-import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
-import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.wms.WebMapServer;
-import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Example style resource controller
@@ -191,24 +191,91 @@ public class WMSLayerController extends CatalogController {
     @PutMapping(value = {"/wmslayers/{layerName}", "/wmsstores/{storeName}/wmslayers/{layerName}"},
             consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
                     MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
-        public void putLayerFromStore(
-                @RequestBody WMSLayerInfo update,
-                final @PathVariable String workspaceName, 
-                final @PathVariable(required=false) String storeName, 
-                final @PathVariable String layerName, 
-                final @RequestParam(name = "calculate", required = false) String calculate) {
-            LOGGER.fine(()->logMessage("PUT", workspaceName, storeName, layerName));
-            
-            WMSLayerInfo original = getResourceInternal(workspaceName, storeName, layerName);
-            calculateOptionalFields(update, original, calculate);
-            new CatalogBuilder(catalog).updateWMSLayer(original, update);
-            catalog.validate(original, false).throwIfInvalid();
-            catalog.getResourcePool().clear(original.getStore());
-            catalog.save(original);
+    public void putLayer(
+            @RequestBody WMSLayerInfo update,
+            final @PathVariable String workspaceName, 
+            final @PathVariable(required=false) String storeName, 
+            final @PathVariable String layerName, 
+            final @RequestParam(name = "calculate", required = false) String calculate) {
+        LOGGER.fine(()->logMessage("PUT", workspaceName, storeName, layerName));
+        
+        WMSLayerInfo original = getResourceInternal(workspaceName, storeName, layerName);
+        calculateOptionalFields(update, original, calculate);
+        new CatalogBuilder(catalog).updateWMSLayer(original, update);
+        catalog.validate(original, false).throwIfInvalid();
+        catalog.getResourcePool().clear(original.getStore());
+        catalog.save(original);
 
-        }
-
+    }
+    
+    @PostMapping(path = {"wmslayers","wmsstores/{storeName}/wmslayers"}, consumes = {
+            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
+    public ResponseEntity<String> postCoverage(@RequestBody WMSLayerInfo resource,
+                                           @PathVariable String workspaceName,
+                                           @PathVariable(required=false) String storeName,
+                                           UriComponentsBuilder builder) throws Exception {
+        String resourceName = handleObjectPost(resource, workspaceName, storeName);
+        UriComponents uriComponents = builder.path("/workspaces/{workspaceName}/wmsstores/{storeName}/wmslayers/{wmslayer}")
+                .buildAndExpand(workspaceName, storeName, resourceName);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(uriComponents.toUri());
+        return new ResponseEntity<>(resourceName, headers, HttpStatus.CREATED);
+    }
+    
     String logMessage(final String message, final String workspaceName, @Nullable final String storeName, @Nullable final String layerName) {
         return message+(Objects.isNull(layerName)?"":(" WMS Layer "+layerName+" in"))+(Objects.isNull(storeName)?"":(" store "+storeName+" in"))+" in workspace "+ workspaceName;
     }
+    
+    private String handleObjectPost(WMSLayerInfo resource, String workspaceName, String storeName) throws Exception {
+        NamespaceInfo ns = getNamespaceInternal(workspaceName);
+        WMSStoreInfo store = getStoreInternal(ns, storeName);
+        if (resource.getStore() != null ) {
+            if ( !storeName.equals( resource.getStore().getName() ) ) {
+                throw new RestException( "Expected wms store " + storeName +
+                " but client specified " + resource.getStore().getName(), HttpStatus.FORBIDDEN );
+            }
+        } else {
+            resource.setStore( store );
+        }
+        
+        //ensure workspace/namespace matches up
+        if ( resource.getNamespace() != null ) {
+            if ( !workspaceName.equals( resource.getNamespace().getPrefix() ) ) {
+                throw new RestException( "Expected workspace " + workspaceName +
+                    " but client specified " + resource.getNamespace().getPrefix(), HttpStatus.FORBIDDEN );
+            }
+        } else {
+            resource.setNamespace( catalog.getNamespaceByPrefix( workspaceName ) );
+        }
+        resource.setEnabled(true);
+        
+        NamespaceInfo foundns = resource.getNamespace();
+        if ( foundns != null && !foundns.getPrefix().equals( workspaceName ) ) {
+            LOGGER.warning( "Namespace: " + ns.getPrefix() + " does not match workspace: " + workspaceName + ", overriding." );
+            foundns = null;
+        }
+        
+        if ( foundns == null){
+            //infer from workspace
+            foundns = ns;
+            resource.setNamespace( ns );
+        }
+        
+        // fill in missing information
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.setStore(store);
+        cb.initWMSLayer( resource );
+        
+        resource.setEnabled(true);
+        catalog.validate(resource, true).throwIfInvalid();
+        catalog.add( resource );
+        
+        // create a layer for the feature type
+        catalog.add(new CatalogBuilder(catalog).buildLayer(resource));
+        
+        LOGGER.info( "POST wms layer " + storeName + "," + resource.getName() );
+        return resource.getName();
+    }
+    
 }

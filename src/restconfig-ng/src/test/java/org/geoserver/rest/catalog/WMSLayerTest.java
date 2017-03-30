@@ -8,6 +8,7 @@ package org.geoserver.rest.catalog;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.geoserver.rest.catalog.HttpTestUtils.hasHeader;
 import static org.geoserver.rest.catalog.HttpTestUtils.hasStatus;
 import static org.geoserver.rest.catalog.HttpTestUtils.istream;
 import static org.hamcrest.Matchers.contains;
@@ -21,6 +22,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.*;
 
 import java.net.URL;
@@ -226,12 +228,12 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         MockHttpServletResponse response = 
             postAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers/", xml, "text/xml");
         
-        assertEquals( 201, response.getStatus() );
-        assertNotNull( response.getHeader( "Location") );
-        assertTrue( response.getHeader("Location").endsWith( "/workspaces/sf/wmsstores/demo/wmslayers/bugsites" ) );
+        assertThat(response, hasStatus(HttpStatus.CREATED ));
+        
+        assertThat(response, hasHeader("Location", Matchers.endsWith("/workspaces/sf/wmsstores/demo/wmslayers/bugsites")));
         
         WMSLayerInfo layer = catalog.getResourceByName("sf", "bugsites", WMSLayerInfo.class);
-        assertNotNull(layer.getNativeBoundingBox());
+        assertThat(layer, hasProperty("nativeBoundingBox", notNullValue()));
     }
     
     @Test

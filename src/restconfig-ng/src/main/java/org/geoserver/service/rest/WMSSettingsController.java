@@ -51,7 +51,7 @@ public class WMSSettingsController extends GeoServerController {
     @Autowired
     public WMSSettingsController(GeoServer geoServer) { super(geoServer); };
 
-    @GetMapping( value = {"/settings", "/settings/workspaces/{workspace}/settings"},
+    @GetMapping( value = {"/settings", "/workspaces/{workspace}/settings"},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE} )
     public RestWrapper getWmsSettings(@PathVariable ( name = "workspace", required = false) String workspaceName) {
         WMSInfo service;
@@ -73,7 +73,7 @@ public class WMSSettingsController extends GeoServerController {
         return wrapObject(service, WMSInfo.class);
     }
 
-    @PutMapping( value = {"/settings", "/settings/workspaces/{workspace}/settings"},
+    @PutMapping( value = {"/settings", "/workspaces/{workspace}/settings"},
             consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
                     MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
     public void putWmsSettings(@RequestBody WMSInfo info,
@@ -95,6 +95,18 @@ public class WMSSettingsController extends GeoServerController {
                 info.setWorkspace(ws);
             }
             geoServer.add(info);
+        }
+    }
+
+    @DeleteMapping ( value = "/workspaces/{workspace}/settings")
+    public void deleteWmsService(@PathVariable String workspace) {
+        WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
+        if (ws == null) {
+            throw new RestException("Workspace " + workspace + " does not exist", HttpStatus.NOT_FOUND);
+        }
+        ServiceInfo serviceInfo = geoServer.getService(ws, WMSInfo.class);
+        if (serviceInfo != null) {
+            geoServer.remove(serviceInfo);
         }
     }
 

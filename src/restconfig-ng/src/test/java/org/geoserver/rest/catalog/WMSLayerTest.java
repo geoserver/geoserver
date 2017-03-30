@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 
 import java.net.URL;
@@ -215,7 +216,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     @Test
     public void testPostAsXML() throws Exception {
         
-        assertNull(catalog.getResourceByName("sf", "bugsites", WMSLayerInfo.class));
+        assertThat(catalog.getResourceByName("sf", "bugsites", WMSLayerInfo.class), nullValue());
         
         String xml = 
           "<wmsLayer>"+
@@ -235,31 +236,55 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         WMSLayerInfo layer = catalog.getResourceByName("sf", "bugsites", WMSLayerInfo.class);
         assertThat(layer, hasProperty("nativeBoundingBox", notNullValue()));
     }
+    @Test
+    public void testPostAsXMLNoWorkspace() throws Exception {
+        
+        assertThat(catalog.getResourceByName("sf", "bugsites", WMSLayerInfo.class), nullValue());
+        
+        String xml = 
+          "<wmsLayer>"+
+            "<name>bugsites</name>"+
+            "<nativeName>world4326</nativeName>"+
+            "<srs>EPSG:4326</srs>" + 
+            "<nativeCRS>EPSG:4326</nativeCRS>" + 
+            "<store>demo</store>" + 
+          "</wmsLayer>";
+        MockHttpServletResponse response = 
+            postAsServletResponse( "/restng/workspaces/sf/wmslayers/", xml, "text/xml");
+        
+        assertThat(response, hasStatus(HttpStatus.CREATED ));
+        
+        assertThat(response, hasHeader("Location", Matchers.endsWith("/workspaces/sf/wmslayers/bugsites")));
+        
+        WMSLayerInfo layer = catalog.getResourceByName("sf", "bugsites", WMSLayerInfo.class);
+        assertThat(layer, hasProperty("nativeBoundingBox", notNullValue()));
+    }
     
     @Test
     public void testPostAsJSON() throws Exception {
         
-        assertNull(catalog.getResourceByName("sf", "bugsites", WMSLayerInfo.class));
+        assertThat(catalog.getResourceByName("sf", "bugsites", WMSLayerInfo.class), nullValue());
         
         String json = 
-          "{" + 
-           "'wmsLayer':{" + 
-              "'name':'bugsites'," +
-              "'nativeName':'world4326'," +
-              "'srs':'EPSG:4326'," +
-              "'nativeCRS':'EPSG:4326'," +
-              "'store':'demo'" +
-             "}" +
-          "}";
-        MockHttpServletResponse response =  
-            postAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers/", json, "text/json");
+                "{" + 
+                 "'wmsLayer':{" + 
+                    "'name':'bugsites'," +
+                    "'nativeName':'world4326'," +
+                    "'srs':'EPSG:4326'," +
+                    "'nativeCRS':'EPSG:4326'," +
+                    "'store':'demo'" +
+                   "}" +
+                "}";
+              MockHttpServletResponse response =  
+                  postAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers/", json, "text/json");
         
-        assertEquals( 201, response.getStatus() );
-        assertNotNull( response.getHeader( "Location") );
-        assertTrue( response.getHeader("Location").endsWith( "/workspaces/sf/wmsstores/demo/wmslayers/bugsites" ) );
+        assertThat(response, hasStatus(HttpStatus.CREATED ));
+        
+        assertThat(response, hasHeader("Location", Matchers.endsWith("/workspaces/sf/wmsstores/demo/wmslayers/bugsites")));
         
         WMSLayerInfo layer = catalog.getResourceByName("sf", "bugsites", WMSLayerInfo.class);
-        assertNotNull(layer.getNativeBoundingBox());
+        assertThat(layer, hasProperty("nativeBoundingBox", notNullValue()));
+        
     }
     
     @Test
@@ -413,8 +438,9 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     @Test
     public void testDelete() throws Exception {
         assertNotNull(catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
-        assertEquals( 200,  
-            deleteAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers/states").getStatus());
+        assertThat(
+                deleteAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers/states"),
+                hasStatus(HttpStatus.OK));
         assertNull( catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
     }
     

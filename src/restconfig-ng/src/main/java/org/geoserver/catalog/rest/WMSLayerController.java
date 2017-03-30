@@ -5,11 +5,11 @@
 package org.geoserver.catalog.rest;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -18,26 +18,34 @@ import javax.annotation.Nullable;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,8 +54,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 /**
  * Example style resource controller
@@ -60,7 +74,7 @@ public class WMSLayerController extends CatalogController {
     private static final Logger LOGGER = Logging.getLogger(WMSLayerController.class);
 
     @Autowired
-    public WMSLayerController(Catalog catalog) {
+    public WMSLayerController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
     }
     
@@ -192,7 +206,7 @@ public class WMSLayerController extends CatalogController {
             consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
                     MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
     public void putLayer(
-            @RequestBody WMSLayerInfo update,
+            final @RequestBody WMSLayerInfo update,
             final @PathVariable String workspaceName, 
             final @PathVariable(required=false) String storeName, 
             final @PathVariable String layerName, 
@@ -205,19 +219,53 @@ public class WMSLayerController extends CatalogController {
         catalog.validate(original, false).throwIfInvalid();
         catalog.getResourcePool().clear(original.getStore());
         catalog.save(original);
-
+        
+    }
+    
+    
+    @DeleteMapping(value = {"/wmslayers/{layerName}", "/wmsstores/{storeName}/wmslayers/{layerName}"})
+    public void deleteLayer(
+            final @PathVariable String workspaceName, 
+            final @PathVariable(required=false) String storeName, 
+            final @PathVariable String layerName, 
+            final @RequestParam(name = "recurse", defaultValue = "false") boolean recurse) {
+        LOGGER.fine(()->logMessage("DELETE", workspaceName, storeName, layerName));
+        
+        WMSLayerInfo resource = this.getResourceInternal(workspaceName, storeName, layerName);
+        
+        List<LayerInfo> layers = catalog.getLayers(resource);
+        
+        if (recurse) {
+            //by recurse we clear out all the layers that public this resource
+            for (LayerInfo l : layers) {
+                catalog.remove(l);
+                LOGGER.info( "DELETE layer " + l.getName());
+            }
+        }
+        else {
+            if (!layers.isEmpty()) {
+                throw new RestException( "wms layer referenced by layer(s)", HttpStatus.FORBIDDEN);
+            }
+        }
+        
+        catalog.remove( resource);
+        
     }
     
     @PostMapping(path = {"wmslayers","wmsstores/{storeName}/wmslayers"}, consumes = {
             MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
-    public ResponseEntity<String> postCoverage(@RequestBody WMSLayerInfo resource,
+    public ResponseEntity<String> postLayer(@RequestBody WMSLayerInfo resource,
                                            @PathVariable String workspaceName,
                                            @PathVariable(required=false) String storeName,
                                            UriComponentsBuilder builder) throws Exception {
         String resourceName = handleObjectPost(resource, workspaceName, storeName);
-        UriComponents uriComponents = builder.path("/workspaces/{workspaceName}/wmsstores/{storeName}/wmslayers/{wmslayer}")
-                .buildAndExpand(workspaceName, storeName, resourceName);
+        LOGGER.fine(()->logMessage("POST", workspaceName, storeName, resourceName));
+        UriComponents uriComponents = Objects.isNull(storeName)?
+                builder.path("/workspaces/{workspaceName}/wmslayers/{wmslayer}")
+                    .buildAndExpand(workspaceName, resourceName):
+                builder.path("/workspaces/{workspaceName}/wmsstores/{storeName}/wmslayers/{wmslayer}")
+                    .buildAndExpand(workspaceName, storeName, resourceName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
         return new ResponseEntity<>(resourceName, headers, HttpStatus.CREATED);
@@ -229,13 +277,16 @@ public class WMSLayerController extends CatalogController {
     
     private String handleObjectPost(WMSLayerInfo resource, String workspaceName, String storeName) throws Exception {
         NamespaceInfo ns = getNamespaceInternal(workspaceName);
-        WMSStoreInfo store = getStoreInternal(ns, storeName);
+        WMSStoreInfo store;
+        
         if (resource.getStore() != null ) {
-            if ( !storeName.equals( resource.getStore().getName() ) ) {
+            if ( Objects.nonNull(storeName)&&!Objects.equals(storeName, resource.getStore().getName() ) ) {
                 throw new RestException( "Expected wms store " + storeName +
                 " but client specified " + resource.getStore().getName(), HttpStatus.FORBIDDEN );
             }
+            store=resource.getStore();
         } else {
+            store = getStoreInternal(ns, storeName);
             resource.setStore( store );
         }
         
@@ -274,8 +325,58 @@ public class WMSLayerController extends CatalogController {
         // create a layer for the feature type
         catalog.add(new CatalogBuilder(catalog).buildLayer(resource));
         
-        LOGGER.info( "POST wms layer " + storeName + "," + resource.getName() );
         return resource.getName();
     }
     
+    // Works with the callback bellow to fix the enabled property
+    @Override
+    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        return WMSLayerInfo.class.isAssignableFrom(methodParameter.getParameterType());
+    }
+    
+    @Override
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
+        persister.setCallback(new XStreamPersister.Callback() {
+            @Override
+            protected Class<WMSLayerInfo> getObjectClass() {
+                return WMSLayerInfo.class;
+            }
+            
+            // Tries to get the object so XStream can unmarshall over top of it.
+            // A hack to avoid overwriting the enabled property on a PUT
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                @SuppressWarnings("unchecked")
+                Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+                String workspaceName = uriTemplateVars.get("workspaceName");
+                String storeName = uriTemplateVars.get("storeName");
+                String layerName = uriTemplateVars.get("layerName");
+                
+                if (workspaceName == null || storeName == null || layerName == null) {
+                    return null;
+                }
+                WMSStoreInfo store = catalog.getStoreByName(workspaceName, storeName, WMSStoreInfo.class);
+                if (store == null) {
+                    return null;
+                }
+                return catalog.getResourceByStore(store, layerName, WMSLayerInfo.class);
+            }
+            
+            @Override
+            protected void postEncodeReference(Object obj, String ref, String prefix,
+                                               HierarchicalStreamWriter writer, MarshallingContext context) {
+                if (obj instanceof NamespaceInfo) {
+                    NamespaceInfo ns = (NamespaceInfo) obj;
+                    converter.encodeLink("/namespaces/" + converter.encode(ns.getPrefix()), writer);
+                }
+                if (obj instanceof WMSStoreInfo) {
+                    WMSStoreInfo store = (WMSStoreInfo) obj;
+                    converter.encodeLink("/workspaces/" + converter.encode(store.getWorkspace().getName()) +
+                            "/wmsstores/" + converter.encode(store.getName()), writer);
+                    
+                }
+            }
+        });
+    }
+
 }

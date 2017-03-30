@@ -6,20 +6,36 @@
 package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.geoserver.rest.catalog.HttpTestUtils.hasStatus;
 import static org.geoserver.rest.catalog.HttpTestUtils.istream;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.*;
 
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Map;
 
 import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
+import org.custommonkey.xmlunit.NodeTest;
+import org.custommonkey.xmlunit.NodeTestException;
+import org.custommonkey.xmlunit.NodeTester;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.CatalogBuilder;
@@ -45,8 +61,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+
+import junit.framework.AssertionFailedError;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -149,14 +169,37 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAllAvailable() throws Exception {
         
-        Document dom = getAsDOM( "/restng/workspaces/sf/wmsstores/demo/wmslayers.xml?list=available");
-        print(dom);
+        Document dom = getAsDOM( "/restng/workspaces/sf/wmsstores/demo/wmslayers.xml?list=available", 200);
+        //print(dom)
         
         // can't control the demo server enough to check the type names, but it should have something
         // more than just topp:states
-        assertXpathEvaluatesTo("true", "count(//wmsLayerName) > 0", dom);
+        assertXpathExists("/list/wmsLayerName[text() = 'world4326']", dom);
+        assertXpathExists("/list/wmsLayerName[text() = 'anotherLayer']", dom);
+        assertXpathNotExists("/list/wmsLayerName[text() = 'topp:states']", dom);
     }
     
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void testGetAllAvailableJSON() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse( "/restng/workspaces/sf/wmsstores/demo/wmslayers.json?list=available");
+        assertThat(response, hasStatus(HttpStatus.OK));
+
+        JSON json = json(response);
+        JSONArray names = (JSONArray) ((JSONObject)((JSONObject)json).get("list")).get("string");
+        assertThat(names, (Matcher)containsInAnyOrder(equalTo("world4326"),equalTo("anotherLayer")));
+   }
+    
+    @Override
+    protected JSON getAsJSON(String path) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(path);
+        try{
+            return json(response);
+        } catch (JSONException ex) {
+            throw new AssertionFailedError("Invalid JSON: \""+response.getContentAsString()+"\"");
+        }
+    }
+
     @Test
     public void testPutAllUnauthorized() throws Exception {
         assertEquals( 405, putAsServletResponse("/restng/workspaces/sf/wmsstores/demo/wmslayers").getStatus() );
@@ -337,6 +380,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         WMSLayerInfo wli = catalog.getResourceByName( "sf", "states", WMSLayerInfo.class);
         wli.setEnabled(true);
         catalog.save(wli);
+        wli = catalog.getResourceByName( "sf", "states", WMSLayerInfo.class);
         assertTrue(wli.isEnabled());
         boolean isAdvertised = wli.isAdvertised();
         

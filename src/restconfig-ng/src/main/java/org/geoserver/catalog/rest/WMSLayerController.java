@@ -15,13 +15,16 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections.PredicateUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
@@ -32,6 +35,8 @@ import org.geotools.data.ows.Layer;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -69,7 +74,7 @@ public class WMSLayerController extends CatalogController {
         switch(list) {
         case "available":
             LOGGER.fine(()->logMessage("GET available WMS layers from ", workspaceName, storeName, null));
-            return getAvailableLayersInternal(workspaceName, storeName, quietOnNotFound);
+            return new AvailableResources(getAvailableLayersInternal(workspaceName, storeName, quietOnNotFound), "wmsLayerName");
         case "configured":
             LOGGER.fine(()->logMessage("GET configured WMS layers from ", workspaceName, storeName, null));
             
@@ -81,14 +86,14 @@ public class WMSLayerController extends CatalogController {
     
     Collection<WMSStoreInfo> getStoresInternal(NamespaceInfo ns, String storeName, boolean quietOnNotFound) {
         if(Objects.nonNull(storeName)) {
-            return Collections.singleton(getStoreInternal(ns, storeName, quietOnNotFound));
+            return Collections.singleton(getStoreInternal(ns, storeName));
         } else {
             return catalog.getStoresByWorkspace(ns.getPrefix(), WMSStoreInfo.class);
         }
     }
     
-    List<AvailableResource<WMSLayerInfo>> getAvailableLayersInternal(String workspaceName, String storeName, boolean quietOnNotFound) {
-        NamespaceInfo ns = getNamespaceInternal(workspaceName, quietOnNotFound);
+    List<String> getAvailableLayersInternal(String workspaceName, String storeName, boolean quietOnNotFound) {
+        NamespaceInfo ns = getNamespaceInternal(workspaceName);
         Collection<WMSStoreInfo> stores = getStoresInternal(ns, storeName, quietOnNotFound);
         return stores.stream()
             .flatMap(store->{
@@ -103,14 +108,20 @@ public class WMSLayerController extends CatalogController {
                     .map(Layer::getName)
                     .filter(Objects::nonNull)
                     .filter(name -> !name.isEmpty())
-                    .filter(name -> Objects.isNull(catalog.getResourceByStore(store, name, WMSLayerInfo.class)))
-                    .map(AvailableResource<WMSLayerInfo>::new);
+                    .filter(name -> !layerConfigured(store, name));
             })
             .collect(Collectors.toList());
     }
     
+    boolean layerConfigured(final WMSStoreInfo store, final String nativeName) {
+        final Filter filter = Predicates.and(Predicates.equal("store.name", store.getName()),Predicates.equal("nativeName", nativeName));
+        try(CloseableIterator<WMSLayerInfo> it = catalog.list(WMSLayerInfo.class, filter, 0, 1, null)){
+            return it.hasNext();
+        }
+    }
+    
     List<WMSLayerInfo> getConfiguredLayersInternal(String workspaceName, String storeName, boolean quietOnNotFound) {
-        NamespaceInfo ns = getNamespaceInternal(workspaceName, quietOnNotFound);
+        NamespaceInfo ns = getNamespaceInternal(workspaceName);
         Collection<WMSStoreInfo> stores = getStoresInternal(ns, storeName, quietOnNotFound);
         return stores.stream()
             .flatMap(store->catalog.getResourcesByStore(store, WMSLayerInfo.class).stream())
@@ -122,60 +133,55 @@ public class WMSLayerController extends CatalogController {
     public RestWrapper<WMSLayerInfo> getLayer(
             final @PathVariable String workspaceName, 
             final @PathVariable(required=false) String storeName, 
-            final @PathVariable String layerName, 
-            final @RequestParam(name = "quietOnNotFound", required = false, defaultValue = "false") boolean quietOnNotFound) {
+            final @PathVariable String layerName) {
         LOGGER.fine(()->logMessage("GET", workspaceName, storeName, layerName));
         
-        WMSLayerInfo layer = getResourceInternal(workspaceName, storeName, layerName, quietOnNotFound);
+        WMSLayerInfo layer = getResourceInternal(workspaceName, storeName, layerName);
         
         return wrapObject(layer, WMSLayerInfo.class);
     }
     
-    protected ResourceNotFoundException notFound(String message, boolean quietOnNotFound) {
-        return new ResourceNotFoundException(quietOnNotFound?"":message);
-    }
-    
-    protected NamespaceInfo getNamespaceInternal(String workspaceName, boolean quietOnNotFound) {
+    protected NamespaceInfo getNamespaceInternal(String workspaceName) {
         if(Objects.isNull(workspaceName)) {
             throw new NullPointerException();
         } else {
             NamespaceInfo ns = catalog.getNamespaceByPrefix(workspaceName);
             if(Objects.isNull(ns)) {
-                throw notFound("Could not find workspace "+workspaceName, quietOnNotFound);
+                throw new ResourceNotFoundException("Could not find workspace "+workspaceName);
             } else {
                 return ns;
             }
         }
     }
-    protected WMSStoreInfo getStoreInternal(NamespaceInfo ns, String storeName, boolean quietOnNotFound) {
+    protected WMSStoreInfo getStoreInternal(NamespaceInfo ns, String storeName) {
         if(Objects.isNull(storeName)) {
             throw new NullPointerException();
         } else {
             WMSStoreInfo store = catalog.getStoreByName(ns.getPrefix(), storeName, WMSStoreInfo.class);
             if(Objects.isNull(ns)) {
-                throw notFound("Could not find WMSStore "+storeName + " in workspace "+ns.getPrefix(), quietOnNotFound);
+                throw new ResourceNotFoundException("Could not find WMSStore "+storeName + " in workspace "+ns.getPrefix());
             } else {
                 return store;
             }
         }
     }
-    protected WMSLayerInfo getResourceInternal(final String workspaceName, @Nullable final String storeName, final String layerName, boolean quietOnNotFound) {
-        final NamespaceInfo ns = getNamespaceInternal(workspaceName, quietOnNotFound);
+    protected WMSLayerInfo getResourceInternal(final String workspaceName, @Nullable final String storeName, final String layerName) {
+        final NamespaceInfo ns = getNamespaceInternal(workspaceName);
         final WMSLayerInfo layer;
         if(Objects.isNull(layerName)) {
             throw new NullPointerException();
         } else if (Objects.isNull(storeName)) {
             layer = catalog.getResourceByName(ns, layerName, WMSLayerInfo.class);
             if(Objects.isNull(layer)) {
-                throw notFound("No such cascaded wms: "+workspaceName+","+layerName, quietOnNotFound);
+                throw new ResourceNotFoundException("No such cascaded wms: "+workspaceName+","+layerName);
             } else {
                 return layer;
             }
         } else {
-            WMSStoreInfo store = getStoreInternal(ns, storeName, quietOnNotFound);
+            WMSStoreInfo store = getStoreInternal(ns, storeName);
             layer = catalog.getResourceByStore(store, layerName, WMSLayerInfo.class);
             if(Objects.isNull(layer)) {
-                throw notFound("Could not find WMSLayer "+layerName+" in store "+storeName + " in workspace "+workspaceName, quietOnNotFound);
+                throw new ResourceNotFoundException("No such cascaded wms: "+workspaceName+","+layerName);
             } else {
                 return layer;
             }
@@ -190,25 +196,19 @@ public class WMSLayerController extends CatalogController {
                 final @PathVariable String workspaceName, 
                 final @PathVariable(required=false) String storeName, 
                 final @PathVariable String layerName, 
-                final @RequestParam(name = "quietOnNotFound", required = false, defaultValue = "false") boolean quietOnNotFound) {
+                final @RequestParam(name = "calculate", required = false) String calculate) {
             LOGGER.fine(()->logMessage("PUT", workspaceName, storeName, layerName));
             
-            WMSLayerInfo original = getResourceInternal(workspaceName, storeName, layerName, quietOnNotFound);
-            
+            WMSLayerInfo original = getResourceInternal(workspaceName, storeName, layerName);
+            calculateOptionalFields(update, original, calculate);
             new CatalogBuilder(catalog).updateWMSLayer(original, update);
             catalog.validate(original, false).throwIfInvalid();
+            catalog.getResourcePool().clear(original.getStore());
             catalog.save(original);
 
         }
 
     String logMessage(final String message, final String workspaceName, @Nullable final String storeName, @Nullable final String layerName) {
         return message+(Objects.isNull(layerName)?"":(" WMS Layer "+layerName+" in"))+(Objects.isNull(storeName)?"":(" store "+storeName+" in"))+" in workspace "+ workspaceName;
-    }
-
-    @Override
-    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        super.configurePersister(persister, converter);
-        
-        persister.getXStream().alias("wmsLayerName", AvailableResource.class);
     }
 }

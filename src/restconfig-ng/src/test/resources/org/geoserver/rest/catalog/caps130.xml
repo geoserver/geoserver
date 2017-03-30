@@ -95,6 +95,20 @@
         <BoundingBox CRS="EPSG:4326" minx="-90" miny="-180"
           maxx="90" maxy="180" />
       </Layer>
+      <Layer queryable="1">
+        <Name>topp:states</Name>
+        <Title>An old friend</Title>
+        <CRS>EPSG:4326</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-180</westBoundLongitude>
+          <eastBoundLongitude>180</eastBoundLongitude>
+          <southBoundLatitude>-90</southBoundLatitude>
+          <northBoundLatitude>90</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="EPSG:4326" minx="-90" miny="-180"
+          maxx="90" maxy="180" />
+      </Layer>
     </Layer>
   </Capability>
 </WMS_Capabilities>

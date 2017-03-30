@@ -93,16 +93,7 @@ public class FeatureTypeController extends CatalogController {
             @PathVariable(name = "datastoreName", required = false) String datastoreName,
             @RequestParam(name = "list", required = true, defaultValue = "configured") String list) {
 
-        // ensure referenced resources exist
-        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new RestException("No such workspace: " + workspaceName, HttpStatus.NOT_FOUND);
-        }
-
-        if (datastoreName != null
-                && catalog.getDataStoreByName(workspaceName, datastoreName) == null) {
-            throw new RestException("No such datastore: " + workspaceName + "," + datastoreName,
-                    HttpStatus.NOT_FOUND);
-        }
+        ensureResourcesExist(workspaceName, datastoreName);
 
         if ("available".equalsIgnoreCase(list) || "available_with_geom".equalsIgnoreCase(list)) {
             DataStoreInfo info = catalog.getDataStoreByName(workspaceName, datastoreName);
@@ -171,6 +162,8 @@ public class FeatureTypeController extends CatalogController {
             @PathVariable(name = "datastoreName", required = false) String dataStore,
             @RequestBody FeatureTypeInfo featureType, UriComponentsBuilder builder)
             throws Exception {
+
+        ensureResourcesExist(workspace, dataStore);
 
         // ensure the store matches up
         if (featureType.getStore() != null) {
@@ -289,18 +282,7 @@ public class FeatureTypeController extends CatalogController {
             @PathVariable(name = "featureTypeName", required = true) String featureTypeName,
             @RequestParam(name = "quietOnNotFound", required = false, defaultValue = "false") Boolean quietOnNotFound) {
 
-        System.out.println("Entering FeatureTypeController::getFeatureType");
-
-        // ensure referenced resources exist
-        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new RestException("No such workspace: " + workspaceName, HttpStatus.NOT_FOUND);
-        }
-
-        if (datastoreName != null
-                && catalog.getDataStoreByName(workspaceName, datastoreName) == null) {
-            throw new RestException("No such datastore: " + workspaceName + "," + datastoreName,
-                    HttpStatus.NOT_FOUND);
-        }
+        ensureResourcesExist(workspaceName, datastoreName);
 
         if (datastoreName != null && catalog.getFeatureTypeByDataStore(
                 catalog.getDataStoreByName(workspaceName, datastoreName),
@@ -358,17 +340,8 @@ public class FeatureTypeController extends CatalogController {
             @RequestBody(required = true) FeatureTypeInfo featureTypeUpdate,
             @RequestParam(name = "recalculate", required = false) String recalculate) {
 
-        // ensure referenced resources exist
-        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new ResourceNotFoundException("No such workspace: " + workspaceName);
-        }
-
-        if (datastoreName != null
-                && catalog.getDataStoreByName(workspaceName, datastoreName) == null) {
-            throw new ResourceNotFoundException(
-                    "No such datastore: " + workspaceName + "," + datastoreName);
-        }
-
+        ensureResourcesExist(workspaceName, datastoreName);
+        
         if (datastoreName != null
                 && catalog.getFeatureTypeByDataStore(catalog.getDataStoreByName(workspaceName),
                         featureTypeName) == null) {
@@ -422,16 +395,7 @@ public class FeatureTypeController extends CatalogController {
             @PathVariable(name = "featureTypeName", required = true) String featureTypeName,
             @RequestParam(name = "recurse", defaultValue = "false") Boolean recurse) {
 
-        // ensure referenced resources exist
-        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new RestException("No such workspace: " + workspaceName, HttpStatus.NOT_FOUND);
-        }
-
-        if (datastoreName != null
-                && catalog.getDataStoreByName(workspaceName, datastoreName) == null) {
-            throw new RestException("No such datastore: " + workspaceName + "," + datastoreName,
-                    HttpStatus.NOT_FOUND);
-        }
+        ensureResourcesExist(workspaceName, datastoreName);
 
         if (datastoreName != null
                 && catalog.getFeatureTypeByDataStore(catalog.getDataStoreByName(workspaceName),
@@ -471,6 +435,33 @@ public class FeatureTypeController extends CatalogController {
         LOGGER.info("DELETE feature type" + datastoreName + "," + featureTypeName);
     }
 
+    /**
+     * Check if the provided workspace and datastore exist.
+     * 
+     * If the parameter is null, no check is performed.
+     * 
+     * If the workspaceName / datastoreName parameter is provided but the corresponding 
+     * resource does not exist, throws a 404 exception.
+     * 
+     * Implementation Note: Does not throw the explicit {@link ResourceNotFoundException}, because
+     * that gets silenced by quietOnNotFound parameters, but these exceptions should not be. 
+     * 
+     * @param workspaceName
+     * @param datastoreName
+     */
+    public void ensureResourcesExist(String workspaceName, String datastoreName) {
+        // ensure referenced resources exist
+        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new RestException("No such workspace: " + workspaceName, HttpStatus.NOT_FOUND);
+        }
+
+        if (datastoreName != null
+                && catalog.getDataStoreByName(workspaceName, datastoreName) == null) {
+            throw new RestException("No such datastore: " + workspaceName + "," + datastoreName,
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
     SimpleFeatureType buildFeatureType(FeatureTypeInfo fti) {
         // basic checks
         if (fti.getName() == null) {
@@ -506,7 +497,7 @@ public class FeatureTypeController extends CatalogController {
 
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType,
-                            Class<? extends HttpMessageConverter<?>> converterType) {
+            Class<? extends HttpMessageConverter<?>> converterType) {
         return FeatureTypeInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
@@ -582,8 +573,7 @@ public class FeatureTypeController extends CatalogController {
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
         return new ObjectToMapWrapper<FeatureTypeInfo>(FeatureTypeInfo.class) {
             @Override
-            protected void wrapInternal(Map properties, SimpleHash model,
-                                        FeatureTypeInfo object) {
+            protected void wrapInternal(Map properties, SimpleHash model, FeatureTypeInfo object) {
                 try {
                     properties.put("boundingBox", object.boundingBox());
                 } catch (Exception e) {

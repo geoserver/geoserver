@@ -28,6 +28,11 @@ public abstract class CatalogController extends RestBaseController {
      * Not an official MIME type, but GeoServer used to support it
      */
     public static final String TEXT_JSON = "text/json";
+    
+    /**
+     * Not an official MIME type, but GeoServer used to support it
+     */
+    public static final String TEXT_XML = "text/xml";
     /**
      * Not an official MIME type, but GeoServer used to support it
      */

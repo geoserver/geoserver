@@ -263,6 +263,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
                         "<database>target/foo</database>" +
                         "<dbtype>h2</dbtype>" +
                         " </connectionParameters>" +
+                        "<workspace>gs</workspace>" +
                         "</dataStore>";
 
         post("/restng/workspaces/gs/datastores", xml);

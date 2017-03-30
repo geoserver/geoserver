@@ -94,7 +94,7 @@
     <module>rest</module>
     <module>bdb</module>
     <module>web</module>
-    <module>gs-importer-rest-ng</module>
+    <module>rest-ng</module>
   </modules>
 
 </project>

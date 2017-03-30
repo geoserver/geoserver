@@ -55,7 +55,7 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         String jsonIndexToken = "{\"name\":\"" + name + "\"";
 
         // GET
-        assertTrue(getAsString(path).trim().contains("not found"));
+        assertNotFound(path);
         assertFalse(getIndexAsString(path, null).contains(htmlIndexToken));
         assertFalse(getIndexAsString(path, "html").contains(htmlIndexToken));
         assertFalse(getIndexAsString(path, "xml").contains(xmlIndexToken));
@@ -64,8 +64,8 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         // PUT
         put(path, content).close();
         String list = getIndexAsString(path,null);
-        if(!list.contains(jsonIndexToken)){
-            assertTrue("list "+path, list.contains(jsonIndexToken));
+        if(!list.contains(htmlIndexToken)){
+            assertTrue("list "+path, list.contains(htmlIndexToken));
         }
         assertTrue("list "+path,getIndexAsString(path, "html").contains(htmlIndexToken));
         assertTrue("list "+path,getIndexAsString(path, "xml").contains(xmlIndexToken));
@@ -78,8 +78,7 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         assertEquals(200, deleteAsServletResponse(path).getStatus());
 
         // GET
-        list = getAsString(path).trim();
-        assertTrue(list.contains("not found"));
+        assertNotFound(path);
         assertFalse(getIndexAsString(path, null).contains(htmlIndexToken));
         assertFalse(getIndexAsString(path, "html").contains(htmlIndexToken));
         assertFalse(getIndexAsString(path, "xml").contains(xmlIndexToken));
@@ -129,12 +128,9 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         }
     }
 
-    void assertNotFound( String path, MockHttpServletResponse response ) throws Exception {
-        assertEquals( 404, response.getStatus() );
-        String string = response.getContentAsString();
-        if( !string.contains("not found")){
-            fail("Expected 'not found' for '"+ path+"':'"+string+"'");
-        }
+    void assertNotFound(String path) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(path+"?quietOnNotFound=true");
+        assertEquals("404 expected for '" + path + "'", 404, response.getStatus());
     }
     @Test
     public void testAllPaths() throws Exception {
@@ -142,8 +138,7 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         List<String> paths = getAllPaths();
 
         for (String path : paths) { // GET - confirm template not there
-            MockHttpServletResponse response = getAsServletResponse(path);
-            assertNotFound(path, response);
+            assertNotFound(path);
         }
 
         for (String path : paths) { // PUT
@@ -160,7 +155,7 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         }
 
         for (String path : paths) { // GET - confirm template removed
-            assertNotFound(path,getAsServletResponse(path));
+            assertNotFound(path);
         }
     }
 

@@ -12,20 +12,47 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.accept.ContentNegotiationStrategy;
+import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.xml.sax.EntityResolver;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Configure various aspects of Spring MVC, in particular message converters
  */
 @Configuration
 public class MVCConfiguration extends WebMvcConfigurationSupport {
+
+    private final class DefaultContentNegotiation implements ContentNegotiationStrategy {
+        @Override
+        public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
+                throws HttpMediaTypeNotAcceptableException {
+            Object request = webRequest.getNativeRequest();
+            List<MediaType> list = new ArrayList<>();
+            if( request instanceof HttpServletRequest){
+                HttpServletRequest httpRequest = (HttpServletRequest) request;
+                String path = httpRequest.getPathInfo();
+                if( path != null && path.contains("templates") && path.endsWith(".ftl")){
+                    list.add( MediaType.TEXT_PLAIN);
+                }
+            }
+            if( list.isEmpty()){
+                list.add(MediaType.TEXT_HTML);
+            }
+            return list;
+        }
+    }
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -73,7 +100,9 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
         configurer.mediaType("html", MediaType.TEXT_HTML);
         configurer.mediaType("xml", MediaType.APPLICATION_XML);
         configurer.mediaType("json", MediaType.APPLICATION_JSON);
-        configurer.defaultContentType(MediaType.TEXT_HTML);
+
+        configurer.defaultContentTypeStrategy( new DefaultContentNegotiation());
+        
 //        configurer.favorPathExtension(true);
         //todo properties files are only supported for test cases. should try to find a way to
         //support them without polluting prod code with handling

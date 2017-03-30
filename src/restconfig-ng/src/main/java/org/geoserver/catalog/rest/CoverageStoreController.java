@@ -26,6 +26,7 @@ import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -63,7 +64,7 @@ public class CoverageStoreController extends CatalogController {
     private static final Logger LOGGER = Logging.getLogger(CoverageStoreController.class);
 
     @Autowired
-    public CoverageStoreController(Catalog catalog) {
+    public CoverageStoreController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
     }
 

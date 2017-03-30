@@ -92,6 +92,7 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new RestInterceptor());
+        registry.addInterceptor(new CallbackInterceptor());
     }
 
     @Override

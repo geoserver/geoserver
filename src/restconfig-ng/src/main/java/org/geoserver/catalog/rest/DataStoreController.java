@@ -21,6 +21,7 @@ import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -50,7 +51,7 @@ public class DataStoreController extends CatalogController {
     private static final Logger LOGGER = Logging.getLogger(DataStoreController.class);
 
     @Autowired
-    public DataStoreController(Catalog catalog) {
+    public DataStoreController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
     }
 

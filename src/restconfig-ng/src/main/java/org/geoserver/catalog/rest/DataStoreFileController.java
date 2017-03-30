@@ -22,6 +22,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -55,7 +56,7 @@ import java.util.zip.ZipOutputStream;
 public class DataStoreFileController extends AbstractStoreUploadController {
 
     @Autowired
-    public DataStoreFileController(Catalog catalog) {
+    public DataStoreFileController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
     }
 

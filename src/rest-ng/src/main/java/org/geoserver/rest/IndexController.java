@@ -29,7 +29,7 @@ public class IndexController extends RestBaseController {
     @Autowired
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
-    @GetMapping(value = "", produces = {MediaType.TEXT_HTML_VALUE})
+    @GetMapping(value = {"", "index"}, produces = {MediaType.TEXT_HTML_VALUE})
     public RestWrapper get() {
 
         SimpleHash model = new SimpleHash();

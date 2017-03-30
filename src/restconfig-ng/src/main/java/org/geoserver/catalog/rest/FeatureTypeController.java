@@ -40,6 +40,7 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -78,7 +79,7 @@ public class FeatureTypeController extends CatalogController {
     private static final Logger LOGGER = Logging.getLogger(CoverageStoreController.class);
 
     @Autowired
-    public FeatureTypeController(Catalog catalog) {
+    public FeatureTypeController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
     }
 

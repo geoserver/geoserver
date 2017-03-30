@@ -43,6 +43,7 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -88,7 +89,7 @@ public class StructuredCoverageController extends CatalogController {
     }
 
     @Autowired
-    public StructuredCoverageController(Catalog catalog) {
+    public StructuredCoverageController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
     }
 

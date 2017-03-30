@@ -28,6 +28,7 @@ import org.geoserver.rest.util.RESTUtils;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -63,7 +64,7 @@ public class TemplateController extends CatalogController {
     static Logger LOGGER = Logging.getLogger("org.geoserver.catalog.rest");
     
     @Autowired
-    public TemplateController(Catalog catalog) {
+    public TemplateController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
         resources = catalog.getResourceLoader();
     }

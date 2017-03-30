@@ -3,11 +3,11 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.catalog.rest;
+package org.geoserver.rest.catalog;
 
-import static junit.framework.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
@@ -15,16 +15,15 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.TestData;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.After;
 import org.junit.Test;
-import org.w3c.dom.Document;
-
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 public class AdminRequestTest extends CatalogRESTTestSupport {
 
@@ -94,41 +93,41 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
 
     @Test
     public void testWorkspaces() throws Exception {
-        assertEquals(200, getAsServletResponse("/rest/workspaces.xml").getStatus());
-        Document dom = getAsDOM("/rest/workspaces.xml");
+        assertEquals(200, getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml").getStatus());
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
         assertEquals(0, dom.getElementsByTagName("workspace").getLength());
         
         super.login();
-        dom = getAsDOM("/rest/workspaces.xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
         assertEquals(getCatalog().getWorkspaces().size(), 
                 dom.getElementsByTagName("workspace").getLength());
 
         loginAsCite();
-        assertEquals(200, getAsServletResponse("/rest/workspaces.xml").getStatus());
-        dom = getAsDOM("/rest/workspaces.xml");
+        assertEquals(200, getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces.xml").getStatus());
+        dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
         assertEquals(1, dom.getElementsByTagName("workspace").getLength());
         
     }
 
     @Test
     public void testWorkspace() throws Exception {
-        assertEquals(404, getAsServletResponse("/rest/workspaces/sf.xml").getStatus());
-        assertEquals(404, getAsServletResponse("/rest/workspaces/cite.xml").getStatus());
+        assertEquals(404, getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf.xml").getStatus());
+        assertEquals(404, getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/cite.xml").getStatus());
 
         loginAsCite();
-        assertEquals(404, getAsServletResponse("/rest/workspaces/sf.xml").getStatus());
-        assertEquals(200, getAsServletResponse("/rest/workspaces/cite.xml").getStatus());
+        assertEquals(404, getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf.xml").getStatus());
+        assertEquals(200, getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/cite.xml").getStatus());
     }
 
     @Test
     public void testGlobalLayerGroupReadOnly() throws Exception {
         loginAsSf();
 
-        Document dom = getAsDOM( "/rest/layergroups.xml");
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/layergroups.xml");
         assertEquals( 1, dom.getElementsByTagName( "layerGroup").getLength());
         assertXpathEvaluatesTo("global", "//layerGroup/name", dom);
         
-        dom = getAsDOM( "/rest/layergroups/global.xml");
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/layergroups/global.xml");
         assertEquals( "layerGroup", dom.getDocumentElement().getNodeName());
 
         String xml = 
@@ -140,7 +139,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
               "</layerGroup>";
             
         MockHttpServletResponse response = 
-            putAsServletResponse("/rest/layergroups/global", xml, "text/xml" );
+            putAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups/global", xml, "text/xml" );
         assertEquals(405, response.getStatus());
 
         xml = 
@@ -155,7 +154,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
                   "<style>point</style>" +
                 "</styles>" +
               "</layerGroup>"; 
-        response = postAsServletResponse("/rest/layergroups", xml, "text/xml" );
+        response = postAsServletResponse(RestBaseController.ROOT_PATH + "/layergroups", xml, "text/xml" );
         assertEquals(405, response.getStatus());
     }
 
@@ -163,23 +162,23 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
     public void testLocalLayerGroupHidden() throws Exception {
         loginAsSf();
 
-        Document dom = getAsDOM( "/rest/layergroups.xml");
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/layergroups.xml");
         print(dom);
         assertEquals( 1, dom.getElementsByTagName( "layerGroup").getLength());
         assertXpathEvaluatesTo("global", "//layerGroup/name", dom);
 
-        MockHttpServletResponse response = getAsServletResponse("/rest/workspaces/cite/layergroups.xml");
+        MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/cite/layergroups.xml");
         assertEquals(404, response.getStatus());
 
-        response = getAsServletResponse("/rest/workspaces/cite/layergroups.xml");
+        response = getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/cite/layergroups.xml");
         assertEquals(404, response.getStatus());
 
 
-        dom = getAsDOM( "/rest/layergroups.xml");
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/layergroups.xml");
         assertEquals( 1, dom.getElementsByTagName( "layerGroup").getLength());
         assertXpathEvaluatesTo("global", "//layerGroup/name", dom);
 
-        dom = getAsDOM( "/rest/workspaces/sf/layergroups.xml");
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/sf/layergroups.xml");
         assertEquals( 1, dom.getElementsByTagName( "layerGroup").getLength());
         assertXpathEvaluatesTo("local", "//layerGroup/name", dom);
 
@@ -189,12 +188,12 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
     public void testGlobalStyleReadOnly() throws Exception {
         loginAsSf();
 
-        Document dom = getAsDOM( "/rest/styles.xml");
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/styles.xml");
 
         assertXpathNotExists("//style/name[text() = 'sf_style']", dom);
         assertXpathNotExists("//style/name[text() = 'cite_style']", dom);
         
-        dom = getAsDOM( "/rest/styles/point.xml");
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/styles/point.xml");
         assertEquals( "style", dom.getDocumentElement().getNodeName());
 
         String xml = 
@@ -203,7 +202,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
             "</style>";
             
         MockHttpServletResponse response = 
-            putAsServletResponse("/rest/styles/point", xml, "text/xml" );
+            putAsServletResponse(RestBaseController.ROOT_PATH + "/styles/point", xml, "text/xml" );
         assertEquals(405, response.getStatus());
 
         xml = 
@@ -211,7 +210,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
                 "<name>foo</name>" +
                 "<filename>foo.sld</filename>" + 
               "</style>"; 
-        response = postAsServletResponse("/rest/styles", xml, "text/xml" );
+        response = postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml, "text/xml" );
         assertEquals(405, response.getStatus());
     }
    
@@ -219,21 +218,21 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
     public void testLocalStyleHidden() throws Exception {
         loginAsCite();
 
-        Document dom = getAsDOM( "/rest/styles.xml");
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/styles.xml");
         assertXpathNotExists("//style/name[text() = 'cite_style']", dom);
         assertXpathNotExists("//style/name[text() = 'sf_style']", dom);
 
-        MockHttpServletResponse response = getAsServletResponse("/rest/workspaces/sf/styles.xml");
+        MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/styles.xml");
         assertEquals(404, response.getStatus());
 
         loginAsSf();
 
-        dom = getAsDOM( "/rest/styles.xml");
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/styles.xml");
        
         assertXpathNotExists("//style/name[text() = 'cite_style']", dom);
         assertXpathNotExists("//style/name[text() = 'sf_style']", dom);
         
-        dom = getAsDOM( "/rest/workspaces/sf/styles.xml");
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/sf/styles.xml");
         assertEquals( 1, dom.getElementsByTagName( "style").getLength());
         assertXpathEvaluatesTo("sf_style", "//style/name", dom);
     }

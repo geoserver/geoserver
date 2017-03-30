@@ -136,15 +136,15 @@
             </configuration>
           </execution>          
           <execution>
-            <id>security</id>
+            <id>manifests</id>
             <phase>process-resources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/security.yaml</inputSpec>
+              <inputSpec>src/main/resources/api/manifests.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/security</output>
+              <output>${project.build.directory}/api/manifests</output>
             </configuration>
           </execution>
           <execution>

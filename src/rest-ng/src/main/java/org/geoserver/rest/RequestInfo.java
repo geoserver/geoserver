@@ -1,5 +1,7 @@
 package org.geoserver.rest;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.geoserver.ows.URLMangler;
@@ -31,6 +33,9 @@ public class RequestInfo {
     String servletPath;
     String pagePath;
     String extension;
+    
+
+    private Map<String, String[]> queryMap;
 
 
     /**
@@ -49,7 +54,7 @@ public class RequestInfo {
 
         servletPath= request.getServletPath();
         pagePath = request.getServletPath()+request.getPathInfo();
-
+        setQueryMap(request.getParameterMap());
         //strip off the extension
         extension = ResponseUtils.getExtension(pagePath);
         if ( extension != null ) {
@@ -60,6 +65,11 @@ public class RequestInfo {
         if ( pagePath.endsWith( "/" ) ) {
             pagePath = pagePath.substring(0, pagePath.length()-1);
         }
+    }
+
+    private void setQueryMap(Map<String, String[]> parameterMap) {
+        queryMap = parameterMap;
+        
     }
 
     /**
@@ -137,6 +147,12 @@ public class RequestInfo {
         return (RequestInfo) RequestContextHolder.getRequestAttributes()
                 .getAttribute(RequestInfo.KEY, RequestAttributes.SCOPE_REQUEST);
     }
+
+    public Map<String, String[]> getQueryMap() {
+        return queryMap;
+    }
+
+    
 
     /**
      * Sets the provided RequestInfo into the {@link RequestContextHolder}

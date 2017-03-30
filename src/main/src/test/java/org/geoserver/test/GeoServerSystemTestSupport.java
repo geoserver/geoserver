@@ -1258,6 +1258,39 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected Document getAsDOM(final String path, String encoding) throws Exception {
         return getAsDOM(path, true, encoding);
     }
+    
+    /**
+     * Executes an ows request using the GET method and returns the result as an 
+     * JSON document.
+     * 
+     * @param path The portion of the request after the context, 
+     *      example: 'wms?request=GetMap&version=1.1.1&..."
+     * @param statusCode Expected status code
+     * 
+     * @return A result of the request parsed into a dom.
+     */
+    protected JSON getAsJSON(final String path, int statusCode)
+            throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(path, statusCode);
+        return json(response);
+    }
+    
+    
+    private MockHttpServletResponse getAsServletResponse(String path, int statusCode) throws Exception {
+        MockHttpServletResponse response = getAsServletResponse(path);
+        int status = response.getStatus();
+        if( statusCode != status ){
+            String content = response.getContentAsString();
+            if( content == null || content.length() == 0 ){
+                throw new ServiceException("expected status <"+statusCode+"> but was <"+status+">");
+            }
+            else {
+                throw new ServiceException("expected status <"+statusCode+"> but was <"+status+">:"+content);
+            }
+        }
+        return response;
+    }
+
     /**
      * Executes a request using the GET method and parses the result as a json object.
      * 

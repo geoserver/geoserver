@@ -68,14 +68,15 @@ public class CoverageController extends CatalogController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE})
-    public RestWrapper getCoverages(@RequestParam(name = "list", required = false) String list,
-                                    @PathVariable(name = "workspace") String workspaceName,
-                                    @PathVariable(name = "store") String storeName) {
+    public Object getCoverages(@RequestParam(name = "list", required = false) String list,
+                               @PathVariable(name = "workspace") String workspaceName,
+                               @PathVariable(name = "store") String storeName) {
         // find the coverage store
         CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
         if (list != null && list.equalsIgnoreCase("all")) {
             // we need to ask the coverage reader which coverages are available
-            return wrapList(getStoreCoverages(coverageStore), String.class);
+            List<String> coverages = getStoreCoverages(coverageStore);
+            return new StringsList(coverages, "coverageName");
         }
         // get the store configured coverages
         List<CoverageInfo> coverages = catalog.getCoveragesByCoverageStore(coverageStore);
@@ -88,8 +89,8 @@ public class CoverageController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
             TEXT_JSON})
-    public RestWrapper getCoverages(@RequestParam(name = "list", required = false) String list,
-                                    @PathVariable(name = "workspace") String workspaceName) {
+    public Object getCoverages(@RequestParam(name = "list", required = false) String list,
+                               @PathVariable(name = "workspace") String workspaceName) {
         // get the workspace name space
         NamespaceInfo nameSpace = catalog.getNamespaceByPrefix(workspaceName);
         if (nameSpace == null) {
@@ -101,7 +102,7 @@ public class CoverageController extends CatalogController {
             // we need to ask the coverage reader of each available coverage store which coverages are available
             List<String> coverages = catalog.getCoverageStores().stream()
                     .flatMap(store -> getStoreCoverages(store).stream()).collect(Collectors.toList());
-            return wrapList(coverages, String.class);
+            return new StringsList(coverages, "coverageName");
         }
         // get all the coverages of the workspace \ name space
         List<CoverageInfo> coverages = catalog.getCoveragesByNamespace(nameSpace);
@@ -351,7 +352,8 @@ public class CoverageController extends CatalogController {
 
             @Override
             protected CatalogInfo getCatalogObject() {
-                Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+                Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes()
+                        .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
                 String workspace = uriTemplateVars.get("workspace");
                 String coveragestore = uriTemplateVars.get("store");
                 String coverage = uriTemplateVars.get("coverage");

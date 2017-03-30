@@ -73,6 +73,7 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
         configurer.mediaType("html", MediaType.TEXT_HTML);
         configurer.mediaType("xml", MediaType.APPLICATION_XML);
         configurer.mediaType("json", MediaType.APPLICATION_JSON);
+        configurer.defaultContentType(MediaType.TEXT_HTML);
 //        configurer.favorPathExtension(true);
         //todo properties files are only supported for test cases. should try to find a way to
         //support them without polluting prod code with handling

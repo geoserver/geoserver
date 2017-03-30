@@ -11,8 +11,8 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.converters.XStreamMessageConverter;
-import org.geoserver.wms.WMSInfo;
-import org.geoserver.wms.WMSXStreamLoader;
+import org.geoserver.wcs.WCSInfo;
+import org.geoserver.wcs.WCSXStreamLoader;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
@@ -28,36 +28,36 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * WMS Settings controller
+ * WCS Settings controller
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = "/restng/services/wms", produces = {
+@RequestMapping(path = "/restng/services/wcs", produces = {
         MediaType.APPLICATION_JSON_VALUE,
         MediaType.APPLICATION_XML_VALUE,
         MediaType.TEXT_HTML_VALUE})
-public class WMSSettingsController extends ServiceSettingsController {
-    private static final Logger LOGGER = Logging.getLogger(WMSSettingsController.class);
+public class WCSSettingsController extends ServiceSettingsController {
+    private static final Logger LOGGER = Logging.getLogger(WCSSettingsController.class);
 
     @Autowired
-    public WMSSettingsController(GeoServer geoServer) { super(geoServer, WMSInfo.class); };
+    public WCSSettingsController(GeoServer geoServer) { super(geoServer, WCSInfo.class); };
 
     @PutMapping( value = {"/settings", "/workspaces/{workspace}/settings"},
             consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
                     MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
-    public void putServiceSettings(@RequestBody WMSInfo info,
+    public void putServiceSettings(@RequestBody WCSInfo info,
                                    @PathVariable ( name = "workspace", required = false) String workspaceName) {
         super.putServiceSettings(info, workspaceName);
     }
 
     @Override
     public String getTemplateName(Object object) {
-        return "wmsSettings";
+        return "wcsSettings";
     }
 
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return WMSInfo.class.isAssignableFrom(methodParameter.getParameterType());
+        return WCSInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
@@ -71,18 +71,18 @@ public class WMSSettingsController extends ServiceSettingsController {
                 ServiceInfo service;
                 if (workspace != null) {
                     WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
-                    service = geoServer.getService(ws, WMSInfo.class);
+                    service = geoServer.getService(ws, WCSInfo.class);
                 } else {
-                    service = geoServer.getService(WMSInfo.class);
+                    service = geoServer.getService(WCSInfo.class);
                 }
                 return service;
             }
             @Override
-            protected Class<WMSInfo> getObjectClass() {
-                return WMSInfo.class;
+            protected Class<WCSInfo> getObjectClass() {
+                return WCSInfo.class;
             }
         });
-        WMSXStreamLoader.initXStreamPersister(persister);
+        WCSXStreamLoader.initXStreamPersister(persister);
     }
 
 

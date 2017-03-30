@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MapXMLConverter extends BaseMessageConverter {
-
+    
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
         return Map.class.isAssignableFrom(clazz)
@@ -75,7 +75,7 @@ public class MapXMLConverter extends BaseMessageConverter {
         outputter.output(doc, outputMessage.getBody());
     }
 
-    private String getMapName(Map map) {
+    protected String getMapName(Map map) {
         if(map instanceof NamedMap) {
             return ((NamedMap) map).getName();
         } else {
@@ -89,7 +89,7 @@ public class MapXMLConverter extends BaseMessageConverter {
      * @param elem a JDOM element
      * @return the Object produced by interpreting the XML
      */
-    private Object convert(Element elem) {
+    protected Object convert(Element elem) {
         List children = elem.getChildren();
         if (children.size() == 0) {
             if (elem.getContent().size() == 0) {
@@ -108,7 +108,7 @@ public class MapXMLConverter extends BaseMessageConverter {
                 }
                 return l;
             } else {
-                Map m = new HashMap();
+                Map m = new NamedMap(child.getName());
                 Iterator it = children.iterator();
                 while (it.hasNext()) {
                     Element curr = (Element) it.next();
@@ -128,7 +128,7 @@ public class MapXMLConverter extends BaseMessageConverter {
      * @param elem the parent Element into which to insert the created JDOM element
      * @param o the Object to be converted
      */
-    private final void insert(Element elem, Object o) {
+    protected void insert(Element elem, Object o) {
         if (o instanceof Map) {
             Iterator it = ((Map) o).entrySet().iterator();
             while (it.hasNext()) {

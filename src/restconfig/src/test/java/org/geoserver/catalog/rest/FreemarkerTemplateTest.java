@@ -123,7 +123,8 @@ public class FreemarkerTemplateTest extends GeoServerSystemTestSupport {
         
         for (String path : paths) {
             // GET
-            assertEquals("File Not Found", getAsString(path).trim());            
+            String result = getAsString(path).trim();
+            assertEquals("File Not Found", result );
         }        
         
         for (String path : paths) {

@@ -145,7 +145,7 @@ public class FreemarkerTemplateResource extends StoreFileResource {
             if (datastore != null) {
                 path.add(datastore);
                 if (featureType != null) {
-                    path.add(featureType);                    
+                    path.add(featureType);
                 }
             } else if (coveragestore != null) {
                 path.add(coveragestore);   
@@ -154,7 +154,7 @@ public class FreemarkerTemplateResource extends StoreFileResource {
                 }
             }
         }
-        
+        System.out.println( "Directory "+workspace+"/("+datastore+"|"+coveragestore+"),("+featureType+","+coverage+") --> "+ Paths.path(path.toArray(new String[] {})) );
         return path.toArray(new String[] {});
     }
 }

@@ -251,6 +251,9 @@ public class ResourceController extends RestBaseController {
     @DeleteMapping
     public void resourceDelete(HttpServletRequest request) {
         Resource resource = resource(request);
+        if (Type.UNDEFINED.equals(resource.getType())) {
+            throw new ResourceNotFoundException("Resource '" + resource.path() + "' not found");
+        }
         boolean removed = resource.delete();
         if (!removed) {
             throw new RestException("Resource '" + resource.path() + "' not removed", HttpStatus.INTERNAL_SERVER_ERROR);

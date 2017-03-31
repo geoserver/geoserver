@@ -44,6 +44,7 @@ public class ImportDataResourceControllerTest extends ImporterTestSupport {
     @Test
     public void testGetFile() throws Exception {
         JSONObject json = (JSONObject) getAsJSON(ROOT_PATH+"/imports/0/data/files/archsites.shp",200);
+        System.out.println(json);
         assertEquals("archsites.shp", json.getString("file"));
         assertEquals("archsites.prj", json.getString("prj"));
     }

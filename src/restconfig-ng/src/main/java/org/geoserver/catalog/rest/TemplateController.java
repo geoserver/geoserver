@@ -119,7 +119,9 @@ public class TemplateController extends CatalogController {
             "/workspaces/{workspace}/coveragestores/{store}/templates/{template}",
             "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates/{template}",
         },
-        produces = {MEDIATYPE_FTL_VALUE}
+        produces = {
+           MEDIATYPE_FTL_VALUE // text/plain
+       }
     )
     public void templateGet(
             HttpServletResponse response,
@@ -204,9 +206,9 @@ public class TemplateController extends CatalogController {
                 "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates",
             },
             produces = {
+                MediaType.TEXT_HTML_VALUE, // this is the default
                 MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
+                MediaType.APPLICATION_XML_VALUE
             })
     public RestWrapper<TemplateInfo> templatesGet(
             @PathVariable(required = false) String workspace,

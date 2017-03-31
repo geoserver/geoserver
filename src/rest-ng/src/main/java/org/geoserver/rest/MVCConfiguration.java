@@ -101,6 +101,7 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
         configurer.mediaType("html", MediaType.TEXT_HTML);
         configurer.mediaType("xml", MediaType.APPLICATION_XML);
         configurer.mediaType("json", MediaType.APPLICATION_JSON);
+        configurer.mediaType("ftl", MediaType.TEXT_PLAIN);
         configurer.mediaType("xml", MediaType.APPLICATION_XML);
         configurer.favorParameter(true);
 

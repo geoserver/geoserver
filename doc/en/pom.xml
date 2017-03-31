@@ -28,6 +28,18 @@
         <executions>
           <!-- one execution per page -->
           <execution>
+            <id>coverages</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/coverages.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/coverages</output>
+            </configuration>
+          </execution>
+          <execution>
             <id>coverageStores</id>
             <phase>process-resources</phase>
             <goals>
@@ -37,6 +49,18 @@
               <inputSpec>src/main/resources/api/coverageStores.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/coverageStores</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>datastores</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/datastores.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/datastores</output>
             </configuration>
           </execution>
           <execution>
@@ -100,6 +124,42 @@
             </configuration>
           </execution>
           <execution>
+            <id>namespaces</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/namespaces.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/namespaces</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>owsServices</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/owsServices.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/owsServices</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>reload</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/reload.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/reload</output>
+            </configuration>
+          </execution>
+          <execution>
             <id>security</id>
             <phase>process-resources</phase>
             <goals>
@@ -148,6 +208,30 @@
             </configuration>
           </execution>
           <execution>
+            <id>template</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/template.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/template</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>wmslayers</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/wmslayers.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/wmslayers</output>
+            </configuration>
+          </execution>
+          <execution>
             <id>wmsstores</id>
             <phase>process-resources</phase>
             <goals>
@@ -157,6 +241,18 @@
               <inputSpec>src/main/resources/api/wmsstores.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/wmsstores</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>workspaces</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/workspaces.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/workspaces</output>
             </configuration>
           </execution>
         </executions>

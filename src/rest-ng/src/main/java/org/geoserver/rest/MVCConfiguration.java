@@ -38,6 +38,8 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
         @Override
         public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
                 throws HttpMediaTypeNotAcceptableException {
+
+
             Object request = webRequest.getNativeRequest();
             List<MediaType> list = new ArrayList<>();
             if( request instanceof HttpServletRequest){

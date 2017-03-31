@@ -26,9 +26,12 @@ import org.geoserver.rest.converters.XStreamXMLMessageConverter;
 import org.geoserver.rest.util.RESTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -44,7 +47,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
-
 
 @RestController
 @RequestMapping(path = {ROOT_PATH + "/resource", ROOT_PATH + "/resource/**"}, produces="*")
@@ -96,10 +98,10 @@ public class ResourceController extends RestBaseController {
     }
 
     /**
-     * Access resource requested, note this may be {@link Resource.Type.UNDEFINED}
+     * Access resource requested, note this may be UNDEFINED
      * 
      * @param request
-     * @return Resource reqquested, may be UNDEFINED if not found.
+     * @return Resource requested, may be UNDEFINED if not found.
      */
     protected Resource resource(HttpServletRequest request) {
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
@@ -159,8 +161,8 @@ public class ResourceController extends RestBaseController {
      * @param response Response provided allowing us to set headers (content type, content length, Resource-Parent, Resource-Type).
      * @return Returns wrapped info object, or direct access to resource contents depending on requested operation
      */
-    @GetMapping
-    public Object resourceGet(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
+    public Object get(HttpServletRequest request, HttpServletResponse response) {
         Resource resource = resource(request);
         Operation operation = operation(request);
         Object result;
@@ -175,14 +177,15 @@ public class ResourceController extends RestBaseController {
                 if (request.getMethod().equals("HEAD")) {
                     result = wrapObject("", String.class);
                 } else if (resource.getType() == Resource.Type.DIRECTORY) {
-                    result = wrapObject(new DirectoryMedataInfo(resource, request), DirectoryMedataInfo.class);
+                    result = wrapObject(new ResourceDirectoryInfo(resource, request), ResourceDirectoryInfo.class);
                 } else {
-                    result = resource.in();
-                    response.setContentType(getMediaType(resource, request).toString());
-                }
+                    HttpHeaders responseHeaders = new HttpHeaders();
+                    MediaType mediaType = getMediaType(resource, request);
+                    responseHeaders.setContentType(mediaType);
+                    response.setContentType(mediaType.toString());
 
-                //UriComponents uriComponents = getUriComponents(name, workspaceName, builder);
-                //headers.setLocation(uriComponents.toUri());
+                    result = new ResponseEntity(resource.in(), responseHeaders, HttpStatus.OK);
+                }
                 response.setHeader("Location", href(resource.path()));
                 response.setHeader("Last-Modified", FORMAT_HEADER.format(resource.lastmodified()).toString());
                 if (!"".equals(resource.path())) {
@@ -203,7 +206,7 @@ public class ResourceController extends RestBaseController {
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         XStream xstream = persister.getXStream();
         xstream.alias("child", ResourceChildInfo.class);
-        xstream.alias("ResourceDirectory", DirectoryMedataInfo.class);
+        xstream.alias("ResourceDirectory", ResourceDirectoryInfo.class);
         xstream.alias("ResourceMetadata", ResourceMetadataInfo.class);
 
         if (converter instanceof XStreamXMLMessageConverter) {
@@ -218,7 +221,7 @@ public class ResourceController extends RestBaseController {
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
         return new ObjectToMapWrapper<T>(clazz, Arrays.asList(AtomLink.class,
-                DirectoryMedataInfo.class, ResourceMetadataInfo.class, ResourceParentInfo.class, ResourceChildInfo.class));
+                ResourceDirectoryInfo.class, ResourceMetadataInfo.class, ResourceParentInfo.class, ResourceChildInfo.class));
     }
     /**
      * Operation requested from the REST endpoint.
@@ -260,7 +263,7 @@ public class ResourceController extends RestBaseController {
     }
 
     /**
-     * Lists Resource for html, json, xml output, as the contents of {@link ResourceController.DirectoryMedataInfo}.
+     * Lists Resource for html, json, xml output, as the contents of {@link ResourceDirectoryInfo}.
      */
     @XStreamAlias("child")
     protected static class ResourceChildInfo {
@@ -344,12 +347,12 @@ public class ResourceController extends RestBaseController {
      * @author Niels Charlier
      */
     @XStreamAlias("ResourceDirectory")
-    protected static class DirectoryMedataInfo extends ResourceMetadataInfo {
+    protected static class ResourceDirectoryInfo extends ResourceMetadataInfo {
 
         private List<ResourceChildInfo> children = new ArrayList<ResourceChildInfo>();
 
-        public DirectoryMedataInfo(String name, ResourceParentInfo parent, Date lastModified,
-                                 String type) {
+        public ResourceDirectoryInfo(String name, ResourceParentInfo parent, Date lastModified,
+                                     String type) {
             super(name, parent, lastModified, type);
         }
 
@@ -357,7 +360,7 @@ public class ResourceController extends RestBaseController {
          * Create from resource.
          * The class must be static for serialization, but output is request dependent so passing on self.
          */
-        public DirectoryMedataInfo(Resource resource, HttpServletRequest request) {
+        public ResourceDirectoryInfo(Resource resource, HttpServletRequest request) {
             super(resource, request, true);
             for (Resource child : resource.list()) {
                 children.add(new ResourceChildInfo(child.name(),

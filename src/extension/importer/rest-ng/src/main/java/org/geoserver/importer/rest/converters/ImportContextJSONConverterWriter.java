@@ -58,6 +58,7 @@ import org.geoserver.rest.converters.BaseMessageConverter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.HttpStatus;
@@ -76,11 +77,8 @@ import net.sf.json.util.JSONBuilder;
 
 @Component
 public class ImportContextJSONConverterWriter extends BaseMessageConverter {
-    
-    public ImportContextJSONConverterWriter() {
-        super();
-    }    
-    
+
+    @Autowired
     public ImportContextJSONConverterWriter(Importer importer) {
         super();
         this.importer = importer;        

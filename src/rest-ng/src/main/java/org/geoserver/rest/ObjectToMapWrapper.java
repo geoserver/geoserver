@@ -136,9 +136,9 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
                 for (Object o : (Collection) value) {
                     valueClass = getClassForUnwrapping(o);
                     if (valueClass == null) {
-                        map.put(key, value.toString());
+                        values.add(o.toString());
                     } else {
-                        map.put(key, objectToMap(value, valueClass));
+                        values.add(objectToMap(o, valueClass));
                     }
                 }
                 map.put(key, new CollectionModel(values, this));

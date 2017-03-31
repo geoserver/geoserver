@@ -335,9 +335,9 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
                 + "'contactPerson':'Claudius Ptolomaeus','contactPosition':'Chief geographer'},"
                 + "'charset':'UTF-8','numDecimals':10,'onlineResource':'http://geoserver.org',"
                 + "'proxyBaseUrl':'http://proxy.url','verbose':false,'verboseExceptions':'true'}}";
-        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings",
+        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings",
                 json, "text/json");
-        assertEquals(200, response.getStatus());
+        assertEquals(201, response.getStatus());
         JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH+"/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
@@ -373,9 +373,9 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
                 + "<proxyBaseUrl>http://proxy.url</proxyBaseUrl>"
                 + "<verbose>false</verbose>" + "<verboseExceptions>false</verboseExceptions>"
                 + "</settings>";
-        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings",
+        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings",
                 xml, "text/xml");
-        assertEquals(200, response.getStatus());
+        assertEquals(201, response.getStatus());
 
         Document dom = getAsDOM(RestBaseController.ROOT_PATH+"/workspaces/sf/settings.xml");
         assertEquals("settings", dom.getDocumentElement().getLocalName());
@@ -389,6 +389,31 @@ public class SettingsControllerTest  extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("Chief geographer", "/settings/contact/contactPosition", dom);
         assertXpathEvaluatesTo("The ancient geographes INC", "/settings/contact/contactOrganization", dom);
         assertXpathEvaluatesTo("Egypt", "/settings/contact/addressCountry", dom);
+    }
+
+    @Test
+    public void testCreateLocalAlreadyExists() throws Exception {
+        GeoServer geoServer = getGeoServer();
+        geoServer.remove(geoServer.getSettings(geoServer.getCatalog().getWorkspaceByName("sf")));
+        String xml = "<settings>" + "<workspace><name>sf</name></workspace>" + "<contact>"
+                + "<addressCity>Alexandria</addressCity>"
+                + "<addressCountry>Egypt</addressCountry>" + "<addressType>Work</addressType>"
+                + "<contactEmail>claudius.ptolomaeus@gmail.com</contactEmail>"
+                + "<contactOrganization>The ancient geographes INC</contactOrganization>"
+                + "<contactPerson>Claudius Ptolomaeus</contactPerson>"
+                + "<contactPosition>Chief geographer</contactPosition>" + "</contact>"
+                + "<charset>UTF-8</charset>" + "<numDecimals>8</numDecimals>"
+                + "<onlineResource>http://geoserver.org</onlineResource>"
+                + "<proxyBaseUrl>http://proxy.url</proxyBaseUrl>"
+                + "<verbose>false</verbose>" + "<verboseExceptions>false</verboseExceptions>"
+                + "</settings>";
+        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings",
+                xml, "text/xml");
+        assertEquals(201, response.getStatus());
+
+        response = postAsServletResponse(RestBaseController.ROOT_PATH+"/workspaces/sf/settings",
+                xml, "text/xml");
+        assertEquals(500, response.getStatus());
     }
 
     @Test

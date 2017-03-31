@@ -23,6 +23,7 @@ import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -58,7 +59,7 @@ public class NamespaceController extends CatalogController {
     private static final Logger LOGGER = Logging.getLogger(NamespaceController.class);
 
     @Autowired
-    public NamespaceController(Catalog catalog) {
+    public NamespaceController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
     }
 

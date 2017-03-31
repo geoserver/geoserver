@@ -437,6 +437,7 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPostToWorkspace() throws Exception {
         Catalog cat = getCatalog();
+        assertNotNull(cat.getWorkspaceByName("sf"));
         assertNull(cat.getLayerGroupByName("sf", "workspaceLayerGroup"));
 
         String xml =

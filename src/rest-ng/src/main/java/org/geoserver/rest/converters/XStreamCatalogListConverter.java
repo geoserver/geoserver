@@ -180,12 +180,12 @@ public abstract class XStreamCatalogListConverter extends XStreamMessageConverte
         }
 
         @Override
-        protected String getMediaType() {
+        public String getMediaType() {
             return MediaType.APPLICATION_ATOM_XML_VALUE;
         }
 
         @Override
-        protected String getExtension() {
+        public String getExtension() {
             return "xml";
         }
     }
@@ -214,12 +214,12 @@ public abstract class XStreamCatalogListConverter extends XStreamMessageConverte
         }
 
         @Override
-        protected String getExtension() {
+        public String getExtension() {
             return "json";
         }
 
         @Override
-        protected String getMediaType() {
+        public String getMediaType() {
             return MediaType.APPLICATION_JSON_VALUE;
         }
 

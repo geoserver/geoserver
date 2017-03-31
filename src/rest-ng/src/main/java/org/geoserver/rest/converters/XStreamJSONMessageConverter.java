@@ -30,12 +30,12 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter {
     }
     
     @Override
-    protected String getExtension() {
+    public String getExtension() {
         return "json";
     }
     
     @Override
-    protected String getMediaType() {
+    public String getMediaType() {
         return MediaType.APPLICATION_JSON_VALUE;
     }
 

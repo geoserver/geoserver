@@ -9,11 +9,15 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.rest.catalog.HttpTestUtils.hasHeader;
 import static org.geoserver.rest.catalog.HttpTestUtils.hasStatus;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.*;
 
+import java.net.URL;
 import java.util.List;
 
 import net.sf.json.JSON;
@@ -21,23 +25,34 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.TestHttpClientRule;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.rest.WMSStoreController;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
-import org.junit.Ignore;
+import org.geoserver.test.http.MockHttpClient;
+import org.geoserver.test.http.MockHttpResponse;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import org.hamcrest.Matchers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 
 public class WMSStoreTest extends CatalogRESTTestSupport {
+    @ClassRule
+    public static TestHttpClientRule clientMocker = new TestHttpClientRule();
+    private static String capabilities;
     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -47,9 +62,22 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.setWorkspace(catalog.getWorkspaceByName("sf"));
         WMSStoreInfo wms = cb.buildWMSStore("demo");
-        wms.setCapabilitiesURL("http://demo.opengeo.org/geoserver/wms?");
+        wms.setCapabilitiesURL(capabilities);
         catalog.add(wms);
+        cb.setStore(wms);
+        WMSLayerInfo layer = cb.buildWMSLayer("world4326");
+        catalog.add(layer);
     } 
+    
+    @BeforeClass
+    public static void mockServer() throws Exception {
+        capabilities = clientMocker.getServer()+"/geoserver/wms?REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS";
+        MockHttpClient client = new MockHttpClient();
+        client.expectGet(
+                new URL(capabilities), 
+                new MockHttpResponse(WMSStoreTest.class.getResource("caps130.xml"), "text/xml"));
+        clientMocker.bind(client, capabilities);
+    }
     
     @Test
     public void testBeanPresent() throws Exception {
@@ -80,7 +108,6 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         }
     }
     
-    @Ignore // FIXME Enable when HTML is working
     @Test
     public void testGetAllAsHTML() throws Exception {
         Document dom = getAsDOM( RestBaseController.ROOT_PATH+"/workspaces/sf/wmsstores.html");
@@ -116,12 +143,17 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         assertXpathExists( "/wmsStore/capabilitiesURL", dom );
     }
 
-    @Ignore // FIXME Enable when HTML is working
     @Test
     public void testGetAsHTML() throws Exception {
+        WMSStoreInfo store = catalog.getStoreByName("sf", "demo", WMSStoreInfo.class);
+        assertThat(store, notNullValue());
+        List<WMSLayerInfo> resources = catalog.getResourcesByStore(store, WMSLayerInfo.class);
+        assertThat(resources, not(empty()));
+        
         Document dom = getAsDOM( RestBaseController.ROOT_PATH+"/workspaces/sf/wmsstores/demo.html");
         
         WMSStoreInfo wms = catalog.getStoreByName( "demo", WMSStoreInfo.class );
+        
         List<WMSLayerInfo> wmsLayers = catalog.getResourcesByStore( wms, WMSLayerInfo.class );
         
         NodeList links = xp.getMatchingNodes("//html:a", dom );
@@ -188,7 +220,7 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         
         assertEquals( "demo", store.get( "name") );
         assertEquals( "sf", store.getJSONObject( "workspace").get( "name" ) );
-        assertEquals( "http://demo.opengeo.org/geoserver/wms?", store.getString( "capabilitiesURL") );
+        assertEquals( capabilities, store.getString( "capabilitiesURL") );
     }
 
     @Test

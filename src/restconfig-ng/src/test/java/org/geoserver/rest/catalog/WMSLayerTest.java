@@ -330,7 +330,6 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertEquals( "EPSG:4326", featureType.get( "srs") );
     }
     
-    @Ignore // FIXME Enable when HTML is working
     @Test
     public void testGetAsHTML() throws Exception {
         Document dom = getAsDOM( RestBaseController.ROOT_PATH+"/workspaces/sf/wmslayers/states.html");

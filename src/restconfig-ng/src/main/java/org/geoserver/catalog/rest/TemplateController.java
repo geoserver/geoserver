@@ -28,6 +28,7 @@ import org.geoserver.rest.util.RESTUtils;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -63,7 +64,7 @@ public class TemplateController extends CatalogController {
     static Logger LOGGER = Logging.getLogger("org.geoserver.catalog.rest");
     
     @Autowired
-    public TemplateController(Catalog catalog) {
+    public TemplateController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
         resources = catalog.getResourceLoader();
     }
@@ -83,7 +84,6 @@ public class TemplateController extends CatalogController {
             "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates/{template}",
         }
     )
-    
     public void templateDelete(
             HttpServletResponse response,
             @PathVariable(required = false) String workspace,
@@ -98,8 +98,8 @@ public class TemplateController extends CatalogController {
         if( resource.getType() != Type.RESOURCE ){
             throw new ResourceNotFoundException("Template not found: '"+path+"'");
         }
-        boolean deleted = resource.delete();
-        if (!deleted) {
+        boolean removed = resource.delete();
+        if (!removed) {
             throw new RestException("Template '" + path + "' not removed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -118,7 +118,9 @@ public class TemplateController extends CatalogController {
             "/workspaces/{workspace}/coveragestores/{store}/templates/{template}",
             "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates/{template}",
         },
-        produces = {MEDIATYPE_FTL_VALUE}
+        produces = {
+           MEDIATYPE_FTL_VALUE // text/plain
+       }
     )
     public void templateGet(
             HttpServletResponse response,
@@ -203,9 +205,9 @@ public class TemplateController extends CatalogController {
                 "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates",
             },
             produces = {
+                MediaType.TEXT_HTML_VALUE, // this is the default
                 MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
+                MediaType.APPLICATION_XML_VALUE
             })
     public RestWrapper<TemplateInfo> templatesGet(
             @PathVariable(required = false) String workspace,
@@ -238,11 +240,6 @@ public class TemplateController extends CatalogController {
             LOGGER.info("PUT file: mimetype=" + request.getContentType() + ", path="
                     + directory.path());
         }
-        // try (OutputStream outputStream = resource.out()) {
-        // IOUtils.copy(content, outputStream);
-        // } catch (IOException e) {
-        // throw new RestException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, e);
-        // }
         try {
             Resource upload = RESTUtils.handleBinUpload(filename, directory, false, request);
             return upload;

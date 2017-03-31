@@ -38,6 +38,8 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
         @Override
         public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
                 throws HttpMediaTypeNotAcceptableException {
+
+
             Object request = webRequest.getNativeRequest();
             List<MediaType> list = new ArrayList<>();
             if( request instanceof HttpServletRequest){
@@ -70,6 +72,7 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
         gsConverters.add(new XStreamJSONMessageConverter());
         gsConverters.add(new XStreamCatalogListConverter.XMLXStreamListConverter());
         gsConverters.add(new XStreamCatalogListConverter.JSONXStreamListConverter());
+        gsConverters.add(new InputStreamConverter());
 
         //Deal with the various Style handler
         EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
@@ -92,6 +95,7 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new RestInterceptor());
+        registry.addInterceptor(new CallbackInterceptor());
     }
 
     @Override
@@ -100,9 +104,12 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
         configurer.mediaType("html", MediaType.TEXT_HTML);
         configurer.mediaType("xml", MediaType.APPLICATION_XML);
         configurer.mediaType("json", MediaType.APPLICATION_JSON);
+        configurer.mediaType("ftl", MediaType.TEXT_PLAIN);
+        configurer.mediaType("xml", MediaType.APPLICATION_XML);
+        configurer.favorParameter(true);
 
         // configurer.defaultContentTypeStrategy( new DefaultContentNegotiation());
-        
+
 //        configurer.favorPathExtension(true);
         //todo properties files are only supported for test cases. should try to find a way to
         //support them without polluting prod code with handling

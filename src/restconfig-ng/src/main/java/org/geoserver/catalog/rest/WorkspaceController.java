@@ -28,6 +28,7 @@ import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -63,7 +64,7 @@ public class WorkspaceController extends CatalogController {
     private static final Logger LOGGER = Logging.getLogger(WorkspaceController.class);
 
     @Autowired
-    public WorkspaceController(Catalog catalog) {
+    public WorkspaceController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
 
     }

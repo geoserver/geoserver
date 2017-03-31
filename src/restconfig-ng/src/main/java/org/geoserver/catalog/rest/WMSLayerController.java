@@ -19,7 +19,6 @@ import javax.annotation.Nullable;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
@@ -27,6 +26,7 @@ import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
@@ -62,6 +62,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+
+import freemarker.template.ObjectWrapper;
+import freemarker.template.SimpleHash;
 
 /**
  * Example style resource controller
@@ -378,5 +381,19 @@ public class WMSLayerController extends CatalogController {
             }
         });
     }
-
+    
+    @Override
+    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+        return new ObjectToMapWrapper<WMSLayerInfo>(WMSLayerInfo.class) {
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @Override
+            protected void wrapInternal(Map properties, SimpleHash model, WMSLayerInfo object) {
+                try {
+                    properties.put("boundingBox", object.boundingBox());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+    }
 }

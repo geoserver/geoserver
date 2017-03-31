@@ -1,4 +1,9 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.rest.resources;
+ 
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -65,7 +70,13 @@ public class ResourceController extends RestBaseController {
         this.store = store;
     }
 
-    private static MediaType getMediaType(Resource resource, HttpServletRequest request) {
+    /**
+     * Extract expected media type from supplied resource
+     * @param resource
+     * @param request
+     * @return Content type requested
+     */
+    protected static MediaType getMediaType(Resource resource, HttpServletRequest request) {
         if (resource.getType() == Resource.Type.DIRECTORY) {
             return getFormat(request);
         } else if (resource.getType() == Resource.Type.RESOURCE) {
@@ -84,6 +95,12 @@ public class ResourceController extends RestBaseController {
         }
     }
 
+    /**
+     * Access resource requested, note this may be {@link Resource.Type.UNDEFINED}
+     * 
+     * @param request
+     * @return Resource reqquested, may be UNDEFINED if not found.
+     */
     protected Resource getResource(HttpServletRequest request) {
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         path = path.substring((ROOT_PATH+"/resource").length());
@@ -124,8 +141,26 @@ public class ResourceController extends RestBaseController {
         return link.replaceAll("&", "&amp;");
     }
 
+    /**
+     * Actual get implementation handles a distrubing number of cases.
+     * <p>
+     * All the inner Resource classes are data transfer object for representing resource metadata, this method also can return direct access to
+     * resource contents.
+     * <p>
+     * Headers:
+     * <ul>
+     * <li>Location: Link to resource
+     * <li>Resource-Type: DIRECTORY, RESOURCE, UNDEFINED
+     * <li>Resource-Parent: Link to parent DIRECTORY
+     * <li>Last-Modified: Last modifed date (this is a standard header).
+     * </ul>
+     * 
+     * @param request Request indicating resource, parameters indicating {@link ResourceController.Operation} and {@link MediaType}.
+     * @param response Response provided allowing us to set headers (content type, content length, Resource-Parent, Resource-Type).
+     * @return Returns wrapped info object, or direct access to resource contents depending on requested operation
+     */
     @GetMapping
-    public Object get(HttpServletRequest request, HttpServletResponse response) {
+    public Object resourceGet(HttpServletRequest request, HttpServletResponse response) {
         Resource resource = getResource(request);
         Operation operation = getOperation(request);
         Object result;
@@ -185,17 +220,26 @@ public class ResourceController extends RestBaseController {
         return new ObjectToMapWrapper<T>(clazz, Arrays.asList(AtomLink.class,
                 ResourceDirectory.class, ResourceMetadata.class, ResourceReference.class, ResourceChild.class));
     }
-
-    public enum Operation {
-        DEFAULT, METADATA, MOVE, COPY
+    /**
+     * Operation requested from the REST endpoint.
+     */
+    public static enum Operation {
+        /** Depends on context (different functionality for directory, resource, undefined) */
+        DEFAULT,
+        /** Requests metadata summary of resource */
+        METADATA,
+        /** Moves resource to new location */
+        MOVE,
+        /** Duplicate resource to a new location */
+        COPY
     }
 
     /**
-     *
+     * Used for parent reference (to indicate directory containing resource).
+     * 
      * XML/Json object for resource reference.
-     *
      */
-    protected static class ResourceReference {
+    protected static class ResourceReference { // TODO: Rename to ResoruceParentInfo as this is a DTO 
 
         private String path;
 
@@ -216,12 +260,10 @@ public class ResourceController extends RestBaseController {
     }
 
     /**
-     *
-     * XML/Json object for resource child of directory.
-     *
+     * Lists Resource for html, json, xml output, as the contents of {@link ResourceController.ResourceDirectory}.
      */
     @XStreamAlias("child")
-    protected static class ResourceChild {
+    protected static class ResourceChild { // TODO: Rename to ResourceChildInfo as DTO
 
         private String name;
 
@@ -242,12 +284,10 @@ public class ResourceController extends RestBaseController {
     }
 
     /**
-     *
-     * XML/Json object for resource metadata.
-     *
+     * Resource metadata for individual resource entry (name, last modified, type, etc...).
      */
     @XStreamAlias("ResourceMetadata")
-    protected static class ResourceMetadata {
+    protected static class ResourceMetadata { // TODO: ResourceMetadataInfo as DTO
 
         private String name;
         private ResourceReference parent;
@@ -299,14 +339,12 @@ public class ResourceController extends RestBaseController {
     }
 
     /**
-     *
-     * XML/Json object for resource directory.
-     *
+     * Extends ResourceMetadataInfo to list contents.
+     * 
      * @author Niels Charlier
-     *
      */
     @XStreamAlias("ResourceDirectory")
-    protected static class ResourceDirectory extends ResourceMetadata {
+    protected static class ResourceDirectory extends ResourceMetadata { // TODO: ResoruceDirectoryMetadataInfo
 
         private List<ResourceChild> children = new ArrayList<ResourceChild>();
 

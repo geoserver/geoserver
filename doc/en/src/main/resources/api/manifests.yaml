@@ -60,67 +60,70 @@ paths:
       responses:
         200:
           description: Returns the manifest
+          schema:
+            $ref: "#/definitions/Manifest"
           examples:
-            application/json: '{ "about": {
-                                "resource": [      
-                                  {
-                                    "@name": "postgresql-9.4.1211",
-                                    "Bundle-License": "http://www.postgresql.org/about/licence/",
-                                    "Specification-Version": 4.2,
-                                    "Bnd-LastModified": 1474207285788,
-                                    "Bundle-Name": "PostgreSQL JDBC Driver JDBC42",
-                                    "Bundle-Description": "Java JDBC 4.2 (JRE 8+) driver for PostgreSQL database",
-                                    "Build-Jdk": "1.8.0_60",
-                                    "Specification-Vendor": "Oracle Corporation",
-                                    "Bundle-SymbolicName": "org.postgresql.jdbc42",
-                                    "Bundle-Copyright": "Copyright (c) 2003-2015, PostgreSQL Global Development Group",
-                                    "Built-By": "vladimirsitnikov",
-                                    "Main-Class": "org.postgresql.util.PGJDBCMain",
-                                    "Bundle-Activator": "org.postgresql.osgi.PGBundleActivator",
-                                    "Require-Capability": "osgi.ee;filter:=\"(&(|(osgi.ee=J2SE)(osgi.ee=JavaSE))(version>=1.8))\"",
-                                    "Tool": "Bnd-2.4.0.201411031534",
-                                    "Implementation-Title": "PostgreSQL JDBC Driver - JDBC 4.2",
-                                    "Implementation-Version": "9.4.1211",
-                                    "Manifest-Version": 1,
-                                    "Created-By": "Apache Maven Bundle Plugin",
-                                    "Implementation-Vendor-Id": "org.postgresql",
-                                    "Bundle-DocURL": "http://jdbc.postgresql.org/",
-                                    "Bundle-Vendor": "PostgreSQL Global Development Group",
-                                    "Implementation-Vendor": "PostgreSQL Global Development Group",
-                                    "Bundle-ManifestVersion": 2,
-                                    "Bundle-Version": "9.4.1211",
-                                    "Specification-Title": "JDBC"
-                                  },
-                                  {
-                                    "@name": "wicket-core-7.6.0",
-                                    "Archiver-Version": "Plexus Archiver",
-                                    "Bundle-License": "http://www.apache.org/licenses/LICENSE-2.0.txt",
-                                    "Specification-Version": "7.6.0",
-                                    "Bnd-LastModified": 1482777231886,
-                                    "Bundle-Name": "Wicket Core",
-                                    "DynamicImport-Package": "*",
-                                    "Bundle-Description": "Wicket is a Java web application framework that takes simplicity, \t\tseparation of concerns and ease of development to a whole new level. \t\tWicket pages can be mocked up, previewed and later revised using \t\tstandard WYSIWYG HTML design tools. Dynamic content processing and \t\tform handling is all handled in Java code using a first-class \t\tcomponent model backed by POJO data beans that can easily be \t\tpersisted using your favorite technology.",
-                                    "Build-Jdk": "1.8.0_111",
-                                    "Specification-Vendor": "Apache Software Foundation",
-                                    "Bundle-SymbolicName": "org.apache.wicket.core",
-                                    "Built-By": "andrea",
-                                    "Require-Capability": "osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=1.7))\"",
-                                    "Tool": "Bnd-2.3.0.201405100607",
-                                    "Implementation-Title": "Wicket Core",
-                                    "Implementation-Version": "7.6.0",
-                                    "Manifest-Version": 1,
-                                    "Created-By": "Apache Maven Bundle Plugin",
-                                    "Implementation-Vendor-Id": "org.apache.wicket",
-                                    "Bundle-DocURL": "http://apache.org",
-                                    "Bundle-Vendor": "Apache Software Foundation",
-                                    "Implementation-Vendor": "Apache Software Foundation",
-                                    "Bundle-ManifestVersion": 2,
-                                    "Bundle-Version": "7.6.0",
-                                    "Specification-Title": "Wicket Core"
-                                  }
-                                ]
-                              }
-                            }'
+            application/json: |
+              { "about": {
+                  "resource": [      
+                    {
+                      "@name": "postgresql-9.4.1211",
+                      "Bundle-License": "http://www.postgresql.org/about/licence/",
+                      "Specification-Version": 4.2,
+                      "Bnd-LastModified": 1474207285788,
+                      "Bundle-Name": "PostgreSQL JDBC Driver JDBC42",
+                      "Bundle-Description": "Java JDBC 4.2 (JRE 8+) driver for PostgreSQL database",
+                      "Build-Jdk": "1.8.0_60",
+                      "Specification-Vendor": "Oracle Corporation",
+                      "Bundle-SymbolicName": "org.postgresql.jdbc42",
+                      "Bundle-Copyright": "Copyright (c) 2003-2015, PostgreSQL Global Development Group",
+                      "Built-By": "vladimirsitnikov",
+                      "Main-Class": "org.postgresql.util.PGJDBCMain",
+                      "Bundle-Activator": "org.postgresql.osgi.PGBundleActivator",
+                      "Require-Capability": "osgi.ee;filter:=\"(&(|(osgi.ee=J2SE)(osgi.ee=JavaSE))(version>=1.8))\"",
+                      "Tool": "Bnd-2.4.0.201411031534",
+                      "Implementation-Title": "PostgreSQL JDBC Driver - JDBC 4.2",
+                      "Implementation-Version": "9.4.1211",
+                      "Manifest-Version": 1,
+                      "Created-By": "Apache Maven Bundle Plugin",
+                      "Implementation-Vendor-Id": "org.postgresql",
+                      "Bundle-DocURL": "http://jdbc.postgresql.org/",
+                      "Bundle-Vendor": "PostgreSQL Global Development Group",
+                      "Implementation-Vendor": "PostgreSQL Global Development Group",
+                      "Bundle-ManifestVersion": 2,
+                      "Bundle-Version": "9.4.1211",
+                      "Specification-Title": "JDBC"
+                    },
+                    {
+                      "@name": "wicket-core-7.6.0",
+                      "Archiver-Version": "Plexus Archiver",
+                      "Bundle-License": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                      "Specification-Version": "7.6.0",
+                      "Bnd-LastModified": 1482777231886,
+                      "Bundle-Name": "Wicket Core",
+                      "DynamicImport-Package": "*",
+                      "Bundle-Description": "Wicket is a Java web application framework that takes simplicity, \t\tseparation of concerns and ease of development to a whole new level. \t\tWicket pages can be mocked up, previewed and later revised using \t\tstandard WYSIWYG HTML design tools. Dynamic content processing and \t\tform handling is all handled in Java code using a first-class \t\tcomponent model backed by POJO data beans that can easily be \t\tpersisted using your favorite technology.",
+                      "Build-Jdk": "1.8.0_111",
+                      "Specification-Vendor": "Apache Software Foundation",
+                      "Bundle-SymbolicName": "org.apache.wicket.core",
+                      "Built-By": "andrea",
+                      "Require-Capability": "osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=1.7))\"",
+                      "Tool": "Bnd-2.3.0.201405100607",
+                      "Implementation-Title": "Wicket Core",
+                      "Implementation-Version": "7.6.0",
+                      "Manifest-Version": 1,
+                      "Created-By": "Apache Maven Bundle Plugin",
+                      "Implementation-Vendor-Id": "org.apache.wicket",
+                      "Bundle-DocURL": "http://apache.org",
+                      "Bundle-Vendor": "Apache Software Foundation",
+                      "Implementation-Vendor": "Apache Software Foundation",
+                      "Bundle-ManifestVersion": 2,
+                      "Bundle-Version": "7.6.0",
+                      "Specification-Title": "Wicket Core"
+                    }
+                  ]
+                }
+              }
             application/xml: |
               <about>
                   <resource name="postgresql-9.4.1208">
@@ -206,23 +209,6 @@ paths:
         200:
           description: Returns the manifest
           examples:
-            application/json: '{
-                                "about": {
-                                  "resource": [
-                                    {
-                                      "@name": "GeoTools",
-                                      "Build-Timestamp": "28-Mar-2017 15:44",
-                                      "Version": "18-SNAPSHOT",
-                                      "Git-Revision": "a96cee38ad6c8e87cb8ccdf75e1fb837bff35ef0"
-                                    },
-                                    {
-                                      "@name": "GeoWebCache",
-                                      "Version": "1.12-SNAPSHOT",
-                                      "Git-Revision": "e9cdf1ecfcd97afc804ba43e04b2e1dedd4b5990/e9cdf1ecfcd97afc804ba43e04b2e1dedd4b5990"
-                                    }
-                                  ]
-                                }
-                              }'
             application/xml: |
               <about>
                   <resource name="GeoTools">
@@ -234,7 +220,24 @@ paths:
                       <Version>1.12-SNAPSHOT</Version>
                       <Git-Revision>e9cdf1ecfcd97afc804ba43e04b2e1dedd4b5990/e9cdf1ecfcd97afc804ba43e04b2e1dedd4b5990</Git-Revision>
                   </resource>
-              </about>                      
+              </about> 
+            application/json: | 
+              { "about": {
+                  "resource": [
+                    {
+                      "@name": "GeoTools",
+                      "Build-Timestamp": "28-Mar-2017 15:44",
+                      "Version": "18-SNAPSHOT",
+                      "Git-Revision": "a96cee38ad6c8e87cb8ccdf75e1fb837bff35ef0"
+                    },
+                    {
+                      "@name": "GeoWebCache",
+                      "Version": "1.12-SNAPSHOT",
+                      "Git-Revision": "e9cdf1ecfcd97afc804ba43e04b2e1dedd4b5990/e9cdf1ecfcd97afc804ba43e04b2e1dedd4b5990"
+                    }
+                  ]
+                }
+              }                            
   /about/status:
     get:
       description: |
@@ -262,61 +265,64 @@ paths:
           required: false
       responses:
         200:
+          schema:
+            $ref: "#/definitions/Status"
           examples: 
-            application/json: '{ "about": {
-                                "status": [
-                                  {
-                                    "module": "gs-web-core",
-                                    "name": "GeoServer Web UI Core",
-                                    "isEnabled": true,
-                                    "isAvailable": true
-                                  },
-                                  {
-                                    "module": "gs-main",
-                                    "name": "GeoServer Main",
-                                    "isEnabled": true,
-                                    "isAvailable": true
-                                  },
-                                  {
-                                    "module": "jvm",
-                                    "name": "Rendering Engine",
-                                    "component": "java2d",
-                                    "version": "1.8.0_121",
-                                    "message": "Java 2D configured with DuctusRenderingEngine.\nProvider: OracleJDK\n",
-                                    "isEnabled": true,
-                                    "isAvailable": true
-                                  },
-                                  {
-                                    "module": "system-properties",
-                                    "name": "system-properties",
-                                    "component": "system-properties",
-                                    "message": "java.runtime.name=Java(TM) SE Runtime Environment\nsun.boot.library.path=/Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/jre/lib\n",
-                                    "isEnabled": true,
-                                    "isAvailable": true
-                                  },
-                                  {
-                                    "module": "system-environment",
-                                    "name": "system-environment",
-                                    "component": "system-environment",
-                                    "message": "PATH=/usr/bin:/bin:/usr/sbin:/sbin\nSHELL=/usr/local/bin/bash\n",
-                                    "isEnabled": true,
-                                    "isAvailable": true
-                                  },
-                                  {
-                                    "module": "gs-web-wms",
-                                    "name": "GeoServer Web UI Web Map Service",
-                                    "isEnabled": true,
-                                    "isAvailable": true
-                                  },
-                                  {
-                                    "module": "gs-wms",
-                                    "name": "GeoServer Web Map Service",
-                                    "isEnabled": true,
-                                    "isAvailable": true
-                                  }
-                                ]
-                              }
-                            }'
+            application/json: |
+              {"about": {
+                  "status": [
+                    {
+                      "module": "gs-web-core",
+                      "name": "GeoServer Web UI Core",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    },
+                    {
+                      "module": "gs-main",
+                      "name": "GeoServer Main",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    },
+                    {
+                      "module": "jvm",
+                      "name": "Rendering Engine",
+                      "component": "java2d",
+                      "version": "1.8.0_121",
+                      "message": "Java 2D configured with DuctusRenderingEngine.\nProvider: OracleJDK\n",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    },
+                    {
+                      "module": "system-properties",
+                      "name": "system-properties",
+                      "component": "system-properties",
+                      "message": "java.runtime.name=Java(TM) SE Runtime Environment\nsun.boot.library.path=/Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/jre/lib\n",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    },
+                    {
+                      "module": "system-environment",
+                      "name": "system-environment",
+                      "component": "system-environment",
+                      "message": "PATH=/usr/bin:/bin:/usr/sbin:/sbin\nSHELL=/usr/local/bin/bash\n",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    },
+                    {
+                      "module": "gs-web-wms",
+                      "name": "GeoServer Web UI Web Map Service",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    },
+                    {
+                      "module": "gs-wms",
+                      "name": "GeoServer Web Map Service",
+                      "isEnabled": true,
+                      "isAvailable": true
+                    }
+                  ]
+                }
+              }
             application/xml: |
               <about>
                 <status>
@@ -381,4 +387,65 @@ paths:
 
           
 
+
+definitions:
+  Manifest:
+    type: object
+    description:  Details on loaded JARs.
+    properties:
+      about:
+        type: object
+        properties:
+          resource:
+            type: array
+            description: Contains key/value pairs for the resource (the resource name is found in the name XML attribute and @name JSON property).
+            items:
+              type: object              
+              properties:
+                '@name': 
+                  type: string
+                  description:  The name of the resource.
+              additionalProperties: true    
+
+  Status:
+    type: object
+    description: Details of installed and configured modules. Status details always include human readable name, and module name. Optional details include version, availability, status message, and links to documentation.
+    properties:
+      about:
+        type: object
+        properties:
+          status:
+            type: array
+            items:
+              type: object
+              properties:
+                module:
+                  type: string
+                  description: |
+                    Module identifier based on artifact bundle. For example, gs-main, gs-oracle.
+                name:
+                  type: string
+                  description:  |
+                    Human readable name (from GeoServer documentation), or as defined in the extension pom.xml, ie. <name>ArcSDE DataStore Extensions</name>
+                component:
+                  type: string
+                  description: |
+                    Optional component identifier within module. For example, rendering-engine.
+                version:
+                  type: string
+                  description: |
+                    Human readable version, ie. for geotools it would be 15-SNAPSHOT
+                message:
+                  type: string
+                  description: |
+                    Optional status message such as what Java rendering engine is in use, or the library path if the module/driver is unavailable
+                isEnabled:
+                  type: boolean
+                  description: |
+                    Returns whether the module is enabled in the current GeoServer configuration.
+                isAvailable:
+                  type: boolean
+                  description: |
+                    Returns whether the module is available to GeoServer
+                
 

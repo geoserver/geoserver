@@ -56,7 +56,6 @@ paths:
         - application/json
       responses:
         200:
-            description: Successful response containing the list of feature types.
             schema:
               type: object
               properties:
@@ -75,29 +74,46 @@ paths:
                             type: string
                             description: The URL
             examples:
-              application/json: '{"featureTypes": {
-                                    "featureType": [
-                                      {
-                                        "name": "PrimitiveGeoFeature",
-                                        "href": "http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.json"
-                                      },
-                                      {
-                                        "name": "archsites",
-                                        "href": "http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/archsites.json"
-                                      }
-                                    ]
-                                  }
-                                }'
-              text/xml: '<featureTypes>
-                            <featureType>
-                                <name>PrimitiveGeoFeature</name>
-                                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.xml" type="application/atom+xml"/>
-                            </featureType>
-                            <featureType>
-                                <name>archsites</name>
-                                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/archsites.xml" type="application/atom+xml"/>
-                            </featureType>
-                        </featureTypes>'
+              application/json: |
+                {"featureTypes": {
+                    "featureType": [
+                      {
+                        "name": "PrimitiveGeoFeature",
+                        "href": "http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.json"
+                      },
+                      {
+                        "name": "archsites",
+                        "href": "http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/archsites.json"
+                      }
+                    ]
+                  }
+                }
+              application/xml: |
+                <featureTypes>
+                    <featureType>
+                        <name>PrimitiveGeoFeature</name>
+                        <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.xml" type="application/atom+xml"/>
+                    </featureType>
+                    <featureType>
+                        <name>archsites</name>
+                        <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/restng/workspaces/sf/datastores/sf/featuretypes/archsites.xml" type="application/atom+xml"/>
+                    </featureType>
+                </featureTypes>
+              application/xml (list=available): |
+                <?xml version="1.0" encoding="UTF-8"?>
+                <list>
+                  <featureTypeName>pdsa</featureTypeName>
+                  <featureTypeName>pdsb</featureTypeName>
+                </list>
+              application/json (list=available): |
+                {"list": { 
+                 "string": [
+                      "pdsa",
+                      "pdsb"
+                    ]
+                  }
+                }
+
     post:
       operationId: postFeatureTypes
       description: |
@@ -175,263 +191,265 @@ paths:
             properties:
               featureType:              
                 $ref: "#/definitions/FeatureTypeInfo"
-      examples:
-        application/json: {  "name": "poi",
-                          "nativeName": "poi",
-                          "namespace": {
-                            "name": "tiger",
-                            "href": "http://localhost:8080/geoserver/rest/namespaces/tiger.json"
-                          },
-                          "title": "Manhattan (NY) points of interest",
-                          "abstract": "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
-                          "keywords": {
-                            "string": [
-                              "poi",
-                              "Manhattan",
-                              "DS_poi",
-                              "points_of_interest",
-                              "sampleKeyword\\@language=ab\\;",
-                              "area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
-                              "Привет\\@language=ru\\;\\@vocabulary=friendly\\;"
-                            ]
-                          },
-                          "metadataLinks": {
-                            "metadataLink": [
-                              {
-                                "type": "text/plain",
-                                "metadataType": "FGDC",
-                                "content": "www.google.com"
-                              }
-                            ]
-                          },
-                          "dataLinks": {
-                            "org.geoserver.catalog.impl.DataLinkInfoImpl": [
-                              {
-                                "type": "text/plain",
-                                "content": "http://www.google.com"
-                              }
-                            ]
-                          },                  
-                          "nativeCRS": "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
-                          "srs": "EPSG:4326",
-                          "nativeBoundingBox": {
-                            "minx": -74.0118315772888,
-                            "maxx": -74.00153046439813,
-                            "miny": 40.70754683896324,
-                            "maxy": 40.719885123828675,
-                            "crs": "EPSG:4326"
-                          },
-                          "latLonBoundingBox": {
-                            "minx": -74.0118315772888,
-                            "maxx": -74.00857344353275,
-                            "miny": 40.70754683896324,
-                            "maxy": 40.711945649065406,
-                            "crs": "EPSG:4326"
-                          },
-                          "projectionPolicy": "REPROJECT_TO_DECLARED",
-                          "enabled": true,
-                          "metadata": {
-                            "entry": [
-                              {
-                                "@key": "kml.regionateStrategy",
-                                "$": "external-sorting"
-                              },
-                              {
-                                "@key": "kml.regionateFeatureLimit",
-                                "$": "15"
-                              },
-                              {
-                                "@key": "cacheAgeMax",
-                                "$": "3000"
-                              },
-                              {
-                                "@key": "cachingEnabled",
-                                "$": "true"
-                              },
-                              {
-                                "@key": "kml.regionateAttribute",
-                                "$": "NAME"
-                              },
-                              {
-                                "@key": "indexingEnabled",
-                                "$": "false"
-                              },
-                              {
-                                "@key": "dirName",
-                                "$": "DS_poi_poi"
-                              }
-                            ]
-                          },
-                          "store": {
-                            "@class": "dataStore",
-                            "name": "tiger:nyc",
-                            "href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.json"
-                          },
-                          "cqlFilter": "INCLUDE",
-                          "maxFeatures": 100,
-                          "numDecimals": 6,
-                          "responseSRS": {
-                            "string": [
-                              4326
-                            ]
-                          },
-                          "overridingServiceSRS": true,
-                          "skipNumberMatched": true,
-                          "circularArcPresent": true,
-                          "linearizationTolerance": 10,
-                          "attributes": {
-                            "attribute": [
-                              {
-                                "name": "the_geom",
-                                "minOccurs": 0,
-                                "maxOccurs": 1,
-                                "nillable": true,
-                                "binding": "com.vividsolutions.jts.geom.Point"
-                              },
-                              {
-                                "name": "NAME",
-                                "minOccurs": 0,
-                                "maxOccurs": 1,
-                                "nillable": true,
-                                "binding": "java.lang.String",
-                                "length": 6
-                              },
-                              {
-                                "name": "THUMBNAIL",
-                                "minOccurs": 0,
-                                "maxOccurs": 1,
-                                "nillable": true,
-                                "binding": "java.lang.String",
-                                "length": 20
-                              },
-                              {
-                                "name": "MAINPAGE",
-                                "minOccurs": 0,
-                                "maxOccurs": 1,
-                                "nillable": true,
-                                "binding": "java.lang.String",
-                                "length": 19
-                              }
-                            ]
-                          }              
+          examples:
+            application/json: |
+              {  "name": "poi",
+                  "nativeName": "poi",
+                  "namespace": {
+                    "name": "tiger",
+                    "href": "http://localhost:8080/geoserver/rest/namespaces/tiger.json"
+                  },
+                  "title": "Manhattan (NY) points of interest",
+                  "abstract": "Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.",
+                  "keywords": {
+                    "string": [
+                      "poi",
+                      "Manhattan",
+                      "DS_poi",
+                      "points_of_interest",
+                      "sampleKeyword\\@language=ab\\;",
+                      "area of effect\\@language=bg\\;\\@vocabulary=technical\\;",
+                      "Привет\\@language=ru\\;\\@vocabulary=friendly\\;"
+                    ]
+                  },
+                  "metadataLinks": {
+                    "metadataLink": [
+                      {
+                        "type": "text/plain",
+                        "metadataType": "FGDC",
+                        "content": "www.google.com"
                       }
-        application/xml: '<featureType>
-                          <name>poi</name>
-                          <nativeName>poi</nativeName>
-                          <namespace>
-                                  <name>tiger</name>
-                                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/tiger.xml" type="application/xml"/>
-                          </namespace>
-                          <title>Manhattan (NY) points of interest</title>
-                          <abstract>Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.</abstract>
-                          <keywords>
-                                  <string>poi</string>
-                                  <string>Manhattan</string>
-                                  <string>DS_poi</string>
-                                  <string>points_of_interest</string>
-                                  <string>fred\@language=ab\;</string>
-                                  <string>area of effect\@language=bg\;\@vocabulary=Technical\;</string>
-                                  <string>Привет\@language=ru\;\@vocabulary=Friendly\;</string>
-                          </keywords>
-                          <metadataLinks>
-                                  <metadataLink>
-                                        <type>text/plain</type>
-                                        <metadataType>FGDC</metadataType>
-                                        <content>http://www.google.com</content>
-                                  </metadataLink>
-                          </metadataLinks>
-                          <dataLinks>
-                                  <org.geoserver.catalog.impl.DataLinkInfoImpl>
-                                        <type>text/plain</type>
-                                        <content>http://www.google.com</content>
-                                  </org.geoserver.catalog.impl.DataLinkInfoImpl>
-                          </dataLinks>
-                          <nativeCRS>GEOGCS["WGS 84", DATUM["World Geodetic System 1984", SPHEROID["WGS 84", 6378137.0, 298.257223563, AUTHORITY["EPSG","7030"]], AUTHORITY["EPSG","6326"]], PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH], AUTHORITY["EPSG","4326"]]</nativeCRS>
-                          <srs>EPSG:4326</srs>
-                          <nativeBoundingBox>
-                                  <minx>-74.0118315772888</minx>
-                                  <maxx>-74.00153046439813</maxx>
-                                  <miny>40.70754683896324</miny>
-                                  <maxy>40.719885123828675</maxy>
-                                  <crs>EPSG:4326</crs>
-                          </nativeBoundingBox>
-                          <latLonBoundingBox>
-                                  <minx>-74.0118315772888</minx>
-                                  <maxx>-74.00857344353275</maxx>
-                                  <miny>40.70754683896324</miny>
-                                  <maxy>40.711945649065406</maxy>
-                                  <crs>EPSG:4326</crs>
-                          </latLonBoundingBox>
-                          <projectionPolicy>NONE</projectionPolicy>
-                          <enabled>true</enabled>
-                          <metadata>
-                                  <entry key="kml.regionateStrategy">external-sorting</entry>
-                                  <entry key="elevation">
-                                        <dimensionInfo>
-                                                <enabled>false</enabled>
-                                        </dimensionInfo>
-                                  </entry>
-                                  <entry key="kml.regionateFeatureLimit">15</entry>
-                                  <entry key="cacheAgeMax">3000</entry>
-                                  <entry key="time">
-                                        <dimensionInfo>
-                                                <enabled>false</enabled>
-                                                <defaultValue/>
-                                        </dimensionInfo>
-                                  </entry>
-                                  <entry key="cachingEnabled">true</entry>
-                                  <entry key="kml.regionateAttribute">NAME</entry>
-                                  <entry key="indexingEnabled">false</entry>
-                                  <entry key="dirName">DS_poi_poi</entry>
-                          </metadata>
-                          <store class="dataStore">
-                                  <name>tiger:nyc</name>
-                                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.xml" type="application/xml"/>
-                          </store>
-                          <cqlFilter>INCLUDE</cqlFilter>
-                          <maxFeatures>100</maxFeatures>
-                          <numDecimals>6</numDecimals>
-                          <responseSRS>
-                                  <string>4326</string>
-                          </responseSRS>
-                          <overridingServiceSRS>true</overridingServiceSRS>
-                          <skipNumberMatched>true</skipNumberMatched>
-                          <circularArcPresent>true</circularArcPresent>
-                          <linearizationTolerance>10</linearizationTolerance>
-                          <attributes>
-                                  <attribute>
-                                        <name>the_geom</name>
-                                        <minOccurs>0</minOccurs>
-                                        <maxOccurs>1</maxOccurs>
-                                        <nillable>true</nillable>
-                                        <binding>com.vividsolutions.jts.geom.Point</binding>
-                                  </attribute>
-                                  <attribute>
-                                        <name>NAME</name>
-                                        <minOccurs>0</minOccurs>
-                                        <maxOccurs>1</maxOccurs>
-                                        <nillable>true</nillable>
-                                        <binding>java.lang.String</binding>
-                                        <length>6</length>
-                                  </attribute>
-                                  <attribute>
-                                        <name>THUMBNAIL</name>
-                                        <minOccurs>0</minOccurs>
-                                        <maxOccurs>1</maxOccurs>
-                                        <nillable>true</nillable>
-                                        <binding>java.lang.String</binding>
-                                        <length>20</length>
-                                  </attribute>
-                                  <attribute>
-                                        <name>MAINPAGE</name>
-                                        <minOccurs>0</minOccurs>
-                                        <maxOccurs>1</maxOccurs>
-                                        <nillable>true</nillable>
-                                        <binding>java.lang.String</binding>
-                                        <length>19</length>
-                                  </attribute>
-                          </attributes>
-                    </featureType>'
+                    ]
+                  },
+                  "dataLinks": {
+                    "org.geoserver.catalog.impl.DataLinkInfoImpl": [
+                      {
+                        "type": "text/plain",
+                        "content": "http://www.google.com"
+                      }
+                    ]
+                  },                  
+                  "nativeCRS": "GEOGCS[\"WGS 84\", \n  DATUM[\"World Geodetic System 1984\", \n    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n    AUTHORITY[\"EPSG\",\"6326\"]], \n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n  UNIT[\"degree\", 0.017453292519943295], \n  AXIS[\"Geodetic longitude\", EAST], \n  AXIS[\"Geodetic latitude\", NORTH], \n  AUTHORITY[\"EPSG\",\"4326\"]]",
+                  "srs": "EPSG:4326",
+                  "nativeBoundingBox": {
+                    "minx": -74.0118315772888,
+                    "maxx": -74.00153046439813,
+                    "miny": 40.70754683896324,
+                    "maxy": 40.719885123828675,
+                    "crs": "EPSG:4326"
+                  },
+                  "latLonBoundingBox": {
+                    "minx": -74.0118315772888,
+                    "maxx": -74.00857344353275,
+                    "miny": 40.70754683896324,
+                    "maxy": 40.711945649065406,
+                    "crs": "EPSG:4326"
+                  },
+                  "projectionPolicy": "REPROJECT_TO_DECLARED",
+                  "enabled": true,
+                  "metadata": {
+                    "entry": [
+                      {
+                        "@key": "kml.regionateStrategy",
+                        "$": "external-sorting"
+                      },
+                      {
+                        "@key": "kml.regionateFeatureLimit",
+                        "$": "15"
+                      },
+                      {
+                        "@key": "cacheAgeMax",
+                        "$": "3000"
+                      },
+                      {
+                        "@key": "cachingEnabled",
+                        "$": "true"
+                      },
+                      {
+                        "@key": "kml.regionateAttribute",
+                        "$": "NAME"
+                      },
+                      {
+                        "@key": "indexingEnabled",
+                        "$": "false"
+                      },
+                      {
+                        "@key": "dirName",
+                        "$": "DS_poi_poi"
+                      }
+                    ]
+                  },
+                  "store": {
+                    "@class": "dataStore",
+                    "name": "tiger:nyc",
+                    "href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.json"
+                  },
+                  "cqlFilter": "INCLUDE",
+                  "maxFeatures": 100,
+                  "numDecimals": 6,
+                  "responseSRS": {
+                    "string": [
+                      4326
+                    ]
+                  },
+                  "overridingServiceSRS": true,
+                  "skipNumberMatched": true,
+                  "circularArcPresent": true,
+                  "linearizationTolerance": 10,
+                  "attributes": {
+                    "attribute": [
+                      {
+                        "name": "the_geom",
+                        "minOccurs": 0,
+                        "maxOccurs": 1,
+                        "nillable": true,
+                        "binding": "com.vividsolutions.jts.geom.Point"
+                      },
+                      {
+                        "name": "NAME",
+                        "minOccurs": 0,
+                        "maxOccurs": 1,
+                        "nillable": true,
+                        "binding": "java.lang.String",
+                        "length": 6
+                      },
+                      {
+                        "name": "THUMBNAIL",
+                        "minOccurs": 0,
+                        "maxOccurs": 1,
+                        "nillable": true,
+                        "binding": "java.lang.String",
+                        "length": 20
+                      },
+                      {
+                        "name": "MAINPAGE",
+                        "minOccurs": 0,
+                        "maxOccurs": 1,
+                        "nillable": true,
+                        "binding": "java.lang.String",
+                        "length": 19
+                      }
+                    ]
+                  }              
+              }
+            application/xml: |
+              <featureType>
+                    <name>poi</name>
+                    <nativeName>poi</nativeName>
+                    <namespace>
+                            <name>tiger</name>
+                            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/tiger.xml" type="application/xml"/>
+                    </namespace>
+                    <title>Manhattan (NY) points of interest</title>
+                    <abstract>Points of interest in New York, New York (on Manhattan). One of the attributes contains the name of a file with a picture of the point of interest.</abstract>
+                    <keywords>
+                            <string>poi</string>
+                            <string>Manhattan</string>
+                            <string>DS_poi</string>
+                            <string>points_of_interest</string>
+                            <string>fred\@language=ab\;</string>
+                            <string>area of effect\@language=bg\;\@vocabulary=Technical\;</string>
+                            <string>Привет\@language=ru\;\@vocabulary=Friendly\;</string>
+                    </keywords>
+                    <metadataLinks>
+                            <metadataLink>
+                                  <type>text/plain</type>
+                                  <metadataType>FGDC</metadataType>
+                                  <content>http://www.google.com</content>
+                            </metadataLink>
+                    </metadataLinks>
+                    <dataLinks>
+                            <org.geoserver.catalog.impl.DataLinkInfoImpl>
+                                  <type>text/plain</type>
+                                  <content>http://www.google.com</content>
+                            </org.geoserver.catalog.impl.DataLinkInfoImpl>
+                    </dataLinks>
+                    <nativeCRS>GEOGCS["WGS 84", DATUM["World Geodetic System 1984", SPHEROID["WGS 84", 6378137.0, 298.257223563, AUTHORITY["EPSG","7030"]], AUTHORITY["EPSG","6326"]], PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], UNIT["degree", 0.017453292519943295], AXIS["Geodetic longitude", EAST], AXIS["Geodetic latitude", NORTH], AUTHORITY["EPSG","4326"]]</nativeCRS>
+                    <srs>EPSG:4326</srs>
+                    <nativeBoundingBox>
+                            <minx>-74.0118315772888</minx>
+                            <maxx>-74.00153046439813</maxx>
+                            <miny>40.70754683896324</miny>
+                            <maxy>40.719885123828675</maxy>
+                            <crs>EPSG:4326</crs>
+                    </nativeBoundingBox>
+                    <latLonBoundingBox>
+                            <minx>-74.0118315772888</minx>
+                            <maxx>-74.00857344353275</maxx>
+                            <miny>40.70754683896324</miny>
+                            <maxy>40.711945649065406</maxy>
+                            <crs>EPSG:4326</crs>
+                    </latLonBoundingBox>
+                    <projectionPolicy>NONE</projectionPolicy>
+                    <enabled>true</enabled>
+                    <metadata>
+                            <entry key="kml.regionateStrategy">external-sorting</entry>
+                            <entry key="elevation">
+                                  <dimensionInfo>
+                                          <enabled>false</enabled>
+                                  </dimensionInfo>
+                            </entry>
+                            <entry key="kml.regionateFeatureLimit">15</entry>
+                            <entry key="cacheAgeMax">3000</entry>
+                            <entry key="time">
+                                  <dimensionInfo>
+                                          <enabled>false</enabled>
+                                          <defaultValue/>
+                                  </dimensionInfo>
+                            </entry>
+                            <entry key="cachingEnabled">true</entry>
+                            <entry key="kml.regionateAttribute">NAME</entry>
+                            <entry key="indexingEnabled">false</entry>
+                            <entry key="dirName">DS_poi_poi</entry>
+                    </metadata>
+                    <store class="dataStore">
+                            <name>tiger:nyc</name>
+                            <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.xml" type="application/xml"/>
+                    </store>
+                    <cqlFilter>INCLUDE</cqlFilter>
+                    <maxFeatures>100</maxFeatures>
+                    <numDecimals>6</numDecimals>
+                    <responseSRS>
+                            <string>4326</string>
+                    </responseSRS>
+                    <overridingServiceSRS>true</overridingServiceSRS>
+                    <skipNumberMatched>true</skipNumberMatched>
+                    <circularArcPresent>true</circularArcPresent>
+                    <linearizationTolerance>10</linearizationTolerance>
+                    <attributes>
+                            <attribute>
+                                  <name>the_geom</name>
+                                  <minOccurs>0</minOccurs>
+                                  <maxOccurs>1</maxOccurs>
+                                  <nillable>true</nillable>
+                                  <binding>com.vividsolutions.jts.geom.Point</binding>
+                            </attribute>
+                            <attribute>
+                                  <name>NAME</name>
+                                  <minOccurs>0</minOccurs>
+                                  <maxOccurs>1</maxOccurs>
+                                  <nillable>true</nillable>
+                                  <binding>java.lang.String</binding>
+                                  <length>6</length>
+                            </attribute>
+                            <attribute>
+                                  <name>THUMBNAIL</name>
+                                  <minOccurs>0</minOccurs>
+                                  <maxOccurs>1</maxOccurs>
+                                  <nillable>true</nillable>
+                                  <binding>java.lang.String</binding>
+                                  <length>20</length>
+                            </attribute>
+                            <attribute>
+                                  <name>MAINPAGE</name>
+                                  <minOccurs>0</minOccurs>
+                                  <maxOccurs>1</maxOccurs>
+                                  <nillable>true</nillable>
+                                  <binding>java.lang.String</binding>
+                                  <length>19</length>
+                            </attribute>
+                    </attributes>
+              </featureType>
     
     post:
       operationId: postFeatureType

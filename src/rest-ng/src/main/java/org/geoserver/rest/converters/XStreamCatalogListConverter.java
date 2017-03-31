@@ -110,7 +110,11 @@ public abstract class XStreamCatalogListConverter extends XStreamMessageConverte
                     }
                     else if ( OwsUtils.getter( clazz, "id", String.class ) != null ) {
                         ref = (String) OwsUtils.get( source, "id");
+                    } else if ( OwsUtils.getter( clazz, "id", Long.class ) != null ) {
+                        //For some reason Importer objects have Long ids so this catches that case
+                        ref = (String) OwsUtils.get( source, "id").toString();
                     }
+                    
                     else {
                         throw new RuntimeException( "Could not determine identifier for: " + clazz.getName());
                     }

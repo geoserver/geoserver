@@ -12,28 +12,25 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.geoserver.importer.Database;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
-import org.geoserver.importer.ImportStore;
 import org.geoserver.importer.ImporterTestSupport;
-import org.geoserver.importer.MemoryImportStore;
 import org.geoserver.importer.SpatialFile;
 import org.geotools.data.h2.H2DataStoreFactory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class ImportResourceTest extends ImporterTestSupport {
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+public class ImportResourceControllerTest extends ImporterTestSupport {
 
     @Before
     public void prepareData() throws Exception {
@@ -57,7 +54,8 @@ public class ImportResourceTest extends ImporterTestSupport {
 
     @Test
     public void testGetAllImports() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/rest/imports?all");
+        JSONObject json = (JSONObject) getAsJSON("/restng/imports",200);
+        
         assertNotNull(json.get("imports"));
 
         JSONArray imports = (JSONArray) json.get("imports");
@@ -78,14 +76,15 @@ public class ImportResourceTest extends ImporterTestSupport {
     
     @Test
     public void testGetNonExistantImport() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse(("/rest/imports/9999"));
+        MockHttpServletResponse resp = getAsServletResponse(("/restng/imports/9999"));
         
         assertEquals(404, resp.getStatus());
     }
 
     @Test
     public void testGetImport() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/rest/imports/0");
+        JSONObject json = (JSONObject) getAsJSON("/restng/imports/0",200);
+        
         assertNotNull(json.get("import"));
         
         JSONObject imprt = json.optJSONObject("import");
@@ -100,7 +99,7 @@ public class ImportResourceTest extends ImporterTestSupport {
     
     @Test
     public void testGetImportExpandChildren() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/rest/imports/0?expand=2");
+        JSONObject json = (JSONObject) getAsJSON("/restng/imports/0?expand=2");
 
         JSONObject source = json.getJSONObject("import").getJSONObject("data");
         assertEquals("directory", source.getString("type"));
@@ -125,7 +124,7 @@ public class ImportResourceTest extends ImporterTestSupport {
     
     @Test
     public void testGetImport2() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/rest/imports/1?expand=3");
+        JSONObject json = (JSONObject) getAsJSON("/restng/imports/1?expand=3",200);
         assertNotNull(json.get("import"));
         
         JSONObject imprt = json.optJSONObject("import");
@@ -150,7 +149,7 @@ public class ImportResourceTest extends ImporterTestSupport {
 
     @Test
     public void testGetImport3() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/rest/imports/2?expand=2");
+        JSONObject json = (JSONObject) getAsJSON("/restng/imports/2?expand=2");
         assertNotNull(json.get("import"));
         
         JSONObject imprt = json.optJSONObject("import");
@@ -177,7 +176,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         params.put(H2DataStoreFactory.DATABASE.key, new File(dir, "cookbook").getAbsolutePath());
         importer.createContext(new Database(params));
 
-        JSONObject json = (JSONObject) getAsJSON("/rest/imports/3?expand=2");
+        JSONObject json = (JSONObject) getAsJSON("/restng/imports/3?expand=2");
         
         assertNotNull(json.get("import"));
 
@@ -192,15 +191,16 @@ public class ImportResourceTest extends ImporterTestSupport {
     }
 
     @Test
+    
     public void testPost() throws Exception {
         
-        MockHttpServletResponse resp = postAsServletResponse("/rest/imports", "");
+        MockHttpServletResponse resp = postAsServletResponse("/restng/imports", "","application/json");
         assertEquals(201, resp.getStatus());
         assertNotNull( resp.getHeader( "Location") );
 
         int id = lastId();
         assertTrue( resp.getHeader("Location").endsWith( "/imports/"+ id));
-
+    
         JSONObject json = (JSONObject) json(resp);
         JSONObject imprt = json.getJSONObject("import");
 
@@ -211,10 +211,10 @@ public class ImportResourceTest extends ImporterTestSupport {
     @Test
     public void testPutWithId() throws Exception {
         // propose a new import id
-        MockHttpServletResponse resp = putAsServletResponse("/rest/imports/8675309");
+        MockHttpServletResponse resp = putAsServletResponse("/restng/imports/8675309","","application/json");
         assertEquals(201, resp.getStatus());
 
-        resp = getAsServletResponse("/rest/imports/8675309");
+        resp = getAsServletResponse("/restng/imports/8675309");
         assertEquals(200, resp.getStatus());
         JSONObject json = (JSONObject) json(resp);
         JSONObject imprt = json.getJSONObject("import");
@@ -222,20 +222,21 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertEquals(8675309, imprt.getInt("id"));
         
         // now propose a new one that is less than the earlier
-        resp = putAsServletResponse("/rest/imports/8675000");
+        resp = putAsServletResponse("/restng/imports/8675000","","application/json");
         assertEquals(201, resp.getStatus());
         // it should be one more than the latest
-        assertTrue(resp.getHeader("Location").endsWith("/rest/imports/8675310"));
+    
+        assertTrue(resp.getHeader("Location").endsWith("/restng/imports/8675310"));
         
         // and just make sure the other parts work
-        resp = getAsServletResponse("/rest/imports/8675310");
+        resp = getAsServletResponse("/restng/imports/8675310");
         assertEquals(200, resp.getStatus());
         json = (JSONObject) json(resp);
         imprt = json.getJSONObject("import");
         assertEquals(8675310, imprt.getInt("id"));
 
         // now a normal request - make sure it continues the sequence
-        resp = postAsServletResponse("/rest/imports/", "");
+        resp = postAsServletResponse("/restng/imports/", "{}","application/json");
         assertEquals(201, resp.getStatus());
         assertNotNull( resp.getHeader( "Location") );
         assertTrue(resp.getHeader("Location").endsWith( "/imports/8675311"));
@@ -261,7 +262,7 @@ public class ImportResourceTest extends ImporterTestSupport {
                 "}" + 
             "}";
         
-        MockHttpServletResponse resp = postAsServletResponse("/rest/imports", json, "application/json");
+        MockHttpServletResponse resp = postAsServletResponse("/restng/imports", json, "application/json");
         assertEquals(201, resp.getStatus());
         assertNotNull( resp.getHeader( "Location") );
 
@@ -279,32 +280,39 @@ public class ImportResourceTest extends ImporterTestSupport {
     private MockHttpServletResponse postAsServletResponseNoContentType(String path, String body) throws Exception {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("POST");
-        request.setContent(body.getBytes("UTF-8"));
+        if(body!=null && !body.isEmpty()) {
+            request.setContent(body.getBytes("UTF-8"));
+        }
         return dispatch(request);
     }
 
     @Test
+   
     public void testPostNoMediaType() throws Exception {
-        MockHttpServletResponse resp = postAsServletResponseNoContentType("/rest/imports", "");
+        MockHttpServletResponse resp = postAsServletResponseNoContentType("/restng/imports", "");
         assertEquals(201, resp.getStatus());
     }
 
     @Test
     public void testImportSessionIdNotInt() throws Exception {
-        MockHttpServletResponse resp = postAsServletResponse("/rest/imports/foo", "");
-        assertEquals(404, resp.getStatus());
+        MockHttpServletResponse resp = postAsServletResponse("/restng/imports/foo", "");
+        //assertEquals(404, resp.getStatus());
+        //Spring feels that 400 is better than 404 for this! - IJT
+        assertEquals(400, resp.getStatus());
     }
 
     @Test
     public void testContentNegotiation() throws Exception {
-        MockHttpServletResponse res = getAsServletResponse("/rest/imports/0");
+        MockHttpServletResponse res = getAsServletResponse("/restng/imports/0");
         assertEquals("application/json", res.getContentType());
 
-        MockHttpServletRequest req = createRequest("/rest/imports/0");
+        MockHttpServletRequest req = createRequest("/restng/imports/0");
         req.setMethod("GET");
         req.addHeader("Accept", "text/html");
 
         res = dispatch(req);
+        assertEquals(200, res.getStatus());
+        System.out.println(res.getContentAsString());
         assertEquals("text/html", res.getContentType());
     }
 
@@ -314,7 +322,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         importer.createContext(new SpatialFile(new File(dir, "point.json")));
         int id = lastId();
 
-        JSONObject json = (JSONObject) getAsJSON("/rest/imports/" + id + "?expand=3");
+        JSONObject json = (JSONObject) getAsJSON("/restng/imports/" + id + "?expand=3");
         assertNotNull(json);
 
         JSONObject imprt = json.optJSONObject("import");

@@ -2043,7 +2043,12 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         }
         
         public void reset() {
-            if (myMark < 0 || myMark >= myBody.length){
+            
+            if (myBody==null ||myMark < 0 || myMark >= myBody.length){
+                if(myBody==null || myBody.length==0) {
+                    //This prevents an annoying error when the sting is empty or null
+                    return;
+                }
                 throw new IllegalStateException("Can't reset when no mark was set.");
             }
             
@@ -2065,7 +2070,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             int realOffset = offset + myOffset;
             int i;
 
-            if ( realOffset >= myBody.length ) {
+            if (myBody==null || realOffset >= myBody.length ) {
                 return -1;
             }
             for (i = 0; (i < length) && (i + myOffset < myBody.length); i++){

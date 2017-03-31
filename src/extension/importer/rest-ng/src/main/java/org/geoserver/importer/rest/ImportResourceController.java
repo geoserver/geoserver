@@ -1,7 +1,262 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.importer.rest;
 
-import org.geoserver.rest.RestBaseController;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
-public class ImportResourceController extends RestBaseController {
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.rest.CatalogController;
+import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportData;
+import org.geoserver.importer.ImportFilter;
+import org.geoserver.importer.Importer;
+import org.geoserver.rest.RequestInfo;
+import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.RestException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
+
+@RestController
+@RequestMapping(path = RestBaseController.ROOT_PATH, produces = {
+        MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE })
+public class ImportResourceController extends BaseController {
+
+    Object importContext; // ImportContext or Iterator<ImportContext>
+
+    private int expand;
+
+    @Autowired
+    public ImportResourceController(Importer importer) {
+        super(importer);
+
+    }
+
+    @PostMapping(value = {"/imports/{id}","/imports"}, produces = { MediaType.APPLICATION_JSON_VALUE })
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<ImportContext> postImports(@PathVariable(name="id",required=false) Long id, @RequestBody(required=false) ImportContext obj,
+            UriComponentsBuilder builder) {
+        // Object obj = lookupContext(null, true, true);
+        ImportContext context = null;
+        /*
+         * if (obj instanceof ImportContext) { // run an existing import try { runImport((ImportContext) obj); context = obj; } catch (Throwable t) {
+         * if (t instanceof ValidationException) { throw new RestException(t.getMessage(), HttpStatus.BAD_REQUEST, t); } else { throw new
+         * RestException("Error occured executing import", HttpStatus.INTERNAL_SERVER_ERROR, t); } } } else {
+         */
+        context = createImport(id, obj);
+        // }
+        if (context != null) {
+            importer.changed(context);
+        } else {
+            throw new RestException("Error occured executing import",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        UriComponents uriComponents = getUriComponents(context.getId().toString(), builder);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(uriComponents.toUri());
+        return new ResponseEntity<ImportContext>(context, headers, HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "/imports", produces = { MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON })
+    public java.util.Iterator<ImportContext> getImports() {
+
+        Object lookupContext = lookupContext(null, true, false);
+        if (lookupContext == null) {
+            // this means a specific lookup failed
+
+            throw new RestException("Failed to find import context", HttpStatus.NOT_FOUND);
+
+        } else {
+
+            return (Iterator<ImportContext>) lookupContext;// wrapList(contexts, ImportContext.class);
+        }
+    }
+
+    @GetMapping(value = "/imports/{id}", produces = { MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    public ImportContext getImports(@PathVariable Long id,
+            @RequestParam(name = "expand", required = false, defaultValue = "0") int expand) {
+        this.expand = expand;
+        Object lookupContext = lookupContext(id, true, false);
+        if (lookupContext == null) {
+            // this means a specific lookup failed
+
+            throw new RestException("Failed to find import context", HttpStatus.NOT_FOUND);
+
+        } else {
+            return (ImportContext) lookupContext;
+        }
+    }
+
+    @PutMapping(value = "/imports/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON })
+    public ResponseEntity<String> putImport(@PathVariable Long id, UriComponentsBuilder builder) {
+        if (id != null) {
+            ImportContext context = createImport(id, null);
+            assert context.getId() >= id;
+            UriComponents uriComponents = getUriComponents(context.getId().toString(), builder);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(uriComponents.toUri());
+            return new ResponseEntity<String>(context.getId().toString(), headers, HttpStatus.CREATED);
+        } else {
+            throw new RestException("ID must be provided for PUT", HttpStatus.BAD_REQUEST);
+        }
+        
+        
+    }
+
+    Object lookupContext(Long imp, boolean allowAll, boolean mustExist) {
+
+        if (imp != null) {
+            ImportContext context = null;
+            try {
+                context = importer.getContext(imp.longValue());
+            } catch (NumberFormatException e) {
+            }
+            if (context == null && mustExist) {
+                throw new RestException("No such import: " + imp.toString(), HttpStatus.NOT_FOUND);
+            }
+            return context;
+        } else {
+            if (allowAll) {
+                return importer.getAllContexts();
+            }
+            throw new RestException("No import specified", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private UriComponents getUriComponents(String name, UriComponentsBuilder builder) {
+        UriComponents uriComponents;
+
+        uriComponents = builder.path("/imports/{id}").buildAndExpand(name);
+
+        return uriComponents;
+    }
+
+    private void runImport(ImportContext context) throws IOException {
+        if (context.getState() == ImportContext.State.INIT) {
+            throw new RestException("Import context is still in INIT state, cannot run it yet",
+                    HttpStatus.PRECONDITION_FAILED);
+        }
+
+        // if the import is empty, prep it but leave data as is
+        if (context.getTasks().isEmpty()) {
+            importer.init(context, false);
+        }
+
+        Map<String, String[]> query = RequestInfo.get().getQueryMap();
+
+        if (query.containsKey("async")) {
+            importer.runAsync(context, ImportFilter.ALL, false);
+        } else {
+            importer.run(context);
+            // @todo revisit - if errors occur, they are logged. A second request
+            // is required to verify success
+        }
+        // getResponse().setStatus(HttpStatus.SUCCESS_NO_CONTENT);
+    }
+
+    private ImportContext createImport(Long id, ImportContext newContext) {
+        // create a new import
+        ImportContext context;
+        try {
+            Map<String, String[]> query = RequestInfo.get().getQueryMap();
+            boolean async = query.containsKey("async");
+            boolean execute = query.containsKey("exec");
+
+            if (async) {
+                context = importer.registerContext(id);
+            } else {
+                context = importer.createContext(id);
+            }
+
+            ImportData data = null;
+            if (newContext != null) {
+                /*
+                 * // read representation specified by user, use it to read ImportContext newContext = (ImportContext) getFormatPostOrPut()
+                 * .toObject(getRequest().getEntity());
+                 */
+
+                WorkspaceInfo targetWorkspace = newContext.getTargetWorkspace();
+                StoreInfo targetStore = newContext.getTargetStore();
+
+                if (targetWorkspace != null) {
+                    // resolve to the 'real' workspace
+                    WorkspaceInfo ws = importer.getCatalog()
+                            .getWorkspaceByName(newContext.getTargetWorkspace().getName());
+                    if (ws == null) {
+                        throw new RestException(
+                                "Target workspace does not exist : "
+                                        + newContext.getTargetStore().getName(),
+                                HttpStatus.BAD_REQUEST);
+
+                    }
+                    context.setTargetWorkspace(ws);
+                }
+                if (targetStore != null) {
+                    StoreInfo ts = importer.getCatalog()
+                            .getStoreByName(newContext.getTargetStore().getName(), StoreInfo.class);
+                    if (ts == null) {
+                        throw new RestException(
+                                "Target store does not exist : "
+                                        + newContext.getTargetStore().getName(),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                    context.setTargetStore(ts);
+                }
+                if (targetStore != null && targetWorkspace == null) {
+                    // take it from the store
+                    context.setTargetWorkspace(targetStore.getWorkspace());
+                }
+
+                context.setData(newContext.getData());
+                context.getDefaultTransforms().addAll(newContext.getDefaultTransforms());
+            } else if (context==null){
+                context = (ImportContext) lookupContext(id, true, false);
+            }
+
+            if (!async && context.getData() != null) {
+                importer.init(context, true);
+            }
+
+            context.reattach(importer.getCatalog(), true);
+            importer.changed(context);
+
+            if (async && context.getData() != null) {
+                if (execute) {
+                    importer.runAsync(context, ImportFilter.ALL, true);
+                } else {
+                    importer.initAsync(context, true);
+                }
+            } else if (execute && context.getData() != null) {
+                importer.run(context);
+            }
+
+        } catch (IOException e) {
+            throw new RestException("Unable to create import", HttpStatus.INTERNAL_SERVER_ERROR, e);
+        } catch (IllegalArgumentException iae) {
+            throw new RestException(iae.getMessage(), HttpStatus.BAD_REQUEST, iae);
+        }
+        return context;
+    }
 
 }

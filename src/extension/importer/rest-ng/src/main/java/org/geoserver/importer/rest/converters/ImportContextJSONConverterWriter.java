@@ -101,7 +101,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
     @Override
     public List getSupportedMediaTypes() {
         return Arrays.asList(MediaType.APPLICATION_JSON,
-                MediaType.valueOf(CatalogController.TEXT_JSON));
+                MediaType.valueOf(CatalogController.TEXT_JSON), MediaType.TEXT_HTML);
     }
 
     @Override
@@ -114,17 +114,33 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
     @Override
     public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
+        if(!contentType.equals(MediaType.TEXT_HTML)){
+            outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        }else {
+            outputMessage.getHeaders().setContentType(MediaType.TEXT_HTML);
+        }
         page = RequestInfo.get();
         String path = page.getPagePath();
         OutputStream out = outputMessage.getBody();
-        json = new FlushableJSONBuilder(new OutputStreamWriter(out));
+        OutputStreamWriter writer = new OutputStreamWriter(out);
+        if(contentType.equals(MediaType.TEXT_HTML)){
+            writer.write("<html><body><pre>");
+        }
+       
+        json = new FlushableJSONBuilder(writer);
         if (t instanceof ImportContext) {
             
             this.context((ImportContext) t, true, expand(1) );
-        } else {
+        } else if( t instanceof Iterator<?>){
             this.contexts((Iterator<ImportContext>) t, expand(0));
+        } 
+        
+        // insert new objects here
+        
+        if(contentType.equals(MediaType.TEXT_HTML)){
+            writer.write("</pre></body></html>");
         }
-
+ 
     }
 
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");

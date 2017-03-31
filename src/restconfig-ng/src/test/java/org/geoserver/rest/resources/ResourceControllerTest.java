@@ -38,7 +38,7 @@ import java.util.*;
  * @author Niels Charlier
  *
  */
-public class ResourceTest extends GeoServerSystemTestSupport {
+public class ResourceControllerTest extends GeoServerSystemTestSupport {
     
     private final String STR_MY_TEST;
     private final String STR_MY_NEW_TEST;
@@ -46,8 +46,9 @@ public class ResourceTest extends GeoServerSystemTestSupport {
     private final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S z");
     private final DateFormat FORMAT_HEADER = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
     
-    private Resource myRes; 
-    public ResourceTest() {
+    private Resource myRes;
+    
+    public ResourceControllerTest() {
         CharsetEncoder encoder = Charset.defaultCharset().newEncoder();
         if (encoder.canEncode("éö")) {
             STR_MY_TEST = "This is my test. é ö";

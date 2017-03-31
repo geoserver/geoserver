@@ -174,6 +174,13 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     }
 
     @Test
+    public void testGetTaskProgress() throws Exception {
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports/0/tasks/0/progress");
+        assertEquals("READY", json.get("state"));
+        //TODO: trigger import and check progress
+    }
+
+    @Test
     public void testDeleteTask() throws Exception {
         MockHttpServletResponse resp = postAsServletResponse(RestBaseController.ROOT_PATH+"/imports", "");
         assertEquals(201, resp.getStatus());

@@ -5,6 +5,7 @@
 package org.geoserver.importer.rest;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportFilter;
 import org.geoserver.importer.Importer;
+import org.geoserver.importer.rest.converters.ImportContextJSONConverterWriter;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
@@ -77,14 +79,14 @@ public class ImportController extends ImportBaseController {
 
     @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON })
-    public ImportContextCollectionWrapper<ImportContext> getImports() {
+    public ImportWrapper getImports() {
 
         Object lookupContext = context(null, true, true);
         if (lookupContext == null) {
             // this means a specific lookup failed
             throw new RestException("Failed to find import context", HttpStatus.NOT_FOUND);
         } else {
-            return new ImportContextCollectionWrapper<>((Iterator<ImportContext>) lookupContext, ImportContext.class);
+            return (writer, converter) -> converter.contexts((Iterator<ImportContext>)lookupContext, converter.expand(0));
         }
     }
 

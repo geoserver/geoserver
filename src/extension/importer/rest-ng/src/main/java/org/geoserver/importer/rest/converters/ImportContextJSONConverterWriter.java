@@ -39,8 +39,7 @@ import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.Table;
 import org.geoserver.importer.mosaic.Granule;
 import org.geoserver.importer.mosaic.Mosaic;
-import org.geoserver.importer.rest.ImportContextCollectionWrapper;
-import org.geoserver.importer.rest.JSONRepresentation;
+import org.geoserver.importer.rest.*;
 import org.geoserver.importer.transform.AttributeRemapTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.CreateIndexTransform;
@@ -104,8 +103,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
         final boolean importControllers = ImportContext.class.isAssignableFrom(clazz)
-                || ImportTask.class.isAssignableFrom(clazz)
-                || ImportContextCollectionWrapper.class.isAssignableFrom(clazz);
+                || ImportTask.class.isAssignableFrom(clazz) || ImportWrapper.class.isAssignableFrom(clazz);
         final boolean dataControllers = ImportData.class.isAssignableFrom(clazz);
         return (importControllers || dataControllers) && getSupportedMediaTypes().contains(mediaType);
     }
@@ -144,12 +142,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
             this.context((ImportContext) t, true, expand(1));
         } else if (t instanceof ImportTask) {
             this.task((ImportTask) t, true, expand(1));
-        } else if(t instanceof ImportContextCollectionWrapper) {
-            if (ImportContext.class.isAssignableFrom(((ImportContextCollectionWrapper) t).getCollectionClass())) {
-                this.contexts((Iterator<ImportContext>) ((ImportContextCollectionWrapper) t).getCollection(), expand(0));
-            } else if (ImportTask.class.isAssignableFrom(((ImportContextCollectionWrapper) t).getCollectionClass())) {
-                this.tasks((List<ImportTask>) ((ImportContextCollectionWrapper) t).getCollection(), true, expand(0));
-            }
+
         } else if (ImportData.class.isAssignableFrom(t.getClass())) {
             ImportData data = (ImportData)t;
             Object parent = data.getParent();
@@ -172,8 +165,10 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
             } else if (data instanceof RemoteData) {
                 remote((RemoteData) data, parent, expand);
             }
-        } else {
-                throw new RestException("Trying to write an unknow object " + t,
+        } else if (ImportWrapper.class.isAssignableFrom(t.getClass())) {
+            ((ImportWrapper) t).write(writer, this);
+        } else  {
+                throw new RestException("Trying to write an unknown object " + t,
                         HttpStatus.I_AM_A_TEAPOT);
         }
         // insert new objects here
@@ -181,6 +176,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         if (contentType.equals(MediaType.TEXT_HTML)) {
             writer.write("</pre></body></html>");
         }
+        writer.flush();
 
     }
 
@@ -197,7 +193,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
     private Callback callback;
 
-    protected int expand(int def) {
+    public int expand(int def) {
         String ex = null;
 
         Map<String, String[]> queryMap = page.getQueryMap();
@@ -346,14 +342,14 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.flush();
     }
 
-    void store(StoreInfo store, ImportTask task, boolean top, int expand) throws IOException {
+    public void store(StoreInfo store, ImportTask task, boolean top, int expand) throws IOException {
 
         String type = store instanceof DataStoreInfo ? "dataStore"
                 : store instanceof CoverageStoreInfo ? "coverageStore" : "store";
 
         json.object();
         if (task != null) {
-            json.key("href").value(page.pageURI(pathTo(task) + "/target"));
+            json.key("href").value(page.pageURI("/target"));
         }
 
         if (expand > 0) {

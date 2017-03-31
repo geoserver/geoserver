@@ -5,35 +5,23 @@
  */
 package org.geoserver.importer.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
-import org.geoserver.importer.Database;
-import org.geoserver.importer.Directory;
-import org.geoserver.importer.ImportContext;
-import org.geoserver.importer.ImportStore;
-import org.geoserver.importer.ImporterTestSupport;
-import org.geoserver.importer.MemoryImportStore;
-import org.geoserver.importer.SpatialFile;
+import org.geoserver.importer.*;
 import org.geotools.data.h2.H2DataStoreFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class ImportResourceTest extends ImporterTestSupport {
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
+
+public class ImportResourceControllerTest extends ImporterTestSupport {
 
     @Before
     public void prepareData() throws Exception {

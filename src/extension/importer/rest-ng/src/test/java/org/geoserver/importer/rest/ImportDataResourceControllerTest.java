@@ -14,6 +14,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.File;
 
+import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -29,20 +30,20 @@ public class ImportDataResourceControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGet() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/restng/imports/0/data");
+        JSONObject json = (JSONObject) getAsJSON(ROOT_PATH+"/imports/0/data");
         assertEquals("directory", json.getString("type"));
         assertEquals(2, json.getJSONArray("files").size());
     }
 
     @Test
     public void testGetFiles() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/restng/imports/0/data/files");
+        JSONObject json = (JSONObject) getAsJSON(ROOT_PATH+"/imports/0/data/files");
         assertEquals(2, json.getJSONArray("files").size());
     }
 
     @Test
     public void testGetFile() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/restng/imports/0/data/files/archsites.shp");
+        JSONObject json = (JSONObject) getAsJSON(ROOT_PATH+"/imports/0/data/files/archsites.shp");
         assertEquals("archsites.shp", json.getString("file"));
         assertEquals("archsites.prj", json.getString("prj"));
     }
@@ -50,16 +51,16 @@ public class ImportDataResourceControllerTest extends ImporterTestSupport {
     @Test
     public void testDelete() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse("/restng/imports/0/data/files/archsites.shp");
+                getAsServletResponse(ROOT_PATH+"/imports/0/data/files/archsites.shp");
         assertEquals(200, response.getStatus());
 
-        response = deleteAsServletResponse("/restng/imports/0/data/files/archsites.shp");
+        response = deleteAsServletResponse(ROOT_PATH+"/imports/0/data/files/archsites.shp");
         assertEquals(204, response.getStatus());
 
-        response = getAsServletResponse("/restng/imports/0/data/files/archsites.shp");
+        response = getAsServletResponse(ROOT_PATH+"/imports/0/data/files/archsites.shp");
         assertEquals(404, response.getStatus());
 
-        JSONArray arr = ((JSONObject)getAsJSON("/restng/imports/0/data/files")).getJSONArray("files");
+        JSONArray arr = ((JSONObject)getAsJSON(ROOT_PATH+"/imports/0/data/files")).getJSONArray("files");
         assertEquals(1, arr.size());
     }
 }

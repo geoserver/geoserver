@@ -5,31 +5,13 @@
 package org.geoserver.rest.resources;
  
 
-import static org.geoserver.rest.RestBaseController.ROOT_PATH;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import freemarker.template.ObjectWrapper;
 import org.geoserver.AtomLink;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.ResourceStoreFactory;
@@ -51,18 +33,23 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.bind.annotation.*;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import freemarker.template.ObjectWrapper;
+import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 
 @RestController
 @RequestMapping(path = {ROOT_PATH + "/resource", ROOT_PATH + "/resource/**"})
@@ -121,12 +108,15 @@ public class ResourceController extends RestBaseController {
      * @return Resource requested, may be UNDEFINED if not found.
      */
     protected Resource resource(HttpServletRequest request) {
-        String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        path = path.substring((ROOT_PATH+"/resource").length());
-        if ("".equals(path)) { //root
-            path = Paths.BASE;
+        String path = request.getPathInfo();
+        //Strip off "/resource"
+        path = path.substring(9);
+        //handle special characters
+        try {
+            path = URLDecoder.decode(path, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RestException("Could not decode the resource URL to UTF-8 format", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
         return resources.get(path);
     }
 
@@ -179,7 +169,7 @@ public class ResourceController extends RestBaseController {
      * @return Returns wrapped info object, or direct access to resource contents depending on requested operation
      */
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD}, produces = {MediaType.ALL_VALUE})
-    public Object get(HttpServletRequest request, HttpServletResponse response) {
+    public Object resourceGet(HttpServletRequest request, HttpServletResponse response) {
         Resource resource = resource(request);
         Operation operation = operation(request);
         Object result;
@@ -259,7 +249,7 @@ public class ResourceController extends RestBaseController {
      * Delete resource
      */
     @DeleteMapping
-    public void resourceDelete(HttpServletRequest request){
+    public void resourceDelete(HttpServletRequest request) {
         Resource resource = resource(request);
         boolean removed = resource.delete();
         if (!removed) {

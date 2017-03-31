@@ -172,6 +172,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
     public void testSpecialCharacterNames() throws Exception {
         // if the file system encoded the file with a ? we need to skip this test
         Assume.assumeTrue(getDataDirectory().get("po?zie").getType() == Type.UNDEFINED);
+        Assert.assertEquals(Type.DIRECTORY, getDataDirectory().get("poëzie").getType());
         XMLUnit.setXpathNamespaceContext(NS_XML);
         Document doc = getAsDOM(RestBaseController.ROOT_PATH+"/resource/po%c3%abzie?format=xml");
         XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver"+RestBaseController.ROOT_PATH+"/resource/po%C3%ABzie/caf%C3%A9", 

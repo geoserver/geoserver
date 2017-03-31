@@ -241,11 +241,6 @@ public class TemplateController extends CatalogController {
             LOGGER.info("PUT file: mimetype=" + request.getContentType() + ", path="
                     + directory.path());
         }
-        // try (OutputStream outputStream = resource.out()) {
-        // IOUtils.copy(content, outputStream);
-        // } catch (IOException e) {
-        // throw new RestException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, e);
-        // }
         try {
             Resource upload = RESTUtils.handleBinUpload(filename, directory, false, request);
             return upload;

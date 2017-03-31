@@ -5,9 +5,26 @@
 package org.geoserver.rest.resources;
  
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import freemarker.template.ObjectWrapper;
+import static org.geoserver.rest.RestBaseController.ROOT_PATH;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.geoserver.AtomLink;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.URLMangler;
@@ -20,39 +37,36 @@ import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamJSONMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.converters.XStreamXMLMessageConverter;
 import org.geoserver.rest.util.RESTUtils;
+import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static org.geoserver.rest.RestBaseController.ROOT_PATH;
+import freemarker.template.ObjectWrapper;
 
 @RestController
 @RequestMapping(path = {ROOT_PATH + "/resource", ROOT_PATH + "/resource/**"}, produces="*")
 public class ResourceController extends RestBaseController {
-    private ResourceStore store;
-
+    private ResourceStore resources;
+    static Logger LOGGER = Logging.getLogger("org.geoserver.catalog.rest");
+    
     private final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S z");
     //TODO: Should we actually be doing this?
     private final DateFormat FORMAT_HEADER = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
@@ -64,12 +78,12 @@ public class ResourceController extends RestBaseController {
     @Autowired
     public ResourceController(@Qualifier("resourceStore") ResourceStoreFactory factory) throws Exception {
         super();
-        this.store = factory.getObject();
+        this.resources = factory.getObject();
     }
 
     public ResourceController(ResourceStore store) {
         super();
-        this.store = store;
+        this.resources = store;
     }
 
     /**
@@ -110,7 +124,7 @@ public class ResourceController extends RestBaseController {
             path = Paths.BASE;
         }
 
-        return store.get(path);
+        return resources.get(path);
     }
 
     protected static Operation operation(HttpServletRequest request) {
@@ -162,7 +176,7 @@ public class ResourceController extends RestBaseController {
      * @return Returns wrapped info object, or direct access to resource contents depending on requested operation
      */
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
-    public Object get(HttpServletRequest request, HttpServletResponse response) {
+    public Object resourceGet(HttpServletRequest request, HttpServletResponse response) {
         Resource resource = resource(request);
         Operation operation = operation(request);
         Object result;
@@ -196,7 +210,44 @@ public class ResourceController extends RestBaseController {
         }
         return result;
     }
+    /**
+     * Upload resource contents.
+     * 
+     * @return All templates
+     */
+    @PutMapping(consumes = {MediaType.ALL_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    public void resourcePut(HttpServletRequest request){
+        Resource resource = resource(request);
+        Resource directory = resource.parent();
+        String filenName = resource.name();
+        
+        Resource result = fileUpload(directory, filenName, request);
+        if (LOGGER.isLoggable(Level.INFO)) {
+            LOGGER.info("PUT resource: " + resource.path());
+        }
+    }
 
+    /**
+     * Verifies mime type and use {@link RESTUtil
+     * @param directory
+     * @param filename
+     * @param request
+     * @return
+     */
+    protected Resource fileUpload(Resource directory, String filename, HttpServletRequest request) {
+        if (LOGGER.isLoggable(Level.INFO)) {
+            LOGGER.info("PUT file: mimetype=" + request.getContentType() + ", path="
+                    + directory.path());
+        }
+        try {
+            Resource upload = RESTUtils.handleBinUpload(filename, directory, false, request);
+            return upload;
+        } catch (IOException problem) {
+            throw new RestException(problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
+                    problem);
+        }
+    }
     //@Override
     //protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
     //    return new ResourceToMapWrapper<>(clazz);

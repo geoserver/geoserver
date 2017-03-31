@@ -29,7 +29,6 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.util.IOUtils;
-import org.geoserver.rest.util.RESTUtils;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
@@ -245,7 +244,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         // Copy the content of the first zip to the second
         IOUtils.copyStream(zipHarvest.openStream(), newZip.out(), true, true);
         Resource outputDirectory = Files.asResource(new File("./target/harvesting"));
-        RESTUtils.unzipFile(newZip, outputDirectory);
+        IOUtils.unzipFile(newZip, outputDirectory);
         // Create the POST request
         MockHttpServletRequest request = createRequest("/rest/workspaces/gs/coveragestores/watertemp3/external.imagemosaic");
         request.setMethod("POST");
@@ -483,7 +482,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         Resource mosaic = zipFile.parent().get("mosaic");
         mosaic.delete();
 
-        RESTUtils.unzipFile(newZip, mosaic);
+        IOUtils.unzipFile(newZip, mosaic);
         return mosaic;
     }
 

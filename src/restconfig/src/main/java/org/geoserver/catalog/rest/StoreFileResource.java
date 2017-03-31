@@ -5,7 +5,6 @@
  */
 package org.geoserver.catalog.rest;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,10 +18,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestletException;
+import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.RESTUploadPathMapper;
 import org.geoserver.rest.util.RESTUtils;
 import org.geotools.data.DataUtilities;
@@ -178,13 +177,13 @@ public abstract class StoreFileResource extends Resource {
                 if(filename == null) {
                     filename = store + "." + format;
                 }
-                uploadedFile = RESTUtils.handleBinUpload(filename, directory, cleanPreviousContents, getRequest(), workspace);
+                uploadedFile = IOUtils.handleBinUpload(filename, directory, cleanPreviousContents, getRequest(), workspace);
             }
             else if (method != null && method.toLowerCase().startsWith("url.")) {
-                uploadedFile = RESTUtils.handleURLUpload(store + "." + format, workspace, directory, getRequest());
+                uploadedFile = IOUtils.handleURLUpload(store + "." + format, workspace, directory, getRequest());
             }    
             else if (method != null && method.toLowerCase().startsWith("external.")) {
-                uploadedFile = RESTUtils.handleEXTERNALUpload(getRequest());
+                uploadedFile = IOUtils.handleEXTERNALUpload(getRequest());
                 external = true;
             }
             else{
@@ -218,7 +217,7 @@ public abstract class StoreFileResource extends Resource {
             //unzip the file 
             try {
                 // Unzipping of the file and, if it is a POST request, filling of the File List
-                RESTUtils.unzipFile(uploadedFile, directory, workspace , store, getRequest(), files, external);
+                IOUtils.unzipFile(uploadedFile, directory, workspace , store, getRequest(), files, external);
 
                 
                 //look for the "primary" file

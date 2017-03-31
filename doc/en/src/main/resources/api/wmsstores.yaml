@@ -7,7 +7,7 @@ info:
 
 paths:
 
-  /rest/workspaces/{workspace}/wmsstores:
+  /workspaces/{workspace}/wmsstores:
 
     get:
       operationId: getWMSStores
@@ -83,7 +83,7 @@ paths:
           description: Method Not Allowed
 
 
-  /rest/workspaces/{workspace}/wmsstores/{store}:
+  /workspaces/{workspace}/wmsstores/{store}:
 
     get:
       operationId: getWMSStore
@@ -209,11 +209,6 @@ paths:
           description: Unauthorized
 
 
-#  /rest/workspaces/{workspace}/wmsstores/{store}/wmslayers:
-#  /rest/workspaces/{workspace}/wmsstores/{store}/wmslayers?list=available:
-#  /rest/workspaces/{workspace}/wmsstores/{store}/wmslayers/{wmslayer}:
-
-
 definitions:
 
   WMSStoresList:
@@ -269,6 +264,8 @@ definitions:
             properties:
               '@key':
                 type: string
+                enum:
+                - useConnectionPooling
                 description: Set to useConnectionPooling
               text:
                 type: boolean

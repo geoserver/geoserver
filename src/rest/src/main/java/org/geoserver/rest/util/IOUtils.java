@@ -19,11 +19,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.net.URL;
-import java.nio.channels.Channel;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.*;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -40,10 +36,18 @@ import java.util.zip.ZipFile;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FilenameUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
+import org.geoserver.rest.RestletException;
 import org.geotools.data.DataUtilities;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
+import org.restlet.data.Status;
+import org.vfny.geoserver.global.ConfigurationException;
 
 /**
  * Assorted IO related utilities
@@ -80,6 +84,209 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
         FILE_CLEANER.setPriority(1);
         FILE_CLEANER.start();
 }
+
+    /**
+     * Reads content from the body of a request and writes it to a file.
+     *
+     * @param fileName The name of the file to write out.
+     * @param directory The directory to write the file to.
+     * @param deleteDirectoryContent Delete directory content if the file already exists.
+     * @param request The request.
+     *
+     * @return The file object representing the newly written file.
+     *
+     * @throws IOException Any I/O errors that occur.
+     */
+    public static Resource handleBinUpload(String fileName,
+            Resource directory, boolean deleteDirectoryContent, Request request) throws IOException {
+        return handleBinUpload(fileName, directory, deleteDirectoryContent, request, null);
+    }
+
+    /**
+     * Reads content from the body of a request and writes it to a file.
+     *
+     * @param fileName The name of the file to write out.
+     * @param directory The directory to write the file to.
+     * @param deleteDirectoryContent Delete directory content if the file already exists.
+     * @param request The request.
+     *
+     * @return The file object representing the newly written file.
+     *
+     * @throws IOException Any I/O errors that occur.
+     */
+    public static Resource handleBinUpload(String fileName, Resource directory, boolean deleteDirectoryContent,
+            Request request, String workSpace) throws IOException {
+        // Creation of a StringBuilder for the selected file
+        StringBuilder itemPath = new StringBuilder(fileName);
+        // Mediatype associated to the input file
+        MediaType mediaType = request.getEntity().getMediaType();
+        // Only zip files are not remapped
+        if(mediaType == null || !RESTUtils.isZipMediaType( mediaType )){
+            String baseName = FilenameUtils.getBaseName(fileName);
+            String itemName = FilenameUtils.getName(fileName);
+            // Store parameters used for mapping the file path
+            Map<String, String> storeParams = new HashMap<String, String>();
+            // Mapping item path
+            RESTUtils.remapping(workSpace, baseName, itemPath, itemName, storeParams);
+        }
+
+        final Resource newFile = directory.get(itemPath.toString());
+
+        if(Resources.exists(newFile)) {
+            if (deleteDirectoryContent) {
+                for (Resource file : directory.list()) {
+                    file.delete();
+                };
+            } else {
+                // delete the file, otherwise replacing it with a smaller one will leave bytes at the end
+                newFile.delete();
+            }
+        }
+
+        try (ReadableByteChannel source = request.getEntity().getChannel()) {
+            try (WritableByteChannel outputChannel = Channels.newChannel(newFile.out())) {
+                copyChannel(1024 * 1024, source, outputChannel);
+            }
+        }
+        return newFile;
+    }
+
+    /**
+     * Handles the upload of a dataset using the URL method.
+     *
+     * @param datasetName the name of the uploaded dataset.
+     * @param extension the extension of the uploaded dataset.
+     * @param request the incoming request.
+     * @return a {@link File} that points to the final uploaded dataset.
+     *
+     * @throws IOException
+     * @throws ConfigurationException
+     *
+     * @deprecated use {@link #handleURLUpload(String, File, Request)}.
+     */
+    public static Resource handleURLUpload(String datasetName, String workSpace, String extension, Request request) throws IOException, ConfigurationException {
+        // Get the dir where to write and create a file there
+
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        Resource data = loader.get("data");
+        return handleURLUpload(datasetName + "." + extension, workSpace, data, request);
+    }
+
+    /**
+     * Reads a url from the body of a request, reads the contents of the url and writes it to a file.
+     *
+     * @param fileName The name of the file to write.
+     * @param directory The directory to write the new file to.
+     * @param request The request.
+     *
+     * @return The file object representing the newly written file.
+     *
+     * @throws IOException Any I/O errors that occur.
+     */
+    public static Resource handleURLUpload(
+            String fileName, String workSpace, Resource directory, Request request)
+            throws IOException {
+        //Initial remapping of the input file
+        StringBuilder itemPath = new StringBuilder(fileName);
+        // Mediatype associated to the input file
+        MediaType mediaType = request.getEntity().getMediaType();
+        // Only zip files are not remapped
+        if(mediaType == null || !RESTUtils.isZipMediaType( mediaType )){
+            String baseName = FilenameUtils.getBaseName(fileName);
+            // Store parameters used for mapping the file path
+            Map<String, String> storeParams = new HashMap<String, String>();
+            String itemName = FilenameUtils.getName(fileName);
+            // Mapping item path
+            RESTUtils.remapping(workSpace, baseName, itemPath, itemName, storeParams);
+        }
+
+        //this may exists already, but we don't fail here since
+        //it might be old and unused, if needed we fail later while copying
+        Resource newFile  = directory.get(itemPath.toString());
+
+        //get the URL for this file to upload
+        final InputStream inStream=request.getEntity().getStream();
+        final String stringURL= getStringFromStream(inStream);
+        final URL fileURL=new URL(stringURL);
+
+        ////
+        //
+        // Now do the real upload
+        //
+        ////
+        final InputStream inputStream =  fileURL.openStream();
+        final OutputStream outStream = newFile.out();
+        copyStream(inputStream, outStream, true, true);
+
+        return newFile;
+    }
+
+    /**
+     * Handles an upload using the EXTERNAL method.
+     *
+     * @param request
+     * @throws IOException
+     */
+    public static Resource handleEXTERNALUpload(Request request) throws IOException {
+        //get the URL for this file to upload
+        InputStream inStream = null;
+        URL fileURL ;
+        try {
+            inStream = request.getEntity().getStream();
+            final String stringURL = getStringFromStream(inStream);
+            fileURL = new URL(stringURL);
+        } finally {
+            closeQuietly(inStream);
+        }
+
+        final File inputFile = URLToFile(fileURL);
+        if(inputFile == null || !inputFile.exists()) {
+            throw new RestletException("Failed to locate the input file " + fileURL, Status.CLIENT_ERROR_BAD_REQUEST);
+        } else if(!inputFile.canRead()) {
+            throw new RestletException("Input file is not readable, check filesystem permissions: " + fileURL,
+                    Status.CLIENT_ERROR_BAD_REQUEST);
+        }
+
+        return Files.asResource(inputFile);
+    }
+
+	/**
+     * Unzips a zip a file to a specified directory, deleting the zip file after unpacking.
+     *
+     * @param zipFile The zip file.
+     * @param outputDirectory The directory to unpack the contents to.
+     * @param request HTTP request sent.
+     * @param files Empty List to be filled with the zip files.
+     *
+     * @throws IOException Any I/O errors that occur.
+     */
+    public static void unzipFile( Resource zipFile,
+            Resource outputDirectory ) throws IOException {
+        unzipFile(zipFile, outputDirectory, null, null, null, null, false);
+    }
+
+	/**
+     * Unzips a zip a file to a specified directory, deleting the zip file after unpacking.
+     *
+     * @param zipFile The zip file.
+     * @param outputDirectory The directory to unpack the contents to.
+     * @param external
+     *
+     * @throws IOException Any I/O errors that occur.
+     */
+    public static void unzipFile(Resource zipFile,
+            Resource outputDirectory, String workspace,
+            String store, Request request, List<Resource> files,
+            boolean external) throws IOException {
+
+        if (outputDirectory == null) {
+            outputDirectory = zipFile.parent();
+        }
+        ZipFile archive = new ZipFile(zipFile.file());
+
+        inflate(archive, outputDirectory, null, workspace, store, request, files, external);
+        zipFile.delete();
+    }
 
 	/**
 	 * Simple class implementing a periodic Thread that periodically tries to

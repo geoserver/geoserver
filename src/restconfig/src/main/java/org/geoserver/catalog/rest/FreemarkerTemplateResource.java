@@ -16,6 +16,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.MediaTypes;
+import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.RESTUtils;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -86,7 +87,7 @@ public class FreemarkerTemplateResource extends StoreFileResource {
                 LOGGER.info("PUT file: mimetype=" + mediaType + ", path=" + directory.path());
             }
             
-            return RESTUtils.handleBinUpload(getAttribute("template") + "." + MEDIATYPE_FTL_EXTENSION, directory, false, getRequest());
+            return IOUtils.handleBinUpload(getAttribute("template") + "." + MEDIATYPE_FTL_EXTENSION, directory, false, getRequest());
         } catch (IOException e) {
             throw new RestletException(e.getMessage(), Status.SERVER_ERROR_INTERNAL, e);
         }

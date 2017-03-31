@@ -28,17 +28,29 @@
         <executions>
           <!-- one execution per page -->
           <execution>
-            <id>styles</id>
+            <id>coverageStores</id>
             <phase>process-resources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/styles.yaml</inputSpec>
+              <inputSpec>src/main/resources/api/coverageStores.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/styles</output>
+              <output>${project.build.directory}/api/coverageStores</output>
             </configuration>
           </execution>
+          <execution>
+            <id>featureTypes</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/featureTypes.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/featureTypes</output>
+            </configuration>
+          </execution>          
           <execution>
             <id>fonts</id>
             <phase>process-resources</phase>
@@ -49,18 +61,6 @@
               <inputSpec>src/main/resources/api/fonts.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/fonts</output>
-            </configuration>
-          </execution>
-          <execution>
-            <id>coverageStores</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <inputSpec>src/main/resources/api/coverageStores.yaml</inputSpec>
-              <language>html</language>
-              <output>${project.build.directory}/api/coverageStores</output>
             </configuration>
           </execution>
           <execution>
@@ -88,29 +88,17 @@
             </configuration>
           </execution>
           <execution>
-            <id>settings</id>
+            <id>manifests</id>
             <phase>process-resources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/settings.yaml</inputSpec>
+              <inputSpec>src/main/resources/api/manifests.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/settings</output>
+              <output>${project.build.directory}/api/manifests</output>
             </configuration>
           </execution>
-          <execution>
-            <id>featureTypes</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <inputSpec>src/main/resources/api/featureTypes.yaml</inputSpec>
-              <language>html</language>
-              <output>${project.build.directory}/api/featureTypes</output>
-            </configuration>
-          </execution>          
           <execution>
             <id>security</id>
             <phase>process-resources</phase>
@@ -124,15 +112,15 @@
             </configuration>
           </execution>          
           <execution>
-            <id>manifests</id>
+            <id>settings</id>
             <phase>process-resources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/manifests.yaml</inputSpec>
+              <inputSpec>src/main/resources/api/settings.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/manifests</output>
+              <output>${project.build.directory}/api/settings</output>
             </configuration>
           </execution>
           <execution>
@@ -145,6 +133,18 @@
               <inputSpec>src/main/resources/api/structuredCoverages.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/structuredCoverages</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>styles</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/styles.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/styles</output>
             </configuration>
           </execution>
           <execution>

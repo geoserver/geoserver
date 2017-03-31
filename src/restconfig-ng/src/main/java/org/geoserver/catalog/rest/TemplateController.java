@@ -84,7 +84,6 @@ public class TemplateController extends CatalogController {
             "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates/{template}",
         }
     )
-    
     public void templateDelete(
             HttpServletResponse response,
             @PathVariable(required = false) String workspace,
@@ -99,8 +98,8 @@ public class TemplateController extends CatalogController {
         if( resource.getType() != Type.RESOURCE ){
             throw new ResourceNotFoundException("Template not found: '"+path+"'");
         }
-        boolean deleted = resource.delete();
-        if (!deleted) {
+        boolean removed = resource.delete();
+        if (!removed) {
             throw new RestException("Template '" + path + "' not removed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

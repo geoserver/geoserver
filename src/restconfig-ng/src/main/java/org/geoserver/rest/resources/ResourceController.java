@@ -49,6 +49,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -212,8 +213,6 @@ public class ResourceController extends RestBaseController {
     }
     /**
      * Upload resource contents.
-     * 
-     * @return All templates
      */
     @PutMapping(consumes = {MediaType.ALL_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
@@ -228,6 +227,20 @@ public class ResourceController extends RestBaseController {
         }
     }
 
+    /**
+     * Delete resourc
+     * 
+     * @return All templates
+     */
+    @DeleteMapping
+    public void resourceDelete(HttpServletRequest request){
+        Resource resource = resource(request);
+        boolean removed = resource.delete();
+        if (!removed) {
+            throw new RestException("Resource '" + resource.path() + "' not removed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
     /**
      * Verifies mime type and use {@link RESTUtil
      * @param directory

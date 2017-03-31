@@ -280,6 +280,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         // pre parse filters
         List<Filter> filters = parseFilters(getMap);
 
+        if ((getMap.getSldBody() != null || getMap.getSld() != null) && wms.isDynamicStylingDisabled()) {
+            throw new ServiceException("Dynamic style usage is forbidden");
+        }
+
         // styles
         // process SLD_BODY, SLD, then STYLES parameter
         if (getMap.getSldBody() != null) {

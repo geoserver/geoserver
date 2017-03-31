@@ -106,7 +106,6 @@ public class GeoFenceConfigurationManager {
         saveConfig(writer, "instanceName", configuration.getInstanceName());
         saveConfig(writer, "servicesUrl", configuration.getServicesUrl());
         saveConfig(writer, "allowRemoteAndInlineLayers", configuration.isAllowRemoteAndInlineLayers());
-        saveConfig(writer, "allowDynamicStyles", configuration.isAllowDynamicStyles());
         saveConfig(writer, "grantWriteToWorkspacesToAuthenticatedUsers", configuration.isGrantWriteToWorkspacesToAuthenticatedUsers());
         saveConfig(writer, "useRolesToFilter", configuration.isUseRolesToFilter());
         saveConfig(writer, "acceptedRoles", configuration.getAcceptedRoles());

@@ -37,6 +37,7 @@ import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -70,7 +71,7 @@ public class StyleController extends CatalogController {
     private static final Logger LOGGER = Logging.getLogger(StyleController.class);
 
     @Autowired
-    public StyleController(Catalog catalog) {
+    public StyleController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
     }
 
@@ -80,7 +81,10 @@ public class StyleController extends CatalogController {
             @PathVariable(required = false) String layerName,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(value = "quietOnNotFound", required = false) boolean quietOnNotFound) {
-
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
+        
         if (layerName != null) {
             return wrapList(catalog.getLayerByName(layerName).getStyles(), StyleInfo.class);
         } else if (workspaceName != null) {
@@ -99,7 +103,11 @@ public class StyleController extends CatalogController {
             @PathVariable( required = false) String layerName,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(defaultValue = "false", name = "default") boolean makeDefault) {
-
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
+        checkFullAdminRequired(workspaceName);
+        
         if (layerName != null) {
             StyleInfo existing = catalog.getStyleByName(style.getName());
             if (existing == null) {
@@ -136,6 +144,11 @@ public class StyleController extends CatalogController {
             @RequestParam(required = false) String name,
             @RequestHeader("Content-Type") String contentType, UriComponentsBuilder builder)
     {
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
+        checkFullAdminRequired(workspaceName);
+        
         StyleHandler handler = org.geoserver.catalog.Styles.handler(contentType);
         if (name == null) {
             name = findNameFromObject(style);
@@ -238,6 +251,10 @@ public class StyleController extends CatalogController {
         @RequestParam(required = false, defaultValue = "false") boolean recurse,
         @RequestParam(required = false, defaultValue = "false") boolean purge)
         throws IOException {
+        
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
 
         StyleInfo style = workspaceName != null ? catalog.getStyleByName(workspaceName, styleName) :
                 catalog.getStyleByName(styleName);
@@ -291,6 +308,11 @@ public class StyleController extends CatalogController {
         UriComponentsBuilder builder)
         throws IOException
     {
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
+        checkFullAdminRequired(workspaceName);
+        
         File directory = unzipSldPackage(stream);
         File uploadedFile = retrieveSldFile(directory);
 
@@ -354,7 +376,11 @@ public class StyleController extends CatalogController {
             @RequestBody StyleInfo info,
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName) {
-
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
+        checkFullAdminRequired(workspaceName);
+        
         StyleInfo original = catalog.getStyleByName(workspaceName, styleName);
 
         //ensure no workspace change
@@ -375,7 +401,11 @@ public class StyleController extends CatalogController {
             @RequestBody Style style,
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName) throws IOException {
-
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
+        checkFullAdminRequired(workspaceName);
+        
         StyleInfo s = catalog.getStyleByName( workspaceName, styleName );
 
         ResourcePool resourcePool = catalog.getResourcePool();
@@ -518,6 +548,12 @@ public class StyleController extends CatalogController {
     }
 
     public void putZipInternal(InputStream is, String workspace, String name, String style) {
+        if(workspace != null && catalog.getWorkspaceByName(workspace) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspace + " not found");
+        }
+        checkFullAdminRequired(workspace);
+
+        
         File directory = null;
         try {
             directory = unzipSldPackage((InputStream) is);

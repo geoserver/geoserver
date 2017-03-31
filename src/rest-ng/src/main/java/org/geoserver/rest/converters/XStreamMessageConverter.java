@@ -85,12 +85,12 @@ public abstract class XStreamMessageConverter extends BaseMessageConverter {
      * The extension used for resources of the type being encoded
      * @return
      */
-    protected abstract String getExtension();
+    public abstract String getExtension();
 
     /**
      * Get the text representation of the mime type being encoded. Only used in link encoding for
      * xml
      * @return
      */
-    protected abstract String getMediaType();
+    public abstract String getMediaType();
 }

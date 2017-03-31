@@ -21,6 +21,7 @@ import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -59,7 +60,7 @@ public class CoverageController extends CatalogController {
     private static final Logger LOGGER = Logging.getLogger(CoverageController.class);
 
     @Autowired
-    public CoverageController(Catalog catalog) {
+    public CoverageController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
     }
 

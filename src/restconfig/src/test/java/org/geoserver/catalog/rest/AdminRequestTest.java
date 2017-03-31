@@ -164,6 +164,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         loginAsSf();
 
         Document dom = getAsDOM( "/rest/layergroups.xml");
+        print(dom);
         assertEquals( 1, dom.getElementsByTagName( "layerGroup").getLength());
         assertXpathEvaluatesTo("global", "//layerGroup/name", dom);
 

@@ -37,13 +37,11 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.DataUtilities;
-import org.springframework.http.HttpMethod;
 
 /**
  * Assorted IO related utilities

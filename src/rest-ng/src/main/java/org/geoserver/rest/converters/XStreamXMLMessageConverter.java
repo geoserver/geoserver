@@ -72,12 +72,12 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter {
     }
     
     @Override
-    protected String getMediaType() {
+    public String getMediaType() {
         return MediaType.APPLICATION_ATOM_XML_VALUE;
     }
 
     @Override
-    protected String getExtension() {
+    public String getExtension() {
         return "xml";
     }
     

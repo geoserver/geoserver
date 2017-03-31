@@ -53,6 +53,7 @@ public class LocalSettingsController extends GeoServerController {
     @PostMapping(value = "/workspaces/{wsName}/settings", consumes = {
             MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+    @ResponseStatus(HttpStatus.CREATED)
     public String createLocalSettings(@PathVariable String wsName, @RequestBody SettingsInfo settingsInfo) {
         String name = "";
         if (wsName != null) {

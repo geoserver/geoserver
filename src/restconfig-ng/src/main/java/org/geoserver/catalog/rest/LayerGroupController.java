@@ -7,14 +7,17 @@ package org.geoserver.catalog.rest;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -47,15 +50,18 @@ public class LayerGroupController extends CatalogController {
     private static final Logger LOGGER = Logging.getLogger(LayerGroupController.class);
 
     @Autowired
-    public LayerGroupController(Catalog catalog) {
+    public LayerGroupController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
     }
 
     @GetMapping(value = {"/layergroups", "/workspaces/{workspace}/layergroups"},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper getLayerGroups(@PathVariable( name = "workspace", required = false) String workspaceName) {
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
         List<LayerGroupInfo> layerGroupInfos = workspaceName != null ?
-                catalog.getLayerGroupsByWorkspace(workspaceName) : catalog.getLayerGroups();
+                catalog.getLayerGroupsByWorkspace(workspaceName) : catalog.getLayerGroupsByWorkspace(CatalogFacade.NO_WORKSPACE);
         return wrapList(layerGroupInfos, LayerGroupInfo.class);
     }
 
@@ -64,6 +70,10 @@ public class LayerGroupController extends CatalogController {
     public RestWrapper getLayerGroup(@PathVariable (name = "layerGroup") String layerGroupName,
                                      @PathVariable (name = "workspace", required = false) String workspaceName,
                                      @RequestParam (name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
+
         LayerGroupInfo layerGroupInfo = workspaceName != null ?
             catalog.getLayerGroupByName(workspaceName, layerGroupName) : catalog.getLayerGroupByName(layerGroupName);
 
@@ -78,6 +88,11 @@ public class LayerGroupController extends CatalogController {
     public ResponseEntity<String> postLayerGroup(@RequestBody LayerGroupInfo lg,
             @PathVariable( name = "workspace", required = false) String workspaceName,
             UriComponentsBuilder builder) throws Exception{
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
+        checkFullAdminRequired(workspaceName);
+        
         if ( lg.getLayers().isEmpty() ) {
             throw new  RestException( "layer group must not be empty", HttpStatus.BAD_REQUEST );
         }
@@ -115,6 +130,12 @@ public class LayerGroupController extends CatalogController {
     public void putLayerGroup(@RequestBody LayerGroupInfo lg,
             @PathVariable( name = "workspace", required = false) String workspaceName,
             @PathVariable( name = "layerGroup" ) String layerGroupName) throws Exception {
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
+        checkFullAdminRequired(workspaceName);
+
+        
         LOGGER.info( "PUT layer group " + layerGroupName
                 + (workspaceName == null ? ", workspace " + workspaceName : ""));
         LayerGroupInfo original = workspaceName != null ?
@@ -140,6 +161,10 @@ public class LayerGroupController extends CatalogController {
     @DeleteMapping( value = {"/layergroups/{layerGroup}", "/workspaces/{workspace}/layergroups/{layerGroup}"})
     public void deleteLayerGroup(@PathVariable( name = "workspace", required = false) String workspaceName,
                                  @PathVariable( name = "layerGroup" ) String layerGroupName) {
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
+        
         LOGGER.info( "DELETE layer group " + layerGroupName );
         LayerGroupInfo lg = workspaceName == null ? catalog.getLayerGroupByName( layerGroupName ) :
                 catalog.getLayerGroupByName(workspaceName, layerGroupName);

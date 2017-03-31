@@ -28,9 +28,11 @@ import org.geoserver.rest.util.RESTUtils;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -62,11 +64,47 @@ public class TemplateController extends CatalogController {
     static Logger LOGGER = Logging.getLogger("org.geoserver.catalog.rest");
     
     @Autowired
-    public TemplateController(Catalog catalog) {
+    public TemplateController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
         resources = catalog.getResourceLoader();
     }
     
+    /**
+     * Template definition.
+     * 
+     * @return Template Definitin
+     */
+    @DeleteMapping (
+        value = {
+            "/templates/{template}",
+            "/workspaces/{workspace}/templates/{template}",
+            "/workspaces/{workspace}/datastores/{store}/templates/{template}",
+            "/workspaces/{workspace}/datastores/{store}/featuretypes/{type}/templates/{template}",
+            "/workspaces/{workspace}/coveragestores/{store}/templates/{template}",
+            "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates/{template}",
+        }
+    )
+    
+    public void templateDelete(
+            HttpServletResponse response,
+            @PathVariable(required = false) String workspace,
+            @PathVariable(required = false) String store,
+            @PathVariable(required = false) String type,
+            @PathVariable String template
+            ){
+        String filename = template+"."+MEDIATYPE_FTL_EXTENSION;
+        String path = Paths.path(path(workspace, store, type ), filename);
+        Resource resource = resources.get(path);
+        
+        if( resource.getType() != Type.RESOURCE ){
+            throw new ResourceNotFoundException("Template not found: '"+path+"'");
+        }
+        boolean deleted = resource.delete();
+        if (!deleted) {
+            throw new RestException("Template '" + path + "' not removed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Template definition.
      * 
@@ -81,7 +119,9 @@ public class TemplateController extends CatalogController {
             "/workspaces/{workspace}/coveragestores/{store}/templates/{template}",
             "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates/{template}",
         },
-        produces = {MEDIATYPE_FTL_VALUE}
+        produces = {
+           MEDIATYPE_FTL_VALUE // text/plain
+       }
     )
     public void templateGet(
             HttpServletResponse response,
@@ -113,6 +153,39 @@ public class TemplateController extends CatalogController {
         }
     }
 
+    /**
+     * All templates as JSON, XML or HTML.
+     * 
+     * @return All templates
+     */
+    @PutMapping(
+        value = {
+            "/templates/{template}",
+            "/workspaces/{workspace}/templates/{template}",
+            "/workspaces/{workspace}/datastores/{store}/templates/{template}",
+            "/workspaces/{workspace}/datastores/{store}/featuretypes/{type}/templates/{template}",
+            "/workspaces/{workspace}/coveragestores/{store}/templates/{template}",
+            "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates/{template}",
+        },
+        consumes = {MEDIATYPE_FTL_VALUE,MediaType.TEXT_PLAIN_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    public void templatePut(
+            HttpServletRequest request,
+            @PathVariable(required = false) String workspace,
+            @PathVariable(required = false) String store,
+            @PathVariable(required = false) String type,
+            @PathVariable String template
+            ){
+        String filename = template + "." + MEDIATYPE_FTL_EXTENSION;
+        String path = path(workspace, store, type);
+        Resource directory = resources.get(path);
+    
+        Resource resource = fileUpload(directory, filename, request);
+        if (LOGGER.isLoggable(Level.INFO)) {
+            LOGGER.info("PUT template: " + resource.path());
+        }
+    }
+
     //
     // List Templates
     //
@@ -127,15 +200,15 @@ public class TemplateController extends CatalogController {
             value = {
                 "/templates",
                 "/workspaces/{workspace}/templates",
-                "/workspaces/{workspace}/datastores/{store}/templates}",
+                "/workspaces/{workspace}/datastores/{store}/templates",
                 "/workspaces/{workspace}/datastores/{store}/featuretypes/{type}/templates",
                 "/workspaces/{workspace}/coveragestores/{store}/templates",
                 "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates",
             },
             produces = {
+                MediaType.TEXT_HTML_VALUE, // this is the default
                 MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
+                MediaType.APPLICATION_XML_VALUE
             })
     public RestWrapper<TemplateInfo> templatesGet(
             @PathVariable(required = false) String workspace,
@@ -156,39 +229,6 @@ public class TemplateController extends CatalogController {
             return wrapList(list, TemplateInfo.class);
         }
     }
-    /**
-     * All templates as JSON, XML or HTML.
-     * 
-     * @return All templates
-     */
-    @PutMapping(
-        value = {
-            "/templates/{template}",
-            "/workspaces/{workspace}/templates/{template}",
-            "/workspaces/{workspace}/datastores/{store}/templates/{template}",
-            "/workspaces/{workspace}/datastores/{store}/featuretypes/{type}/templates/{template}",
-            "/workspaces/{workspace}/coveragestores/{store}/templates/{template}",
-            "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates/{template}",
-        },
-        consumes = {MEDIATYPE_FTL_VALUE})
-    @ResponseStatus(HttpStatus.CREATED)
-    public void templatePut(
-            HttpServletRequest request,
-            @PathVariable(required = false) String workspace,
-            @PathVariable(required = false) String store,
-            @PathVariable(required = false) String type,
-            @PathVariable String template
-            ){
-        String filename = template + "." + MEDIATYPE_FTL_EXTENSION;
-        String path = path(workspace, store, type);
-        Resource directory = resources.get(path);
-
-        Resource resource = fileUpload(directory, filename, request);
-        if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.info("PUT template: " + resource.path());
-        }
-    }
-
     /**
      * Verifies mime type and use {@link RESTUtil
      * @param directory

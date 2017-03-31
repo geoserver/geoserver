@@ -17,6 +17,7 @@ import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -49,7 +50,7 @@ public class WMSStoreController extends CatalogController {
     private static final Logger LOGGER = Logging.getLogger(WMSStoreController.class);
 
     @Autowired
-    public WMSStoreController(Catalog catalog) {
+    public WMSStoreController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
     }
 

@@ -20,11 +20,13 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,7 +54,7 @@ public class LayerController extends CatalogController {
     private static final Logger LOGGER = Logging.getLogger(LayerController.class);
 
     @Autowired
-    public LayerController(Catalog catalog) {
+    public LayerController(@Qualifier("catalog") Catalog catalog) {
         super(catalog);
     }
 
@@ -88,6 +90,9 @@ public class LayerController extends CatalogController {
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse) throws IOException {
         
         LayerInfo layer = (LayerInfo) catalog.getLayerByName(layerName);
+        if(layer == null) {
+            throw new ResourceNotFoundException(layerName);
+        }
         if (!recurse) {
             catalog.remove(layer);
             LOGGER.info( "DELETE layer '" + layerName+"'");

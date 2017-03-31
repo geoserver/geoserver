@@ -8,12 +8,15 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -114,6 +117,29 @@ public abstract class CatalogController extends RestBaseController {
             return CRS.decode(srs);
         } catch(Exception e) {
             throw new RuntimeException("This is unexpected, the layer seems to be mis-configured", e);
+        }
+    }
+    
+    /**
+     * Determines if the current user is authenticated as full administrator.
+     */
+    protected boolean isAuthenticatedAsAdmin() {
+        if (SecurityContextHolder.getContext() == null) {
+            return false;
+        }
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class).
+                checkAuthenticationForAdminRole();
+    }
+    
+    /**
+     * Validates the current user can edit the resource (full admin required if workspaceName is null)
+     * @param workspaceName
+     */
+    protected void checkFullAdminRequired(String workspaceName) {
+        // global workspaces/styles can only be edited by a full admin
+        if (workspaceName == null && !isAuthenticatedAsAdmin()) {
+            throw new RestException("Cannot edit global resource , full admin credentials required", 
+                    HttpStatus.METHOD_NOT_ALLOWED);
         }
     }
 }

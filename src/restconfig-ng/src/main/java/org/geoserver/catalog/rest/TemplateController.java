@@ -52,8 +52,10 @@ import org.springframework.web.bind.annotation.RestController;
  * <li>workspaces/{workspace}/datastores/{store}/templates/{template}.ftl</li>
  * <li>workspaces/{workspace}/datastores/{store}/featuretypes/{ft}/templates</li>
  * <li>workspaces/{workspace}/datastores/{store}/teaturetypes/{ft}/templates/{template}.ftl</li>
+ * <li>workspaces/{workspace}/coveragestores/{store}/coverage/{ft}/templates</li>
+ * <li>workspaces/{workspace}/coveragestores/{store}/coverage/{ft}/templates/{template}.ftl</li>
  * </ul>
- * @author Jody Garnett
+ * @author Jody Garnett (Boundless)
  */
 @RestController
 @ControllerAdvice
@@ -72,7 +74,7 @@ public class TemplateController extends CatalogController {
     /**
      * Template definition.
      * 
-     * @return Template Definitin
+     * @return Template definition
      */
     @DeleteMapping (
         value = {

@@ -12,14 +12,14 @@ paths:
       summary: Get a list of layers
       description: Displays a list of all layers on the server. You must use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers.xml" for XML)
       produces:
-        - application/json
-        - application/xml
         - text/html
+        - application/xml
+        - application/json
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/LayerResponse"
+            $ref: "#/definitions/Layers"
           examples:
             application/xml: '
               <layers>
@@ -149,7 +149,7 @@ paths:
     put:
       operationId: layersNamePut
       summary: Modify a layer.
-      description: Modifies an existing layer on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layergroups/{layergroup}.xml" for XML).
+      description: Modifies an existing layer on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}.xml" for XML).
       parameters:
         - name: layerName
           in: path
@@ -182,16 +182,16 @@ paths:
       responses:
         200:
           description: OK
+          
 definitions:
-
-  LayerResponse:
+  Layers:
     title: layers
     type: object
     properties:
-      layerGroups:
-        $ref: "#/definitions/Layers"
+      layers:
+        $ref: "#/definitions/LayerReference"
         
-  Layers:
+  LayerReference:
     title: layers
     type: object
     properties:

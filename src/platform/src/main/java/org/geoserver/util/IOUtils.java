@@ -8,6 +8,7 @@ package org.geoserver.util;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,6 +30,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -96,7 +98,27 @@ public class IOUtils {
             throws IOException {
         filteredCopy(new BufferedReader(new FileReader(from)), to, filters);
     }
-
+    /**
+     * Capture contents of {@link InputStream} as a String.
+     * @param input InputStream, closed after use. 
+     * @return contents of input
+     */
+    public static String toString(InputStream input) throws IOException {
+        if( input == null){
+            return null;
+        }
+        ByteArrayOutputStream output;
+        try {
+            output = new ByteArrayOutputStream();
+            copy( input, output );
+        }
+        finally {
+            input.close();
+            input.close();
+        }
+        return output.toString();
+    }
+    
     /**
      * Copies from a reader to a file by performing a filtering on certain
      * specified tokens. In particular, each key in the filters map will be

@@ -19,13 +19,10 @@ import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Created by vickdw on 3/30/17.
- */
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH)
-public class ImportDataController extends BaseController {
+public class ImportDataController extends ImportBaseController {
 
     public ImportDataController(Importer importer) {
         super(importer);

@@ -28,39 +28,15 @@
         <executions>
           <!-- one execution per page -->
           <execution>
-            <id>styles</id>
+            <id>coverages</id>
             <phase>process-resources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/styles.yaml</inputSpec>
+              <inputSpec>src/main/resources/api/coverages.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/styles</output>
-            </configuration>
-          </execution>
-          <execution>
-            <id>workspace</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <inputSpec>src/main/resources/api/workspaces/api.yaml</inputSpec>
-              <language>html</language>
-              <output>${project.build.directory}/api/workspaces</output>
-            </configuration>
-          </execution>
-          <execution>
-            <id>fonts</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <inputSpec>src/main/resources/api/fonts.yaml</inputSpec>
-              <language>html</language>
-              <output>${project.build.directory}/api/fonts</output>
+              <output>${project.build.directory}/api/coverages</output>
             </configuration>
           </execution>
           <execution>
@@ -73,6 +49,42 @@
               <inputSpec>src/main/resources/api/coverageStores.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/coverageStores</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>datastores</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/datastores.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/datastores</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>featureTypes</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/featureTypes.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/featureTypes</output>
+            </configuration>
+          </execution>          
+          <execution>
+            <id>fonts</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/fonts.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/fonts</output>
             </configuration>
           </execution>
           <execution>
@@ -100,29 +112,53 @@
             </configuration>
           </execution>
           <execution>
-            <id>settings</id>
+            <id>manifests</id>
             <phase>process-resources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/settings.yaml</inputSpec>
+              <inputSpec>src/main/resources/api/manifests.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/settings</output>
+              <output>${project.build.directory}/api/manifests</output>
             </configuration>
           </execution>
           <execution>
-            <id>featureTypes</id>
+            <id>namespaces</id>
             <phase>process-resources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/featureTypes.yaml</inputSpec>
+              <inputSpec>src/main/resources/api/namespaces.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/featureTypes</output>
+              <output>${project.build.directory}/api/namespaces</output>
             </configuration>
-          </execution>          
+          </execution>
+          <execution>
+            <id>owsServices</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/owsServices.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/owsServices</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>reload</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/reload.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/reload</output>
+            </configuration>
+          </execution>
           <execution>
             <id>security</id>
             <phase>process-resources</phase>
@@ -136,15 +172,15 @@
             </configuration>
           </execution>          
           <execution>
-            <id>manifests</id>
+            <id>settings</id>
             <phase>process-resources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/manifests.yaml</inputSpec>
+              <inputSpec>src/main/resources/api/settings.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/manifests</output>
+              <output>${project.build.directory}/api/settings</output>
             </configuration>
           </execution>
           <execution>
@@ -160,6 +196,42 @@
             </configuration>
           </execution>
           <execution>
+            <id>styles</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/styles.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/styles</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>template</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/template.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/template</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>wmslayers</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/wmslayers.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/wmslayers</output>
+            </configuration>
+          </execution>
+          <execution>
             <id>wmsstores</id>
             <phase>process-resources</phase>
             <goals>
@@ -169,6 +241,18 @@
               <inputSpec>src/main/resources/api/wmsstores.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/wmsstores</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>workspaces</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/workspaces.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/workspaces</output>
             </configuration>
           </execution>
         </executions>

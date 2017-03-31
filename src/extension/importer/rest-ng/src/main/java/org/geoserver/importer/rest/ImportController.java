@@ -38,14 +38,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH, produces = {
         MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE })
-public class ImportResourceController extends BaseController {
+public class ImportController extends ImportBaseController {
 
     Object importContext; // ImportContext or Iterator<ImportContext>
 
     private int expand;
 
     @Autowired
-    public ImportResourceController(Importer importer) {
+    public ImportController(Importer importer) {
         super(importer);
 
     }
@@ -54,7 +54,7 @@ public class ImportResourceController extends BaseController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ImportContext> postImports(@PathVariable(name="id",required=false) Long id, @RequestBody(required=false) ImportContext obj,
             UriComponentsBuilder builder) {
-        // Object obj = lookupContext(null, true, true);
+        // Object obj = context(null, true, true);
         ImportContext context = null;
         /*
          * if (obj instanceof ImportContext) { // run an existing import try { runImport((ImportContext) obj); context = obj; } catch (Throwable t) {
@@ -79,12 +79,10 @@ public class ImportResourceController extends BaseController {
             CatalogController.TEXT_JSON })
     public java.util.Iterator<ImportContext> getImports() {
 
-        Object lookupContext = lookupContext(null, true, false);
+        Object lookupContext = context(null, true, true);
         if (lookupContext == null) {
             // this means a specific lookup failed
-
             throw new RestException("Failed to find import context", HttpStatus.NOT_FOUND);
-
         } else {
 
             return (Iterator<ImportContext>) lookupContext;// wrapList(contexts, ImportContext.class);
@@ -96,15 +94,7 @@ public class ImportResourceController extends BaseController {
     public ImportContext getImports(@PathVariable Long id,
             @RequestParam(name = "expand", required = false, defaultValue = "0") int expand) {
         this.expand = expand;
-        Object lookupContext = lookupContext(id, true, false);
-        if (lookupContext == null) {
-            // this means a specific lookup failed
-
-            throw new RestException("Failed to find import context", HttpStatus.NOT_FOUND);
-
-        } else {
-            return (ImportContext) lookupContext;
-        }
+        return context(id);
     }
 
     @PutMapping(value = "/imports/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE,
@@ -122,26 +112,6 @@ public class ImportResourceController extends BaseController {
         }
         
         
-    }
-
-    Object lookupContext(Long imp, boolean allowAll, boolean mustExist) {
-
-        if (imp != null) {
-            ImportContext context = null;
-            try {
-                context = importer.getContext(imp.longValue());
-            } catch (NumberFormatException e) {
-            }
-            if (context == null && mustExist) {
-                throw new RestException("No such import: " + imp.toString(), HttpStatus.NOT_FOUND);
-            }
-            return context;
-        } else {
-            if (allowAll) {
-                return importer.getAllContexts();
-            }
-            throw new RestException("No import specified", HttpStatus.BAD_REQUEST);
-        }
     }
 
     private UriComponents getUriComponents(String name, UriComponentsBuilder builder) {
@@ -231,7 +201,7 @@ public class ImportResourceController extends BaseController {
                 context.setData(newContext.getData());
                 context.getDefaultTransforms().addAll(newContext.getDefaultTransforms());
             } else if (context==null){
-                context = (ImportContext) lookupContext(id, true, false);
+                context = context(id, true);
             }
 
             if (!async && context.getData() != null) {

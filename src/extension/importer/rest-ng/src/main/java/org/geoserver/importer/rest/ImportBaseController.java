@@ -1,26 +1,20 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.importer.rest;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
-import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
-import org.geoserver.rest.util.RESTUtils;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 
-public class BaseController extends RestBaseController {
+public class ImportBaseController extends RestBaseController {
     protected Importer importer;
 
-    protected BaseController(Importer importer) {
+    protected ImportBaseController(Importer importer) {
         this.importer = importer;
     }
 
@@ -29,13 +23,23 @@ public class BaseController extends RestBaseController {
     }
 
     protected ImportContext context(Long imp, boolean optional) {
-        long i = imp;
+        return (ImportContext) context(imp, optional, false);
+    }
 
-        ImportContext context = importer.getContext(i);
-        if (!optional && context == null) {
-            throw new RestException("No such import: " + i, HttpStatus.NOT_FOUND);
+    Object context(Long imp, boolean optional, boolean allowAll) {
+        if (imp == null) {
+            if (allowAll) {
+                return importer.getAllContexts();
+            }
+            throw new RestException("No import specified", HttpStatus.BAD_REQUEST);
+        } else {
+            ImportContext context = null;
+            context = importer.getContext(imp);
+            if (context == null && !optional) {
+                throw new RestException("No such import: " + imp.toString(), HttpStatus.NOT_FOUND);
+            }
+            return context;
         }
-        return context;
     }
 
     protected ImportTask task(Long imp, int taskNumber) {

@@ -56,25 +56,27 @@ public class IOUtils {
     }
     
     /**
-     * Copies the provided input stream onto an outputstream
+     * Copies the provided input stream onto an outputstream.
+     * <p>
+     * Please note that both from input stream and out output stream will be closed.
      * 
-     * @param from
+     * @param in
      * @param to
      * @throws IOException
      */
-    public static void copy(InputStream from, OutputStream out) throws IOException {
-        try {        
+    public static void copy(InputStream in, OutputStream out) throws IOException {
+        try {
             byte[] buffer = new byte[1024 * 16];
             int bytes = 0;
-            while ((bytes = from.read(buffer)) != -1)
+            while ((bytes = in.read(buffer)) != -1)
                 out.write(buffer, 0, bytes);
 
             out.flush();
         } finally {
-            if(from != null) {
-                from.close();
+            if (in != null) {
+                in.close();
             }
-            if(out != null) {
+            if (out != null) {
                 out.close();
             }
         }

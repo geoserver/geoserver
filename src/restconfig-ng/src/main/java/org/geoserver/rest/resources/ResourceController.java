@@ -33,6 +33,7 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.ResourceStoreFactory;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.ResourceNotFoundException;
@@ -42,6 +43,7 @@ import org.geoserver.rest.converters.XStreamJSONMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.converters.XStreamXMLMessageConverter;
 import org.geoserver.rest.util.RESTUtils;
+import org.geoserver.util.IOUtils;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -212,25 +214,49 @@ public class ResourceController extends RestBaseController {
         return result;
     }
     /**
-     * Upload resource contents.
+     * Upload or modify resource contents.
+     * <ul>
+     * <li>{@link Operation#DEFAULT}: update resource contents; creating if needed.</li>
+     * <li>{@link Operation#MOVE}: moves resource to new location.</li>
+     * <li>{@link Operation#COPY}: copy resource to new location.</li>
+     * </ul>
      */
     @PutMapping(consumes = {MediaType.ALL_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public void resourcePut(HttpServletRequest request){
+    public void resourcePut(HttpServletRequest request,HttpServletResponse response){
         Resource resource = resource(request);
         Resource directory = resource.parent();
         String filenName = resource.name();
         
-        Resource result = fileUpload(directory, filenName, request);
-        if (LOGGER.isLoggable(Level.INFO)) {
-            LOGGER.info("PUT resource: " + resource.path());
+        if (resource.getType() == Type.DIRECTORY) {
+            throw new RestException("Attempting to write data to a directory.",  HttpStatus.METHOD_NOT_ALLOWED );
+        }
+        Operation operation = operation(request);
+        boolean isNew = resource.getType() == Type.UNDEFINED;
+        if (operation == Operation.COPY || operation == Operation.MOVE) {
+            // TODO: move me right round, like a record player, round round!
+            throw new RestException("Not yet implemented resource "+operation.name(), HttpStatus.NOT_IMPLEMENTED);
+        }
+        else if (operation == Operation.METADATA ){
+            throw new RestException("Attempting to write data to metadata.",  HttpStatus.METHOD_NOT_ALLOWED );
+        }
+        try {
+            IOUtils.copy( request.getInputStream(), resource.out());
+            if (LOGGER.isLoggable(Level.INFO)) {
+                LOGGER.fine("PUT resource: " + resource.path());
+            }
+        } catch (IOException e) {
+            throw new RestException(
+                    "Unable to copy content to '" + resource.path() + "':" + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
+        if(isNew){
+            response.setStatus(HttpStatus.CREATED.value());
         }
     }
 
     /**
-     * Delete resourc
-     * 
-     * @return All templates
+     * Delete resource
      */
     @DeleteMapping
     public void resourceDelete(HttpServletRequest request){

@@ -45,7 +45,9 @@ public abstract class CatalogController extends RestBaseController {
     public static final String MEDIATYPE_FTL_EXTENSION = "ftl";
     public static final String MEDIATYPE_FTL_VALUE = "text/plain";
     public static final MediaType MEDIATYPE_FTL = new MediaType("text","plain");
-    
+
+    public static final String APPLICATION_XSLT = "application/xslt+xml";
+
     protected final Catalog catalog;
     protected final GeoServerDataDirectory dataDir;
 

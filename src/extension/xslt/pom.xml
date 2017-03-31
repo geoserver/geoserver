@@ -17,7 +17,7 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-restconfig</artifactId>
+      <artifactId>gs-restconfig-ng</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

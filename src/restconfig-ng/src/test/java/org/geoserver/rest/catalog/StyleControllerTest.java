@@ -17,6 +17,7 @@ import org.geoserver.catalog.PropertyStyleHandler;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -334,6 +335,43 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         handler.encode(Styles.sld(s), SLDHandler.VERSION_10, false, out);
         xml = new String(out.toByteArray());
         assertTrue(xml.contains("<sld:Name>foo</sld:Name>"));
+    }
+    
+    @Test
+    public void testRawPutAsSLD() throws Exception {
+        String xml = newSLDXML();
+
+        MockHttpServletResponse response =
+            putAsServletResponse( "/restng/styles/Ponds?raw=true", xml, SLDHandler.MIMETYPE_10);
+        assertEquals( 200, response.getStatus() );
+
+        Style s = catalog.getStyleByName( "Ponds" ).getStyle();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        SLDHandler handler = new SLDHandler();
+        handler.encode(Styles.sld(s), SLDHandler.VERSION_10, false, out);
+        xml = new String(out.toByteArray());
+        assertTrue(xml.contains("<sld:Name>foo</sld:Name>"));
+    }
+    
+    @Test
+    public void testRawPutAsInvalidSLD() throws Exception {
+        String xml = "This is not valid SLD";
+
+        MockHttpServletResponse response =
+            putAsServletResponse( "/restng/styles/Ponds?raw=true", xml, SLDHandler.MIMETYPE_10);
+        assertEquals( 200, response.getStatus() );
+
+        StyleInfo styleInfo = catalog.getStyleByName( "Ponds" );
+        String fileName = styleInfo.getFilename();
+        
+        GeoServerResourceLoader resources = getGeoServer().getCatalog().getResourceLoader();
+        
+        Resource resource = resources.get("styles/"+fileName);
+        String content = new String(resource.getContents());
+        
+        assertFalse("replaced",content.contains("<sld:Name>foo</sld:Name>"));
+        assertTrue("replaced",content.contains("not valid"));
     }
 
     @Test

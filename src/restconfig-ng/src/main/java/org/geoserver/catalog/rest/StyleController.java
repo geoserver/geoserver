@@ -10,9 +10,16 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -25,6 +32,7 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestBaseController;
@@ -35,10 +43,13 @@ import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -77,7 +88,7 @@ public class StyleController extends CatalogController {
 
     @GetMapping(value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"},
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
-    public RestWrapper getStyles(
+    public RestWrapper<?> getStyles(
             @PathVariable(required = false) String layerName,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(value = "quietOnNotFound", required = false) boolean quietOnNotFound) {
@@ -369,13 +380,68 @@ public class StyleController extends CatalogController {
         putZipInternal(is, workspaceName, name, styleName);
     }
 
+    @PutMapping(
+      value = {
+          "/styles/{styleName}",
+          "/workspaces/{workspaceName}/styles/{styleName}"
+      },
+      consumes = {MediaType.ALL_VALUE}
+    )
+    public void putStyleD(
+            @PathVariable String styleName,
+            @PathVariable(required = false) String workspaceName,
+            HttpServletRequest request,HttpServletResponse response,
+            @RequestParam(name = "raw", required = false, defaultValue = "false") boolean raw
+        ) throws IOException
+    {
+        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+        }
+        checkFullAdminRequired(workspaceName);
+        StyleInfo s = catalog.getStyleByName( workspaceName, styleName );
+        
+        String contentType = request.getContentType();
+        String extentsion = "sld"; // TODO: determine this from path
+        
+        ResourcePool resourcePool = catalog.getResourcePool();
+        if( raw ){
+            InputStream input = request.getInputStream();
+            resourcePool.writeStyle(s, (InputStream) input);
+            catalog.save(s);
+        }
+        else {
+            String content = IOUtils.toString( request.getInputStream());
+            EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
+            for (StyleHandler format : Styles.handlers()) {
+                for (Version version : format.getVersions()) {
+                    String mimeType = format.mimeType(version);
+                    if( !mimeType.equals(contentType)){
+                        continue; // skip this format
+                    }
+                    try {
+                        StyledLayerDescriptor sld = format.parse( content, version, null, entityResolver);
+                        Style style = Styles.style(sld);
+                        resourcePool.writeStyle(s, (Style) style, true);
+                        
+                        catalog.save(s);
+                        return;
+                    }
+                    catch(IOException invalid){
+                        throw new RestException("Invalid style:"+invalid.getMessage(), HttpStatus.BAD_REQUEST, invalid);
+                    }
+                }
+            }
+            throw new RestException("Unknown style fomrat '"+contentType+"'", HttpStatus.BAD_REQUEST);
+        }
+    }
     @PutMapping(value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
             MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
     public void putStyleInfo(
             @RequestBody StyleInfo info,
             @PathVariable String styleName,
-            @PathVariable(required = false) String workspaceName) {
+            @PathVariable(required = false) String workspaceName
+            ) {
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
@@ -395,8 +461,8 @@ public class StyleController extends CatalogController {
         catalog.save(original);
     }
 
-    @PutMapping(value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
-        consumes = {SLDHandler.MIMETYPE_11, SLDHandler.MIMETYPE_10})
+//    @PutMapping(value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+//        consumes = {SLDHandler.MIMETYPE_11, SLDHandler.MIMETYPE_10})
     public void putStyleSLD(
             @RequestBody Style style,
             @PathVariable String styleName,
@@ -409,11 +475,13 @@ public class StyleController extends CatalogController {
         StyleInfo s = catalog.getStyleByName( workspaceName, styleName );
 
         ResourcePool resourcePool = catalog.getResourcePool();
-        if (style instanceof Style) {
+        if(style instanceof Style) {
             resourcePool.writeStyle(s, (Style) style, true);
-        }
-        else {
+        } else if (style instanceof InputStream) {
             resourcePool.writeStyle(s, (InputStream)style);
+        } else {
+            throw new RestException("Converted style object was neither a Style nor an InputStream"
+                    , HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         catalog.save(s);
@@ -546,8 +614,10 @@ public class StyleController extends CatalogController {
             IOUtils.closeQuietly(out);
         }
     }
-
-    public void putZipInternal(InputStream is, String workspace, String name, String style) {
+    
+    
+    // TODO: This method is not called from anywhere? can it be removed
+    private void putZipInternal(InputStream is, String workspace, String name, String style) {
         if(workspace != null && catalog.getWorkspaceByName(workspace) == null) {
             throw new ResourceNotFoundException("Workspace " + workspace + " not found");
         }

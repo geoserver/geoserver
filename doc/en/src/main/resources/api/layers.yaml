@@ -2,333 +2,817 @@
 swagger: '2.0'
 info:
   version: 1.0.0
-  title: GeoServer Layers
-  description: A layer is a published resource (feature type or coverage).
+  title: GeoServer Styles
+  description: A style describes how a resource is symbolized or rendered by the Web Map Service.
 
 paths:
-  /layers:
+
+  /styles:
     get:
-      operationId: layersGet
-      summary: Get a list of layers
-      description: Displays a list of all layers on the server. You must use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers.xml" for XML)
+      operationId: getStyles
+      summary: Get a list of styles
+      description: Displays a list of all styles on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles.xml" for XML).
       produces:
-        - text/html
         - application/xml
         - application/json
+        - text/html
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/Layers"
+            $ref: "#/definitions/StyleList"
           examples:
             application/xml: '
-              <layers>
-                 <layer>
-                   <name>giant_polygon</name>
-                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate"
-                     href="http://localhost:8080/geoserver/rest/layers/giant_polygon.xml"
-                     type="application/xml"/>
-                 </layer>
-                 <layer>
-                   <name>bugsites</name>
-                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate"
-                     href="http://localhost:8080/geoserver/rest/layers/bugsites.xml"
-                     type="application/xml"/>
-                 </layer>
-               </layers>
+              <styles>
+                  <style>
+                      <name>burg</name>
+                      <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/burg.xml" type="application/xml"/>
+                  </style>
+                  <style>
+                      <name>capitals</name>
+                      <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/capitals.xml" type="application/xml"/>
+                  </style>    
+              </styles>
             '
             application/json: '
-               {
-                 "layers": {
-                   "layer": [
-                     {
-                       "name": "giant_polygon",
-                       "href": "http:\/\/localhost:8080\/geoserver\/rest\/layers\/giant_polygon.json"
-                     },
-                     {
-                       "name": "bugsites",
-                       "href": "http:\/\/localhost:8080\/geoserver\/rest\/layers\/bugsites.json"
-                     },
-                   ]
-                 }
-               }
+              {"styles":{"style":[{"href":"http://localhost:8080/geoserver/rest/styles/burg.json","name":"burg"},{"href":"http://localhost:8080/geoserver/rest/styles/capitals.json","name":"capitals"}]}}
             '
 
-  /layers/{layerName}:
+    post:
+      operationId: postStyles
+      summary: Add a new style
+      description: Adds a new style entry to the server. Note that using the XML content only adds the entry to the catalog and does not upload style content. Use POST with a ZIP file to create and upload at once, or POST the XML content and then separately PUT the style info at /styles/{style}.
+      parameters:
+        - name: styleBody
+          description: Style body information to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/StyleInfoPost"
+      consumes:
+        - application/xml
+        - application/json
+        - application/zip
+      responses:
+        201:
+          description: Created
+
+    put:
+      operationId: putStyles
+      description: Invalid. Use POST for adding a new style, or use PUT with /styles/{style} to edit/upload an existing style.
+      responses:
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteStyles
+      description: Invalid. Use /styles/{style} instead.
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /style/{style}:
+
     get:
-      operationId: layersNameGet
-      summary: Retrieve a layer 
-      description: Retrieves a single layer definition. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}.xml" for XML).
+      operationId: getStyle
+      summary: Retrieve a style
+      description: Retrieves a single style. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles/{style}.xml" for XML).
       produces:
         - application/xml
         - application/json
+        - application/vnd.ogc.sld+xml
         - text/html
       parameters:
-        - name: layerName
+        - name: style
           in: path
           required: true
-          description: The name of the layer to retrieve.
+          description: Name of the style to retrieve.
           type: string
+        - name: purge
+          in: query
+          required: false
+          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
+          type: boolean
         - name: quietOnNotFound 
           in: query
           required: false
-          description: The quietOnNotFound parameter avoids logging an exception when the layer  is not present. Note that 404 status code will still be returned.
+          description: When set to "true", will not log an exception when the style is not present. The 404 status code will still be returned. Allowable values are "true" or "false" (default).
+          type: boolean
+        - name: pretty
+          in: query
+          required: false
+          description: Returns the style in a human-readable format, with proper whitespace and indentation. This parameter has no effect if you request a style in its native format. The HTML, XML, and JSON formats do not support this parameter.
           type: boolean
       responses:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/Layer"
+            $ref: "#/definitions/Style"
           examples:
             application/xml: '
-              <layer>
-                <name>poi</name>
-                <path>/</path>
-                <type>VECTOR</type>
-                <defaultStyle>
-                  <name>poi</name>
-                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/poi.xml" type="application/xml"/>
-                </defaultStyle>
-                <styles class="linked-hash-set">
-                  <style>
-                    <name>burg</name>
-                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/burg.xml" type="application/xml"/>
-                  </style>
-                  <style>
-                    <name>point</name>
-                    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/point.xml" type="application/xml"/>
-                  </style>
-                </styles>
-                <resource class="featureType">
-                  <name>poi</name>
-                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/poi.xml" type="application/xml"/>
-                </resource>
-                <attribution>
-                  <logoWidth>0</logoWidth>
-                  <logoHeight>0</logoHeight>
-                </attribution>
-              </layer>
+              <style>
+                <name>rain</name>
+                <format>sld</format>
+                <languageVersion>
+                  <version>1.0.0</version>
+                </languageVersion>
+                <filename>rain.sld</filename>
+              </style>
               '
             application/json: '
-              {
-              
-                  "layer": {
-                      "name": "poi",
-                      "path": "/",
-                      "type": "VECTOR",
-                      "defaultStyle": {
-                          "name": "poi",
-                          "href": "http://localhost:8080/geoserver/rest/styles/poi.json"
-                      },
-                      "styles": {
-                          "@class": "linked-hash-set",
-                          "style": [
-                              {
-                                  "name": "burg",
-                                  "href": "http://localhost:8080/geoserver/rest/styles/burg.json"
-                              },
-                              {
-                                  "name": "point",
-                                  "href": "http://localhost:8080/geoserver/rest/styles/point.json"
-                              }
-                          ]
-                      },
-                      "resource": {
-                          "@class": "featureType",
-                          "name": "poi",
-                          "href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/poi.json"
-                      },
-                      "attribution": {
-                          "logoWidth": 0,
-                          "logoHeight": 0
-                      }
-                  }
-              
-              }
+              {"style":{"name":"rain","format":"sld","languageVersion":{"version":"1.0.0"},"filename":"rain.sld"}}
               '
-    put:
-      operationId: layersNamePut
-      summary: Modify a layer.
-      description: Modifies an existing layer on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}.xml" for XML).
-      parameters:
-        - name: layerName
-          in: path
-          required: true
-          description: The name of the layer to modify.
-          type: string
-        - name: layerBody
-          in: body
-          description: The updated layer definition.
-          required: true
-          schema:
-            $ref: "#/definitions/Layer"
-      consumes:
-        - application/xml
-        - application/json
-      responses:
-        200:
-          description: The layer was successfully updated.
+            application/vnd.ogc.sld+xml: '
+              <?xml version="1.0" encoding="UTF-8"?>
+              <StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+                xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+                <NamedLayer>
+                  <Name>rain</Name>
+                  <UserStyle>
+                    <Name>rain</Name>
+                    <Title>Rain distribution</Title>
+                    <FeatureTypeStyle>
+                      <Rule>
+                        <RasterSymbolizer>
+                          <Opacity>1.0</Opacity>
+                          <ColorMap>
+                            <ColorMapEntry color="#FF0000" quantity="0" />
+                            <ColorMapEntry color="#FFFFFF" quantity="100"/>
+                            <ColorMapEntry color="#00FF00" quantity="2000"/>
+                            <ColorMapEntry color="#0000FF" quantity="5000"/>
+                          </ColorMap>
+                        </RasterSymbolizer>
+                      </Rule>
+                    </FeatureTypeStyle>
+                  </UserStyle>
+                </NamedLayer>
+              </StyledLayerDescriptor>
+              '
 
-    delete:
-      operationId: layersNameDelete
-      summary: Delete layer
-      description: Deletes a layer from the server.
+    post:
+      operationId: postStyle
+      description: Invalid. Use PUT to edit a style, or POST with /styles to add a new style.
       parameters:
-        - name: layerName
+        - name: style
           in: path
           required: true
-          description: The name of the layer to delete.
+          description: Name of the style to retrieve.
           type: string
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putStyle
+      summary: Modify a single style
+      description: Modifies a single style. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles/{style}.xml" for XML).
+      parameters:
+        - name: style
+          in: path
+          required: true
+          description: Name of the style to retrieve.
+          type: string
+        - name: purge
+          in: query
+          required: false
+          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
+          type: boolean
+        - name: raw
+          in: query
+          description: When set to "true", will forgo parsing and encoding of the uploaded style content, and instead the style will be streamed directly to the GeoServer configuration. Use this setting if the content and formatting of the style is to be preserved exactly. May result in an invalid and unusable style if the payload is malformed. Allowable values are "true" or "false" (default).
+          type: boolean
+          required: false
+      consumes:
+        - application/vnd.ogc.sld+xml
+        - application/vnd.ogc.se+xml
+        - application/zip
       responses:
         200:
           description: OK
-          
+        401:
+          description: Unauthorized
+
+    delete:
+      operationId: deleteStyle
+      summary: Delete style
+      description: Deletes a style.
+      parameters:
+        - name: style
+          in: path
+          required: true
+          description: Name of the style to delete.
+          type: string
+        - name: purge
+          in: query
+          required: false
+          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
+          type: boolean
+        - name: recurse
+          in: query
+          required: false
+          description: Removes references to the specified style in existing layers. Allowed values are "true" or "false" (default).
+          type: boolean
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+
+
+  /rest/workspaces/{workspace}/styles:
+
+    get:
+      operationId: getWorkspaceStyles
+      summary: Get a list of styles in a given workspace
+      description: Displays a list of all styles in a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/styles.xml" for XML).
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Name of workspace
+          type: string
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/StyleList"
+          examples:
+            application/xml: '
+              <styles>
+                <style>
+                  <name>burg</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/styles/burg.xml" type="application/xml"/>
+                </style>
+                <style>
+                  <name>dem</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/styles/dem.xml" type="application/xml"/>
+                </style>
+              </styles>
+            '
+            application/json: '
+              {"styles":{"style":[{"name":"burg","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/sf\/styles\/burg.json"},{"name":"dem","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/sf\/styles\/dem.json"}]}}
+            '
+
+    post:
+      operationId: postWorkspaceStyles
+      summary: Add a new style to a given workspace
+      description: Adds a new style entry to the server in the given workspace. Note that using the XML content only adds the entry to the catalog and does not upload style content. Use POST with a ZIP file to create and upload at once, or POST the XML content and then separately PUT the style info at /workspaces/{workspace}/styles/{style}.
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Name of workspace
+          type: string
+        - name: styleBody
+          description: Style body information to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/StyleInfoPost"
+      consumes:
+        - application/xml
+        - application/json
+        - application/zip
+      responses:
+        201:
+          description: Created
+
+    put:
+      operationId: putWorkspaceStyles
+      description: Invalid. Use POST for adding a new style, or use PUT with /workspaces/{workspace}/styles/{style} to edit/upload an existing style.
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Name of workspace
+          type: string
+      responses:
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteWorkspaceStyles
+      description: Invalid. Use /workspaces/{workspace}/styles/{style} instead.
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Name of workspace
+          type: string
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /rest/workspaces/{workspace}/styles/{style}:
+
+    get:
+      operationId: getWorkspaceStyle
+      summary: Retrieve a style from a given workspace
+      description: Retrieves a single style from a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/styles/{style}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - application/vnd.ogc.sld+xml
+        - text/html
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Name of the workspace for style definitions
+          type: string
+        - name: style
+          in: path
+          required: true
+          description: Name of the style to retrieve.
+          type: string
+        - name: purge
+          in: query
+          required: false
+          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
+          type: boolean
+        - name: quietOnNotFound 
+          in: query
+          required: false
+          description: When set to "true", will not log an exception when the style is not present. The 404 status code will still be returned. Allowable values are "true" or "false" (default).
+          type: boolean
+        - name: pretty
+          in: query
+          required: false
+          description: Returns the style in a human-readable format, with proper whitespace and indentation. This parameter has no effect if you request a style in its native format. The HTML, XML, and JSON formats do not support this parameter.
+          type: boolean      
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/StyleWorkspace"
+          examples:
+            application/xml: '
+              <style>
+                <name>burg</name>
+                <workspace>
+                  <name>sf</name>
+                </workspace>
+                <format>sld</format>
+                <languageVersion>
+                  <version>1.0.0</version>
+                </languageVersion>
+                <filename>burg.sld</filename>
+              </style>
+              '
+            application/json: '
+              {"style":{"name":"burg","workspace":{"name":"sf"},"format":"sld","languageVersion":{"version":"1.0.0"},"filename":"burg.sld"}}
+              '
+            application/vnd.ogc.sld+xml: '
+              <StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
+                xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
+                <NamedLayer>
+                  <Name>redflag</Name>
+                  <UserStyle>
+                    <Name>burg</Name>
+                    <Title>A small red flag</Title>
+                    <Abstract>A sample of how to use an SVG based symbolizer</Abstract>
+              
+                    <FeatureTypeStyle>
+                      <Rule>
+                        <Title>Red flag</Title>
+                        <PointSymbolizer>
+                          <Graphic>
+                            <ExternalGraphic>
+                              <OnlineResource xlink:type="simple" xlink:href="burg02.svg" />
+                              <Format>image/svg+xml</Format>
+                            </ExternalGraphic>
+                            <Size>
+                              <ogc:Literal>20</ogc:Literal>
+                            </Size>
+                          </Graphic>
+                        </PointSymbolizer>
+                      </Rule>
+              
+                    </FeatureTypeStyle>
+                  </UserStyle>
+                </NamedLayer>
+              </StyledLayerDescriptor>
+              '
+
+    post:
+      operationId: postWorkspaceStyle
+      description: Invalid. Use PUT to edit a style, or POST with /workspaces/{workspace}/styles to add a new style.
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Name of the workspace for style definitions
+          type: string
+        - name: style
+          in: path
+          required: true
+          description: Name of the style to retrieve.
+          type: string
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putWorkspaceStyle
+      summary: Modify a single style in a given workspace
+      description: Modifies a single style in a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/styles/{style}.xml" for XML).
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Name of the workspace for style definitions
+          type: string
+        - name: style
+          in: path
+          required: true
+          description: Name of the style to retrieve.
+          type: string
+        - name: purge
+          in: query
+          required: false
+          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
+          type: boolean
+        - name: raw
+          in: query
+          description: When set to "true", will forgo parsing and encoding of the uploaded style content, and instead the style will be streamed directly to the GeoServer configuration. Use this setting if the content and formatting of the style is to be preserved exactly. May result in an invalid and unusable style if the payload is malformed. Allowable values are "true" or "false" (default).
+          type: boolean
+          required: false
+      consumes:
+        - application/vnd.ogc.sld+xml
+        - application/vnd.ogc.se+xml
+        - application/zip
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+
+    delete:
+      operationId: deleteWorkspaceStyle
+      summary: Delete style in a given workspace
+      description: Deletes a style in a given workspace.
+      parameters:
+        - name: workspace
+          in: path
+          required: true
+          description: Name of the workspace for style definitions
+          type: string
+        - name: style
+          in: path
+          required: true
+          description: Name of the style to delete.
+          type: string
+        - name: purge
+          in: query
+          required: false
+          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
+          type: boolean
+        - name: recurse
+          in: query
+          required: false
+          description: Removes references to the specified style in existing layers. Allowed values are "true" or "false" (default).
+          type: boolean
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+
+
+  /rest/layers/{layer}/styles:
+
+    get:
+      operationId: getLayerStyles
+      summary: Get a list of layer alternate styles
+      description: Displays a list of all alternate styles for a given layer. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}/styles.xml" for XML).
+      parameters:
+        - name: layer
+          in: path
+          required: true
+          description: Name of the layer to manage styles for
+          type: string
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/StyleList"
+          examples:
+            application/xml: '
+              <styles>
+                <style>
+                  <name>pophatch</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/topp:states/styles/pophatch.xml" type="application/xml"/>
+                </style>
+                <style>
+                  <name>polygon</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/topp:states/styles/polygon.xml" type="application/xml"/>
+                </style>
+              </styles>
+            '
+            application/json: '
+              {"styles":{"style":[{"name":"pophatch","href":"http:\/\/localhost:8080\/geoserver\/rest\/layers\/topp:states\/styles\/pophatch.json"},{"name":"polygon","href":"http:\/\/localhost:8080\/geoserver\/rest\/layers\/topp:states\/styles\/polygon.json"}]}}
+            '
+
+    post:
+      operationId: postLayerStyles
+      summary: Add a new style
+      description: Adds a new style entry to the layer. Note that using the XML content only adds the entry to the catalog and does not upload style content. Use POST with a ZIP file to create and upload at once, or POST the XML content and then separately PUT the style info at /layers/{layer}/styles/{style}.
+      parameters:
+        - name: layer
+          in: path
+          required: true
+          description: Name of the layer to manage styles for
+          type: string
+        - name: styleBody
+          description: Style body information to upload.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/StyleInfoPost"
+      consumes:
+        - application/xml
+        - application/json
+        - application/zip
+      responses:
+        201:
+          description: Created
+
+    put:
+      operationId: putLayerStyles
+      description: Invalid. Use POST for adding a new style, or use PUT with /layers/{layer}/styles/{style} to edit/upload an existing style.
+      parameters:
+        - name: layer
+          in: path
+          required: true
+          description: Name of the layer to manage styles for
+          type: string
+      responses:
+        405:
+          description: Method Not Allowed
+
+    delete:
+      operationId: deleteLayerStyles
+      description: Invalid. Use /layers/{layer}/styles/{style} instead.
+      parameters:
+        - name: layer
+          in: path
+          required: true
+          description: Name of the layer to manage styles for
+          type: string
+      responses:
+        405:
+          description: Method Not Allowed
+
+
+  /rest/layers/{layer}/styles/{style}:
+
+    get:
+      operationId: getLayerStyle
+      summary: Retrieve a style from a given workspace
+      description: Retrieves a single style from a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/styles/{style}.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - application/vnd.ogc.sld+xml
+        - text/html
+      parameters:
+        - name: layer
+          in: path
+          required: true
+          description: Name of the layer to manage styles for
+          type: string
+        - name: style
+          in: path
+          required: true
+          description: Name of the style to retrieve.
+          type: string
+        - name: purge
+          in: query
+          required: false
+          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
+          type: boolean
+        - name: quietOnNotFound 
+          in: query
+          required: false
+          description: When set to "true", will not log an exception when the style is not present. The 404 status code will still be returned. Allowable values are "true" or "false" (default).
+          type: boolean
+        - name: pretty
+          in: query
+          required: false
+          description: Returns the style in a human-readable format, with proper whitespace and indentation. This parameter has no effect if you request a style in its native format. The HTML, XML, and JSON formats do not support this parameter.
+          type: boolean      
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/StyleLayer"
+          examples:
+            application/xml: ''
+            # Stack trace: could not get example
+            application/json: ''
+            # Stack trace: could not get example
+            application/vnd.ogc.sld+xml: ''
+            # Stack trace: could not get example
+
+    post:
+      operationId: postLayerStyle
+      description: Invalid. Use PUT to edit a style, or POST with /layers/{layer}/styles to add a new style.
+      parameters:
+        - name: layer
+          in: path
+          required: true
+          description: Name of the layer to manage styles for
+          type: string
+        - name: style
+          in: path
+          required: true
+          description: Name of the style to retrieve.
+          type: string
+      responses:
+        405:
+          description: Method Not Allowed
+
+    put:
+      operationId: putLayerStyle
+      summary: Modify a single style for a given layer
+      description: Modifies a single style for a given layer. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}/styles/{style}.xml" for XML).
+      parameters:
+        - name: layer
+          in: path
+          required: true
+          description: Name of the layer to manage styles for.
+          type: string
+        - name: style
+          in: path
+          required: true
+          description: Name of the style to modify.
+          type: string
+        - name: purge
+          in: query
+          required: false
+          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
+          type: boolean
+        - name: raw
+          in: query
+          description: When set to "true", will forgo parsing and encoding of the uploaded style content, and instead the style will be streamed directly to the GeoServer configuration. Use this setting if the content and formatting of the style is to be preserved exactly. May result in an invalid and unusable style if the payload is malformed. Allowable values are "true" or "false" (default).
+          type: boolean
+          required: false
+      consumes:
+        - application/vnd.ogc.sld+xml
+        - application/vnd.ogc.se+xml
+        - application/zip
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+
+    delete:
+      operationId: deleteLayerStyle
+      summary: Delete style for a given layer
+      description: Deletes a style for a given layer.
+      parameters:
+        - name: layer
+          in: path
+          required: true
+          description: Name of the layer to manage styles for
+          type: string
+        - name: style
+          in: path
+          required: true
+          description: Name of the style to delete.
+          type: string
+        - name: purge
+          in: query
+          required: false
+          description: Specifies whether the underlying file containing the style should be deleted on disk. Allowable values are "true" or "false" (default).
+          type: boolean
+        - name: recurse
+          in: query
+          required: false
+          description: Removes references to the specified style in existing layers. Allowed values are "true" or "false" (default).
+          type: boolean
+      responses:
+        200:
+          description: OK
+        401:
+          description: Unauthorized
+
+
 definitions:
-  Layers:
-    title: layers
+
+  StyleInfoPost:
+    title: style
     type: object
+    example: '
+      {"text/xml": "<style><name>roads_style</name><filename>roads.sld</filename></style>"}
+      {"application/zip": <ZIP file containing SLD>}
+      '
     properties:
-      layers:
-        $ref: "#/definitions/LayerReference"
-        
-  LayerReference:
-    title: layers
+      name:
+        type: string
+        description: Name of style
+      filename:
+        type: string
+        description: Name of filename containing SLD code
+
+  StyleList:
+    title: styles
+    type: array
+    items:
+      $ref: '#/definitions/StyleListItem'
+
+  StyleListItem:
+    title: style
     type: object
     properties:
       name:
         type: string
-        description: Name of layer
-      link:
+        description: Name of style
+      href:
         type: string
-        description: URL to layer definition
-        
-  Layer:
-    title: layer
+        description: URL to style definition
+
+  Style:
     type: object
+    title: style
     properties:
       name:
         type: string
-        description: Name of the layer
-      path:
+        description: Name of style
+      format:
         type: string
-        description: Location of the layer in the WMS capabilities layer tree
-      type:
+        description: Format of style
+      languageVersion:
+        type: object
+        properties:
+          version:
+            type: string
+            description: Version of style format
+      filename:
         type: string
-        enum: 
-        - VECTOR
-        - RASTER
-        - REMOTE
-        - WMS
-        - GROUP
-        description: Type of published layer. Can be VECTOR, RASTER, REMOTE, WMS or GROUP. Must be consistent with resource definition.
-      defaultStyle:
-        $ref: "#/definitions/StyleReference"
-      styles:
+        description: File name of the style
+
+  StyleWorkspace:
+    type: object
+    title: style
+    properties:
+      name:
+        type: string
+        description: Name of style
+      workspace:
         type: object
-        description: Avaialble styles for layer publication
         properties:
-          '@class':
-            type: string
-            enum:
-            - linked-hash-set
-            description: required value linked-hash-set.
-          style:
-            type: array
-            items:
-              $ref: "#/definitions/StyleReference"
-      resource:
-        type: object
-        description:  Resource supplying information for layer publication
-        properties:
-          '@class':
-            type: string
-            enum:
-            - featureType
-            default: featureType
-            description: required value featureType
           name:
             type: string
-            description: Name of resource
-          link:
-            type: string
-            readOnly: true
-            description: URL to the resource definition
-      opaque:
-        type: boolean
-        description: Controls layer transparency (whether the layer is opaque or transparent).
-      metadata:
-        type: array
-        items:
-          $ref: "#/definitions/MetadataEntry"
-      attribution:
+            description: Name of workspace containing the style
+      format:
+        type: string
+        description: Format of style
+      languageVersion:
         type: object
-        description: WMS attribution information to be drawn on each map
         properties:
-          title:
+          version:
             type: string
-            description: Human-readable text describing the data provider
-          href:
+            description: Version of style format
+      filename:
+        type: string
+        description: File name of the style
+
+  StyleLayer:
+    type: object
+    title: style
+    properties:
+      name:
+        type: string
+        description: Name of style
+      layer:
+        type: object
+        properties:
+          name:
             type: string
-            description: URL to data provider
-          logoURL:
+            description: Name of layer containing the style
+      format:
+        type: string
+        description: Format of style
+      languageVersion:
+        type: object
+        properties:
+          version:
             type: string
-            description: Data provider logo
-          logoWidth:
-            type: integer
-            description: Data provider logo width
-          logoHeight:
-            type: integer
-            description: Data provider logo height
-          logoType:
-            type: string
-            description: Format of data provider logo, example "image/png"
-      authorityURLs:
-        type: array
-        items:
-          type: object
-          title: AuthorityURL
-          properties:
-            name:
-              type: string
-              description: Authory name, describing the industry, national or international origanization responsible for data product standard.
-            href:
-              type: string
-              description: URL to authority organization
-      identifiers:
-        type: array
-        items:
-          type: object
-          title: Identifier
-          properties:
-            authority:
-              type: string
-              description: Authority cited, for details see authorityURLs
-            identifier:
-              type: string
-              description: Work citied, often a data standard provided by 
-  StyleReference:
-      type: object
-      title: style
-      description: Reference to style definition
-      properties:
-        name:
-          type: string
-          description: Name of style
-        link:
-          type: string
-          readOnly: true
-          description: URL to the style definition
-  MetadataEntry:
-      type: object
-      title: entry
-      properties:
-        '@key':
-          title: key
-          type: string
-          enum:
-          - buffer
-          description: Key used for metadata entry, additional keys are added over time
-        '$':
-          title: text
-          type: string
-          description: Text value for provided key Valid text depends on key used. Example  {'@key'='buffer','$'='5'}") or <entry key="buffer">5</entry>
+            description: Version of style format
+      filename:
+        type: string
+        description: File name of the style

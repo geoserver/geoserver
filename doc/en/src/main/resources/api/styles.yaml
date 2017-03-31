@@ -163,7 +163,7 @@ paths:
       summary: Modify a single style
       description: Modifies a single style. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles/{style}.xml" for XML).
       parameters:
-        - name: styleName
+        - name: style
           in: path
           required: true
           description: Name of the style to retrieve.
@@ -172,7 +172,8 @@ paths:
           in: body
           description: Updated style body.
           required: true
-          type: string
+          schema:
+            $ref: "#/definitions/StylePutBody"
         - name: purge
           in: query
           required: false
@@ -190,8 +191,6 @@ paths:
       responses:
         200:
           description: OK
-        401:
-          description: Unauthorized
 
     delete:
       operationId: deleteStyle
@@ -216,8 +215,6 @@ paths:
       responses:
         200:
           description: OK
-        401:
-          description: Unauthorized
 
 
   /rest/workspaces/{workspace}/styles:
@@ -394,7 +391,8 @@ paths:
           in: body
           description: Updated style body.
           required: true
-          type: string
+          schema:
+            $ref: "#/definitions/StylePutBody"
         - name: purge
           in: query
           required: false
@@ -412,8 +410,6 @@ paths:
       responses:
         200:
           description: OK
-        401:
-          description: Unauthorized
 
     delete:
       operationId: deleteWorkspaceStyle
@@ -438,8 +434,6 @@ paths:
       responses:
         200:
           description: OK
-        401:
-          description: Unauthorized
 
 
   /rest/layers/{layer}/styles:
@@ -574,7 +568,8 @@ paths:
           in: body
           description: Updated style body.
           required: true
-          type: string
+          schema:
+            $ref: "#/definitions/StylePutBody"
         - name: purge
           in: query
           required: false
@@ -592,8 +587,6 @@ paths:
       responses:
         200:
           description: OK
-        401:
-          description: Unauthorized
 
     delete:
       operationId: deleteLayerStyle
@@ -618,8 +611,6 @@ paths:
       responses:
         200:
           description: OK
-        401:
-          description: Unauthorized
 
 
 definitions:

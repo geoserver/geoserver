@@ -107,6 +107,12 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
         configurer.mediaType("ftl", MediaType.TEXT_PLAIN);
         configurer.mediaType("xml", MediaType.APPLICATION_XML);
         configurer.favorParameter(true);
+        
+        // allow extension point configuration of media types
+        List<MediaTypeCallback> callbacks = GeoServerExtensions.extensions(MediaTypeCallback.class);
+        for (MediaTypeCallback callback : callbacks) {
+            callback.configure(configurer);
+        }
 
         // configurer.defaultContentTypeStrategy( new DefaultContentNegotiation());
 

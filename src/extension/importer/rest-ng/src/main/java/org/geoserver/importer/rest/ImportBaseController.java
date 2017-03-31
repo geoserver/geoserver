@@ -9,6 +9,7 @@ import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.restlet.data.Status;
 import org.springframework.http.HttpStatus;
 
 public class ImportBaseController extends RestBaseController {
@@ -42,32 +43,38 @@ public class ImportBaseController extends RestBaseController {
         }
     }
 
-    protected ImportTask task(Long imp, int taskNumber) {
+    protected ImportTask task(Long imp, Integer taskNumber) {
         return task(imp, taskNumber, false);
     }
 
     protected ImportTask task(Long imp, Integer taskNumber, boolean optional) {
+        return (ImportTask) task(imp, taskNumber, optional, false);
+    }
+
+    protected Object task(Long imp, Integer taskNumber, boolean optional, boolean allowAll) {
         ImportContext context = context(imp);
         ImportTask task = null;
-        
-        if(taskNumber == null && optional) {
-            return task;
-        } 
-        
-        task = context.task(taskNumber);
 
+        //handle null taskNumber
+        if (taskNumber == null) {
+            if (!optional && !allowAll) {
+                throw new RestException("No task specified", HttpStatus.NOT_FOUND);
+            }
+        } else {
+            task = context.task(taskNumber);
+        }
+
+        //handle no task found
         if (task == null) {
-            throw new RestException(
-                    "No such task: " + taskNumber + " for import: " + context.getId(),
-                    HttpStatus.NOT_FOUND);
+            if (allowAll) {
+                return context.getTasks();
+            }
+            if (!optional) {
+                throw new RestException(
+                        "No such task: " + taskNumber + " for import: " + context.getId(),
+                        HttpStatus.NOT_FOUND);
+            }
         }
-
-        if (task == null && !optional) {
-            throw new RestException("No task specified",
-
-                    HttpStatus.NOT_FOUND);
-        }
-
         return task;
     }
 

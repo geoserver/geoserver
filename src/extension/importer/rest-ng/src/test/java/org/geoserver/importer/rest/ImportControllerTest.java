@@ -29,7 +29,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-public class ImportResourceControllerTest extends ImporterTestSupport {
+public class ImportControllerTest extends ImporterTestSupport {
 
     @Before
     public void prepareData() throws Exception {

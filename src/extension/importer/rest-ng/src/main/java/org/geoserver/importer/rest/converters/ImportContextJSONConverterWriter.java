@@ -9,7 +9,6 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,7 @@ import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.Table;
 import org.geoserver.importer.mosaic.Granule;
 import org.geoserver.importer.mosaic.Mosaic;
-import org.geoserver.importer.rest.ImportDataController;
+import org.geoserver.importer.rest.ImportContextCollectionWrapper;
 import org.geoserver.importer.rest.JSONRepresentation;
 import org.geoserver.importer.transform.AttributeRemapTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
@@ -93,13 +92,11 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
-        // TODO Auto-generated method stub
-
         final boolean importControllers = ImportContext.class.isAssignableFrom(clazz)
-                || java.util.Iterator.class.isAssignableFrom(clazz);
+                || ImportTask.class.isAssignableFrom(clazz)
+                || ImportContextCollectionWrapper.class.isAssignableFrom(clazz);
         final boolean dataControllers = ImportData.class.isAssignableFrom(clazz);
-        return (importControllers || dataControllers) 
-                && getSupportedMediaTypes().contains(mediaType);
+        return (importControllers || dataControllers) && getSupportedMediaTypes().contains(mediaType);
     }
 
     @Override
@@ -133,10 +130,15 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
         json = new FlushableJSONBuilder(writer);
         if (t instanceof ImportContext) {
-
             this.context((ImportContext) t, true, expand(1));
-        } else if (t instanceof Iterator<?>) {
-            this.contexts((Iterator<ImportContext>) t, expand(0));
+        } else if (t instanceof ImportTask) {
+            this.task((ImportTask) t, true, expand(1));
+        } else if(t instanceof ImportContextCollectionWrapper) {
+            if (ImportContext.class.isAssignableFrom(((ImportContextCollectionWrapper) t).getCollectionClass())) {
+                this.contexts((Iterator<ImportContext>) ((ImportContextCollectionWrapper) t).getCollection(), expand(0));
+            } else if (ImportTask.class.isAssignableFrom(((ImportContextCollectionWrapper) t).getCollectionClass())) {
+                this.tasks((List<ImportTask>) ((ImportContextCollectionWrapper) t).getCollection(), true, expand(0));
+            }
         } else if (ImportData.class.isAssignableFrom(t.getClass())) {
             ImportData data = (ImportData)t;
             Object parent = data.getParent();
@@ -160,10 +162,9 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
                 remote((RemoteData) data, parent, expand);
             }
         } else {
-            throw new RestException("Trying to write an unknow object " + t,
-                    HttpStatus.I_AM_A_TEAPOT);
+                throw new RestException("Trying to write an unknow object " + t,
+                        HttpStatus.I_AM_A_TEAPOT);
         }
-
         // insert new objects here
 
         if (contentType.equals(MediaType.TEXT_HTML)) {

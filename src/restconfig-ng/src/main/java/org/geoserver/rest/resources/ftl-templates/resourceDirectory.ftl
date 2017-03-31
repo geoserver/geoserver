@@ -7,16 +7,16 @@
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 </head>
 <body>
-<h1>Resource Directory '${properties.path}'</h1>
+<h1>Resource Directory '${properties.parent.path}${properties.name}'</h1>
 
 <ul>
     <li>Name: '${properties.name}'</li>
-    <li>Parent: <#if properties.parent??><a href="${properties.parent.href}">${properties.parent.path}</a></#if></li>
+    <li>Parent: <#if properties.parent??><a href="${properties.parent.link.href}">${properties.parent.path}</a></#if></li>
     <li>Last modified: ${properties.lastModified}</li>
     <li>Children:
         <ul>
             <#list properties.children as l>
-                <li><a href="${l.href}">${l.name}</a></li>
+                <li><a href="${l.link.href}">${l.name}</a></li>
             </#list>
         </ul>
     </li>

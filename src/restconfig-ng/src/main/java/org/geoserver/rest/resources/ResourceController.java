@@ -2,13 +2,8 @@ package org.geoserver.rest.resources;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.converters.Converter;
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.converters.UnmarshallingContext;
-import com.thoughtworks.xstream.io.ExtendedHierarchicalStreamWriterHelper;
-import com.thoughtworks.xstream.io.HierarchicalStreamReader;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import freemarker.template.ObjectWrapper;
+import org.geoserver.AtomLink;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
@@ -16,10 +11,13 @@ import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.ResourceStoreFactory;
+import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.converters.XStreamJSONMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.converters.XStreamXMLMessageConverter;
 import org.geoserver.rest.util.RESTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -36,6 +34,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
@@ -45,6 +45,14 @@ import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 @RequestMapping(path = {ROOT_PATH + "/resource", ROOT_PATH + "/resource/**"}, produces="*")
 public class ResourceController extends RestBaseController {
     private ResourceStore store;
+
+    private final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S z");
+    //TODO: Should we actually be doing this?
+    private final DateFormat FORMAT_HEADER = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+    {
+        FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
+        FORMAT_HEADER.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
     @Autowired
     public ResourceController(@Qualifier("resourceStore") ResourceStoreFactory factory) throws Exception {
@@ -57,8 +65,10 @@ public class ResourceController extends RestBaseController {
         this.store = store;
     }
 
-    private static MediaType getMediaType(Resource resource) {
-        if (resource.getType() == Resource.Type.RESOURCE) {
+    private static MediaType getMediaType(Resource resource, HttpServletRequest request) {
+        if (resource.getType() == Resource.Type.DIRECTORY) {
+            return getFormat(request);
+        } else if (resource.getType() == Resource.Type.RESOURCE) {
             String mimeType = URLConnection.guessContentTypeFromName(resource.name());
             if (mimeType == null || MediaType.APPLICATION_OCTET_STREAM.toString().equals(mimeType)) {
                 //try guessing from data
@@ -73,6 +83,7 @@ public class ResourceController extends RestBaseController {
             return null;
         }
     }
+
     protected Resource getResource(HttpServletRequest request) {
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         path = path.substring((ROOT_PATH+"/resource").length());
@@ -83,7 +94,7 @@ public class ResourceController extends RestBaseController {
         return store.get(path);
     }
 
-    protected Operation getOperation(HttpServletRequest request) {
+    protected static Operation getOperation(HttpServletRequest request) {
         Operation operation = Operation.DEFAULT;
         String strOp = RESTUtils.getQueryStringValue(request, "operation");
         if (strOp != null) {
@@ -94,7 +105,7 @@ public class ResourceController extends RestBaseController {
         return operation;
     }
 
-    protected MediaType getFormat(HttpServletRequest request) {
+    protected static MediaType getFormat(HttpServletRequest request) {
         String format = RESTUtils.getQueryStringValue(request, "format");
         if ("xml".equals(format)) {
             return MediaType.APPLICATION_XML;
@@ -121,7 +132,7 @@ public class ResourceController extends RestBaseController {
         response.setContentType(getFormat(request).toString());
 
         if (operation == Operation.METADATA) {
-            result =  wrapObject(new ResourceMetadata(resource), ResourceMetadata.class);
+            result =  wrapObject(new ResourceMetadata(resource, request), ResourceMetadata.class);
         } else {
             if (resource.getType() == Resource.Type.UNDEFINED) {
                 throw new ResourceNotFoundException("Undefined resource path.");
@@ -129,33 +140,29 @@ public class ResourceController extends RestBaseController {
                 if (request.getMethod().equals("HEAD")) {
                     result = wrapObject("", String.class);
                 } else if (resource.getType() == Resource.Type.DIRECTORY) {
-                    result = wrapObject(new ResourceDirectory(resource), ResourceDirectory.class);
+                    result = wrapObject(new ResourceDirectory(resource, request), ResourceDirectory.class);
                 } else {
                     result = resource.in();
-                    response.setContentType(getMediaType(resource).toString());
+                    response.setContentType(getMediaType(resource, request).toString());
                 }
 
                 //UriComponents uriComponents = getUriComponents(name, workspaceName, builder);
                 //headers.setLocation(uriComponents.toUri());
                 response.setHeader("Location", href(resource.path()));
-                response.setHeader("Last-Modified", new Date(resource.lastmodified()).toString());
+                response.setHeader("Last-Modified", FORMAT_HEADER.format(resource.lastmodified()).toString());
                 if (!"".equals(resource.path())) {
                     response.setHeader("Resource-Parent", href(resource.parent().path()));
                 }
                 response.setHeader("Resource-Type", resource.getType().toString().toLowerCase());
-
-                //Probably return this all the time
-
-
             }
         }
         return result;
     }
 
-    @Override
-    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ResourceToMapWrapper<>(clazz);
-    }
+    //@Override
+    //protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+    //    return new ResourceToMapWrapper<>(clazz);
+    //}
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
@@ -164,72 +171,19 @@ public class ResourceController extends RestBaseController {
         xstream.alias("ResourceDirectory", ResourceDirectory.class);
         xstream.alias("ResourceMetadata", ResourceMetadata.class);
 
-        xstream.registerConverter(
-            new Converter() {
-                public boolean canConvert(Class type) {
-                    return ResourceMetadata.class.isAssignableFrom( type );
-                }
+        if (converter instanceof XStreamXMLMessageConverter) {
+            AtomLink.configureXML(xstream);
+            xstream.aliasField("atom:link", ResourceReference.class, "link");
+            xstream.aliasField("atom:link", ResourceChild.class, "link");
+        } else if (converter instanceof XStreamJSONMessageConverter) {
+            AtomLink.configureJSON(xstream);
+        }
+    }
 
-                private void writeLink(String link, String mimeType, HierarchicalStreamWriter writer) {
-                    writer.startNode( "atom:link");
-                    writer.addAttribute("xmlns:atom", "http://www.w3.org/2005/Atom");
-                    writer.addAttribute("rel", "alternate");
-                    writer.addAttribute("href", link);
-
-                    writer.addAttribute("type", mimeType);
-                    writer.endNode();
-                }
-
-                public void marshal(Object source,
-                                    HierarchicalStreamWriter writer,
-                                    MarshallingContext context) {
-
-                    ResourceMetadata resource = (ResourceMetadata) source;
-
-                    writer.startNode("name");
-                    writer.setValue(resource.getName());
-                    writer.endNode();
-
-                    if (resource instanceof ResourceChild) {
-                        writeLink(href(resource.getPath()), resource.getMediaType() == null ?
-                                        converter.getSupportedMediaTypes().get(0).toString() : resource.getMediaType().toString(),
-                                writer);
-                    }
-                    ResourceReference parent = resource.getParent();
-                    writer.startNode("parent");
-                    writer.startNode("path");
-                    context.convertAnother("/" + parent.getPath());
-                    writer.endNode();
-                    writeLink(href(parent.getPath()), converter.getSupportedMediaTypes().get(0).toString(), writer);
-                    writer.endNode();
-                    writer.startNode("lastModified");
-                    context.convertAnother(resource.getLastModified());
-                    writer.endNode();
-                    if (resource.getClass().equals(ResourceMetadata.class)) {
-                        writer.startNode("type");
-                        context.convertAnother(resource.getType());
-                        writer.endNode();
-                    }
-                    if (resource instanceof ResourceDirectory) {
-                        writer.startNode("children");
-                        Collection collection = ((ResourceDirectory) resource).getChildren();
-                        for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
-                            Object item = iterator.next();
-                            String name = xstream.getMapper().serializedClass(item.getClass());
-                            ExtendedHierarchicalStreamWriterHelper.startNode(writer, name, item.getClass());
-                            context.convertAnother(item);
-                            writer.endNode();
-                        }
-                        writer.endNode();
-                    }
-                }
-
-                public Object unmarshal(HierarchicalStreamReader reader,
-                                        UnmarshallingContext context) {
-                    return null;
-                }
-            }
-        );
+    @Override
+    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+        return new ObjectToMapWrapper<T>(clazz, Arrays.asList(AtomLink.class,
+                ResourceDirectory.class, ResourceMetadata.class, ResourceReference.class, ResourceChild.class));
     }
 
     public enum Operation {
@@ -242,18 +196,22 @@ public class ResourceController extends RestBaseController {
      *
      */
     protected static class ResourceReference {
+
         private String path;
 
-        public ResourceReference(String path) {
+        private AtomLink link;
+
+        public ResourceReference(String path, AtomLink link) {
             this.path = path;
+            this.link = link;
         }
 
         public String getPath() {
             return path;
         }
 
-        public String getHref() {
-            return href(path);
+        public AtomLink getLink() {
+            return link;
         }
     }
 
@@ -263,9 +221,23 @@ public class ResourceController extends RestBaseController {
      *
      */
     @XStreamAlias("child")
-    protected static class ResourceChild extends ResourceMetadata {
-        public ResourceChild(Resource resource, ResourceReference parent) {
-            super(resource);
+    protected static class ResourceChild {
+
+        private String name;
+
+        private AtomLink link;
+
+        public ResourceChild(String name, AtomLink link) {
+            this.name = name;
+            this.link = link;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public AtomLink getLink() {
+            return link;
         }
     }
 
@@ -281,20 +253,32 @@ public class ResourceController extends RestBaseController {
         private ResourceReference parent;
         private Date lastModified;
         private String type;
-        private MediaType mimeType;
+
+        public ResourceMetadata(String name, ResourceReference parent,
+                                Date lastModified, String type) {
+            this.name = name;
+            this.parent = parent;
+            this.lastModified = lastModified;
+            this.type = type;
+        }
 
         /**
          * Create from resource.
          * The class must be static for serialization, but output is request dependent so passing on self.
          */
-        protected ResourceMetadata(Resource resource) {
+        protected ResourceMetadata(Resource resource, HttpServletRequest request, boolean isDir) {
             if (!resource.path().isEmpty()) {
-                parent = new ResourceReference(resource.parent().path());
+                parent = new ResourceReference("/" + resource.parent().path(),
+                        new AtomLink(href(resource.parent().path()), "alternate",
+                                getFormat(request).toString()));
             }
-            mimeType = ResourceController.getMediaType(resource);
             lastModified = new Date(resource.lastmodified());
-            type = resource.getType().toString().toLowerCase();
+            type = isDir ? null : resource.getType().toString().toLowerCase();
             name = resource.name();
+        }
+
+        public ResourceMetadata(Resource resource, HttpServletRequest request) {
+            this(resource, request, false);
         }
 
         public ResourceReference getParent() {
@@ -312,18 +296,6 @@ public class ResourceController extends RestBaseController {
         public String getName() {
             return name;
         }
-
-        public String getPath() {
-            return (parent == null ? "" : parent.getPath()+"/")+name;
-        }
-
-        public String getHref() {
-            return href(getPath());
-        }
-
-        public MediaType getMediaType() {
-            return mimeType;
-        }
     }
 
     /**
@@ -338,16 +310,24 @@ public class ResourceController extends RestBaseController {
 
         private List<ResourceChild> children = new ArrayList<ResourceChild>();
 
+        public ResourceDirectory(String name, ResourceReference parent, Date lastModified,
+                                 String type) {
+            super(name, parent, lastModified, type);
+        }
+
         /**
          * Create from resource.
          * The class must be static for serialization, but output is request dependent so passing on self.
          */
-        public ResourceDirectory(Resource resource) {
-            super(resource);
+        public ResourceDirectory(Resource resource, HttpServletRequest request) {
+            super(resource, request, true);
             for (Resource child : resource.list()) {
-                children.add(new ResourceChild(child, new ResourceReference(getPath())));
+                children.add(new ResourceChild(child.name(),
+                        new AtomLink(href(child.path()), "alternate",
+                                getMediaType(child, request).toString())));
             }
         }
+
 
         public List<ResourceChild> getChildren() {
             return children;

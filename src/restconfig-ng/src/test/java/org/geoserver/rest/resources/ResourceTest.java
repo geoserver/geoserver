@@ -177,7 +177,7 @@ public class ResourceTest extends GeoServerSystemTestSupport {
         print(doc);
         XMLAssert.assertXpathEvaluatesTo("mydir", "/ResourceDirectory/name", doc);
         XMLAssert.assertXpathEvaluatesTo("/", "/ResourceDirectory/parent/path", doc);
-        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver"+RestBaseController.ROOT_PATH+"/resource/", 
+        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver"+RestBaseController.ROOT_PATH+"/resource/",
                 "/ResourceDirectory/parent/atom:link/@href", doc);
         XMLAssert.assertXpathEvaluatesTo(FORMAT.format(myRes.parent().lastmodified()),
                 "/ResourceDirectory/lastModified", doc);

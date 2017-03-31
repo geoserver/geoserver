@@ -72,7 +72,7 @@ paths:
           description: Method Not Allowed
 
 
-  /style/{styleName}:
+  /style/{style}:
 
     get:
       operationId: getStyle
@@ -84,7 +84,7 @@ paths:
         - application/vnd.ogc.sld+xml
         - text/html
       parameters:
-        - name: styleName
+        - name: style
           in: path
           required: true
           description: Name of the style to retrieve.
@@ -173,7 +173,8 @@ paths:
           description: Updated style body.
           required: true
           schema:
-            $ref: "#/definitions/StylePutBody"
+            type: string
+            description: Style code.
         - name: purge
           in: query
           required: false
@@ -197,7 +198,7 @@ paths:
       summary: Delete style
       description: Deletes a style.
       parameters:
-        - name: styleName
+        - name: style
           in: path
           required: true
           description: Name of the style to delete.
@@ -295,7 +296,7 @@ paths:
         - application/vnd.ogc.sld+xml
         - text/html
       parameters:
-        - name: styleName
+        - name: style
           in: path
           required: true
           description: Name of the style to retrieve.
@@ -382,7 +383,7 @@ paths:
       summary: Modify a single style in a given workspace
       description: Modifies a single style in a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/styles/{style}.xml" for XML).
       parameters:
-        - name: styleName
+        - name: style
           in: path
           required: true
           description: Name of the style to retrieve.
@@ -392,7 +393,8 @@ paths:
           description: Updated style body.
           required: true
           schema:
-            $ref: "#/definitions/StylePutBody"
+            type: string
+            description: Style code.
         - name: purge
           in: query
           required: false
@@ -416,7 +418,7 @@ paths:
       summary: Delete style in a given workspace
       description: Deletes a style in a given workspace.
       parameters:
-        - name: styleName
+        - name: style
           in: path
           required: true
           description: Name of the style to delete.
@@ -514,7 +516,7 @@ paths:
         - application/vnd.ogc.sld+xml
         - text/html
       parameters:
-        - name: styleName
+        - name: style
           in: path
           required: true
           description: Name of the style to retrieve.
@@ -559,7 +561,7 @@ paths:
       summary: Modify a single style for a given layer
       description: Modifies a single style for a given layer. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}/styles/{style}.xml" for XML).
       parameters:
-        - name: styleName
+        - name: style
           in: path
           required: true
           description: Name of the style to retrieve.
@@ -569,7 +571,8 @@ paths:
           description: Updated style body.
           required: true
           schema:
-            $ref: "#/definitions/StylePutBody"
+            type: string
+            description: Style code.
         - name: purge
           in: query
           required: false
@@ -593,7 +596,7 @@ paths:
       summary: Delete style for a given layer
       description: Deletes a style for a given layer.
       parameters:
-        - name: styleName
+        - name: style
           in: path
           required: true
           description: Name of the style to delete.
@@ -647,9 +650,6 @@ definitions:
         type: string
         description: URL to style definition
 
-  StylePutBody:
-    type: String
-    description: Style code.
 
   Style:
     type: object

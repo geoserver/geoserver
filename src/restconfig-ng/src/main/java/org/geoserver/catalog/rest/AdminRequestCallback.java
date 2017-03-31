@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.geoserver.rest.DispatcherCallback;
 import org.geoserver.rest.DispatcherCallbackAdapter;
+import org.geoserver.rest.GeoServerController;
 import org.geoserver.security.AdminRequest;
 import org.springframework.stereotype.Component;
 
@@ -24,8 +25,11 @@ public class AdminRequestCallback extends DispatcherCallbackAdapter {
     @Override
     public void dispatched(HttpServletRequest HttpServletRequest,
             HttpServletResponse HttpServletResponse, Object handler) {
-        if (DispatcherCallback.getControllerBean(handler) instanceof CatalogController)
+        Object controllerBean = DispatcherCallback.getControllerBean(handler);
+        if (controllerBean instanceof CatalogController
+                || controllerBean instanceof GeoServerController) {
             AdminRequest.start(this);
+        }
     }
 
     @Override

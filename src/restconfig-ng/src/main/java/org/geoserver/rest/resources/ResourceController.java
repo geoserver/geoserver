@@ -101,7 +101,7 @@ public class ResourceController extends RestBaseController {
      * @param request
      * @return Resource reqquested, may be UNDEFINED if not found.
      */
-    protected Resource getResource(HttpServletRequest request) {
+    protected Resource resource(HttpServletRequest request) {
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         path = path.substring((ROOT_PATH+"/resource").length());
         if ("".equals(path)) { //root
@@ -111,7 +111,7 @@ public class ResourceController extends RestBaseController {
         return store.get(path);
     }
 
-    protected static Operation getOperation(HttpServletRequest request) {
+    protected static Operation operation(HttpServletRequest request) {
         Operation operation = Operation.DEFAULT;
         String strOp = RESTUtils.getQueryStringValue(request, "operation");
         if (strOp != null) {
@@ -133,11 +133,11 @@ public class ResourceController extends RestBaseController {
         }
     }
 
-    private static String href(String path) {
+    protected static String href(String path) {
         return ResponseUtils.buildURL(RequestInfo.get().servletURI("resource/"),
                 ResponseUtils.urlEncode(path, '/'), null, URLMangler.URLType.RESOURCE);
     }
-    private static String formatHtmlLink(String link) {
+    protected static String formatHtmlLink(String link) {
         return link.replaceAll("&", "&amp;");
     }
 
@@ -161,13 +161,13 @@ public class ResourceController extends RestBaseController {
      */
     @GetMapping
     public Object resourceGet(HttpServletRequest request, HttpServletResponse response) {
-        Resource resource = getResource(request);
-        Operation operation = getOperation(request);
+        Resource resource = resource(request);
+        Operation operation = operation(request);
         Object result;
         response.setContentType(getFormat(request).toString());
 
         if (operation == Operation.METADATA) {
-            result =  wrapObject(new ResourceMetadata(resource, request), ResourceMetadata.class);
+            result =  wrapObject(new ResourceMetadataInfo(resource, request), ResourceMetadataInfo.class);
         } else {
             if (resource.getType() == Resource.Type.UNDEFINED) {
                 throw new ResourceNotFoundException("Undefined resource path.");
@@ -175,7 +175,7 @@ public class ResourceController extends RestBaseController {
                 if (request.getMethod().equals("HEAD")) {
                     result = wrapObject("", String.class);
                 } else if (resource.getType() == Resource.Type.DIRECTORY) {
-                    result = wrapObject(new ResourceDirectory(resource, request), ResourceDirectory.class);
+                    result = wrapObject(new DirectoryMedataInfo(resource, request), DirectoryMedataInfo.class);
                 } else {
                     result = resource.in();
                     response.setContentType(getMediaType(resource, request).toString());
@@ -202,14 +202,14 @@ public class ResourceController extends RestBaseController {
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         XStream xstream = persister.getXStream();
-        xstream.alias("child", ResourceChild.class);
-        xstream.alias("ResourceDirectory", ResourceDirectory.class);
-        xstream.alias("ResourceMetadata", ResourceMetadata.class);
+        xstream.alias("child", ResourceChildInfo.class);
+        xstream.alias("ResourceDirectory", DirectoryMedataInfo.class);
+        xstream.alias("ResourceMetadata", ResourceMetadataInfo.class);
 
         if (converter instanceof XStreamXMLMessageConverter) {
             AtomLink.configureXML(xstream);
-            xstream.aliasField("atom:link", ResourceReference.class, "link");
-            xstream.aliasField("atom:link", ResourceChild.class, "link");
+            xstream.aliasField("atom:link", ResourceParentInfo.class, "link");
+            xstream.aliasField("atom:link", ResourceChildInfo.class, "link");
         } else if (converter instanceof XStreamJSONMessageConverter) {
             AtomLink.configureJSON(xstream);
         }
@@ -218,7 +218,7 @@ public class ResourceController extends RestBaseController {
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
         return new ObjectToMapWrapper<T>(clazz, Arrays.asList(AtomLink.class,
-                ResourceDirectory.class, ResourceMetadata.class, ResourceReference.class, ResourceChild.class));
+                DirectoryMedataInfo.class, ResourceMetadataInfo.class, ResourceParentInfo.class, ResourceChildInfo.class));
     }
     /**
      * Operation requested from the REST endpoint.
@@ -239,13 +239,13 @@ public class ResourceController extends RestBaseController {
      * 
      * XML/Json object for resource reference.
      */
-    protected static class ResourceReference { // TODO: Rename to ResoruceParentInfo as this is a DTO 
+    protected static class ResourceParentInfo { 
 
         private String path;
 
         private AtomLink link;
 
-        public ResourceReference(String path, AtomLink link) {
+        public ResourceParentInfo(String path, AtomLink link) {
             this.path = path;
             this.link = link;
         }
@@ -260,16 +260,16 @@ public class ResourceController extends RestBaseController {
     }
 
     /**
-     * Lists Resource for html, json, xml output, as the contents of {@link ResourceController.ResourceDirectory}.
+     * Lists Resource for html, json, xml output, as the contents of {@link ResourceController.DirectoryMedataInfo}.
      */
     @XStreamAlias("child")
-    protected static class ResourceChild { // TODO: Rename to ResourceChildInfo as DTO
+    protected static class ResourceChildInfo {
 
         private String name;
 
         private AtomLink link;
 
-        public ResourceChild(String name, AtomLink link) {
+        public ResourceChildInfo(String name, AtomLink link) {
             this.name = name;
             this.link = link;
         }
@@ -287,14 +287,14 @@ public class ResourceController extends RestBaseController {
      * Resource metadata for individual resource entry (name, last modified, type, etc...).
      */
     @XStreamAlias("ResourceMetadata")
-    protected static class ResourceMetadata { // TODO: ResourceMetadataInfo as DTO
+    protected static class ResourceMetadataInfo {
 
         private String name;
-        private ResourceReference parent;
+        private ResourceParentInfo parent;
         private Date lastModified;
         private String type;
 
-        public ResourceMetadata(String name, ResourceReference parent,
+        public ResourceMetadataInfo(String name, ResourceParentInfo parent,
                                 Date lastModified, String type) {
             this.name = name;
             this.parent = parent;
@@ -306,9 +306,9 @@ public class ResourceController extends RestBaseController {
          * Create from resource.
          * The class must be static for serialization, but output is request dependent so passing on self.
          */
-        protected ResourceMetadata(Resource resource, HttpServletRequest request, boolean isDir) {
+        protected ResourceMetadataInfo(Resource resource, HttpServletRequest request, boolean isDir) {
             if (!resource.path().isEmpty()) {
-                parent = new ResourceReference("/" + resource.parent().path(),
+                parent = new ResourceParentInfo("/" + resource.parent().path(),
                         new AtomLink(href(resource.parent().path()), "alternate",
                                 getFormat(request).toString()));
             }
@@ -317,11 +317,11 @@ public class ResourceController extends RestBaseController {
             name = resource.name();
         }
 
-        public ResourceMetadata(Resource resource, HttpServletRequest request) {
+        public ResourceMetadataInfo(Resource resource, HttpServletRequest request) {
             this(resource, request, false);
         }
 
-        public ResourceReference getParent() {
+        public ResourceParentInfo getParent() {
             return parent;
         }
 
@@ -344,11 +344,11 @@ public class ResourceController extends RestBaseController {
      * @author Niels Charlier
      */
     @XStreamAlias("ResourceDirectory")
-    protected static class ResourceDirectory extends ResourceMetadata { // TODO: ResoruceDirectoryMetadataInfo
+    protected static class DirectoryMedataInfo extends ResourceMetadataInfo {
 
-        private List<ResourceChild> children = new ArrayList<ResourceChild>();
+        private List<ResourceChildInfo> children = new ArrayList<ResourceChildInfo>();
 
-        public ResourceDirectory(String name, ResourceReference parent, Date lastModified,
+        public DirectoryMedataInfo(String name, ResourceParentInfo parent, Date lastModified,
                                  String type) {
             super(name, parent, lastModified, type);
         }
@@ -357,17 +357,17 @@ public class ResourceController extends RestBaseController {
          * Create from resource.
          * The class must be static for serialization, but output is request dependent so passing on self.
          */
-        public ResourceDirectory(Resource resource, HttpServletRequest request) {
+        public DirectoryMedataInfo(Resource resource, HttpServletRequest request) {
             super(resource, request, true);
             for (Resource child : resource.list()) {
-                children.add(new ResourceChild(child.name(),
+                children.add(new ResourceChildInfo(child.name(),
                         new AtomLink(href(child.path()), "alternate",
                                 getMediaType(child, request).toString())));
             }
         }
 
 
-        public List<ResourceChild> getChildren() {
+        public List<ResourceChildInfo> getChildren() {
             return children;
         }
     }

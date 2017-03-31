@@ -15,7 +15,7 @@ import org.geoserver.backuprestore.utils.BackupUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestletException;
-import org.geoserver.rest.util.RESTUtils;
+import org.geoserver.rest.util.IOUtils;
 import org.geotools.factory.Hints;
 import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.filter.Filter;
@@ -101,7 +101,7 @@ public class RestoreStreamResource  extends RestoreResource {
                 LOGGER.info("PUT file: mimetype=" + mediaType + ", path=" + directory.path());
             }
             
-            Resource archiveFile = RESTUtils.handleBinUpload(getAttribute("restoreId") + ".zip", directory, false, getRequest());
+            Resource archiveFile = IOUtils.handleBinUpload(getAttribute("restoreId") + ".zip", directory, false, getRequest());
             
             if (archiveFile != null && Resources.exists(archiveFile) && FileUtils.sizeOf(archiveFile.file())>0) {
                 RestoreExecutionAdapter execution = getBackupFacade().runRestoreAsync(archiveFile, wsFilter, hints);

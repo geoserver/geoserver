@@ -4,17 +4,31 @@
  */
 package org.geoserver.catalog.rest;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.geoserver.ManifestLoader;
 import org.geoserver.ManifestLoader.AboutModel;
 import org.geoserver.ManifestLoader.AboutModel.AboutModelType;
 import org.geoserver.ManifestLoader.AboutModel.ManifestModel;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.platform.ModuleStatus;
+import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,27 +41,38 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
-@RestController @RequestMapping(path = RestBaseController.ROOT_PATH, 
-    produces = {MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.TEXT_HTML_VALUE})
+import freemarker.template.ObjectWrapper;
+import freemarker.template.SimpleHash;
+import freemarker.template.Template;
+
+@RestController
+@RequestMapping(path = RestBaseController.ROOT_PATH, produces = { MediaType.TEXT_HTML_VALUE,
+        MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+@ControllerAdvice
 public class AboutController extends RestBaseController {
-        
-    @GetMapping(value = "/about/manifest") 
-    public RestWrapper<AboutModel> getManifest(@RequestParam(name = "manifest", required = false) String regex,
+
+    @GetMapping(value = "/about/manifest")
+    public RestWrapper<AboutModel> getManifest(
+            @RequestParam(name = "manifest", required = false) String regex,
             @RequestParam(required = false) String from, @RequestParam(required = false) String to,
-            @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
-        return wrapObject(getModel(AboutModelType.RESOURCES, regex, from, to, key, value), AboutModel.class);
+            @RequestParam(required = false) String key,
+            @RequestParam(required = false) String value) {
+        return wrapObject(getModel(AboutModelType.RESOURCES, regex, from, to, key, value),
+                AboutModel.class);
     }
-    
-    @GetMapping(value = "/about/version") 
-    public RestWrapper<AboutModel> getVersion(@RequestParam(name = "manifest", required = false) String regex,
+
+    @GetMapping(value = "/about/version")
+    public RestWrapper<AboutModel> getVersion(
+            @RequestParam(name = "manifest", required = false) String regex,
             @RequestParam(required = false) String from, @RequestParam(required = false) String to,
-            @RequestParam(required = false) String key, @RequestParam(required = false) String value) {
-        return wrapObject(getModel(AboutModelType.VERSIONS, regex, from, to, key, value), AboutModel.class);
+            @RequestParam(required = false) String key,
+            @RequestParam(required = false) String value) {
+        return wrapObject(getModel(AboutModelType.VERSIONS, regex, from, to, key, value),
+                AboutModel.class);
     }
-    
-    protected AboutModel getModel(AboutModelType type, String regex, String from,  String to, String key, String value) {
+
+    protected AboutModel getModel(AboutModelType type, String regex, String from, String to,
+            String key, String value) {
         AboutModel model = null;
 
         // filter name by regex
@@ -80,7 +105,7 @@ public class AboutController extends RestBaseController {
             return model;
         } else {
             return buildAboutModel(type);
-        }        
+        }
     }
 
     private static AboutModel buildAboutModel(AboutModelType type) {
@@ -93,9 +118,63 @@ public class AboutController extends RestBaseController {
         }
     }
 
+    @Override
+    protected String getTemplateName(Object object) {
+        if (object instanceof AboutModel) {
+            return "AboutModel.ftl";
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean supports(MethodParameter methodParameter, Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
+        return AboutModel.class.isAssignableFrom(methodParameter.getParameterType());
+    }
+
+    @Override
+    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+
+        if (AboutModel.class.isAssignableFrom(clazz)) {
+            return new ObjectToMapWrapper<AboutModel>(AboutModel.class) {
+                @Override
+                protected void wrapInternal(Map properties, SimpleHash model, AboutModel object) {
+                    final List<Map<String, Object>> manifests = new ArrayList<Map<String, Object>>();
+                    final Iterator<ManifestModel> it = object.getManifests().iterator();
+                    while (it.hasNext()) {
+                        final ManifestModel manifest = it.next();
+
+                        final Map<String, Object> map = new HashMap<String, Object>();
+                        map.put("name", manifest.getName());
+
+                        final List<String> props = new ArrayList<String>();
+                        map.put("properties", props);
+
+                        final List<String> values = new ArrayList<String>();
+                        map.put("valuez", values);
+
+                        final Iterator<String> innerIt = manifest.getEntries().keySet().iterator();
+                        while (innerIt.hasNext()) {
+                            String key = innerIt.next();
+                            props.add(key);
+                            values.add(manifest.getEntries().get(key));
+                        }
+                        manifests.add(map);
+                    }
+
+                    properties.put("manifests", manifests);
+                }
+            };
+        } else {
+            return null;
+        }
+
+    }
+
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         XStream xs = persister.getXStream();
-        
+
         // AboutModel
         xs.processAnnotations(AboutModel.class);
         xs.allowTypes(new Class[] { AboutModel.class });

@@ -19,13 +19,17 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.accept.ContentNegotiationManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -34,10 +38,12 @@ import net.sf.json.JSONObject;
  */
 public class AboutControllerTest extends GeoServerSystemTestSupport {
 
-    //@Test
+    private static String BASEPATH = RestBaseController.ROOT_PATH;
+    
+    @Test
     public void testEmptyListHTMLTemplate() throws Exception {
         try {
-            getAsDOM("/rest/about/version?manifest=NOTEXISTS.*");
+            getAsDOM(BASEPATH + "/about/version?manifest=NOTEXISTS.*");
         } catch (Exception e) {
             Assert.fail(e.getLocalizedMessage());
             e.printStackTrace();
@@ -47,30 +53,30 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetVersionsAsXML() throws Exception {
         // make the request, parsing the result as a dom
-        Document dom = getAsDOM("/restng/about/version.xml");
+        Document dom = getAsDOM(BASEPATH + "/about/version.xml");
         checkXMLModel(dom);
     }
 
     @Test
     public void testGetManifestsAsXML() throws Exception {
         // make the request, parsing the result as a dom
-        Document dom = getAsDOM("/restng/about/manifest.xml");
+        Document dom = getAsDOM(BASEPATH + "/about/manifest.xml");
 
         checkXMLModel(dom);
     }
 
-    //@Test
+    @Test
     public void testGetAsVersionsHTML() throws Exception {
         // make the request, parsing the result into a Dom object
-        Document dom = getAsDOM("/restng/about/version");
+        Document dom = getAsDOM(BASEPATH + "/about/version");
 
         checkHTMLModel(dom);
     }
 
-    //@Test
+    @Test
     public void testGetAsManifestsHTML() throws Exception {
         // make the request, parsing the result into a Dom object
-        Document dom = getAsDOM("/restng/about/manifest?manifest=freemarker.*");
+        Document dom = getAsDOM(BASEPATH + "/about/manifest?manifest=freemarker.*");
 
         checkHTMLModel(dom);
     }
@@ -78,17 +84,42 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetAsVersionsJSON() throws Exception {
         // make the request, parsing the result into a json object
-        JSONObject json = (JSONObject) getAsJSON("/restng/about/version.json");
-
+        JSONObject json = (JSONObject) getAsJSON(BASEPATH + "/about/version.json");
+        print(json);
         checkJSONModel(json);
     }
 
     @Test
     public void testGetAsManifestsJSON() throws Exception {
         // make the request, parsing the result into a json object
-        JSONObject json = (JSONObject) getAsJSON("/restng/about/manifest.json");
+        JSONObject json = (JSONObject) getAsJSON(BASEPATH + "/about/manifest.json");
 
         checkJSONModel(json);
+    }
+    
+    @Test
+    public void testGetStatusAsHTML() throws Exception {
+        // make the request, parsing the result into a Dom object
+        Document dom = getAsDOM(BASEPATH + "/about/status");
+        checkHTMLModel(dom);
+        
+        Document dom2 = getAsDOM(BASEPATH + "/about/status.html");
+        checkHTMLModel(dom2);
+    }
+    
+    @Test
+    public void testGetStatusAsJSON() throws Exception {
+        // make the request, parsing the result into a Dom object
+        JSON dom = getAsJSON(BASEPATH + "/about/status.json");
+ 
+        
+    }
+    
+    @Test
+    public void testGetStatusAsXML() throws Exception {
+        // make the request, parsing the result into a Dom object
+        Document dom = getAsDOM(BASEPATH + "/about/status.xml");        
+        
     }
 
     private void checkHTMLModel(Document dom) {

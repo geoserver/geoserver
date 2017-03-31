@@ -6,6 +6,8 @@
 package org.geoserver.rest.catalog;
 
 import static org.junit.Assert.assertTrue;
+
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
@@ -14,26 +16,36 @@ import org.junit.Test;
  */
 public class AboutStatusControllerTest extends GeoServerSystemTestSupport {
     
-    //TODO: why is AboutStatusController.configurePersister not being called?
-
+    private static String BASEPATH = RestBaseController.ROOT_PATH;
+    
     @Test
-    public void testGetStatus() throws Exception {
-        String xml = getAsString("/restng/about/status.xml");        
-        //assertTrue(xml.contains("Available"));
-        //assertTrue(xml.contains("Enabled"));
+    public void testGetStatusHTML() throws Exception {
+        String html = getAsString(BASEPATH + "/about/status");
+        assertTrue(html.contains("Available"));
+        assertTrue(html.contains("Enabled"));
+    }
+    
+    @Test
+    public void testGetStatusXML() throws Exception {
+        getAsDOM(BASEPATH + "/about/status.xml");        
+    }
+    
+    @Test
+    public void testGetStatusJSON() throws Exception {
+        getAsJSON(BASEPATH + "/about/status.json");        
     }
 
     @Test
     public void testGetSingleModule() throws Exception {
-        String xml = getAsString("/restng/about/status/gs-main.xml");
-        assertTrue(xml.contains("<name>GeoServer Main</name>"));
-        //assertTrue(xml.contains("Enabled"));
-    }
+        String html = getAsString(BASEPATH + "/about/status/gs-main");
+        assertTrue(html.contains("<b>Module</b> : gs-main"));
+        assertTrue(html.contains("<b>Enabled</b> : true"));
+    }   
 
     @Test
     public void testMalformedModuleName() throws Exception {
-        String xml = getAsString("/restng/about/status/fake1_module.xml");
-        assertTrue(xml.contains("No such module"));
+        String html = getAsString(BASEPATH + "/about/status/fake1_module");
+        assertTrue(html.contains("No such module"));
     }
 
 }

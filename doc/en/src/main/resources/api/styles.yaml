@@ -279,7 +279,7 @@ paths:
           description: Method Not Allowed
 
     delete:
-      operationId: deleteStyles
+      operationId: deleteWorkspaceStyles
       description: Invalid. Use /workspaces/{workspace}/styles/{style} instead.
       responses:
         405:
@@ -494,14 +494,14 @@ paths:
           description: Created
 
     put:
-      operationId: putStyles
+      operationId: putLayerStyles
       description: Invalid. Use POST for adding a new style, or use PUT with /layers/{layer}/styles/{style} to edit/upload an existing style.
       responses:
         405:
           description: Method Not Allowed
 
     delete:
-      operationId: deleteStyles
+      operationId: deleteLayerStyles
       description: Invalid. Use /layers/{layer}/styles/{style} instead.
       responses:
         405:

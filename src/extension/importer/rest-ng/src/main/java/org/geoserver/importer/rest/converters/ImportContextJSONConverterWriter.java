@@ -40,6 +40,7 @@ import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.Table;
 import org.geoserver.importer.mosaic.Granule;
 import org.geoserver.importer.mosaic.Mosaic;
+import org.geoserver.importer.rest.ImportDataController;
 import org.geoserver.importer.rest.JSONRepresentation;
 import org.geoserver.importer.transform.AttributeRemapTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
@@ -81,7 +82,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
     public ImportContextJSONConverterWriter(Importer importer) {
         super();
         this.importer = importer;
-        
+
     }
 
     @Override
@@ -93,8 +94,11 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
         // TODO Auto-generated method stub
-        
-        return (ImportContext.class.isAssignableFrom(clazz) || java.util.Iterator.class.isAssignableFrom(clazz) )
+
+        final boolean importControllers = ImportContext.class.isAssignableFrom(clazz)
+                || java.util.Iterator.class.isAssignableFrom(clazz);
+        final boolean dataControllers = ImportData.class.isAssignableFrom(clazz);
+        return (importControllers || dataControllers) 
                 && getSupportedMediaTypes().contains(mediaType);
     }
 
@@ -114,33 +118,58 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
     @Override
     public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        if(!contentType.equals(MediaType.TEXT_HTML)){
+        if (!contentType.equals(MediaType.TEXT_HTML)) {
             outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        }else {
+        } else {
             outputMessage.getHeaders().setContentType(MediaType.TEXT_HTML);
         }
         page = RequestInfo.get();
         String path = page.getPagePath();
         OutputStream out = outputMessage.getBody();
         OutputStreamWriter writer = new OutputStreamWriter(out);
-        if(contentType.equals(MediaType.TEXT_HTML)){
+        if (contentType.equals(MediaType.TEXT_HTML)) {
             writer.write("<html><body><pre>");
         }
-       
+
         json = new FlushableJSONBuilder(writer);
         if (t instanceof ImportContext) {
-            
-            this.context((ImportContext) t, true, expand(1) );
-        } else if( t instanceof Iterator<?>){
+
+            this.context((ImportContext) t, true, expand(1));
+        } else if (t instanceof Iterator<?>) {
             this.contexts((Iterator<ImportContext>) t, expand(0));
-        } 
-        
+        } else if (ImportData.class.isAssignableFrom(t.getClass())) {
+            ImportData data = (ImportData)t;
+            Object parent = data.getParent();
+            int expand = expand(1);
+            if (data  instanceof FileData) {
+                if (data instanceof Directory) {
+                    if (data instanceof Mosaic) {
+                        mosaic((Mosaic) data, parent  ,expand );
+                    }
+                    else {
+                        directory((Directory) data, parent, expand);
+                    }
+                } else {
+                    file((FileData) data, parent, expand, false);
+                }
+            } else if (data instanceof Database) {
+                database((Database) data, parent, expand);
+            } else if (data instanceof Table) {
+                table((Table)data, parent, expand);
+            } else if (data instanceof RemoteData) {
+                remote((RemoteData) data, parent, expand);
+            }
+        } else {
+            throw new RestException("Trying to write an unknow object " + t,
+                    HttpStatus.I_AM_A_TEAPOT);
+        }
+
         // insert new objects here
-        
-        if(contentType.equals(MediaType.TEXT_HTML)){
+
+        if (contentType.equals(MediaType.TEXT_HTML)) {
             writer.write("</pre></body></html>");
         }
- 
+
     }
 
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
@@ -158,11 +187,11 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
     protected int expand(int def) {
         String ex = null;
-        
+
         Map<String, String[]> queryMap = page.getQueryMap();
-        if(queryMap!=null) {
+        if (queryMap != null) {
             String[] params = queryMap.get("expand");
-            if(params!=null&&params.length>0) {
+            if (params != null && params.length > 0) {
                 ex = params[0];
             }
         }
@@ -172,14 +201,13 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
         try {
             return "self".equalsIgnoreCase(ex) ? 1
-                 : "all".equalsIgnoreCase(ex) ? Integer.MAX_VALUE 
-                 : "none".equalsIgnoreCase(ex) ? 0 
-                 : Integer.parseInt(ex);
-        }
-        catch(NumberFormatException e) {
+                    : "all".equalsIgnoreCase(ex) ? Integer.MAX_VALUE
+                            : "none".equalsIgnoreCase(ex) ? 0 : Integer.parseInt(ex);
+        } catch (NumberFormatException e) {
             return def;
         }
     }
+
     public void contexts(Iterator<ImportContext> contexts, int expand) throws IOException {
         json.object().key("imports").array();
         while (contexts.hasNext()) {

@@ -42,10 +42,14 @@ public class BaseController extends RestBaseController {
         return task(imp, taskNumber, false);
     }
 
-    protected ImportTask task(Long imp, int taskNumber, boolean optional) {
+    protected ImportTask task(Long imp, Integer taskNumber, boolean optional) {
         ImportContext context = context(imp);
         ImportTask task = null;
-
+        
+        if(taskNumber == null && optional) {
+            return task;
+        } 
+        
         task = context.task(taskNumber);
 
         if (task == null) {

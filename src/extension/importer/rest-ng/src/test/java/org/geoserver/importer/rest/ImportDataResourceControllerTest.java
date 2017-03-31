@@ -30,20 +30,20 @@ public class ImportDataResourceControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGet() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON(ROOT_PATH+"/imports/0/data");
+        JSONObject json = (JSONObject) getAsJSON(ROOT_PATH+"/imports/0/data",200);
         assertEquals("directory", json.getString("type"));
         assertEquals(2, json.getJSONArray("files").size());
     }
 
     @Test
     public void testGetFiles() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON(ROOT_PATH+"/imports/0/data/files");
+        JSONObject json = (JSONObject) getAsJSON(ROOT_PATH+"/imports/0/data/files",200);
         assertEquals(2, json.getJSONArray("files").size());
     }
 
     @Test
     public void testGetFile() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON(ROOT_PATH+"/imports/0/data/files/archsites.shp");
+        JSONObject json = (JSONObject) getAsJSON(ROOT_PATH+"/imports/0/data/files/archsites.shp",200);
         assertEquals("archsites.shp", json.getString("file"));
         assertEquals("archsites.prj", json.getString("prj"));
     }

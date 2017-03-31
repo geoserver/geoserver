@@ -40,18 +40,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>workspace</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <inputSpec>src/main/resources/api/workspaces/api.yaml</inputSpec>
-              <language>html</language>
-              <output>${project.build.directory}/api/workspaces</output>
-            </configuration>
-          </execution>
-          <execution>
             <id>fonts</id>
             <phase>process-resources</phase>
             <goals>

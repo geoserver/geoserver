@@ -29,7 +29,6 @@ import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
-import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.data.DataAccess;
@@ -67,7 +66,6 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 import freemarker.template.SimpleHash;
-import freemarker.template.Template;
 
 /**
  * Feature type controller
@@ -86,9 +84,9 @@ public class FeatureTypeController extends CatalogController {
 
     @GetMapping(path = { "/workspaces/{workspaceName}/featuretypes",
             "/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes" }, produces = {
-                    MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
-                    MediaType.TEXT_HTML_VALUE })
-    public RestWrapper getFeatureTypes(
+                    MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.APPLICATION_XML_VALUE })
+    public Object getFeatureTypes(
             @PathVariable(name = "workspaceName", required = true) String workspaceName,
             @PathVariable(name = "datastoreName", required = false) String datastoreName,
             @RequestParam(name = "list", required = true, defaultValue = "configured") String list) {
@@ -136,7 +134,7 @@ public class FeatureTypeController extends CatalogController {
                 throw new ResourceNotFoundException("Could not load datastore: " + datastoreName);
             }
 
-            return wrapList(available, String.class);
+            return new StringsList(available, "featureTypeName");
         } else {
             List<FeatureTypeInfo> fts;
 
@@ -155,8 +153,8 @@ public class FeatureTypeController extends CatalogController {
 
     @PostMapping(path = { "/workspaces/{workspaceName}/featuretypes",
             "/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes" }, consumes = {
-                    MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-                    MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+                    CatalogController.TEXT_JSON, MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE })
     public ResponseEntity postFeatureType(
             @PathVariable(name = "workspaceName", required = true) String workspace,
             @PathVariable(name = "datastoreName", required = false) String dataStore,
@@ -274,8 +272,8 @@ public class FeatureTypeController extends CatalogController {
 
     @GetMapping(path = { "/workspaces/{workspaceName}/featuretypes/{featureTypeName}",
             "/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes/{featureTypeName}" }, produces = {
-                    MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
-                    MediaType.TEXT_HTML_VALUE })
+                    MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.APPLICATION_XML_VALUE })
     public RestWrapper getFeatureType(
             @PathVariable(name = "workspaceName", required = true) String workspaceName,
             @PathVariable(name = "datastoreName", required = false) String datastoreName,
@@ -331,8 +329,8 @@ public class FeatureTypeController extends CatalogController {
 
     @PutMapping(path = { "/workspaces/{workspaceName}/featuretypes/{featureTypeName}",
             "/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes/{featureTypeName}" }, produces = {
-                    MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
-                    MediaType.TEXT_HTML_VALUE })
+                    MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.APPLICATION_XML_VALUE })
     public void putFeatureType(
             @PathVariable(name = "workspaceName", required = true) String workspaceName,
             @PathVariable(name = "datastoreName", required = false) String datastoreName,
@@ -341,7 +339,7 @@ public class FeatureTypeController extends CatalogController {
             @RequestParam(name = "recalculate", required = false) String recalculate) {
 
         ensureResourcesExist(workspaceName, datastoreName);
-        
+
         if (datastoreName != null
                 && catalog.getFeatureTypeByDataStore(catalog.getDataStoreByName(workspaceName),
                         featureTypeName) == null) {
@@ -387,8 +385,8 @@ public class FeatureTypeController extends CatalogController {
 
     @DeleteMapping(path = { "/workspaces/{workspaceName}/featuretypes/{featureTypeName}",
             "/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes/{featureTypeName}" }, produces = {
-                    MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
-                    MediaType.TEXT_HTML_VALUE })
+                    MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
+                    MediaType.APPLICATION_XML_VALUE })
     public void deleteFeatureType(
             @PathVariable(name = "workspaceName", required = true) String workspaceName,
             @PathVariable(name = "datastoreName", required = false) String datastoreName,
@@ -436,15 +434,11 @@ public class FeatureTypeController extends CatalogController {
     }
 
     /**
-     * Check if the provided workspace and datastore exist.
-     * 
-     * If the parameter is null, no check is performed.
-     * 
-     * If the workspaceName / datastoreName parameter is provided but the corresponding 
-     * resource does not exist, throws a 404 exception.
-     * 
-     * Implementation Note: Does not throw the explicit {@link ResourceNotFoundException}, because
-     * that gets silenced by quietOnNotFound parameters, but these exceptions should not be. 
+     * Check if the provided workspace and datastore exist. <br/>
+     * <br/>
+     * If the parameter is null, no check is performed. <br/>
+     * <br/>
+     * If the workspaceName / datastoreName parameter is provided but the corresponding resource does not exist, throws a 404 exception.
      * 
      * @param workspaceName
      * @param datastoreName
@@ -452,13 +446,13 @@ public class FeatureTypeController extends CatalogController {
     public void ensureResourcesExist(String workspaceName, String datastoreName) {
         // ensure referenced resources exist
         if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new RestException("No such workspace: " + workspaceName, HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException("No such workspace: " + workspaceName);
         }
 
         if (datastoreName != null
                 && catalog.getDataStoreByName(workspaceName, datastoreName) == null) {
-            throw new RestException("No such datastore: " + workspaceName + "," + datastoreName,
-                    HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException(
+                    "No such datastore: " + workspaceName + "," + datastoreName);
         }
     }
 

@@ -315,11 +315,6 @@ paths:
                             ]
                           }              
                       }
-
-    
-    
-    
-    
         application/xml: '<featureType>
                           <name>poi</name>
                           <nativeName>poi</nativeName>

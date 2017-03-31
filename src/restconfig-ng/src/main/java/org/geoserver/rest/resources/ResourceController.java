@@ -63,7 +63,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import freemarker.template.ObjectWrapper;
 
 @RestController
-@RequestMapping(path = {ROOT_PATH + "/resource", ROOT_PATH + "/resource/**"}, produces="*")
+@RequestMapping(path = {ROOT_PATH + "/resource", ROOT_PATH + "/resource/**"})
 public class ResourceController extends RestBaseController {
     private ResourceStore resources;
     static Logger LOGGER = Logging.getLogger("org.geoserver.catalog.rest");
@@ -176,8 +176,8 @@ public class ResourceController extends RestBaseController {
      * @param response Response provided allowing us to set headers (content type, content length, Resource-Parent, Resource-Type).
      * @return Returns wrapped info object, or direct access to resource contents depending on requested operation
      */
-    @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD})
-    public Object resourceGet(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD}, produces = {MediaType.ALL_VALUE})
+    public Object get(HttpServletRequest request, HttpServletResponse response) {
         Resource resource = resource(request);
         Operation operation = operation(request);
         Object result;
@@ -189,16 +189,16 @@ public class ResourceController extends RestBaseController {
             if (resource.getType() == Resource.Type.UNDEFINED) {
                 throw new ResourceNotFoundException("Undefined resource path.");
             } else {
+                HttpHeaders responseHeaders = new HttpHeaders();
+                MediaType mediaType = getMediaType(resource, request);
+                responseHeaders.setContentType(mediaType);
+                response.setContentType(mediaType.toString());
+
                 if (request.getMethod().equals("HEAD")) {
-                    result = wrapObject("", String.class);
+                    result = new ResponseEntity("", responseHeaders, HttpStatus.OK);
                 } else if (resource.getType() == Resource.Type.DIRECTORY) {
                     result = wrapObject(new ResourceDirectoryInfo(resource, request), ResourceDirectoryInfo.class);
                 } else {
-                    HttpHeaders responseHeaders = new HttpHeaders();
-                    MediaType mediaType = getMediaType(resource, request);
-                    responseHeaders.setContentType(mediaType);
-                    response.setContentType(mediaType.toString());
-
                     result = new ResponseEntity(resource.in(), responseHeaders, HttpStatus.OK);
                 }
                 response.setHeader("Location", href(resource.path()));
@@ -242,7 +242,7 @@ public class ResourceController extends RestBaseController {
     }
     
     /**
-     * Verifies mime type and use {@link RESTUtil
+     * Verifies mime type and use {@link RESTUtils}
      * @param directory
      * @param filename
      * @param request

@@ -72,6 +72,7 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
         gsConverters.add(new XStreamJSONMessageConverter());
         gsConverters.add(new XStreamCatalogListConverter.XMLXStreamListConverter());
         gsConverters.add(new XStreamCatalogListConverter.JSONXStreamListConverter());
+        gsConverters.add(new InputStreamConverter());
 
         //Deal with the various Style handler
         EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();

@@ -21,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
@@ -156,6 +157,18 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testResourceHead() throws Exception {
+        MockHttpServletResponse response = headAsServletResponse(RestBaseController.ROOT_PATH+"/resource/mydir2/fake.png");
+        Assert.assertEquals(
+                FORMAT_HEADER.format(getDataDirectory().get("/mydir2/fake.png").lastmodified()),
+                response.getHeader("Last-Modified"));
+        Assert.assertEquals("http://localhost:8080/geoserver"+RestBaseController.ROOT_PATH+"/resource/mydir2",
+                response.getHeader("Resource-Parent"));
+        Assert.assertEquals("resource", response.getHeader("Resource-Type"));
+        assertContentType("image/png", response);
+    }
+
+    @Test
     public void testSpecialCharacterNames() throws Exception {
         // if the file system encoded the file with a ? we need to skip this test
         Assume.assumeTrue(getDataDirectory().get("po?zie").getType() == Type.UNDEFINED);
@@ -232,6 +245,17 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testDirectoryHeaders() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH+"/resource/mydir?format=xml");
+        Assert.assertEquals(FORMAT_HEADER.format(myRes.parent().lastmodified()),
+                response.getHeader("Last-Modified"));
+        Assert.assertEquals("http://localhost:8080/geoserver"+RestBaseController.ROOT_PATH+"/resource/",
+                response.getHeader("Resource-Parent"));
+        Assert.assertEquals("directory", response.getHeader("Resource-Type"));
+        assertContentType("application/xml", response);
+    }
+
+    @Test
+    public void testDirectoryHead() throws Exception {
+        MockHttpServletResponse response = headAsServletResponse(RestBaseController.ROOT_PATH+"/resource/mydir?format=xml");
         Assert.assertEquals(FORMAT_HEADER.format(myRes.parent().lastmodified()),
                 response.getHeader("Last-Modified"));
         Assert.assertEquals("http://localhost:8080/geoserver"+RestBaseController.ROOT_PATH+"/resource/",
@@ -346,6 +370,15 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
         response = postAsServletResponse(RestBaseController.ROOT_PATH+"/resource/mydir", "blabla");
         Assert.assertEquals(405, response.getStatus());
         
+    }
+
+    //TODO: Migrate this (properly) to GeoServerSystemTestSupport)
+    public MockHttpServletResponse headAsServletResponse(String path) throws Exception {
+        MockHttpServletRequest request = createRequest( path );
+        request.setMethod( "HEAD" );
+        request.setContent(new byte[]{});
+
+        return dispatch( request, null );
     }
 
 }

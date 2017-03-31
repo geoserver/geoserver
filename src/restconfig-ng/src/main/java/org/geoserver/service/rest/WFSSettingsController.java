@@ -10,6 +10,7 @@ import org.geoserver.catalog.rest.CatalogController;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSXStreamLoader;
@@ -32,7 +33,7 @@ import java.util.logging.Logger;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = "/restng/services/wfs", produces = {
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/services/wfs", produces = {
         MediaType.APPLICATION_JSON_VALUE,
         MediaType.APPLICATION_XML_VALUE,
         MediaType.TEXT_HTML_VALUE})

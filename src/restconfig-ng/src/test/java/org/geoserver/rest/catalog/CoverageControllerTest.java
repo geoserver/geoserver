@@ -15,6 +15,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.rest.RestBaseController;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
@@ -54,7 +55,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllByWorkspaceXML() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/wcs/coverages.xml");
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/wcs/coverages.xml");
         assertEquals( 
             catalog.getCoveragesByNamespace( catalog.getNamespaceByPrefix( "wcs") ).size(), 
             dom.getElementsByTagName( "coverage").getLength() );
@@ -62,7 +63,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllByWorkspaceJSON() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/restng/workspaces/wcs/coverages.json");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/wcs/coverages.json");
         JSONArray coverages = json.getJSONObject("coverages").getJSONArray("coverage");
         assertEquals(catalog.getCoveragesByNamespace( catalog.getNamespaceByPrefix( "wcs")).size(), coverages.size());
     }
@@ -72,7 +73,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         byte[] bytes = FileUtils.readFileToByteArray( DataUtilities.urlToFile(zip)  );
         
         MockHttpServletResponse response = 
-            putAsServletResponse( "/restng/workspaces/gs/coveragestores/usaWorldImage/file.worldimage" + 
+            putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/file.worldimage" +
                 (!autoConfigureCoverage ? "?configure=none" : ""), bytes, "application/zip");
         assertEquals( 201, response.getStatus() );
     }
@@ -88,24 +89,24 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
 
         addCoverageStore(true);
-        dom = getAsDOM( "/restng/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
         assertEquals( 1, dom.getElementsByTagName( "coverage").getLength() );
         assertXpathEvaluatesTo( "1", "count(//coverage/name[text()='usa'])", dom );
     }
 
     @Test
     public void testPutAllUnauthorized() throws Exception {
-        assertEquals( 405, putAsServletResponse("/restng/workspaces/wcs/coveragestores/BlueMarble/coverages").getStatus() );
+        assertEquals( 405, putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages").getStatus() );
     }
 
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
-        assertEquals( 405, deleteAsServletResponse("/restng/workspaces/wcs/coveragestores/BlueMarble/coverages").getStatus() );
+        assertEquals( 405, deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages").getStatus() );
     }
 
     @Test
     public void testGetAsXML() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.xml");
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.xml");
         
         assertXpathEvaluatesTo("BlueMarble", "/coverage/name", dom);
         assertXpathEvaluatesTo( "1", "count(//latLonBoundingBox)", dom);
@@ -116,7 +117,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
 
   @Test
   public void testGetAsJSON() throws Exception {
-      JSON json = getAsJSON( "/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.json");
+      JSON json = getAsJSON( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.json");
       JSONObject coverage = ((JSONObject)json).getJSONObject("coverage");
       assertNotNull(coverage);
       
@@ -126,7 +127,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
     
   @Test
   public void testGetAsHTML() throws Exception {
-      Document dom = getAsDOM( "/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.html" );
+      Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.html" );
       assertEquals( "html", dom.getDocumentElement().getNodeName() );
   }
   
@@ -137,8 +138,8 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
       String cs = "BlueMarble";
       String c = "BlueMarblesssss";
       // Request path
-      String requestPath = "/restng/workspaces/" + ws + "/coverages/" + c + ".html";
-      String requestPath2 = "/restng/workspaces/" + ws + "/coveragestores/" + cs + "/coverages/" + c + ".html";
+      String requestPath = RestBaseController.ROOT_PATH + "/workspaces/" + ws + "/coverages/" + c + ".html";
+      String requestPath2 = RestBaseController.ROOT_PATH + "/workspaces/" + ws + "/coveragestores/" + cs + "/coverages/" + c + ".html";
       // Exception path
       String exception = "No such coverage: "+ws+","+c;
       String exception2 = "No such coverage: "+ws+","+cs+","+c;
@@ -187,7 +188,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
         
         addCoverageStore(false);
-        dom = getAsDOM( "/restng/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
         assertEquals( 0, dom.getElementsByTagName( "coverage").getLength() );
         
         String xml = 
@@ -238,7 +239,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
                 "<namespace>gs</namespace>"+
               "</coverage>";
         MockHttpServletResponse response = 
-            postAsServletResponse( "/restng/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
+            postAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
         
         assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
@@ -247,11 +248,11 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         dom = getAsDOM( req );
         assertEquals( "wcs:Coverages", dom.getDocumentElement().getNodeName() );
 
-        dom = getAsDOM("/restng/workspaces/gs/coveragestores/usaWorldImage/coverages/usa.xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages/usa.xml");
         assertXpathEvaluatesTo("-130.85168", "/coverage/latLonBoundingBox/minx", dom);
         assertXpathEvaluatesTo("983 598", "/coverage/grid/range/high", dom);
 
-        dom = getAsDOM( "/restng/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
         assertEquals( 1, dom.getElementsByTagName( "coverage").getLength() );
     }
 
@@ -265,7 +266,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         assertEquals( "ows:ExceptionReport", document.getDocumentElement().getNodeName());
         // add the test store, no coverages should be available
         addCoverageStore(false);
-        JSONObject json = (JSONObject) getAsJSON("/restng/workspaces/gs/coveragestores/usaWorldImage/coverages.json");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages.json");
         assertThat(json.getString("coverages").isEmpty(), is(true));
         // content for the POST request
         String content = "{" +
@@ -296,7 +297,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
                 "}";
         // perform the POST request that will create the USA coverage
         MockHttpServletResponse response = postAsServletResponse(
-                "/restng/workspaces/gs/coveragestores/usaWorldImage/coverages/", content, "application/json");
+                RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages/", content, "application/json");
         assertEquals(201, response.getStatus());
         assertNotNull(response.getHeader( "Location"));
         assertTrue(response.getHeader("Location").endsWith("/workspaces/gs/coveragestores/usaWorldImage/coverages/usa" ));
@@ -304,12 +305,12 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         document = getAsDOM(request);
         assertEquals("wcs:Coverages", document.getDocumentElement().getNodeName());
         // check create coverage attributes
-        json = (JSONObject) getAsJSON("/restng/workspaces/gs/coveragestores/usaWorldImage/coverages/usa.json");
+        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages/usa.json");
         assertThat(json.getJSONObject("coverage").getString("name"), is("usa"));
         assertThat(json.getJSONObject("coverage").getJSONObject("latLonBoundingBox").getString("minx"), is("-130.85168"));
         assertThat(json.getJSONObject("coverage").getJSONObject("grid").getJSONObject("range").getString("high"), is("983 598"));
         // check that the coverage is listed
-        json = (JSONObject) getAsJSON("/restng/workspaces/gs/coveragestores/usaWorldImage/coverages.json");
+        json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages.json");
         JSONArray coverages = json.getJSONObject("coverages").getJSONArray("coverage");
         assertThat(coverages.size(), is(1));
         assertThat(coverages.getJSONObject(0).getString("name"), is("usa"));
@@ -326,7 +327,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
         
         addCoverageStore(false);
-        dom = getAsDOM( "/restng/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
         assertEquals( 0, dom.getElementsByTagName( "coverage").getLength() );
         
         String xml = 
@@ -350,7 +351,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
                 "<nativeCoverageName>usa</nativeCoverageName>"+
               "</coverage>";
         MockHttpServletResponse response = 
-            postAsServletResponse( "/restng/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
+            postAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
         
         assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
@@ -359,7 +360,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         dom = getAsDOM( req );
         assertEquals( "wcs:Coverages", dom.getDocumentElement().getNodeName() );
 
-        dom = getAsDOM("/restng/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName.xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName.xml");
         assertXpathEvaluatesTo("-130.85168", "/coverage/latLonBoundingBox/minx", dom);
         assertXpathEvaluatesTo("983 598", "/coverage/grid/range/high", dom);
 
@@ -376,7 +377,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
 
         addCoverageStore(false);
-        dom = getAsDOM( "/restng/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
         assertEquals( 0, dom.getElementsByTagName( "coverage").getLength() );
 
         String xml =
@@ -385,7 +386,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
                 "<nativeCoverageName>usa</nativeCoverageName>"+
               "</coverage>";
         MockHttpServletResponse response =
-            postAsServletResponse( "/restng/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
+            postAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
 
         assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
@@ -394,7 +395,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         dom = getAsDOM( req );
         assertEquals( "wcs:Coverages", dom.getDocumentElement().getNodeName() );
 
-        dom = getAsDOM("/restng/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName.xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName.xml");
         assertXpathEvaluatesTo("differentName", "/coverage/name", dom);
         assertXpathEvaluatesTo("differentName", "/coverage/title", dom);
         assertXpathEvaluatesTo("usa", "/coverage/nativeCoverageName", dom);
@@ -411,7 +412,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         assertEquals( "ows:ExceptionReport", dom.getDocumentElement().getNodeName());
 
         addCoverageStore(false);
-        dom = getAsDOM( "/restng/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages.xml");
         assertEquals( 0, dom.getElementsByTagName( "coverage").getLength() );
 
         String xml =
@@ -420,7 +421,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
                 "<nativeName>usa</nativeName>"+
               "</coverage>";
         MockHttpServletResponse response =
-            postAsServletResponse( "/restng/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
+            postAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages/", xml, "text/xml");
 
         assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
@@ -429,7 +430,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         dom = getAsDOM( req );
         assertEquals( "wcs:Coverages", dom.getDocumentElement().getNodeName() );
 
-        dom = getAsDOM("/restng/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName.xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/usaWorldImage/coverages/differentName.xml");
         assertXpathEvaluatesTo("differentName", "/coverage/name", dom);
         assertXpathEvaluatesTo("differentName", "/coverage/title", dom);
         assertXpathEvaluatesTo("usa", "/coverage/nativeCoverageName", dom);
@@ -437,7 +438,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutWithCalculation() throws Exception {
-        String path = "/restng/workspaces/wcs/coveragestores/DEM/coverages/DEM.xml";
+        String path = RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/DEM.xml";
         String clearLatLonBoundingBox =
                 "<coverage>"
                 + "<latLonBoundingBox/>" 
@@ -497,7 +498,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
 //             "}" +
 //          "}";
 //        MockHttpServletResponse response =  
-//            postAsServletResponse( "/restng/workspaces/gs/coveragestores/pds/coverages/", json, "text/json");
+//            postAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/pds/coverages/", json, "text/json");
 //        
 //        assertEquals( 201, response.getStatusCode() );
 //        assertNotNull( response.getHeader( "Location") );
@@ -517,7 +518,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
             "</coverage>";
         
         MockHttpServletResponse response = 
-            postAsServletResponse( "/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", xml, "text/xml");
+            postAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", xml, "text/xml");
         assertEquals( 405, response.getStatus() );
     }
 
@@ -528,10 +529,10 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
             "<title>new title</title>" +  
           "</coverage>";
         MockHttpServletResponse response = 
-            putAsServletResponse("/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", xml, "text/xml");
+            putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", xml, "text/xml");
         assertEquals( 200, response.getStatus() );
         
-        Document dom = getAsDOM("/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.xml");
         assertXpathEvaluatesTo("new title", "/coverage/title", dom );
         
         CoverageInfo c = catalog.getCoverageByName( "wcs", "BlueMarble");
@@ -547,10 +548,10 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
                 "    }\n" +
                 "}";
         MockHttpServletResponse response = putAsServletResponse(
-                "/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", jsonPayload, "application/json");
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", jsonPayload, "application/json");
         assertEquals(200, response.getStatus());
         // check that the coverage title was correctly updated
-        JSONObject json = (JSONObject) getAsJSON("/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.json");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.json");
         assertThat(json.getJSONObject("coverage").getString("title"), is("new title 2"));
         CoverageInfo coverage = catalog.getCoverageByName( "wcs", "BlueMarble");
         assertEquals("new title 2", coverage.getTitle());
@@ -568,7 +569,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
             "<title>new title</title>" +  
           "</coverage>";
         MockHttpServletResponse response = 
-            putAsServletResponse("/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", xml, "text/xml");
+            putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble", xml, "text/xml");
         assertEquals( 200, response.getStatus() );
         
         c = catalog.getCoverageByName( "wcs", "BlueMarble");
@@ -583,7 +584,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
               "<title>new title</title>" +  
             "</coverage>";
           MockHttpServletResponse response = 
-              putAsServletResponse("/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/NonExistant", xml, "text/xml");
+              putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/NonExistant", xml, "text/xml");
           assertEquals( 404, response.getStatus() );
     }
 
@@ -594,14 +595,14 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
             catalog.remove(l);
         }
         assertEquals( 200,  
-            deleteAsServletResponse( "/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble").getStatus());
+            deleteAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble").getStatus());
         assertNull( catalog.getCoverageByName("wcs", "BlueMarble"));
     }
 
     @Test
     public void testDeleteNonExistant() throws Exception {
         assertEquals( 404,  
-            deleteAsServletResponse( "/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/NonExistant").getStatus());
+            deleteAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/NonExistant").getStatus());
     }
 
     @Test
@@ -611,9 +612,9 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getLayerByName("wcs:BlueMarble"));
         
         assertEquals(403, deleteAsServletResponse( 
-        "/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble").getStatus());
+        RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble").getStatus());
         assertEquals( 200, deleteAsServletResponse( 
-        "/restng/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble?recurse=true").getStatus());
+        RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble?recurse=true").getStatus());
 
         assertNull(catalog.getCoverageByName("wcs", "BlueMarble"));
         assertNull(catalog.getLayerByName("wcs:BlueMarble"));
@@ -627,10 +628,10 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
             "<title>new title</title>" +  
           "</coverage>";
         MockHttpServletResponse response = 
-            putAsServletResponse("/restng/workspaces/wcs/coveragestores/DEM/coverages/DEM", xml, "text/xml");
+            putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/DEM", xml, "text/xml");
         assertEquals( 200, response.getStatus() );
         
-        Document dom = getAsDOM("/restng/workspaces/wcs/coveragestores/DEM/coverages/tazdem.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem.xml");
         assertXpathEvaluatesTo("new title", "/coverage/title", dom );
         
         CoverageInfo c = catalog.getCoverageByName( "wcs", "tazdem");
@@ -666,7 +667,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
                   "</dimensions>" +
                 "</coverage>";
         response = 
-           putAsServletResponse("/restng/workspaces/wcs/coveragestores/DEM/coverages/tazdem", xml, "text/xml");
+           putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem", xml, "text/xml");
         assertEquals( 200, response.getStatus() );
 
         c = catalog.getCoverageByName( "wcs", "tazdem");

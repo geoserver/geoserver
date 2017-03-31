@@ -13,6 +13,7 @@ import java.text.MessageFormat;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.impl.GeoServerUser;
@@ -29,7 +30,7 @@ import org.springframework.http.HttpStatus;
  */
 public class UserPasswordControllerTest extends GeoServerSystemTestSupport {
 
-    final static String UP_URI = "/restng/security/self/password";
+    final static String UP_URI = RestBaseController.ROOT_PATH + "/security/self/password";
 
     final static String USERNAME = "restuser";
     final static String USERPW = "restpassword";

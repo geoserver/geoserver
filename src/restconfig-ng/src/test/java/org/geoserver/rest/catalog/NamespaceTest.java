@@ -20,6 +20,7 @@ import net.sf.json.JSONObject;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -37,14 +38,14 @@ public class NamespaceTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllAsXML() throws Exception {
-        Document dom = getAsDOM( "/restng/namespaces.xml",200);
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/namespaces.xml",200);
         assertEquals( catalog.getNamespaces().size() , 
             dom.getElementsByTagName( "namespace").getLength() );
     }
 
     @Test
     public void testGetAllAsJSON() throws Exception {
-        JSON json = getAsJSON( "/restng/namespaces.json");
+        JSON json = getAsJSON( RestBaseController.ROOT_PATH + "/namespaces.json");
         assertTrue( json instanceof JSONObject );
         
         JSONArray namespaces = ((JSONObject)json).getJSONObject("namespaces").getJSONArray("namespace");
@@ -55,7 +56,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllAsHTML() throws Exception {
-        Document dom = getAsDOM( "/restng/namespaces.html" );
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/namespaces.html" );
         
         List<NamespaceInfo> namespaces = catalog.getNamespaces();
         
@@ -72,17 +73,17 @@ public class NamespaceTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAllUnauthorized() throws Exception {
-        assertEquals( 405, putAsServletResponse( "/restng/namespaces" ).getStatus() );
+        assertEquals( 405, putAsServletResponse( RestBaseController.ROOT_PATH + "/namespaces" ).getStatus() );
     }
 
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
-        assertEquals( 405, deleteAsServletResponse( "/restng/namespaces").getStatus() );
+        assertEquals( 405, deleteAsServletResponse( RestBaseController.ROOT_PATH + "/namespaces").getStatus() );
     }
     
     @Test
     public void testGetAsXML() throws Exception {
-        Document dom = getAsDOM( "/restng/namespaces/sf.xml",200);
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/namespaces/sf.xml",200);
         assertEquals( "namespace", dom.getDocumentElement().getLocalName() );
         assertEquals( 1, dom.getElementsByTagName( "prefix" ).getLength() );
         
@@ -101,14 +102,14 @@ public class NamespaceTest extends CatalogRESTTestSupport {
                   "<prefix>ian</prefix>" +
                   "<uri>http://ian.com</uri>" +
                 "</namespace>";
-            MockHttpServletResponse response = postAsServletResponse( "/restng/namespaces", xml, "text/xml" );
+            MockHttpServletResponse response = postAsServletResponse( RestBaseController.ROOT_PATH + "/namespaces", xml, "text/xml" );
             assertEquals( 201, response.getStatus() );
             assertNotNull( response.getHeader( "Location") );
             assertTrue( response.getHeader("Location").endsWith( "/namespaces/ian" ) );
             
             NamespaceInfo ws = getCatalog().getNamespaceByPrefix( "ian" );
             assertNotNull(ws);
-        Document dom = getAsDOM( "/restng/namespaces/ian.xml");
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/namespaces/ian.xml");
         assertEquals( "namespace", dom.getDocumentElement().getLocalName() );
         assertEquals( 1, dom.getElementsByTagName( "prefix" ).getLength() );
         
@@ -120,7 +121,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
     }
     @Test
     public void testGetAsHTML() throws Exception {
-        Document dom = getAsDOM( "/restng/namespaces/sf.html");
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/namespaces/sf.html");
 
         List<ResourceInfo> resources = catalog.getResourcesByNamespace("sf",ResourceInfo.class); 
         NodeList listItems = xp.getMatchingNodes("//html:li", dom );
@@ -139,7 +140,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         // Parameters for the request
         String namespace = "sfsssss";
         // Request path
-        String requestPath = "/restng/namespaces/" + namespace + ".html";
+        String requestPath = RestBaseController.ROOT_PATH + "/namespaces/" + namespace + ".html";
         // Exception path
         String exception = "No such namespace: '" + namespace+"'";
         // First request should thrown an exception
@@ -156,7 +157,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
     
     @Test
     public void testGetNonExistant() throws Exception {
-        assertEquals( 404, getAsServletResponse( "/restng/namespaces/none").getStatus() );
+        assertEquals( 404, getAsServletResponse( RestBaseController.ROOT_PATH + "/namespaces/none").getStatus() );
     }
     
     @Test
@@ -166,7 +167,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
               "<prefix>foo</prefix>" +
               "<uri>http://foo.com</uri>" +
             "</namespace>";
-        MockHttpServletResponse response = postAsServletResponse( "/restng/namespaces", xml, "text/xml" );
+        MockHttpServletResponse response = postAsServletResponse( RestBaseController.ROOT_PATH + "/namespaces", xml, "text/xml" );
         assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/namespaces/foo" ) );
@@ -177,7 +178,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
     
     @Test
     public void testGetAsJSON() throws Exception {
-        JSON json = getAsJSON( "/restng/namespaces/sf.json");
+        JSON json = getAsJSON( RestBaseController.ROOT_PATH + "/namespaces/sf.json");
         JSONObject namespace = ((JSONObject) json).getJSONObject( "namespace") ;
         assertEquals( "sf", namespace.get( "prefix" ) );
         assertEquals( MockData.SF_URI, namespace.get( "uri" ) );
@@ -188,7 +189,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         removeNamespace("foo");
         String json = "{'namespace':{ 'prefix':'foo', 'uri':'http://foo.com' }}";
         
-        MockHttpServletResponse response = postAsServletResponse( "/restng/namespaces", json, "text/json" );
+        MockHttpServletResponse response = postAsServletResponse( RestBaseController.ROOT_PATH + "/namespaces", json, "text/json" );
         assertEquals( 201, response.getStatus() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/namespaces/foo" ) );
@@ -206,13 +207,13 @@ public class NamespaceTest extends CatalogRESTTestSupport {
             "</namespace>";
         
         MockHttpServletResponse response = 
-            postAsServletResponse("/restng/namespaces/gs", xml, "text/xml" );
+            postAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces/gs", xml, "text/xml" );
         assertEquals( 405, response.getStatus() );
     }
     
     @Test
     public void testDeleteNonExistant() throws Exception {
-        assertEquals( 404, deleteAsServletResponse("/restng/namespaces/newExistant").getStatus() );
+        assertEquals( 404, deleteAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces/newExistant").getStatus() );
     }
     
     @Test
@@ -222,20 +223,20 @@ public class NamespaceTest extends CatalogRESTTestSupport {
               "<prefix>foo</prefix>" + 
               "<uri>http://foo.com</uri>" +
             "</namespace>";
-        post( "/restng/namespaces", xml );
+        post( RestBaseController.ROOT_PATH + "/namespaces", xml );
         
-        Document dom = getAsDOM( "/restng/namespaces/foo.xml");
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/namespaces/foo.xml");
         assertEquals( "namespace", dom.getDocumentElement().getNodeName() );
         
-        assertEquals( 200, deleteAsServletResponse( "/restng/namespaces/foo" ).getStatus() );
-        assertEquals( 404, getAsServletResponse( "/restng/namespaces/foo.xml" ).getStatus() );
+        assertEquals( 200, deleteAsServletResponse( RestBaseController.ROOT_PATH + "/namespaces/foo" ).getStatus() );
+        assertEquals( 404, getAsServletResponse( RestBaseController.ROOT_PATH + "/namespaces/foo.xml" ).getStatus() );
         // verify associated workspace was deleted
-        assertEquals( 404, getAsServletResponse( "/restng/workspaces/foo.xml" ).getStatus() );
+        assertEquals( 404, getAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/foo.xml" ).getStatus() );
     }
     
     @Test
     public void testDeleteNonEmpty() throws Exception {
-        assertEquals( 401, deleteAsServletResponse("/restng/namespaces/sf").getStatus() );
+        assertEquals( 401, deleteAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces/sf").getStatus() );
     }
     
     @Test
@@ -246,10 +247,10 @@ public class NamespaceTest extends CatalogRESTTestSupport {
             "</namespace>";
         
         MockHttpServletResponse response = 
-            putAsServletResponse("/restng/namespaces/gs", xml, "text/xml" );
+            putAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces/gs", xml, "text/xml" );
         assertEquals( 200, response.getStatus() );
         
-        Document dom = getAsDOM( "/restng/namespaces/gs.xml" );
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/namespaces/gs.xml" );
         assertXpathEvaluatesTo("1", "count(//namespace/uri[text()='http://changed'])", dom );
     }
     
@@ -261,13 +262,13 @@ public class NamespaceTest extends CatalogRESTTestSupport {
             "</namespace>";
         
         MockHttpServletResponse response = 
-            putAsServletResponse("/restng/namespaces/nonExistant", xml, "text/xml" );
+            putAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces/nonExistant", xml, "text/xml" );
         assertEquals( 404, response.getStatus() );
     }
     
     @Test
     public void testGetDefaultNamespace() throws Exception {
-        Document dom = getAsDOM( "/restng/namespaces/default.xml");
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/namespaces/default.xml");
         
         assertEquals( "namespace", dom.getDocumentElement().getLocalName() );
         assertEquals( 1, dom.getElementsByTagName( "prefix" ).getLength() );
@@ -280,7 +281,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertEquals( "gs", def.getPrefix() );
         
         String json = "{'namespace':{ 'prefix':'sf' }}";
-        put( "/restng/namespaces/default", json, "text/json");
+        put( RestBaseController.ROOT_PATH + "/namespaces/default", json, "text/json");
         
         def = getCatalog().getDefaultNamespace(); 
         assertEquals( "sf", def.getPrefix() );

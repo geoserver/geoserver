@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.config.GeoServer;
 import org.geoserver.wfs.WFSInfo;
@@ -31,7 +32,7 @@ public class WFSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetASJSON() throws Exception {
-        JSON json = getAsJSON("/restng/services/wfs/settings.json");
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/services/wfs/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject wfsinfo = (JSONObject) jsonObject.get("wfs");
@@ -43,7 +44,7 @@ public class WFSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsXML() throws Exception {
-        Document dom = getAsDOM("/restng/services/wfs/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/settings.xml");
         assertEquals("wfs", dom.getDocumentElement().getLocalName());
         assertEquals(1, dom.getElementsByTagName("name").getLength());
         assertXpathEvaluatesTo("true", "/wfs/enabled", dom);
@@ -54,16 +55,16 @@ public class WFSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        getAsDOM("/restng/services/wfs/settings.html" );
+        getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/settings.html" );
     }
 
     @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wfs': {'id':'wfs','enabled':'false','name':'WFS'}}";
-        MockHttpServletResponse response = putAsServletResponse("/restng/services/wfs/settings/",
+        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wfs/settings/",
                 json, "text/json");
         assertEquals(200, response.getStatus());
-        JSON jsonMod = getAsJSON("/restng/services/wfs/settings.json");
+        JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/services/wfs/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
         JSONObject wfsinfo = (JSONObject) jsonObject.get("wfs");
@@ -79,10 +80,10 @@ public class WFSSettingsControllerTest extends CatalogRESTTestSupport {
                 + "<name>WFS</name><title>GeoServer Web Feature Service</title>"
                 + "<maintainer>http://geoserver.org/comm</maintainer>"
                 + "</wfs>";
-        MockHttpServletResponse response = putAsServletResponse("/restng/services/wfs/settings", xml,
+        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wfs/settings", xml,
                 "text/xml");
         assertEquals(200, response.getStatus());
-        Document dom = getAsDOM("/restng/services/wfs/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/settings.xml");
         assertXpathEvaluatesTo("false", "/wfs/enabled", dom);
         assertXpathEvaluatesTo("WFS", "/wfs/name", dom);
     }
@@ -97,10 +98,10 @@ public class WFSSettingsControllerTest extends CatalogRESTTestSupport {
                 + "<name>WFS</name><title>GeoServer Web Feature Service</title>"
                 + "<maintainer>http://geoserver.org/comm</maintainer>"
                 + "</wfs>";
-        MockHttpServletResponse response = putAsServletResponse("/restng/services/wfs/settings", xml,
+        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wfs/settings", xml,
                 "text/xml");
         assertEquals(200, response.getStatus());
-        Document dom = getAsDOM("/restng/services/wfs/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/settings.xml");
         assertXpathEvaluatesTo("true", "/wfs/enabled", dom);
         assertXpathEvaluatesTo("WFS", "/wfs/name", dom);
         i = geoServer.getService(WFSInfo.class);
@@ -110,6 +111,6 @@ public class WFSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testDelete() throws Exception {
-        assertEquals(405, deleteAsServletResponse("/restng/services/wfs/settings").getStatus());
+        assertEquals(405, deleteAsServletResponse(RestBaseController.ROOT_PATH + "/services/wfs/settings").getStatus());
     }
 }

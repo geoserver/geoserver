@@ -36,7 +36,7 @@ public class FontListTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetAsXML() throws Exception {
         //make the request, parsing the result as a dom
-        Document dom = getAsDOM("/restng/fonts.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/fonts.xml");
 
         /*TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();
@@ -54,7 +54,7 @@ public class FontListTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetAsJSON() throws Exception {
         //make the request, parsing the result into a json object
-        JSON json = getAsJSON("/restng/fonts.json");
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/fonts.json");
 
         //make assertions
         assertTrue(json instanceof JSONObject);

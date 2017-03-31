@@ -12,6 +12,7 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
@@ -42,7 +43,7 @@ import java.util.logging.Logger;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = "/restng", produces = {
+@RequestMapping(path = RestBaseController.ROOT_PATH, produces = {
         MediaType.APPLICATION_JSON_VALUE,
         MediaType.APPLICATION_XML_VALUE,
         MediaType.TEXT_HTML_VALUE})

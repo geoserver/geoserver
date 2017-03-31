@@ -17,6 +17,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
@@ -51,7 +52,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateModelException;
 
 @RestController
-@RequestMapping(path = "/restng", produces = { MediaType.APPLICATION_JSON_VALUE,
+@RequestMapping(path = RestBaseController.ROOT_PATH, produces = { MediaType.APPLICATION_JSON_VALUE,
         MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
 public class NamespaceController extends CatalogController {
     private static final String NAMESPACE_NAME = "namespaceName";

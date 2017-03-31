@@ -15,6 +15,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
@@ -54,7 +55,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @ControllerAdvice
-@RequestMapping(path = "/restng/workspaces/{workspace}")
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces/{workspace}")
 public class CoverageController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageController.class);

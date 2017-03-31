@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
@@ -30,7 +31,7 @@ import net.sf.json.JSONObject;
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class AccessControllersTest extends SecurityRESTTestSupport {
 
-    final static String BASE_URI = "/restng/security/acl/";
+    final static String BASE_URI = RestBaseController.ROOT_PATH + "/security/acl/";
 
     final static String DATA_URI = BASE_URI + "layers";
 

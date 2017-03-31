@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/restng", produces = { MediaType.APPLICATION_JSON_VALUE,
+@RequestMapping(path = RestBaseController.ROOT_PATH, produces = { MediaType.APPLICATION_JSON_VALUE,
         MediaType.APPLICATION_XML_VALUE })
 public class FontListController extends RestBaseController {
 

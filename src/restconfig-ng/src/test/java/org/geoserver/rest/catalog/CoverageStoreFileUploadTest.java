@@ -28,6 +28,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.RESTUtils;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -63,7 +64,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         byte[] bytes = FileUtils.readFileToByteArray( DataUtilities.urlToFile(zip) );
         
         MockHttpServletResponse response = 
-            putAsServletResponse( "/restng/workspaces/sf/coveragestores/usa/file.worldimage", bytes, "application/zip");
+            putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/sf/coveragestores/usa/file.worldimage", bytes, "application/zip");
         assertEquals( 201, response.getStatus() );
         
         String content = response.getContentAsString();
@@ -85,7 +86,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         byte[] bytes = FileUtils.readFileToByteArray( DataUtilities.urlToFile(zip) );
         
         MockHttpServletResponse response = 
-            putAsServletResponse( "/restng/workspaces/gs/coveragestores/store%20with%20spaces/file.worldimage", bytes, "application/zip");
+            putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/store%20with%20spaces/file.worldimage", bytes, "application/zip");
         assertEquals(500, response.getStatus());
     }
     
@@ -102,7 +103,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         }
         
         MockHttpServletResponse response = 
-            putAsServletResponse( "/restng/workspaces/gs/coveragestores/watertemp/file.imagemosaic", bytes, "application/zip");
+            putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp/file.imagemosaic", bytes, "application/zip");
         assertEquals( 201, response.getStatus() );
         
         // check the response contents
@@ -134,7 +135,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         }
         
         MockHttpServletResponse response = 
-            putAsServletResponse( "/restng/workspaces/gs/coveragestores/watertemp2/file.imagemosaic", bytes, "application/zip");
+            putAsServletResponse( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp2/file.imagemosaic", bytes, "application/zip");
         assertEquals( 201, response.getStatus() );
         
         // check the response contents
@@ -162,7 +163,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             IOUtils.closeQuietly(is);
         }
         // Create the POST request
-        MockHttpServletRequest request = createRequest( "/restng/workspaces/gs/coveragestores/watertemp2/file.imagemosaic" ); 
+        MockHttpServletRequest request = createRequest( RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp2/file.imagemosaic" );
         request.setMethod( "POST" );
         request.setContentType("application/zip" );
         request.setContent(bytes);
@@ -196,7 +197,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             IOUtils.closeQuietly(is);
         }
         // Create the POST request
-        MockHttpServletRequest request = createRequest( "/restng/workspaces/wcs/coveragestores/BlueMarble" ); 
+        MockHttpServletRequest request = createRequest( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble" );
         request.setMethod( "POST" );
         request.setContentType("application/zip" );
         request.setContent(bytes);
@@ -221,7 +222,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         }
 
         MockHttpServletResponse response = putAsServletResponse(
-                "/restng/workspaces/gs/coveragestores/watertemp3/file.imagemosaic", bytes,
+                RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp3/file.imagemosaic", bytes,
                 "application/zip");
         assertEquals(201, response.getStatus());
 
@@ -247,7 +248,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         Resource outputDirectory = Files.asResource(new File("./target/harvesting"));
         RESTUtils.unzipFile(newZip, outputDirectory);
         // Create the POST request
-        MockHttpServletRequest request = createRequest("/restng/workspaces/gs/coveragestores/watertemp3/external.imagemosaic");
+        MockHttpServletRequest request = createRequest(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp3/external.imagemosaic");
         request.setMethod("POST");
         request.setContentType("text/plain");
         request.setContent(("file:///" + outputDirectory.dir().getAbsolutePath()).getBytes("UTF-8"));
@@ -324,7 +325,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
                 IOUtils.closeQuietly(is);
             }
             // Create the POST request
-            MockHttpServletRequest request = createRequest("/restng/workspaces/gs/coveragestores/watertemp4/file.imagemosaic");
+            MockHttpServletRequest request = createRequest(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp4/file.imagemosaic");
             request.setMethod("POST");
             request.setContentType("application/zip");
             request.setContent(bytes);
@@ -450,7 +451,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             byte[] bytes, String filename) throws Exception, IOException {
         StructuredGridCoverage2DReader reader2;
         // Create the POST request
-        MockHttpServletRequest request = createRequest("/restng/workspaces/gs/coveragestores/watertemp5/file.imagemosaic?filename=" + filename);
+        MockHttpServletRequest request = createRequest(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp5/file.imagemosaic?filename=" + filename);
         request.setMethod("POST");
         request.setContentType("image/tiff");
         request.setContent(bytes);

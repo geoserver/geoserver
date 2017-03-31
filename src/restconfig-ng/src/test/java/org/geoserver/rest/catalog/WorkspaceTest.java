@@ -25,6 +25,7 @@ import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -46,7 +47,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
 	@Test
 	public void testGetAllAsXML() throws Exception {
-		Document dom = getAsDOM("/restng/workspaces.xml");
+		Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
 		assertEquals(catalog.getNamespaces().size(), dom.getElementsByTagName("workspace").getLength());
 		NodeList nodes = dom.getElementsByTagName("workspace");
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -65,7 +66,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
 	@Test
 	public void testGetAllAsHTML() throws Exception {
-		Document dom = getAsDOM("/restng/workspaces.html");
+		Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.html");
 
 		List<WorkspaceInfo> workspaces = catalog.getWorkspaces();
 
@@ -82,17 +83,17 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
 	@Test
 	public void testPutAllUnauthorized() throws Exception {
-		assertEquals(405, putAsServletResponse("/restng/workspaces").getStatus());
+		assertEquals(405, putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces").getStatus());
 	}
 
 	@Test
 	public void testDeleteAllUnauthorized() throws Exception {
-		assertEquals(405, deleteAsServletResponse("/restng/workspaces").getStatus());
+		assertEquals(405, deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces").getStatus());
 	}
 
 	@Test
     public void testGetAsXML() throws Exception {
-        Document dom = getAsDOM( "/restng/workspaces/sf.xml");
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/sf.xml");
         assertEquals( "workspace", dom.getDocumentElement().getLocalName() );
         assertEquals( 1, dom.getElementsByTagName( "name" ).getLength() );
         
@@ -107,7 +108,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 	public void testGetAsHTML() throws Exception {
 		List<StoreInfo> stores = catalog.getStoresByWorkspace("sf", StoreInfo.class);
 
-		Document dom = getAsDOM("/restng/workspaces/sf.html");
+		Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf.html");
 
 		NodeList links = xp.getMatchingNodes("//html:a", dom);
 		assertEquals(stores.size(), links.getLength());
@@ -125,7 +126,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		// Parameters for the request
 		String workspace = "sfsssss";
 		// Request path
-		String requestPath = "/restng/workspaces/" + workspace + ".html";
+		String requestPath = RestBaseController.ROOT_PATH + "/workspaces/" + workspace + ".html";
 		// Exception path
 		String exception = "No such workspace: '" + workspace+"'";
 		// First request should thrown an exception
@@ -140,13 +141,13 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
 	@Test
 	public void testGetNonExistant() throws Exception {
-		assertEquals(404, getAsServletResponse("/restng/workspaces/none").getStatus());
+		assertEquals(404, getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/none").getStatus());
 	}
 
 	@Test
 	public void testPostAsXML() throws Exception {
 		String xml = "<workspace>" + "<name>foo</name>" + "</workspace>";
-		MockHttpServletResponse response = postAsServletResponse("/restng/workspaces", xml, "text/xml");
+		MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces", xml, "text/xml");
 		assertEquals(201, response.getStatus());
 		assertNotNull(response.getHeader("Location"));
 		System.out.println(response.getHeader("Location"));
@@ -159,7 +160,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
 	@Test
 	public void testGetAsJSON() throws Exception {
-		JSON json = getAsJSON("/restng/workspaces/sf.json");
+		JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/sf.json");
 		JSONObject workspace = ((JSONObject) json).getJSONObject("workspace");
 		assertEquals("sf", workspace.get("name"));
 		assertNotNull(workspace.get("dataStores"));
@@ -170,7 +171,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		removeWorkspace("foo");
 		String json = "{'workspace':{ 'name':'foo' }}";
 
-		MockHttpServletResponse response = postAsServletResponse("/restng/workspaces", json, "text/json");
+		MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces", json, "text/json");
 		assertEquals(201, response.getStatus());
 		assertNotNull(response.getHeader("Location"));
 		assertTrue(response.getHeader("Location").endsWith("/workspaces/foo"));
@@ -183,36 +184,36 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 	public void testPostToResource() throws Exception {
 		String xml = "<workspace>" + "<name>changed</name>" + "</workspace>";
 
-		MockHttpServletResponse response = postAsServletResponse("/restng/workspaces/gs", xml, "text/xml");
+		MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs", xml, "text/xml");
 		assertEquals(405, response.getStatus());
 	}
 
 	@Test
 	public void testDeleteNonExistant() throws Exception {
-		assertEquals(404, deleteAsServletResponse("/restng/workspaces/newExistant").getStatus());
+		assertEquals(404, deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/newExistant").getStatus());
 	}
 
 	@Test
 	public void testDelete() throws Exception {
 		String xml = "<workspace>" + "<name>foo</name>" + "</workspace>";
-		post("/restng/workspaces", xml);
+		post(RestBaseController.ROOT_PATH + "/workspaces", xml);
 
-		Document dom = getAsDOM("/restng/workspaces/foo.xml");
+		Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/foo.xml");
 		assertEquals("workspace", dom.getDocumentElement().getNodeName());
 
-		assertEquals(200, deleteAsServletResponse("/restng/workspaces/foo").getStatus());
-		assertEquals(404, getAsServletResponse("/restng/workspaces/foo.xml").getStatus());
+		assertEquals(200, deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/foo").getStatus());
+		assertEquals(404, getAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/foo.xml").getStatus());
 	}
 
 	@Test
 	public void testDeleteNonEmptyForbidden() throws Exception {
 		getTestData().addVectorLayer(SystemTestData.PRIMITIVEGEOFEATURE, catalog);
-		assertEquals(403, deleteAsServletResponse("/restng/workspaces/sf").getStatus());
+		assertEquals(403, deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf").getStatus());
 	}
 
 	@Test
 	public void testDeleteDefaultNotAllowed() throws Exception {
-		assertEquals(405, deleteAsServletResponse("/restng/workspaces/default").getStatus());
+		assertEquals(405, deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/default").getStatus());
 	}
 
 	@Test
@@ -225,11 +226,11 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 			}
 
 			// actually go and remove the store
-			String resource = "/restng/workspaces/" + ws.getName();
+			String resource = RestBaseController.ROOT_PATH + "/workspaces/" + ws.getName();
 			assertEquals(200, deleteAsServletResponse(resource).getStatus());
 			assertEquals(404, getAsServletResponse(resource).getStatus());
 		}
-		Document dom = getAsDOM("/restng/workspaces.xml");
+		Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces.xml");
 		assertEquals(0, dom.getElementsByTagName("workspace").getLength());
 	}
 
@@ -239,7 +240,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		List<StoreInfo> stores = catalog.getStoresByWorkspace("sf", StoreInfo.class);
 		assertFalse(stores.isEmpty());
 
-		MockHttpServletResponse response = deleteAsServletResponse("/restng/workspaces/sf?recurse=true");
+		MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf?recurse=true");
 		assertEquals(200, response.getStatus());
 
 		assertNull(catalog.getWorkspaceByName("sf"));
@@ -256,10 +257,10 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		String xml = "<workspace>" + "<metadata>" + "<foo>" + "<string>bar</string>" + "</foo>" + "</metadata>"
 				+ "</workspace>";
 
-		MockHttpServletResponse response = putAsServletResponse("/restng/workspaces/gs", xml, "text/xml");
+		MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs", xml, "text/xml");
 		assertEquals(200, response.getStatus());
 
-		Document dom = getAsDOM("/restng/workspaces/gs.xml");
+		Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/gs.xml");
 		assertXpathEvaluatesTo("1", "count(//name[text()='gs'])", dom);
 		assertXpathEvaluatesTo("1", "count(//entry[@key='foo' and text()='bar'])", dom);
 		
@@ -271,7 +272,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 	public void testPutNameChangeForbidden() throws Exception {
 		String xml = "<workspace>" + "<name>changed</name>" + "</workspace>";
 
-		MockHttpServletResponse response = putAsServletResponse("/restng/workspaces/gs", xml, "text/xml");
+		MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs", xml, "text/xml");
 		assertEquals(403, response.getStatus());
 	}
 
@@ -280,13 +281,13 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		String xml = "<workspace>" + "<metadata>" + "<entry>" + "<string>foo</string>" + "<string>bar</string>"
 				+ "</entry>" + "</metadata>" + "</workspace>";
 
-		MockHttpServletResponse response = putAsServletResponse("/restng/workspaces/nonExistant", xml, "text/xml");
+		MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/nonExistant", xml, "text/xml");
 		assertEquals(404, response.getStatus());
 	}
 
 	@Test
 	public void testGetDefaultWorkspace() throws Exception {
-		Document dom = getAsDOM("/restng/workspaces/default.xml");
+		Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/default.xml");
 
 		assertEquals("workspace", dom.getDocumentElement().getLocalName());
 		assertEquals(1, dom.getElementsByTagName("name").getLength());
@@ -298,7 +299,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		assertEquals("gs", def.getName());
 
 		String json = "{'workspace':{ 'name':'sf' }}";
-		put("/restng/workspaces/default", json, "text/json");
+		put(RestBaseController.ROOT_PATH + "/workspaces/default", json, "text/json");
 
 		def = getCatalog().getDefaultWorkspace();
 		assertEquals("sf", def.getName());
@@ -309,14 +310,14 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		// we can do this round trip two ways - first upload/download and check
 		removeWorkspace("ian");
 		String xml = "<workspace>" + "<name>foo</name>" + "</workspace>";
-		MockHttpServletResponse response = postAsServletResponse("/restng/workspaces", xml, "text/xml");
+		MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces", xml, "text/xml");
 		assertEquals(201, response.getStatus());
 		assertNotNull(response.getHeader("Location"));
 		assertTrue(response.getHeader("Location").endsWith("/workspaces/foo"));
 
 		WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
 		assertNotNull(ws);
-		Document dom = getAsDOM("/restng/workspaces/foo.xml");
+		Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/foo.xml");
 		assertEquals("workspace", dom.getDocumentElement().getLocalName());
 		assertEquals(1, dom.getElementsByTagName("name").getLength());
 
@@ -324,7 +325,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		assertEquals("foo", name.getFirstChild().getTextContent());
 
 		// second download/upload - this runs into GEOS-5603(?)
-		dom = getAsDOM("/restng/workspaces/" + SystemTestData.SF_PREFIX + ".xml");
+		dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/" + SystemTestData.SF_PREFIX + ".xml");
 		name = (Element) dom.getElementsByTagName("name").item(0);
 
 		name.setTextContent("ian");
@@ -335,7 +336,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		transformer.transform(new DOMSource(dom), new StreamResult(writer));
 		String output = writer.getBuffer().toString();
 
-		response = postAsServletResponse("/restng/workspaces", output, "text/xml");
+		response = postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces", output, "text/xml");
 		assertEquals(201, response.getStatus());
 		assertNotNull(response.getHeader("Location"));
 		assertTrue(response.getHeader("Location").endsWith("/workspaces/ian"));
@@ -346,26 +347,26 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		// we can do this round trip two ways - first upload/download and check
 		removeWorkspace("ian");
 		String json = "{'workspace':{'name':'foo'}}";
-		MockHttpServletResponse response = postAsServletResponse("/restng/workspaces", json, "application/json");
+		MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces", json, "application/json");
 		assertEquals(201, response.getStatus());
 		assertNotNull(response.getHeader("Location"));
 		assertTrue(response.getHeader("Location").endsWith("/workspaces/foo"));
 
 		WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
 		assertNotNull(ws);
-		JSON jsonObj = getAsJSON("/restng/workspaces/foo.json");
+		JSON jsonObj = getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/foo.json");
 		JSONObject workspace = ((JSONObject) jsonObj).getJSONObject("workspace");
 		assertEquals("foo", workspace.get("name"));
 
 		// second download/upload - this runs into GEOS-5603(?)
-		jsonObj = getAsJSON("/restng/workspaces/" + SystemTestData.SF_PREFIX + ".json");
+		jsonObj = getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/" + SystemTestData.SF_PREFIX + ".json");
 		workspace = ((JSONObject) jsonObj).getJSONObject("workspace");
 
 		workspace.put("name", "ian");
 
 		String output = jsonObj.toString();
 
-		response = postAsServletResponse("/restng/workspaces", output, "application/json");
+		response = postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces", output, "application/json");
 		assertEquals(201, response.getStatus());
 		assertNotNull(response.getHeader("Location"));
 		assertTrue(response.getHeader("Location").endsWith("/workspaces/ian"));

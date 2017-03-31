@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.text.MessageFormat;
 
+import org.geoserver.rest.RestBaseController;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -24,9 +25,9 @@ import net.sf.json.JSONObject;
  */
 public class MasterPasswordControllerTest extends SecurityRESTTestSupport {
 
-    final static String MP_URI_JSON = "/restng/security/masterpw.json";
+    final static String MP_URI_JSON = RestBaseController.ROOT_PATH + "/security/masterpw.json";
 
-    final static String MP_URI_XML = "/restng/security/masterpw.xml";
+    final static String MP_URI_XML = RestBaseController.ROOT_PATH + "/security/masterpw.xml";
 
     String xmlTemplate = "<" + MasterPasswordController.XML_ROOT_ELEM + ">" + "<"
             + MasterPasswordController.MP_CURRENT_KEY + ">{0}</"

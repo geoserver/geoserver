@@ -16,6 +16,7 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.LocalWorkspace;
@@ -53,7 +54,7 @@ public class LocalWMSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsJSON() throws Exception {
-        JSON json = getAsJSON("/restng/services/wms/workspaces/sf/settings.json");
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject wmsinfo = (JSONObject) jsonObject.get("wms");
@@ -69,7 +70,7 @@ public class LocalWMSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsXML() throws Exception {
-        Document dom = getAsDOM("/restng/services/wms/workspaces/sf/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings.xml");
         assertEquals("wms", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("true", "/wms/enabled", dom);
         assertXpathEvaluatesTo("sf", "/wms/workspace/name", dom);
@@ -80,16 +81,16 @@ public class LocalWMSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        getAsDOM("/restng/services/wms/workspaces/sf/settings.html" );
+        getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings.html" );
     }
 
     public void testCreateAsJSON() throws Exception {
         removeLocalWorkspace();
         String input = "{'wms': {'id' : 'wms_sf', 'workspace':{'name':'sf'},'name' : 'WMS', 'enabled': 'true'}}";
-        MockHttpServletResponse response = putAsServletResponse("/restng/services/wms/workspaces/sf/settings/",
+        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings/",
                 input, "text/json");
         assertEquals(200, response.getStatus());
-        JSON json = getAsJSON("/restng/services/wms/workspaces/sf/settings.json");
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject wmsinfo = (JSONObject) jsonObject.get("wms");
@@ -107,11 +108,11 @@ public class LocalWMSSettingsControllerTest extends CatalogRESTTestSupport {
         String xml = "<wms>" + "<id>wms_sf</id>" + "<workspace>" + "<name>sf</name>"
                 + "</workspace>" + "<name>OGC:WMS</name>" + "<enabled>false</enabled>"
                 + "<interpolation>Nearest</interpolation>" + "</wms>";
-        MockHttpServletResponse response = putAsServletResponse("/restng/services/wms/workspaces/sf/settings",
+        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings",
                 xml, "text/xml");
         assertEquals(200, response.getStatus());
 
-        Document dom = getAsDOM("/restng/services/wms/workspaces/sf/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings.xml");
         assertEquals("wms", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("false", "/wms/enabled", dom);
         assertXpathEvaluatesTo("sf", "/wms/workspace/name", dom);
@@ -123,10 +124,10 @@ public class LocalWMSSettingsControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPutAsJSON() throws Exception {
         String json = "{'wms': {'id':'wms','workspace':{'name':'sf'},'enabled':'false','name':'WMS'}}";
-        MockHttpServletResponse response = putAsServletResponse("/restng/services/wms/workspaces/sf/settings/",
+        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings/",
                 json, "text/json");
         assertEquals(200, response.getStatus());
-        JSON jsonMod = getAsJSON("/restng/services/wms/workspaces/sf/settings.json");
+        JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
         JSONObject wmsinfo = (JSONObject) jsonObject.get("wms");
@@ -138,29 +139,29 @@ public class LocalWMSSettingsControllerTest extends CatalogRESTTestSupport {
     public void testPutAsXML() throws Exception {
         String xml = "<wms>" + "<id>wms</id>" + "<workspace>" + "<name>sf</name>"
                 + "</workspace>" + "<enabled>false</enabled>" + "</wms>";
-        MockHttpServletResponse response = putAsServletResponse("/restng/services/wms/workspaces/sf/settings",
+        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings",
                 xml, "text/xml");
         assertEquals(200, response.getStatus());
-        Document dom = getAsDOM("/restng/services/wms/workspaces/sf/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings.xml");
         assertXpathEvaluatesTo("false", "/wms/enabled", dom);
     }
 
     @Test
     public void testPutFullAsXML() throws Exception {
         String xml = IOUtils.toString(LocalWMSSettingsControllerTest.class.getResourceAsStream("wms.xml"));
-        MockHttpServletResponse response = putAsServletResponse("/restng/services/wms/workspaces/sf/settings",
+        MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings",
                 xml, "text/xml");
         assertEquals(200, response.getStatus());
-        Document dom = getAsDOM("/restng/services/wms/workspaces/sf/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings.xml");
         assertXpathEvaluatesTo("true", "/wms/enabled", dom);
     }
 
     @Test
     public void testDelete() throws Exception {
-        assertEquals(200, deleteAsServletResponse("/restng/services/wms/workspaces/sf/settings").getStatus());
+        assertEquals(200, deleteAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings").getStatus());
         boolean thrown = false;
         try {
-            JSON json = getAsJSON("/restng/services/wms/workspaces/sf/settings.json");
+            JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings.json");
         } catch (JSONException e) {
             thrown = true;
         }

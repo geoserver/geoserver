@@ -65,9 +65,18 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
     
     Importer importer;
     JSONObject json;
+    
+    public ImportContextJSONConverterReader() {
+        super();
+    }
 
     public ImportContextJSONConverterReader(Importer importer)  {
         this.importer = importer;
+    }
+    
+    public ImportContextJSONConverterReader(Importer importer, InputStream in) throws IOException {
+        this.importer = importer;
+        this.json = parse(in);
     }
 
     public JSONObject object() {

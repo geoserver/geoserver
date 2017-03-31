@@ -77,12 +77,23 @@ import net.sf.json.util.JSONBuilder;
 
 @Component
 public class ImportContextJSONConverterWriter extends BaseMessageConverter {
-
+    
+    public ImportContextJSONConverterWriter() {
+        super();
+    }    
+    
     public ImportContextJSONConverterWriter(Importer importer) {
         super();
-        this.importer = importer;
-
+        this.importer = importer;        
     }
+    
+    public ImportContextJSONConverterWriter(Importer importer, OutputStream out) {
+        super();
+        this.importer = importer;
+        this.json = new FlushableJSONBuilder(new OutputStreamWriter(out));
+        this.page = RequestInfo.get();
+    }
+
 
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {

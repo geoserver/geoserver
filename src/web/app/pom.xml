@@ -113,23 +113,23 @@
       <artifactId>gs-gwc</artifactId>
       <version>${project.version}</version>
     </dependency>
+<!--
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-rest</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!--
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-restconfig</artifactId>
       <version>${project.version}</version>
     </dependency>
+-->
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-rest-ng</artifactId>
       <version>${project.version}</version>
     </dependency>
-    -->
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-restconfig-ng</artifactId>

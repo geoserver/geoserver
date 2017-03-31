@@ -2,8 +2,14 @@ package org.geoserver.catalog.rest;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+
+import freemarker.template.ObjectWrapper;
+import freemarker.template.SimpleHash;
+import freemarker.template.TemplateModelException;
+
 import org.geoserver.catalog.*;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
@@ -23,6 +29,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -176,5 +186,45 @@ public class WMSStoreController extends CatalogController {
                 }
             }
         });
+    }
+    
+
+    @Override
+    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
+        return new ObjectToMapWrapper<WMSStoreInfo>(WMSStoreInfo.class) {
+
+            @Override
+            protected void wrapInternal(Map properties, SimpleHash model, WMSStoreInfo store) {
+                if (properties == null) {
+                    try {
+                        properties = model.toMap();
+                    } catch (TemplateModelException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+                List<Map<String, Map<String, String>>> dsProps = new ArrayList<>();
+
+                List<WMSLayerInfo> resources = catalog.getResourcesByStore(store, WMSLayerInfo.class);
+                for (WMSLayerInfo resource : resources){
+                    Map<String, String> names = new HashMap<>();
+                    names.put("name", resource.getName());
+                    dsProps.add(Collections.singletonMap("properties", names));
+                }
+                if (!dsProps.isEmpty())
+                    properties.putIfAbsent("wmsLayers", dsProps);
+
+            }
+
+            @Override
+            protected void wrapInternal(SimpleHash model, @SuppressWarnings("rawtypes") Collection object) {
+                for (Object w : object) {
+                    WMSStoreInfo wk = (WMSStoreInfo) w;
+                    wrapInternal(null, model, wk);
+                }
+
+            }
+        };
+        
     }
 }

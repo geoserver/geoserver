@@ -13,9 +13,9 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.ResourceStoreFactory;
-import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.ResourceNotFoundException;
@@ -119,16 +119,25 @@ public class ResourceController extends RestBaseController {
         }
         return resources.get(path);
     }
-
+    
+    /**
+     * Look up operation query string value, defaults to {@link Operation#DEFAULT} if not provided.
+     * @param request
+     * @return operation defined by query string, or {@link Operation#DEFAULT} if not provided
+     */
     protected static Operation operation(HttpServletRequest request) {
-        Operation operation = Operation.DEFAULT;
-        String strOp = RESTUtils.getQueryStringValue(request, "operation");
-        if (strOp != null) {
+        String operation = RESTUtils.getQueryStringValue(request, "operation");
+        if (operation != null) {
+            operation = operation.trim().toUpperCase();
             try {
-                operation = Operation.valueOf(strOp.trim().toUpperCase());
-            } catch (IllegalArgumentException e) {}
+                return Operation.valueOf(operation);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalStateException("Unknown operation '"+operation+"' requested");
+            }
         }
-        return operation;
+        else {
+            return Operation.DEFAULT;
+        }
     }
 
     protected static MediaType getFormat(HttpServletRequest request) {
@@ -204,42 +213,76 @@ public class ResourceController extends RestBaseController {
         return result;
     }
     /**
-     * Upload or modify resource contents.
+     * Upload or modify resource contents:
      * <ul>
-     * <li>{@link Operation#DEFAULT}: update resource contents; creating if needed.</li>
-     * <li>{@link Operation#MOVE}: moves resource to new location.</li>
-     * <li>{@link Operation#COPY}: copy resource to new location.</li>
+     * <li>{@link Operation#DEFAULT}: update resource contents (creating if needed).</li>
+     * <li>{@link Operation#MOVE}: moves a resource, indicated by request body, to this location.</li>
+     * <li>{@link Operation#COPY}: duplicates a resource, indicated by request body, to this location</li>
      * </ul>
+     * @paarm request
+     * @param response {@link HttpStatus#CREATED} for a new resource, or {@link HttpStatus#OK} when updating existing resource
      */
     @PutMapping(consumes = {MediaType.ALL_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public void resourcePut(HttpServletRequest request,HttpServletResponse response){
         Resource resource = resource(request);
-        Resource directory = resource.parent();
-        String filenName = resource.name();
         
         if (resource.getType() == Type.DIRECTORY) {
             throw new RestException("Attempting to write data to a directory.",  HttpStatus.METHOD_NOT_ALLOWED );
         }
         Operation operation = operation(request);
-        boolean isNew = resource.getType() == Type.UNDEFINED;
-        if (operation == Operation.COPY || operation == Operation.MOVE) {
-            // TODO: move me right round, like a record player, round round!
-            throw new RestException("Not yet implemented resource "+operation.name(), HttpStatus.NOT_IMPLEMENTED);
-        }
-        else if (operation == Operation.METADATA ){
+        if (operation == Operation.METADATA ){
             throw new RestException("Attempting to write data to metadata.",  HttpStatus.METHOD_NOT_ALLOWED );
         }
-        try {
-            IOUtils.copy( request.getInputStream(), resource.out());
-            if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.fine("PUT resource: " + resource.path());
+        
+        boolean isNew = resource.getType() == Type.UNDEFINED;
+        if (operation == Operation.COPY || operation == Operation.MOVE) {
+            String path = null;
+            try {
+                path = IOUtils.toString( request.getInputStream());
+            } catch (IOException e) {
+                throw new RestException("Unable to read content:" + e.getMessage(),
+                        HttpStatus.INTERNAL_SERVER_ERROR, e);
             }
-        } catch (IOException e) {
-            throw new RestException(
-                    "Unable to copy content to '" + resource.path() + "':" + e.getMessage(),
-                    HttpStatus.INTERNAL_SERVER_ERROR, e);
+            Resource source = resources.get(path);
+            if( source.getType() == Type.UNDEFINED){
+                throw new RestException("Unable to locate '" + path + "'.", HttpStatus.NOT_FOUND);
+            }
+            if ( operation == Operation.MOVE){
+                boolean moved = source.renameTo(resource);
+                if(!moved){
+                    throw new RestException("Rename operation failed.", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+            else { // COPY
+                if( source.getType() == Type.DIRECTORY){
+                    throw new RestException("Cannot copy directory.", HttpStatus.METHOD_NOT_ALLOWED);
+                }
+                try {
+                    IOUtils.copy( source.in(), resource.out());
+                } catch (IOException e) {
+                    throw new RestException("Copy operation failed:"+e, HttpStatus.INTERNAL_SERVER_ERROR,e);
+                }
+                
+            }
         }
+        else if (operation == Operation.DEFAULT){
+            try {
+                IOUtils.copy( request.getInputStream(), resource.out());
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.fine("PUT resource: " + resource.path());
+                }
+            } catch (IOException e) {
+                throw new RestException(
+                        "Unable to read content to '" + resource.path() + "':" + e.getMessage(),
+                        HttpStatus.INTERNAL_SERVER_ERROR, e);
+            }
+        }
+        else {
+            throw new IllegalStateException("Unexpected operation '"+operation+"'");
+        }
+        
+        // fill in correct status / header details
         if(isNew){
             response.setStatus(HttpStatus.CREATED.value());
         }

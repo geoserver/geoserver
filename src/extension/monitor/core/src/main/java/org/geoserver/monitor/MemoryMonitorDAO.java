@@ -165,9 +165,8 @@ O:      for (Iterator<RequestData> it = requests.iterator(); it.hasNext();) {
     
     public void dispose() {
         live.clear();
-        live = null;
         history.clear();
-        history = null;
+        REQUEST_ID_GEN = new AtomicLong(1);
     }
     
     static interface Predicate {

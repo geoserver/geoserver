@@ -1205,6 +1205,11 @@
       <artifactId>compress-lzf</artifactId>
       <version>${compress-lzf.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.10.2</version>
+    </dependency>
   </dependencies>
  </dependencyManagement>
 

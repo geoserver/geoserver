@@ -36,7 +36,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping(path = RestBaseController.ROOT_PATH, produces = {
+@RequestMapping(path = RestBaseController.ROOT_PATH+"/imports", produces = {
         MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE })
 public class ImportController extends ImportBaseController {
 
@@ -50,7 +50,7 @@ public class ImportController extends ImportBaseController {
 
     }
 
-    @PostMapping(value = {"/imports/{id}","/imports"}, produces = { MediaType.APPLICATION_JSON_VALUE })
+    @PostMapping(value = {"/{id}",""}, produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ImportContext> postImports(@PathVariable(name="id",required=false) Long id, @RequestBody(required=false) ImportContext obj,
             UriComponentsBuilder builder) {
@@ -75,21 +75,20 @@ public class ImportController extends ImportBaseController {
         return new ResponseEntity<ImportContext>(context, headers, HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/imports", produces = { MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON })
-    public java.util.Iterator<ImportContext> getImports() {
+    public ImportContextCollectionWrapper<ImportContext> getImports() {
 
         Object lookupContext = context(null, true, true);
         if (lookupContext == null) {
             // this means a specific lookup failed
             throw new RestException("Failed to find import context", HttpStatus.NOT_FOUND);
         } else {
-
-            return (Iterator<ImportContext>) lookupContext;// wrapList(contexts, ImportContext.class);
+            return new ImportContextCollectionWrapper<>((Iterator<ImportContext>) lookupContext, ImportContext.class);
         }
     }
 
-    @GetMapping(value = "/imports/{id}", produces = { MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(value = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
     public ImportContext getImports(@PathVariable Long id,
             @RequestParam(name = "expand", required = false, defaultValue = "0") int expand) {
@@ -97,7 +96,7 @@ public class ImportController extends ImportBaseController {
         return context(id);
     }
 
-    @PutMapping(value = "/imports/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE,
+    @PutMapping(value = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON })
     public ResponseEntity<String> putImport(@PathVariable Long id, UriComponentsBuilder builder) {
         if (id != null) {

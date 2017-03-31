@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by vickdw on 3/30/17.
  */
-public class ImportDataResourceControllerTest extends ImporterTestSupport {
+public class ImportDataControllerTest extends ImporterTestSupport {
     @Before
     public void prepareData() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");

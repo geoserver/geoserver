@@ -51,7 +51,6 @@
             <bean class="org.geoserver.geofence.config.GeoFenceConfiguration">
                   <property name="instanceName" value="${instanceName:default-gs}"/>
                   <property name="servicesUrl" value="${servicesUrl}"/>
-                  <property name="allowDynamicStyles" value="${allowDynamicStyles:False}"/>
                   <property name="allowRemoteAndInlineLayers" value="${allowRemoteAndInlineLayers:False}"/>
                   <property name="grantWriteToWorkspacesToAuthenticatedUsers" value="${grantWriteToWorkspacesToAuthenticatedUsers:False}"/>
                   <property name="useRolesToFilter" value="${useRolesToFilter:False}"/>

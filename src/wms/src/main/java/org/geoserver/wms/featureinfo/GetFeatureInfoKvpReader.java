@@ -135,6 +135,10 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
         request.setGetMapRequest(getMapPart);
         
         List<MapLayerInfo> getMapLayers = getMapPart.getLayers();
+
+        if ((getMapPart.getSldBody() != null || getMapPart.getSld() != null) && wms.isDynamicStylingDisabled()) {
+            throw new ServiceException("Dynamic style usage is forbidden");
+        }
         
         if ((getMapPart.getSldBody() != null || getMapPart.getSld() != null)
                 && (rawKvp.get("QUERY_LAYERS") == null || "".equals(rawKvp.get("QUERY_LAYERS")))) {

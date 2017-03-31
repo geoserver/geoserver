@@ -134,8 +134,6 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(new CheckBox("allowRemoteAndInlineLayers",
                 new PropertyModel<Boolean>(configModel,
                         "allowRemoteAndInlineLayers")));
-        form.add(new CheckBox("allowDynamicStyles", new PropertyModel<Boolean>(
-                configModel, "allowDynamicStyles")));
         form.add(new CheckBox("grantWriteToWorkspacesToAuthenticatedUsers",
                 new PropertyModel<Boolean>(configModel,
                         "grantWriteToWorkspacesToAuthenticatedUsers")));

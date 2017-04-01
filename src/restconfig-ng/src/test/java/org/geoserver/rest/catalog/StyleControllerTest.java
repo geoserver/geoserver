@@ -342,7 +342,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response =
-            putAsServletResponse( "/restng/styles/Ponds?raw=true", xml, SLDHandler.MIMETYPE_10);
+            putAsServletResponse( RestBaseController.ROOT_PATH + "/styles/Ponds?raw=true", xml, SLDHandler.MIMETYPE_10);
         assertEquals( 200, response.getStatus() );
 
         Style s = catalog.getStyleByName( "Ponds" ).getStyle();
@@ -359,7 +359,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         String xml = "This is not valid SLD";
 
         MockHttpServletResponse response =
-            putAsServletResponse( "/restng/styles/Ponds?raw=true", xml, SLDHandler.MIMETYPE_10);
+            putAsServletResponse( RestBaseController.ROOT_PATH + "/styles/Ponds?raw=true", xml, SLDHandler.MIMETYPE_10);
         assertEquals( 200, response.getStatus() );
 
         StyleInfo styleInfo = catalog.getStyleByName( "Ponds" );

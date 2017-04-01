@@ -22,6 +22,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.geoserver.catalog.CascadeDeleteVisitor;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -155,6 +156,11 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 
 		WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
 		assertNotNull(ws);
+		
+		// check corresponding namespace creation
+		NamespaceInfo ns = getCatalog().getNamespaceByPrefix("foo");
+		assertNotNull(ns);
+		
 		removeWorkspace("foo");
 	}
 

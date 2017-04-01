@@ -113,6 +113,18 @@ public class WorkspaceController extends CatalogController {
             LOGGER.info("made workspace " + name + " default");
         }
         LOGGER.info("POST Style " + name);
+        
+        //create a namespace corresponding to the workspace if one does not 
+        // already exist
+        NamespaceInfo namespace = catalog.getNamespaceByPrefix( workspace.getName() );
+        if ( namespace == null ) {
+            LOGGER.fine( "Automatically creating namespace for workspace " + workspace.getName() );
+
+            namespace = catalog.getFactory().createNamespace();
+            namespace.setPrefix( workspace.getName() );
+            namespace.setURI( "http://" + workspace.getName() );
+            catalog.add( namespace );
+        }
 
         // build the new path
         UriComponents uriComponents = getUriComponents(name, builder);

@@ -29,7 +29,7 @@ public class StringsListXMLConverter extends BaseMessageConverter {
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
         return StringsList.class.isAssignableFrom(clazz)
-                && getSupportedMediaTypes().contains(mediaType);
+                && isSupportedMediaType(mediaType);
     }
 
     @Override

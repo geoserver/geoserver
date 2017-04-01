@@ -30,19 +30,18 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter {
 
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
-        return !RestListWrapper.class.isAssignableFrom(clazz) &&
-            MediaType.APPLICATION_XML.equals(mediaType) || MediaType.TEXT_XML.equals(mediaType);
+        return !RestListWrapper.class.isAssignableFrom(clazz) && isSupportedMediaType(mediaType);
     }
 
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
-        return !RestListWrapper.class.isAssignableFrom(clazz) && RestWrapper.class.isAssignableFrom(clazz) &&
-            MediaType.APPLICATION_XML.equals(mediaType) || MediaType.TEXT_XML.equals(mediaType);
+        return !RestListWrapper.class.isAssignableFrom(clazz) && RestWrapper.class.isAssignableFrom(clazz)
+                && isSupportedMediaType(mediaType);
     }
 
     @Override
     public List<MediaType> getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.APPLICATION_XML);
+        return Arrays.asList(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
     }
 
     @Override

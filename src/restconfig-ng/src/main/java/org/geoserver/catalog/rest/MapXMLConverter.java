@@ -33,13 +33,13 @@ public class MapXMLConverter extends BaseMessageConverter {
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
         return Map.class.isAssignableFrom(clazz)
-                && getSupportedMediaTypes().contains(mediaType);
+                && isSupportedMediaType(mediaType);
     }
 
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
         return Map.class.isAssignableFrom(clazz)
-                && getSupportedMediaTypes().contains(mediaType);
+                && isSupportedMediaType(mediaType);
     }
 
     @Override

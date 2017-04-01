@@ -48,7 +48,7 @@ public abstract class XStreamCatalogListConverter extends XStreamMessageConverte
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
         return RestListWrapper.class.isAssignableFrom(clazz) &&
-            this.getSupportedMediaTypes().contains(mediaType);
+                isSupportedMediaType(mediaType);
     }
 
     @Override

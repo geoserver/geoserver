@@ -83,7 +83,7 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
         return ImportContext.class.isAssignableFrom(clazz)
-                && getSupportedMediaTypes().contains(mediaType);
+                && isSupportedMediaType(mediaType);
         
     }
 

@@ -42,7 +42,7 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter {
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
         return !RestListWrapper.class.isAssignableFrom(clazz) &&
-            (MediaType.APPLICATION_JSON.equals(mediaType) || TEXT_JSON.equals(mediaType));
+                isSupportedMediaType(mediaType);
     }
 
     @Override

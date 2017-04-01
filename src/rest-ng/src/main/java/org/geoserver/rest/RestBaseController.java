@@ -39,7 +39,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
     /**
      * Root path of the rest api
      */
-    public static final String ROOT_PATH = "/restng";
+    public static final String ROOT_PATH = "/rest";
 
     /**
      * Default encoding for the freemarker {@link Configuration}

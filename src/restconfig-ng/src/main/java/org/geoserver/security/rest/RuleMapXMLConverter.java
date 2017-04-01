@@ -34,13 +34,13 @@ public class RuleMapXMLConverter extends MapXMLConverter {
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
         return RuleMap.class.isAssignableFrom(clazz)
-                && getSupportedMediaTypes().contains(mediaType);
+                && isSupportedMediaType(mediaType);
     }
 
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
         return RuleMap.class.isAssignableFrom(clazz)
-                && getSupportedMediaTypes().contains(mediaType);
+                && isSupportedMediaType(mediaType);
     }
 
     @Override

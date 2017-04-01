@@ -49,7 +49,7 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
 
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
-        return MediaType.TEXT_HTML.equals(mediaType) && RestWrapper.class.isAssignableFrom(clazz);
+        return MediaType.TEXT_HTML.includes(mediaType) && RestWrapper.class.isAssignableFrom(clazz);
     }
 
     @Override

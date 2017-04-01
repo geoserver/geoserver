@@ -29,8 +29,7 @@ public abstract class AbstractMonitorRequestConverter extends BaseMessageConvert
 
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
-        return MonitorQueryResults.class.isAssignableFrom(clazz)
-                && getSupportedMediaTypes().contains(mediaType);
+        return MonitorQueryResults.class.isAssignableFrom(clazz) && isSupportedMediaType(mediaType);
     }
 
     @Override

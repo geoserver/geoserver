@@ -103,7 +103,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         final boolean importControllers = ImportContext.class.isAssignableFrom(clazz)
                 || ImportTask.class.isAssignableFrom(clazz) || ImportWrapper.class.isAssignableFrom(clazz);
         final boolean dataControllers = ImportData.class.isAssignableFrom(clazz);
-        return (importControllers || dataControllers) && getSupportedMediaTypes().contains(mediaType);
+        return (importControllers || dataControllers) && isSupportedMediaType(mediaType);
     }
 
     @Override

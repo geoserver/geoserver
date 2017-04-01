@@ -47,13 +47,13 @@ public class StyleConverter extends BaseMessageConverter {
 
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
-        return Style.class.equals(clazz) && supportedMediaTypes.contains(mediaType);
+        return Style.class.equals(clazz) && isSupportedMediaType(mediaType);
     }
 
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
         return (Style.class.equals(clazz) || StyleInfo.class.isAssignableFrom(clazz)) &&
-            supportedMediaTypes.contains(mediaType);
+                isSupportedMediaType(mediaType);
     }
 
     @Override

@@ -5,13 +5,13 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
-import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 
 /**
  * Base message converter behavior
  */
-public abstract class BaseMessageConverter implements HttpMessageConverter, ExtensionPriority {
+public abstract class BaseMessageConverter<T> implements HttpMessageConverter<T>, ExtensionPriority {
 
     protected final Catalog catalog;
 
@@ -27,5 +27,18 @@ public abstract class BaseMessageConverter implements HttpMessageConverter, Exte
 
     public int getPriority() {
         return ExtensionPriority.LOWEST;
+    }
+    
+    /**
+     * Checks if the media type provided is "included" by one of the media types declared
+     * in {@link #getSupportedMediaTypes()}
+     */
+    protected boolean isSupportedMediaType(MediaType mediaType) {
+        for (MediaType supported : getSupportedMediaTypes()) {
+            if(supported.includes(mediaType)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

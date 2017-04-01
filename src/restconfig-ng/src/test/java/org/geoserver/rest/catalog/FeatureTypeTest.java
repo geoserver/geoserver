@@ -5,13 +5,11 @@
  */
 package org.geoserver.rest.catalog;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertSame;
-import static org.custommonkey.xmlunit.XMLAssert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -492,6 +490,19 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertNotNull(response.getHeader("Location"));
         assertTrue(response.getHeader("Location")
                 .endsWith("/workspaces/gs/datastores/ngpds/featuretypes/ngpdsa"));
+    }
+    
+    @Test
+    public void testDeleteWsNotSameAsStoreName() throws Exception {
+        // create a feature type whose store name is not same as workspace name
+        testPostGeometrylessFeatureType();
+        
+        assertEquals(200,
+                deleteAsServletResponse(
+                        BASEPATH + "/workspaces/gs/datastores/ngpds/featuretypes/ngpdsa?recurse=true")
+                                .getStatus());
+        assertNull(catalog.getFeatureTypeByName("gs", "ngpdsa"));
+
     }
 
     @Test

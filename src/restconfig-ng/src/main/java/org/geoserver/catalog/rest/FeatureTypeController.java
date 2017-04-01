@@ -397,9 +397,8 @@ public class FeatureTypeController extends CatalogController {
         ensureResourcesExist(workspaceName, datastoreName);
 
         if (datastoreName != null
-                && catalog.getFeatureTypeByDataStore(catalog.getDataStoreByName(workspaceName),
+                && catalog.getFeatureTypeByDataStore(catalog.getDataStoreByName(workspaceName, datastoreName),
                         featureTypeName) == null) {
-
             throw new RestException("No such feature type: " + workspaceName + "," + datastoreName
                     + "," + featureTypeName, HttpStatus.NOT_FOUND);
         } else {

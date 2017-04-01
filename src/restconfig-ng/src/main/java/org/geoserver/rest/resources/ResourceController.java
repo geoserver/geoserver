@@ -75,6 +75,17 @@ public class ResourceController extends RestBaseController {
         super();
         this.resources = store;
     }
+    
+    @Override
+    protected String getTemplateName(Object object) {
+        if(object instanceof ResourceDirectoryInfo) {
+            return "resourceDirectoryInfo.ftl";
+        } else if(object instanceof ResourceMetadataInfo) {
+            return "resourceMetadataInfo.ftl";
+        } else {
+            return super.getTemplateName(object);
+        }
+    }
 
     /**
      * Extract expected media type from supplied resource

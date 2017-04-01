@@ -19,7 +19,7 @@ paths:
           required: true
           type: string
         - name: list
-          in: path
+          in: query
           description: Set "list=available" to see all possible layers in the store, not just ones currently published
           type: string
           enum:
@@ -133,6 +133,7 @@ paths:
           required: false
       responses:
         200:
+          description: OK
           schema:
             $ref: "#/definitions/WMSStoreLayerInfo"
           examples:
@@ -266,7 +267,7 @@ paths:
           required: true
           type: string
         - name: list
-          in: path
+          in: query
           description: Set "list=available" to see all possible layers in the store, not just ones currently published
           enum:
           - available
@@ -390,6 +391,7 @@ paths:
           required: false
       responses:
         200:
+          description: OK
           schema:
             $ref: "#/definitions/WMSStoreLayerInfo"
           examples:

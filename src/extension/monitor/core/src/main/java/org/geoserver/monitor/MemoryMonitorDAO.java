@@ -161,6 +161,8 @@ O:      for (Iterator<RequestData> it = requests.iterator(); it.hasNext();) {
     };
     
     public void clear() {
+        live.clear();
+        history.clear();
     }
     
     public void dispose() {

@@ -255,6 +255,18 @@
               <output>${project.build.directory}/api/workspaces</output>
             </configuration>
           </execution>
+          <execution>
+            <id>monitoring</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>src/main/resources/api/monitoring.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/monitoring</output>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>

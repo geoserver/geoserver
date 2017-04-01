@@ -1,7 +1,6 @@
 package org.geoserver.monitor.rest;
 
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,7 +18,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -106,6 +104,15 @@ public class RequestControllerTest extends GeoServerSystemTestSupport {
         }
 
         assertFalse(it.hasNext());
+    }
+    
+    @Test
+    public void testDelete() throws Exception {
+        // delete all
+        MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH + "/monitor/requests");
+        assertEquals(200, response.getStatus());
+        
+        assertEquals(0, monitor.getDAO().getRequests().size());
     }
     
     @Test

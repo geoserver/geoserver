@@ -305,7 +305,8 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 		assertEquals("gs", def.getName());
 
 		String json = "{'workspace':{ 'name':'sf' }}";
-		put(RestBaseController.ROOT_PATH + "/workspaces/default", json, "text/json");
+		MockHttpServletResponse response = putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/default", json, "text/json");
+		assertEquals(200, response.getStatus());
 
 		def = getCatalog().getDefaultWorkspace();
 		assertEquals("sf", def.getName());

@@ -145,21 +145,22 @@ public class WorkspaceController extends CatalogController {
             @PathVariable String workspaceName, UriComponentsBuilder builder) {
         if ( "default".equals( workspaceName ) ) {
             catalog.setDefaultWorkspace( workspace );
+        } else {
+            // name must exist
+            WorkspaceInfo wks = catalog.getWorkspaceByName(workspaceName);
+            if (wks == null) {
+                throw new RestException("Can't change a non existant workspace (" + workspaceName + ")",
+                        HttpStatus.NOT_FOUND);
+            }
+    
+            String infoName = workspace.getName();
+            if (infoName != null && !workspaceName.equals(infoName)) {
+                throw new RestException("Can't change name of workspace", HttpStatus.FORBIDDEN);
+            }
+    
+            new CatalogBuilder(catalog).updateWorkspace(wks, workspace);
+            catalog.save(wks);
         }
-        // name must exist
-        WorkspaceInfo wks = catalog.getWorkspaceByName(workspaceName);
-        if (wks == null) {
-            throw new RestException("Can't change a non existant workspace (" + workspaceName + ")",
-                    HttpStatus.NOT_FOUND);
-        }
-
-        String infoName = workspace.getName();
-        if (infoName != null && !workspaceName.equals(infoName)) {
-            throw new RestException("Can't change name of workspace", HttpStatus.FORBIDDEN);
-        }
-
-        new CatalogBuilder(catalog).updateWorkspace(wks, workspace);
-        catalog.save(wks);
     }
 
     @DeleteMapping(path = "/workspaces/{workspaceName}")

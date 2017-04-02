@@ -72,7 +72,7 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter {
     
     @Override
     public String getMediaType() {
-        return MediaType.APPLICATION_ATOM_XML_VALUE;
+        return MediaType.APPLICATION_XML_VALUE;
     }
 
     @Override

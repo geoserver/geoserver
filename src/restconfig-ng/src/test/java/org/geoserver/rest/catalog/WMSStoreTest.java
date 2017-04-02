@@ -210,6 +210,27 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         
         assertEquals("http://somehost/wms?", newStore.getCapabilitiesURL());
     }
+    
+    @Test
+    public void testPostAsXMLNoWorkspace() throws Exception {
+        
+        String xml =
+            "<wmsStore>" +
+              "<name>newWMSStore</name>" +
+              "<capabilitiesURL>http://somehost/wms?</capabilitiesURL>" +
+            "</wmsStore>";
+        MockHttpServletResponse response = 
+            postAsServletResponse( RestBaseController.ROOT_PATH+"/workspaces/sf/wmsstores", xml, "text/xml" );
+        
+        assertThat(response, hasStatus(HttpStatus.CREATED) );
+        assertThat(response, hasHeader("Location", endsWith("/workspaces/sf/wmsstores/newWMSStore")) );
+
+        WMSStoreInfo newStore = catalog.getStoreByName( "newWMSStore", WMSStoreInfo.class );
+        assertNotNull( newStore );
+        
+        assertEquals("http://somehost/wms?", newStore.getCapabilitiesURL());
+    }
+
 
     @Test
     public void testGetAsJSON() throws Exception {

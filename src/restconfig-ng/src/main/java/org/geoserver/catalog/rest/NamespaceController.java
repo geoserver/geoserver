@@ -14,6 +14,7 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
@@ -92,11 +93,22 @@ public class NamespaceController extends CatalogController {
             MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE }, consumes = { "text/xml",
                     MediaType.APPLICATION_XML_VALUE, TEXT_JSON, MediaType.APPLICATION_JSON_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> postNamespace(@RequestBody NamespaceInfo namepace,
+    public ResponseEntity<String> postNamespace(@RequestBody NamespaceInfo namespace,
             UriComponentsBuilder builder) {
-        catalog.add(namepace);
-        String name = namepace.getName();
+        catalog.add(namespace);
+        String name = namespace.getName();
         LOGGER.info("Added namespace " + name);
+        
+        //JD: we need to keep namespace and workspace in sync, so create a worksapce
+        // if one does not already exists, we can remove this once we get to a point
+        // where namespace is just an attribute on a layer, and not a containing element
+        if ( catalog.getWorkspaceByName( namespace.getPrefix() ) == null ) {
+            WorkspaceInfo ws = catalog.getFactory().createWorkspace();
+            ws.setName( namespace.getPrefix() );
+            catalog.add( ws );
+        }
+
+        
         // build the new path
         UriComponents uriComponents = getUriComponents(name, builder);
         HttpHeaders headers = new HttpHeaders();

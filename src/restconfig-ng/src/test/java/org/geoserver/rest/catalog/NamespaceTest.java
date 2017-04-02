@@ -19,6 +19,7 @@ import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
@@ -172,7 +173,11 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/namespaces/foo" ) );
         
-        NamespaceInfo ws = getCatalog().getNamespaceByPrefix( "foo" );
+        NamespaceInfo ns = getCatalog().getNamespaceByPrefix( "foo" );
+        assertNotNull(ns);
+        
+        // check the corresponding workspace has been created
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName("foo");
         assertNotNull(ws);
     }
     

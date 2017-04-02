@@ -5,6 +5,8 @@
 package org.geoserver.rest.catalog;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -18,6 +20,9 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.Styles;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.rest.RestBaseController;
 import org.geoserver.security.AccessMode;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.ysld.YsldHandler;
@@ -57,12 +62,36 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
     
     @Test
     public void testRawPutYSLD() throws Exception {
-        String content = newYSLD();
+        // step 1 create style info with correct format
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("gs", "foo"));
+
+        String xml =
+            "<style>" +
+                "<name>foo</name>" +
+                "<format>ysld</format>"+
+                "<filename>foo.yaml</filename>" +
+                "</style>";
+        
         MockHttpServletResponse response =
-            putAsServletResponse( "/restng/styles/Ponds?raw=true", content, YsldHandler.MIMETYPE);
+            postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml);
+        assertEquals(201, response.getStatus());
+        assertNotNull(cat.getStyleByName("foo"));
+        
+        
+        String content = newYSLD();
+        response =
+            putAsServletResponse( "/rest/styles/foo?raw=true", content, YsldHandler.MIMETYPE);
         assertEquals( 200, response.getStatus() );
 
-        Style s = catalog.getStyleByName( "Ponds" ).getStyle();
+        GeoServerResourceLoader resources = catalog.getResourceLoader();
+        
+        Resource resource = resources.get("/styles/foo.yaml");
+        
+        String definition = new String(resource.getContents());
+        assertTrue("is yaml",definition.contains("stroke-color: '#FF0000'"));
+        
+        Style s = catalog.getStyleByName( "foo" ).getStyle();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         SLDHandler handler = new SLDHandler();

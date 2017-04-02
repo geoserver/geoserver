@@ -1,5 +1,6 @@
 package org.geoserver.catalog.rest;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,10 +31,12 @@ import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -262,6 +265,12 @@ public class WorkspaceController extends CatalogController {
 
             }
         };
+    }
+    
+    @Override
+    public boolean supports(MethodParameter methodParameter, Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
+        return WorkspaceInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override

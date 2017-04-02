@@ -1,5 +1,6 @@
 package org.geoserver.catalog.rest;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import freemarker.template.ObjectWrapper;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -26,10 +28,12 @@ import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -133,7 +137,7 @@ public class NamespaceController extends CatalogController {
 
         String infoName = namespace.getName();
         if (infoName != null && !prefix.equals(infoName)) {
-            throw new RestException("Can't change name of workspace", HttpStatus.FORBIDDEN);
+            throw new RestException("Can't change name of namespace", HttpStatus.FORBIDDEN);
         }
 
         new CatalogBuilder(catalog).updateNamespace(nsi, namespace);
@@ -209,6 +213,12 @@ public class NamespaceController extends CatalogController {
                 }
             }
         };
+    }
+    
+    @Override
+    public boolean supports(MethodParameter methodParameter, Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
+        return NamespaceInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override

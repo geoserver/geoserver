@@ -190,12 +190,14 @@ public class StructuredCoverageController extends CatalogController {
      * Note, the .+ regular expression allows granuleId to contain dots instead of having them
      * interpreted as format extension
      */
-    @DeleteMapping(path = "/granules/{granuleId:.+}")
+    @DeleteMapping(path = {"/granules/{granuleId:.+}", "/granules/{granuleId:.+}/{format}"})
     @ResponseBody
     public void deleteGranule(@PathVariable(name = "workspaceName") String workspaceName,
             @PathVariable(name = "storeName") String storeName,
             @PathVariable(name = "coverageName") String coverageName,
-            @PathVariable(name = "granuleId") String granuleId) throws IOException {
+            @PathVariable(name = "granuleId") String granuleId,
+            @PathVariable(name = "format", required = false) String gsConfigFormat) throws IOException {
+        // gsConfigForma allows for weird calls gsconfig does, like granules/granule.id/.json
         GranuleStore store = getGranuleStore(workspaceName, storeName, coverageName);
         Filter filter = getGranuleIdFilter(granuleId);
 

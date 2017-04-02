@@ -253,6 +253,28 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     }
     
     @Test
+    public void testDeleteSingleGranuleGsConfigStyle() throws Exception {
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        // print(dom);
+        
+        // get the granule ids
+        String octoberId = xpath.evaluate("//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff']/@fid", dom);
+        assertNotNull(octoberId);
+        
+        // delete it like gsconfig does (yes, it really appens "./json" at the end)
+        MockHttpServletResponse response = deleteAsServletResponse(RestBaseController.ROOT_PATH 
+                + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/" + octoberId + "/.json");
+        assertEquals(200, response.getStatus());
+
+        // check it's gone from the index
+        dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml");
+        assertXpathEvaluatesTo("1", "count(//gf:watertemp)", dom);
+        assertXpathEvaluatesTo("0", "count(//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081031T0000000_12.tiff'])", dom);
+        assertXpathEvaluatesTo("2008-11-01T00:00:00Z", "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:ingestion", dom);
+        assertXpathEvaluatesTo("0", "//gf:watertemp[gf:location = 'NCOM_wattemp_000_20081101T0000000_12.tiff']/gf:elevation", dom);
+    }
+    
+    @Test
     public void testDeleteAllGranules() throws Exception {
         Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml", 200);
         assertXpathEvaluatesTo("2", "count(//gf:watertemp)", dom);

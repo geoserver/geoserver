@@ -25,6 +25,9 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
@@ -148,6 +151,23 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo(novemberId, "//gf:watertemp/@fid", dom);
         assertXpathEvaluatesTo("NCOM_wattemp_000_20081101T0000000_12.tiff", "//gf:watertemp/gf:location", dom);
         assertXpathEvaluatesTo("0", "//gf:watertemp/gf:elevation", dom);
+    }
+    
+    @Test
+    public void testGranulesOnRenamedCoverage() throws Exception {
+        // rename the watertemp coverage
+        CoverageStoreInfo store = catalog.getCoverageStoreByName("watertemp");
+        CoverageInfo coverage = catalog.getCoverageByCoverageStore(store, "watertemp");
+        coverage.setName("renamed");
+        catalog.save(coverage);
+            
+        Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/coverages/renamed/index.xml", 200);
+        // print(dom);
+        assertXpathEvaluatesTo("4", "count(//Schema/attributes/Attribute)", dom);
+        assertXpathEvaluatesTo("com.vividsolutions.jts.geom.MultiPolygon", "/Schema/attributes/Attribute[name='the_geom']/binding", dom);
+        assertXpathEvaluatesTo("java.lang.String", "/Schema/attributes/Attribute[name='location']/binding", dom);
+        assertXpathEvaluatesTo("java.util.Date", "/Schema/attributes/Attribute[name='ingestion']/binding", dom);
+        assertXpathEvaluatesTo("java.lang.Integer", "/Schema/attributes/Attribute[name='elevation']/binding", dom);
     }
     
     @Test 

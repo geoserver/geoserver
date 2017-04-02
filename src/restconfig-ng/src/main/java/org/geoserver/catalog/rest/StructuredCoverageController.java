@@ -107,8 +107,8 @@ public class StructuredCoverageController extends CatalogController {
         return wrapObject(indexSchema, IndexSchema.class);
     }
 
-    @GetMapping(path = "/granules", produces = { MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE })
+    @GetMapping(path = "/granules", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
     @ResponseBody
     public SimpleFeatureCollection getGranules(
             @PathVariable(name = "workspaceName") String workspaceName,
@@ -314,7 +314,7 @@ public class StructuredCoverageController extends CatalogController {
             throw new ResourceNotFoundException("No such coverage store: " + storeName);
         }
         Optional<CoverageInfo> optCoverage = catalog.getCoveragesByStore(store).stream()
-                .filter(si -> storeName.equals(si.getName())).findFirst();
+                .filter(si -> coverageName.equals(si.getName())).findFirst();
         if (!optCoverage.isPresent()) {
             throw new ResourceNotFoundException("No such coverage in store: " + coverageName);
         }

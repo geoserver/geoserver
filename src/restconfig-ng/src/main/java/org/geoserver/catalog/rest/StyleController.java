@@ -391,7 +391,7 @@ public class StyleController extends CatalogController {
       },
       consumes = {MediaType.ALL_VALUE}
     )
-    public void putStyleD(
+    public void putStyle(
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName,
             HttpServletRequest request,HttpServletResponse response,
@@ -467,29 +467,29 @@ public class StyleController extends CatalogController {
 
 //    @PutMapping(value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
 //        consumes = {SLDHandler.MIMETYPE_11, SLDHandler.MIMETYPE_10})
-    public void putStyleSLD(
-            @RequestBody Style style,
-            @PathVariable String styleName,
-            @PathVariable(required = false) String workspaceName) throws IOException {
-        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
-        }
-        checkFullAdminRequired(workspaceName);
-        
-        StyleInfo s = catalog.getStyleByName( workspaceName, styleName );
-
-        ResourcePool resourcePool = catalog.getResourcePool();
-        if(style instanceof Style) {
-            resourcePool.writeStyle(s, (Style) style, true);
-        } else if (style instanceof InputStream) {
-            resourcePool.writeStyle(s, (InputStream)style);
-        } else {
-            throw new RestException("Converted style object was neither a Style nor an InputStream"
-                    , HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        catalog.save(s);
-    }
+//    public void putStyleSLD(
+//            @RequestBody Style style,
+//            @PathVariable String styleName,
+//            @PathVariable(required = false) String workspaceName) throws IOException {
+//        if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
+//            throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
+//        }
+//        checkFullAdminRequired(workspaceName);
+//        
+//        StyleInfo s = catalog.getStyleByName( workspaceName, styleName );
+//
+//        ResourcePool resourcePool = catalog.getResourcePool();
+//        if(style instanceof Style) {
+//            resourcePool.writeStyle(s, (Style) style, true);
+//        } else if (style instanceof InputStream) {
+//            resourcePool.writeStyle(s, (InputStream)style);
+//        } else {
+//            throw new RestException("Converted style object was neither a Style nor an InputStream"
+//                    , HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//
+//        catalog.save(s);
+//    }
 
     /**
      * Unzips the ZIP stream.

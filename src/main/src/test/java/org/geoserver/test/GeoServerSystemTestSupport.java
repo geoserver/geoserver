@@ -1098,9 +1098,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * </p>
      * @param path The porition of the request after the context ( no query string ), 
      *      example: 'wms'. 
-     * 
+     * @param xml The body content, often xml for OGC services
      * @return An input stream which is the result of the request.
-     * 
      */
     protected InputStream post( String path , String xml ) throws Exception {
         MockHttpServletResponse response = postAsServletResponse(path, xml);
@@ -1114,10 +1113,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param path
      *            The porition of the request after the context ( no query
      *            string ), example: 'wms'.
-     * @param xml The body content.
-     * 
+     * @param xml The body content, often xml for OGC services
      * @return the servlet response
-     * 
      */
     protected MockHttpServletResponse postAsServletResponse(String path, String xml)
             throws Exception {
@@ -1170,6 +1167,14 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         return new ByteArrayInputStream(response.getContentAsString().getBytes());
     }
     
+    /**
+     * Executes an ows request using the POST method, with xml as body content.
+     * 
+     * @param path The porition of the request after the context ( no query string ), example: 'wms'.
+     * @param xml The body content, often xml for OGC services
+     * @param contentType
+     * @return the servlet response
+     */
     protected MockHttpServletResponse postAsServletResponse(String path, String body, String contentType) throws Exception {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("POST");

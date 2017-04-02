@@ -405,13 +405,11 @@ public class StyleController extends CatalogController {
         StyleInfo s = catalog.getStyleByName( workspaceName, styleName );
         
         String contentType = request.getContentType();
-        String extentsion = "sld"; // TODO: determine this from path
+        // String extentsion = "sld"; // TODO: determine this from path
         
         ResourcePool resourcePool = catalog.getResourcePool();
         if( raw ){
-            InputStream input = request.getInputStream();
-            resourcePool.writeStyle(s, (InputStream) input);
-            catalog.save(s);
+            writeRaw( s, request.getInputStream() );
         }
         else {
             String content = IOUtils.toString( request.getInputStream());
@@ -425,9 +423,15 @@ public class StyleController extends CatalogController {
                     try {
                         StyledLayerDescriptor sld = format.parse( content, version, null, entityResolver);
                         Style style = Styles.style(sld);
-                        resourcePool.writeStyle(s, (Style) style, true);
-                        
-                        catalog.save(s);
+                        if( format instanceof SLDHandler){
+                            s.setFormat(format.getFormat());
+                            resourcePool.writeStyle(s, (Style) style, true);
+                            catalog.save(s);
+                        }
+                        else {
+                            s.setFormat(format.getFormat());
+                            writeRaw(s, request.getInputStream());
+                        }
                         return;
                     }
                     catch(IOException invalid){
@@ -438,6 +442,14 @@ public class StyleController extends CatalogController {
             throw new RestException("Unknown style fomrat '"+contentType+"'", HttpStatus.BAD_REQUEST);
         }
     }
+    
+    private void writeRaw( StyleInfo info, InputStream input) throws IOException{
+        ResourcePool resourcePool = catalog.getResourcePool();
+        
+        resourcePool.writeStyle(info, input);
+        catalog.save( info);
+    }
+    
     @PutMapping(value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
             MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })

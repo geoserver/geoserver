@@ -18,6 +18,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.SLDHandler;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -28,6 +29,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.ysld.YsldHandler;
 import org.geotools.styling.Style;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -64,7 +66,7 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
     public void testRawPutYSLD() throws Exception {
         // step 1 create style info with correct format
         Catalog cat = getCatalog();
-        assertNull(cat.getStyleByName("gs", "foo"));
+        assertNull("foo not available",cat.getStyleByName("foo"));
 
         String xml =
             "<style>" +
@@ -72,9 +74,8 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
                 "<format>ysld</format>"+
                 "<filename>foo.yaml</filename>" +
                 "</style>";
-        
-        MockHttpServletResponse response =
-            postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml);
+        MockHttpServletResponse response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/styles", xml);
         assertEquals(201, response.getStatus());
         assertNotNull(cat.getStyleByName("foo"));
         
@@ -91,13 +92,58 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
         String definition = new String(resource.getContents());
         assertTrue("is yaml",definition.contains("stroke-color: '#FF0000'"));
         
-        Style s = catalog.getStyleByName( "foo" ).getStyle();
+        StyleInfo styleInfo = catalog.getStyleByName( "foo" );
+        Style s = styleInfo.getStyle();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         SLDHandler handler = new SLDHandler();
         handler.encode(Styles.sld(s), SLDHandler.VERSION_10, false, out);
         content = new String(out.toByteArray());
         assertTrue(content.contains("<sld:Name>foo</sld:Name>"));
+        catalog.remove(styleInfo);
+    }
+    
+    @Test
+    public void testPutYSLD() throws Exception {
+        // step 1 create style info with correct format
+        Catalog cat = getCatalog();
+        assertNull(cat.getStyleByName("bar"));
+
+        String xml =
+            "<style>" +
+                "<name>bar</name>" +
+                "<format>ysld</format>"+
+                "<filename>bar.yaml</filename>" +
+                "</style>";
+        
+        MockHttpServletResponse response =
+            postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml);
+        assertEquals(201, response.getStatus());
+        assertNotNull(cat.getStyleByName("bar"));
+        
+        
+        String content = newYSLD();
+        response =
+            putAsServletResponse( "/rest/styles/bar", content, YsldHandler.MIMETYPE);
+        assertEquals( 200, response.getStatus() );
+
+        GeoServerResourceLoader resources = catalog.getResourceLoader();
+        
+        Resource resource = resources.get("/styles/bar.yaml");
+        
+        String definition = new String(resource.getContents());
+        assertTrue("is yaml",definition.contains("stroke-color: '#FF0000'"));
+        
+        StyleInfo styleInfo = catalog.getStyleByName( "bar" );
+        Style s = styleInfo.getStyle();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        SLDHandler handler = new SLDHandler();
+        handler.encode(Styles.sld(s), SLDHandler.VERSION_10, false, out);
+        content = new String(out.toByteArray());
+        assertTrue(content.contains("<sld:Name>bar</sld:Name>"));
+        
+        catalog.remove(styleInfo);
     }
     
     String newYSLD() {

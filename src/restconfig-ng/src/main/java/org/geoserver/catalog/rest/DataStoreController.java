@@ -187,9 +187,9 @@ public class DataStoreController extends CatalogController {
             @Override
             protected void postEncodeDataStore(DataStoreInfo ds,
                                                    HierarchicalStreamWriter writer, MarshallingContext context) {
-                // add a link to the coverages
-                writer.startNode("datastore");
-                converter.encodeCollectionLink("datastore", writer);
+                // add a link to the featuretypes
+                writer.startNode("featureTypes");
+                converter.encodeCollectionLink("featuretypes", writer);
                 writer.endNode();
             }
 

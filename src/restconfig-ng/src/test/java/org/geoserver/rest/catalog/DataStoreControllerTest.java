@@ -11,6 +11,7 @@ import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.rest.RestBaseController;
 import org.geotools.data.DataStore;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,8 @@ import java.util.Properties;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.*;
 
 /**
@@ -112,10 +115,13 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM( ROOT_PATH+"/workspaces/sf/datastores/sf.xml");
+        print(dom);
         assertEquals( "dataStore", dom.getDocumentElement().getNodeName() );
         assertEquals( "sf", xp.evaluate( "/dataStore/name", dom) );
         assertEquals( "sf", xp.evaluate( "/dataStore/workspace/name", dom) );
         assertXpathExists( "/dataStore/connectionParameters", dom );
+        assertThat( xp.evaluate( "/dataStore/featureTypes/atom:link/@href", dom), endsWith(RestBaseController.ROOT_PATH 
+                + "/workspaces/sf/datastores/sf/featuretypes.xml"));
     }
 
     @Test

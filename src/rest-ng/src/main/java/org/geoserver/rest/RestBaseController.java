@@ -25,12 +25,21 @@ import java.util.logging.Logger;
 /**
  * Base class for all rest-ng controllers
  *
- * Extending classes should be annotated with {@link org.springframework.web.bind.annotation.RestController} and
- * {@link org.springframework.web.bind.annotation.ControllerAdvice}
+ * Extending classes should be annotated with {@link org.springframework.web.bind.annotation.RestController} so that
+ * they are automatically instantiated as a Controller bean.
  *
- * Provides basic logic for wrapper construction and persister configuration
+ * Custom configuration can be added to XStreamPersister by overriding {@link #configurePersister(XStreamPersister, XStreamMessageConverter)}
+ * Custom configuration can be added to Freemarker by calling {@link #configureFreemarker(FreemarkerHTMLMessageConverter, Template)}
  *
- * Also provides various utilities for dealing with the {@link FreemarkerHTMLMessageConverter}
+ * Any extending classes which override {@link #configurePersister(XStreamPersister, XStreamMessageConverter)}, and
+ * require this configuration for reading objects from incoming requests must also be annotated with
+ * {@link org.springframework.web.bind.annotation.ControllerAdvice} and override the {@link #supports(MethodParameter, Type, Class)}
+ * method.
+ *
+ * Any response objects that should be encoded using either {@link XStreamMessageConverter} or {@link FreemarkerHTMLMessageConverter}
+ * should be wrapped in a {@link RestWrapper} by calling {@link #wrapObject(Object, Class)}.
+ * Any response objects that should be encoded using {@link org.geoserver.rest.converters.XStreamCatalogListConverter}
+ * should be wrapped by calling {@link #wrapList(Collection, Class)}
  */
 public abstract class RestBaseController implements RequestBodyAdvice {
 
@@ -215,8 +224,10 @@ public abstract class RestBaseController implements RequestBodyAdvice {
 
     @Override
     /**
-     * Any subclass that implements {@link #configurePersister(XStreamPersister, XStreamMessageConverter)} should
-     * override this method to return true when called from the appropriate controller
+     * Any subclass that implements {@link #configurePersister(XStreamPersister, XStreamMessageConverter)} and require
+     * this configuration for reading objects from incoming requests should override this method to return true when
+     * called from the appropriate controller, and should also be annotated with
+     * {@link org.springframework.web.bind.annotation.ControllerAdvice}
      */
     public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return false;

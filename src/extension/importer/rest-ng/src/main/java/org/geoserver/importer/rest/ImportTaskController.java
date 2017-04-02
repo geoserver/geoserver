@@ -88,4 +88,11 @@ public class ImportTaskController extends ImportBaseController {
         return (writer, converter) -> converter.store(task.getStore(), task, true, converter.expand(1));
 
     }
+
+    @GetMapping(path = {"/{taskId}/layer"}, produces = { MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    public ImportWrapper layersGet(@PathVariable Long id, @PathVariable Integer taskId) {
+        ImportTask task = task(id, taskId);
+        return (writer, converter) -> converter.layer(task, true, converter.expand(1));
+    }
 }

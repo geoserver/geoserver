@@ -113,7 +113,6 @@
       <artifactId>gs-gwc</artifactId>
       <version>${project.version}</version>
     </dependency>
-<!--
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-rest</artifactId>
@@ -124,7 +123,7 @@
       <artifactId>gs-restconfig</artifactId>
       <version>${project.version}</version>
     </dependency>
--->
+<!--
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-rest-ng</artifactId>
@@ -135,6 +134,7 @@
       <artifactId>gs-restconfig-ng</artifactId>
       <version>${project.version}</version>
     </dependency>
+    -->
     <dependency>
       <groupId>org.geoserver.security</groupId>
       <artifactId>gs-sec-jdbc</artifactId>

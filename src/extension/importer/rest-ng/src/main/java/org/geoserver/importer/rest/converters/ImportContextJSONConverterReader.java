@@ -102,12 +102,19 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
     @Override
     public Object read(Class clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
-        ImportContext context = null;
         InputStream in = inputMessage.getBody();
         json = parse(in);
+        return context();
+    }
+
+    public ImportContext context() throws IOException {
+        return context(json);
+    }
+    public ImportContext context(JSONObject json) throws IOException {
+        ImportContext context = null;
         if (json.has("import")) {
             context = new ImportContext();
-            
+
             json = json.getJSONObject("import");
             if (json.has("id")) {
                 context.setId(json.getLong("id"));
@@ -123,11 +130,11 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
             }
             if (json.has("targetWorkspace")) {
                 context.setTargetWorkspace(
-                    fromJSON(json.getJSONObject("targetWorkspace"), WorkspaceInfo.class));
+                        fromJSON(json.getJSONObject("targetWorkspace"), WorkspaceInfo.class));
             }
             if (json.has("targetStore")) {
                 context.setTargetStore(
-                    fromJSON(json.getJSONObject("targetStore"), StoreInfo.class));
+                        fromJSON(json.getJSONObject("targetStore"), StoreInfo.class));
             }
             if (json.has("data")) {
                 context.setData(data(json.getJSONObject("data")));

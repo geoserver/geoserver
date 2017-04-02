@@ -25,6 +25,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.data.DataUtilities;
 import org.geotools.styling.Style;
+import org.hamcrest.core.StringEndsWith;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -46,6 +47,7 @@ import java.util.Properties;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.*;
 
 /**
@@ -283,6 +285,23 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertTrue( response.getHeader("Location").endsWith( "/styles/bar" ) );
 
         assertNotNull( catalog.getStyleByName( "bar" ) );
+    }
+    
+    @Test
+    public void testStyleWithSpaceInName() throws Exception {
+        String xml = newSLDXML();
+
+        MockHttpServletResponse response =
+            postAsServletResponse( RestBaseController.ROOT_PATH + "/styles?name=Default%20Styler", xml, SLDHandler.MIMETYPE_10);
+        assertEquals( 201, response.getStatus() );
+        assertNotNull( response.getHeader( "Location") );
+        assertThat(response.getHeader("Location"), endsWith( "/styles/Default%20Styler" ) );
+
+        assertNotNull( catalog.getStyleByName( "Default Styler" ) );
+        
+        // now delete it, using a + instead of %20, the old code supported it
+        response = deleteAsServletResponse(RestBaseController.ROOT_PATH + "/styles/Default+Styler");
+        assertEquals(200, response.getStatus());
     }
 
     @Test

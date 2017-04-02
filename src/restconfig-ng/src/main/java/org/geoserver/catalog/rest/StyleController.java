@@ -269,6 +269,10 @@ public class StyleController extends CatalogController {
 
         StyleInfo style = workspaceName != null ? catalog.getStyleByName(workspaceName, styleName) :
                 catalog.getStyleByName(styleName);
+        
+        if(style == null) {
+            throw new ResourceNotFoundException("Style " + styleName + " not found");
+        }
 
         if (recurse) {
             new CascadeDeleteVisitor(catalog).visit(style);

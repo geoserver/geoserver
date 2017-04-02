@@ -63,7 +63,7 @@ public class RequestControllerTest extends GeoServerSystemTestSupport {
         // this check is's actual XML
         org.jsoup.nodes.Document document = Jsoup.parse(response.getContentAsString());
         // testing the first element
-        assertEquals("http://localhost:8080/geoserver/restng/monitor/requests/1.html",
+        assertEquals("http://localhost:8080/geoserver/" + RestBaseController.ROOT_PATH + "/monitor/requests/1.html",
                 document.select("a:contains(1)").attr("href"));
         assertEquals("RUNNING", document.select("tr.even > td").get(1).text());
     }

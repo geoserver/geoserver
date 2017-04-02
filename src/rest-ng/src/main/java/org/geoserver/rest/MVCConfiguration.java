@@ -19,8 +19,11 @@ import org.springframework.web.servlet.config.annotation.ContentNegotiationConfi
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.util.UrlPathHelper;
 import org.xml.sax.EntityResolver;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -126,7 +129,25 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
         //Force MVC to use /restng endpoint. If we need something more advanced, we should make a custom PathHelper
-        configurer.setUrlPathHelper(mvcUrlPathHelper());
+        configurer.setUrlPathHelper(new GeoServerUrlPathHelper());
         configurer.getUrlPathHelper().setAlwaysUseFullPath(true);
+    }
+    
+    static class GeoServerUrlPathHelper extends UrlPathHelper {
+        
+        public GeoServerUrlPathHelper() {
+            setAlwaysUseFullPath(true);
+            setDefaultEncoding("UTF-8");
+        }
+        
+        @Override
+        public String decodeRequestString(HttpServletRequest request, String source) {
+            // compatibility with old Restlet based config, it also decodes "+" into space
+            try {
+                return URLDecoder.decode(source, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                return null;
+            }
+        }
     }
 }

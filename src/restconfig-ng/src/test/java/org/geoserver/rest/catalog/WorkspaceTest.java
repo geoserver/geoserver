@@ -218,8 +218,8 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 	}
 
 	@Test
-	public void testDeleteDefaultNotAllowed() throws Exception {
-		assertEquals(405, deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/default").getStatus());
+	public void testDeleteDefault() throws Exception {
+		assertEquals(200, deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/default").getStatus());
 	}
 
 	@Test

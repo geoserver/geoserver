@@ -164,9 +164,6 @@ public class WorkspaceController extends CatalogController {
             @RequestParam(defaultValue = "false", name = "recurse") boolean recurse) {
 
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
-        if(workspaceName.equals("default")) {
-            throw new RestException("Can't delete the default workspace", HttpStatus.METHOD_NOT_ALLOWED);
-        }
         if(ws == null) {
             throw new RestException("Workspace '"+workspaceName+"' not found", HttpStatus.NOT_FOUND);
         }

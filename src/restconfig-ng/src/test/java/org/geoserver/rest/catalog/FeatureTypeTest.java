@@ -45,8 +45,9 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
     private static String BASEPATH = RestBaseController.ROOT_PATH;
 
     @Before
-    public void removePdsStore() {
+    public void removePropertyStores() {
         removeStore("gs", "pds");
+        removeStore("gs", "ngpds");
     }
 
     @Before
@@ -123,8 +124,9 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAllByDataStore() throws Exception {
-
+        // two stores to play with
         addPropertyDataStore(true);
+        addGeomlessPropertyDataStore(true);
 
         Document dom = getAsDOM(BASEPATH + "/workspaces/gs/datastores/pds/featuretypes.xml");
 

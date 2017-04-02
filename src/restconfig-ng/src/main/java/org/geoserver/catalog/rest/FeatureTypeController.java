@@ -142,10 +142,10 @@ public class FeatureTypeController extends CatalogController {
             if (datastoreName != null) {
                 DataStoreInfo dataStore = catalog.getDataStoreByName(workspaceName, datastoreName);
                 fts = catalog.getFeatureTypesByDataStore(dataStore);
+            } else {
+                NamespaceInfo ns = catalog.getNamespaceByPrefix(workspaceName);
+                fts = catalog.getFeatureTypesByNamespace(ns);
             }
-
-            NamespaceInfo ns = catalog.getNamespaceByPrefix(workspaceName);
-            fts = catalog.getFeatureTypesByNamespace(ns);
 
             return wrapList(fts, FeatureTypeInfo.class);
         }

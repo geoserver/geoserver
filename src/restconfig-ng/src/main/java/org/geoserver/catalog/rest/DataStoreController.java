@@ -4,21 +4,33 @@
  */
 package org.geoserver.catalog.rest;
 
-import com.thoughtworks.xstream.converters.MarshallingContext;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import freemarker.template.ObjectWrapper;
-import freemarker.template.SimpleHash;
-import freemarker.template.Template;
-import freemarker.template.TemplateModelException;
-import org.geoserver.catalog.*;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.geoserver.catalog.CascadeDeleteVisitor;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
-import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.geotools.data.DataAccessFactory;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,17 +40,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.vfny.geoserver.util.DataStoreUtils;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.*;
-import java.util.logging.Logger;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+
+import freemarker.template.ObjectWrapper;
+import freemarker.template.SimpleHash;
+import freemarker.template.TemplateModelException;
 
 /**
  * Created by vickdw on 3/27/17.
@@ -86,6 +110,44 @@ public class DataStoreController extends CatalogController {
     public ResponseEntity<String> postDataStoreInfo(@RequestBody DataStoreInfo dataStore,
                                                         @PathVariable(name = "workspace") String workspaceName,
                                                         UriComponentsBuilder builder) {
+        if ( dataStore.getWorkspace() != null ) {
+             //ensure the specifried workspace matches the one dictated by the uri
+             WorkspaceInfo ws = (WorkspaceInfo) dataStore.getWorkspace();
+             if ( !workspaceName.equals( ws.getName() ) ) {
+                 throw new RestException( "Expected workspace " + workspaceName + 
+                     " but client specified " + ws.getName(), HttpStatus.FORBIDDEN );
+             }
+        } else {
+             dataStore.setWorkspace( catalog.getWorkspaceByName(workspaceName) );
+        } 
+        dataStore.setEnabled(true);
+        
+        //if no namespace parameter set, set it
+        //TODO: we should really move this sort of thing to be something central
+        if (!dataStore.getConnectionParameters().containsKey("namespace")) {
+            WorkspaceInfo ws = dataStore.getWorkspace();
+            NamespaceInfo ns = catalog.getNamespaceByPrefix(ws.getName());
+            if (ns == null) {
+                ns = catalog.getDefaultNamespace();
+            }
+            if (ns != null) {
+                dataStore.getConnectionParameters().put("namespace", ns.getURI());
+            }
+        }
+
+        //attempt to set the datastore type
+        try {
+            DataAccessFactory factory = 
+                DataStoreUtils.aquireFactory(dataStore.getConnectionParameters());
+            dataStore.setType(factory.getDisplayName());
+        }
+        catch(Exception e) {
+            LOGGER.warning("Unable to determine datastore type from connection parameters");
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "", e);
+            }
+        }
+        
         catalog.validate(dataStore, true).throwIfInvalid();
         catalog.add(dataStore);
 

@@ -236,6 +236,32 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
         DataStore ds = (DataStore) newDataStore.getDataStore(null);
         assertNotNull(ds);
     }
+    
+    @Test
+    public void testPostAsXMLNoWorkspace() throws Exception {
+        File dir = setupNewDataStore();
+        String xml =
+                "<dataStore>" +
+                        "<name>newDataStore</name>" +
+                        "<connectionParameters>" +
+                        "<namespace><string>sf</string></namespace>" +
+                        "<directory>" +
+                        "<string>" + dir.getAbsolutePath() + "</string>" +
+                        "</directory>" +
+                        "</connectionParameters>" +
+                        "</dataStore>";
+        MockHttpServletResponse response =
+                postAsServletResponse( ROOT_PATH+"/workspaces/sf/datastores", xml, "text/xml" );
+        assertEquals( 201, response.getStatus() );
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/workspaces/sf/datastores/newDataStore" ) );
+
+        DataStoreInfo newDataStore = catalog.getDataStoreByName( "newDataStore" );
+        assertNotNull( newDataStore );
+
+        DataStore ds = (DataStore) newDataStore.getDataStore(null);
+        assertNotNull(ds);
+    }
 
     @Test
     public void testPostAsJSON() throws Exception {

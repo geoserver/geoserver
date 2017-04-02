@@ -7,17 +7,16 @@ package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.*;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.rest.RestBaseController;
@@ -113,14 +112,28 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsXML() throws Exception {
+      
+        
         print(get(RestBaseController.ROOT_PATH + "/layergroups/sfLayerGroup.xml"));
         Document dom = getAsDOM( RestBaseController.ROOT_PATH + "/layergroups/sfLayerGroup.xml");
+        print(dom);
+        
         assertEquals( "layerGroup", dom.getDocumentElement().getNodeName() );
         assertXpathEvaluatesTo("sfLayerGroup", "/layerGroup/name", dom );
         assertXpathEvaluatesTo( "2", "count(//published)", dom );
         assertXpathEvaluatesTo( "2", "count(//style)", dom );
+        // check layer link
+        assertThat(xp.evaluate("//published[name='PrimitiveGeoFeature']/atom:link/@href", dom), 
+                endsWith(RestBaseController.ROOT_PATH + "/layers/PrimitiveGeoFeature.xml"));
+        assertThat(xp.evaluate("//published[name='PrimitiveGeoFeature']/atom:link/@type", dom), 
+                equalTo("application/xml"));
+        // check style link
+        assertThat(xp.evaluate("//style[1]/atom:link/@href", dom), 
+                endsWith(RestBaseController.ROOT_PATH + "/styles/point.xml"));
+        assertThat(xp.evaluate("//style[1]/atom:link/@type", dom), 
+                equalTo("application/xml"));
 
-        print(get(RestBaseController.ROOT_PATH + "/layergroups/citeLayerGroup.xml"));
+        
         dom = getAsDOM( RestBaseController.ROOT_PATH + "/layergroups/citeLayerGroup.xml");
         assertEquals( "layerGroup", dom.getDocumentElement().getNodeName() );
         assertXpathEvaluatesTo("citeLayerGroup", "/layerGroup/name", dom );

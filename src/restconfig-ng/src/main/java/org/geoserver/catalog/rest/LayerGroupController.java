@@ -10,6 +10,8 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
@@ -32,6 +34,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -67,7 +72,7 @@ public class LayerGroupController extends CatalogController {
     }
 
     @GetMapping(value = {"/layergroups/{layerGroup}", "/workspaces/{workspace}/layergroups/{layerGroup}"},
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
+            produces = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper getLayerGroup(@PathVariable (name = "layerGroup") String layerGroupName,
                                      @PathVariable (name = "workspace", required = false) String workspaceName,
                                      @RequestParam (name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
@@ -178,7 +183,7 @@ public class LayerGroupController extends CatalogController {
     }
 
     @Override
-    public void configurePersister(XStreamPersister persister, XStreamMessageConverter xStreamMessageConverter) {
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         persister.setCallback(new XStreamPersister.Callback() {
             @Override
             protected Class<LayerGroupInfo> getObjectClass() {
@@ -195,6 +200,22 @@ public class LayerGroupController extends CatalogController {
                     return null;
                 }
                 return catalog.getLayerGroupByName(workspace, layerGroup);
+            }
+            
+            @Override
+            protected void postEncodeReference(Object obj, String ref, String prefix,
+                    HierarchicalStreamWriter writer, MarshallingContext context) {
+                if ( obj instanceof StyleInfo ) {
+                    StringBuffer link = new StringBuffer();
+                    if (prefix != null) {
+                        link.append("/workspaces/").append(converter.encode(prefix));
+                    }
+                    link.append("/styles/").append(converter.encode(ref));
+                    converter.encodeLink(link.toString(), writer);
+                }
+                if ( obj instanceof LayerInfo ) {
+                    converter.encodeLink("/layers/" + converter.encode(ref), writer);
+                }
             }
         });
     }

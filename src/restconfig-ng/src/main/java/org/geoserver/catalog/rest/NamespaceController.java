@@ -127,21 +127,22 @@ public class NamespaceController extends CatalogController {
             UriComponentsBuilder builder) {
         if ("default".equals(prefix)) {
             catalog.setDefaultNamespace(namespace);
+        } else {
+            // name must exist
+            NamespaceInfo nsi = catalog.getNamespaceByPrefix(prefix);
+            if (nsi == null) {
+                throw new RestException("Can't change a non existant namespace (" + prefix + ")",
+                        HttpStatus.NOT_FOUND);
+            }
+    
+            String infoName = namespace.getName();
+            if (infoName != null && !prefix.equals(infoName)) {
+                throw new RestException("Can't change name of namespace", HttpStatus.FORBIDDEN);
+            }
+    
+            new CatalogBuilder(catalog).updateNamespace(nsi, namespace);
+            catalog.save(nsi);
         }
-        // name must exist
-        NamespaceInfo nsi = catalog.getNamespaceByPrefix(prefix);
-        if (nsi == null) {
-            throw new RestException("Can't change a non existant namespace (" + prefix + ")",
-                    HttpStatus.NOT_FOUND);
-        }
-
-        String infoName = namespace.getName();
-        if (infoName != null && !prefix.equals(infoName)) {
-            throw new RestException("Can't change name of namespace", HttpStatus.FORBIDDEN);
-        }
-
-        new CatalogBuilder(catalog).updateNamespace(nsi, namespace);
-        catalog.save(nsi);
     }
 
     @DeleteMapping(path = "/namespaces/{prefix}")

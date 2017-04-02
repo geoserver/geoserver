@@ -13,10 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -24,11 +20,14 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.rest.RestBaseController;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import org.springframework.mock.web.MockHttpServletResponse;
+import net.sf.json.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public class NamespaceTest extends CatalogRESTTestSupport {
     
@@ -286,7 +285,8 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertEquals( "gs", def.getPrefix() );
         
         String json = "{'namespace':{ 'prefix':'sf' }}";
-        put( RestBaseController.ROOT_PATH + "/namespaces/default", json, "text/json");
+        MockHttpServletResponse response = putAsServletResponse( RestBaseController.ROOT_PATH + "/namespaces/default", json, "text/json");
+        assertEquals(200, response);
         
         def = getCatalog().getDefaultNamespace(); 
         assertEquals( "sf", def.getPrefix() );

@@ -134,6 +134,8 @@ public class WMS implements ApplicationContextAware {
     
     public static final Boolean SCALEHINT_MAPUNITS_PIXEL_DEFAULT = Boolean.FALSE;
     
+    public static final String DYNAMIC_STYLING_DISABLED = "dynamicStylingDisabled";
+
     static final Logger LOGGER = Logging.getLogger(WMS.class);
 
     public static final String WEB_CONTAINER_KEY = "WMS";
@@ -354,6 +356,10 @@ public class WMS implements ApplicationContextAware {
 
     public WMSInterpolation getInterpolation() {
         return getServiceInfo().getInterpolation();
+    }
+
+    public boolean isDynamicStylingDisabled() {
+        return getServiceInfo().isDynamicStylingDisabled();
     }
 
     public JAIInfo.PngEncoderType getPNGEncoderType() {

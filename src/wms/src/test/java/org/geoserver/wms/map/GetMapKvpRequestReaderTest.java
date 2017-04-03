@@ -39,6 +39,8 @@ import org.geoserver.test.ows.KvpRequestReaderTestSupport;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
+import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.wms.kvp.PaletteManager;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.Style;
@@ -52,6 +54,14 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     GetMapKvpRequestReader reader;
 
     Dispatcher dispatcher;
+
+    public static final String STATES_SLD = "<StyledLayerDescriptor version=\"1.0.0\">"
+            + "<UserLayer><Name>sf:states</Name><UserStyle><Name>UserSelection</Name>"
+            + "<FeatureTypeStyle><Rule><Filter xmlns:gml=\"http://www.opengis.net/gml\">"
+            + "<PropertyIsEqualTo><PropertyName>STATE_ABBR</PropertyName><Literal>IL</Literal></PropertyIsEqualTo>"
+            + "</Filter><PolygonSymbolizer><Fill><CssParameter name=\"fill\">#FF0000</CssParameter></Fill>"
+            + "</PolygonSymbolizer></Rule><Rule><LineSymbolizer><Stroke/></LineSymbolizer></Rule>"
+            + "</FeatureTypeStyle></UserStyle></UserLayer></StyledLayerDescriptor>";
 
     /**
      * This is a READ ONLY TEST so we can use one time setup
@@ -82,7 +92,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         cb.calculateLayerGroupBounds(gi2);
         getCatalog().add(gi2);
     }
-    
+
     @Override
     protected void oneTimeTearDown() throws Exception {
         super.oneTimeTearDown();
@@ -135,7 +145,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
             getGeoServer().save(geoserverInfo);
         }
     }
-    
+
     public void testCreateRequest() throws Exception {
         GetMapRequest request = (GetMapRequest) reader.createRequest();
         assertNotNull(request);
@@ -258,7 +268,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertNotNull(request.getInterpolations().get(2));
         assertTrue(request.getInterpolations().get(2) instanceof InterpolationBilinear);
     }
-    
+
     public void testInterpolationsForLayerGroups() throws Exception {
         HashMap kvp = new HashMap();
         kvp.put("layers", "testGroup2");
@@ -388,6 +398,58 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         final Style style = (Style) request.getStyles().get(0);
         assertNotNull(style);
         assertEquals("TheLibraryModeStyle", style.getName());
+    }
+
+    public void testSldDisabled() throws Exception {
+        HashMap kvp = new HashMap();
+        URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
+        String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
+        kvp.put("sld", decoded);
+        kvp.put("layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+
+        WMS wms = new WMS(getGeoServer());
+        WMSInfo  oldInfo = wms.getGeoServer().getService(WMSInfo.class);
+        WMSInfo info = new WMSInfoImpl();
+        info.setDynamicStylingDisabled(Boolean.TRUE);
+        getGeoServer().remove(oldInfo);
+        getGeoServer().add(info);
+        reader = new GetMapKvpRequestReader(wms);
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        boolean error = false;
+        try {
+            request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        } catch(ServiceException e) {
+            error = true;
+        }
+        getGeoServer().remove(info);
+        getGeoServer().add(oldInfo);
+        assertTrue(error);
+    }
+
+    public void testSldBodyDisabled() throws Exception {
+        HashMap kvp = new HashMap();
+        kvp.put("sld_body", STATES_SLD);
+        kvp.put("layers",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+
+        WMS wms = new WMS(getGeoServer());
+        WMSInfo  oldInfo = wms.getGeoServer().getService(WMSInfo.class);
+        WMSInfo info = new WMSInfoImpl();
+        info.setDynamicStylingDisabled(Boolean.TRUE);
+        getGeoServer().remove(oldInfo);
+        getGeoServer().add(info);
+        reader = new GetMapKvpRequestReader(wms);
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        boolean error = false;
+        try {
+            request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
+        } catch(ServiceException e) {
+            error = true;
+        }
+        getGeoServer().remove(info);
+        getGeoServer().add(oldInfo);
+        assertTrue(error);
     }
 
     public void testSldNamed() throws Exception {

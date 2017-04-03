@@ -4,27 +4,20 @@
  */
 package org.geoserver.importer.rest;
 
-import java.io.File;
-import java.util.NoSuchElementException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
 import org.geoserver.catalog.rest.CatalogController;
-import org.geoserver.importer.Directory;
-import org.geoserver.importer.FileData;
-import org.geoserver.importer.ImportContext;
-import org.geoserver.importer.ImportData;
-import org.geoserver.importer.ImportTask;
-import org.geoserver.importer.Importer;
+import org.geoserver.importer.*;
 import org.geoserver.importer.rest.converters.ImportContextJSONConverterWriter;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
+import java.util.NoSuchElementException;
 
 @RestController
 @ControllerAdvice

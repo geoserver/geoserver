@@ -1,12 +1,8 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.importer.rest.converters;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.activation.MimetypesFileTypeMap;
 
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
@@ -15,8 +11,6 @@ import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.BaseMessageConverter;
-import org.geoserver.rest.util.RESTUtils;
-import org.restlet.data.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -26,10 +20,18 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * {@link BaseMessageConverter} implementation for reading and writing {@link ImportTransform} objects to/from json
+ */
 @Component
 public class ImportTransformMessageConverter extends BaseMessageConverter
         implements HttpMessageConverter {

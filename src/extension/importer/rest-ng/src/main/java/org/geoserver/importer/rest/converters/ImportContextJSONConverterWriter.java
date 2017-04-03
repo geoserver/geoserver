@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.importer.rest.converters;
 
 import java.io.ByteArrayOutputStream;
@@ -75,6 +79,10 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import net.sf.json.util.JSONBuilder;
 
+/**
+ * {@link BaseMessageConverter} implementation for writing JSON or HTML responses from {@link ImportContext},
+ * {@link ImportTask}  or {@link ImportWrapper} objects.
+ */
 @Component
 public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 

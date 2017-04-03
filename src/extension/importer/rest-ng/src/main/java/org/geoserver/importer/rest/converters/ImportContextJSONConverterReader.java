@@ -65,6 +65,9 @@ import org.springframework.stereotype.Component;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+/**
+ * {@link BaseMessageConverter} implementation for reading {@link ImportContext} and {@link ImportTask} objects from JSON
+ */
 @Component
 public class ImportContextJSONConverterReader extends BaseMessageConverter {
 
@@ -86,7 +89,7 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
     }
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
-        return (ImportContext.class.isAssignableFrom(clazz) || ImportContext.class.isAssignableFrom(clazz))
+        return (ImportContext.class.isAssignableFrom(clazz) || ImportTask.class.isAssignableFrom(clazz))
                 && isSupportedMediaType(mediaType);
         
     }

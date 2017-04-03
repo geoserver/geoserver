@@ -9,7 +9,6 @@ import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
-import org.restlet.data.Status;
 import org.springframework.http.HttpStatus;
 
 public class ImportBaseController extends RestBaseController {

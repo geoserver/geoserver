@@ -286,7 +286,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         
         String json = "{'namespace':{ 'prefix':'sf' }}";
         MockHttpServletResponse response = putAsServletResponse( RestBaseController.ROOT_PATH + "/namespaces/default", json, "text/json");
-        assertEquals(200, response);
+        assertEquals(200, response.getStatus());
         
         def = getCatalog().getDefaultNamespace(); 
         assertEquals( "sf", def.getPrefix() );

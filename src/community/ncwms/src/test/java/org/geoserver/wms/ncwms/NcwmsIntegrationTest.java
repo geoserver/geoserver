@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,6 +19,7 @@ import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockTestData;
@@ -166,6 +166,18 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         // filter by workspace
         Document dom = getAsDOM(
                 "wms?service=WMS&version=1.3.0&request=GetCapabilities&dataset=cite");
+        assertDatasetWithCapabilities(dom);
+    }
+    
+    @Test
+    public void testDatasetFilteringPOST() throws Exception {
+        // filter by workspace
+        Document dom = postAsDOM(
+                "wms?service=WMS&version=1.3.0&request=GetCapabilities&dataset=cite");
+        assertDatasetWithCapabilities(dom);
+    }
+
+    private void assertDatasetWithCapabilities(Document dom) throws XpathException, Exception {
         // check only the layers in that workspace are there, and are not qualified
         for (LayerInfo layer : getCatalog().getLayers()) {
             if ("cite".equals(layer.getResource().getStore().getWorkspace().getName())
@@ -226,4 +238,17 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
         // dry here
         assertPixel(image, 160, 60, new Color(170, 170, 170));
     }
+    
+    @Test
+    public void testWfsCapabilitiesPostRequest() throws Exception {
+        // run a WFS 2.0 capabilities request, used to NPE in the NcWmsDatasetCallback
+        String xml = "<GetCapabilities xmlns=\"http://www.opengis.net/wfs/2.0\" "
+                + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                + "service=\"WFS\" "
+                + "xsi:schemaLocation=\"http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd\"/>";
+        Document dom = postAsDOM("wfs", xml);
+        // print(dom);
+        assertEquals("wfs:WFS_Capabilities", dom.getDocumentElement().getNodeName());
+    }
+    
 }

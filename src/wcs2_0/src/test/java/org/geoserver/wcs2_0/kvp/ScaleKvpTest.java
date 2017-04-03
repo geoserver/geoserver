@@ -5,6 +5,8 @@ import static junit.framework.TestCase.assertNotNull;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,18 +19,35 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
-import org.w3c.dom.Document;
-
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 /**
  * Testing Scaling Extension KVP
  * @author Simone Giannecchini, GeoSolutions SAS
  *
  */
+@RunWith(Parameterized.class)
 public class ScaleKvpTest extends WCSKVPTestSupport {
 
     private Logger LOGGER= Logging.getLogger(ScaleKvpTest.class);
+    private String axisPrefix;
+    private String subsetPrefix;
     
+    
+    @Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {     
+                 {"", ""}, {"http://www.opengis.net/def/axis/OGC/1/", "http://www.opengis.net/def/axis/OGC/0/"}  
+           });
+    }
+    
+    public ScaleKvpTest(String axisPrefix, String subsetPrefix) {
+        this.axisPrefix = axisPrefix;
+        this.subsetPrefix = subsetPrefix;
+    }
 
     @Test
     public void capabilties() throws Exception {
@@ -152,8 +171,8 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         
         // subsample
         MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                        "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES=http://www.opengis.net/def/axis/OGC/1/i(0.5)," +
-                        "http://www.opengis.net/def/axis/OGC/1/j(0.5)");
+                        "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES=" + axisPrefix + "i(0.5)," +
+                         axisPrefix + "j(0.5)");
         
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -192,8 +211,8 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         
         // upsample
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES=http://www.opengis.net/def/axis/OGC/1/i(2)," +
-        "http://www.opengis.net/def/axis/OGC/1/j(2)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES=" + axisPrefix + "i(2)," +
+         axisPrefix + "j(2)");
         
         assertEquals("image/tiff", response.getContentType());
         tiffContents = getBinary(response);
@@ -232,16 +251,16 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         
         // error 0
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES=http://www.opengis.net/def/axis/OGC/1/i(0)," +
-        "http://www.opengis.net/def/axis/OGC/1/j(0.5)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES=" + axisPrefix + "i(0)," +
+         axisPrefix + "j(0.5)");
         
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidScaleFactor.getExceptionCode(), "0.0");
         
         // error < 0
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES=http://www.opengis.net/def/axis/OGC/1/i(-1)," +
-        "http://www.opengis.net/def/axis/OGC/1/j(0.5)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES=" + axisPrefix + "i(-1)," +
+         axisPrefix + "j(0.5)");
         
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidScaleFactor.getExceptionCode(), "-1.0");
@@ -261,10 +280,10 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             // subsample 
             MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
                             "&coverageId=wcs__BlueMarble&&Format=image/tiff" +
-                            "&subset=http://www.opengis.net/def/axis/OGC/0/Long(" +sourceEnvelope.x+","+(sourceEnvelope.x+sourceEnvelope.width/2)+")"+
-                            "&subset=http://www.opengis.net/def/axis/OGC/0/Lat(" +sourceEnvelope.y+","+(sourceEnvelope.y+sourceEnvelope.height/2)+")" +
-                            		"&SCALESIZE=http://www.opengis.net/def/axis/OGC/1/i(50)," +
-                            "http://www.opengis.net/def/axis/OGC/1/j(50)");
+                            "&subset=" + subsetPrefix + "Long(" +sourceEnvelope.x+","+(sourceEnvelope.x+sourceEnvelope.width/2)+")"+
+                            "&subset=" + subsetPrefix + "Lat(" +sourceEnvelope.y+","+(sourceEnvelope.y+sourceEnvelope.height/2)+")" +
+                            		"&SCALESIZE=" + axisPrefix + "i(50)," +
+                             axisPrefix + "j(50)");
             
             
             assertEquals("image/tiff", response.getContentType());
@@ -314,10 +333,10 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             
             // upsample
             MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                    "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALESIZE=http://www.opengis.net/def/axis/OGC/1/i(1000)," +
-                            "http://www.opengis.net/def/axis/OGC/1/j(1000)&" +
-                            "&subset=http://www.opengis.net/def/axis/OGC/0/Long(" +sourceEnvelope.x+","+(sourceEnvelope.x+sourceEnvelope.width/2)+")"+
-                            "&subset=http://www.opengis.net/def/axis/OGC/0/Lat(" +sourceEnvelope.y+","+(sourceEnvelope.y+sourceEnvelope.height/2)+")");
+                    "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALESIZE=" + axisPrefix + "i(1000)," +
+                             axisPrefix + "j(1000)&" +
+                            "&subset=" + subsetPrefix + "Long(" +sourceEnvelope.x+","+(sourceEnvelope.x+sourceEnvelope.width/2)+")"+
+                            "&subset=" + subsetPrefix + "Lat(" +sourceEnvelope.y+","+(sourceEnvelope.y+sourceEnvelope.height/2)+")");
             
             assertEquals("image/tiff", response.getContentType());
             byte[] tiffContents = getBinary(response);
@@ -363,16 +382,16 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         
         // error 0
         MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALESIZE=http://www.opengis.net/def/axis/OGC/1/i(100)," +
-                        "http://www.opengis.net/def/axis/OGC/1/j(0)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALESIZE=" + axisPrefix + "i(100)," +
+                         axisPrefix + "j(0)");
         
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
         
         // error < 0
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALESIZE=http://www.opengis.net/def/axis/OGC/1/i(-2)," +
-                        "http://www.opengis.net/def/axis/OGC/1/j(100)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALESIZE=" + axisPrefix + "i(-2)," +
+                         axisPrefix + "j(100)");
         
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "-2");
@@ -383,8 +402,8 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         
         // subsample
         MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                        "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(0,99)," +
-                        "http://www.opengis.net/def/axis/OGC/1/j(0,99)");
+                        "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "i(0,99)," +
+                         axisPrefix + "j(0,99)");
         
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -423,8 +442,8 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         
         // upsample
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(100,1099)," +
-                    "http://www.opengis.net/def/axis/OGC/1/j(100,1099)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "i(100,1099)," +
+                     axisPrefix + "j(100,1099)");
         
         assertEquals("image/tiff", response.getContentType());
         tiffContents = getBinary(response);
@@ -469,8 +488,8 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         // test coverage directly to make sure we respect LLC & URC
         try {
             targetCoverage = (GridCoverage2D) executeGetCoverage("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                    "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(100,1099)," +
-                        "http://www.opengis.net/def/axis/OGC/1/j(100,1099)");
+                    "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "i(100,1099)," +
+                         axisPrefix + "j(100,1099)");
             assertNotNull(targetCoverage);            
             sourceCoverage=(GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
             
@@ -504,32 +523,32 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         
         // error minx > maxx
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(1000,0)," +
-                        "http://www.opengis.net/def/axis/OGC/1/j(0,1000)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "i(1000,0)," +
+                         axisPrefix + "j(0,1000)");
         
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
         
         // error minx ==  maxx
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(1000,1000)," +
-                        "http://www.opengis.net/def/axis/OGC/1/j(0,1000)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "i(1000,1000)," +
+                         axisPrefix + "j(0,1000)");
         
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
         
         // error miny > maxy
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/j(1000,0)," +
-                        "http://www.opengis.net/def/axis/OGC/1/i(0,1000)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "j(1000,0)," +
+                         axisPrefix + "i(0,1000)");
         
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
         
         // error miny ==  maxy
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/j(1000,1000)," +
-                        "http://www.opengis.net/def/axis/OGC/1/i(0,1000)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "j(1000,1000)," +
+                         axisPrefix + "i(0,1000)");
         
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");      
@@ -547,10 +566,10 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             
             // subsample
             MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                            "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(50,149)," +
-                            "http://www.opengis.net/def/axis/OGC/1/j(50,149)" +
-                            "&subset=http://www.opengis.net/def/axis/OGC/0/Long(" +sourceEnvelope.x+","+(sourceEnvelope.x+sourceEnvelope.width/2)+")"+
-                                "&subset=http://www.opengis.net/def/axis/OGC/0/Lat(" +sourceEnvelope.y+","+(sourceEnvelope.y+sourceEnvelope.height/2)+")");
+                            "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "i(50,149)," +
+                             axisPrefix + "j(50,149)" +
+                            "&subset=" + subsetPrefix + "Long(" +sourceEnvelope.x+","+(sourceEnvelope.x+sourceEnvelope.width/2)+")"+
+                                "&subset=" + subsetPrefix + "Lat(" +sourceEnvelope.y+","+(sourceEnvelope.y+sourceEnvelope.height/2)+")");
             
             assertEquals("image/tiff", response.getContentType());
             byte[] tiffContents = getBinary(response);
@@ -600,10 +619,10 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             
             // upsample
             MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                    "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(100,1099)," +
-                        "http://www.opengis.net/def/axis/OGC/1/j(100,1099)" +
-                        "&subset=http://www.opengis.net/def/axis/OGC/0/Long(" +sourceEnvelope.x+","+(sourceEnvelope.x+sourceEnvelope.width/2)+")"+
-                            "&subset=http://www.opengis.net/def/axis/OGC/0/Lat(" +sourceEnvelope.y+","+(sourceEnvelope.y+sourceEnvelope.height/2)+")");
+                    "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "i(100,1099)," +
+                         axisPrefix + "j(100,1099)" +
+                        "&subset=" + subsetPrefix + "Long(" +sourceEnvelope.x+","+(sourceEnvelope.x+sourceEnvelope.width/2)+")"+
+                            "&subset=" + subsetPrefix + "Lat(" +sourceEnvelope.y+","+(sourceEnvelope.y+sourceEnvelope.height/2)+")");
             
             assertEquals("image/tiff", response.getContentType());
             byte[] tiffContents = getBinary(response);
@@ -654,8 +673,8 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         // test coverage directly to make sure we respect LLC & URC
         try {
             targetCoverage = (GridCoverage2D) executeGetCoverage("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                    "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(100,1099)," +
-                        "http://www.opengis.net/def/axis/OGC/1/j(100,1099)");
+                    "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "i(100,1099)," +
+                         axisPrefix + "j(100,1099)");
             assertNotNull(targetCoverage);            
             sourceCoverage=(GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
             
@@ -689,32 +708,32 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         
         // error minx > maxx
         MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(1000,0)," +
-                        "http://www.opengis.net/def/axis/OGC/1/j(0,1000)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "i(1000,0)," +
+                         axisPrefix + "j(0,1000)");
         
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
         
         // error minx ==  maxx
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(1000,1000)," +
-                        "http://www.opengis.net/def/axis/OGC/1/j(0,1000)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "i(1000,1000)," +
+                         axisPrefix + "j(0,1000)");
         
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
         
         // error miny > maxy
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/j(1000,0)," +
-                        "http://www.opengis.net/def/axis/OGC/1/i(0,1000)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "j(1000,0)," +
+                         axisPrefix + "i(0,1000)");
         
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
         
         // error miny ==  maxy
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
-                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/j(1000,1000)," +
-                        "http://www.opengis.net/def/axis/OGC/1/i(0,1000)");
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=" + axisPrefix + "j(1000,1000)," +
+                         axisPrefix + "i(0,1000)");
         
         assertEquals("application/xml", response.getContentType());
         checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");      

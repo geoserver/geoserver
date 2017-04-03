@@ -27,6 +27,7 @@ import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -42,6 +43,7 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServer;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs.CoverageCleanerCallback;
@@ -58,14 +60,13 @@ import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.referencing.operation.MathTransform;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXParseException;
-
-import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Base support class for wcs tests.
@@ -83,8 +84,9 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     
     List<GridCoverage> coverages = new ArrayList<GridCoverage>();
     
-    protected final static String VERSION=WCS20Const.CUR_VERSION;
-
+    protected final static String VERSION = WCS20Const.CUR_VERSION;
+    
+    protected static final QName UTM11 = new QName(MockData.WCS_URI, "utm11", MockData.WCS_PREFIX); 
 
     /**
      * Small value for comparaison of sample values. Since most grid coverage implementations in
@@ -189,8 +191,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         testData.setUpDefaultRasterLayers();
         testData.setUpWcs10RasterLayers();
         testData.setUpWcs11RasterLayers();
-        
-        
+        testData.setUpRasterLayer(UTM11, "/utm11-2.tiff", null, null, WCSTestSupport.class);
     }
 
     @Override

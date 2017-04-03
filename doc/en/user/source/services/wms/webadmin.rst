@@ -112,9 +112,18 @@ GetFeatureInfo requests. A GetMap/GetFeatureInfo request with a MIME type not al
      
 .. note:: Activating MIME type restriction and not allowing at least one MIME type disables the particular request.
    
-    
+Disabling usage of dynamic styling in GetMap and GetFeatureInfo requests
+------------------------------------------------------------------------
+
+Dynamic styles can be applied to layers in GetMap and GetFeatureInfo requests using the SLD or SLD_BODY parameters for GET requests.
+
+In addition, GetMap POST requests can contain inline style definition for layers.
+
+The usage of dynamic styling can be restricted on a global or per virtual service basis using the **Dynamic styling** section.
+
+.. figure:: img/service_WMS_disableDynamicStyling.png
      
-     
+When the flag is checked, a GetMap/GetFeatureInfo request with a dynamic style will result in a service exception reporting the error.
      
      
      

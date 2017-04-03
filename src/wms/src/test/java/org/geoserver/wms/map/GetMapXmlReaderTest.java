@@ -18,9 +18,12 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
+import org.geoserver.wms.WMSInfoImpl;
 import org.geotools.styling.Style;
 import org.opengis.filter.PropertyIsEqualTo;
 
@@ -99,6 +102,28 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
         assertEquals(1, request.getFilter().size());
         PropertyIsEqualTo parsed = (PropertyIsEqualTo) request.getFilter().get(0);
         assertEquals("[ NAME = VALUE ]", parsed.toString());
+    }
+    
+    public void testAllowDynamicStyles() throws Exception {
+        GetMapRequest request = (GetMapRequest) reader.createRequest();
+        BufferedReader input = getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml");
+
+        WMS wms = new WMS(getGeoServer());
+        WMSInfo  oldInfo = wms.getGeoServer().getService(WMSInfo.class);
+        WMSInfo info = new WMSInfoImpl();
+        info.setDynamicStylingDisabled(Boolean.TRUE);
+        getGeoServer().remove(oldInfo);
+        getGeoServer().add(info);
+        GetMapXmlReader reader = new GetMapXmlReader(wms);
+        boolean error = false;
+        try {
+            request = (GetMapRequest) reader.read(request, input, new HashMap());
+        } catch(ServiceException e) {
+            error = true;
+        }
+        getGeoServer().remove(info);
+        getGeoServer().add(oldInfo);
+        assertTrue(error);
     }
 
     private BufferedReader getResourceInputStream(String classRelativePath) throws IOException {

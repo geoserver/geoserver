@@ -79,4 +79,14 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         assertTrue(wms.isBBOXForEachCRS());
     }
+
+    @Test
+    public void testDynamicStylingDisabled() throws Exception {
+        assertFalse(wms.isDynamicStylingDisabled());
+        tester.startPage(WMSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("dynamicStyling.disabled", true);
+        ft.submit("submit");
+        assertTrue(wms.isDynamicStylingDisabled());
+    }
 }

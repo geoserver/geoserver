@@ -33,6 +33,7 @@ import org.geotools.data.csv.CSVFeatureStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.util.logging.Logging;
+import org.springframework.core.io.FileSystemResource;
 
 /**
  * @author ian
@@ -51,6 +52,13 @@ public class CSVPPIO extends CDataPPIO {
 
     @Override
     public Object decode(String input) throws Exception {
+        if(input.contains("\\r")) {
+            System.out.println("contains \\r");
+        }
+        if(input.contains("\\n")) {
+            System.out.println("contains \\n");
+        }
+
         return decode(new ByteArrayInputStream(input.getBytes()));
     }
 
@@ -63,6 +71,7 @@ public class CSVPPIO extends CDataPPIO {
     public Object decode(InputStream input) throws Exception {
         // this will be deleted for us when the process finishes
         Resource tmp = resourceManager.getTemporaryResource(".csv");
+        
         IOUtils.copy(input, tmp.out());
         HashMap<String, Object> params = new HashMap<>();
         params.put(CSVDataStoreFactory.FILE_PARAM.key,tmp.file().getAbsoluteFile());

@@ -78,10 +78,12 @@ import net.sf.json.util.JSONBuilder;
 @Component
 public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
+
+
     @Autowired
     public ImportContextJSONConverterWriter(Importer importer) {
         super();
-        this.importer = importer;        
+        this.importer = importer;
     }
     
     public ImportContextJSONConverterWriter(Importer importer, OutputStream out) {
@@ -845,7 +847,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         return pathTo(parent) + "/data";
     }
 
-    static RestException badRequest(String error) {
+    public static RestException badRequest(String error) {
         JSONObject errorResponse = new JSONObject();
         JSONArray errors = new JSONArray();
         errors.add(error);

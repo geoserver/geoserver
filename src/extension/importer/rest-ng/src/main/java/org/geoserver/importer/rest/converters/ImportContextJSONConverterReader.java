@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.importer.rest.converters;
 
 import java.io.ByteArrayInputStream;
@@ -63,7 +67,7 @@ import net.sf.json.JSONObject;
 
 @Component
 public class ImportContextJSONConverterReader extends BaseMessageConverter {
-    
+
     Importer importer;
     JSONObject json;
 
@@ -82,7 +86,7 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
     }
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
-        return ImportContext.class.isAssignableFrom(clazz)
+        return (ImportContext.class.isAssignableFrom(clazz) || ImportContext.class.isAssignableFrom(clazz))
                 && isSupportedMediaType(mediaType);
         
     }
@@ -104,7 +108,12 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
             throws IOException, HttpMessageNotReadableException {
         InputStream in = inputMessage.getBody();
         json = parse(in);
-        return context();
+        if (ImportContext.class.isAssignableFrom(clazz)) {
+            return context();
+        } else if (ImportTask.class.isAssignableFrom(clazz)) {
+            return task();
+        }
+        return null;
     }
 
     public ImportContext context() throws IOException {
@@ -515,4 +524,8 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
 
     }
 
+    @Override
+    public int getPriority() {
+        return super.getPriority()-5;
+    }
 }

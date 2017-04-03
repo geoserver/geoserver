@@ -38,5 +38,6 @@ The app-schema module looks to GeoServer just like any other data store and so c
    wfs-2.0-support
    joining
    tutorial
+   mongo-tutorial
    
 

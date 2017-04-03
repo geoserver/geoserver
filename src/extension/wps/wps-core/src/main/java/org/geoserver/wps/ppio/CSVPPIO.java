@@ -28,15 +28,20 @@ import org.geoserver.util.IOUtils;
 import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.process.ResourceRawData;
+import org.geoserver.wps.resource.WPSResource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.FeatureStore;
 import org.geotools.data.csv.CSVDataStore;
 import org.geotools.data.csv.CSVDataStoreFactory;
 import org.geotools.data.csv.CSVFeatureStore;
 import org.geotools.data.csv.parse.CSVStrategy;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
+import org.springframework.core.io.FileSystemResource;
 
 import net.opengis.wcs11.validation.CoverageSummaryTypeValidator;
 
@@ -49,7 +54,7 @@ public class CSVPPIO extends CDataPPIO {
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.wps.ppio.CSVPPIO");
 
     protected CSVPPIO(WPSResourceManager resourceManager) {
-        super(FeatureCollection.class, FeatureCollection.class, "text/csv");
+        super(SimpleFeatureCollection.class, SimpleFeatureCollection.class, "text/csv");
         this.resourceManager = resourceManager;
     }
   
@@ -57,6 +62,13 @@ public class CSVPPIO extends CDataPPIO {
 
     @Override
     public Object decode(String input) throws Exception {
+        if(input.contains("\\r")) {
+            System.out.println("contains \\r");
+        }
+        if(input.contains("\\n")) {
+            System.out.println("contains \\n");
+        }
+
         return decode(new ByteArrayInputStream(input.getBytes()));
     }
 
@@ -67,25 +79,38 @@ public class CSVPPIO extends CDataPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
+        // this will be deleted for us when the process finishes
         Resource tmp = resourceManager.getTemporaryResource(".csv");
+        
         IOUtils.copy(input, tmp.out());
         HashMap<String, Object> params = new HashMap<>();
         params.put(CSVDataStoreFactory.FILE_PARAM.key,tmp.file().getAbsoluteFile());
         params.put(CSVDataStoreFactory.STRATEGYP.key, "CSVAttributesOnlyStrategy");
         CSVDataStore store = (CSVDataStore) DataStoreFinder.getDataStore(params);
-        return store.getFeatureSource().getFeatures();
+        SimpleFeatureCollection collection = store.getFeatureSource().getFeatures();
+        LOGGER.info("read in "+collection.size()+" features from CSV source");
+        store.dispose();
+        return collection;
     }
 
     @Override
     public void encode(Object value, OutputStream os) throws Exception {
+        // will be deleted when the process finishes
         Resource tmp = resourceManager.getTemporaryResource(".csv");
-        
+        SimpleFeatureCollection collection = (SimpleFeatureCollection) value;
         HashMap<String, Object> params = new HashMap<>();
-        params.put("URL",DataUtilities.fileToURL(tmp.file()));
+        params.put(CSVDataStoreFactory.FILE_PARAM.key,tmp.file().getAbsoluteFile());
+        params.put(CSVDataStoreFactory.STRATEGYP.key, "CSVAttributesOnlyStrategy");
         CSVDataStore store = (CSVDataStore) DataStoreFinder.getDataStore(params);
-        CSVFeatureStore csvFeatureStore = (CSVFeatureStore)store.getFeatureSource();
-        csvFeatureStore.addFeatures((FeatureCollection) value);
-        
+        store.createSchema(collection.getSchema());
+        SimpleFeatureSource featureSource = store.getFeatureSource();
+        if(featureSource instanceof FeatureStore) {
+            CSVFeatureStore csvFeatureStore = (CSVFeatureStore)featureSource;
+            
+            csvFeatureStore.addFeatures(collection);
+            
+        }
+        store.dispose();
         IOUtils.copy(tmp.in(),os);
         
     }

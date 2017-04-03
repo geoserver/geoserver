@@ -22,11 +22,10 @@ import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import org.springframework.mock.web.MockHttpServletResponse;
 
 public class TransactionTest extends WFS20TestSupport {
 
@@ -824,4 +823,57 @@ public class TransactionTest extends WFS20TestSupport {
        assertEquals("soap:Envelope", dom.getDocumentElement().getNodeName());
        assertEquals(1, dom.getElementsByTagName("wfs:TransactionResponse").getLength());
    }
+
+    @Test
+    public void elementHandlerOrder() throws Exception {
+        String xml = "<wfs:Transaction service='WFS' version='2.0.0' xmlns:cgf='http://www.opengis.net/cite/geometry' " +
+                "  xmlns:fes='" + FES.NAMESPACE + "' " +
+                "  xmlns:wfs='" + WFS.NAMESPACE + "' " +
+                "  xmlns:gml='" + GML.NAMESPACE + "'> " +
+                " <wfs:Insert srsName='EPSG:32615'> " + "  <cgf:Points> " + "   <cgf:pointProperty> " +
+                "    <gml:Point> " + "     <gml:pos>1 1</gml:pos> " + "    </gml:Point> " + "   </cgf:pointProperty> "
+                + "   <cgf:id>t0003</cgf:id> " + "  </cgf:Points> " + " </wfs:Insert> " +
+                " <wfs:Insert srsName='EPSG:32615'> " + "  <cgf:Points> " + "   <cgf:pointProperty> " +
+                "    <gml:Point> " + "     <gml:pos>5 1</gml:pos> " + "    </gml:Point> " + "   </cgf:pointProperty> "
+                + "   <cgf:id>t0003</cgf:id> " + "  </cgf:Points> " + " </wfs:Insert> " +
+                " <wfs:Insert srsName='EPSG:32615'> " + "  <cgf:Points> " + "   <cgf:pointProperty> " +
+                "    <gml:Point> " + "     <gml:pos>2 3</gml:pos> " + "    </gml:Point> " + "   </cgf:pointProperty> "
+                + "   <cgf:id>t0003</cgf:id> " + "  </cgf:Points> " + " </wfs:Insert> " +
+                " <wfs:Insert srsName='EPSG:32615'> " + "  <cgf:Points> " + "   <cgf:pointProperty> " +
+                "    <gml:Point> " + "     <gml:pos>4 8</gml:pos> " + "    </gml:Point> " + "   </cgf:pointProperty> "
+                + "   <cgf:id>t0003</cgf:id> " + "  </cgf:Points> " + " </wfs:Insert> " +
+                " <wfs:Insert srsName='EPSG:32615'> " + "  <cgf:Points> " + "   <cgf:pointProperty> " +
+                "    <gml:Point> " + "     <gml:pos>5 7</gml:pos> " + "    </gml:Point> " + "   </cgf:pointProperty> "
+                + "   <cgf:id>t0003</cgf:id> " + "  </cgf:Points> " + " </wfs:Insert> " +
+                " <wfs:Insert srsName='EPSG:32615'> " + "  <cgf:Points> " + "   <cgf:pointProperty> " +
+                "    <gml:Point> " + "     <gml:pos>3 4</gml:pos> " + "    </gml:Point> " + "   </cgf:pointProperty> "
+                + "   <cgf:id>t0003</cgf:id> " + "  </cgf:Points> " + " </wfs:Insert> " +
+                " <wfs:Insert srsName='EPSG:32615'> " + "  <cgf:Points> " + "   <cgf:pointProperty> " +
+                "    <gml:Point> " + "     <gml:pos>4 4</gml:pos> " + "    </gml:Point> " + "   </cgf:pointProperty> "
+                + "   <cgf:id>t0003</cgf:id> " + "  </cgf:Points> " + " </wfs:Insert> " +
+                " <wfs:Insert srsName='EPSG:32615'> " + "  <cgf:Points> " + "   <cgf:pointProperty> " +
+                "    <gml:Point> " + "     <gml:pos>1 8</gml:pos> " + "    </gml:Point> " + "   </cgf:pointProperty> "
+                + "   <cgf:id>t0003</cgf:id> " + "  </cgf:Points> " + " </wfs:Insert> " +
+                " <wfs:Insert srsName='EPSG:32615'> " + "  <cgf:Points> " + "   <cgf:pointProperty> " +
+                "    <gml:Point> " + "     <gml:pos>9 1</gml:pos> " + "    </gml:Point> " + "   </cgf:pointProperty> "
+                + "   <cgf:id>t0003</cgf:id> " + "  </cgf:Points> " + " </wfs:Insert> " +
+                " <wfs:Insert srsName='EPSG:32615'> " + "  <cgf:Points> " + "   <cgf:pointProperty> " +
+                "    <gml:Point> " + "     <gml:pos>10 1</gml:pos> " + "    </gml:Point> " + "   </cgf:pointProperty> "
+                + "   <cgf:id>t0003</cgf:id> " + "  </cgf:Points> " + " </wfs:Insert> " +
+                " <wfs:Insert srsName='EPSG:32615'> " + "  <cgf:Points> " + "   <cgf:pointProperty> " +
+                "    <gml:Point> " + "     <gml:pos>1 10</gml:pos> " + "    </gml:Point> " + "   </cgf:pointProperty> "
+                + "   <cgf:id>t0003</cgf:id> " + "  </cgf:Points> " + " </wfs:Insert> " +
+                " <wfs:Insert srsName='EPSG:32615'> " + "  <cgf:Points> " + "   <cgf:pointProperty> " +
+                "    <gml:Point> " + "     <gml:pos>11 11</gml:pos> " + "    </gml:Point> " + "   </cgf:pointProperty> "
+                + "   <cgf:id>t0003</cgf:id> " + "  </cgf:Points> " + " </wfs:Insert> "
+                + "</wfs:Transaction>";
+
+        // get elements from dom and loop through list
+        Document dom = postAsDOM("wfs", xml);
+        NodeList elementsByTagName = dom.getElementsByTagName("fes:ResourceId");
+        for (int i=0; i<elementsByTagName.getLength(); i++) {
+            String id = elementsByTagName.item(i).getAttributes().item(0).getNodeValue();
+            assertEquals(id, "new"+i);
+        }
+    }
 }

@@ -777,4 +777,58 @@ public class TransactionTest extends WFSTestSupport {
         print(dom);
        XMLAssert.assertXpathExists("//gs:bar[@gml:id = 'bar.1234']",dom);
    }
+
+    @Test
+    public void elementHandlerOrder() throws Exception {
+        // create eleven features in a single request
+        String feature = "<wfs:Transaction service=\"WFS\" version=\"1.1.0\" "
+            + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+            + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+            + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+            + "xmlns:gml=\"http://www.opengis.net/gml\"> " + "<wfs:Insert > " + "<cgf:Points>"
+            + "<cgf:pointProperty>" + "<gml:Point>" + "<gml:pos>20 10</gml:pos>"
+            + "</gml:Point>" + "</cgf:pointProperty>" + "<cgf:id>t0001</cgf:id>"
+            + "</cgf:Points>" + "</wfs:Insert>"  + "<wfs:Insert > " + "<cgf:Points>"
+            + "<cgf:pointProperty>" + "<gml:Point>" + "<gml:pos>20 11</gml:pos>"
+            + "</gml:Point>" + "</cgf:pointProperty>" + "<cgf:id>t0001</cgf:id>"
+            + "</cgf:Points>" + "</wfs:Insert>"+   "<wfs:Insert > " + "<cgf:Points>"
+            + "<cgf:pointProperty>" + "<gml:Point>" + "<gml:pos>20 12</gml:pos>"
+            + "</gml:Point>" + "</cgf:pointProperty>" + "<cgf:id>t0001</cgf:id>"
+            + "</cgf:Points>" + "</wfs:Insert>" + "<wfs:Insert > " + "<cgf:Points>"
+            + "<cgf:pointProperty>" + "<gml:Point>" + "<gml:pos>20 13</gml:pos>"
+            + "</gml:Point>" + "</cgf:pointProperty>" + "<cgf:id>t0001</cgf:id>"
+            + "</cgf:Points>" + "</wfs:Insert>" + "<wfs:Insert > " + "<cgf:Points>"
+            + "<cgf:pointProperty>" + "<gml:Point>" + "<gml:pos>20 14</gml:pos>"
+            + "</gml:Point>" + "</cgf:pointProperty>" + "<cgf:id>t0001</cgf:id>"
+            + "</cgf:Points>" + "</wfs:Insert>" + "<wfs:Insert > " + "<cgf:Points>"
+            + "<cgf:pointProperty>" + "<gml:Point>" + "<gml:pos>20 15</gml:pos>"
+            + "</gml:Point>" + "</cgf:pointProperty>" + "<cgf:id>t0001</cgf:id>"
+            + "</cgf:Points>" + "</wfs:Insert>" + "<wfs:Insert > " + "<cgf:Points>"
+            + "<cgf:pointProperty>" + "<gml:Point>" + "<gml:pos>20 16</gml:pos>"
+            + "</gml:Point>" + "</cgf:pointProperty>" + "<cgf:id>t0001</cgf:id>"
+            + "</cgf:Points>" + "</wfs:Insert>" + "<wfs:Insert > " + "<cgf:Points>"
+            + "<cgf:pointProperty>" + "<gml:Point>" + "<gml:pos>20 17</gml:pos>"
+            + "</gml:Point>" + "</cgf:pointProperty>" + "<cgf:id>t0001</cgf:id>"
+            + "</cgf:Points>" + "</wfs:Insert>" + "<wfs:Insert > " + "<cgf:Points>"
+            + "<cgf:pointProperty>" + "<gml:Point>" + "<gml:pos>20 18</gml:pos>"
+            + "</gml:Point>" + "</cgf:pointProperty>" + "<cgf:id>t0001</cgf:id>"
+            + "</cgf:Points>" + "</wfs:Insert>" + "<wfs:Insert > " + "<cgf:Points>"
+            + "<cgf:pointProperty>" + "<gml:Point>" + "<gml:pos>20 19</gml:pos>"
+            + "</gml:Point>" + "</cgf:pointProperty>" + "<cgf:id>t0001</cgf:id>"
+            + "</cgf:Points>" + "</wfs:Insert>" + "<wfs:Insert > " + "<cgf:Points>"
+            + "<cgf:pointProperty>" + "<gml:Point>" + "<gml:pos>20 20</gml:pos>"
+            + "</gml:Point>" + "</cgf:pointProperty>" + "<cgf:id>t0001</cgf:id>"
+            + "</cgf:Points>" + "</wfs:Insert>" + "<wfs:Insert > " + "<cgf:Points>"
+            + "<cgf:pointProperty>" + "<gml:Point>" + "<gml:pos>20 21</gml:pos>"
+            + "</gml:Point>" + "</cgf:pointProperty>" + "<cgf:id>t0001</cgf:id>"
+            + "</cgf:Points>" + "</wfs:Insert>" + "</wfs:Transaction>";
+
+        // get elements from dom and loop through list
+        Document dom = postAsDOM("wfs", feature);
+        NodeList elementsByTagName = dom.getElementsByTagName("ogc:FeatureId");
+        for (int i=0; i<elementsByTagName.getLength(); i++) {
+            String id = elementsByTagName.item(i).getAttributes().item(0).getNodeValue();
+            assertEquals(id, "new"+i);
+        }
+    }
 }

@@ -27,6 +27,7 @@ import org.geotools.util.logging.Logging;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.restlet.data.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -161,6 +162,19 @@ public class ImportTaskController extends ImportBaseController {
             updateStoreInfo(task(id, taskId), store, importer);
             importer.changed(task(id, taskId));
         }
+    }
+
+    @PutMapping(path = {"/{taskId}/layer"}, produces = { MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public ImportWrapper layerPut(@PathVariable Long id, @PathVariable Integer taskId, @RequestBody LayerInfo layer) {
+        ImportTask task = task(id, taskId);
+
+        return (writer, converter) -> {
+            updateLayer(task, layer, importer, converter);
+            importer.changed(task);
+            converter.task(task, true, converter.expand(1));
+        };
     }
 
     @DeleteMapping(path = "/{taskId}", produces = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})

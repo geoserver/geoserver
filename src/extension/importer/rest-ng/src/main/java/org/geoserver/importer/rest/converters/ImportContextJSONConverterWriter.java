@@ -4,12 +4,7 @@
  */
 package org.geoserver.importer.rest.converters;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -861,8 +856,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         errors.add(error);
         errorResponse.put("errors", errors);
 
-        JSONRepresentation rep = new JSONRepresentation(errorResponse);
-        return new RestException(rep.toString(), HttpStatus.BAD_REQUEST);
+        return new RestException(errorResponse.toString(), HttpStatus.BAD_REQUEST);
     }
 
     public static class FlushableJSONBuilder extends JSONBuilder {

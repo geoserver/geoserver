@@ -232,7 +232,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                               @RequestParam(name = "update", required = false) String update,
                               @RequestParam(name = "charset", required = false) String characterset,
                                         HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setStatus(201);
+        response.setStatus(HttpStatus.ACCEPTED.value());
 
         // doFileUpload returns a List of File but in the case of a Put operation the list contains only a value
         List<Resource> files = doFileUpload(method, workspaceName, storeName, format, request);
@@ -413,7 +413,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             // data feature types
             //String configure = form.getFirstValue( "configure" );
             if ( "none".equalsIgnoreCase( configure ) ) {
-                response.setStatus( 201 );
+                response.setStatus( HttpStatus.CREATED.value() );
                 return;
             }
 
@@ -491,7 +491,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                     catalog.save( ftinfo );
                 }
 
-                response.setStatus( 201 );
+                response.setStatus( HttpStatus.CREATED.value() );
             }
             //}
         }

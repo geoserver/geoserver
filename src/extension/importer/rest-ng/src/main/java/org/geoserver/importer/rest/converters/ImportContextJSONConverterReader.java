@@ -89,7 +89,8 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
     }
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
-        return (ImportContext.class.isAssignableFrom(clazz) || ImportTask.class.isAssignableFrom(clazz))
+        return (ImportContext.class.isAssignableFrom(clazz) || ImportTask.class.isAssignableFrom(clazz) ||
+                ImportTransform.class.isAssignableFrom(clazz) || TransformChain.class.isAssignableFrom(clazz))
                 && isSupportedMediaType(mediaType);
         
     }
@@ -115,6 +116,8 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
             return context();
         } else if (ImportTask.class.isAssignableFrom(clazz)) {
             return task();
+        } else if (ImportTransform.class.isAssignableFrom(clazz) || TransformChain.class.isAssignableFrom(clazz)) {
+            return transform();
         }
         return null;
     }

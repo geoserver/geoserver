@@ -94,7 +94,7 @@ public class ImportTransformTest extends ImporterTestSupport {
     public void testPostTransform() throws Exception {
         String json = "{\"type\": \"ReprojectTransform\", \"target\": \"EPSG:3005\"}";
         MockHttpServletResponse resp = postAsServletResponse(BASEPATH + "/imports/0/tasks/0/transforms",
-                json);
+                json, "application/json");
 
         String location = resp.getHeader("Location");
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());

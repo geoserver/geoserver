@@ -455,7 +455,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         }
     }
 
-    void transformChain(ImportTask task, boolean top, int expand) throws IOException {
+    public void transformChain(ImportTask task, boolean top, int expand) throws IOException {
 
         if (top) {
             json.object();

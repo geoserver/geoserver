@@ -19,6 +19,7 @@ import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.SpatialFile;
+import org.geoserver.rest.RestBaseController;
 import org.geotools.data.h2.H2DataStoreFactory;
 import org.junit.After;
 import org.junit.Before;
@@ -53,7 +54,7 @@ public class ImportControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGetAllImports() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/restng/imports", 200);
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports", 200);
 
         assertNotNull(json.get("imports"));
 
@@ -75,14 +76,14 @@ public class ImportControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGetNonExistantImport() throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse(("/restng/imports/9999"));
+        MockHttpServletResponse resp = getAsServletResponse((RestBaseController.ROOT_PATH+"/imports/9999"));
 
         assertEquals(404, resp.getStatus());
     }
 
     @Test
     public void testGetImport() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/restng/imports/0", 200);
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports/0", 200);
 
         assertNotNull(json.get("import"));
 
@@ -98,7 +99,7 @@ public class ImportControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGetImportExpandChildren() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/restng/imports/0?expand=2");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports/0?expand=2");
 
         JSONObject source = json.getJSONObject("import").getJSONObject("data");
         assertEquals("directory", source.getString("type"));
@@ -123,7 +124,7 @@ public class ImportControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGetImport2() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/restng/imports/1?expand=3", 200);
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports/1?expand=3", 200);
         assertNotNull(json.get("import"));
 
         JSONObject imprt = json.optJSONObject("import");
@@ -148,7 +149,7 @@ public class ImportControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGetImport3() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON("/restng/imports/2?expand=2");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports/2?expand=2");
         assertNotNull(json.get("import"));
 
         JSONObject imprt = json.optJSONObject("import");
@@ -175,7 +176,7 @@ public class ImportControllerTest extends ImporterTestSupport {
         params.put(H2DataStoreFactory.DATABASE.key, new File(dir, "cookbook").getAbsolutePath());
         importer.createContext(new Database(params));
 
-        JSONObject json = (JSONObject) getAsJSON("/restng/imports/3?expand=2");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports/3?expand=2");
 
         assertNotNull(json.get("import"));
 
@@ -193,7 +194,7 @@ public class ImportControllerTest extends ImporterTestSupport {
 
     public void testPost() throws Exception {
 
-        MockHttpServletResponse resp = postAsServletResponse("/restng/imports", "",
+        MockHttpServletResponse resp = postAsServletResponse(RestBaseController.ROOT_PATH+"/imports", "",
                 "application/json");
         assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
@@ -211,11 +212,11 @@ public class ImportControllerTest extends ImporterTestSupport {
     @Test
     public void testPutWithId() throws Exception {
         // propose a new import id
-        MockHttpServletResponse resp = putAsServletResponse("/restng/imports/8675309", "",
+        MockHttpServletResponse resp = putAsServletResponse(RestBaseController.ROOT_PATH+"/imports/8675309", "",
                 "application/json");
         assertEquals(201, resp.getStatus());
 
-        resp = getAsServletResponse("/restng/imports/8675309");
+        resp = getAsServletResponse(RestBaseController.ROOT_PATH+"/imports/8675309");
         assertEquals(200, resp.getStatus());
         JSONObject json = (JSONObject) json(resp);
         JSONObject imprt = json.getJSONObject("import");
@@ -223,21 +224,21 @@ public class ImportControllerTest extends ImporterTestSupport {
         assertEquals(8675309, imprt.getInt("id"));
 
         // now propose a new one that is less than the earlier
-        resp = putAsServletResponse("/restng/imports/8675000", "", "application/json");
+        resp = putAsServletResponse(RestBaseController.ROOT_PATH+"/imports/8675000", "", "application/json");
         assertEquals(201, resp.getStatus());
         // it should be one more than the latest
 
-        assertTrue(resp.getHeader("Location").endsWith("/restng/imports/8675310"));
+        assertTrue(resp.getHeader("Location").endsWith(RestBaseController.ROOT_PATH+"/imports/8675310"));
 
         // and just make sure the other parts work
-        resp = getAsServletResponse("/restng/imports/8675310");
+        resp = getAsServletResponse(RestBaseController.ROOT_PATH+"/imports/8675310");
         assertEquals(200, resp.getStatus());
         json = (JSONObject) json(resp);
         imprt = json.getJSONObject("import");
         assertEquals(8675310, imprt.getInt("id"));
 
         // now a normal request - make sure it continues the sequence
-        resp = postAsServletResponse("/restng/imports/", "{}", "application/json");
+        resp = postAsServletResponse(RestBaseController.ROOT_PATH+"/imports/", "{}", "application/json");
         assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
         assertTrue(resp.getHeader("Location").endsWith("/imports/8675311"));
@@ -251,7 +252,7 @@ public class ImportControllerTest extends ImporterTestSupport {
                 + "\"name\": \"sf\"" + "}" + "}," + "\"targetStore\": {" + "\"dataStore\": {"
                 + "\"name\": \"skunkworks\"" + "}" + "}" + "}" + "}";
 
-        MockHttpServletResponse resp = postAsServletResponse("/restng/imports", json,
+        MockHttpServletResponse resp = postAsServletResponse(RestBaseController.ROOT_PATH+"/imports", json,
                 "application/json");
         assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
@@ -280,13 +281,13 @@ public class ImportControllerTest extends ImporterTestSupport {
     @Test
 
     public void testPostNoMediaType() throws Exception {
-        MockHttpServletResponse resp = postAsServletResponseNoContentType("/restng/imports", "");
+        MockHttpServletResponse resp = postAsServletResponseNoContentType(RestBaseController.ROOT_PATH+"/imports", "");
         assertEquals(201, resp.getStatus());
     }
 
     @Test
     public void testImportSessionIdNotInt() throws Exception {
-        MockHttpServletResponse resp = postAsServletResponse("/restng/imports/foo", "");
+        MockHttpServletResponse resp = postAsServletResponse(RestBaseController.ROOT_PATH+"/imports/foo", "");
         // assertEquals(404, resp.getStatus());
         // Spring feels that 400 is better than 404 for this! - IJT
         assertEquals(400, resp.getStatus());
@@ -294,10 +295,10 @@ public class ImportControllerTest extends ImporterTestSupport {
 
     @Test
     public void testContentNegotiation() throws Exception {
-        MockHttpServletResponse res = getAsServletResponse("/restng/imports/0");
+        MockHttpServletResponse res = getAsServletResponse(RestBaseController.ROOT_PATH+"/imports/0");
         assertEquals("application/json", res.getContentType());
 
-        MockHttpServletRequest req = createRequest("/restng/imports/0");
+        MockHttpServletRequest req = createRequest(RestBaseController.ROOT_PATH+"/imports/0");
         req.setMethod("GET");
         req.addHeader("Accept", "text/html");
 
@@ -313,7 +314,7 @@ public class ImportControllerTest extends ImporterTestSupport {
         importer.createContext(new SpatialFile(new File(dir, "point.json")));
         int id = lastId();
 
-        JSONObject json = (JSONObject) getAsJSON("/restng/imports/" + id + "?expand=3");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports/" + id + "?expand=3");
         assertNotNull(json);
 
         JSONObject imprt = json.optJSONObject("import");

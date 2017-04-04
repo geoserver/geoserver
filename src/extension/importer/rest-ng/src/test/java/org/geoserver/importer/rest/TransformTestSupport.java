@@ -6,6 +6,7 @@
 package org.geoserver.importer.rest;
 
 import junit.framework.TestCase;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
@@ -14,7 +15,6 @@ import org.geoserver.importer.rest.converters.ImportContextJSONConverterReader;
 import org.geoserver.importer.rest.converters.ImportContextJSONConverterWriter;
 import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.rest.RequestInfo;
-import org.hsqldb.lib.StringInputStream;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.context.request.AbstractRequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -88,7 +88,7 @@ public abstract class TransformTestSupport extends TestCase {
 
         jsonio.transform(transform, 0, c.task(0), true, 1);
 
-        ImportTransform transform2 = new ImportContextJSONConverterReader(im, new StringInputStream(buffer.toString())).transform();
+        ImportTransform transform2 = new ImportContextJSONConverterReader(im, IOUtils.toInputStream(buffer.toString())).transform();
         PropertyDescriptor[] pd = BeanUtils.getPropertyDescriptors(transform.getClass());
 
         for (int i = 0; i < pd.length; i++) {

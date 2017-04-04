@@ -7,6 +7,7 @@ package org.geoserver.importer.rest;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
+import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.springframework.http.HttpStatus;
@@ -77,12 +78,31 @@ public class ImportBaseController extends RestBaseController {
         return task;
     }
 
+    ImportTransform transform(Long importId, Integer taskId, Integer transformId) {
+        return transform(importId, taskId, transformId, false);
+    }
+    ImportTransform transform(Long importId, Integer taskId, Integer transformId, boolean optional) {
+        ImportTask task = task(importId, taskId);
+
+        ImportTransform tx = null;
+        if (transformId != null) {
+            try {
+                tx = (ImportTransform) task.getTransform().getTransforms().get(transformId);
+            } catch (NumberFormatException e) {
+            } catch (IndexOutOfBoundsException e) {
+            }
+        }
+
+        if (tx == null && !optional) {
+            throw new RestException("No such transform", HttpStatus.NOT_FOUND);
+        }
+        return tx;
+    }
+
     protected int expand(int def, String ex) {
-        
         if (ex == null) {
             return def;
         }
-
         try {
             return "self".equalsIgnoreCase(ex) ? 1
                     : "all".equalsIgnoreCase(ex) ? Integer.MAX_VALUE
@@ -91,14 +111,4 @@ public class ImportBaseController extends RestBaseController {
             return def;
         }
     }
-
-    
-/*
-    protected ImportJSONReader newReader(InputStream input) throws IOException {
-        return new ImportJSONReader(importer, input);
-    }
-
-    protected ImportJSONWriter newWriter(OutputStream output) throws IOException {
-        return new ImportJSONWriter(importer, getPageInfo(), output);
-    }*/
 }

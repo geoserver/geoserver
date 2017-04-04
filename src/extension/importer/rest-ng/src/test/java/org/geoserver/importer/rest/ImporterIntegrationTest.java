@@ -271,6 +271,7 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
         } else {
             state = json.getJSONObject("import").getString("state");
         }
+        Thread.sleep(500);
         assertEquals("COMPLETE", state);
         assertThat(invoked[0], is(true));
         checkPoiImport();

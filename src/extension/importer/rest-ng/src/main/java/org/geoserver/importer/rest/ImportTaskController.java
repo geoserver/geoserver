@@ -138,18 +138,21 @@ public class ImportTaskController extends ImportBaseController {
         return acceptData(data, context(id), response);
     }
 
-    @PutMapping(path = "/{taskId:.+}")
-    public Object taskPut(@PathVariable Long id, @PathVariable Object taskId, HttpServletRequest request, HttpServletResponse response) {
-
-        //TODO: split into two mappings, use @RequestBody
-        if (request.getContentType().startsWith(MediaType.APPLICATION_JSON_VALUE) || request.getContentType().startsWith(CatalogController.TEXT_JSON)) {
-            return (ImportWrapper) (writer, converter) -> handleTaskPut(id, Integer.parseInt(taskId.toString()), request, response, converter);
-        } else {
-            ImportContext context = context(id);
-            //TODO: Task id is the file name here. This functionality is completely undocumented
-            return acceptData(handleFileUpload(context, taskId, request), context, response);
-        }
+    @PutMapping(path = "/{taskId}", consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON})
+    public ImportWrapper taskPut(@PathVariable Long id, @PathVariable Integer taskId, HttpServletRequest request, HttpServletResponse response) {
+        return (writer, converter) -> handleTaskPut(id, taskId, request, response, converter);
     }
+
+    //TODO: produces all to support filename in path.
+    //TODO: Need to find a way to exclude just this method from content negotiation via path other than "produces = {MediaType.ALL_VALUE}"
+    @PutMapping(path = "/{taskId:.+}", produces = {MediaType.ALL_VALUE})
+    public Object taskPutFile(@PathVariable Long id, @PathVariable Object taskId, HttpServletRequest request, HttpServletResponse response) {
+        ImportContext context = context(id);
+        //TODO: Task id is the file name here. This functionality is completely undocumented
+        return acceptData(handleFileUpload(context, taskId, request), context, response);
+    }
+
+
 
     @PutMapping(path = {"/{taskId}/target"}, produces = { MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})

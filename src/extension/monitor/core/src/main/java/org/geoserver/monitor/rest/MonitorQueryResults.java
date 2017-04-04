@@ -1,6 +1,9 @@
 package org.geoserver.monitor.rest;
 
+import java.util.List;
+
 import org.geoserver.monitor.Monitor;
+import org.geoserver.monitor.RequestData;
 
 /**
  * Wrapper class for REST monitor request results
@@ -21,6 +24,10 @@ public class MonitorQueryResults {
         return monitor;
     }
 
+    /**
+     * Monitor results: Query, list of RequestData, or single RequestData.
+     * @return
+     */
     public Object getResult() {
         return result;
     }

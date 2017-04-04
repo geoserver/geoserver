@@ -18,14 +18,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class GeoJSONFeatureCollectionConverter extends FeatureCollectionConverter {
 
-    @Override
-    public List getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.APPLICATION_JSON,
-                MediaType.valueOf(CatalogController.TEXT_JSON));
+    public GeoJSONFeatureCollectionConverter(){
+        super(MediaType.APPLICATION_JSON,MediaType.valueOf(CatalogController.TEXT_JSON));
     }
-
+    
     @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
+    protected void writeInternal(Object t, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         SimpleFeatureCollection features = getFeatures(t);
         final FeatureJSON json = new FeatureJSON();

@@ -17,7 +17,6 @@ import org.geoserver.monitor.Query;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestDataVisitor;
 import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
@@ -26,15 +25,14 @@ public class ZIPMonitorConverter extends AbstractMonitorRequestConverter {
 
     CSVMonitorConverter csv = new CSVMonitorConverter();
 
-    @Override
-    public List getSupportedMediaTypes() {
-        return Arrays.asList(MonitorRequestController.ZIP_MEDIATYPE);
+    public ZIPMonitorConverter() {
+        super(MonitorRequestController.ZIP_MEDIATYPE);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
+    protected void writeInternal(MonitorQueryResults results, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        MonitorQueryResults results = (MonitorQueryResults) t;
         Object object = results.getResult();
         Monitor monitor = results.getMonitor();
         List<String> fields = new ArrayList<>(Arrays.asList(results.getFields()));

@@ -20,36 +20,42 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 /**
  * Base class for monitor requests converters
  */
-public abstract class AbstractMonitorRequestConverter extends BaseMessageConverter {
+public abstract class AbstractMonitorRequestConverter extends BaseMessageConverter<MonitorQueryResults> {
+    
+    protected AbstractMonitorRequestConverter(MediaType mediaType){
+        super(mediaType);
+    }
     
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
+    protected boolean supports(Class<?> clazz){
+        return MonitorQueryResults.class.isAssignableFrom(clazz);
+    }
+    
+    @Override
+    public boolean canRead(Class<?> clazz, MediaType mediaType) {
         return false;
     }
 
-    @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        return MonitorQueryResults.class.isAssignableFrom(clazz) && isSupportedMediaType(mediaType);
-    }
 
     @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
-            throws IOException, HttpMessageNotReadableException {
-        throw new UnsupportedOperationException();
+    protected MonitorQueryResults readInternal(Class<? extends MonitorQueryResults> clazz, HttpInputMessage inputMessage)
+                    throws IOException, HttpMessageNotReadableException{
+        throw new UnsupportedOperationException("Read not supported");
     }
     
+    @SuppressWarnings("unchecked")
     static void handleRequests(Object object, RequestDataVisitor visitor, Monitor monitor) {
         if (object instanceof Query) {
             monitor.query((Query) object, visitor);
         } else {
             List<RequestData> requests;
             if (object instanceof List) {
-                requests = (List) object;
+                requests = (List<RequestData>) object;
             } else {
                 requests = Collections.singletonList((RequestData) object);
             }
             for (RequestData data : requests) {
-                visitor.visit(data, null);
+                visitor.visit(data, (Object[]) null);
             }
         }
     }

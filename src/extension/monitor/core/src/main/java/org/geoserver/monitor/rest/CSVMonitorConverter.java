@@ -28,16 +28,14 @@ import org.springframework.stereotype.Component;
 public class CSVMonitorConverter extends AbstractMonitorRequestConverter {
     
     static Pattern ESCAPE_REQUIRED = Pattern.compile("[\\,\\s\"]");
-
-    @Override
-    public List getSupportedMediaTypes() {
-        return Arrays.asList(MonitorRequestController.CSV_MEDIATYPE);
+    
+    public CSVMonitorConverter() {
+        super(MonitorRequestController.CSV_MEDIATYPE);
     }
 
     @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
+    protected void writeInternal(MonitorQueryResults results, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        MonitorQueryResults results = (MonitorQueryResults) t;
         Object result = results.getResult();
         String[] fields = results.getFields();
         Monitor monitor = results.getMonitor();
@@ -45,6 +43,7 @@ public class CSVMonitorConverter extends AbstractMonitorRequestConverter {
         OutputStream os = outputMessage.getBody();
         write(result, fields, monitor, os);
     }
+    
 
     void write(Object result, String[] fields, Monitor monitor, OutputStream os)
             throws IOException {

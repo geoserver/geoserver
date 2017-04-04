@@ -21,15 +21,19 @@ import org.geotools.data.Transaction;
 import org.geotools.jdbc.JDBCDataStore;
 import org.junit.Before;
 import org.junit.Test;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpOutputMessage;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.io.*;
 import java.net.URL;
@@ -109,12 +113,25 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         ImportContext context = importer.getContext(id);
         
         MockHttpServletRequest req = createRequest(RestBaseController.ROOT_PATH+"/imports/" + id + "/tasks/");
-        Form form = new Form();
+        MultiValueMap<String, Object> form = new LinkedMultiValueMap<String, Object>(1);
         form.add("url", new File(zip).getAbsoluteFile().toURI().toString());
-        req.setContent(form.encode().getBytes("UTF-8"));
+        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        final HttpHeaders headers = new HttpHeaders();
+        new FormHttpMessageConverter().write(form, MediaType.APPLICATION_FORM_URLENCODED, new HttpOutputMessage() {
+            @Override
+            public OutputStream getBody() throws IOException {
+                return stream;
+            }
+
+            @Override
+            public HttpHeaders getHeaders() {
+                return headers;
+            }
+        });
+        req.setContent(stream.toByteArray());
         req.setMethod("POST");
-        req.setContentType(MediaType.APPLICATION_WWW_FORM.toString());
-        req.addHeader("Content-Type", MediaType.APPLICATION_WWW_FORM.toString());
+        req.setContentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+        req.addHeader("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
         resp = dispatch(req);
         
         assertEquals(201, resp.getStatus());
@@ -455,7 +472,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
     }
     
     private void verifyInvalidCRSErrorResponse(MockHttpServletResponse resp) throws UnsupportedEncodingException {
-        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST.getCode(), resp.getStatus());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), resp.getStatus());
         //TODO: Implement JSON error format
         /*
         JSONObject errorResponse = JSONObject.fromObject(resp.getContentAsString());

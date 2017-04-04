@@ -9,14 +9,21 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.importer.*;
+import org.geoserver.importer.rest.TransformTestSupport;
 import org.geoserver.importer.transform.DateFormatTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.rest.RequestInfo;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.web.context.request.AbstractRequestAttributes;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -26,6 +33,8 @@ public class ImportJSONIOTest extends ImporterTestSupport {
     private ImportContextJSONConverterWriter writer;
 
     private ByteArrayOutputStream buf;
+
+    private RequestAttributes oldAttributes;
 
     @Before
     public void prepareData() throws Exception {
@@ -39,6 +48,16 @@ public class ImportJSONIOTest extends ImporterTestSupport {
 
         newBuffer();
         writer = new ImportContextJSONConverterWriter(importer, buf);
+
+        oldAttributes = RequestContextHolder.getRequestAttributes();
+        RequestContextHolder.setRequestAttributes(new TransformTestSupport.MapRequestAttributes());
+
+        RequestInfo.set(info);
+    }
+
+    @After
+    public void cleanUp() {
+        RequestContextHolder.setRequestAttributes(oldAttributes);
     }
 
     private ImportContextJSONConverterReader reader() throws IOException {

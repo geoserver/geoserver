@@ -81,7 +81,16 @@ import net.sf.json.util.JSONBuilder;
 @Component
 public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
+    static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    static {
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
+    Importer importer;
+
+    FlushableJSONBuilder json;
+
+    private Callback callback;
 
     @Autowired
     public ImportContextJSONConverterWriter(Importer importer) {
@@ -93,7 +102,6 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         super();
         this.importer = importer;
         this.json = new FlushableJSONBuilder(new OutputStreamWriter(out));
-        this.page = RequestInfo.get();
     }
 
 
@@ -132,7 +140,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         } else {
             outputMessage.getHeaders().setContentType(MediaType.TEXT_HTML);
         }
-        page = RequestInfo.get();
+        RequestInfo page = RequestInfo.get();
         String path = page.getPagePath();
         OutputStream out = outputMessage.getBody();
         OutputStreamWriter writer = new OutputStreamWriter(out);
@@ -183,23 +191,9 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
     }
 
-    static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-    static {
-        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }
-
-    Importer importer;
-
-    RequestInfo page;
-
-    FlushableJSONBuilder json;
-
-    private Callback callback;
-
     public int expand(int def) {
         String ex = null;
-
-        Map<String, String[]> queryMap = page.getQueryMap();
+        Map<String, String[]> queryMap = RequestInfo.get().getQueryMap();
         if (queryMap != null) {
             String[] params = queryMap.get("expand");
             if (params != null && params.length > 0) {
@@ -233,10 +227,9 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         if (top) {
             json.object().key("import");
         }
-
         json.object();
         json.key("id").value(context.getId());
-        json.key("href").value(page.servletURI(pathTo(context)));
+        json.key("href").value(RequestInfo.get().servletURI(pathTo(context)));
         json.key("state").value(context.getState());
         if (context.getMessage() != null) {
             json.key("message").value(context.getMessage());
@@ -292,7 +285,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
     public void task(ImportTask task, boolean top, int expand) throws IOException {
 
         long id = task.getId();
-        String href = page.servletURI(pathTo(task));
+        String href = RequestInfo.get().servletURI(pathTo(task));
         if (top) {
             json.object().key("task");
         }
@@ -352,7 +345,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
         json.object();
         if (task != null) {
-            json.key("href").value(page.servletURI(pathTo(task) + "/target"));
+            json.key("href").value(RequestInfo.get().servletURI(pathTo(task) + "/target"));
         }
 
         if (expand > 0) {
@@ -377,7 +370,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         ResourceInfo r = layer.getResource();
 
         json.object().key("name").value(layer.getName()).key("href")
-                .value(page.servletURI(pathTo(task) + "/layer"));
+                .value(RequestInfo.get().servletURI(pathTo(task) + "/layer"));
 
         if (expand > 0) {
             if (r.getTitle() != null) {
@@ -436,7 +429,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
             json.object();
         }
 
-        String href = page.servletURI(pathTo(task) + "/layer/style");
+        String href = RequestInfo.get().servletURI(pathTo(task) + "/layer/style");
 
         json.key("style");
         if (expand > 0) {
@@ -492,7 +485,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
             int expand) throws IOException {
         json.object();
         json.key("type").value(transform.getClass().getSimpleName());
-        json.key("href").value(page.servletURI(pathTo(parent) + "/transforms/" + index));
+        json.key("href").value(RequestInfo.get().servletURI(pathTo(parent) + "/transforms/" + index));
         if (expand > 0) {
             if (transform instanceof DateFormatTransform) {
                 DateFormatTransform df = (DateFormatTransform) transform;
@@ -614,7 +607,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.key("type").value("file");
         json.key("format").value(data.getFormat() != null ? data.getFormat().getName() : null);
         if (href) {
-            json.key("href").value(page.servletURI(pathTo(data, parent)));
+            json.key("href").value(RequestInfo.get().servletURI(pathTo(data, parent)));
         }
 
         if (expand > 0) {
@@ -636,7 +629,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         // TODO: we should probably url encode to handle spaces and other chars
         String filename = data.getFile().getName();
         json.key("file").value(filename);
-        json.key("href").value(page.servletURI(pathTo(data, parent) + "/files/" + filename));
+        json.key("href").value(RequestInfo.get().servletURI(pathTo(data, parent) + "/files/" + filename));
         if (expand > 0) {
             if (data instanceof SpatialFile) {
                 SpatialFile sf = (SpatialFile) data;
@@ -675,7 +668,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         }
 
         json.key("location").value(data.getFile().getPath());
-        json.key("href").value(page.servletURI(pathTo(data, parent)));
+        json.key("href").value(RequestInfo.get().servletURI(pathTo(data, parent)));
 
         if (expand > 0) {
             if (data.getCharsetEncoding() != null) {
@@ -712,7 +705,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.object();
         json.key("type").value("database");
         json.key("format").value(data.getFormat() != null ? data.getFormat().getName() : null);
-        json.key("href").value(page.servletURI(pathTo(data, parent)));
+        json.key("href").value(RequestInfo.get().servletURI(pathTo(data, parent)));
 
         if (expand > 0) {
             json.key("parameters").object();
@@ -739,7 +732,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.key("type").value("table");
         json.key("name").value(data.getName());
         json.key("format").value(data.getFormat() != null ? data.getFormat().getName() : null);
-        json.key("href").value(page.servletURI(pathTo(data, parent)));
+        json.key("href").value(RequestInfo.get().servletURI(pathTo(data, parent)));
         json.endObject();
     }
 

@@ -17,6 +17,7 @@ import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.rest.RequestInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.context.request.AbstractRequestAttributes;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.beans.PropertyDescriptor;
@@ -41,44 +42,9 @@ public abstract class TransformTestSupport extends TestCase {
         
         replay(im, ri);
 
-        RequestContextHolder.setRequestAttributes(new AbstractRequestAttributes() {
-            Map<String, Object> requestAttributes = new HashMap<>();
+        RequestAttributes oldAttributes = RequestContextHolder.getRequestAttributes();
+        RequestContextHolder.setRequestAttributes(new TransformTestSupport.MapRequestAttributes());
 
-            @Override
-            public Object getAttribute(String name, int scope) {
-                return requestAttributes.get(name);
-            }
-
-            @Override
-            public void setAttribute(String name, Object value, int scope) {
-                requestAttributes.put(name, value);
-            }
-
-            @Override
-            public void removeAttribute(String name, int scope) {
-                requestAttributes.remove(name);
-            }
-
-            @Override
-            public String[] getAttributeNames(int scope) {
-                return requestAttributes.keySet().toArray(new String[requestAttributes.size()]);
-            }
-
-            @Override
-            protected void updateAccessedSessionAttributes() { }
-
-            @Override
-            public void registerDestructionCallback(String name, Runnable callback, int scope) { }
-
-            @Override
-            public Object resolveReference(String key) { return null; }
-
-            @Override
-            public String getSessionId() { return null; }
-
-            @Override
-            public Object getSessionMutex() { return null; }
-        });
         RequestInfo.set(ri);
 
         ImportContextJSONConverterWriter jsonio = new ImportContextJSONConverterWriter(im, new WriterOutputStream(buffer));
@@ -96,5 +62,45 @@ public abstract class TransformTestSupport extends TestCase {
                     pd[i].getReadMethod().invoke(transform),
                     pd[i].getReadMethod().invoke(transform2));
         }
+        RequestContextHolder.setRequestAttributes(oldAttributes);
+    }
+
+    public static class MapRequestAttributes extends AbstractRequestAttributes {
+        Map<String, Object> requestAttributes = new HashMap<>();
+
+        @Override
+        public Object getAttribute(String name, int scope) {
+            return requestAttributes.get(name);
+        }
+
+        @Override
+        public void setAttribute(String name, Object value, int scope) {
+            requestAttributes.put(name, value);
+        }
+
+        @Override
+        public void removeAttribute(String name, int scope) {
+            requestAttributes.remove(name);
+        }
+
+        @Override
+        public String[] getAttributeNames(int scope) {
+            return requestAttributes.keySet().toArray(new String[requestAttributes.size()]);
+        }
+
+        @Override
+        protected void updateAccessedSessionAttributes() { }
+
+        @Override
+        public void registerDestructionCallback(String name, Runnable callback, int scope) { }
+
+        @Override
+        public Object resolveReference(String key) { return null; }
+
+        @Override
+        public String getSessionId() { return null; }
+
+        @Override
+        public Object getSessionMutex() { return null; }
     }
 }

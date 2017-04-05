@@ -23,6 +23,38 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExcelMonitorConverter extends AbstractMonitorRequestConverter {
 
+    private static final class ExcelRequestDataVisitor implements RequestDataVisitor {
+        private final HSSFSheet sheet;
+
+        int rowNumber = 1;
+
+        private String[] fields;
+
+        private ExcelRequestDataVisitor(HSSFSheet sheet, String[] fields) {
+            this.sheet = sheet;
+            this.fields = fields;
+        }
+
+        public void visit(RequestData data, Object... aggregates) {
+            HSSFRow row = sheet.createRow(rowNumber++);
+            for (int j = 0; j < fields.length; j++) {
+                HSSFCell cell = row.createCell(j);
+                Object obj = OwsUtils.get(data, fields[j]);
+                if (obj == null) {
+                    continue;
+                }
+   
+                if (obj instanceof Date) {
+                    cell.setCellValue((Date) obj);
+                } else if (obj instanceof Number) {
+                    cell.setCellValue(((Number) obj).doubleValue());
+                } else {
+                    cell.setCellValue(new HSSFRichTextString(obj.toString()));
+                }
+            }
+        }
+    }
+
     public ExcelMonitorConverter() {
         super(MonitorRequestController.EXCEL_MEDIATYPE);
     }
@@ -46,28 +78,7 @@ public class ExcelMonitorConverter extends AbstractMonitorRequestConverter {
             }
     
             // write out the request
-            handleRequests(object, new RequestDataVisitor() {
-                int i = 1;
-    
-                public void visit(RequestData data, Object... aggregates) {
-                    HSSFRow row = sheet.createRow(i++);
-                    for (int j = 0; j < fields.length; j++) {
-                        HSSFCell cell = row.createCell(j);
-                        Object obj = OwsUtils.get(data, fields[j]);
-                        if (obj == null) {
-                            continue;
-                        }
-    
-                        if (obj instanceof Date) {
-                            cell.setCellValue((Date) obj);
-                        } else if (obj instanceof Number) {
-                            cell.setCellValue(((Number) obj).doubleValue());
-                        } else {
-                            cell.setCellValue(new HSSFRichTextString(obj.toString()));
-                        }
-                    }
-                }
-            }, monitor);
+            handleRequests(object, new ExcelRequestDataVisitor(sheet, fields), monitor);
     
             // write to output
             wb.write(outputMessage.getBody());

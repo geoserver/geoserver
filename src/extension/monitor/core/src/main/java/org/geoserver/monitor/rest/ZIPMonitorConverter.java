@@ -44,7 +44,7 @@ public class ZIPMonitorConverter extends AbstractMonitorRequestConverter {
         // create the csv entry
         zout.putNextEntry(new ZipEntry("requests.csv"));
         String[] csvFields = (String[]) fields.toArray(new String[fields.size()]);
-        csv.write(object, csvFields, monitor, zout);
+        csv.writeCSVfile(object, csvFields, monitor, zout);
 
         if (object instanceof Query) {
             monitor.query((Query) object, new RequestDataVisitor() {

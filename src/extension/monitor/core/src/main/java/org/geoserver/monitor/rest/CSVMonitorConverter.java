@@ -29,6 +29,46 @@ public class CSVMonitorConverter extends AbstractMonitorRequestConverter {
     
     static Pattern ESCAPE_REQUIRED = Pattern.compile("[\\,\\s\"]");
     
+    private static final class CSVRequestDataVisitor implements RequestDataVisitor {
+        private BufferedWriter writer;
+        private String[] fields;
+        CSVRequestDataVisitor( BufferedWriter writer, String fields[]){
+            this.writer = writer;
+            this.fields = fields;
+        }
+        @Override
+        public void visit(RequestData data, Object... aggregates) {
+            try {
+                StringBuffer sb = new StringBuffer();
+    
+                for (String fld : fields) {
+                    Object val = OwsUtils.get(data, fld);
+                    if (val instanceof Date) {
+                        val = DateUtil.serializeDateTime((Date) val);
+                    }
+                    if (val != null) {
+                        String string = val.toString();
+                        Matcher match = ESCAPE_REQUIRED.matcher(string);
+                        if (match.find()) { // may need escaping, so escape
+                            string = string.replaceAll("\"", "\"\"");// Double all double quotes to escape
+                            sb.append("\"");
+                            sb.append(string);
+                            sb.append("\"");
+                        } else { // No need for escaping
+                            sb.append(string);
+                        }
+                    }
+                    sb.append(",");
+                }
+                sb.setLength(sb.length() - 1); // Remove trailing comma
+                sb.append("\n");
+                writer.write(sb.toString());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     public CSVMonitorConverter() {
         super(MonitorRequestController.CSV_MEDIATYPE);
     }
@@ -41,11 +81,18 @@ public class CSVMonitorConverter extends AbstractMonitorRequestConverter {
         Monitor monitor = results.getMonitor();
 
         OutputStream os = outputMessage.getBody();
-        write(result, fields, monitor, os);
+        writeCSVfile(result, fields, monitor, os);
     }
     
-
-    void write(Object result, String[] fields, Monitor monitor, OutputStream os)
+    
+    /**
+     * Write CSV file (also called by {@link ZIPMonitorConverter}
+     * @param result Query, List or individual RequestData)
+     * @param fields
+     * @param monitor used to cancel output process
+     * @param os Output stream (not closed by this method allowing use of zipfile)
+     */
+    void writeCSVfile(Object result, String[] fields, Monitor monitor, OutputStream os)
             throws IOException {
         final BufferedWriter w = new BufferedWriter(new OutputStreamWriter(os));
 
@@ -57,44 +104,9 @@ public class CSVMonitorConverter extends AbstractMonitorRequestConverter {
         sb.setLength(sb.length() - 1);
         w.write(sb.append("\n").toString());
 
-        handleRequests(result, new RequestDataVisitor() {
-            public void visit(RequestData data, Object... aggregates) {
-                try {
-                    writeRequest(data, w, fields);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }, monitor);
+        handleRequests(result, new CSVRequestDataVisitor(w, fields), monitor);
 
         w.flush();
-    }
-
-    void writeRequest(RequestData data, BufferedWriter w, String[] fields) throws IOException {
-        StringBuffer sb = new StringBuffer();
-
-        for (String fld : fields) {
-            Object val = OwsUtils.get(data, fld);
-            if (val instanceof Date) {
-                val = DateUtil.serializeDateTime((Date) val);
-            }
-            if (val != null) {
-                String string = val.toString();
-                Matcher match = ESCAPE_REQUIRED.matcher(string);
-                if (match.find()) { // may need escaping, so escape
-                    string = string.replaceAll("\"", "\"\"");// Double all double quotes to escape
-                    sb.append("\"");
-                    sb.append(string);
-                    sb.append("\"");
-                } else { // No need for escaping
-                    sb.append(string);
-                }
-            }
-            sb.append(",");
-        }
-        sb.setLength(sb.length() - 1); // Remove trailing comma
-        sb.append("\n");
-        w.write(sb.toString());
     }
 
 }

@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.rest.catalog;
 
 import java.io.IOException;
@@ -20,6 +24,15 @@ import org.springframework.stereotype.Component;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+/**
+ * Outputs a named list of strings, as represented by {@link AvailableResources}.
+ * <p>
+ * This is used for WMS output.
+ * 
+ * 
+ * @author Kevin Smith (Boundless)
+ */
+// TODO: This is a duplicate of StringsListConverter
 @Component
 public class AvailableResourcesConverter extends BaseMessageConverter<AvailableResources> {
     

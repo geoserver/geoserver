@@ -22,7 +22,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.rest.CatalogController;
+import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersister.Callback;
 import org.geoserver.config.util.XStreamPersisterFactory;

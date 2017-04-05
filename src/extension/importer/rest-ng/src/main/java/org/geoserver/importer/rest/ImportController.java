@@ -6,7 +6,7 @@ package org.geoserver.importer.rest;
 
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.rest.CatalogController;
+import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportFilter;

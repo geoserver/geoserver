@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
-import org.geoserver.catalog.rest.CatalogController;
-import org.geoserver.catalog.rest.NamedMap;
+import org.geoserver.rest.catalog.CatalogController;
+import org.geoserver.rest.catalog.NamedMap;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;

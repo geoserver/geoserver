@@ -1,18 +1,14 @@
 package org.geoserver.rest;
 
 import freemarker.template.ObjectWrapper;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.rest.CatalogController;
+import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.config.*;
-import org.geoserver.config.impl.SettingsInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;

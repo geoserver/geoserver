@@ -7,7 +7,7 @@ package org.geoserver.security.rest;
 import java.io.IOException;
 import java.util.Map;
 
-import org.geoserver.catalog.rest.MapJSONConverter;
+import org.geoserver.rest.catalog.MapJSONConverter;
 import org.geoserver.platform.ExtensionPriority;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;

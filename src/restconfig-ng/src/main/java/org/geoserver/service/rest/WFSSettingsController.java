@@ -6,7 +6,7 @@
 package org.geoserver.service.rest;
 
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.rest.CatalogController;
+import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamPersister;

@@ -14,7 +14,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.StoreInfoImpl;
-import org.geoserver.catalog.rest.CatalogController;
+import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.importer.*;
 import org.geoserver.importer.rest.converters.ImportContextJSONConverterReader;
 import org.geoserver.importer.rest.converters.ImportContextJSONConverterWriter;

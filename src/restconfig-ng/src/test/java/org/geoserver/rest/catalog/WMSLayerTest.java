@@ -27,18 +27,12 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Map;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
-import org.custommonkey.xmlunit.NodeTest;
-import org.custommonkey.xmlunit.NodeTestException;
-import org.custommonkey.xmlunit.NodeTester;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.CatalogBuilder;
@@ -48,7 +42,6 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.TestHttpClientRule;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.rest.WMSLayerController;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
@@ -59,12 +52,10 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;

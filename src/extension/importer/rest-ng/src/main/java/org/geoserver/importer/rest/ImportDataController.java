@@ -6,7 +6,7 @@ package org.geoserver.importer.rest;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
-import org.geoserver.catalog.rest.CatalogController;
+import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.importer.*;
 import org.geoserver.importer.rest.converters.ImportContextJSONConverterWriter;
 import org.geoserver.rest.RestBaseController;

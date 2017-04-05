@@ -7,7 +7,7 @@ package org.geoserver.importer.rest;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.Template;
 import org.apache.commons.lang.NotImplementedException;
-import org.geoserver.catalog.rest.CatalogController;
+import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.transform.ImportTransform;

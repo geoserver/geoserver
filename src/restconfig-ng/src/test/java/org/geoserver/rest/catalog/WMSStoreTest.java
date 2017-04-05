@@ -28,22 +28,17 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.TestHttpClientRule;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
-import org.geoserver.catalog.rest.WMSStoreController;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import org.hamcrest.Matchers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;

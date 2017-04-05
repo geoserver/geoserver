@@ -6,8 +6,8 @@ package org.geoserver.security.rest;
 
 import java.util.Map;
 
-import org.geoserver.catalog.rest.CatalogController;
-import org.geoserver.catalog.rest.NamedMap;
+import org.geoserver.rest.catalog.CatalogController;
+import org.geoserver.rest.catalog.NamedMap;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;

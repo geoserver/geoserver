@@ -7,7 +7,7 @@ package org.geoserver.security.rest;
 import java.util.List;
 import java.util.Map;
 
-import org.geoserver.catalog.rest.MapXMLConverter;
+import org.geoserver.rest.catalog.MapXMLConverter;
 import org.geoserver.platform.ExtensionPriority;
 import org.jdom.Element;
 import org.springframework.http.MediaType;

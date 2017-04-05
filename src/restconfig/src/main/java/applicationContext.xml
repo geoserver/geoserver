@@ -569,7 +569,7 @@
   <bean id="fontFinder" class="org.geoserver.rest.FontListResource"  scope="prototype"/>
 
   <!-- admin request callback -->
-  <bean id="adminRequestRestCallback" class="org.geoserver.catalog.rest.AdminRequestCallback"/>
+  <bean id="adminRequestRestCallback" class="org.geoserver.rest.catalog.AdminRequestCallback"/>
 
   <bean id="abstractGeoServerFinder" class="org.geoserver.rest.AbstractGeoServerFinder" abstract="true">
     <constructor-arg ref="geoServer"></constructor-arg>

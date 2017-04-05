@@ -20,8 +20,11 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
+/**
+ * Convert MonitorResutls to an Excel spreadsheet.
+ */
 @Component
-public class ExcelMonitorConverter extends AbstractMonitorRequestConverter {
+public class ExcelMonitorConverter extends BaseMonitorConverter {
 
     private static final class ExcelRequestDataVisitor implements RequestDataVisitor {
         private final HSSFSheet sheet;

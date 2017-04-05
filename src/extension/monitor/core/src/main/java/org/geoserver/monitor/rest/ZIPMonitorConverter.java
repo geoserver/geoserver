@@ -20,8 +20,11 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
+/**
+ * Convert MonitorResutls to a zip file (containing csv files).
+ */
 @Component
-public class ZIPMonitorConverter extends AbstractMonitorRequestConverter {
+public class ZIPMonitorConverter extends BaseMonitorConverter {
 
     CSVMonitorConverter csv = new CSVMonitorConverter();
 

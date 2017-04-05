@@ -8,9 +8,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,12 +18,14 @@ import org.geoserver.monitor.RequestDataVisitor;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.feature.type.DateUtil;
 import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
+/**
+ * Convert MonitorResutls to a csv file.
+ */
 @Component
-public class CSVMonitorConverter extends AbstractMonitorRequestConverter {
+public class CSVMonitorConverter extends BaseMonitorConverter {
     
     static Pattern ESCAPE_REQUIRED = Pattern.compile("[\\,\\s\"]");
     

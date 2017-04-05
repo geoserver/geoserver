@@ -15,15 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import freemarker.template.ObjectWrapper;
-import org.geoserver.catalog.AttributeTypeInfo;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CatalogInfo;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.ResourceNotFoundException;
@@ -92,13 +84,8 @@ public class FeatureTypeController extends CatalogController {
             @PathVariable(name = "datastoreName", required = false) String datastoreName,
             @RequestParam(name = "list", required = true, defaultValue = "configured") String list) {
 
-        ensureResourcesExist(workspaceName, datastoreName);
-
         if ("available".equalsIgnoreCase(list) || "available_with_geom".equalsIgnoreCase(list)) {
-            DataStoreInfo info = catalog.getDataStoreByName(workspaceName, datastoreName);
-            if (info == null) {
-                throw new ResourceNotFoundException("No such datastore: " + datastoreName);
-            }
+            DataStoreInfo info = getExistingDataStore(workspaceName, datastoreName);
 
             // flag to control whether to filter out types without geometry
             boolean skipNoGeom = "available_with_geom".equalsIgnoreCase(list);
@@ -157,45 +144,43 @@ public class FeatureTypeController extends CatalogController {
                     CatalogController.TEXT_JSON, MediaType.APPLICATION_JSON_VALUE,
                     MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE })
     public ResponseEntity postFeatureType(
-            @PathVariable(name = "workspaceName", required = true) String workspace,
-            @PathVariable(name = "datastoreName", required = false) String dataStore,
-            @RequestBody FeatureTypeInfo featureType, UriComponentsBuilder builder)
+            @PathVariable(name = "workspaceName", required = true) String workspaceName,
+            @PathVariable(name = "datastoreName", required = false) String dataStoreName,
+            @RequestBody FeatureTypeInfo ftInfo, UriComponentsBuilder builder)
             throws Exception {
 
-        ensureResourcesExist(workspace, dataStore);
-
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, dataStoreName);
         // ensure the store matches up
-        if (featureType.getStore() != null) {
-            if (!dataStore.equals(featureType.getStore().getName())) {
-                throw new RestException("Expected datastore " + dataStore + " but client specified "
-                        + featureType.getStore().getName(), HttpStatus.FORBIDDEN);
+        if (ftInfo.getStore() != null) {
+            if (!dataStoreName.equals(ftInfo.getStore().getName())) {
+                throw new RestException("Expected datastore " + dataStoreName + " but client specified "
+                        + ftInfo.getStore().getName(), HttpStatus.FORBIDDEN);
             }
         } else {
-            featureType.setStore(catalog.getDataStoreByName(workspace, dataStore));
+            ftInfo.setStore(dsInfo);
         }
 
         // ensure workspace/namespace matches up
-        if (featureType.getNamespace() != null) {
-            if (!workspace.equals(featureType.getNamespace().getPrefix())) {
-                throw new RestException("Expected workspace " + workspace + " but client specified "
-                        + featureType.getNamespace().getPrefix(), HttpStatus.FORBIDDEN);
+        if (ftInfo.getNamespace() != null) {
+            if (!workspaceName.equals(ftInfo.getNamespace().getPrefix())) {
+                throw new RestException("Expected workspace " + workspaceName + " but client specified "
+                        + ftInfo.getNamespace().getPrefix(), HttpStatus.FORBIDDEN);
             }
         } else {
-            featureType.setNamespace(catalog.getNamespaceByPrefix(workspace));
+            ftInfo.setNamespace(catalog.getNamespaceByPrefix(workspaceName));
         }
-        featureType.setEnabled(true);
+        ftInfo.setEnabled(true);
 
         // now, does the feature type exist? If not, create it
-        DataStoreInfo ds = catalog.getDataStoreByName(workspace, dataStore);
-        DataAccess gtda = ds.getDataStore(null);
-        if (gtda instanceof DataStore) {
-            String typeName = featureType.getName();
-            if (featureType.getNativeName() != null) {
-                typeName = featureType.getNativeName();
+        DataAccess dataAccess = dsInfo.getDataStore(null);
+        if (dataAccess instanceof DataStore) {
+            String typeName = ftInfo.getName();
+            if (ftInfo.getNativeName() != null) {
+                typeName = ftInfo.getNativeName();
             }
             boolean typeExists = false;
-            DataStore gtds = (DataStore) gtda;
-            for (String name : gtds.getTypeNames()) {
+            DataStore dataStore = (DataStore) dataAccess;
+            for (String name : dataStore.getTypeNames()) {
                 if (name.equals(typeName)) {
                     typeExists = true;
                     break;
@@ -203,71 +188,71 @@ public class FeatureTypeController extends CatalogController {
             }
 
             // check to see if this is a virtual JDBC feature type
-            MetadataMap mdm = featureType.getMetadata();
+            MetadataMap mdm = ftInfo.getMetadata();
             boolean virtual = mdm != null && mdm.containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
 
             if (!virtual && !typeExists) {
-                gtds.createSchema(buildFeatureType(featureType));
+                dataStore.createSchema(buildFeatureType(ftInfo));
                 // the attributes created might not match up 1-1 with the actual spec due to
                 // limitations of the data store, have it re-compute them
-                featureType.getAttributes().clear();
-                List<String> typeNames = Arrays.asList(gtds.getTypeNames());
+                ftInfo.getAttributes().clear();
+                List<String> typeNames = Arrays.asList(dataStore.getTypeNames());
                 // handle Oracle oddities
                 // TODO: use the incoming store capabilites API to better handle the name transformation
                 if (!typeNames.contains(typeName) && typeNames.contains(typeName.toUpperCase())) {
-                    featureType.setNativeName(featureType.getName().toLowerCase());
+                    ftInfo.setNativeName(ftInfo.getName().toLowerCase());
                 }
             }
         }
 
         CatalogBuilder cb = new CatalogBuilder(catalog);
-        cb.initFeatureType(featureType);
+        cb.initFeatureType(ftInfo);
 
         // attempt to fill in metadata from underlying feature source
         try {
-            FeatureSource featureSource = gtda
-                    .getFeatureSource(new NameImpl(featureType.getNativeName()));
+            FeatureSource featureSource = dataAccess
+                    .getFeatureSource(new NameImpl(ftInfo.getNativeName()));
             if (featureSource != null) {
-                cb.setupMetadata(featureType, featureSource);
+                cb.setupMetadata(ftInfo, featureSource);
             }
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Unable to fill in metadata from underlying feature source",
                     e);
         }
 
-        if (featureType.getStore() == null) {
+        if (ftInfo.getStore() == null) {
             // get from requests
-            featureType.setStore(ds);
+            ftInfo.setStore(dsInfo);
         }
 
-        NamespaceInfo ns = featureType.getNamespace();
-        if (ns != null && !ns.getPrefix().equals(workspace)) {
+        NamespaceInfo ns = ftInfo.getNamespace();
+        if (ns != null && !ns.getPrefix().equals(workspaceName)) {
             // TODO: change this once the two can be different and we untie namespace
             // from workspace
             LOGGER.warning("Namespace: " + ns.getPrefix() + " does not match workspace: "
-                    + workspace + ", overriding.");
+                    + workspaceName + ", overriding.");
             ns = null;
         }
 
         if (ns == null) {
             // infer from workspace
-            ns = catalog.getNamespaceByPrefix(workspace);
-            featureType.setNamespace(ns);
+            ns = catalog.getNamespaceByPrefix(workspaceName);
+            ftInfo.setNamespace(ns);
         }
 
-        featureType.setEnabled(true);
-        catalog.validate(featureType, true).throwIfInvalid();
-        catalog.add(featureType);
+        ftInfo.setEnabled(true);
+        catalog.validate(ftInfo, true).throwIfInvalid();
+        catalog.add(ftInfo);
 
         // create a layer for the feature type
-        catalog.add(new CatalogBuilder(catalog).buildLayer(featureType));
+        catalog.add(new CatalogBuilder(catalog).buildLayer(ftInfo));
 
-        LOGGER.info("POST feature type" + dataStore + "," + featureType.getName());
+        LOGGER.info("POST feature type" + dataStoreName + "," + ftInfo.getName());
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(
                 builder.path("/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes/"
-                        + featureType.getName()).buildAndExpand(workspace, dataStore).toUri());
+                        + ftInfo.getName()).buildAndExpand(workspaceName, dataStoreName).toUri());
         return new ResponseEntity<String>("", headers, HttpStatus.CREATED);
     }
 
@@ -281,51 +266,11 @@ public class FeatureTypeController extends CatalogController {
             @PathVariable(name = "featureTypeName", required = true) String featureTypeName,
             @RequestParam(name = "quietOnNotFound", required = false, defaultValue = "false") Boolean quietOnNotFound) {
 
-        ensureResourcesExist(workspaceName, datastoreName);
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, datastoreName);
+        FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
+        checkFeatureTypeExists(ftInfo, workspaceName, datastoreName, featureTypeName);
 
-        if (datastoreName != null && catalog.getFeatureTypeByDataStore(
-                catalog.getDataStoreByName(workspaceName, datastoreName),
-                featureTypeName) == null) {
-            throw new ResourceNotFoundException("No such feature type: " + workspaceName + ","
-                    + datastoreName + "," + featureTypeName);
-        } else {
-            // look up by workspace/namespace
-            NamespaceInfo ns = catalog.getNamespaceByPrefix(workspaceName);
-
-            if (ns == null || catalog.getFeatureTypeByName(ns, featureTypeName) == null) {
-                throw new ResourceNotFoundException(
-                        "No such feature type: " + workspaceName + "," + featureTypeName);
-            }
-        }
-
-        FeatureTypeInfo ftInfo;
-
-        if (datastoreName == null) {
-            LOGGER.fine("GET feature type" + workspaceName + "," + featureTypeName);
-
-            // grab the corresponding namespace for this workspace
-            NamespaceInfo ns = catalog.getNamespaceByPrefix(workspaceName);
-            if (ns != null) {
-                ftInfo = catalog.getFeatureTypeByName(ns, featureTypeName);
-            } else {
-                return wrapObject(null, FeatureTypeInfo.class,
-                        "No namespace found for prefix: " + workspaceName, quietOnNotFound);
-            }
-        } else { // datastore != null
-            LOGGER.fine("GET feature type" + datastoreName + "," + featureTypeName);
-            DataStoreInfo dsInfo = catalog.getDataStoreByName(workspaceName, datastoreName);
-            ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
-        }
-
-        String msgIfNotFound;
-        if (datastoreName != null) {
-            msgIfNotFound = "No such feature type: " + workspaceName + "," + datastoreName + ","
-                    + featureTypeName;
-        } else {
-            msgIfNotFound = "No such feature type: " + workspaceName + "," + featureTypeName;
-        }
-
-        return wrapObject(ftInfo, FeatureTypeInfo.class, msgIfNotFound, quietOnNotFound);
+        return wrapObject(ftInfo, FeatureTypeInfo.class, "No such feature type: "+featureTypeName, quietOnNotFound);
     }
 
     @PutMapping(path = { "/workspaces/{workspaceName}/featuretypes/{featureTypeName}",
@@ -339,38 +284,22 @@ public class FeatureTypeController extends CatalogController {
             @RequestBody(required = true) FeatureTypeInfo featureTypeUpdate,
             @RequestParam(name = "recalculate", required = false) String recalculate) {
 
-        ensureResourcesExist(workspaceName, datastoreName);
-
-        if (datastoreName != null
-                && catalog.getFeatureTypeByDataStore(catalog.getDataStoreByName(workspaceName),
-                        featureTypeName) == null) {
-
-            throw new ResourceNotFoundException("No such feature type: " + workspaceName + ","
-                    + datastoreName + "," + featureTypeName);
-        } else {
-            // look up by workspace/namespace
-            NamespaceInfo ns = catalog.getNamespaceByPrefix(workspaceName);
-            if (ns == null || catalog.getFeatureTypeByName(ns, featureTypeName) == null) {
-                throw new ResourceNotFoundException(
-                        "No such feature type: " + workspaceName + "," + featureTypeName);
-            }
-        }
-
-        DataStoreInfo ds = catalog.getDataStoreByName(workspaceName, datastoreName);
-        FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByDataStore(ds, featureTypeName);
-        Map<String, Serializable> parametersCheck = featureTypeInfo.getStore()
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, datastoreName);
+        FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
+        checkFeatureTypeExists(ftInfo, workspaceName, datastoreName, featureTypeName);
+        Map<String, Serializable> parametersCheck = ftInfo.getStore()
                 .getConnectionParameters();
 
-        calculateOptionalFields(featureTypeUpdate, featureTypeInfo, recalculate);
+        calculateOptionalFields(featureTypeUpdate, ftInfo, recalculate);
         CatalogBuilder helper = new CatalogBuilder(catalog);
-        helper.updateFeatureType(featureTypeInfo, featureTypeUpdate);
+        helper.updateFeatureType(ftInfo, featureTypeUpdate);
 
-        catalog.validate(featureTypeInfo, false).throwIfInvalid();
-        catalog.save(featureTypeInfo);
-        catalog.getResourcePool().clear(featureTypeInfo);
+        catalog.validate(ftInfo, false).throwIfInvalid();
+        catalog.save(ftInfo);
+        catalog.getResourcePool().clear(ftInfo);
 
-        Map<String, Serializable> parameters = featureTypeInfo.getStore().getConnectionParameters();
-        MetadataMap mdm = featureTypeInfo.getMetadata();
+        Map<String, Serializable> parameters = ftInfo.getStore().getConnectionParameters();
+        MetadataMap mdm = ftInfo.getMetadata();
         boolean virtual = mdm != null && mdm.containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
 
         if (!virtual && parameters.equals(parametersCheck)) {
@@ -379,7 +308,7 @@ public class FeatureTypeController extends CatalogController {
         } else {
             LOGGER.info("PUT featureType" + datastoreName + "," + featureTypeName
                     + " updated metadata and data access");
-            catalog.getResourcePool().clear(featureTypeInfo.getStore());
+            catalog.getResourcePool().clear(ftInfo.getStore());
         }
 
     }
@@ -394,27 +323,10 @@ public class FeatureTypeController extends CatalogController {
             @PathVariable(name = "featureTypeName", required = true) String featureTypeName,
             @RequestParam(name = "recurse", defaultValue = "false") Boolean recurse) {
 
-        ensureResourcesExist(workspaceName, datastoreName);
-
-        if (datastoreName != null
-                && catalog.getFeatureTypeByDataStore(catalog.getDataStoreByName(workspaceName, datastoreName),
-                        featureTypeName) == null) {
-            throw new RestException("No such feature type: " + workspaceName + "," + datastoreName
-                    + "," + featureTypeName, HttpStatus.NOT_FOUND);
-        } else {
-            // look up by workspace/namespace
-            NamespaceInfo ns = catalog.getNamespaceByPrefix(workspaceName);
-            if (ns == null || catalog.getFeatureTypeByName(ns, featureTypeName) == null) {
-
-                throw new RestException(
-                        "No such feature type: " + workspaceName + "," + featureTypeName,
-                        HttpStatus.NOT_FOUND);
-            }
-        }
-
-        DataStoreInfo ds = catalog.getDataStoreByName(workspaceName, datastoreName);
-        FeatureTypeInfo ft = catalog.getFeatureTypeByDataStore(ds, featureTypeName);
-        List<LayerInfo> layers = catalog.getLayers(ft);
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, datastoreName);
+        FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
+        checkFeatureTypeExists(ftInfo, workspaceName, datastoreName, featureTypeName);
+        List<LayerInfo> layers = catalog.getLayers(ftInfo);
 
         if (recurse) {
             // by recurse we clear out all the layers that public this resource
@@ -429,31 +341,33 @@ public class FeatureTypeController extends CatalogController {
             }
         }
 
-        catalog.remove(ft);
+        catalog.remove(ftInfo);
         LOGGER.info("DELETE feature type" + datastoreName + "," + featureTypeName);
     }
 
     /**
-     * Check if the provided workspace and datastore exist. <br/>
-     * <br/>
-     * If the parameter is null, no check is performed. <br/>
-     * <br/>
-     * If the workspaceName / datastoreName parameter is provided but the corresponding resource does not exist, throws a 404 exception.
-     * 
-     * @param workspaceName
-     * @param datastoreName
+     * If the feature type doesn't exists throws a REST exception with HTTP 404 code.
      */
-    public void ensureResourcesExist(String workspaceName, String datastoreName) {
-        // ensure referenced resources exist
-        if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
-            throw new ResourceNotFoundException("No such workspace: " + workspaceName);
+    private void checkFeatureTypeExists(FeatureTypeInfo featureType, String workspaceName, String dataStoreName, String featureTypeName) {
+        if (featureType == null && dataStoreName == null) {
+            throw new ResourceNotFoundException(String.format(
+                    "No such feature type: %s,%s", workspaceName, featureTypeName));
+        } else if (featureType == null) {
+            throw new ResourceNotFoundException(String.format(
+                    "No such feature type: %s,%s,%s", workspaceName, dataStoreName, featureTypeName));
         }
+    }
 
-        if (datastoreName != null
-                && catalog.getDataStoreByName(workspaceName, datastoreName) == null) {
+    /**
+     * Helper method that find a store based on the workspace name and store name.
+     */
+    private DataStoreInfo getExistingDataStore(String workspaceName, String storeName) {
+        DataStoreInfo original = catalog.getDataStoreByName(workspaceName, storeName);
+        if (original == null) {
             throw new ResourceNotFoundException(
-                    "No such datastore: " + workspaceName + "," + datastoreName);
+                    "No such data store: " + workspaceName + "," + storeName);
         }
+        return original;
     }
 
     SimpleFeatureType buildFeatureType(FeatureTypeInfo fti) {

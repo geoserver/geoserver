@@ -297,12 +297,11 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         // First request should thrown an exception
         MockHttpServletResponse response = getAsServletResponse(requestPath);
         assertEquals(404, response.getStatus());
-        assertTrue(response.getContentAsString().contains(exception));
+        assertContains(response.getContentAsString(), exception);
 
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
         assertEquals(404, response.getStatus());
-        assertFalse(response.getContentAsString().contains(exception));
         // No exception thrown
         assertTrue(response.getContentAsString().isEmpty());
 
@@ -311,12 +310,11 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         // First request should thrown an exception
         response = getAsServletResponse(requestPath2);
         assertEquals(404, response.getStatus());
-        assertTrue(response.getContentAsString().contains(exception2));
+        assertContains(response.getContentAsString(), exception2);
 
         // Same request with ?quietOnNotFound should not throw an exception
         response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
         assertEquals(404, response.getStatus());
-        assertFalse(response.getContentAsString().contains(exception2));
         // No exception thrown
         assertTrue(response.getContentAsString().isEmpty());
     }
@@ -576,5 +574,9 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         // Fetch the feature from the catalog again, and ensure nothing changed.
         FeatureTypeInfo after = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
         assertEquals(before, after);
+    }
+
+    public static void assertContains(String message, String contains) {
+        assertTrue("Expected \"" + message + "\" to contain \"" + contains + "\"", message.contains(contains));
     }
 }

@@ -29,8 +29,6 @@ import org.xml.sax.EntityResolver;
  */
 public class StyleConverter extends BaseMessageConverter {
 
-    private final List<MediaType> supportedMediaTypes;
-
     private final Version version;
 
     private final StyleHandler handler;
@@ -38,8 +36,7 @@ public class StyleConverter extends BaseMessageConverter {
     private final EntityResolver entityResolver;
 
     public StyleConverter(String mimeType, Version version, StyleHandler handler, EntityResolver entityResolver) {
-        supportedMediaTypes = new ArrayList<>();
-        supportedMediaTypes.add(MediaType.valueOf(mimeType));
+        super(MediaType.valueOf(mimeType));
         this.handler = handler;
         this.version = version;
         this.entityResolver = entityResolver;

@@ -26,7 +26,7 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter {
     static final MediaType TEXT_JSON = MediaType.valueOf("text/json");
 
     public XStreamJSONMessageConverter() {
-        super();
+        super(MediaType.APPLICATION_JSON);
     }
     
     @Override
@@ -40,14 +40,13 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter {
     }
 
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
-        return !RestListWrapper.class.isAssignableFrom(clazz) &&
-                isSupportedMediaType(mediaType);
+    protected boolean supports(Class clazz) {
+        return !RestListWrapper.class.isAssignableFrom(clazz);
     }
 
     @Override
     public boolean canWrite(Class clazz, MediaType mediaType) {
-        /**
+        /*
          * Actually, this should largely be dependent on clazz and not by the passed in media type.
          *
          * During my research I found that:
@@ -66,7 +65,7 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter {
     }
 
     @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
+    public Object readInternal(Class clazz, HttpInputMessage inputMessage)
         throws IOException, HttpMessageNotReadableException
     {
         XStreamPersister p = xpf.createJSONPersister();
@@ -78,7 +77,7 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter {
     }
 
     @Override
-    public void write(Object o, MediaType contentType, HttpOutputMessage outputMessage)
+    public void writeInternal(Object o, HttpOutputMessage outputMessage)
         throws IOException, HttpMessageNotWritableException {
         XStreamPersister xmlPersister = xpf.createJSONPersister();
         xmlPersister.setCatalog(catalog);

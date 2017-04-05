@@ -8,15 +8,20 @@ import java.io.IOException;
 
 import org.geoserver.catalog.rest.FormatCollectionWrapper.JSONCollectionWrapper;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geotools.GML;
+import org.geotools.GML.Version;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.geojson.feature.FeatureJSON;
 import org.springframework.http.HttpInputMessage;
+import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
 
 /**
  * Base class for converters handling (wrapped) feature collections
  */
-public abstract class FeatureCollectionConverter extends BaseMessageConverter<SimpleFeatureCollection> {
+public abstract class FeatureCollectionConverter<T> extends BaseMessageConverter<T> {
 
     public FeatureCollectionConverter(MediaType... supportedMediaTypes) {
         super(supportedMediaTypes);
@@ -33,7 +38,7 @@ public abstract class FeatureCollectionConverter extends BaseMessageConverter<Si
     }
     
     @Override
-    protected SimpleFeatureCollection readInternal(Class<? extends SimpleFeatureCollection> clazz,
+    protected T readInternal(Class<? extends T> clazz,
             HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
         throw new HttpMessageNotReadableException(
                 getClass().getName() + " does not support deserialization");
@@ -44,11 +49,25 @@ public abstract class FeatureCollectionConverter extends BaseMessageConverter<Si
      * @param o
      * @return features
      */
-    SimpleFeatureCollection getFeatures(Object content) {
-        if(content instanceof FormatCollectionWrapper) {
-            return ((FormatCollectionWrapper) content).getCollection();
-        } else {
-            return (SimpleFeatureCollection) content;
-        }
+    abstract SimpleFeatureCollection getFeatures(T content);
+
+    
+    protected void writeGeoJsonl(T content, HttpOutputMessage outputMessage)
+            throws IOException, HttpMessageNotWritableException {
+        SimpleFeatureCollection features = getFeatures(content);
+        final FeatureJSON json = new FeatureJSON();
+        boolean geometryless = features.getSchema().getGeometryDescriptor() == null;
+        json.setEncodeFeatureCollectionBounds(!geometryless);
+        json.setEncodeFeatureCollectionCRS(!geometryless);
+        json.writeFeatureCollection(features, outputMessage.getBody());
+    }
+    
+    protected void writeGML(T content, HttpOutputMessage outputMessage)
+            throws IOException, HttpMessageNotWritableException {
+        SimpleFeatureCollection features = getFeatures(content);
+        GML gml = new GML(Version.WFS1_0);
+        gml.setNamespace("gf", features.getSchema().getName().getNamespaceURI());
+        // gml.setFeatureBounding(false);
+        gml.encode(outputMessage.getBody(), features);
     }
 }

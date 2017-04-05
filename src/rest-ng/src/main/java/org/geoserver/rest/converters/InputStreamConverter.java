@@ -16,30 +16,35 @@ import java.util.List;
 /**
  * Created by tbarsballe on 2017-03-31.
  */
-public class InputStreamConverter extends BaseMessageConverter {
+public class InputStreamConverter extends BaseMessageConverter<InputStream> {
+    
+    public InputStreamConverter(){
+        super(MediaType.ALL);
+    }
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
+    protected boolean canRead(MediaType mediaType) {
         return false;
     }
-
+    
     @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
+    protected boolean supports(Class<?> clazz) {
         return InputStream.class.isAssignableFrom(clazz);
     }
 
     @Override
-    public List<MediaType> getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.ALL);
+    protected InputStream readInternal(Class<? extends InputStream> clazz,
+            HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+        throw new HttpMessageNotReadableException(getClass().getName() + " does not support deserialization");
     }
 
     @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void write(Object o, MediaType contentType, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
-        IOUtils.copy((InputStream)o,outputMessage.getBody());
-        ((InputStream) o).close();
+    protected void writeInternal(InputStream inputStream, HttpOutputMessage outputMessage)
+            throws IOException, HttpMessageNotWritableException {
+        try {
+            IOUtils.copy(inputStream,outputMessage.getBody());
+        }
+        finally {
+            inputStream.close();
+        }
     }
 }

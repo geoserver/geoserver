@@ -1,5 +1,7 @@
 package org.geoserver.rest.converters;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.geoserver.catalog.Catalog;
@@ -7,9 +9,13 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
+import org.springframework.http.HttpInputMessage;
+import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
 
 /**
  * Base message converter behavior
@@ -89,4 +95,18 @@ public abstract class BaseMessageConverter<T> extends AbstractHttpMessageConvert
 //            throws IOException, HttpMessageNotWritableException {
 //        throw new HttpMessageNotReadableException(getClass().getName()+" does not support serialization");
 //    }
+    
+    /* Default implementation provided for consistent not-implemented message */
+    @Override
+    protected T readInternal(Class<? extends T> clazz,
+            HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+        throw new HttpMessageNotReadableException(getClass().getName() + " does not support deserialization");
+    }
+    
+    /* Default implementation provided for consistent not-implemented message */
+    @Override
+    protected void writeInternal(T t, HttpOutputMessage outputMessage)
+            throws IOException, HttpMessageNotWritableException {
+        throw new HttpMessageNotWritableException(getClass().getName() + " does not support serialization");
+    }
 }

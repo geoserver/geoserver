@@ -1,30 +1,35 @@
 package org.geoserver.rest.converters;
 
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
+
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Logger;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 /**
  * Message converter for Freemarker-generated HTML output
  */
-public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
+public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWrapper<?>> {
 
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.restng.converters");
 
@@ -34,7 +39,7 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
     protected String encoding;
 
     public FreemarkerHTMLMessageConverter() {
-        super();
+        super(MediaType.TEXT_HTML);
     }
 
     public FreemarkerHTMLMessageConverter(String encoding) {
@@ -43,68 +48,57 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter {
     }
 
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
-        return false;
+    protected boolean supports(Class<?> clazz) {
+        return RestWrapper.class.isAssignableFrom(clazz);
+    }
+    
+    @Override
+    protected boolean canRead(MediaType mediaType) {
+        return false; // reading not supported
     }
 
     @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        return MediaType.TEXT_HTML.includes(mediaType) && RestWrapper.class.isAssignableFrom(clazz);
-    }
-
-    @Override
-    public List<MediaType> getSupportedMediaTypes() {
-        return Collections.singletonList(MediaType.TEXT_HTML);
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
-            throws IOException, HttpMessageNotReadableException {
+    protected RestWrapper<?> readInternal(Class<? extends RestWrapper<?>> clazz,
+            HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
         throw new UnsupportedOperationException();
     }
-
+    
     /**
-     * Write an given object to the given output message as HTML.
-     *
-     * @param o Object to serialize. Must be an instance of {@link RestWrapper}
-     * @param contentType the content type to use when writing
-     * @param outputMessage the message to write to
+     * Write an given object to the given output message as HTML, invoked from {@link #write}.
+     * @param wrapper The wrapped object write to the output message
+     * @param outputMessage the HTTP output message to write to
      * @throws IOException in case of I/O errors
      * @throws HttpMessageNotWritableException in case of conversion errors
-     * @throws IllegalArgumentException if o is not an instance of {@link RestWrapper}
      */
     @Override
-    public void write(Object o, MediaType contentType, HttpOutputMessage outputMessage)
+    protected void writeInternal(RestWrapper<?> wrapper, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        Writer tmplWriter = null;
-        if (o instanceof RestWrapper) {
-            RestWrapper wrapper = (RestWrapper) o;
-            wrapper.configureFreemarker(this);
-            try {
-                Object object = wrapper.getObject();
-                Template template = wrapper.getTemplate();
-                OutputStream outputStream = outputMessage.getBody();
-
-                if (contentType.getCharSet() != null) {
-                    tmplWriter = new BufferedWriter(
-                            new OutputStreamWriter(outputStream, contentType.getCharSet().name()));
-                } else {
-                    tmplWriter = new BufferedWriter(
-                            new OutputStreamWriter(outputStream, template.getEncoding()));
-                }
-
-                template.process(object, tmplWriter);
-                tmplWriter.flush();
-            } catch (TemplateException te) {
-                throw new IOException("Template processing error " + te.getMessage());
-            } finally {
-                if (tmplWriter != null) {
-                    tmplWriter.close();
-                }
+        MediaType contentType = outputMessage.getHeaders().getContentType();
+        
+        Writer templateWriter = null;
+        wrapper.configureFreemarker(this);
+        try {
+            Object object = wrapper.getObject();
+            Template template = wrapper.getTemplate();
+            OutputStream outputStream = outputMessage.getBody();
+            Charset charSet = contentType.getCharset();
+            
+            if (charSet != null) {
+                templateWriter = new BufferedWriter(
+                        new OutputStreamWriter(outputStream, charSet.name()));
+            } else {
+                templateWriter = new BufferedWriter(
+                        new OutputStreamWriter(outputStream, template.getEncoding()));
             }
-        } else {
-            throw new IllegalArgumentException(
-                    "Object must be an instance of RestWrapper. Was: " + o.getClass());
+
+            template.process(object, templateWriter);
+            templateWriter.flush();
+        } catch (TemplateException te) {
+            throw new IOException("Template processing error " + te.getMessage());
+        } finally {
+            if (templateWriter != null) {
+                templateWriter.close();
+            }
         }
     }
 

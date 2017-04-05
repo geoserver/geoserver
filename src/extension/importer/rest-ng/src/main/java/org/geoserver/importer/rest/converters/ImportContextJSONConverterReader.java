@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -69,17 +70,19 @@ import net.sf.json.JSONObject;
  * {@link BaseMessageConverter} implementation for reading {@link ImportContext} and {@link ImportTask} objects from JSON
  */
 @Component
-public class ImportContextJSONConverterReader extends BaseMessageConverter {
+public class ImportContextJSONConverterReader extends BaseMessageConverter<Object> {
 
     Importer importer;
     JSONObject json;
 
     @Autowired
     public ImportContextJSONConverterReader(Importer importer)  {
+        super(MediaType.APPLICATION_JSON,CatalogController.MEDIATYPE_TEXT_JSON);
         this.importer = importer;
     }
     
     public ImportContextJSONConverterReader(Importer importer, InputStream in) throws IOException {
+        super(MediaType.APPLICATION_JSON,CatalogController.MEDIATYPE_TEXT_JSON);
         this.importer = importer;
         this.json = parse(in);
     }
@@ -88,27 +91,18 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
         return json;
     }
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
+    protected boolean supports(Class<?> clazz) {
         return (ImportContext.class.isAssignableFrom(clazz) || ImportTask.class.isAssignableFrom(clazz) ||
-                ImportTransform.class.isAssignableFrom(clazz) || TransformChain.class.isAssignableFrom(clazz))
-                && isSupportedMediaType(mediaType);
-        
+                ImportTransform.class.isAssignableFrom(clazz) || TransformChain.class.isAssignableFrom(clazz));
+    }
+    
+    @Override
+    protected boolean canWrite(MediaType mediaType) {
+        return false; // write not supported
     }
 
     @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public List getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.APPLICATION_JSON,
-                MediaType.valueOf(CatalogController.TEXT_JSON));
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
+    protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         InputStream in = inputMessage.getBody();
         json = parse(in);
@@ -523,11 +517,12 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
     <T> T fromJSON(Class<T> clazz) throws IOException {
         return fromJSON(json, clazz);
     }
+    
     @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
+    protected void writeInternal(Object t, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        // TODO Auto-generated method stub
-
+        throw new HttpMessageNotWritableException(
+                getClass().getName() + " does not support serialization");
     }
 
     @Override

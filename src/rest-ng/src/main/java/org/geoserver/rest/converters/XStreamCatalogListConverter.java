@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
  * Converter to handle the serialization of lists of catalog resources, which need some special
  * handling
  */
-public abstract class XStreamCatalogListConverter extends XStreamMessageConverter {
+public abstract class XStreamCatalogListConverter extends XStreamMessageConverter<RestListWrapper> {
 
     public XStreamCatalogListConverter() {
         super();

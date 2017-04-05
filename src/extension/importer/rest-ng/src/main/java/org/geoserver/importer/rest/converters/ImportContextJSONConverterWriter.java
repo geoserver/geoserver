@@ -4,10 +4,15 @@
  */
 package org.geoserver.importer.rest.converters;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Serializable;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +43,7 @@ import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.Table;
 import org.geoserver.importer.mosaic.Granule;
 import org.geoserver.importer.mosaic.Mosaic;
-import org.geoserver.importer.rest.*;
+import org.geoserver.importer.rest.ImportWrapper;
 import org.geoserver.importer.transform.AttributeRemapTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.CreateIndexTransform;
@@ -79,7 +84,7 @@ import net.sf.json.util.JSONBuilder;
  * {@link ImportTask}  or {@link ImportWrapper} objects.
  */
 @Component
-public class ImportContextJSONConverterWriter extends BaseMessageConverter {
+public class ImportContextJSONConverterWriter extends BaseMessageConverter<Object> {
 
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     static {
@@ -94,54 +99,46 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
     @Autowired
     public ImportContextJSONConverterWriter(Importer importer) {
-        super();
+        super(MediaType.APPLICATION_JSON,CatalogController.MEDIATYPE_TEXT_JSON,MediaType.TEXT_HTML);
         this.importer = importer;
     }
     
     public ImportContextJSONConverterWriter(Importer importer, OutputStream out) {
-        super();
+        super(MediaType.APPLICATION_JSON,CatalogController.MEDIATYPE_TEXT_JSON,MediaType.TEXT_HTML);
         this.importer = importer;
         this.json = new FlushableJSONBuilder(new OutputStreamWriter(out));
     }
 
-
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
+    protected boolean supports(Class<?> clazz) {
+        return ImportContext.class.isAssignableFrom(clazz)
+                || ImportTask.class.isAssignableFrom(clazz)
+                || ImportWrapper.class.isAssignableFrom(clazz)
+                || ImportData.class.isAssignableFrom(clazz);
+    }
+    @Override
+    protected boolean canRead(MediaType mediaType) {
         return false;
-
     }
-
+    
     @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        final boolean importControllers = ImportContext.class.isAssignableFrom(clazz)
-                || ImportTask.class.isAssignableFrom(clazz) || ImportWrapper.class.isAssignableFrom(clazz);
-        final boolean dataControllers = ImportData.class.isAssignableFrom(clazz);
-        return (importControllers || dataControllers) && isSupportedMediaType(mediaType);
-    }
-
-    @Override
-    public List getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.APPLICATION_JSON,
-                MediaType.valueOf(CatalogController.TEXT_JSON), MediaType.TEXT_HTML);
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
+    protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new HttpMessageNotReadableException(getClass().getName() + " does not support deserialization");
     }
-
+    
     @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
+    protected void writeInternal(Object t, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        if (!contentType.equals(MediaType.TEXT_HTML)) {
-            outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        } else {
-            outputMessage.getHeaders().setContentType(MediaType.TEXT_HTML);
-        }
-        RequestInfo page = RequestInfo.get();
-        String path = page.getPagePath();
+        MediaType contentType = outputMessage.getHeaders().getContentType();
+     
+//        if (!contentType.equals(MediaType.TEXT_HTML)) {
+//            outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+//        } else {
+//            outputMessage.getHeaders().setContentType(MediaType.TEXT_HTML);
+//        }
+//        RequestInfo page = RequestInfo.get();
+//        String path = page.getPagePath();
         OutputStream out = outputMessage.getBody();
         OutputStreamWriter writer = new OutputStreamWriter(out);
         if (contentType.equals(MediaType.TEXT_HTML)) {
@@ -188,7 +185,6 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
             writer.write("</pre></body></html>");
         }
         writer.flush();
-
     }
 
     public int expand(int def) {
@@ -709,8 +705,8 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
         if (expand > 0) {
             json.key("parameters").object();
-            for (Map.Entry e : data.getParameters().entrySet()) {
-                json.key((String) e.getKey()).value(e.getValue());
+            for (Map.Entry<String,Serializable> e : data.getParameters().entrySet()) {
+                json.key(e.getKey()).value(e.getValue());
             }
 
             json.endObject();

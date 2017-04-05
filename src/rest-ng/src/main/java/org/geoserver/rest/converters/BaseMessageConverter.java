@@ -1,14 +1,20 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.rest.converters;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -18,11 +24,15 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
 /**
- * Base message converter behavior
+ * Base message converter behavior for XStream XML or JSON converters.
+ * <p>
+ * Local fields have been provided for {@link #catalog} and {@link #geoServer} access.
  */
 public abstract class BaseMessageConverter<T> extends AbstractHttpMessageConverter<T>
         implements HttpMessageConverter<T>, ExtensionPriority {
 
+    private static final Logger LOGGER = Logging.getLogger("org.geoserver.rest.converters");
+    
     protected final Catalog catalog;
     
     protected final XStreamPersisterFactory xpf;

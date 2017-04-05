@@ -7,12 +7,16 @@ import org.geoserver.catalog.Styles;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.converters.*;
 import org.geotools.util.Version;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
@@ -35,32 +39,46 @@ import javax.servlet.http.HttpServletRequest;
  * Configure various aspects of Spring MVC, in particular message converters
  */
 @Configuration
-public class MVCConfiguration extends WebMvcConfigurationSupport {
+public class RestConfiguration extends WebMvcConfigurationSupport {
 
-    private final class DefaultContentNegotiation implements ContentNegotiationStrategy {
-        @Override
-        public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
-                throws HttpMediaTypeNotAcceptableException {
-
-
-            Object request = webRequest.getNativeRequest();
-            List<MediaType> list = new ArrayList<>();
-            if( request instanceof HttpServletRequest){
-                HttpServletRequest httpRequest = (HttpServletRequest) request;
-                String path = httpRequest.getPathInfo();
-                if( path != null && path.contains("templates") && path.endsWith(".ftl")){
-                    list.add( MediaType.TEXT_PLAIN);
-                }
-            }
-            if( list.isEmpty()){
-                list.add(MediaType.TEXT_HTML);
-            }
-            return list;
-        }
-    }
+    private ContentNegotiationManager contentNegotiationManager;
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    /**
+     * Return a {@link ContentNegotiationManager} instance to use to determine
+     * requested {@linkplain MediaType media types} in a given request.
+     */
+    @Override
+    @Bean
+    public ContentNegotiationManager mvcContentNegotiationManager() {
+        if (this.contentNegotiationManager == null) {
+            this.contentNegotiationManager = super.mvcContentNegotiationManager();
+            this.contentNegotiationManager.getStrategies().add(0, new DelegatingContentNegotiationStrategy());
+        }
+        return this.contentNegotiationManager;
+    }
+
+    /**
+     * Allows extension point configuration of {@link ContentNegotiationStrategy}s
+     */
+    private static class DelegatingContentNegotiationStrategy implements ContentNegotiationStrategy {
+        @Override
+        public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest) throws HttpMediaTypeNotAcceptableException {
+            List<ContentNegotiationStrategy> strategies = GeoServerExtensions.extensions(ContentNegotiationStrategy.class);
+            List<MediaType> mediaTypes;
+            for (ContentNegotiationStrategy strategy : strategies) {
+                if (!(strategy instanceof ContentNegotiationManager || strategy instanceof DelegatingContentNegotiationStrategy)) {
+                    mediaTypes = strategy.resolveMediaTypes(webRequest);
+                    if (mediaTypes.size() > 0) {
+                        return mediaTypes;
+                    }
+                }
+            }
+            return new ArrayList<>();
+        }
+    }
 
     @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -117,9 +135,6 @@ public class MVCConfiguration extends WebMvcConfigurationSupport {
         for (MediaTypeCallback callback : callbacks) {
             callback.configure(configurer);
         }
-
-        // configurer.defaultContentTypeStrategy( new DefaultContentNegotiation());
-
 //        configurer.favorPathExtension(true);
         //todo properties files are only supported for test cases. should try to find a way to
         //support them without polluting prod code with handling

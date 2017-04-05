@@ -355,6 +355,23 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         xml = new String(out.toByteArray());
         assertTrue(xml.contains("<sld:Name>foo</sld:Name>"));
     }
+
+    @Test
+    public void testPutAsSLDWithExtension() throws Exception {
+        String xml = newSLDXML();
+
+        MockHttpServletResponse response =
+                putAsServletResponse( RestBaseController.ROOT_PATH + "/styles/Ponds.sld", xml, SLDHandler.MIMETYPE_10);
+        assertEquals( 200, response.getStatus() );
+
+        Style s = catalog.getStyleByName( "Ponds" ).getStyle();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        SLDHandler handler = new SLDHandler();
+        handler.encode(Styles.sld(s), SLDHandler.VERSION_10, false, out);
+        xml = new String(out.toByteArray());
+        assertTrue(xml.contains("<sld:Name>foo</sld:Name>"));
+    }
     
     @Test
     public void testRawPutAsSLD() throws Exception {

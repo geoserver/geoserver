@@ -19,6 +19,7 @@ import org.geoserver.importer.*;
 import org.geoserver.importer.rest.converters.ImportContextJSONConverterReader;
 import org.geoserver.importer.rest.converters.ImportContextJSONConverterWriter;
 import org.geoserver.importer.transform.TransformChain;
+import org.geoserver.rest.PutIgnoringExtensionContentNegotiationStrategy;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
@@ -28,9 +29,12 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +43,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -143,9 +148,19 @@ public class ImportTaskController extends ImportBaseController {
         return (writer, converter) -> handleTaskPut(id, taskId, request, response, converter);
     }
 
-    //TODO: produces all to support filename in path.
-    //TODO: Need to find a way to exclude just this method from content negotiation via path other than "produces = {MediaType.ALL_VALUE}"
-    @PutMapping(path = "/{taskId:.+}", produces = {MediaType.ALL_VALUE})
+    /**
+     * Workaround to support regular response content type when file extension is in path
+     */
+    @Configuration
+    static class ImportTaskControllerConfiguration {
+        @Bean
+        PutIgnoringExtensionContentNegotiationStrategy importTaskPutContentNegotiationStrategy() {
+            return new PutIgnoringExtensionContentNegotiationStrategy(
+                    new PatternsRequestCondition("/imports/{id}/tasks/{taskId:.+}"),
+                    Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_HTML));
+        }
+    }
+    @PutMapping(path = "/{taskId:.+}")
     public Object taskPutFile(@PathVariable Long id, @PathVariable Object taskId, HttpServletRequest request, HttpServletResponse response) {
         ImportContext context = context(id);
         //TODO: Task id is the file name here. This functionality is completely undocumented

@@ -14,6 +14,7 @@ import java.io.StringBufferInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -35,6 +36,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.rest.PutIgnoringExtensionContentNegotiationStrategy;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.ResourceNotFoundException;
@@ -48,6 +50,8 @@ import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -64,6 +68,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.xml.sax.EntityResolver;
@@ -384,13 +389,21 @@ public class StyleController extends CatalogController {
         putZipInternal(is, workspaceName, name, styleName);
     }
 
-    @PutMapping(
-      value = {
-          "/styles/{styleName}",
-          "/workspaces/{workspaceName}/styles/{styleName}"
-      },
-      consumes = {MediaType.ALL_VALUE}
-    )
+    /**
+     * Workaround to support regular response content type when extension is in path
+     */
+    @Configuration
+    static class StyleControllerConfiguration {
+        @Bean
+        PutIgnoringExtensionContentNegotiationStrategy stylePutContentNegotiationStrategy() {
+            return new PutIgnoringExtensionContentNegotiationStrategy(
+                    new PatternsRequestCondition("/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"),
+                    Arrays.asList(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_HTML));
+        }
+    }
+
+    @PutMapping( value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"},
+            consumes = {MediaType.ALL_VALUE})
     public void putStyle(
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName,
@@ -686,5 +699,4 @@ public class StyleController extends CatalogController {
     private boolean existsStyleInCatalog(String workspaceName, String name) {
         return (catalog.getStyleByName(workspaceName, name ) != null);
     }
-
 }

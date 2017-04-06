@@ -6,7 +6,7 @@ package org.geoserver.rest.catalog;
 
 import java.io.IOException;
 
-import org.geoserver.catalog.rest.FormatCollectionWrapper.JSONCollectionWrapper;
+import org.geoserver.rest.catalog.FormatCollectionWrapper.JSONCollectionWrapper;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.geotools.GML;
 import org.geotools.GML.Version;

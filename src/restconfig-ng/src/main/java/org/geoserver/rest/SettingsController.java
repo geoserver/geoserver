@@ -23,7 +23,7 @@ import java.util.Arrays;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH)
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/settings")
 public class SettingsController extends GeoServerController {
 
     @Autowired
@@ -31,13 +31,13 @@ public class SettingsController extends GeoServerController {
         super(geoServer);
     }
 
-    @GetMapping(value = "/settings", produces = { MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
     public RestWrapper<GeoServerInfo> getGlobalSettings() {
         return wrapObject(geoServer.getGlobal(), GeoServerInfo.class);
     }
 
-    @PutMapping(value = "/settings", consumes = {
+    @PutMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
     public void setGlobalSettings(@RequestBody GeoServerInfo geoServerInfo) {
@@ -46,7 +46,7 @@ public class SettingsController extends GeoServerController {
         geoServer.save(original);
     }
 
-    @GetMapping(value = "/settings/contact", produces = { MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(value = "/contact", produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
     public RestWrapper<ContactInfo> getContact() {
         if (geoServer.getSettings().getContact() == null) {
@@ -55,7 +55,7 @@ public class SettingsController extends GeoServerController {
         return wrapObject(geoServer.getGlobal().getSettings().getContact(), ContactInfo.class);
     }
 
-    @PutMapping(value = "/settings/contact", consumes = {
+    @PutMapping(value = "/contact", consumes = {
             MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
     public void setContact(@RequestBody ContactInfo contactInfo) {

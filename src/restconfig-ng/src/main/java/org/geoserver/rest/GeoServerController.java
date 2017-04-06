@@ -6,7 +6,7 @@ import org.geoserver.rest.RestBaseController;
 /**
  * Base controller implementation for geoserver info requests
  */
-public class GeoServerController extends RestBaseController {
+public abstract class GeoServerController extends RestBaseController {
     protected final GeoServer geoServer;
 
     public GeoServerController(GeoServer geoServer) {

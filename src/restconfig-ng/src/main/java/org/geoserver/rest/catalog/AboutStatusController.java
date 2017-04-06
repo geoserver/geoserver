@@ -40,18 +40,18 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
 @RestController
-@RequestMapping(path = RestBaseController.ROOT_PATH, produces = { MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/about/status", produces = { MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
         MediaType.APPLICATION_XML_VALUE })
 public class AboutStatusController extends RestBaseController {
 
-    @GetMapping(value = "/about/status")
+    @GetMapping
     protected RestWrapper<ModuleStatus> getStatus() throws Exception {
         List<ModuleStatus> applicationStatus = GeoServerExtensions.extensions(ModuleStatus.class)
                 .stream().map(ModuleStatusImpl::new).collect(Collectors.toList());
         return wrapList(applicationStatus, ModuleStatus.class);
     }
 
-    @GetMapping(value = "/about/status/{target}")
+    @GetMapping(value = "/{target}")
     protected RestWrapper<ModuleStatus> getStatus(@PathVariable String target) throws Exception {
         List<ModuleStatus> applicationStatus = GeoServerExtensions.extensions(ModuleStatus.class)
                 .stream().map(ModuleStatusImpl::new).filter(getModule(target))

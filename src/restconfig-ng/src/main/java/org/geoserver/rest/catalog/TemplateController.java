@@ -44,21 +44,27 @@ import org.springframework.web.bind.annotation.RestController;
  * 
  * <ul>
  * <li>templates</li>
- * <li>templates/{template}.ftl</li>
- * <li>workspaces/{workspace}/templates</li>
- * <li>workspaces/{workspace}/templates/{template>.ftl</li>
- * <li>workspaces/{workspace}/datastores/{store}/templates</li>
- * <li>workspaces/{workspace}/datastores/{store}/templates/{template}.ftl</li>
- * <li>workspaces/{workspace}/datastores/{store}/featuretypes/{ft}/templates</li>
- * <li>workspaces/{workspace}/datastores/{store}/teaturetypes/{ft}/templates/{template}.ftl</li>
- * <li>workspaces/{workspace}/coveragestores/{store}/coverage/{ft}/templates</li>
- * <li>workspaces/{workspace}/coveragestores/{store}/coverage/{ft}/templates/{template}.ftl</li>
+ * <li>templates/{templateName}.ftl</li>
+ * <li>workspaces/{workspaceName}/templates</li>
+ * <li>workspaces/{workspaceName}/templates/{template>.ftl</li>
+ * <li>workspaces/{workspaceName}/datastores/{storeName}/templates</li>
+ * <li>workspaces/{workspaceName}/datastores/{storeName}/templates/{templateName}.ftl</li>
+ * <li>workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}/templates</li>
+ * <li>workspaces/{workspaceName}/datastores/{storeName}/teaturetypes/{featureTypeName}/templates/{templateName}.ftl</li>
+ * <li>workspaces/{workspaceName}/coveragestores/{storeName}/coverage/{featureTypeName}/templates</li>
+ * <li>workspaces/{workspaceName}/coveragestores/{storeName}/coverage/{featureTypeName}/templates/{templateName}.ftl</li>
  * </ul>
  * @author Jody Garnett (Boundless)
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH)
+@RequestMapping(path = {
+        RestBaseController.ROOT_PATH + "/templates",
+        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/templates",
+        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{storeName}/templates",
+        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}/templates",
+        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/coveragestores/{storeName}/templates",
+        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{featureTypeName}/templates"})
 public class TemplateController extends CatalogController {
     
     private GeoServerResourceLoader resources;
@@ -75,25 +81,16 @@ public class TemplateController extends CatalogController {
      * 
      * @return Template definition
      */
-    @DeleteMapping (
-        value = {
-            "/templates/{template}",
-            "/workspaces/{workspace}/templates/{template}",
-            "/workspaces/{workspace}/datastores/{store}/templates/{template}",
-            "/workspaces/{workspace}/datastores/{store}/featuretypes/{type}/templates/{template}",
-            "/workspaces/{workspace}/coveragestores/{store}/templates/{template}",
-            "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates/{template}",
-        }
-    )
+    @DeleteMapping(value = "/{templateName}")
     public void templateDelete(
             HttpServletResponse response,
-            @PathVariable(required = false) String workspace,
-            @PathVariable(required = false) String store,
-            @PathVariable(required = false) String type,
-            @PathVariable String template
+            @PathVariable(required = false) String workspaceName,
+            @PathVariable(required = false) String storeName,
+            @PathVariable(required = false) String featureTypeName,
+            @PathVariable String templateName
             ){
-        String filename = template+"."+MEDIATYPE_FTL_EXTENSION;
-        String path = Paths.path(path(workspace, store, type ), filename);
+        String filename = templateName+"."+MEDIATYPE_FTL_EXTENSION;
+        String path = Paths.path(path(workspaceName, storeName, featureTypeName ), filename);
         Resource resource = resources.get(path);
         
         if( resource.getType() != Type.RESOURCE ){
@@ -111,27 +108,20 @@ public class TemplateController extends CatalogController {
      * @return Template Definitin
      */
     @GetMapping(
-        value = {
-            "/templates/{template}",
-            "/workspaces/{workspace}/templates/{template}",
-            "/workspaces/{workspace}/datastores/{store}/templates/{template}",
-            "/workspaces/{workspace}/datastores/{store}/featuretypes/{type}/templates/{template}",
-            "/workspaces/{workspace}/coveragestores/{store}/templates/{template}",
-            "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates/{template}",
-        },
+        value = "/{templateName}",
         produces = {
            MEDIATYPE_FTL_VALUE // text/plain
        }
     )
     public void templateGet(
             HttpServletResponse response,
-            @PathVariable(required = false) String workspace,
-            @PathVariable(required = false) String store,
-            @PathVariable(required = false) String type,
-            @PathVariable String template
+            @PathVariable(required = false) String workspaceName,
+            @PathVariable(required = false) String storeName,
+            @PathVariable(required = false) String featureTypeName,
+            @PathVariable String templateName
             ){
-        String filename = template+"."+MEDIATYPE_FTL_EXTENSION;
-        String path = Paths.path(path(workspace, store, type ), filename);
+        String filename = templateName+"."+MEDIATYPE_FTL_EXTENSION;
+        String path = Paths.path(path(workspaceName, storeName, featureTypeName ), filename);
         Resource resource = resources.get(path);
         
         if( resource.getType() != Type.RESOURCE ){
@@ -159,25 +149,18 @@ public class TemplateController extends CatalogController {
      * @return All templates
      */
     @PutMapping(
-        value = {
-            "/templates/{template}",
-            "/workspaces/{workspace}/templates/{template}",
-            "/workspaces/{workspace}/datastores/{store}/templates/{template}",
-            "/workspaces/{workspace}/datastores/{store}/featuretypes/{type}/templates/{template}",
-            "/workspaces/{workspace}/coveragestores/{store}/templates/{template}",
-            "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates/{template}",
-        },
+        value = "/{templateName}",
         consumes = {MEDIATYPE_FTL_VALUE,MediaType.TEXT_PLAIN_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public void templatePut(
             HttpServletRequest request,
-            @PathVariable(required = false) String workspace,
-            @PathVariable(required = false) String store,
-            @PathVariable(required = false) String type,
-            @PathVariable String template
+            @PathVariable(required = false) String workspaceName,
+            @PathVariable(required = false) String storeName,
+            @PathVariable(required = false) String featureTypeName,
+            @PathVariable String templateName
             ){
-        String filename = template + "." + MEDIATYPE_FTL_EXTENSION;
-        String path = path(workspace, store, type);
+        String filename = templateName + "." + MEDIATYPE_FTL_EXTENSION;
+        String path = path(workspaceName, storeName, featureTypeName);
         Resource directory = resources.get(path);
     
         Resource resource = fileUpload(directory, filename, request);
@@ -197,24 +180,16 @@ public class TemplateController extends CatalogController {
      * @return All templates
      */
     @GetMapping(
-            value = {
-                "/templates",
-                "/workspaces/{workspace}/templates",
-                "/workspaces/{workspace}/datastores/{store}/templates",
-                "/workspaces/{workspace}/datastores/{store}/featuretypes/{type}/templates",
-                "/workspaces/{workspace}/coveragestores/{store}/templates",
-                "/workspaces/{workspace}/coveragestores/{store}/coverages/{type}/templates",
-            },
             produces = {
                 MediaType.TEXT_HTML_VALUE, // this is the default
                 MediaType.APPLICATION_JSON_VALUE,
                 MediaType.APPLICATION_XML_VALUE
             })
     public RestWrapper<TemplateInfo> templatesGet(
-            @PathVariable(required = false) String workspace,
-            @PathVariable(required = false) String store,
-            @PathVariable(required = false) String type){
-        String path = path(workspace, store, type );
+            @PathVariable(required = false) String workspaceName,
+            @PathVariable(required = false) String storeName,
+            @PathVariable(required = false) String featureTypeName){
+        String path = path(workspaceName, storeName, featureTypeName );
         Resource directory = resources.get(path);
         switch( directory.getType() ){
         case RESOURCE:
@@ -230,7 +205,7 @@ public class TemplateController extends CatalogController {
         }
     }
     /**
-     * Verifies mime type and use {@link RESTUtil
+     * Verifies mime type
      * @param directory
      * @param filename
      * @param request

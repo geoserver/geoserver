@@ -71,7 +71,8 @@ import freemarker.template.SimpleHash;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}")
+@RequestMapping(path = {RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/wmslayers",
+        RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/wmsstores/{storeName}/wmslayers"})
 public class WMSLayerController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(WMSLayerController.class);
@@ -81,8 +82,7 @@ public class WMSLayerController extends CatalogController {
         super(catalog);
     }
     
-    @GetMapping(value = {"/wmslayers", "/wmsstores/{storeName}/wmslayers"},
-        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
+    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public Object getLayers(
             final @PathVariable String workspaceName, 
             final @PathVariable(required = false) String storeName,
@@ -145,7 +145,7 @@ public class WMSLayerController extends CatalogController {
             .collect(Collectors.toList());
     }
     
-    @GetMapping(value = {"/wmslayers/{layerName}", "/wmsstores/{storeName}/wmslayers/{layerName}"},
+    @GetMapping(value = "/{layerName}",
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper<WMSLayerInfo> getLayer(
             final @PathVariable String workspaceName, 
@@ -205,7 +205,7 @@ public class WMSLayerController extends CatalogController {
         }
     }
     
-    @PutMapping(value = {"/wmslayers/{layerName}", "/wmsstores/{storeName}/wmslayers/{layerName}"},
+    @PutMapping(value = "/{layerName}",
             consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
                     MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
     public void putLayer(
@@ -226,7 +226,7 @@ public class WMSLayerController extends CatalogController {
     }
     
     
-    @DeleteMapping(value = {"/wmslayers/{layerName}", "/wmsstores/{storeName}/wmslayers/{layerName}"})
+    @DeleteMapping(value = "/{layerName}")
     public void deleteLayer(
             final @PathVariable String workspaceName, 
             final @PathVariable(required=false) String storeName, 
@@ -255,7 +255,7 @@ public class WMSLayerController extends CatalogController {
         
     }
     
-    @PostMapping(path = {"wmslayers","wmsstores/{storeName}/wmslayers"}, consumes = {
+    @PostMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
     public ResponseEntity<String> postLayer(@RequestBody WMSLayerInfo resource,

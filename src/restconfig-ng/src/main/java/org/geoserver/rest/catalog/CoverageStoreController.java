@@ -58,7 +58,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspace}/coveragestores")
+@RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/coveragestores")
 public class CoverageStoreController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageStoreController.class);
@@ -71,7 +71,7 @@ public class CoverageStoreController extends CatalogController {
     @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
     public RestWrapper<CoverageStoreInfo> getCoverageStores(
-            @PathVariable(name = "workspace") String workspaceName) {
+            @PathVariable(name = "workspaceName") String workspaceName) {
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
         if(ws == null) {
             throw new ResourceNotFoundException("No such workspace : " + workspaceName);
@@ -81,11 +81,11 @@ public class CoverageStoreController extends CatalogController {
         return wrapList(coverageStores, CoverageStoreInfo.class);
     }
 
-    @GetMapping(path = "{store}", produces = { MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(path = "{storeName}", produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
     public RestWrapper<CoverageStoreInfo> getCoverageStore(
-            @PathVariable(name = "workspace") String workspaceName,
-            @PathVariable(name = "store") String storeName) {
+            @PathVariable String workspaceName,
+            @PathVariable String storeName) {
         CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
         return wrapObject(coverageStore, CoverageStoreInfo.class);
     }
@@ -93,7 +93,7 @@ public class CoverageStoreController extends CatalogController {
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
     public ResponseEntity<String> postCoverageStoreInfo(@RequestBody CoverageStoreInfo coverageStore,
-            @PathVariable(name = "workspace") String workspaceName,
+            @PathVariable String workspaceName,
             UriComponentsBuilder builder) {
         catalog.validate(coverageStore, true).throwIfInvalid();
         catalog.add(coverageStore);
@@ -108,11 +108,11 @@ public class CoverageStoreController extends CatalogController {
     }
 
     
-    @PutMapping(value = "{store}", consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
+    @PutMapping(value = "{storeName}", consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
     public void putCoverageStoreInfo(@RequestBody CoverageStoreInfo info,
-            @PathVariable(name = "workspace") String workspaceName,
-            @PathVariable(name = "store") String storeName) {
+            @PathVariable String workspaceName,
+            @PathVariable String storeName) {
         CoverageStoreInfo original = getExistingCoverageStore(workspaceName, storeName);
         
         new CatalogBuilder(catalog).updateCoverageStore(original, info);
@@ -132,9 +132,9 @@ public class CoverageStoreController extends CatalogController {
         return original;
     }
     
-    @DeleteMapping(value = "{store}")
-    public void deleteCoverageStoreInfo(@PathVariable(name = "workspace") String workspaceName,
-            @PathVariable(name = "store") String storeName,
+    @DeleteMapping(value = "{storeName}")
+    public void deleteCoverageStoreInfo(@PathVariable String workspaceName,
+            @PathVariable String storeName,
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,
             @RequestParam(name = "purge", required = false, defaultValue = "none") String deleteType) throws IOException {
         CoverageStoreInfo cs = getExistingCoverageStore(workspaceName, storeName);
@@ -190,8 +190,8 @@ public class CoverageStoreController extends CatalogController {
             @Override
             protected CatalogInfo getCatalogObject() {
                 Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-                String workspace = uriTemplateVars.get("workspace");
-                String coveragestore = uriTemplateVars.get("store");
+                String workspace = uriTemplateVars.get("workspaceName");
+                String coveragestore = uriTemplateVars.get("storeName");
 
                 if (workspace == null || coveragestore == null) {
                     return null;

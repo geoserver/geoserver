@@ -43,11 +43,11 @@ public class WMSSettingsController extends ServiceSettingsController {
     @Autowired
     public WMSSettingsController(GeoServer geoServer) { super(geoServer, WMSInfo.class); };
 
-    @PutMapping( value = {"/settings", "/workspaces/{workspace}/settings"},
+    @PutMapping( value = {"/settings", "/workspaces/{workspaceName}/settings"},
             consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
                     MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
     public void putServiceSettings(@RequestBody WMSInfo info,
-                                   @PathVariable ( name = "workspace", required = false) String workspaceName) {
+                                   @PathVariable(required = false) String workspaceName) {
         super.putServiceSettings(info, workspaceName);
     }
 
@@ -68,7 +68,7 @@ public class WMSSettingsController extends ServiceSettingsController {
             @Override
             protected ServiceInfo getServiceObject() {
                 Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-                String workspace = uriTemplateVars.get("workspace");
+                String workspace = uriTemplateVars.get("workspaceName");
                 ServiceInfo service;
                 if (workspace != null) {
                     WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);

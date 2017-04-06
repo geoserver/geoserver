@@ -62,7 +62,7 @@ import freemarker.template.TemplateModelException;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspace}/wmsstores")
+@RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/wmsstores")
 public class WMSStoreController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(WMSStoreController.class);
@@ -75,17 +75,17 @@ public class WMSStoreController extends CatalogController {
     @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
     public RestWrapper<WMSStoreInfo> getWMSStores(
-            @PathVariable(name = "workspace") String workspaceName) {
+            @PathVariable String workspaceName) {
         List<WMSStoreInfo> wmsStores = catalog
                 .getStoresByWorkspace(workspaceName, WMSStoreInfo.class);
         return wrapList(wmsStores, WMSStoreInfo.class);
     }
 
-    @GetMapping(path = "{store}", produces = { MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(path = "/{storeName}", produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
     public RestWrapper<WMSStoreInfo> getWMSStore(
-            @PathVariable(name = "workspace") String workspaceName,
-            @PathVariable(name = "store") String storeName) {
+            @PathVariable String workspaceName,
+            @PathVariable String storeName) {
         WMSStoreInfo wmsStore = getExistingWMSStore(workspaceName, storeName);
         return wrapObject(wmsStore, WMSStoreInfo.class);
     }
@@ -93,7 +93,7 @@ public class WMSStoreController extends CatalogController {
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
     public ResponseEntity<String> postWMSStoreInfo(@RequestBody WMSStoreInfo wmsStore,
-            @PathVariable(name = "workspace") String workspaceName,
+            @PathVariable String workspaceName,
             UriComponentsBuilder builder) {
         if ( wmsStore.getWorkspace() != null ) {
              //ensure the specified workspace matches the one dictated by the uri
@@ -120,11 +120,11 @@ public class WMSStoreController extends CatalogController {
     }
 
     
-    @PutMapping(value = "{store}", consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
+    @PutMapping(value = "/{storeName}", consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
     public void putWMSStoreInfo(@RequestBody WMSStoreInfo info,
-            @PathVariable(name = "workspace") String workspaceName,
-            @PathVariable(name = "store") String storeName) {
+            @PathVariable String workspaceName,
+            @PathVariable String storeName) {
         WMSStoreInfo original = getExistingWMSStore(workspaceName, storeName);
         if(info.getWorkspace() != null && !original.getWorkspace().equals(info.getWorkspace())) {
             throw new RestException("Attempting to move "+storeName+" from "+original.getWorkspace().getName()+" to "+info.getWorkspace().getName()+" via PUT", HttpStatus.FORBIDDEN);
@@ -149,9 +149,9 @@ public class WMSStoreController extends CatalogController {
         return original;
     }
     
-    @DeleteMapping(value = "{store}")
-    public void deleteWMSStoreInfo(@PathVariable(name = "workspace") String workspaceName,
-            @PathVariable(name = "store") String storeName,
+    @DeleteMapping(value = "/{storeName}")
+    public void deleteWMSStoreInfo(@PathVariable String workspaceName,
+            @PathVariable String storeName,
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,
             @RequestParam(name = "purge", required = false, defaultValue = "none") String deleteType) throws IOException {
         WMSStoreInfo cs = getExistingWMSStore(workspaceName, storeName);
@@ -190,8 +190,8 @@ public class WMSStoreController extends CatalogController {
             protected CatalogInfo getCatalogObject() {
                 @SuppressWarnings("unchecked")
                 Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-                String workspace = uriTemplateVars.get("workspace");
-                String store = uriTemplateVars.get("store");
+                String workspace = uriTemplateVars.get("workspaceName");
+                String store = uriTemplateVars.get("storeName");
 
                 if(workspace == null || store == null) {
                     return null;

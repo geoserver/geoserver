@@ -52,7 +52,7 @@ import java.util.zip.ZipOutputStream;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH
-        + "/workspaces/{workspace}/datastores/{store}/{method}.{format}")
+        + "/workspaces/{workspaceName}/datastores/{storeName}/{method}.{format}")
 public class DataStoreFileController extends AbstractStoreUploadController {
 
     @Autowired
@@ -138,10 +138,10 @@ public class DataStoreFileController extends AbstractStoreUploadController {
     }
 
     @GetMapping
-    public ResponseEntity getDataStores(@PathVariable(name = "workspace") String workspaceName,
-                              @PathVariable(name = "store") String storeName,
-                              @PathVariable(name = "method") UploadMethod method,
-                              @PathVariable(name = "format") String format,
+    public ResponseEntity getDataStores(@PathVariable String workspaceName,
+                              @PathVariable String storeName,
+                              @PathVariable UploadMethod method,
+                              @PathVariable String format,
                               HttpServletRequest request,
                               HttpServletResponse response)
             throws IOException {
@@ -223,10 +223,10 @@ public class DataStoreFileController extends AbstractStoreUploadController {
     }
 
     @PutMapping
-    public void putDataStore( @PathVariable(name = "workspace") String workspaceName,
-                              @PathVariable(name = "store") String storeName,
-                              @PathVariable(name = "method") UploadMethod method,
-                              @PathVariable(name = "format") String format,
+    public void putDataStore( @PathVariable String workspaceName,
+                              @PathVariable String storeName,
+                              @PathVariable UploadMethod method,
+                              @PathVariable String format,
                               @RequestParam(name = "configure", required = false) String configure,
                               @RequestParam(name = "target", required = false) String target,
                               @RequestParam(name = "update", required = false) String update,

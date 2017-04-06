@@ -93,9 +93,9 @@ public class StructuredCoverageController extends CatalogController {
 
     @GetMapping(produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
     public RestWrapper<IndexSchema> getIndex(
-            @PathVariable(name = "workspaceName") String workspaceName,
-            @PathVariable(name = "storeName") String storeName,
-            @PathVariable(name = "coverageName") String coverageName) throws IOException {
+            @PathVariable String workspaceName,
+            @PathVariable String storeName,
+            @PathVariable String coverageName) throws IOException {
         GranuleSource source = getGranuleSource(workspaceName, storeName, coverageName);
         SimpleFeatureType schema = source.getSchema();
         List<AttributeTypeInfo> attributes = new CatalogBuilder(catalog).getAttributes(schema,
@@ -109,9 +109,9 @@ public class StructuredCoverageController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
     @ResponseBody
     public SimpleFeatureCollection getGranules(
-            @PathVariable(name = "workspaceName") String workspaceName,
-            @PathVariable(name = "storeName") String storeName,
-            @PathVariable(name = "coverageName") String coverageName,
+            @PathVariable String workspaceName,
+            @PathVariable String storeName,
+            @PathVariable String coverageName,
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "offset", required = false) Integer offset,
             @RequestParam(name = "limit", required = false) Integer limit) throws IOException {
@@ -126,9 +126,9 @@ public class StructuredCoverageController extends CatalogController {
 
     @DeleteMapping(path = "/granules")
     @ResponseBody
-    public void deleteGranules(@PathVariable(name = "workspaceName") String workspaceName,
-            @PathVariable(name = "storeName") String storeName,
-            @PathVariable(name = "coverageName") String coverageName,
+    public void deleteGranules(@PathVariable String workspaceName,
+            @PathVariable String storeName,
+            @PathVariable String coverageName,
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "offset", required = false) Integer offset,
             @RequestParam(name = "limit", required = false) Integer limit) throws IOException {
@@ -148,10 +148,10 @@ public class StructuredCoverageController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
     public FormatCollectionWrapper getGranule(
-            @PathVariable(name = "workspaceName") String workspaceName,
-            @PathVariable(name = "storeName") String storeName,
-            @PathVariable(name = "coverageName") String coverageName,
-            @PathVariable(name = "granuleId") String granuleId) throws IOException {
+            @PathVariable String workspaceName,
+            @PathVariable String storeName,
+            @PathVariable String coverageName,
+            @PathVariable String granuleId) throws IOException {
         GranuleSource source = getGranuleSource(workspaceName, storeName, coverageName);
         Filter filter = getGranuleIdFilter(granuleId);
         Query q = new Query(null, filter);
@@ -191,9 +191,9 @@ public class StructuredCoverageController extends CatalogController {
     @DeleteMapping(path = {"/granules/{granuleId:.+}", "/granules/{granuleId:.+}/{format}"})
     @ResponseBody
     public void deleteGranule(@PathVariable(name = "workspaceName") String workspaceName,
-            @PathVariable(name = "storeName") String storeName,
-            @PathVariable(name = "coverageName") String coverageName,
-            @PathVariable(name = "granuleId") String granuleId,
+            @PathVariable String storeName,
+            @PathVariable String coverageName,
+            @PathVariable String granuleId,
             @PathVariable(name = "format", required = false) String gsConfigFormat) throws IOException {
         // gsConfigForma allows for weird calls gsconfig does, like granules/granule.id/.json
         GranuleStore store = getGranuleStore(workspaceName, storeName, coverageName);

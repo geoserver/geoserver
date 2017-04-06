@@ -47,7 +47,8 @@ import java.util.logging.Logger;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH, produces = {
+@RequestMapping(path = {RestBaseController.ROOT_PATH + "/layergroups",
+        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/layergroups"}, produces = {
         MediaType.APPLICATION_JSON_VALUE,
         MediaType.APPLICATION_XML_VALUE,
         MediaType.TEXT_HTML_VALUE})
@@ -59,9 +60,8 @@ public class LayerGroupController extends CatalogController {
         super(catalog);
     }
 
-    @GetMapping(value = {"/layergroups", "/workspaces/{workspace}/layergroups"},
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
-    public RestWrapper getLayerGroups(@PathVariable( name = "workspace", required = false) String workspaceName) {
+    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
+    public RestWrapper getLayerGroups(@PathVariable(required = false) String workspaceName) {
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
@@ -70,11 +70,11 @@ public class LayerGroupController extends CatalogController {
         return wrapList(layerGroupInfos, LayerGroupInfo.class);
     }
 
-    @GetMapping(value = {"/layergroups/{layerGroup}", "/workspaces/{workspace}/layergroups/{layerGroup}"},
+    @GetMapping(value = "{layerGroupName}",
             produces = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE, MediaType.TEXT_HTML_VALUE})
-    public RestWrapper getLayerGroup(@PathVariable (name = "layerGroup") String layerGroupName,
-                                     @PathVariable (name = "workspace", required = false) String workspaceName,
-                                     @RequestParam (name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
+    public RestWrapper getLayerGroup(@PathVariable String layerGroupName,
+                                     @PathVariable(required = false) String workspaceName,
+                                     @RequestParam(name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
@@ -87,11 +87,10 @@ public class LayerGroupController extends CatalogController {
         return wrapObject(layerGroupInfo, LayerGroupInfo.class, errorMessage, quietOnNotFound);
     }
 
-    @PostMapping(value = {"/layergroups", "/workspaces/{workspace}/layergroups"},
-            consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
                     MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
     public ResponseEntity<String> postLayerGroup(@RequestBody LayerGroupInfo lg,
-            @PathVariable( name = "workspace", required = false) String workspaceName,
+            @PathVariable(required = false) String workspaceName,
             UriComponentsBuilder builder) throws Exception{
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
@@ -129,12 +128,12 @@ public class LayerGroupController extends CatalogController {
         return new ResponseEntity<String>(layerGroupName, httpHeaders, HttpStatus.CREATED);
     }
 
-    @PutMapping( value = {"/layergroups/{layerGroup}", "/workspaces/{workspace}/layergroups/{layerGroup}"},
+    @PutMapping( value = "{layerGroupName}",
             consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
                     MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
     public void putLayerGroup(@RequestBody LayerGroupInfo lg,
-            @PathVariable( name = "workspace", required = false) String workspaceName,
-            @PathVariable( name = "layerGroup" ) String layerGroupName) throws Exception {
+            @PathVariable(required = false) String workspaceName,
+            @PathVariable String layerGroupName) throws Exception {
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
@@ -163,9 +162,9 @@ public class LayerGroupController extends CatalogController {
         catalog.save( original );
     }
 
-    @DeleteMapping( value = {"/layergroups/{layerGroup}", "/workspaces/{workspace}/layergroups/{layerGroup}"})
-    public void deleteLayerGroup(@PathVariable( name = "workspace", required = false) String workspaceName,
-                                 @PathVariable( name = "layerGroup" ) String layerGroupName) {
+    @DeleteMapping(value = "{layerGroupName}")
+    public void deleteLayerGroup(@PathVariable(required = false) String workspaceName,
+                                 @PathVariable String layerGroupName) {
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
@@ -192,8 +191,8 @@ public class LayerGroupController extends CatalogController {
             @Override
             protected CatalogInfo getCatalogObject() {
                 Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-                String workspace = uriTemplateVars.get("workspace");
-                String layerGroup = uriTemplateVars.get("layerGroup");
+                String workspace = uriTemplateVars.get("workspaceName");
+                String layerGroup = uriTemplateVars.get("layerGroupName");
 
                 if (layerGroup == null) {
                     return null;

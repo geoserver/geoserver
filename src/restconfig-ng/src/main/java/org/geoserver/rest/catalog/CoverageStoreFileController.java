@@ -52,7 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH
-        + "/workspaces/{workspace}/coveragestores/{store}/{method}.{format}")
+        + "/workspaces/{workspaceName}/coveragestores/{storeName}/{method}.{format}")
 public class CoverageStoreFileController extends AbstractStoreUploadController {
 
     /**
@@ -72,10 +72,10 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
 
     @PostMapping()
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void postCoverageStore(@PathVariable(name = "workspace") String workspaceName,
-            @PathVariable(name = "store") String storeName,
-            @PathVariable(name = "method") UploadMethod method,
-            @PathVariable(name = "format") String format, HttpServletRequest request)
+    public void postCoverageStore(@PathVariable String workspaceName,
+            @PathVariable String storeName,
+            @PathVariable UploadMethod method,
+            @PathVariable String format, HttpServletRequest request)
             throws IOException {
 
         // check the coverage store exists
@@ -112,10 +112,10 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
     @PutMapping(produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
     @ResponseStatus(code = HttpStatus.CREATED)
     public RestWrapper<CoverageStoreInfo> putCoverageStore(
-            @PathVariable(name = "workspace") String workspaceName,
-            @PathVariable(name = "store") String storeName,
-            @PathVariable(name = "method") UploadMethod method,
-            @PathVariable(name = "format") String format,
+            @PathVariable String workspaceName,
+            @PathVariable String storeName,
+            @PathVariable UploadMethod method,
+            @PathVariable String format,
             @RequestParam(name = "configure", required = false) String configure,
             @RequestParam(name = "USE_JAI_IMAGEREAD", required = false) Boolean useJaiImageRead,
             @RequestParam(name = "coverageName", required = false) String coverageName,

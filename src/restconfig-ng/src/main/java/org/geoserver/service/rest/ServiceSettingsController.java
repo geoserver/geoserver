@@ -38,9 +38,9 @@ public abstract class ServiceSettingsController extends GeoServerController {
         this.clazz = clazz;
     };
 
-    @GetMapping( value = {"/settings", "/workspaces/{workspace}/settings"},
+    @GetMapping( value = {"/settings", "/workspaces/{workspaceName}/settings"},
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE} )
-    public RestWrapper getServiceSettings(@PathVariable ( name = "workspace", required = false) String workspaceName) {
+    public RestWrapper getServiceSettings(@PathVariable(required = false) String workspaceName) {
         ServiceInfo service;
         if (workspaceName != null) {
             WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspaceName);
@@ -82,11 +82,11 @@ public abstract class ServiceSettingsController extends GeoServerController {
         }
     }
 
-    @DeleteMapping ( value = "/workspaces/{workspace}/settings")
-    public void deleteService(@PathVariable String workspace) {
-        WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
+    @DeleteMapping ( value = "/workspaces/{workspaceName}/settings")
+    public void deleteService(@PathVariable String workspaceName) {
+        WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspaceName);
         if (ws == null) {
-            throw new RestException("Workspace " + workspace + " does not exist", HttpStatus.NOT_FOUND);
+            throw new RestException("Workspace " + workspaceName + " does not exist", HttpStatus.NOT_FOUND);
         }
         ServiceInfo serviceInfo = geoServer.getService(ws, clazz);
         if (serviceInfo != null) {

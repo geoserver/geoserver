@@ -69,7 +69,7 @@ import freemarker.template.TemplateModelException;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspace}/datastores")
+@RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/datastores")
 public class DataStoreController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(DataStoreController.class);
@@ -86,7 +86,7 @@ public class DataStoreController extends CatalogController {
     @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
     public RestWrapper<DataStoreInfo> getDataStores(
-            @PathVariable(name = "workspace") String workspaceName) {
+            @PathVariable(name = "workspaceName") String workspaceName) {
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
         if(ws == null) {
             throw new ResourceNotFoundException("No such workspace : " + workspaceName);
@@ -96,11 +96,11 @@ public class DataStoreController extends CatalogController {
         return wrapList(dataStores, DataStoreInfo.class);
     }
 
-    @GetMapping(path = "{store}", produces = { MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(path = "{storeName}", produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
     public RestWrapper<DataStoreInfo> getCoverageStore(
-            @PathVariable(name = "workspace") String workspaceName,
-            @PathVariable(name = "store") String storeName) {
+            @PathVariable(name = "workspaceName") String workspaceName,
+            @PathVariable(name = "storeName") String storeName) {
         DataStoreInfo dataStore = getExistingDataStore(workspaceName, storeName);
         return wrapObject(dataStore, DataStoreInfo.class);
     }
@@ -108,7 +108,7 @@ public class DataStoreController extends CatalogController {
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
     public ResponseEntity<String> postDataStoreInfo(@RequestBody DataStoreInfo dataStore,
-                                                        @PathVariable(name = "workspace") String workspaceName,
+                                                        @PathVariable(name = "workspaceName") String workspaceName,
                                                         UriComponentsBuilder builder) {
         if ( dataStore.getWorkspace() != null ) {
              //ensure the specifried workspace matches the one dictated by the uri
@@ -160,11 +160,11 @@ public class DataStoreController extends CatalogController {
         return new ResponseEntity<String>(storeName, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "{store}", consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
+    @PutMapping(value = "{storeName}", consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
     public void putCoverageStoreInfo(@RequestBody DataStoreInfo info,
-                                     @PathVariable(name = "workspace") String workspaceName,
-                                     @PathVariable(name = "store") String storeName) {
+                                     @PathVariable(name = "workspaceName") String workspaceName,
+                                     @PathVariable(name = "storeName") String storeName) {
         DataStoreInfo original = getExistingDataStore(workspaceName, storeName);
 
         if (!original.getName().equalsIgnoreCase(info.getName())) {
@@ -183,9 +183,9 @@ public class DataStoreController extends CatalogController {
         LOGGER.info("PUT datastore " + workspaceName + "," + storeName);
     }
 
-    @DeleteMapping(value = "{store}")
-    public void deleteDataStoreInfo(@PathVariable(name = "workspace") String workspaceName,
-                                        @PathVariable(name = "store") String storeName,
+    @DeleteMapping(value = "{storeName}")
+    public void deleteDataStoreInfo(@PathVariable(name = "workspaceName") String workspaceName,
+                                        @PathVariable(name = "storeName") String storeName,
                                         @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,
                                         @RequestParam(name = "purge", required = false, defaultValue = "none") String deleteType) throws IOException {
         DataStoreInfo ds = getExistingDataStore(workspaceName, storeName);
@@ -237,8 +237,8 @@ public class DataStoreController extends CatalogController {
             @Override
             protected CatalogInfo getCatalogObject() {
                 Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes().getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-                String workspace = uriTemplateVars.get("workspace");
-                String datastore = uriTemplateVars.get("store");
+                String workspace = uriTemplateVars.get("workspaceName");
+                String datastore = uriTemplateVars.get("storeName");
 
                 if (workspace == null || datastore == null) {
                     return null;

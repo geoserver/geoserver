@@ -54,10 +54,9 @@ import freemarker.template.SimpleHash;
 import freemarker.template.TemplateModelException;
 
 @RestController
-@RequestMapping(path = RestBaseController.ROOT_PATH, produces = { MediaType.APPLICATION_JSON_VALUE,
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/namespaces", produces = { MediaType.APPLICATION_JSON_VALUE,
         MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
 public class NamespaceController extends CatalogController {
-    private static final String NAMESPACE_NAME = "namespaceName";
 
     private static final Logger LOGGER = Logging.getLogger(NamespaceController.class);
 
@@ -66,7 +65,7 @@ public class NamespaceController extends CatalogController {
         super(catalog);
     }
 
-    @GetMapping(value = "/namespaces/{namespaceName}", produces = {
+    @GetMapping(value = "/{namespaceName}", produces = {
             MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE,
             MediaType.APPLICATION_XML_VALUE })
     public RestWrapper<NamespaceInfo> getNamespace(@PathVariable String namespaceName) {
@@ -82,7 +81,7 @@ public class NamespaceController extends CatalogController {
         return wrapObject(namespace, NamespaceInfo.class);
     }
 
-    @GetMapping(value = "/namespaces", produces = { MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
     public RestWrapper getNamespaces() {
 
@@ -90,7 +89,7 @@ public class NamespaceController extends CatalogController {
         return wrapList(wkspaces, NamespaceInfo.class);
     }
 
-    @PostMapping(value = "/namespaces", produces = { MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE }, consumes = { "text/xml",
                     MediaType.APPLICATION_XML_VALUE, TEXT_JSON, MediaType.APPLICATION_JSON_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
@@ -117,7 +116,7 @@ public class NamespaceController extends CatalogController {
         return new ResponseEntity<String>(name, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "/namespaces/{prefix}", produces = { MediaType.APPLICATION_JSON_VALUE,
+    @PutMapping(value = "/{prefix}", produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE }, consumes = { "text/xml",
                     MediaType.APPLICATION_XML_VALUE, TEXT_JSON, MediaType.APPLICATION_JSON_VALUE })
     public void putNamespace(@RequestBody NamespaceInfo namespace, @PathVariable String prefix,
@@ -142,7 +141,7 @@ public class NamespaceController extends CatalogController {
         }
     }
 
-    @DeleteMapping(path = "/namespaces/{prefix}")
+    @DeleteMapping(path = "/{prefix}")
     protected void deleteNamespace(@PathVariable String prefix) {
 
         NamespaceInfo ns = catalog.getNamespaceByPrefix(prefix);
@@ -233,7 +232,7 @@ public class NamespaceController extends CatalogController {
                         .getRequestAttributes()
                         .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE,
                                 RequestAttributes.SCOPE_REQUEST);
-                String prefix = uriTemplateVars.get(NAMESPACE_NAME);
+                String prefix = uriTemplateVars.get("namespaceName");
 
                 if (prefix == null) {
                     return null;

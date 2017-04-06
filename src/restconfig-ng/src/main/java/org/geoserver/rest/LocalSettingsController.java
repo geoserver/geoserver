@@ -27,7 +27,7 @@ import java.util.Arrays;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH)
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/settings")
 public class LocalSettingsController extends GeoServerController {
 
     @Autowired
@@ -35,11 +35,11 @@ public class LocalSettingsController extends GeoServerController {
         super(geoServer);
     }
 
-    @GetMapping(value = "/workspaces/{wsName}/settings", produces = { MediaType.APPLICATION_JSON_VALUE,
+    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<SettingsInfo> getLocalSettings(@PathVariable String wsName) {
-        if (wsName != null) {
-            WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(wsName);
+    public RestWrapper<SettingsInfo> getLocalSettings(@PathVariable String workspaceName) {
+        if (workspaceName != null) {
+            WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
             SettingsInfo settingsInfo = geoServer.getSettings(workspaceInfo);
             if (settingsInfo == null) {
                 settingsInfo = new SettingsInfoImpl();
@@ -47,18 +47,18 @@ public class LocalSettingsController extends GeoServerController {
             }
             return wrapObject(settingsInfo, SettingsInfo.class);
         }
-        throw new RestException("Workspace " + wsName + " not found", HttpStatus.BAD_REQUEST);
+        throw new RestException("Workspace " + workspaceName + " not found", HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping(value = "/workspaces/{wsName}/settings", consumes = {
+    @PostMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
-    public String createLocalSettings(@PathVariable String wsName, @RequestBody SettingsInfo settingsInfo) {
+    public String createLocalSettings(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
         String name = "";
-        if (wsName != null) {
+        if (workspaceName != null) {
             Catalog catalog = geoServer.getCatalog();
-            WorkspaceInfo workspaceInfo = catalog.getWorkspaceByName(wsName);
+            WorkspaceInfo workspaceInfo = catalog.getWorkspaceByName(workspaceName);
             settingsInfo.setWorkspace(workspaceInfo);
             geoServer.add(settingsInfo);
             geoServer.save(geoServer.getSettings(workspaceInfo));
@@ -67,12 +67,12 @@ public class LocalSettingsController extends GeoServerController {
         return name;
     }
 
-    @PutMapping(value = "/workspaces/{wsName}/settings", consumes = {
+    @PutMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
-    public void setLocalSettings(@PathVariable String wsName, @RequestBody SettingsInfo settingsInfo) {
-        if (wsName != null) {
-            WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(wsName);
+    public void setLocalSettings(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
+        if (workspaceName != null) {
+            WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
             SettingsInfo original = geoServer.getSettings(workspaceInfo);
             if (original == null) {
                 settingsInfo.setWorkspace(workspaceInfo);
@@ -86,10 +86,10 @@ public class LocalSettingsController extends GeoServerController {
         }
     }
 
-    @DeleteMapping(value = "/workspaces/{wsName}/settings")
-    public void deleteLocalSetings(@PathVariable String wsName) {
-        if (wsName != null) {
-            WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(wsName);
+    @DeleteMapping
+    public void deleteLocalSetings(@PathVariable String workspaceName) {
+        if (workspaceName != null) {
+            WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
             SettingsInfo settingsInfo = geoServer.getSettings(workspaceInfo);
             geoServer.remove(settingsInfo);
         }

@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces/{workspace}")
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}")
 public class CoverageController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageController.class);
@@ -65,14 +65,14 @@ public class CoverageController extends CatalogController {
         super(catalog);
     }
 
-    @GetMapping(path = "coveragestores/{store}/coverages", produces = {
+    @GetMapping(path = "coveragestores/{storeName}/coverages", produces = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE})
     public Object getCoverages(@RequestParam(name = "list", required = false) String list,
-                               @PathVariable(name = "workspace") String workspaceName,
-                               @PathVariable(name = "store") String storeName) {
+                               @PathVariable String workspaceName,
+                               @PathVariable String storeName) {
         // find the coverage store
         CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
         if (list != null && list.equalsIgnoreCase("all")) {
@@ -92,7 +92,7 @@ public class CoverageController extends CatalogController {
             MediaType.TEXT_HTML_VALUE,
             TEXT_JSON})
     public Object getCoverages(@RequestParam(name = "list", required = false) String list,
-                               @PathVariable(name = "workspace") String workspaceName) {
+                               @PathVariable String workspaceName) {
         // get the workspace name space
         NamespaceInfo nameSpace = catalog.getNamespaceByPrefix(workspaceName);
         if (nameSpace == null) {
@@ -111,15 +111,15 @@ public class CoverageController extends CatalogController {
         return wrapList(coverages, CoverageInfo.class);
     }
 
-    @GetMapping(path = "coveragestores/{store}/coverages/{coverage}", produces = {
+    @GetMapping(path = "coveragestores/{storeName}/coverages/{coverageName}", produces = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
             TEXT_JSON})
-    public RestWrapper<CoverageInfo> getCoverage(@PathVariable(name = "workspace") String workspaceName,
-                                                 @PathVariable(name = "store") String storeName,
-                                                 @PathVariable(name = "coverage") String coverageName) {
+    public RestWrapper<CoverageInfo> getCoverage(@PathVariable String workspaceName,
+                                                 @PathVariable String storeName,
+                                                 @PathVariable String coverageName) {
         CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
         List<CoverageInfo> coverages = catalog.getCoveragesByCoverageStore(coverageStore);
         Optional<CoverageInfo> optCoverage = coverages.stream()
@@ -133,14 +133,14 @@ public class CoverageController extends CatalogController {
         return wrapObject(coverage, CoverageInfo.class);
     }
 
-    @GetMapping(path = "coverages/{coverage}", produces = {
+    @GetMapping(path = "coverages/{coverageName}", produces = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
             TEXT_JSON})
-    public RestWrapper<CoverageInfo> getCoverage(@PathVariable(name = "workspace") String workspaceName,
-                                                 @PathVariable(name = "coverage") String coverageName) {
+    public RestWrapper<CoverageInfo> getCoverage(@PathVariable String workspaceName,
+                                                 @PathVariable String coverageName) {
         // get the workspace name space
         NamespaceInfo nameSpace = catalog.getNamespaceByPrefix(workspaceName);
         if (nameSpace == null) {
@@ -153,21 +153,21 @@ public class CoverageController extends CatalogController {
         return wrapObject(coverage, CoverageInfo.class);
     }
 
-    @PostMapping(path = {"coverages", "coveragestores/{store}/coverages"}, consumes = {
+    @PostMapping(path = {"coverages", "coveragestores/{storeName}/coverages"}, consumes = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> postCoverage(@RequestBody CoverageInfo coverage,
-                                               @PathVariable(name = "workspace") String workspaceName,
-                                               @PathVariable(name = "store", required = false) String storeName,
+                                               @PathVariable String workspaceName,
+                                               @PathVariable(required = false) String storeName,
                                                UriComponentsBuilder builder) throws Exception {
         String coverageName = handleObjectPost(coverage, workspaceName, storeName);
         UriComponents uriComponents;
         if (storeName == null) {
-            uriComponents = builder.path("/workspaces/{workspaceName}/coverages/{coverage}")
+            uriComponents = builder.path("/workspaces/{workspaceName}/coverages/{coverageName}")
                     .buildAndExpand(workspaceName, storeName, coverageName);
         } else {
-            uriComponents = builder.path("/workspaces/{workspaceName}/coveragestores/{store}/coverages/{coverage}")
+            uriComponents = builder.path("/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{coverageName}")
                     .buildAndExpand(workspaceName, storeName, coverageName);
         }
         HttpHeaders headers = new HttpHeaders();
@@ -175,15 +175,15 @@ public class CoverageController extends CatalogController {
         return new ResponseEntity<>(coverageName, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping(path = "coveragestores/{store}/coverages/{coverage}", consumes = {
+    @PutMapping(path = "coveragestores/{storeName}/coverages/{coverageName}", consumes = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE})
     public void putCoverage(@RequestBody CoverageInfo coverage,
-                            @PathVariable(name = "workspace") String workspaceName,
-                            @PathVariable(name = "store") String storeName,
-                            @PathVariable(name = "coverage") String coverageName,
-                            @RequestParam(name = "calculate", required = false) String calculate) throws Exception {
+                            @PathVariable String workspaceName,
+                            @PathVariable String storeName,
+                            @PathVariable String coverageName,
+                            @RequestParam(required = false) String calculate) throws Exception {
         CoverageStoreInfo cs = catalog.getCoverageStoreByName(workspaceName, storeName);
         CoverageInfo original = catalog.getCoverageByCoverageStore(cs, coverageName);
         checkCoverageExists(original, workspaceName, coverageName);
@@ -196,10 +196,10 @@ public class CoverageController extends CatalogController {
     }
 
 
-    @DeleteMapping(path = "coveragestores/{store}/coverages/{coverage}")
-    protected void deleteCoverage(@PathVariable(name = "workspace") String workspaceName,
-                                  @PathVariable(name = "store") String storeName,
-                                  @PathVariable(name = "coverage") String coverageName,
+    @DeleteMapping(path = "coveragestores/{storeName}/coverages/{coverageName}")
+    protected void deleteCoverage(@PathVariable String workspaceName,
+                                  @PathVariable String storeName,
+                                  @PathVariable String coverageName,
                                   @RequestParam(name = "recurse", defaultValue = "false") boolean recurse) {
         CoverageStoreInfo ds = catalog.getCoverageStoreByName(workspaceName, storeName);
         CoverageInfo c = catalog.getCoverageByCoverageStore(ds, coverageName);
@@ -347,9 +347,9 @@ public class CoverageController extends CatalogController {
             protected CatalogInfo getCatalogObject() {
                 Map<String, String> uriTemplateVars = (Map<String, String>) RequestContextHolder.getRequestAttributes()
                         .getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-                String workspace = uriTemplateVars.get("workspace");
-                String coveragestore = uriTemplateVars.get("store");
-                String coverage = uriTemplateVars.get("coverage");
+                String workspace = uriTemplateVars.get("workspaceName");
+                String coveragestore = uriTemplateVars.get("storeName");
+                String coverage = uriTemplateVars.get("coverageName");
 
                 if (workspace == null || coveragestore == null || coverage == null) {
                     return null;

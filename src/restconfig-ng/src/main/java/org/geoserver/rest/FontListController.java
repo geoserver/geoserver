@@ -16,12 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = RestBaseController.ROOT_PATH, produces = { MediaType.APPLICATION_JSON_VALUE,
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/fonts", produces = { MediaType.APPLICATION_JSON_VALUE,
         MediaType.APPLICATION_XML_VALUE })
 public class FontListController extends RestBaseController {
 
-    @GetMapping(value = "/fonts", produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE })
+    @GetMapping
     public Map<String, Set<String>> getFonts() {
         FontCache cache = FontCache.getDefaultInstance();
 

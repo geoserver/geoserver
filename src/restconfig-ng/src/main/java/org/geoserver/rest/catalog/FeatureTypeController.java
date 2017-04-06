@@ -65,7 +65,10 @@ import freemarker.template.SimpleHash;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH)
+@RequestMapping(path = {
+        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/featuretypes",
+        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{dataStoreName}/featuretypes"
+})
 public class FeatureTypeController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageStoreController.class);
@@ -75,17 +78,16 @@ public class FeatureTypeController extends CatalogController {
         super(catalog);
     }
 
-    @GetMapping(path = { "/workspaces/{workspaceName}/featuretypes",
-            "/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes" }, produces = {
+    @GetMapping(produces = {
                     MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
                     MediaType.APPLICATION_XML_VALUE })
     public Object getFeatureTypes(
-            @PathVariable(name = "workspaceName", required = true) String workspaceName,
-            @PathVariable(name = "datastoreName", required = false) String datastoreName,
+            @PathVariable String workspaceName,
+            @PathVariable(required = false) String dataStoreName,
             @RequestParam(name = "list", required = true, defaultValue = "configured") String list) {
 
         if ("available".equalsIgnoreCase(list) || "available_with_geom".equalsIgnoreCase(list)) {
-            DataStoreInfo info = getExistingDataStore(workspaceName, datastoreName);
+            DataStoreInfo info = getExistingDataStore(workspaceName, dataStoreName);
 
             // flag to control whether to filter out types without geometry
             boolean skipNoGeom = "available_with_geom".equalsIgnoreCase(list);
@@ -119,15 +121,15 @@ public class FeatureTypeController extends CatalogController {
                     }
                 }
             } catch (IOException e) {
-                throw new ResourceNotFoundException("Could not load datastore: " + datastoreName);
+                throw new ResourceNotFoundException("Could not load datastore: " + dataStoreName);
             }
 
             return new StringsList(available, "featureTypeName");
         } else {
             List<FeatureTypeInfo> fts;
 
-            if (datastoreName != null) {
-                DataStoreInfo dataStore = catalog.getDataStoreByName(workspaceName, datastoreName);
+            if (dataStoreName != null) {
+                DataStoreInfo dataStore = catalog.getDataStoreByName(workspaceName, dataStoreName);
                 fts = catalog.getFeatureTypesByDataStore(dataStore);
             } else {
                 NamespaceInfo ns = catalog.getNamespaceByPrefix(workspaceName);
@@ -139,13 +141,12 @@ public class FeatureTypeController extends CatalogController {
 
     }
 
-    @PostMapping(path = { "/workspaces/{workspaceName}/featuretypes",
-            "/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes" }, consumes = {
+    @PostMapping(consumes = {
                     CatalogController.TEXT_JSON, MediaType.APPLICATION_JSON_VALUE,
                     MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE })
     public ResponseEntity postFeatureType(
-            @PathVariable(name = "workspaceName", required = true) String workspaceName,
-            @PathVariable(name = "datastoreName", required = false) String dataStoreName,
+            @PathVariable String workspaceName,
+            @PathVariable(required = false) String dataStoreName,
             @RequestBody FeatureTypeInfo ftInfo, UriComponentsBuilder builder)
             throws Exception {
 
@@ -256,37 +257,35 @@ public class FeatureTypeController extends CatalogController {
         return new ResponseEntity<String>("", headers, HttpStatus.CREATED);
     }
 
-    @GetMapping(path = { "/workspaces/{workspaceName}/featuretypes/{featureTypeName}",
-            "/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes/{featureTypeName}" }, produces = {
+    @GetMapping(path = "/{featureTypeName}", produces = {
                     MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
                     MediaType.APPLICATION_XML_VALUE })
     public RestWrapper getFeatureType(
-            @PathVariable(name = "workspaceName", required = true) String workspaceName,
-            @PathVariable(name = "datastoreName", required = false) String datastoreName,
-            @PathVariable(name = "featureTypeName", required = true) String featureTypeName,
+            @PathVariable String workspaceName,
+            @PathVariable(required = false) String dataStoreName,
+            @PathVariable String featureTypeName,
             @RequestParam(name = "quietOnNotFound", required = false, defaultValue = "false") Boolean quietOnNotFound) {
 
-        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, datastoreName);
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, dataStoreName);
         FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
-        checkFeatureTypeExists(ftInfo, workspaceName, datastoreName, featureTypeName);
+        checkFeatureTypeExists(ftInfo, workspaceName, dataStoreName, featureTypeName);
 
         return wrapObject(ftInfo, FeatureTypeInfo.class, "No such feature type: "+featureTypeName, quietOnNotFound);
     }
 
-    @PutMapping(path = { "/workspaces/{workspaceName}/featuretypes/{featureTypeName}",
-            "/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes/{featureTypeName}" }, produces = {
+    @PutMapping(path = "/{featureTypeName}", produces = {
                     MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
                     MediaType.APPLICATION_XML_VALUE })
     public void putFeatureType(
-            @PathVariable(name = "workspaceName", required = true) String workspaceName,
-            @PathVariable(name = "datastoreName", required = false) String datastoreName,
-            @PathVariable(name = "featureTypeName", required = true) String featureTypeName,
-            @RequestBody(required = true) FeatureTypeInfo featureTypeUpdate,
+            @PathVariable String workspaceName,
+            @PathVariable(required = false) String dataStoreName,
+            @PathVariable String featureTypeName,
+            @RequestBody FeatureTypeInfo featureTypeUpdate,
             @RequestParam(name = "recalculate", required = false) String recalculate) {
 
-        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, datastoreName);
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, dataStoreName);
         FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
-        checkFeatureTypeExists(ftInfo, workspaceName, datastoreName, featureTypeName);
+        checkFeatureTypeExists(ftInfo, workspaceName, dataStoreName, featureTypeName);
         Map<String, Serializable> parametersCheck = ftInfo.getStore()
                 .getConnectionParameters();
 
@@ -303,29 +302,28 @@ public class FeatureTypeController extends CatalogController {
         boolean virtual = mdm != null && mdm.containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
 
         if (!virtual && parameters.equals(parametersCheck)) {
-            LOGGER.info("PUT FeatureType" + datastoreName + "," + featureTypeName
+            LOGGER.info("PUT FeatureType" + dataStoreName + "," + featureTypeName
                     + " updated metadata only");
         } else {
-            LOGGER.info("PUT featureType" + datastoreName + "," + featureTypeName
+            LOGGER.info("PUT featureType" + dataStoreName + "," + featureTypeName
                     + " updated metadata and data access");
             catalog.getResourcePool().clear(ftInfo.getStore());
         }
 
     }
 
-    @DeleteMapping(path = { "/workspaces/{workspaceName}/featuretypes/{featureTypeName}",
-            "/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes/{featureTypeName}" }, produces = {
+    @DeleteMapping(path = "{featureTypeName}", produces = {
                     MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
                     MediaType.APPLICATION_XML_VALUE })
     public void deleteFeatureType(
-            @PathVariable(name = "workspaceName", required = true) String workspaceName,
-            @PathVariable(name = "datastoreName", required = false) String datastoreName,
-            @PathVariable(name = "featureTypeName", required = true) String featureTypeName,
+            @PathVariable String workspaceName,
+            @PathVariable(required = false) String dataStoreName,
+            @PathVariable String featureTypeName,
             @RequestParam(name = "recurse", defaultValue = "false") Boolean recurse) {
 
-        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, datastoreName);
+        DataStoreInfo dsInfo = getExistingDataStore(workspaceName, dataStoreName);
         FeatureTypeInfo ftInfo = catalog.getFeatureTypeByDataStore(dsInfo, featureTypeName);
-        checkFeatureTypeExists(ftInfo, workspaceName, datastoreName, featureTypeName);
+        checkFeatureTypeExists(ftInfo, workspaceName, dataStoreName, featureTypeName);
         List<LayerInfo> layers = catalog.getLayers(ftInfo);
 
         if (recurse) {
@@ -342,7 +340,7 @@ public class FeatureTypeController extends CatalogController {
         }
 
         catalog.remove(ftInfo);
-        LOGGER.info("DELETE feature type" + datastoreName + "," + featureTypeName);
+        LOGGER.info("DELETE feature type" + dataStoreName + "," + featureTypeName);
     }
 
     /**
@@ -434,7 +432,7 @@ public class FeatureTypeController extends CatalogController {
                                 RequestAttributes.SCOPE_REQUEST);
                 String workspace = uriTemplateVars.get("workspaceName");
                 String featuretype = uriTemplateVars.get("featureTypeName");
-                String datastore = uriTemplateVars.get("datastoreName");
+                String datastore = uriTemplateVars.get("dataStoreName");
 
                 if (workspace == null || datastore == null || featuretype == null) {
                     return null;

@@ -46,12 +46,12 @@ import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 
 @RestController
-@RequestMapping(path = RestBaseController.ROOT_PATH, produces = { MediaType.TEXT_HTML_VALUE,
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/about", produces = { MediaType.TEXT_HTML_VALUE,
         MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 @ControllerAdvice
 public class AboutController extends RestBaseController {
 
-    @GetMapping(value = "/about/manifest")
+    @GetMapping(value = "/manifest")
     public RestWrapper<AboutModel> getManifest(
             @RequestParam(name = "manifest", required = false) String regex,
             @RequestParam(required = false) String from, @RequestParam(required = false) String to,
@@ -61,7 +61,7 @@ public class AboutController extends RestBaseController {
                 AboutModel.class);
     }
 
-    @GetMapping(value = "/about/version")
+    @GetMapping(value = "/version")
     public RestWrapper<AboutModel> getVersion(
             @RequestParam(name = "manifest", required = false) String regex,
             @RequestParam(required = false) String from, @RequestParam(required = false) String to,

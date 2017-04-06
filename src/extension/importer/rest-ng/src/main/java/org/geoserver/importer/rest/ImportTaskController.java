@@ -206,8 +206,6 @@ public class ImportTaskController extends ImportBaseController {
         List<ImportTask> newTasks = null;
         try {
             newTasks = importer.update(context, data);
-            //importer.prep(context);
-            //context.updated();
         } catch (ValidationException ve) {
             throw ImportContextJSONConverterWriter.badRequest(ve.getMessage());
         } catch (IOException e) {
@@ -217,14 +215,10 @@ public class ImportTaskController extends ImportBaseController {
             final List<ImportTask> result = newTasks;
             if (newTasks.size() == 1) {
                 long taskId = newTasks.get(0).getId();
-                try {
-                    response.sendRedirect(RequestInfo.get().servletURI(String.format("/imports/%d/tasks/%d", context.getId(), taskId)));
-                } catch (IOException e) {
-                    throw new RestException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, e);
-                }
-            } else {
-                response.setStatus(HttpStatus.CREATED.value());
+                response.setHeader("Location", RequestInfo.get().servletURI(String.format("/imports/%d/tasks/%d", context.getId(), taskId)));
             }
+            response.setStatus(HttpStatus.CREATED.value());
+
             return (ImportWrapper) (writer, converter) -> {
                 if (result.size() == 1) {
                     converter.task(result.get(0), true, converter.expand(1));

@@ -191,7 +191,6 @@ public class ImportControllerTest extends ImporterTestSupport {
     }
 
     @Test
-
     public void testPost() throws Exception {
 
         MockHttpServletResponse resp = postAsServletResponse(RestBaseController.ROOT_PATH+"/imports", "",
@@ -278,6 +277,9 @@ public class ImportControllerTest extends ImporterTestSupport {
         assertEquals("sf", ctx.getTargetWorkspace().getName());
         assertNotNull(ctx.getTargetStore());
         assertEquals("skunkworks", ctx.getTargetStore().getName());
+
+        resp = postAsServletResponse(RestBaseController.ROOT_PATH+"/imports/"+id, "");
+        assertEquals(204, resp.getStatus());
     }
 
     private MockHttpServletResponse postAsServletResponseNoContentType(String path, String body)

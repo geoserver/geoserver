@@ -6,11 +6,8 @@ package org.geoserver.importer.rest;
 
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.importer.*;
 import org.geoserver.rest.catalog.CatalogController;
-import org.geoserver.importer.ImportContext;
-import org.geoserver.importer.ImportData;
-import org.geoserver.importer.ImportFilter;
-import org.geoserver.importer.Importer;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
@@ -36,38 +33,43 @@ public class ImportController extends ImportBaseController {
     @Autowired
     public ImportController(Importer importer) {
         super(importer);
-
     }
 
     @PostMapping(value = {"/{id}",""}, produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ImportContext> postImports(@PathVariable(name="id",required=false) Long id, @RequestBody(required=false) ImportContext obj,
-            UriComponentsBuilder builder) {
-        // Object obj = context(null, true, true);
-        ImportContext context = null;
-        /*
-         * if (obj instanceof ImportContext) { // run an existing import try { runImport((ImportContext) obj); context = obj; } catch (Throwable t) {
-         * if (t instanceof ValidationException) { throw new RestException(t.getMessage(), HttpStatus.BAD_REQUEST, t); } else { throw new
-         * RestException("Error occured executing import", HttpStatus.INTERNAL_SERVER_ERROR, t); } } } else {
-         */
-        context = createImport(id, obj);
-        // }
+    public ResponseEntity<Object> postImports(
+            @PathVariable(name="id",required=false) Long id,
+            @RequestParam(name="async", required = false, defaultValue = "false") boolean async,
+            @RequestParam(name="exec", required = false, defaultValue = "false") boolean exec,
+            @RequestBody(required=false) ImportContext obj, UriComponentsBuilder builder) throws IOException {
+        ImportContext context = (ImportContext) context(id, true, false);
+        if (context != null) {
+             try {
+                 runImport(context, async);
+             } catch (Throwable t) {
+                if (t instanceof ValidationException) {
+                    throw new RestException(t.getMessage(), HttpStatus.BAD_REQUEST, t);
+                } else {
+                    throw new RestException("Error occured executing import", HttpStatus.INTERNAL_SERVER_ERROR, t);
+                }
+             }
+             return new ResponseEntity<>("", new HttpHeaders(), HttpStatus.NO_CONTENT);
+        }
+        context = createImport(id, obj, async, exec);
         if (context != null) {
             importer.changed(context);
         } else {
-            throw new RestException("Error occured executing import",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestException("Error occured executing import", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         UriComponents uriComponents = getUriComponents(context.getId().toString(), builder);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
-        return new ResponseEntity<ImportContext>(context, headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(context, headers, HttpStatus.CREATED);
     }
 
     @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON })
     public ImportWrapper getImports() {
-
         Object lookupContext = context(null, true, true);
         if (lookupContext == null) {
             // this means a specific lookup failed
@@ -85,9 +87,13 @@ public class ImportController extends ImportBaseController {
 
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ImportContext> putImport(@PathVariable Long id, UriComponentsBuilder builder) {
+    public ResponseEntity<Object> putImport(
+            @PathVariable Long id,
+            @RequestParam(name="async", required = false, defaultValue = "false") boolean async,
+            @RequestParam(name="exec", required = false, defaultValue = "false") boolean exec,
+            UriComponentsBuilder builder) {
         if (id != null) {
-            ImportContext context = createImport(id, null);
+            ImportContext context = createImport(id, null, async, exec);
             assert context.getId() >= id;
             UriComponents uriComponents = getUriComponents(context.getId().toString(), builder);
             HttpHeaders headers = new HttpHeaders();
@@ -121,19 +127,14 @@ public class ImportController extends ImportBaseController {
     }
 
     private UriComponents getUriComponents(String name, UriComponentsBuilder builder) {
-        UriComponents uriComponents;
-
-        uriComponents = builder.path("/imports/{id}").buildAndExpand(name);
-
-        return uriComponents;
+        return builder.path("/imports/{id}").buildAndExpand(name);
     }
 
-    private void runImport(ImportContext context) throws IOException {
+    private void runImport(ImportContext context, boolean async) throws IOException {
         if (context.getState() == ImportContext.State.INIT) {
             throw new RestException("Import context is still in INIT state, cannot run it yet",
                     HttpStatus.PRECONDITION_FAILED);
         }
-
         // if the import is empty, prep it but leave data as is
         if (context.getTasks().isEmpty()) {
             importer.init(context, false);
@@ -141,37 +142,24 @@ public class ImportController extends ImportBaseController {
 
         Map<String, String[]> query = RequestInfo.get().getQueryMap();
 
-        if (query.containsKey("async")) {
+        if (async) {
             importer.runAsync(context, ImportFilter.ALL, false);
         } else {
             importer.run(context);
-            // @todo revisit - if errors occur, they are logged. A second request
-            // is required to verify success
         }
-        // getResponse().setStatus(HttpStatus.SUCCESS_NO_CONTENT);
     }
 
-    private ImportContext createImport(Long id, ImportContext newContext) {
+    private ImportContext createImport(Long id, ImportContext newContext, boolean async, boolean execute) {
         // create a new import
         ImportContext context;
         try {
-            Map<String, String[]> query = RequestInfo.get().getQueryMap();
-            boolean async = query.containsKey("async");
-            boolean execute = query.containsKey("exec");
-
             if (async) {
                 context = importer.registerContext(id);
             } else {
                 context = importer.createContext(id);
             }
-
             ImportData data = null;
             if (newContext != null) {
-                /*
-                 * // read representation specified by user, use it to read ImportContext newContext = (ImportContext) getFormatPostOrPut()
-                 * .toObject(getRequest().getEntity());
-                 */
-
                 WorkspaceInfo targetWorkspace = newContext.getTargetWorkspace();
                 StoreInfo targetStore = newContext.getTargetStore();
 
@@ -203,17 +191,14 @@ public class ImportController extends ImportBaseController {
                     // take it from the store
                     context.setTargetWorkspace(targetStore.getWorkspace());
                 }
-
                 context.setData(newContext.getData());
                 context.getDefaultTransforms().addAll(newContext.getDefaultTransforms());
             } else if (context==null){
                 context = context(id, true);
             }
-
             if (!async && context.getData() != null) {
                 importer.init(context, true);
             }
-
             context.reattach(importer.getCatalog(), true);
             importer.changed(context);
 
@@ -226,7 +211,6 @@ public class ImportController extends ImportBaseController {
             } else if (execute && context.getData() != null) {
                 importer.run(context);
             }
-
         } catch (IOException e) {
             throw new RestException("Unable to create import", HttpStatus.INTERNAL_SERVER_ERROR, e);
         } catch (IllegalArgumentException iae) {
@@ -234,5 +218,4 @@ public class ImportController extends ImportBaseController {
         }
         return context;
     }
-
 }

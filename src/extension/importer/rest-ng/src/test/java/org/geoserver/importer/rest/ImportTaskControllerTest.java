@@ -307,8 +307,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
         req.setContent(org.apache.commons.io.IOUtils.toByteArray(geotiffResourceStream));
         resp = dispatch(req);
 
-        //TODO: Why is this 201, should be 302? Figure out return codes etc.
-        //assertEquals(201, resp.getStatus());
+        assertEquals(201, resp.getStatus());
 
         context = importer.getContext(context.getId());
         assertNull(context.getData());

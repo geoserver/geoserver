@@ -32,6 +32,9 @@ public class ImportBaseController extends RestBaseController {
             if (allowAll) {
                 return importer.getAllContexts();
             }
+            if (optional) {
+                return null;
+            }
             throw new RestException("No import specified", HttpStatus.BAD_REQUEST);
         } else {
             ImportContext context = null;

@@ -115,17 +115,6 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-rest</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-restconfig</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-<!--
-    <dependency>
-      <groupId>org.geoserver</groupId>
       <artifactId>gs-rest-ng</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -134,7 +123,6 @@
       <artifactId>gs-restconfig-ng</artifactId>
       <version>${project.version}</version>
     </dependency>
-    -->
     <dependency>
       <groupId>org.geoserver.security</groupId>
       <artifactId>gs-sec-jdbc</artifactId>
@@ -1060,7 +1048,7 @@
         </dependency>
         <dependency>
           <groupId>org.geoserver.importer</groupId>
-          <artifactId>gs-importer-rest</artifactId>
+          <artifactId>gs-importer-rest-ng</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

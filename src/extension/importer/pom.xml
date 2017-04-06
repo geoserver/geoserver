@@ -91,10 +91,9 @@
 
   <modules>
     <module>core</module>
-    <module>rest</module>
+    <module>rest-ng</module>
     <module>bdb</module>
     <module>web</module>
-    <module>rest-ng</module>
   </modules>
 
 </project>

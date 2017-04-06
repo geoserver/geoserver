@@ -27,7 +27,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersister.Callback;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -84,7 +83,7 @@ import net.sf.json.util.JSONBuilder;
  * {@link ImportTask}  or {@link ImportWrapper} objects.
  */
 @Component
-public class ImportContextJSONConverterWriter extends BaseMessageConverter<Object> {
+public class ImportJSONWriter {
 
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     static {
@@ -98,36 +97,35 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter<Objec
     private Callback callback;
 
     @Autowired
-    public ImportContextJSONConverterWriter(Importer importer) {
-        super(MediaType.APPLICATION_JSON,CatalogController.MEDIATYPE_TEXT_JSON,MediaType.TEXT_HTML);
+    public ImportJSONWriter(Importer importer) {
         this.importer = importer;
     }
     
-    public ImportContextJSONConverterWriter(Importer importer, OutputStream out) {
-        super(MediaType.APPLICATION_JSON,CatalogController.MEDIATYPE_TEXT_JSON,MediaType.TEXT_HTML);
-        this.importer = importer;
-        this.json = new FlushableJSONBuilder(new OutputStreamWriter(out));
-    }
+//    public ImportContextJSONConverterWriter(Importer importer, OutputStream out) {
+//        super(MediaType.APPLICATION_JSON,CatalogController.MEDIATYPE_TEXT_JSON,MediaType.TEXT_HTML);
+//        this.importer = importer;
+//        this.json = new FlushableJSONBuilder(new OutputStreamWriter(out));
+//    }
 
-    @Override
+//    @Override
     protected boolean supports(Class<?> clazz) {
         return ImportContext.class.isAssignableFrom(clazz)
                 || ImportTask.class.isAssignableFrom(clazz)
                 || ImportWrapper.class.isAssignableFrom(clazz)
                 || ImportData.class.isAssignableFrom(clazz);
     }
-    @Override
+//    @Override
     protected boolean canRead(MediaType mediaType) {
         return false;
     }
     
-    @Override
+//    @Override
     protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         throw new HttpMessageNotReadableException(getClass().getName() + " does not support deserialization");
     }
     
-    @Override
+//    @Override
     protected void writeInternal(Object t, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         MediaType contentType = outputMessage.getHeaders().getContentType();
@@ -174,7 +172,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter<Objec
                 remote((RemoteData) data, parent, expand);
             }
         } else if (ImportWrapper.class.isAssignableFrom(t.getClass())) {
-            ((ImportWrapper) t).write(writer, this);
+            ((ImportWrapper) t).write(json, this);
         } else  {
                 throw new RestException("Trying to write an unknown object " + t,
                         HttpStatus.I_AM_A_TEAPOT);
@@ -218,8 +216,10 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter<Objec
         json.endArray().endObject();
         json.flush();
     }
-
     public void context(ImportContext context, boolean top, int expand) throws IOException {
+        context( json, context, top, expand );
+    }
+    public void context(FlushableJSONBuilder json, ImportContext context, boolean top, int expand) throws IOException {
         if (top) {
             json.object().key("import");
         }
@@ -575,8 +575,10 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter<Objec
         }
         json.flush();
     }
-
     public void remote(RemoteData data, Object parent, int expand) throws IOException {
+        remote(json, data, parent, expand);
+    }
+    public void remote(FlushableJSONBuilder json,RemoteData data, Object parent, int expand) throws IOException {
 
         json.object();
 
@@ -597,6 +599,9 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter<Objec
     }
 
     public void file(FileData data, Object parent, int expand, boolean href) throws IOException {
+        file(json, data, parent, expand, href);
+    }
+    public void file(FlushableJSONBuilder json,FileData data, Object parent, int expand, boolean href) throws IOException {
 
         json.object();
 
@@ -649,12 +654,21 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter<Objec
     public void mosaic(Mosaic data, Object parent, int expand) throws IOException {
         directory(data, "mosaic", parent, expand);
     }
+    
+    public void mosaic(FlushableJSONBuilder json, Mosaic data, Object parent, int expand) throws IOException {
+        directory(json, data, "mosaic", parent, expand);
+    }
 
     public void directory(Directory data, Object parent, int expand) throws IOException {
         directory(data, "directory", parent, expand);
     }
-
-    public void directory(Directory data, String typeName, Object parent, int expand)
+    public void directory(FlushableJSONBuilder json,Directory data, Object parent, int expand) throws IOException {
+        directory(json,data, "directory", parent, expand);
+    }
+    public void directory(Directory data, String typeName, Object parent, int expand) throws IOException{
+        directory(json, data, "directory", parent, expand);
+    }
+    public void directory(FlushableJSONBuilder json,Directory data, String typeName, Object parent, int expand)
             throws IOException {
 
         json.object();
@@ -696,8 +710,10 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter<Objec
         }
         json.flush();
     }
-
     public void database(Database data, Object parent, int expand) throws IOException {
+        database(json, data, parent, expand);
+    }
+    public void database(FlushableJSONBuilder json,Database data, Object parent, int expand) throws IOException {
         json.object();
         json.key("type").value("database");
         json.key("format").value(data.getFormat() != null ? data.getFormat().getName() : null);

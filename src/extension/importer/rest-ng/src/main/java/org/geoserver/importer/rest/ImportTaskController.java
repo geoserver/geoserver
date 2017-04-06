@@ -16,8 +16,8 @@ import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.importer.*;
-import org.geoserver.importer.rest.converters.ImportContextJSONConverterReader;
-import org.geoserver.importer.rest.converters.ImportContextJSONConverterWriter;
+import org.geoserver.importer.rest.converters.ImportJSONReader;
+import org.geoserver.importer.rest.converters.ImportJSONWriter;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.rest.PutIgnoringExtensionContentNegotiationStrategy;
 import org.geoserver.rest.RequestInfo;
@@ -207,7 +207,7 @@ public class ImportTaskController extends ImportBaseController {
         try {
             newTasks = importer.update(context, data);
         } catch (ValidationException ve) {
-            throw ImportContextJSONConverterWriter.badRequest(ve.getMessage());
+            throw ImportJSONWriter.badRequest(ve.getMessage());
         } catch (IOException e) {
             throw new RestException("Error updating context", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
@@ -300,11 +300,13 @@ public class ImportTaskController extends ImportBaseController {
 
 
 
-    void handleTaskPut(Long id, Integer taskId, HttpServletRequest request, HttpServletResponse response, ImportContextJSONConverterWriter converter) {
+    void handleTaskPut(Long id, Integer taskId, HttpServletRequest request, HttpServletResponse response, ImportJSONWriter converter) {
         ImportTask orig = task(id, taskId);
         ImportTask task;
         try {
-            task = new ImportContextJSONConverterReader(importer, request.getInputStream()).task();
+            ImportJSONReader reader = new ImportJSONReader(importer);
+            task = reader.task(request.getInputStream());
+//            task = new ImportContextJSONConverterReader(importer,request.getInputStream()).task();
         } catch (ValidationException | IOException ve) {
             LOGGER.log(Level.WARNING, null, ve);
             throw converter.badRequest(ve.getMessage());
@@ -370,7 +372,7 @@ public class ImportTaskController extends ImportBaseController {
         return directory;
     }
 
-    static void updateLayer(ImportTask orig, LayerInfo l, Importer importer, ImportContextJSONConverterWriter converter) {
+    static void updateLayer(ImportTask orig, LayerInfo l, Importer importer, ImportJSONWriter converter) {
         //update the original layer and resource from the new
 
         ResourceInfo r = l.getResource();

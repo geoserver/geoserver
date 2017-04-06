@@ -6,13 +6,15 @@
 package org.geoserver.importer.rest;
 
 import junit.framework.TestCase;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
-import org.geoserver.importer.rest.converters.ImportContextJSONConverterReader;
-import org.geoserver.importer.rest.converters.ImportContextJSONConverterWriter;
+import org.geoserver.importer.rest.converters.ImportJSONReader;
+import org.geoserver.importer.rest.converters.ImportJSONWriter;
 import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.rest.RequestInfo;
 import org.springframework.beans.BeanUtils;
@@ -47,14 +49,15 @@ public abstract class TransformTestSupport extends TestCase {
 
         RequestInfo.set(ri);
 
-        ImportContextJSONConverterWriter jsonio = new ImportContextJSONConverterWriter(im, new WriterOutputStream(buffer));
+        ImportJSONWriter jsonio = new ImportJSONWriter(im, new WriterOutputStream(buffer));
 
         ImportContext c = new ImportContext(0);
         c.addTask(new ImportTask());
 
         jsonio.transform(transform, 0, c.task(0), true, 1);
 
-        ImportTransform transform2 = new ImportContextJSONConverterReader(im, IOUtils.toInputStream(buffer.toString())).transform();
+        ImportJSONReader reader = new ImportJSONReader(im);
+        ImportTransform transform2 = reader.transform(buffer.toString());
         PropertyDescriptor[] pd = BeanUtils.getPropertyDescriptors(transform.getClass());
 
         for (int i = 0; i < pd.length; i++) {

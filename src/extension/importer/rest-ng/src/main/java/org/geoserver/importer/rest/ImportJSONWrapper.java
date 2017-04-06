@@ -5,7 +5,7 @@
 package org.geoserver.importer.rest;
 
 import net.sf.json.JSONObject;
-import org.geoserver.importer.rest.converters.ImportContextJSONConverterWriter;
+import org.geoserver.importer.rest.converters.ImportJSONWriter;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -18,7 +18,7 @@ public class ImportJSONWrapper implements ImportWrapper {
     }
 
     @Override
-    public void write(Writer writer, ImportContextJSONConverterWriter converter) throws IOException {
+    public void write(Writer writer, ImportJSONWriter converter) throws IOException {
         writer.write(json.toString());
     }
 }

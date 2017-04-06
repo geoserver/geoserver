@@ -4,14 +4,12 @@
  */
 package org.geoserver.importer.rest;
 
-import org.geoserver.importer.rest.converters.ImportContextJSONConverterWriter;
-
-import java.io.IOException;
-import java.io.Writer;
+import org.geoserver.importer.rest.converters.ImportJSONWriter;
+import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
 
 /**
- * Wrapper used by {@link ImportContextJSONConverterWriter} to write custom json content
+ * Wrapper used by {@link ImportJSONWriter} to write custom json content
  */
 public interface ImportWrapper {
-    void write(Writer writer, ImportContextJSONConverterWriter converter) throws IOException;
+    void write(FlushableJSONBuilder json, ImportJSONWriter builder );
 }

@@ -30,7 +30,7 @@ import java.util.Map;
  * @author Ian Schneider <ischneider@opengeo.org>
  */
 public class ImportJSONIOTest extends ImporterTestSupport {
-    private ImportContextJSONConverterWriter writer;
+    private ImportJSONWriter writer;
 
     private ByteArrayOutputStream buf;
 
@@ -47,7 +47,7 @@ public class ImportJSONIOTest extends ImporterTestSupport {
         info.setPagePath("pagePath");
 
         newBuffer();
-        writer = new ImportContextJSONConverterWriter(importer, buf);
+        writer = new ImportJSONWriter(importer, buf);
 
         oldAttributes = RequestContextHolder.getRequestAttributes();
         RequestContextHolder.setRequestAttributes(new TransformTestSupport.MapRequestAttributes());
@@ -60,12 +60,12 @@ public class ImportJSONIOTest extends ImporterTestSupport {
         RequestContextHolder.setRequestAttributes(oldAttributes);
     }
 
-    private ImportContextJSONConverterReader reader() throws IOException {
-        return new ImportContextJSONConverterReader(importer, stream(buffer()));
+    private ImportJSONReader reader() throws IOException {
+        return new ImportJSONReader(importer, stream(buffer()));
     }
 
-    private ImportContextJSONConverterReader reader(JSONObject json) throws IOException {
-        ImportContextJSONConverterReader reader = new ImportContextJSONConverterReader(importer, stream(buffer()));
+    private ImportJSONReader reader(JSONObject json) throws IOException {
+        ImportJSONReader reader = new ImportJSONReader(importer, stream(buffer()));
         reader.json = json;
         return reader;
     }
@@ -142,7 +142,7 @@ public class ImportJSONIOTest extends ImporterTestSupport {
 
         writer.context(context, true, 3);
         ByteArrayInputStream inbuf = new ByteArrayInputStream(buf.toByteArray());
-        ImportContext readBack = new ImportContextJSONConverterReader(importer, inbuf).context();
+        ImportContext readBack = new ImportJSONReader(importer, inbuf).context();
 
         Assert.assertEquals(context.getData(), readBack.getData());
     }
@@ -158,7 +158,7 @@ public class ImportJSONIOTest extends ImporterTestSupport {
 
         writer.context(context, true, 3);
         ByteArrayInputStream inbuf = new ByteArrayInputStream(buf.toByteArray());
-        ImportContext readBack = new ImportContextJSONConverterReader(importer, inbuf).context();
+        ImportContext readBack = new ImportJSONReader(importer, inbuf).context();
 
         Assert.assertEquals(context.getData(), readBack.getData());
     }

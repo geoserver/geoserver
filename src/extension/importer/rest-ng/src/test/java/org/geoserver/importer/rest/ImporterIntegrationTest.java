@@ -7,6 +7,7 @@ package org.geoserver.importer.rest;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 import net.sf.json.JSONObject;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.*;
 import org.geoserver.importer.ImportContext;
@@ -33,6 +34,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -258,8 +260,9 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
                 + (async ? "&async=true" : ""), contextDefinition, "application/json"));
         // print(json);
         String state = null;
+        int importId;
         if (async) {
-            int importId = json.getJSONObject("import").getInt("id");
+            importId = json.getJSONObject("import").getInt("id");
             for (int i = 0; i < 60 * 2 * 2; i++) {
                 json = (JSONObject) getAsJSON("/rest/imports/" + importId);
                 // print(json);
@@ -270,11 +273,16 @@ public class ImporterIntegrationTest extends ImporterTestSupport {
             }
         } else {
             state = json.getJSONObject("import").getString("state");
+            importId = json.getJSONObject("import").getInt("id");
         }
         Thread.sleep(500);
         assertEquals("COMPLETE", state);
         assertThat(invoked[0], is(true));
         checkPoiImport();
+
+        //Test delete
+        MockHttpServletResponse resp = deleteAsServletResponse("/rest/imports/"+importId);
+        assertEquals(204, resp.getStatus());
     }
 
     protected Authentication createAuthentication() {

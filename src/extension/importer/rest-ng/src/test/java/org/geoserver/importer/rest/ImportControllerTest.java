@@ -216,10 +216,15 @@ public class ImportControllerTest extends ImporterTestSupport {
                 "application/json");
         assertEquals(201, resp.getStatus());
 
-        resp = getAsServletResponse(RestBaseController.ROOT_PATH+"/imports/8675309");
-        assertEquals(200, resp.getStatus());
         JSONObject json = (JSONObject) json(resp);
         JSONObject imprt = json.getJSONObject("import");
+
+        assertEquals(8675309, imprt.getInt("id"));
+
+        resp = getAsServletResponse(RestBaseController.ROOT_PATH+"/imports/8675309");
+        assertEquals(200, resp.getStatus());
+        json = (JSONObject) json(resp);
+        imprt = json.getJSONObject("import");
 
         assertEquals(8675309, imprt.getInt("id"));
 
@@ -242,6 +247,13 @@ public class ImportControllerTest extends ImporterTestSupport {
         assertEquals(201, resp.getStatus());
         assertNotNull(resp.getHeader("Location"));
         assertTrue(resp.getHeader("Location").endsWith("/imports/8675311"));
+    }
+
+    @Test
+    public void testPutWithIdNoContentType() throws Exception {
+        // propose a new import id
+        MockHttpServletResponse resp = putAsServletResponse(RestBaseController.ROOT_PATH + "/imports/8675317");
+        assertEquals(201, resp.getStatus());
     }
 
     @Test

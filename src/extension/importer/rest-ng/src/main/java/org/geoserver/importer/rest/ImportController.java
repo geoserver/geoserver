@@ -24,6 +24,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -31,10 +32,6 @@ import java.util.Map;
 @RequestMapping(path = RestBaseController.ROOT_PATH+"/imports", produces = {
         MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE })
 public class ImportController extends ImportBaseController {
-
-    Object importContext; // ImportContext or Iterator<ImportContext>
-
-    private int expand;
 
     @Autowired
     public ImportController(Importer importer) {
@@ -82,27 +79,45 @@ public class ImportController extends ImportBaseController {
 
     @GetMapping(value = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
-    public ImportContext getImports(@PathVariable Long id,
-            @RequestParam(name = "expand", required = false, defaultValue = "0") int expand) {
-        this.expand = expand;
+    public ImportContext getImports(@PathVariable Long id) {
         return context(id);
     }
 
-    @PutMapping(value = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON })
-    public ResponseEntity<String> putImport(@PathVariable Long id, UriComponentsBuilder builder) {
+    @PutMapping(value = "/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<ImportContext> putImport(@PathVariable Long id, UriComponentsBuilder builder) {
         if (id != null) {
             ImportContext context = createImport(id, null);
             assert context.getId() >= id;
             UriComponents uriComponents = getUriComponents(context.getId().toString(), builder);
             HttpHeaders headers = new HttpHeaders();
             headers.setLocation(uriComponents.toUri());
-            return new ResponseEntity<String>(context.getId().toString(), headers, HttpStatus.CREATED);
+            return new ResponseEntity<>(context, headers, HttpStatus.CREATED);
         } else {
             throw new RestException("ID must be provided for PUT", HttpStatus.BAD_REQUEST);
         }
-        
-        
+    }
+
+    @DeleteMapping(value = {"", "/{id}"}, produces = { MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteImports(@PathVariable(required = false) Long id) {
+        Iterator<ImportContext> contexts = null;
+        if (id == null) {
+            contexts = importer.getAllContexts();
+        } else {
+            contexts = Collections.singletonList(context(id)).iterator();
+        }
+        while (contexts.hasNext()) {
+            ImportContext ctx = contexts.next();
+            if (ctx.getState() != ImportContext.State.COMPLETE) {
+                try {
+                    importer.delete(ctx);
+                } catch (IOException ioe) {
+                    throw new RestException("Error deleting context " + ctx.getId(), HttpStatus.INTERNAL_SERVER_ERROR, ioe);
+                }
+            }
+        }
     }
 
     private UriComponents getUriComponents(String name, UriComponentsBuilder builder) {

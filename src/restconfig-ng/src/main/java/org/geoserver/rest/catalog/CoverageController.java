@@ -153,32 +153,23 @@ public class CoverageController extends CatalogController {
         return wrapObject(coverage, CoverageInfo.class);
     }
 
-    @PostMapping(path = "coveragestores/{store}/coverages", consumes = {
+    @PostMapping(path = {"coverages", "coveragestores/{store}/coverages"}, consumes = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> postCoverage(@RequestBody CoverageInfo coverage,
                                                @PathVariable(name = "workspace") String workspaceName,
-                                               @PathVariable(name = "store") String storeName,
+                                               @PathVariable(name = "store", required = false) String storeName,
                                                UriComponentsBuilder builder) throws Exception {
         String coverageName = handleObjectPost(coverage, workspaceName, storeName);
-        UriComponents uriComponents = builder.path("/workspaces/{workspaceName}/coveragestores/{store}/coverages/{coverage}")
-                .buildAndExpand(workspaceName, storeName, coverageName);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(uriComponents.toUri());
-        return new ResponseEntity<>(coverageName, headers, HttpStatus.CREATED);
-    }
-
-    @PostMapping(path = "coverages", consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE})
-    public ResponseEntity<String> postCoverage(@RequestBody CoverageInfo coverage,
-                                               @PathVariable(name = "workspace") String workspaceName,
-                                               UriComponentsBuilder builder) throws Exception {
-        String coverageName = handleObjectPost(coverage, workspaceName, null);
-        UriComponents uriComponents = builder.path("/workspaces/{workspaceName}/coverages/{coverage}")
-                .buildAndExpand(workspaceName, coverageName);
+        UriComponents uriComponents;
+        if (storeName == null) {
+            uriComponents = builder.path("/workspaces/{workspaceName}/coverages/{coverage}")
+                    .buildAndExpand(workspaceName, storeName, coverageName);
+        } else {
+            uriComponents = builder.path("/workspaces/{workspaceName}/coveragestores/{store}/coverages/{coverage}")
+                    .buildAndExpand(workspaceName, storeName, coverageName);
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
         return new ResponseEntity<>(coverageName, headers, HttpStatus.CREATED);

@@ -138,13 +138,10 @@ public class DataStoreFileController extends AbstractStoreUploadController {
     }
 
     @GetMapping
-    public ResponseEntity getDataStores(@PathVariable String workspaceName,
-                              @PathVariable String storeName,
-                              @PathVariable UploadMethod method,
-                              @PathVariable String format,
-                              HttpServletRequest request,
-                              HttpServletResponse response)
-            throws IOException {
+    public ResponseEntity getDataStores(
+            @PathVariable String workspaceName,
+            @PathVariable String storeName) throws IOException {
+
         //find the directory from teh datastore connection parameters
         DataStoreInfo info = catalog.getDataStoreByName(workspaceName, storeName);
         if (info == null) {
@@ -223,15 +220,17 @@ public class DataStoreFileController extends AbstractStoreUploadController {
     }
 
     @PutMapping
-    public void putDataStore( @PathVariable String workspaceName,
-                              @PathVariable String storeName,
-                              @PathVariable UploadMethod method,
-                              @PathVariable String format,
-                              @RequestParam(name = "configure", required = false) String configure,
-                              @RequestParam(name = "target", required = false) String target,
-                              @RequestParam(name = "update", required = false) String update,
-                              @RequestParam(name = "charset", required = false) String characterset,
-                                        HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void putDataStore(
+            @PathVariable String workspaceName,
+            @PathVariable String storeName,
+            @PathVariable UploadMethod method,
+            @PathVariable String format,
+            @RequestParam(name = "configure", required = false) String configure,
+            @RequestParam(name = "target", required = false) String target,
+            @RequestParam(name = "update", required = false) String update,
+            @RequestParam(name = "charset", required = false) String characterset,
+            HttpServletRequest request, HttpServletResponse response) throws IOException {
+
         response.setStatus(HttpStatus.ACCEPTED.value());
 
         // doFileUpload returns a List of File but in the case of a Put operation the list contains only a value

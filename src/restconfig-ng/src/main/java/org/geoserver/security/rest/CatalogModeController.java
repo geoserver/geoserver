@@ -51,8 +51,11 @@ public class CatalogModeController {
         }
     }
 
-    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+    @GetMapping(produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
     @ResponseBody
     public NamedMap getMap() throws Exception {
         checkUserIsAdmin();
@@ -63,8 +66,11 @@ public class CatalogModeController {
         return modeMap;
     }
 
-    @PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+    @PutMapping(consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
     protected void putMap(@RequestBody Map map) throws Exception {
         checkUserIsAdmin();
 

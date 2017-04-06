@@ -43,11 +43,15 @@ public class WMSSettingsController extends ServiceSettingsController {
     @Autowired
     public WMSSettingsController(GeoServer geoServer) { super(geoServer, WMSInfo.class); };
 
-    @PutMapping( value = {"/settings", "/workspaces/{workspaceName}/settings"},
-            consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-                    MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
-    public void putServiceSettings(@RequestBody WMSInfo info,
-                                   @PathVariable(required = false) String workspaceName) {
+    @PutMapping(value = {"/settings", "/workspaces/{workspaceName}/settings"}, consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE})
+    public void putServiceSettings(
+            @RequestBody WMSInfo info,
+            @PathVariable(required = false) String workspaceName) {
+
         super.putServiceSettings(info, workspaceName);
     }
 

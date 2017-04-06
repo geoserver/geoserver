@@ -43,8 +43,11 @@ public class UserPasswordController extends RestBaseController {
         throw new RestException("You can not request the password!", HttpStatus.METHOD_NOT_ALLOWED);
     }
 
-    @PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
-            CatalogController.TEXT_XML, CatalogController.TEXT_JSON })
+    @PutMapping(consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            CatalogController.TEXT_XML,
+            CatalogController.TEXT_JSON })
     public void putPassword(@RequestBody Map<String, String> putMap) {
         if (!getManager().checkAuthenticationForRole(
                 SecurityContextHolder.getContext().getAuthentication(),

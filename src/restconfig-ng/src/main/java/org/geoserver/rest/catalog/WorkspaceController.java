@@ -59,8 +59,10 @@ import freemarker.template.SimpleHash;
 import freemarker.template.TemplateModelException;
 
 @RestController
-@RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces", produces = { MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces", produces = {
+        MediaType.APPLICATION_JSON_VALUE,
+        MediaType.APPLICATION_XML_VALUE,
+        MediaType.TEXT_HTML_VALUE })
 public class WorkspaceController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(WorkspaceController.class);
@@ -71,17 +73,14 @@ public class WorkspaceController extends CatalogController {
 
     }
 
-    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
+    @GetMapping
     public RestWrapper getWorkspaces() {
 
         List<WorkspaceInfo> wkspaces = catalog.getWorkspaces();
         return wrapList(wkspaces, WorkspaceInfo.class);
     }
 
-    @GetMapping(value = "/{workspaceName}", produces = {
-            MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE,
-            MediaType.APPLICATION_XML_VALUE })
+    @GetMapping(value = "/{workspaceName}")
     public RestWrapper<WorkspaceInfo> getWorkspace(@PathVariable String workspaceName) {
 
         WorkspaceInfo wkspace = catalog.getWorkspaceByName(workspaceName);
@@ -95,11 +94,14 @@ public class WorkspaceController extends CatalogController {
         return wrapObject(wkspace, WorkspaceInfo.class);
     }
 
-    @PostMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE }, consumes = { "text/xml",
-                    MediaType.APPLICATION_XML_VALUE, TEXT_JSON, MediaType.APPLICATION_JSON_VALUE })
+    @PostMapping(consumes = {
+            CatalogController.TEXT_XML,
+            MediaType.APPLICATION_XML_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_JSON_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> postWorkspace(@RequestBody WorkspaceInfo workspace,
+    public ResponseEntity<String> postWorkspace(
+            @RequestBody WorkspaceInfo workspace,
             @RequestParam(defaultValue = "false", name = "default") boolean makeDefault,
             UriComponentsBuilder builder) {
         
@@ -134,13 +136,15 @@ public class WorkspaceController extends CatalogController {
         return new ResponseEntity<String>(name, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "/{workspaceName}", produces = {
-            MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE,
-            MediaType.APPLICATION_XML_VALUE }, consumes = { "text/xml",
-                    MediaType.APPLICATION_XML_VALUE, TEXT_JSON, MediaType.APPLICATION_JSON_VALUE })
-
-    public void putWorkspace(@RequestBody WorkspaceInfo workspace,
+    @PutMapping(value = "/{workspaceName}", consumes = {
+            CatalogController.TEXT_XML,
+                MediaType.APPLICATION_XML_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_JSON_VALUE })
+    public void putWorkspace(
+            @RequestBody WorkspaceInfo workspace,
             @PathVariable String workspaceName, UriComponentsBuilder builder) {
+
         if ( "default".equals( workspaceName ) ) {
             catalog.setDefaultWorkspace( workspace );
         } else {
@@ -162,7 +166,8 @@ public class WorkspaceController extends CatalogController {
     }
 
     @DeleteMapping(path = "/{workspaceName}")
-    protected void deleteWorkspace(@PathVariable String workspaceName,
+    protected void deleteWorkspace(
+            @PathVariable String workspaceName,
             @RequestParam(defaultValue = "false", name = "recurse") boolean recurse) {
 
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);

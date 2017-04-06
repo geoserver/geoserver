@@ -91,11 +91,15 @@ public class StructuredCoverageController extends CatalogController {
         super(catalog);
     }
 
-    @GetMapping(produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
+    @GetMapping(produces = {
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON })
     public RestWrapper<IndexSchema> getIndex(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @PathVariable String coverageName) throws IOException {
+
         GranuleSource source = getGranuleSource(workspaceName, storeName, coverageName);
         SimpleFeatureType schema = source.getSchema();
         List<AttributeTypeInfo> attributes = new CatalogBuilder(catalog).getAttributes(schema,
@@ -105,8 +109,11 @@ public class StructuredCoverageController extends CatalogController {
         return wrapObject(indexSchema, IndexSchema.class);
     }
 
-    @GetMapping(path = "/granules", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON })
+    @GetMapping(path = "/granules", produces = {
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON })
     @ResponseBody
     public SimpleFeatureCollection getGranules(
             @PathVariable String workspaceName,
@@ -132,6 +139,7 @@ public class StructuredCoverageController extends CatalogController {
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "offset", required = false) Integer offset,
             @RequestParam(name = "limit", required = false) Integer limit) throws IOException {
+
         GranuleStore store = getGranuleStore(workspaceName, storeName, coverageName);
         Query q = toQuery(filter, offset, limit);
 
@@ -144,7 +152,8 @@ public class StructuredCoverageController extends CatalogController {
      * Note, the .+ regular expression allows granuleId to contain dots instead of having them
      * interpreted as format extension
      */
-    @GetMapping(path = "/granules/{granuleId:.+}", produces = { MediaType.APPLICATION_XML_VALUE,
+    @GetMapping(path = "/granules/{granuleId:.+}", produces = {
+            MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
     public FormatCollectionWrapper getGranule(
@@ -152,6 +161,7 @@ public class StructuredCoverageController extends CatalogController {
             @PathVariable String storeName,
             @PathVariable String coverageName,
             @PathVariable String granuleId) throws IOException {
+
         GranuleSource source = getGranuleSource(workspaceName, storeName, coverageName);
         Filter filter = getGranuleIdFilter(granuleId);
         Query q = new Query(null, filter);
@@ -195,6 +205,7 @@ public class StructuredCoverageController extends CatalogController {
             @PathVariable String coverageName,
             @PathVariable String granuleId,
             @PathVariable(name = "format", required = false) String gsConfigFormat) throws IOException {
+
         // gsConfigForma allows for weird calls gsconfig does, like granules/granule.id/.json
         GranuleStore store = getGranuleStore(workspaceName, storeName, coverageName);
         Filter filter = getGranuleIdFilter(granuleId);

@@ -43,11 +43,15 @@ public class WFSSettingsController extends ServiceSettingsController {
     @Autowired
     public WFSSettingsController(GeoServer geoServer) { super(geoServer, WFSInfo.class); };
 
-    @PutMapping( value = {"/settings", "/workspaces/{workspaceName}/settings"},
-            consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-                    MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
-    public void putServiceSettings(@RequestBody WFSInfo info,
-                                   @PathVariable(required = false) String workspaceName) {
+    @PutMapping(value = {"/settings", "/workspaces/{workspaceName}/settings"}, consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE})
+    public void putServiceSettings(
+            @RequestBody WFSInfo info,
+            @PathVariable(required = false) String workspaceName) {
+
         super.putServiceSettings(info, workspaceName);
     }
 

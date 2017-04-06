@@ -66,8 +66,10 @@ public class LayerController extends CatalogController {
      * 
      * @return All layers
      */
-    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
+    @GetMapping(produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE })
     public RestWrapper<LayerInfo> layersGet() {
         List<LayerInfo> layers = catalog.getLayers();
         return wrapList(layers, LayerInfo.class);
@@ -79,10 +81,14 @@ public class LayerController extends CatalogController {
      * @param layerName
      * @return A single layer
      */
-    @GetMapping(path = "/{layerName}", produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<LayerInfo> layersNameGet(@PathVariable String layerName,
+    @GetMapping(path = "/{layerName}", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE })
+    public RestWrapper<LayerInfo> layersNameGet(
+            @PathVariable String layerName,
             @RequestParam (name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
+
         LayerInfo layer = catalog.getLayerByName(layerName);
         return wrapObject(layer, LayerInfo.class, "No such layer: "+layerName, quietOnNotFound );
     }
@@ -107,7 +113,8 @@ public class LayerController extends CatalogController {
     }
     
     @PutMapping(value = "/{layerName}")
-    public void layersNamePut(@RequestBody LayerInfo layer,@PathVariable String layerName ){
+    public void layersNamePut(@RequestBody LayerInfo layer,@PathVariable String layerName) {
+
         LayerInfo original = catalog.getLayerByName(layerName);
         
         // ensure this is not a name change
@@ -130,7 +137,6 @@ public class LayerController extends CatalogController {
     public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return LayerInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
-
     
     //
     // Configuration and Settings

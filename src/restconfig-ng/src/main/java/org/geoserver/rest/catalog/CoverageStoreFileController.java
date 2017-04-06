@@ -70,13 +70,14 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         super(catalog);
     }
 
-    @PostMapping()
+    @PostMapping
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void postCoverageStore(@PathVariable String workspaceName,
+    public void postCoverageStore(
+            @PathVariable String workspaceName,
             @PathVariable String storeName,
             @PathVariable UploadMethod method,
-            @PathVariable String format, HttpServletRequest request)
-            throws IOException {
+            @PathVariable String format,
+            HttpServletRequest request) throws IOException {
 
         // check the coverage store exists
         CoverageStoreInfo info = catalog.getCoverageStoreByName(workspaceName, storeName);

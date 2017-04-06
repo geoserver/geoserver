@@ -72,29 +72,39 @@ public class WMSStoreController extends CatalogController {
         super(catalog);
     }
 
-    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
+    @GetMapping(produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<WMSStoreInfo> getWMSStores(
-            @PathVariable String workspaceName) {
+    public RestWrapper<WMSStoreInfo> getWMSStores(@PathVariable String workspaceName) {
+
         List<WMSStoreInfo> wmsStores = catalog
                 .getStoresByWorkspace(workspaceName, WMSStoreInfo.class);
         return wrapList(wmsStores, WMSStoreInfo.class);
     }
 
-    @GetMapping(path = "/{storeName}", produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
+    @GetMapping(path = "/{storeName}", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE })
     public RestWrapper<WMSStoreInfo> getWMSStore(
             @PathVariable String workspaceName,
             @PathVariable String storeName) {
+
         WMSStoreInfo wmsStore = getExistingWMSStore(workspaceName, storeName);
         return wrapObject(wmsStore, WMSStoreInfo.class);
     }
     
-    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
-    public ResponseEntity<String> postWMSStoreInfo(@RequestBody WMSStoreInfo wmsStore,
+    @PostMapping(consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
+    public ResponseEntity<String> postWMSStoreInfo(
+            @RequestBody WMSStoreInfo wmsStore,
             @PathVariable String workspaceName,
             UriComponentsBuilder builder) {
+
         if ( wmsStore.getWorkspace() != null ) {
              //ensure the specified workspace matches the one dictated by the uri
              WorkspaceInfo ws = (WorkspaceInfo) wmsStore.getWorkspace();
@@ -120,11 +130,16 @@ public class WMSStoreController extends CatalogController {
     }
 
     
-    @PutMapping(value = "/{storeName}", consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
-    public void putWMSStoreInfo(@RequestBody WMSStoreInfo info,
+    @PutMapping(value = "/{storeName}", consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
+    public void putWMSStoreInfo(
+            @RequestBody WMSStoreInfo info,
             @PathVariable String workspaceName,
             @PathVariable String storeName) {
+
         WMSStoreInfo original = getExistingWMSStore(workspaceName, storeName);
         if(info.getWorkspace() != null && !original.getWorkspace().equals(info.getWorkspace())) {
             throw new RestException("Attempting to move "+storeName+" from "+original.getWorkspace().getName()+" to "+info.getWorkspace().getName()+" via PUT", HttpStatus.FORBIDDEN);
@@ -150,10 +165,12 @@ public class WMSStoreController extends CatalogController {
     }
     
     @DeleteMapping(value = "/{storeName}")
-    public void deleteWMSStoreInfo(@PathVariable String workspaceName,
+    public void deleteWMSStoreInfo(
+            @PathVariable String workspaceName,
             @PathVariable String storeName,
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,
             @RequestParam(name = "purge", required = false, defaultValue = "none") String deleteType) throws IOException {
+
         WMSStoreInfo cs = getExistingWMSStore(workspaceName, storeName);
         if (!recurse) {
             if (!catalog.getResourcesByStore(cs, WMSLayerInfo.class).isEmpty()) {

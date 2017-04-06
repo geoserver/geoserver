@@ -46,8 +46,8 @@ import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 
 @RestController
-@RequestMapping(path = RestBaseController.ROOT_PATH + "/about", produces = { MediaType.TEXT_HTML_VALUE,
-        MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/about",
+        produces = { MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 @ControllerAdvice
 public class AboutController extends RestBaseController {
 
@@ -57,6 +57,7 @@ public class AboutController extends RestBaseController {
             @RequestParam(required = false) String from, @RequestParam(required = false) String to,
             @RequestParam(required = false) String key,
             @RequestParam(required = false) String value) {
+
         return wrapObject(getModel(AboutModelType.RESOURCES, regex, from, to, key, value),
                 AboutModel.class);
     }
@@ -67,6 +68,7 @@ public class AboutController extends RestBaseController {
             @RequestParam(required = false) String from, @RequestParam(required = false) String to,
             @RequestParam(required = false) String key,
             @RequestParam(required = false) String value) {
+
         return wrapObject(getModel(AboutModelType.VERSIONS, regex, from, to, key, value),
                 AboutModel.class);
     }

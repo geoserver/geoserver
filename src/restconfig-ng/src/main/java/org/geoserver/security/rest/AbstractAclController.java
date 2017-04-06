@@ -48,8 +48,11 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         return GeoServerExtensions.bean(GeoServerSecurityManager.class);
     }
 
-    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+    @GetMapping(produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
     @ResponseBody
     public RuleMap getRules() throws IOException {
         checkUserIsAdmin();
@@ -62,8 +65,11 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         }
     }
 
-    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+    @PostMapping(consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
     public void postRules(@RequestBody RuleMap map) throws IOException {
         checkUserIsAdmin();
 
@@ -74,8 +80,11 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         }
     }
 
-    @PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+    @PutMapping(consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
     public void putRules(@RequestBody RuleMap map) throws IOException {
         checkUserIsAdmin();
 

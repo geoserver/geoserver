@@ -43,8 +43,11 @@ public class MasterPasswordController extends RestBaseController {
         return GeoServerExtensions.bean(GeoServerSecurityManager.class);
     }
 
-    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+    @GetMapping(produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
     public NamedMap<String, String> getMasterPassword() throws IOException {
 
         if (getManager().checkAuthenticationForAdminRole() == false) {
@@ -60,8 +63,11 @@ public class MasterPasswordController extends RestBaseController {
         return m;
     }
 
-    @PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+    @PutMapping(consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
     public void putMasterPassword(@RequestBody Map<String, String> putMap) throws IOException {
         if (getManager().checkAuthenticationForAdminRole() == false) {
             // yes, for backwards compat, it's really METHOD_NOT_ALLOWED

@@ -35,9 +35,12 @@ public class LocalSettingsController extends GeoServerController {
         super(geoServer);
     }
 
-    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
+    @GetMapping(produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE })
     public RestWrapper<SettingsInfo> getLocalSettings(@PathVariable String workspaceName) {
+
         if (workspaceName != null) {
             WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
             SettingsInfo settingsInfo = geoServer.getSettings(workspaceInfo);
@@ -51,8 +54,10 @@ public class LocalSettingsController extends GeoServerController {
     }
 
     @PostMapping(consumes = {
-            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
     public String createLocalSettings(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
         String name = "";
@@ -68,8 +73,10 @@ public class LocalSettingsController extends GeoServerController {
     }
 
     @PutMapping(consumes = {
-            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
     public void setLocalSettings(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
         if (workspaceName != null) {
             WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);

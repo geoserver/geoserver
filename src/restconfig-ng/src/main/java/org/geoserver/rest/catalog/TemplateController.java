@@ -87,8 +87,8 @@ public class TemplateController extends CatalogController {
             @PathVariable(required = false) String workspaceName,
             @PathVariable(required = false) String storeName,
             @PathVariable(required = false) String featureTypeName,
-            @PathVariable String templateName
-            ){
+            @PathVariable String templateName) {
+
         String filename = templateName+"."+MEDIATYPE_FTL_EXTENSION;
         String path = Paths.path(path(workspaceName, storeName, featureTypeName ), filename);
         Resource resource = resources.get(path);
@@ -107,19 +107,15 @@ public class TemplateController extends CatalogController {
      * 
      * @return Template Definitin
      */
-    @GetMapping(
-        value = "/{templateName}",
-        produces = {
-           MEDIATYPE_FTL_VALUE // text/plain
-       }
-    )
+    @GetMapping(value = "/{templateName}", produces = {
+            MEDIATYPE_FTL_VALUE})
     public void templateGet(
-            HttpServletResponse response,
             @PathVariable(required = false) String workspaceName,
             @PathVariable(required = false) String storeName,
             @PathVariable(required = false) String featureTypeName,
-            @PathVariable String templateName
-            ){
+            @PathVariable String templateName,
+            HttpServletResponse response) {
+
         String filename = templateName+"."+MEDIATYPE_FTL_EXTENSION;
         String path = Paths.path(path(workspaceName, storeName, featureTypeName ), filename);
         Resource resource = resources.get(path);
@@ -148,17 +144,17 @@ public class TemplateController extends CatalogController {
      * 
      * @return All templates
      */
-    @PutMapping(
-        value = "/{templateName}",
-        consumes = {MEDIATYPE_FTL_VALUE,MediaType.TEXT_PLAIN_VALUE})
+    @PutMapping(value = "/{templateName}", consumes = {
+            MEDIATYPE_FTL_VALUE,
+            MediaType.TEXT_PLAIN_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public void templatePut(
-            HttpServletRequest request,
             @PathVariable(required = false) String workspaceName,
             @PathVariable(required = false) String storeName,
             @PathVariable(required = false) String featureTypeName,
-            @PathVariable String templateName
-            ){
+            @PathVariable String templateName,
+            HttpServletRequest request) {
+
         String filename = templateName + "." + MEDIATYPE_FTL_EXTENSION;
         String path = path(workspaceName, storeName, featureTypeName);
         Resource directory = resources.get(path);
@@ -179,16 +175,15 @@ public class TemplateController extends CatalogController {
      * 
      * @return All templates
      */
-    @GetMapping(
-            produces = {
-                MediaType.TEXT_HTML_VALUE, // this is the default
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE
-            })
+    @GetMapping(produces = {
+            MediaType.TEXT_HTML_VALUE, // this is the default
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE})
     public RestWrapper<TemplateInfo> templatesGet(
             @PathVariable(required = false) String workspaceName,
             @PathVariable(required = false) String storeName,
             @PathVariable(required = false) String featureTypeName){
+
         String path = path(workspaceName, storeName, featureTypeName );
         Resource directory = resources.get(path);
         switch( directory.getType() ){

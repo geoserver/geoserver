@@ -31,23 +31,29 @@ public class SettingsController extends GeoServerController {
         super(geoServer);
     }
 
-    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
+    @GetMapping(produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE })
     public RestWrapper<GeoServerInfo> getGlobalSettings() {
         return wrapObject(geoServer.getGlobal(), GeoServerInfo.class);
     }
 
     @PutMapping(consumes = {
-            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
     public void setGlobalSettings(@RequestBody GeoServerInfo geoServerInfo) {
         GeoServerInfo original = geoServer.getGlobal();
         OwsUtils.copy(geoServerInfo, original, GeoServerInfo.class);
         geoServer.save(original);
     }
 
-    @GetMapping(value = "/contact", produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
+    @GetMapping(value = "/contact", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE })
     public RestWrapper<ContactInfo> getContact() {
         if (geoServer.getSettings().getContact() == null) {
             throw new ResourceNotFoundException("No contact information available");
@@ -56,8 +62,10 @@ public class SettingsController extends GeoServerController {
     }
 
     @PutMapping(value = "/contact", consumes = {
-            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
     public void setContact(@RequestBody ContactInfo contactInfo) {
         GeoServerInfo geoServerInfo = geoServer.getGlobal();
         ContactInfo original = geoServerInfo.getSettings().getContact();

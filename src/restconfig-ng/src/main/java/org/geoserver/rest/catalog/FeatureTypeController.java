@@ -67,8 +67,7 @@ import freemarker.template.SimpleHash;
 @ControllerAdvice
 @RequestMapping(path = {
         RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/featuretypes",
-        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{dataStoreName}/featuretypes"
-})
+        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{dataStoreName}/featuretypes"})
 public class FeatureTypeController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageStoreController.class);
@@ -79,8 +78,9 @@ public class FeatureTypeController extends CatalogController {
     }
 
     @GetMapping(produces = {
-                    MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
-                    MediaType.APPLICATION_XML_VALUE })
+            MediaType.TEXT_HTML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE })
     public Object getFeatureTypes(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String dataStoreName,
@@ -142,13 +142,14 @@ public class FeatureTypeController extends CatalogController {
     }
 
     @PostMapping(consumes = {
-                    CatalogController.TEXT_JSON, MediaType.APPLICATION_JSON_VALUE,
-                    MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE })
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.TEXT_XML_VALUE,
+            MediaType.APPLICATION_XML_VALUE })
     public ResponseEntity postFeatureType(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String dataStoreName,
-            @RequestBody FeatureTypeInfo ftInfo, UriComponentsBuilder builder)
-            throws Exception {
+            @RequestBody FeatureTypeInfo ftInfo, UriComponentsBuilder builder) throws Exception {
 
         DataStoreInfo dsInfo = getExistingDataStore(workspaceName, dataStoreName);
         // ensure the store matches up
@@ -258,8 +259,9 @@ public class FeatureTypeController extends CatalogController {
     }
 
     @GetMapping(path = "/{featureTypeName}", produces = {
-                    MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
-                    MediaType.APPLICATION_XML_VALUE })
+            MediaType.TEXT_HTML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE })
     public RestWrapper getFeatureType(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String dataStoreName,
@@ -274,8 +276,9 @@ public class FeatureTypeController extends CatalogController {
     }
 
     @PutMapping(path = "/{featureTypeName}", produces = {
-                    MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
-                    MediaType.APPLICATION_XML_VALUE })
+            MediaType.TEXT_HTML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE })
     public void putFeatureType(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String dataStoreName,
@@ -313,8 +316,9 @@ public class FeatureTypeController extends CatalogController {
     }
 
     @DeleteMapping(path = "{featureTypeName}", produces = {
-                    MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
-                    MediaType.APPLICATION_XML_VALUE })
+            MediaType.TEXT_HTML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE })
     public void deleteFeatureType(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String dataStoreName,

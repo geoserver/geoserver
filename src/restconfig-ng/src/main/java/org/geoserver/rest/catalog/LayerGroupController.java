@@ -47,11 +47,14 @@ import java.util.logging.Logger;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = {RestBaseController.ROOT_PATH + "/layergroups",
-        RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/layergroups"}, produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.TEXT_HTML_VALUE})
+@RequestMapping(
+        path = {
+                RestBaseController.ROOT_PATH + "/layergroups",
+                RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/layergroups"},
+        produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE})
 public class LayerGroupController extends CatalogController {
     private static final Logger LOGGER = Logging.getLogger(LayerGroupController.class);
 
@@ -60,8 +63,9 @@ public class LayerGroupController extends CatalogController {
         super(catalog);
     }
 
-    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
+    @GetMapping
     public RestWrapper getLayerGroups(@PathVariable(required = false) String workspaceName) {
+
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
@@ -70,11 +74,12 @@ public class LayerGroupController extends CatalogController {
         return wrapList(layerGroupInfos, LayerGroupInfo.class);
     }
 
-    @GetMapping(value = "{layerGroupName}",
-            produces = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE, MediaType.TEXT_HTML_VALUE})
-    public RestWrapper getLayerGroup(@PathVariable String layerGroupName,
-                                     @PathVariable(required = false) String workspaceName,
-                                     @RequestParam(name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
+    @GetMapping(value = "{layerGroupName}")
+    public RestWrapper getLayerGroup(
+            @PathVariable String layerGroupName,
+            @PathVariable(required = false) String workspaceName,
+            @RequestParam(name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
+
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
@@ -87,11 +92,16 @@ public class LayerGroupController extends CatalogController {
         return wrapObject(layerGroupInfo, LayerGroupInfo.class, errorMessage, quietOnNotFound);
     }
 
-    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-                    MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
-    public ResponseEntity<String> postLayerGroup(@RequestBody LayerGroupInfo lg,
+    @PostMapping(consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE})
+    public ResponseEntity<String> postLayerGroup(
+            @RequestBody LayerGroupInfo lg,
             @PathVariable(required = false) String workspaceName,
-            UriComponentsBuilder builder) throws Exception{
+            UriComponentsBuilder builder) throws Exception {
+
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
@@ -128,17 +138,20 @@ public class LayerGroupController extends CatalogController {
         return new ResponseEntity<String>(layerGroupName, httpHeaders, HttpStatus.CREATED);
     }
 
-    @PutMapping( value = "{layerGroupName}",
-            consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-                    MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
-    public void putLayerGroup(@RequestBody LayerGroupInfo lg,
+    @PutMapping(value = "{layerGroupName}", consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE})
+    public void putLayerGroup(
+            @RequestBody LayerGroupInfo lg,
             @PathVariable(required = false) String workspaceName,
             @PathVariable String layerGroupName) throws Exception {
+
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
         checkFullAdminRequired(workspaceName);
-
         
         LOGGER.info( "PUT layer group " + layerGroupName
                 + (workspaceName == null ? ", workspace " + workspaceName : ""));
@@ -163,8 +176,10 @@ public class LayerGroupController extends CatalogController {
     }
 
     @DeleteMapping(value = "{layerGroupName}")
-    public void deleteLayerGroup(@PathVariable(required = false) String workspaceName,
-                                 @PathVariable String layerGroupName) {
+    public void deleteLayerGroup(
+            @PathVariable(required = false) String workspaceName,
+            @PathVariable String layerGroupName) {
+
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }

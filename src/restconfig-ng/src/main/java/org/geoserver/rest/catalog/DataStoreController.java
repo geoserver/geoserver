@@ -69,7 +69,7 @@ import freemarker.template.TemplateModelException;
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/datastores")
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores")
 public class DataStoreController extends CatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(DataStoreController.class);
@@ -83,10 +83,11 @@ public class DataStoreController extends CatalogController {
     Get Mappings
      */
 
-    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
+    @GetMapping(produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<DataStoreInfo> getDataStores(
-            @PathVariable(name = "workspaceName") String workspaceName) {
+    public RestWrapper<DataStoreInfo> getDataStores(@PathVariable String workspaceName) {
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
         if(ws == null) {
             throw new ResourceNotFoundException("No such workspace : " + workspaceName);
@@ -96,20 +97,28 @@ public class DataStoreController extends CatalogController {
         return wrapList(dataStores, DataStoreInfo.class);
     }
 
-    @GetMapping(path = "{storeName}", produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
+    @GetMapping(path = "{storeName}", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE })
     public RestWrapper<DataStoreInfo> getCoverageStore(
-            @PathVariable(name = "workspaceName") String workspaceName,
-            @PathVariable(name = "storeName") String storeName) {
+            @PathVariable String workspaceName,
+            @PathVariable String storeName) {
+
         DataStoreInfo dataStore = getExistingDataStore(workspaceName, storeName);
         return wrapObject(dataStore, DataStoreInfo.class);
     }
 
-    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
-    public ResponseEntity<String> postDataStoreInfo(@RequestBody DataStoreInfo dataStore,
-                                                        @PathVariable(name = "workspaceName") String workspaceName,
-                                                        UriComponentsBuilder builder) {
+    @PostMapping(consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
+    public ResponseEntity<String> postDataStoreInfo(
+            @RequestBody DataStoreInfo dataStore,
+            @PathVariable String workspaceName,
+            UriComponentsBuilder builder) {
+
         if ( dataStore.getWorkspace() != null ) {
              //ensure the specifried workspace matches the one dictated by the uri
              WorkspaceInfo ws = (WorkspaceInfo) dataStore.getWorkspace();
@@ -160,11 +169,16 @@ public class DataStoreController extends CatalogController {
         return new ResponseEntity<String>(storeName, headers, HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "{storeName}", consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
-    public void putCoverageStoreInfo(@RequestBody DataStoreInfo info,
-                                     @PathVariable(name = "workspaceName") String workspaceName,
-                                     @PathVariable(name = "storeName") String storeName) {
+    @PutMapping(value = "{storeName}", consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
+    public void putCoverageStoreInfo(
+            @RequestBody DataStoreInfo info,
+            @PathVariable String workspaceName,
+            @PathVariable String storeName) {
+
         DataStoreInfo original = getExistingDataStore(workspaceName, storeName);
 
         if (!original.getName().equalsIgnoreCase(info.getName())) {
@@ -184,10 +198,12 @@ public class DataStoreController extends CatalogController {
     }
 
     @DeleteMapping(value = "{storeName}")
-    public void deleteDataStoreInfo(@PathVariable(name = "workspaceName") String workspaceName,
-                                        @PathVariable(name = "storeName") String storeName,
-                                        @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,
-                                        @RequestParam(name = "purge", required = false, defaultValue = "none") String deleteType) throws IOException {
+    public void deleteDataStoreInfo(
+            @PathVariable String workspaceName,
+            @PathVariable String storeName,
+            @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,
+            @RequestParam(name = "purge", required = false, defaultValue = "none") String deleteType) throws IOException {
+
         DataStoreInfo ds = getExistingDataStore(workspaceName, storeName);
         if (!recurse) {
             if (!catalog.getStoresByWorkspace(workspaceName, DataStoreInfo.class).isEmpty()) {

@@ -40,8 +40,8 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
 @RestController
-@RequestMapping(path = RestBaseController.ROOT_PATH + "/about/status", produces = { MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE })
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/about/status",
+        produces = { MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE })
 public class AboutStatusController extends RestBaseController {
 
     @GetMapping

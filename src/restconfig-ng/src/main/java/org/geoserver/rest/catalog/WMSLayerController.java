@@ -82,12 +82,15 @@ public class WMSLayerController extends CatalogController {
         super(catalog);
     }
     
-    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
+    @GetMapping(produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE})
     public Object getLayers(
-            final @PathVariable String workspaceName, 
-            final @PathVariable(required = false) String storeName,
-            final @RequestParam(required = false, defaultValue = "false") boolean quietOnNotFound,
-            final @RequestParam(required = false, defaultValue = "configured") String list) {
+            @PathVariable String workspaceName,
+            @PathVariable(required = false) String storeName,
+            @RequestParam(required = false, defaultValue = "false") boolean quietOnNotFound,
+            @RequestParam(required = false, defaultValue = "configured") String list) {
         switch(list) {
         case "available":
             LOGGER.fine(()->logMessage("GET available WMS layers from ", workspaceName, storeName, null));
@@ -145,12 +148,15 @@ public class WMSLayerController extends CatalogController {
             .collect(Collectors.toList());
     }
     
-    @GetMapping(value = "/{layerName}",
-        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
+    @GetMapping(value = "/{layerName}", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE})
     public RestWrapper<WMSLayerInfo> getLayer(
-            final @PathVariable String workspaceName, 
-            final @PathVariable(required=false) String storeName, 
-            final @PathVariable String layerName) {
+            @PathVariable String workspaceName,
+            @PathVariable(required=false) String storeName,
+            @PathVariable String layerName) {
+
         LOGGER.fine(()->logMessage("GET", workspaceName, storeName, layerName));
         
         WMSLayerInfo layer = getResourceInternal(workspaceName, storeName, layerName);
@@ -205,15 +211,18 @@ public class WMSLayerController extends CatalogController {
         }
     }
     
-    @PutMapping(value = "/{layerName}",
-            consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-                    MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
+    @PutMapping(value = "/{layerName}", consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE})
     public void putLayer(
-            final @RequestBody WMSLayerInfo update,
-            final @PathVariable String workspaceName, 
-            final @PathVariable(required=false) String storeName, 
-            final @PathVariable String layerName, 
-            final @RequestParam(name = "calculate", required = false) String calculate) {
+            @RequestBody WMSLayerInfo update,
+            @PathVariable String workspaceName,
+            @PathVariable(required=false) String storeName,
+            @PathVariable String layerName,
+            @RequestParam(name = "calculate", required = false) String calculate) {
+
         LOGGER.fine(()->logMessage("PUT", workspaceName, storeName, layerName));
         
         WMSLayerInfo original = getResourceInternal(workspaceName, storeName, layerName);
@@ -228,10 +237,11 @@ public class WMSLayerController extends CatalogController {
     
     @DeleteMapping(value = "/{layerName}")
     public void deleteLayer(
-            final @PathVariable String workspaceName, 
-            final @PathVariable(required=false) String storeName, 
-            final @PathVariable String layerName, 
-            final @RequestParam(name = "recurse", defaultValue = "false") boolean recurse) {
+            @PathVariable String workspaceName,
+            @PathVariable(required=false) String storeName,
+            @PathVariable String layerName,
+            @RequestParam(name = "recurse", defaultValue = "false") boolean recurse) {
+
         LOGGER.fine(()->logMessage("DELETE", workspaceName, storeName, layerName));
         
         WMSLayerInfo resource = this.getResourceInternal(workspaceName, storeName, layerName);
@@ -256,12 +266,16 @@ public class WMSLayerController extends CatalogController {
     }
     
     @PostMapping(consumes = {
-            MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
-    public ResponseEntity<String> postLayer(@RequestBody WMSLayerInfo resource,
-                                           @PathVariable String workspaceName,
-                                           @PathVariable(required=false) String storeName,
-                                           UriComponentsBuilder builder) throws Exception {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE})
+    public ResponseEntity<String> postLayer(
+            @RequestBody WMSLayerInfo resource,
+            @PathVariable String workspaceName,
+            @PathVariable(required=false) String storeName,
+            UriComponentsBuilder builder) throws Exception {
+
         String resourceName = handleObjectPost(resource, workspaceName, storeName);
         LOGGER.fine(()->logMessage("POST", workspaceName, storeName, resourceName));
         UriComponents uriComponents = Objects.isNull(storeName)?

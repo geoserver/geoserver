@@ -68,10 +68,12 @@ public class CoverageStoreController extends CatalogController {
         super(catalog);
     }
 
-    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE,
+    @GetMapping(produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<CoverageStoreInfo> getCoverageStores(
-            @PathVariable(name = "workspaceName") String workspaceName) {
+    public RestWrapper<CoverageStoreInfo> getCoverageStores(@PathVariable String workspaceName) {
+
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
         if(ws == null) {
             throw new ResourceNotFoundException("No such workspace : " + workspaceName);
@@ -81,20 +83,28 @@ public class CoverageStoreController extends CatalogController {
         return wrapList(coverageStores, CoverageStoreInfo.class);
     }
 
-    @GetMapping(path = "{storeName}", produces = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
+    @GetMapping(path = "{storeName}", produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE })
     public RestWrapper<CoverageStoreInfo> getCoverageStore(
             @PathVariable String workspaceName,
             @PathVariable String storeName) {
+
         CoverageStoreInfo coverageStore = getExistingCoverageStore(workspaceName, storeName);
         return wrapObject(coverageStore, CoverageStoreInfo.class);
     }
     
-    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
-    public ResponseEntity<String> postCoverageStoreInfo(@RequestBody CoverageStoreInfo coverageStore,
+    @PostMapping(consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
+    public ResponseEntity<String> postCoverageStoreInfo(
+            @RequestBody CoverageStoreInfo coverageStore,
             @PathVariable String workspaceName,
             UriComponentsBuilder builder) {
+
         catalog.validate(coverageStore, true).throwIfInvalid();
         catalog.add(coverageStore);
 
@@ -108,11 +118,16 @@ public class CoverageStoreController extends CatalogController {
     }
 
     
-    @PutMapping(value = "{storeName}", consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-            MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE })
-    public void putCoverageStoreInfo(@RequestBody CoverageStoreInfo info,
+    @PutMapping(value = "{storeName}", consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE })
+    public void putCoverageStoreInfo(
+            @RequestBody CoverageStoreInfo info,
             @PathVariable String workspaceName,
             @PathVariable String storeName) {
+
         CoverageStoreInfo original = getExistingCoverageStore(workspaceName, storeName);
         
         new CatalogBuilder(catalog).updateCoverageStore(original, info);
@@ -133,10 +148,12 @@ public class CoverageStoreController extends CatalogController {
     }
     
     @DeleteMapping(value = "{storeName}")
-    public void deleteCoverageStoreInfo(@PathVariable String workspaceName,
+    public void deleteCoverageStoreInfo(
+            @PathVariable String workspaceName,
             @PathVariable String storeName,
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,
             @RequestParam(name = "purge", required = false, defaultValue = "none") String deleteType) throws IOException {
+
         CoverageStoreInfo cs = getExistingCoverageStore(workspaceName, storeName);
         if (!recurse) {
             if (!catalog.getCoveragesByCoverageStore(cs).isEmpty()) {

@@ -86,7 +86,7 @@ public class WMSLayerController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE})
-    public Object getLayers(
+    public Object layersGet(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
             @RequestParam(required = false, defaultValue = "false") boolean quietOnNotFound,
@@ -152,7 +152,7 @@ public class WMSLayerController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE})
-    public RestWrapper<WMSLayerInfo> getLayer(
+    public RestWrapper<WMSLayerInfo> layerGet(
             @PathVariable String workspaceName,
             @PathVariable(required=false) String storeName,
             @PathVariable String layerName) {
@@ -216,7 +216,7 @@ public class WMSLayerController extends CatalogController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE})
-    public void putLayer(
+    public void layerPut(
             @RequestBody WMSLayerInfo update,
             @PathVariable String workspaceName,
             @PathVariable(required=false) String storeName,
@@ -236,7 +236,7 @@ public class WMSLayerController extends CatalogController {
     
     
     @DeleteMapping(value = "/{layerName}")
-    public void deleteLayer(
+    public void layerDelete(
             @PathVariable String workspaceName,
             @PathVariable(required=false) String storeName,
             @PathVariable String layerName,
@@ -270,7 +270,7 @@ public class WMSLayerController extends CatalogController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE})
-    public ResponseEntity<String> postLayer(
+    public ResponseEntity<String> layerPost(
             @RequestBody WMSLayerInfo resource,
             @PathVariable String workspaceName,
             @PathVariable(required=false) String storeName,

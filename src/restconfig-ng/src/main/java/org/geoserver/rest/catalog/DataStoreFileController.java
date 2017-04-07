@@ -138,7 +138,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
     }
 
     @GetMapping
-    public ResponseEntity getDataStores(
+    public ResponseEntity dataStoresGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName) throws IOException {
 
@@ -220,7 +220,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
     }
 
     @PutMapping
-    public void putDataStore(
+    public void dataStorePut(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @PathVariable UploadMethod method,

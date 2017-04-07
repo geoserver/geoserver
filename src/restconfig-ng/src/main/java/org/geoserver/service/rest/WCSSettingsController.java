@@ -46,9 +46,9 @@ public class WCSSettingsController extends ServiceSettingsController {
     @PutMapping( value = {"/settings", "/workspaces/{workspaceName}/settings"},
             consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
                     MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
-    public void putServiceSettings(@RequestBody WCSInfo info,
+    public void serviceSettingsPut(@RequestBody WCSInfo info,
                                    @PathVariable(required = false) String workspaceName) {
-        super.putServiceSettings(info, workspaceName);
+        super.serviceSettingsPut(info, workspaceName);
     }
 
     @Override

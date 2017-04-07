@@ -74,7 +74,7 @@ public class WorkspaceController extends CatalogController {
     }
 
     @GetMapping
-    public RestWrapper getWorkspaces() {
+    public RestWrapper workspacesGet() {
 
         List<WorkspaceInfo> wkspaces = catalog.getWorkspaces();
         return wrapList(wkspaces, WorkspaceInfo.class);
@@ -100,7 +100,7 @@ public class WorkspaceController extends CatalogController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_JSON_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> postWorkspace(
+    public ResponseEntity<String> workspacePost(
             @RequestBody WorkspaceInfo workspace,
             @RequestParam(defaultValue = "false", name = "default") boolean makeDefault,
             UriComponentsBuilder builder) {
@@ -141,7 +141,7 @@ public class WorkspaceController extends CatalogController {
                 MediaType.APPLICATION_XML_VALUE,
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_JSON_VALUE })
-    public void putWorkspace(
+    public void workspacePut(
             @RequestBody WorkspaceInfo workspace,
             @PathVariable String workspaceName, UriComponentsBuilder builder) {
 
@@ -166,7 +166,7 @@ public class WorkspaceController extends CatalogController {
     }
 
     @DeleteMapping(path = "/{workspaceName}")
-    protected void deleteWorkspace(
+    protected void workspaceDelete(
             @PathVariable String workspaceName,
             @RequestParam(defaultValue = "false", name = "recurse") boolean recurse) {
 

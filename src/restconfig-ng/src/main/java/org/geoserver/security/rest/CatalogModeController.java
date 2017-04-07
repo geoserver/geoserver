@@ -57,7 +57,7 @@ public class CatalogModeController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     @ResponseBody
-    public NamedMap getMap() throws Exception {
+    public NamedMap mapGet() throws Exception {
         checkUserIsAdmin();
 
         CatalogMode mode = ((DataAccessRuleDAO) ruleDAO).getMode();
@@ -71,7 +71,7 @@ public class CatalogModeController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    protected void putMap(@RequestBody Map map) throws Exception {
+    protected void mapPut(@RequestBody Map map) throws Exception {
         checkUserIsAdmin();
 
         String mode = (String) map.get(MODE_ELEMENT);

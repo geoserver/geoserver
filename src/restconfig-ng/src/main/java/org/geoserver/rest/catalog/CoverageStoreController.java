@@ -72,7 +72,7 @@ public class CoverageStoreController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<CoverageStoreInfo> getCoverageStores(@PathVariable String workspaceName) {
+    public RestWrapper<CoverageStoreInfo> coverageStoresGet(@PathVariable String workspaceName) {
 
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
         if(ws == null) {
@@ -87,7 +87,7 @@ public class CoverageStoreController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<CoverageStoreInfo> getCoverageStore(
+    public RestWrapper<CoverageStoreInfo> coverageStoreGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName) {
 
@@ -100,7 +100,7 @@ public class CoverageStoreController extends CatalogController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public ResponseEntity<String> postCoverageStoreInfo(
+    public ResponseEntity<String> coverageStorePost(
             @RequestBody CoverageStoreInfo coverageStore,
             @PathVariable String workspaceName,
             UriComponentsBuilder builder) {
@@ -123,7 +123,7 @@ public class CoverageStoreController extends CatalogController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public void putCoverageStoreInfo(
+    public void coverageStoreGet(
             @RequestBody CoverageStoreInfo info,
             @PathVariable String workspaceName,
             @PathVariable String storeName) {
@@ -148,7 +148,7 @@ public class CoverageStoreController extends CatalogController {
     }
     
     @DeleteMapping(value = "{storeName}")
-    public void deleteCoverageStoreInfo(
+    public void overageStoreDelete(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,

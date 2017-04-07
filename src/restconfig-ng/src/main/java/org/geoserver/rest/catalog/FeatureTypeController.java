@@ -81,7 +81,7 @@ public class FeatureTypeController extends CatalogController {
             MediaType.TEXT_HTML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE })
-    public Object getFeatureTypes(
+    public Object featureTypesGet(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String dataStoreName,
             @RequestParam(name = "list", required = true, defaultValue = "configured") String list) {
@@ -146,7 +146,7 @@ public class FeatureTypeController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE })
-    public ResponseEntity postFeatureType(
+    public ResponseEntity featureTypePost(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String dataStoreName,
             @RequestBody FeatureTypeInfo ftInfo, UriComponentsBuilder builder) throws Exception {
@@ -262,7 +262,7 @@ public class FeatureTypeController extends CatalogController {
             MediaType.TEXT_HTML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE })
-    public RestWrapper getFeatureType(
+    public RestWrapper featureTypeGet(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String dataStoreName,
             @PathVariable String featureTypeName,
@@ -279,7 +279,7 @@ public class FeatureTypeController extends CatalogController {
             MediaType.TEXT_HTML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE })
-    public void putFeatureType(
+    public void featureTypePut(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String dataStoreName,
             @PathVariable String featureTypeName,
@@ -319,7 +319,7 @@ public class FeatureTypeController extends CatalogController {
             MediaType.TEXT_HTML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE })
-    public void deleteFeatureType(
+    public void featureTypeDelete(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String dataStoreName,
             @PathVariable String featureTypeName,

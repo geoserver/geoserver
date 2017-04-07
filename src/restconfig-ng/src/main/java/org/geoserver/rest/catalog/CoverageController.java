@@ -70,7 +70,7 @@ public class CoverageController extends CatalogController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE})
-    public Object getCoverages(
+    public Object coveragesGet(
             @RequestParam(name = "list", required = false) String list,
             @PathVariable String workspaceName,
             @PathVariable String storeName) {
@@ -92,7 +92,7 @@ public class CoverageController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
             TEXT_JSON})
-    public Object getCoverages(
+    public Object coveragesGet(
             @RequestParam(name = "list", required = false) String list,
             @PathVariable String workspaceName) {
         // get the workspace name space
@@ -119,7 +119,7 @@ public class CoverageController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
             TEXT_JSON})
-    public RestWrapper<CoverageInfo> getCoverage(
+    public RestWrapper<CoverageInfo> coverageGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @PathVariable String coverageName) {
@@ -143,7 +143,7 @@ public class CoverageController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
             TEXT_JSON})
-    public RestWrapper<CoverageInfo> getCoverage(
+    public RestWrapper<CoverageInfo> coverageGet(
             @PathVariable String workspaceName,
             @PathVariable String coverageName) {
         // get the workspace name space
@@ -162,7 +162,7 @@ public class CoverageController extends CatalogController {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> postCoverage(
+    public ResponseEntity<String> coveragePost(
             @RequestBody CoverageInfo coverage,
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -186,7 +186,7 @@ public class CoverageController extends CatalogController {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE})
-    public void putCoverage(
+    public void coveragePut(
             @RequestBody CoverageInfo coverage,
             @PathVariable String workspaceName,
             @PathVariable String storeName,
@@ -206,7 +206,7 @@ public class CoverageController extends CatalogController {
 
 
     @DeleteMapping(path = "coveragestores/{storeName}/coverages/{coverageName}")
-    protected void deleteCoverage(
+    protected void coverageDelete(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @PathVariable String coverageName,

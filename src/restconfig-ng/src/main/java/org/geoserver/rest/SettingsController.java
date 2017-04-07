@@ -19,7 +19,7 @@ import java.util.Arrays;
 /**
  * Settings controller
  *
- * Provides access to global settings, local settings, and contact info
+ * Provides access to global settings and contact info
  */
 @RestController
 @ControllerAdvice
@@ -35,7 +35,7 @@ public class SettingsController extends GeoServerController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<GeoServerInfo> getGlobalSettings() {
+    public RestWrapper<GeoServerInfo> settingsGet() {
         return wrapObject(geoServer.getGlobal(), GeoServerInfo.class);
     }
 
@@ -44,7 +44,7 @@ public class SettingsController extends GeoServerController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public void setGlobalSettings(@RequestBody GeoServerInfo geoServerInfo) {
+    public void settingsPut(@RequestBody GeoServerInfo geoServerInfo) {
         GeoServerInfo original = geoServer.getGlobal();
         OwsUtils.copy(geoServerInfo, original, GeoServerInfo.class);
         geoServer.save(original);
@@ -54,7 +54,7 @@ public class SettingsController extends GeoServerController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<ContactInfo> getContact() {
+    public RestWrapper<ContactInfo> contactGet() {
         if (geoServer.getSettings().getContact() == null) {
             throw new ResourceNotFoundException("No contact information available");
         }
@@ -66,7 +66,7 @@ public class SettingsController extends GeoServerController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public void setContact(@RequestBody ContactInfo contactInfo) {
+    public void contactSet(@RequestBody ContactInfo contactInfo) {
         GeoServerInfo geoServerInfo = geoServer.getGlobal();
         ContactInfo original = geoServerInfo.getSettings().getContact();
         OwsUtils.copy(contactInfo, original, ContactInfo.class);

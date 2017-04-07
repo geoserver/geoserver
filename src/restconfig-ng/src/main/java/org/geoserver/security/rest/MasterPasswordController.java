@@ -48,7 +48,7 @@ public class MasterPasswordController extends RestBaseController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public NamedMap<String, String> getMasterPassword() throws IOException {
+    public NamedMap<String, String> masterPasswordGet() throws IOException {
 
         if (getManager().checkAuthenticationForAdminRole() == false) {
             throw new RestException("Amdinistrative privelges required", HttpStatus.FORBIDDEN);
@@ -68,7 +68,7 @@ public class MasterPasswordController extends RestBaseController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public void putMasterPassword(@RequestBody Map<String, String> putMap) throws IOException {
+    public void masterPasswordPut(@RequestBody Map<String, String> putMap) throws IOException {
         if (getManager().checkAuthenticationForAdminRole() == false) {
             // yes, for backwards compat, it's really METHOD_NOT_ALLOWED
             throw new RestException("Amdinistrative privelges required",

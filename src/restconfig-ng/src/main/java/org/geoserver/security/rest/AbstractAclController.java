@@ -54,7 +54,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     @ResponseBody
-    public RuleMap getRules() throws IOException {
+    public RuleMap rulesGet() throws IOException {
         checkUserIsAdmin();
 
         try {
@@ -70,7 +70,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public void postRules(@RequestBody RuleMap map) throws IOException {
+    public void rulesPost(@RequestBody RuleMap map) throws IOException {
         checkUserIsAdmin();
 
         try {
@@ -85,7 +85,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public void putRules(@RequestBody RuleMap map) throws IOException {
+    public void rulesPut(@RequestBody RuleMap map) throws IOException {
         checkUserIsAdmin();
 
         try {
@@ -96,7 +96,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
     }
 
     @DeleteMapping(path = "/**")
-    public void handleDelete(HttpServletRequest request) throws UnsupportedEncodingException {
+    public void rulesDelete(HttpServletRequest request) throws UnsupportedEncodingException {
         checkUserIsAdmin();
 
         String thePath = (String) request.getPathInfo();

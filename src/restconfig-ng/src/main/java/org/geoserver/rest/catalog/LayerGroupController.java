@@ -64,7 +64,7 @@ public class LayerGroupController extends CatalogController {
     }
 
     @GetMapping
-    public RestWrapper getLayerGroups(@PathVariable(required = false) String workspaceName) {
+    public RestWrapper layerGroupsGet(@PathVariable(required = false) String workspaceName) {
 
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
@@ -75,7 +75,7 @@ public class LayerGroupController extends CatalogController {
     }
 
     @GetMapping(value = "{layerGroupName}")
-    public RestWrapper getLayerGroup(
+    public RestWrapper layerGroupGet(
             @PathVariable String layerGroupName,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
@@ -97,7 +97,7 @@ public class LayerGroupController extends CatalogController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE})
-    public ResponseEntity<String> postLayerGroup(
+    public ResponseEntity<String> layerGroupPost(
             @RequestBody LayerGroupInfo lg,
             @PathVariable(required = false) String workspaceName,
             UriComponentsBuilder builder) throws Exception {
@@ -143,7 +143,7 @@ public class LayerGroupController extends CatalogController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE})
-    public void putLayerGroup(
+    public void layerGroupPut(
             @RequestBody LayerGroupInfo lg,
             @PathVariable(required = false) String workspaceName,
             @PathVariable String layerGroupName) throws Exception {
@@ -176,7 +176,7 @@ public class LayerGroupController extends CatalogController {
     }
 
     @DeleteMapping(value = "{layerGroupName}")
-    public void deleteLayerGroup(
+    public void layerGroupDelete(
             @PathVariable(required = false) String workspaceName,
             @PathVariable String layerGroupName) {
 

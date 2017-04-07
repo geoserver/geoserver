@@ -87,7 +87,7 @@ public class StyleController extends CatalogController {
     }
 
     @GetMapping(value = {"/styles", "/layers/{layerName}/styles", "/workspaces/{workspaceName}/styles"})
-    public RestWrapper<?> getStyles(
+    public RestWrapper<?> stylesGet(
             @PathVariable(required = false) String layerName,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(value = "quietOnNotFound", required = false) boolean quietOnNotFound) {
@@ -111,7 +111,7 @@ public class StyleController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON })
     @ResponseStatus(HttpStatus.CREATED)
-    public String postStyle(
+    public String stylePost(
             @RequestBody StyleInfo style,
             @PathVariable( required = false) String layerName,
             @PathVariable(required = false) String workspaceName,
@@ -153,7 +153,7 @@ public class StyleController extends CatalogController {
     @PostMapping(value = {"/styles", "/workspaces/{workspaceName}/styles"}, consumes = {
             SLDHandler.MIMETYPE_11,
             SLDHandler.MIMETYPE_10})
-    public ResponseEntity<String> postStyleSLD(
+    public ResponseEntity<String> styleSLDPost(
             @RequestBody Style style,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(required = false) String name,
@@ -226,7 +226,7 @@ public class StyleController extends CatalogController {
     }
 
     @GetMapping(path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"})
-    protected RestWrapper<StyleInfo> getStyle(
+    protected RestWrapper<StyleInfo> styleGet(
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName) {
 
@@ -236,7 +236,7 @@ public class StyleController extends CatalogController {
     @GetMapping(path = {"/styles/{styleName}","/workspaces/{workspaceName}/styles/{styleName}"}, produces = {
             SLDHandler.MIMETYPE_10,
             SLDHandler.MIMETYPE_11})
-    protected StyleInfo getStyleSLD(
+    protected StyleInfo styleSLDGet(
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName) {
 
@@ -261,7 +261,7 @@ public class StyleController extends CatalogController {
     }
 
     @DeleteMapping(path = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"})
-    protected void deleteStyle(
+    protected void styleDelete(
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(required = false, defaultValue = "false") boolean recurse,
@@ -320,7 +320,7 @@ public class StyleController extends CatalogController {
 
     @PostMapping(value = {"/styles", "/workspaces/{workspaceName}/styles"}, consumes = {
             CatalogController.APPLICATION_ZIP})
-    public ResponseEntity<String> postStyle(
+    public ResponseEntity<String> stylePost(
             InputStream stream,
             @RequestParam(required = false) String name,
             @PathVariable(required = false) String workspaceName,
@@ -377,7 +377,7 @@ public class StyleController extends CatalogController {
 
     @PutMapping( value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
             CatalogController.APPLICATION_ZIP})
-    public void putStyleZip(
+    public void styleZipPut(
             InputStream is,
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName,
@@ -401,7 +401,7 @@ public class StyleController extends CatalogController {
 
     @PutMapping(value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
             MediaType.ALL_VALUE})
-    public void putStyle(
+    public void stylePut(
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(name = "raw", required = false, defaultValue = "false") boolean raw,
@@ -464,7 +464,7 @@ public class StyleController extends CatalogController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON })
-    public void putStyleInfo(
+    public void stylePut(
             @RequestBody StyleInfo info,
             @PathVariable String styleName,
             @PathVariable(required = false) String workspaceName) {

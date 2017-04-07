@@ -95,7 +95,7 @@ public class StructuredCoverageController extends CatalogController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON })
-    public RestWrapper<IndexSchema> getIndex(
+    public RestWrapper<IndexSchema> indexGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @PathVariable String coverageName) throws IOException {
@@ -115,7 +115,7 @@ public class StructuredCoverageController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON })
     @ResponseBody
-    public SimpleFeatureCollection getGranules(
+    public SimpleFeatureCollection granulesGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @PathVariable String coverageName,
@@ -133,7 +133,7 @@ public class StructuredCoverageController extends CatalogController {
 
     @DeleteMapping(path = "/granules")
     @ResponseBody
-    public void deleteGranules(@PathVariable String workspaceName,
+    public void granulesDelete(@PathVariable String workspaceName,
             @PathVariable String storeName,
             @PathVariable String coverageName,
             @RequestParam(name = "filter", required = false) String filter,
@@ -156,7 +156,7 @@ public class StructuredCoverageController extends CatalogController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
-    public FormatCollectionWrapper getGranule(
+    public FormatCollectionWrapper granuleGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @PathVariable String coverageName,
@@ -200,7 +200,7 @@ public class StructuredCoverageController extends CatalogController {
      */
     @DeleteMapping(path = {"/granules/{granuleId:.+}", "/granules/{granuleId:.+}/{format}"})
     @ResponseBody
-    public void deleteGranule(@PathVariable(name = "workspaceName") String workspaceName,
+    public void granuleDelete(@PathVariable(name = "workspaceName") String workspaceName,
             @PathVariable String storeName,
             @PathVariable String coverageName,
             @PathVariable String granuleId,

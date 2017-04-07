@@ -21,9 +21,9 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 
 /**
- * Settings controller
+ * Local Settings controller
  *
- * Provides access to global settings, local settings, and contact info
+ * Provides access to workspace-specific settings
  */
 @RestController
 @ControllerAdvice
@@ -39,7 +39,7 @@ public class LocalSettingsController extends GeoServerController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<SettingsInfo> getLocalSettings(@PathVariable String workspaceName) {
+    public RestWrapper<SettingsInfo> localSettingsGet(@PathVariable String workspaceName) {
 
         if (workspaceName != null) {
             WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
@@ -59,7 +59,7 @@ public class LocalSettingsController extends GeoServerController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
-    public String createLocalSettings(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
+    public String localSettingsCreate(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
         String name = "";
         if (workspaceName != null) {
             Catalog catalog = geoServer.getCatalog();
@@ -77,7 +77,7 @@ public class LocalSettingsController extends GeoServerController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public void setLocalSettings(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
+    public void localSettingsPut(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {
         if (workspaceName != null) {
             WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
             SettingsInfo original = geoServer.getSettings(workspaceInfo);
@@ -94,7 +94,7 @@ public class LocalSettingsController extends GeoServerController {
     }
 
     @DeleteMapping
-    public void deleteLocalSetings(@PathVariable String workspaceName) {
+    public void localSetingsDelete(@PathVariable String workspaceName) {
         if (workspaceName != null) {
             WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
             SettingsInfo settingsInfo = geoServer.getSettings(workspaceInfo);

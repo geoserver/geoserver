@@ -85,7 +85,7 @@ public class LayerController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<LayerInfo> layersNameGet(
+    public RestWrapper<LayerInfo> layerGet(
             @PathVariable String layerName,
             @RequestParam (name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {
 
@@ -94,7 +94,7 @@ public class LayerController extends CatalogController {
     }
 
     @DeleteMapping(value = "/{layerName}")
-    public void layersNameDelete(
+    public void layerDelete(
             @PathVariable String layerName,
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse) throws IOException {
         
@@ -113,7 +113,7 @@ public class LayerController extends CatalogController {
     }
     
     @PutMapping(value = "/{layerName}")
-    public void layersNamePut(@RequestBody LayerInfo layer,@PathVariable String layerName) {
+    public void layerPut(@RequestBody LayerInfo layer,@PathVariable String layerName) {
 
         LayerInfo original = catalog.getLayerByName(layerName);
         

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FontListController extends RestBaseController {
 
     @GetMapping
-    public Map<String, Set<String>> getFonts() {
+    public Map<String, Set<String>> fontsGet() {
         FontCache cache = FontCache.getDefaultInstance();
 
         Map<String, Set<String>> fonts = new HashedMap();

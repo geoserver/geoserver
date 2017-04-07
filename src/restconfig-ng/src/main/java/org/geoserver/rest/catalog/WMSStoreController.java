@@ -76,7 +76,7 @@ public class WMSStoreController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<WMSStoreInfo> getWMSStores(@PathVariable String workspaceName) {
+    public RestWrapper<WMSStoreInfo> wmsStoresGet(@PathVariable String workspaceName) {
 
         List<WMSStoreInfo> wmsStores = catalog
                 .getStoresByWorkspace(workspaceName, WMSStoreInfo.class);
@@ -87,7 +87,7 @@ public class WMSStoreController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<WMSStoreInfo> getWMSStore(
+    public RestWrapper<WMSStoreInfo> wmsStoreGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName) {
 
@@ -100,7 +100,7 @@ public class WMSStoreController extends CatalogController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public ResponseEntity<String> postWMSStoreInfo(
+    public ResponseEntity<String> wmsStorePost(
             @RequestBody WMSStoreInfo wmsStore,
             @PathVariable String workspaceName,
             UriComponentsBuilder builder) {
@@ -135,7 +135,7 @@ public class WMSStoreController extends CatalogController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public void putWMSStoreInfo(
+    public void wmsStorePut(
             @RequestBody WMSStoreInfo info,
             @PathVariable String workspaceName,
             @PathVariable String storeName) {
@@ -165,7 +165,7 @@ public class WMSStoreController extends CatalogController {
     }
     
     @DeleteMapping(value = "/{storeName}")
-    public void deleteWMSStoreInfo(
+    public void wmsStoreDelete(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,

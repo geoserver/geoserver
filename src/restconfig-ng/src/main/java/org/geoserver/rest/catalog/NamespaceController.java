@@ -71,7 +71,7 @@ public class NamespaceController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
             MediaType.APPLICATION_XML_VALUE })
-    public RestWrapper<NamespaceInfo> getNamespace(@PathVariable String namespaceName) {
+    public RestWrapper<NamespaceInfo> namespaceGet(@PathVariable String namespaceName) {
 
         NamespaceInfo namespace = catalog.getNamespaceByPrefix(namespaceName);
         if (namespace == null) {
@@ -97,7 +97,7 @@ public class NamespaceController extends CatalogController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_JSON_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> postNamespace(@RequestBody NamespaceInfo namespace, UriComponentsBuilder builder) {
+    public ResponseEntity<String> namespaceGet(@RequestBody NamespaceInfo namespace, UriComponentsBuilder builder) {
 
         catalog.add(namespace);
         String name = namespace.getName();
@@ -125,7 +125,7 @@ public class NamespaceController extends CatalogController {
             MediaType.APPLICATION_XML_VALUE,
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_JSON_VALUE })
-    public void putNamespace(
+    public void namespacePut(
             @RequestBody NamespaceInfo namespace,
             @PathVariable String prefix,
             UriComponentsBuilder builder) {
@@ -151,7 +151,7 @@ public class NamespaceController extends CatalogController {
     }
 
     @DeleteMapping(path = "/{prefix}")
-    protected void deleteNamespace(@PathVariable String prefix) {
+    protected void namespaceDelete(@PathVariable String prefix) {
 
         NamespaceInfo ns = catalog.getNamespaceByPrefix(prefix);
         if (prefix.equals("default")) {

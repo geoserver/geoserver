@@ -45,14 +45,14 @@ import freemarker.template.TemplateModelException;
 public class AboutStatusController extends RestBaseController {
 
     @GetMapping
-    protected RestWrapper<ModuleStatus> getStatus() throws Exception {
+    protected RestWrapper<ModuleStatus> statusGet() throws Exception {
         List<ModuleStatus> applicationStatus = GeoServerExtensions.extensions(ModuleStatus.class)
                 .stream().map(ModuleStatusImpl::new).collect(Collectors.toList());
         return wrapList(applicationStatus, ModuleStatus.class);
     }
 
     @GetMapping(value = "/{target}")
-    protected RestWrapper<ModuleStatus> getStatus(@PathVariable String target) throws Exception {
+    protected RestWrapper<ModuleStatus> statusGet(@PathVariable String target) throws Exception {
         List<ModuleStatus> applicationStatus = GeoServerExtensions.extensions(ModuleStatus.class)
                 .stream().map(ModuleStatusImpl::new).filter(getModule(target))
                 .collect(Collectors.toList());

@@ -52,7 +52,7 @@ import freemarker.template.Template;
 public class AboutController extends RestBaseController {
 
     @GetMapping(value = "/manifest")
-    public RestWrapper<AboutModel> getManifest(
+    public RestWrapper<AboutModel> manifestGet(
             @RequestParam(name = "manifest", required = false) String regex,
             @RequestParam(required = false) String from, @RequestParam(required = false) String to,
             @RequestParam(required = false) String key,
@@ -63,7 +63,7 @@ public class AboutController extends RestBaseController {
     }
 
     @GetMapping(value = "/version")
-    public RestWrapper<AboutModel> getVersion(
+    public RestWrapper<AboutModel> versionGet(
             @RequestParam(name = "manifest", required = false) String regex,
             @RequestParam(required = false) String from, @RequestParam(required = false) String to,
             @RequestParam(required = false) String key,

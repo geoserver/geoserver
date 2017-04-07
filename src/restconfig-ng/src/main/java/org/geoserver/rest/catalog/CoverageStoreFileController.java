@@ -72,7 +72,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void postCoverageStore(
+    public void coverageStorePost(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @PathVariable UploadMethod method,
@@ -112,7 +112,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
 
     @PutMapping(produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
     @ResponseStatus(code = HttpStatus.CREATED)
-    public RestWrapper<CoverageStoreInfo> putCoverageStore(
+    public RestWrapper<CoverageStoreInfo> coverageStorePut(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @PathVariable UploadMethod method,

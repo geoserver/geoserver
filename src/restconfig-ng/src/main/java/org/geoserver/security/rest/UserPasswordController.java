@@ -39,7 +39,7 @@ public class UserPasswordController extends RestBaseController {
     static final String XML_ROOT_ELEM = "userPassword";
 
     @GetMapping()
-    public void getPassword() {
+    public void passwordGet() {
         throw new RestException("You can not request the password!", HttpStatus.METHOD_NOT_ALLOWED);
     }
 
@@ -48,7 +48,7 @@ public class UserPasswordController extends RestBaseController {
             MediaType.APPLICATION_XML_VALUE,
             CatalogController.TEXT_XML,
             CatalogController.TEXT_JSON })
-    public void putPassword(@RequestBody Map<String, String> putMap) {
+    public void passwordPut(@RequestBody Map<String, String> putMap) {
         if (!getManager().checkAuthenticationForRole(
                 SecurityContextHolder.getContext().getAuthentication(),
                 GeoServerRole.AUTHENTICATED_ROLE))

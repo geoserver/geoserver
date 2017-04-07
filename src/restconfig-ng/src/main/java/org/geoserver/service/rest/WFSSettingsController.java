@@ -48,11 +48,11 @@ public class WFSSettingsController extends ServiceSettingsController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE})
-    public void putServiceSettings(
+    public void serviceSettingsPut(
             @RequestBody WFSInfo info,
             @PathVariable(required = false) String workspaceName) {
 
-        super.putServiceSettings(info, workspaceName);
+        super.serviceSettingsPut(info, workspaceName);
     }
 
     @Override

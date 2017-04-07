@@ -87,7 +87,7 @@ public class DataStoreController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<DataStoreInfo> getDataStores(@PathVariable String workspaceName) {
+    public RestWrapper<DataStoreInfo> dataStoresGet(@PathVariable String workspaceName) {
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
         if(ws == null) {
             throw new ResourceNotFoundException("No such workspace : " + workspaceName);
@@ -101,7 +101,7 @@ public class DataStoreController extends CatalogController {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_HTML_VALUE })
-    public RestWrapper<DataStoreInfo> getCoverageStore(
+    public RestWrapper<DataStoreInfo> dataStoreGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName) {
 
@@ -114,7 +114,7 @@ public class DataStoreController extends CatalogController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public ResponseEntity<String> postDataStoreInfo(
+    public ResponseEntity<String> dataStorePost(
             @RequestBody DataStoreInfo dataStore,
             @PathVariable String workspaceName,
             UriComponentsBuilder builder) {
@@ -174,7 +174,7 @@ public class DataStoreController extends CatalogController {
             CatalogController.TEXT_JSON,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
-    public void putCoverageStoreInfo(
+    public void dataStorePut(
             @RequestBody DataStoreInfo info,
             @PathVariable String workspaceName,
             @PathVariable String storeName) {
@@ -198,7 +198,7 @@ public class DataStoreController extends CatalogController {
     }
 
     @DeleteMapping(value = "{storeName}")
-    public void deleteDataStoreInfo(
+    public void dataStoreDelete(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,

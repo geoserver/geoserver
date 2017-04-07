@@ -1,8 +1,6 @@
 package org.geoserver.rest.converters;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.wrapper.RestHttpInputWrapper;
@@ -21,12 +19,12 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 /**
  * Message converter implementation for JSON serialization via XStream
  */
-public class XStreamJSONMessageConverter extends XStreamMessageConverter {
+public class XStreamJSONMessageConverter extends XStreamMessageConverter<Object> {
     
     static final MediaType TEXT_JSON = MediaType.valueOf("text/json");
 
     public XStreamJSONMessageConverter() {
-        super();
+        super(MediaType.APPLICATION_JSON, TEXT_JSON);
     }
     
     @Override
@@ -40,33 +38,17 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter {
     }
 
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
-        return !RestListWrapper.class.isAssignableFrom(clazz) &&
-                isSupportedMediaType(mediaType);
+    protected boolean supports(Class<?> clazz) {
+//        if( RestWrapper.class.isAssignableFrom(clazz) ){
+//            return !RestListWrapper.class.isAssignableFrom(clazz); // we can only write RestWrapper, not RestListWrapper
+//        }
+        return true; // reading objects is fine
     }
-
+    //
+    // reading
+    //
     @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        /**
-         * Actually, this should largely be dependent on clazz and not by the passed in media type.
-         *
-         * During my research I found that:
-         *
-         * - Unless "produces" was set on the controller object, the passed media type was null
-         * - So, you can't actually rely on media type not being null
-         * - BUT, this method is only called anyway if they requested media type (via Accepts header) is in the list of getSupportedMediaTypes
-         */
-        return !RestListWrapper.class.isAssignableFrom(clazz) && RestWrapper.class.isAssignableFrom(clazz) &&
-            MediaType.APPLICATION_JSON.equals(mediaType);
-    }
-
-    @Override
-    public List<MediaType> getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.APPLICATION_JSON, TEXT_JSON);
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
+    public Object readInternal(Class<?> clazz, HttpInputMessage inputMessage)
         throws IOException, HttpMessageNotReadableException
     {
         XStreamPersister p = xpf.createJSONPersister();
@@ -76,17 +58,27 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter {
         }
         return p.load(inputMessage.getBody(), clazz);
     }
-
+    
+    //
+    // writing
+    //
     @Override
-    public void write(Object o, MediaType contentType, HttpOutputMessage outputMessage)
+    public boolean canWrite(Class<?> clazz, MediaType mediaType) {
+        if( RestListWrapper.class.isAssignableFrom(clazz) ){
+            return false; // we can only write RestWrapper, not RestListWrapper
+        }
+        return RestWrapper.class.isAssignableFrom(clazz) && canWrite(mediaType);
+    }
+    @Override
+    public void writeInternal(Object o, HttpOutputMessage outputMessage)
         throws IOException, HttpMessageNotWritableException {
         XStreamPersister xmlPersister = xpf.createJSONPersister();
         xmlPersister.setCatalog(catalog);
         xmlPersister.setReferenceByName(true);
         xmlPersister.setExcludeIds();
         if (o instanceof RestWrapper) {
-            ((RestWrapper) o).configurePersister(xmlPersister, this);
-            o = ((RestWrapper) o).getObject();
+            ((RestWrapper<?>) o).configurePersister(xmlPersister, this);
+            o = ((RestWrapper<?>) o).getObject();
         }
         xmlPersister.save(o, outputMessage.getBody());
     }

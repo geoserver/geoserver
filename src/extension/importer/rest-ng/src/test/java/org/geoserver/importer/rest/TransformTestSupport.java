@@ -5,14 +5,20 @@
  */
 package org.geoserver.importer.rest;
 
-import junit.framework.TestCase;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.WriterOutputStream;
+import static org.easymock.classextension.EasyMock.createNiceMock;
+import static org.easymock.classextension.EasyMock.replay;
+
+import java.beans.PropertyDescriptor;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
-import org.geoserver.importer.rest.converters.ImportContextJSONConverterReader;
-import org.geoserver.importer.rest.converters.ImportContextJSONConverterWriter;
+import org.geoserver.importer.rest.converters.ImportJSONReader;
+import org.geoserver.importer.rest.converters.ImportJSONWriter;
+import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
 import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.rest.RequestInfo;
 import org.springframework.beans.BeanUtils;
@@ -20,13 +26,7 @@ import org.springframework.web.context.request.AbstractRequestAttributes;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import java.beans.PropertyDescriptor;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.easymock.classextension.EasyMock.createNiceMock;
-import static org.easymock.classextension.EasyMock.replay;
+import junit.framework.TestCase;
 
 /**
  *
@@ -47,14 +47,16 @@ public abstract class TransformTestSupport extends TestCase {
 
         RequestInfo.set(ri);
 
-        ImportContextJSONConverterWriter jsonio = new ImportContextJSONConverterWriter(im, new WriterOutputStream(buffer));
+        ImportJSONWriter jsonio = new ImportJSONWriter(im);
+        FlushableJSONBuilder builder = new FlushableJSONBuilder(buffer);
 
         ImportContext c = new ImportContext(0);
         c.addTask(new ImportTask());
 
-        jsonio.transform(transform, 0, c.task(0), true, 1);
+        jsonio.transform(builder,transform, 0, c.task(0), true, 1);
 
-        ImportTransform transform2 = new ImportContextJSONConverterReader(im, IOUtils.toInputStream(buffer.toString())).transform();
+        ImportJSONReader reader = new ImportJSONReader(im);
+        ImportTransform transform2 = reader.transform(buffer.toString());
         PropertyDescriptor[] pd = BeanUtils.getPropertyDescriptors(transform.getClass());
 
         for (int i = 0; i < pd.length; i++) {

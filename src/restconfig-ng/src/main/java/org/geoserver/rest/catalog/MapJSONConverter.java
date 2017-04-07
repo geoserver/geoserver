@@ -10,11 +10,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.springframework.http.HttpInputMessage;
@@ -29,31 +27,28 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
+/**
+ * Convert Map to/from JSON.
+ * @author jody
+ *
+ */
 @Component
-public class MapJSONConverter extends BaseMessageConverter {
+public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
 
-    @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
-        return Map.class.isAssignableFrom(clazz)
-                && isSupportedMediaType(mediaType);
+    public MapJSONConverter() {
+        super(MediaType.APPLICATION_JSON, CatalogController.MEDIATYPE_TEXT_JSON);
     }
 
     @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        return Map.class.isAssignableFrom(clazz)
-                && isSupportedMediaType(mediaType);
+    protected boolean supports(Class<?> clazz) {
+        return Map.class.isAssignableFrom(clazz);
     }
 
     @Override
-    public List getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.APPLICATION_JSON,
-                MediaType.valueOf(CatalogController.TEXT_JSON));
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
+    public Map<?, ?> readInternal(Class<? extends Map<?, ?>> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         // TODO: character set
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputMessage.getBody()));
         StringBuilder text = new StringBuilder();
         String line = null;
@@ -64,7 +59,7 @@ public class MapJSONConverter extends BaseMessageConverter {
     }
 
     @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
+    public void writeInternal(Map<?, ?> map, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         // TODO: character set
         Writer outWriter = new BufferedWriter(new OutputStreamWriter(outputMessage.getBody()));
@@ -72,33 +67,35 @@ public class MapJSONConverter extends BaseMessageConverter {
         // JD: why does this initial flush occur?
         outWriter.flush();
 
-        JSON obj = (JSON) toJSONObject(t);
+        JSON obj = (JSON) toJSONObject(map);
 
         obj.write(outWriter);
         outWriter.flush();
     }
-
+    
+    /**
+     * Convert to JSON representation.
+     * @param obj
+     * @return json representation
+     */
     public Object toJSONObject(Object obj) {
         if (obj instanceof Map) {
-            Map m = (Map) obj;
+            Map<?, ?> m = (Map<?, ?>) obj;
             JSONObject json = new JSONObject();
-            Iterator it = m.entrySet().iterator();
 
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                json.put((String) entry.getKey(), toJSONObject(entry.getValue()));
+            for (Entry<?, ?> entry : m.entrySet()) {
+                String key = (String) entry.getKey();
+                Object value = toJSONObject(entry.getValue());
+                json.put(key, value);
             }
-
             return json;
         } else if (obj instanceof Collection) {
-            Collection col = (Collection) obj;
+            Collection<?> collection = (Collection<?>) obj;
             JSONArray json = new JSONArray();
-            Iterator it = col.iterator();
-
-            while (it.hasNext()) {
-                json.add(toJSONObject(it.next()));
+            for (Object object : collection) {
+                Object value = toJSONObject(object);
+                json.add(toJSONObject(value));
             }
-
             return json;
         } else if (obj instanceof Number) {
             return obj;

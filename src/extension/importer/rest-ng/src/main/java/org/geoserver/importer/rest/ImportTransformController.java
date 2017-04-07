@@ -67,15 +67,15 @@ public class ImportTransformController extends ImportBaseController {
                                @PathVariable(value = "transformId", required = false) Integer transformId,
                                @RequestParam(value = "expand", required = false) String expand, HttpServletRequest request) {
 
-        return (writer, converter) -> {
+        return (writer, builder, converter) -> {
             ImportTransform tx = transform(importId, taskId, transformId, true);
             if (tx == null) {
-                converter.transformChain(task(importId, taskId), true, converter.expand(1));
+                converter.transformChain(builder,task(importId, taskId), true, converter.expand(1));
             } else {
                 ImportTask task = task(importId, taskId);
                 int index = task.getTransform().getTransforms().indexOf(tx);
 
-                converter.transform(tx, index, task, true, converter.expand(1));
+                converter.transform(builder, tx, index, task, true, converter.expand(1));
             }
         };
     }
@@ -91,11 +91,11 @@ public class ImportTransformController extends ImportBaseController {
         ImportTransform orig = transform(importId, taskId, transformId);
         OwsUtils.copy(importTransform, orig, (Class) orig.getClass());
 
-        return (writer, converter) -> {
+        return (writer, builder, converter) -> {
             ImportTask task = task(importId, taskId);
             int index = task.getTransform().getTransforms().indexOf(orig);
 
-            converter.transform(orig, index, task, true, converter.expand(1));
+            converter.transform(builder, orig, index, task, true, converter.expand(1));
         };
     }
 

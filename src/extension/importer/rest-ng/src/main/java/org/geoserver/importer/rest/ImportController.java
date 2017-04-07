@@ -4,26 +4,39 @@
  */
 package org.geoserver.importer.rest;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.importer.*;
-import org.geoserver.rest.catalog.CatalogController;
+import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportData;
+import org.geoserver.importer.ImportFilter;
+import org.geoserver.importer.Importer;
+import org.geoserver.importer.ValidationException;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.catalog.CatalogController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
 
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH+"/imports", produces = {
@@ -75,7 +88,7 @@ public class ImportController extends ImportBaseController {
             // this means a specific lookup failed
             throw new RestException("Failed to find import context", HttpStatus.NOT_FOUND);
         } else {
-            return (writer, converter) -> converter.contexts((Iterator<ImportContext>)lookupContext, converter.expand(0));
+            return (writer, builder, converter) -> converter.contexts(builder,(Iterator<ImportContext>)lookupContext, converter.expand(0));
         }
     }
 

@@ -95,7 +95,7 @@ public class MonitorRequestController extends RestBaseController {
             return wrapObject((RequestData) object, RequestData.class);
         } else {
             final List<RequestData> requests = new ArrayList<>();
-            AbstractMonitorRequestConverter.handleRequests(object, new RequestDataVisitor() {
+            BaseMonitorConverter.handleRequests(object, new RequestDataVisitor() {
                 public void visit(RequestData data, Object... aggregates) {
                     requests.add(data);
                 }

@@ -1336,13 +1336,12 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             myBody = body;
         }
         
-//        @Override
-//        public void setContent(String body) {
-//            myBody = body.getBytes();
-//        }
-        
         public ServletInputStream getInputStream(){
             return new GeoServerDelegatingServletInputStream(myBody);
+        }
+        @Override
+        public String toString() {
+            return "GeoServerMockHttpServletRequest "+getMethod()+ " "+getRequestURI();
         }
     }
 

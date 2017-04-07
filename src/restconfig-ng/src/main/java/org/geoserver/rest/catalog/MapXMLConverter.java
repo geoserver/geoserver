@@ -6,7 +6,6 @@ package org.geoserver.rest.catalog;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -27,27 +26,22 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MapXMLConverter extends BaseMessageConverter {
-    
-    @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
-        return Map.class.isAssignableFrom(clazz)
-                && isSupportedMediaType(mediaType);
+public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
+
+    public MapXMLConverter() {
+        super(MediaType.TEXT_XML, MediaType.APPLICATION_XML);
     }
 
     @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        return Map.class.isAssignableFrom(clazz)
-                && isSupportedMediaType(mediaType);
+    protected boolean supports(Class<?> clazz) {
+        return Map.class.isAssignableFrom(clazz);
     }
 
+    //
+    // reading
+    //
     @Override
-    public List getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.TEXT_XML, MediaType.APPLICATION_XML);
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
+    public Map<?, ?> readInternal(Class<? extends Map<?, ?>> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         Object result = null;
         SAXBuilder builder = new SAXBuilder();
@@ -60,13 +54,15 @@ public class MapXMLConverter extends BaseMessageConverter {
 
         Element elem = doc.getRootElement();
         result = convert(elem);
-        return result;
+        return (Map<?, ?>) result;
     }
 
+    //
+    // writing
+    //
     @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
+    public void writeInternal(Map<?, ?> map, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        Map map = (Map) t;
         Element root = new Element(getMapName(map));
         final Document doc = new Document(root);
         insert(root, map);
@@ -74,9 +70,9 @@ public class MapXMLConverter extends BaseMessageConverter {
         outputter.output(doc, outputMessage.getBody());
     }
 
-    protected String getMapName(Map map) {
-        if(map instanceof NamedMap) {
-            return ((NamedMap) map).getName();
+    protected String getMapName(Map<?, ?> map) {
+        if (map instanceof NamedMap) {
+            return ((NamedMap<?, ?>) map).getName();
         } else {
             return "root";
         }
@@ -89,7 +85,7 @@ public class MapXMLConverter extends BaseMessageConverter {
      * @return the Object produced by interpreting the XML
      */
     protected Object convert(Element elem) {
-        List children = elem.getChildren();
+        List<?> children = elem.getChildren();
         if (children.size() == 0) {
             if (elem.getContent().size() == 0) {
                 return null;
@@ -99,16 +95,16 @@ public class MapXMLConverter extends BaseMessageConverter {
         } else if (children.get(0) instanceof Element) {
             Element child = (Element) children.get(0);
             if (child.getName().equals("entry")) {
-                List l = new ArrayList();
-                Iterator it = elem.getChildren("entry").iterator();
+                List<Object> l = new ArrayList<Object>();
+                Iterator<?> it = elem.getChildren("entry").iterator();
                 while (it.hasNext()) {
                     Element curr = (Element) it.next();
                     l.add(convert(curr));
                 }
                 return l;
             } else {
-                Map m = new NamedMap(child.getName());
-                Iterator it = children.iterator();
+                Map<String, Object> m = new NamedMap<String, Object>(child.getName());
+                Iterator<?> it = children.iterator();
                 while (it.hasNext()) {
                     Element curr = (Element) it.next();
                     m.put(curr.getName(), convert(curr));
@@ -125,27 +121,26 @@ public class MapXMLConverter extends BaseMessageConverter {
      * @todo This method is recursive and could cause stack overflow errors for large input maps.
      *
      * @param elem the parent Element into which to insert the created JDOM element
-     * @param o the Object to be converted
+     * @param object the Object to be converted
      */
-    protected void insert(Element elem, Object o) {
-        if (o instanceof Map) {
-            Iterator it = ((Map) o).entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
+    protected void insert(Element elem, Object object) {
+        if (object instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) object;
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
                 Element newElem = new Element(entry.getKey().toString());
                 insert(newElem, entry.getValue());
                 elem.addContent(newElem);
             }
-        } else if (o instanceof Collection) {
-            Iterator it = ((Collection) o).iterator();
-            while (it.hasNext()) {
+        } else if (object instanceof Collection) {
+            Collection<?> collection = (Collection<?>) object;
+
+            for (Object entry : collection) {
                 Element newElem = new Element("entry");
-                Object entry = it.next();
                 insert(newElem, entry);
                 elem.addContent(newElem);
             }
         } else {
-            elem.addContent(o == null ? "" : o.toString());
+            elem.addContent(object == null ? "" : object.toString());
         }
     }
 

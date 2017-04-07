@@ -4,52 +4,50 @@
  */
 package org.geoserver.rest.catalog;
 
-import net.sf.json.JSONObject;
-import org.geoserver.rest.converters.BaseMessageConverter;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.stereotype.Component;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
+import org.geoserver.rest.converters.BaseMessageConverter;
+import org.springframework.http.HttpOutputMessage;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.stereotype.Component;
+
+import net.sf.json.JSONObject;
+
+/**
+ * Convert a named {@link StringsList} to JSON.
+ */
 @Component
-public class StringsListJSONConverter extends BaseMessageConverter {
+public class StringsListJSONConverter extends BaseMessageConverter<StringsList> {
+
+    public StringsListJSONConverter() {
+        super(MediaType.APPLICATION_JSON, CatalogController.MEDIATYPE_TEXT_JSON);
+    }
 
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
+    protected boolean supports(Class<?> clazz) {
+        return StringsList.class.isAssignableFrom(clazz);
+    }
+
+    //
+    // Reading
+    //
+    @Override
+    protected boolean canRead(MediaType mediaType) {
         return false;
     }
 
+    //
+    // writing
+    //
     @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        return StringsList.class.isAssignableFrom(clazz)
-                && isSupportedMediaType(mediaType);
-    }
-
-    @Override
-    public List getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.APPLICATION_JSON, MediaType.valueOf(CatalogController.TEXT_JSON));
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
+    public void writeInternal(StringsList stringsList, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        StringsList stringsList = (StringsList) t;
         Map<String, Object> values = Collections.singletonMap("list",
                 Collections.singletonMap("string", stringsList.getValues()));
         Writer outWriter = new BufferedWriter(new OutputStreamWriter(outputMessage.getBody()));

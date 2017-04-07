@@ -12,47 +12,47 @@ import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.Query;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestDataVisitor;
+import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
 /**
- * Base class for monitor requests converters
+ * Base class for monitor requests converters, handles visiting results.
  */
-public abstract class AbstractMonitorRequestConverter extends BaseMessageConverter {
-    
+public abstract class BaseMonitorConverter extends BaseMessageConverter<MonitorQueryResults> {
+
+    protected BaseMonitorConverter(MediaType... mediaType) {
+        super(mediaType);
+    }
+
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
+    protected boolean supports(Class<?> clazz) {
+        return MonitorQueryResults.class.isAssignableFrom(clazz);
+    }
+
+    @Override
+    protected boolean canRead(MediaType mediaType) {
         return false;
     }
 
-    @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        return MonitorQueryResults.class.isAssignableFrom(clazz) && isSupportedMediaType(mediaType);
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
-            throws IOException, HttpMessageNotReadableException {
-        throw new UnsupportedOperationException();
-    }
-    
+    @SuppressWarnings("unchecked")
     static void handleRequests(Object object, RequestDataVisitor visitor, Monitor monitor) {
         if (object instanceof Query) {
             monitor.query((Query) object, visitor);
         } else {
             List<RequestData> requests;
             if (object instanceof List) {
-                requests = (List) object;
+                requests = (List<RequestData>) object;
             } else {
                 requests = Collections.singletonList((RequestData) object);
             }
             for (RequestData data : requests) {
-                visitor.visit(data, null);
+                visitor.visit(data, (Object[]) null);
             }
         }
     }
-
 
 }

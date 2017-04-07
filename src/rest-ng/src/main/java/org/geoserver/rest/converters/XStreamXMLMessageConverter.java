@@ -22,31 +22,32 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 /**
  * Message converter implementation for XML serialization via XStream
  */
-public class XStreamXMLMessageConverter extends XStreamMessageConverter {
+public class XStreamXMLMessageConverter extends XStreamMessageConverter<Object> {
 
     public XStreamXMLMessageConverter() {
-        super();
+        super(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
     }
 
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
-        return !RestListWrapper.class.isAssignableFrom(clazz) && isSupportedMediaType(mediaType);
+    protected boolean supports(Class<?> clazz) {
+        if( RestWrapper.class.isAssignableFrom(clazz) ){
+            return !RestListWrapper.class.isAssignableFrom(clazz); // we can only read RestWrapper, not RestListWrapper
+        }
+        return true; // reading objects is fine
     }
+    
+    //
+    // reading
+    //
+//    @Override
+//    public boolean canRead(Class<?> clazz, MediaType mediaType) {
+//        return !RestListWrapper.class.isAssignableFrom(clazz) && canRead(mediaType);
+//    }
 
+    
     @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        return !RestListWrapper.class.isAssignableFrom(clazz) && RestWrapper.class.isAssignableFrom(clazz)
-                && isSupportedMediaType(mediaType);
-    }
-
-    @Override
-    public List<MediaType> getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
-        throws IOException, HttpMessageNotReadableException {
+    protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage inputMessage)
+            throws IOException, HttpMessageNotReadableException {
         XStreamPersister p = xpf.createXMLPersister();
         if (inputMessage instanceof RestHttpInputWrapper) {
             ((RestHttpInputWrapper) inputMessage).configurePersister(p, this);
@@ -54,30 +55,40 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter {
         p.setCatalog(catalog);
         return p.load(inputMessage.getBody(), clazz);
     }
-
-
+    
+    //
+    // writing
+    //
     @Override
-    public void write(Object o, MediaType contentType, HttpOutputMessage outputMessage)
-        throws IOException, HttpMessageNotWritableException {
+    public boolean canWrite(Class<?> clazz, MediaType mediaType) {
+        if( RestListWrapper.class.isAssignableFrom(clazz) ){
+            return false; // we can only write RestWrapper, not RestListWrapper
+        }
+        return RestWrapper.class.isAssignableFrom(clazz) && canWrite(mediaType);
+    }
+    @Override
+    protected void writeInternal(Object o, HttpOutputMessage outputMessage)
+            throws IOException, HttpMessageNotWritableException {
         XStreamPersister xmlPersister = xpf.createXMLPersister();
         xmlPersister.setCatalog(catalog);
         xmlPersister.setReferenceByName(true);
         xmlPersister.setExcludeIds();
         if (o instanceof RestWrapper) {
-            ((RestWrapper) o).configurePersister(xmlPersister, this);
-            o = ((RestWrapper) o).getObject();
+            RestWrapper<?> wrapper = (RestWrapper<?>) o;
+            wrapper.configurePersister(xmlPersister, this);
+            o = wrapper.getObject();
         }
         xmlPersister.save(o, outputMessage.getBody());
-    }
-    
-    @Override
-    public String getMediaType() {
-        return MediaType.APPLICATION_XML_VALUE;
     }
 
     @Override
     public String getExtension() {
         return "xml";
+    }
+    
+    @Override
+    public String getMediaType() {
+        return MediaType.APPLICATION_XML_VALUE;
     }
     
     @Override

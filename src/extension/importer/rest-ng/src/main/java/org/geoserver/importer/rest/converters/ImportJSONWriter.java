@@ -4,10 +4,15 @@
  */
 package org.geoserver.importer.rest.converters;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Serializable;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +27,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersister.Callback;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -38,7 +42,7 @@ import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.Table;
 import org.geoserver.importer.mosaic.Granule;
 import org.geoserver.importer.mosaic.Mosaic;
-import org.geoserver.importer.rest.*;
+import org.geoserver.importer.rest.ImportWrapper;
 import org.geoserver.importer.transform.AttributeRemapTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.CreateIndexTransform;
@@ -58,11 +62,9 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
@@ -79,7 +81,7 @@ import net.sf.json.util.JSONBuilder;
  * {@link ImportTask}  or {@link ImportWrapper} objects.
  */
 @Component
-public class ImportContextJSONConverterWriter extends BaseMessageConverter {
+public class ImportJSONWriter {
 
     static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     static {
@@ -88,71 +90,52 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
     Importer importer;
 
-    FlushableJSONBuilder json;
+    // FlushableJSONBuilder json;
 
     private Callback callback;
 
     @Autowired
-    public ImportContextJSONConverterWriter(Importer importer) {
-        super();
+    public ImportJSONWriter(Importer importer) {
         this.importer = importer;
     }
     
-    public ImportContextJSONConverterWriter(Importer importer, OutputStream out) {
-        super();
-        this.importer = importer;
-        this.json = new FlushableJSONBuilder(new OutputStreamWriter(out));
+//    public ImportContextJSONConverterWriter(Importer importer, OutputStream out) {
+//        super(MediaType.APPLICATION_JSON,CatalogController.MEDIATYPE_TEXT_JSON,MediaType.TEXT_HTML);
+//        this.importer = importer;
+//        this.json = new FlushableJSONBuilder(new OutputStreamWriter(out));
+//    }
+
+//    @Override
+    protected boolean supports(Class<?> clazz) {
+        return ImportContext.class.isAssignableFrom(clazz)
+                || ImportTask.class.isAssignableFrom(clazz)
+                || ImportWrapper.class.isAssignableFrom(clazz)
+                || ImportData.class.isAssignableFrom(clazz);
     }
-
-
-    @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
-        return false;
-
-    }
-
-    @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        final boolean importControllers = ImportContext.class.isAssignableFrom(clazz)
-                || ImportTask.class.isAssignableFrom(clazz) || ImportWrapper.class.isAssignableFrom(clazz);
-        final boolean dataControllers = ImportData.class.isAssignableFrom(clazz);
-        return (importControllers || dataControllers) && isSupportedMediaType(mediaType);
-    }
-
-    @Override
-    public List getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.APPLICATION_JSON,
-                MediaType.valueOf(CatalogController.TEXT_JSON), MediaType.TEXT_HTML);
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
-            throws IOException, HttpMessageNotReadableException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
+    
+//    @Override
+    protected void writeInternal(FlushableJSONBuilder json, Object t, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        if (!contentType.equals(MediaType.TEXT_HTML)) {
-            outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        } else {
-            outputMessage.getHeaders().setContentType(MediaType.TEXT_HTML);
-        }
-        RequestInfo page = RequestInfo.get();
-        String path = page.getPagePath();
+        MediaType contentType = outputMessage.getHeaders().getContentType();
+     
+//        if (!contentType.equals(MediaType.TEXT_HTML)) {
+//            outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+//        } else {
+//            outputMessage.getHeaders().setContentType(MediaType.TEXT_HTML);
+//        }
+//        RequestInfo page = RequestInfo.get();
+//        String path = page.getPagePath();
         OutputStream out = outputMessage.getBody();
         OutputStreamWriter writer = new OutputStreamWriter(out);
         if (contentType.equals(MediaType.TEXT_HTML)) {
             writer.write("<html><body><pre>");
         }
 
-        json = new FlushableJSONBuilder(writer);
+        // json = new FlushableJSONBuilder(writer);
         if (t instanceof ImportContext) {
-            this.context((ImportContext) t, true, expand(1));
+            this.context(json, (ImportContext) t, true, expand(1));
         } else if (t instanceof ImportTask) {
-            this.task((ImportTask) t, true, expand(1));
+            this.task(json, (ImportTask) t, true, expand(1));
 
         } else if (ImportData.class.isAssignableFrom(t.getClass())) {
             ImportData data = (ImportData)t;
@@ -161,23 +144,23 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
             if (data  instanceof FileData) {
                 if (data instanceof Directory) {
                     if (data instanceof Mosaic) {
-                        mosaic((Mosaic) data, parent  ,expand );
+                        mosaic(json, (Mosaic) data, parent  ,expand );
                     }
                     else {
-                        directory((Directory) data, parent, expand);
+                        directory(json, (Directory) data, parent, expand);
                     }
                 } else {
-                    file((FileData) data, parent, expand, false);
+                    file(json, (FileData) data, parent, expand, false);
                 }
             } else if (data instanceof Database) {
-                database((Database) data, parent, expand);
+                database(json, (Database) data, parent, expand);
             } else if (data instanceof Table) {
-                table((Table)data, parent, expand);
+                table(json, (Table)data, parent, expand);
             } else if (data instanceof RemoteData) {
-                remote((RemoteData) data, parent, expand);
+                remote(json, (RemoteData) data, parent, expand);
             }
         } else if (ImportWrapper.class.isAssignableFrom(t.getClass())) {
-            ((ImportWrapper) t).write(writer, this);
+            ((ImportWrapper) t).write(writer,json, this);
         } else  {
                 throw new RestException("Trying to write an unknown object " + t,
                         HttpStatus.I_AM_A_TEAPOT);
@@ -188,7 +171,6 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
             writer.write("</pre></body></html>");
         }
         writer.flush();
-
     }
 
     public int expand(int def) {
@@ -213,17 +195,17 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         }
     }
 
-    public void contexts(Iterator<ImportContext> contexts, int expand) throws IOException {
+    public void contexts(FlushableJSONBuilder json, Iterator<ImportContext> contexts, int expand) throws IOException {
         json.object().key("imports").array();
         while (contexts.hasNext()) {
             ImportContext context = contexts.next();
-            context(context, false, expand);
+            context(json, context, false, expand);
         }
         json.endArray().endObject();
         json.flush();
     }
 
-    public void context(ImportContext context, boolean top, int expand) throws IOException {
+    public void context(FlushableJSONBuilder json, ImportContext context, boolean top, int expand) throws IOException {
         if (top) {
             json.object().key("import");
         }
@@ -242,18 +224,18 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
             }
             if (context.getTargetStore() != null) {
                 json.key("targetStore");
-                store(context.getTargetStore(), null, false, expand - 1);
+                store(json, context.getTargetStore(), null, false, expand - 1);
                 // value(toJSON(context.getTargetStore()));
             }
 
             if (context.getData() != null) {
                 json.key("data");
-                data(context.getData(), context, expand - 1);
+                data(json, context.getData(), context, expand - 1);
             }
             if (!context.getDefaultTransforms().isEmpty()) {
-                transforms(context, expand - 1, context.getDefaultTransforms());
+                transforms(json, context, expand - 1, context.getDefaultTransforms());
             }
-            tasks(context.getTasks(), false, expand - 1);
+            tasks(json, context.getTasks(), false, expand - 1);
         }
 
         json.endObject();
@@ -264,7 +246,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.flush();
     }
 
-    public void tasks(List<ImportTask> tasks, boolean top, int expand) throws IOException {
+    public void tasks(FlushableJSONBuilder json, List<ImportTask> tasks, boolean top, int expand) throws IOException {
 
         if (top) {
             json.object();
@@ -272,7 +254,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
         json.key("tasks").array();
         for (ImportTask task : tasks) {
-            task(task, false, expand);
+            task(json,task, false, expand);
         }
         json.endArray();
 
@@ -282,7 +264,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.flush();
     }
 
-    public void task(ImportTask task, boolean top, int expand) throws IOException {
+    public void task(FlushableJSONBuilder json, ImportTask task, boolean top, int expand) throws IOException {
 
         long id = task.getId();
         String href = RequestInfo.get().servletURI(pathTo(task));
@@ -301,14 +283,14 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
             ImportData data = task.getData();
             if (data != null) {
                 json.key("data");
-                data(data, task, expand - 1);
+                data(json, data, task, expand - 1);
             }
 
             // target
             StoreInfo store = task.getStore();
             if (store != null) {
                 json.key("target");
-                store(store, task, false, expand - 1);
+                store(json, store, task, false, expand - 1);
             }
 
             json.key("progress").value(href + "/progress");
@@ -319,15 +301,15 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
                 layer.getResource().setCatalog(importer.getCatalog());
 
                 json.key("layer");
-                layer(task, false, expand - 1);
+                layer(json, task, false, expand - 1);
             }
 
             if (task.getError() != null) {
                 json.key("errorMessage").value(concatErrorMessages(task.getError()));
             }
 
-            transformChain(task, false, expand - 1);
-            messages(task.getMessages());
+            transformChain(json, task, false, expand - 1);
+            messages(json, task.getMessages());
         }
 
         json.endObject();
@@ -338,7 +320,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.flush();
     }
 
-    public void store(StoreInfo store, ImportTask task, boolean top, int expand) throws IOException {
+    public void store(FlushableJSONBuilder json, StoreInfo store, ImportTask task, boolean top, int expand) throws IOException {
 
         String type = store instanceof DataStoreInfo ? "dataStore"
                 : store instanceof CoverageStoreInfo ? "coverageStore" : "store";
@@ -360,7 +342,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.flush();
     }
 
-    public void layer(ImportTask task, boolean top, int expand) throws IOException {
+    public void layer(FlushableJSONBuilder json, ImportTask task, boolean top, int expand) throws IOException {
 
         if (top) {
             json.object().key("layer");
@@ -395,11 +377,11 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
                 }
             }
             if (r instanceof FeatureTypeInfo) {
-                featureType((FeatureTypeInfo) r);
+                featureType(json, (FeatureTypeInfo) r);
             }
             StyleInfo s = layer.getDefaultStyle();
             if (s != null) {
-                style(s, task, false, expand - 1);
+                style(json, s, task, false, expand - 1);
             }
         }
 
@@ -410,7 +392,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.flush();
     }
 
-    void featureType(FeatureTypeInfo featureTypeInfo) throws IOException {
+    void featureType(FlushableJSONBuilder json, FeatureTypeInfo featureTypeInfo) throws IOException {
         json.key("attributes").array();
         List<AttributeTypeInfo> attributes = featureTypeInfo.attributes();
         for (int i = 0; i < attributes.size(); i++) {
@@ -423,7 +405,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.endArray();
     }
 
-    void style(StyleInfo style, ImportTask task, boolean top, int expand) throws IOException {
+    void style(FlushableJSONBuilder json, StyleInfo style, ImportTask task, boolean top, int expand) throws IOException {
 
         if (top) {
             json.object();
@@ -448,7 +430,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         }
     }
 
-    public void transformChain(ImportTask task, boolean top, int expand) throws IOException {
+    public void transformChain(FlushableJSONBuilder json, ImportTask task, boolean top, int expand) throws IOException {
 
         if (top) {
             json.object();
@@ -459,7 +441,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.key("transformChain").object();
         json.key("type").value(txChain instanceof VectorTransformChain ? "vector" : "raster");
 
-        transforms(task, expand,
+        transforms(json,task, expand,
                 txChain != null ? txChain.getTransforms() : new ArrayList<ImportTransform>());
         json.endObject();
 
@@ -470,18 +452,18 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.flush();
     }
 
-    private void transforms(Object parent, int expand, List<? extends ImportTransform> transforms)
+    private void transforms(FlushableJSONBuilder json, Object parent, int expand, List<? extends ImportTransform> transforms)
             throws IOException {
         json.key("transforms").array();
 
         for (int i = 0; i < transforms.size(); i++) {
-            transform(transforms.get(i), i, parent, false, expand);
+            transform(json,transforms.get(i), i, parent, false, expand);
         }
 
         json.endArray();
     }
 
-    public void transform(ImportTransform transform, int index, Object parent, boolean top,
+    public void transform(FlushableJSONBuilder json, ImportTransform transform, int index, Object parent, boolean top,
             int expand) throws IOException {
         json.object();
         json.key("type").value(transform.getClass().getSimpleName());
@@ -559,28 +541,31 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.endObject();
     }
 
-    public void data(ImportData data, Object parent, int expand) throws IOException {
+    public void data(FlushableJSONBuilder json, ImportData data, Object parent, int expand) throws IOException {
         if (data instanceof FileData) {
             if (data instanceof Directory) {
                 if (data instanceof Mosaic) {
-                    mosaic((Mosaic) data, parent, expand);
+                    mosaic(json, (Mosaic) data, parent, expand);
                 } else {
-                    directory((Directory) data, parent, expand);
+                    directory(json, (Directory) data, parent, expand);
                 }
             } else {
-                file((FileData) data, parent, expand, false);
+                file(json,(FileData) data, parent, expand, false);
             }
         } else if (data instanceof Database) {
-            database((Database) data, parent, expand);
+            database(json,(Database) data, parent, expand);
         } else if (data instanceof Table) {
-            table((Table) data, parent, expand);
+            table(json, (Table) data, parent, expand);
         } else if (data instanceof RemoteData) {
-            remote((RemoteData) data, parent, expand);
+            remote(json, (RemoteData) data, parent, expand);
+        }
+        else {
+            throw new IllegalArgumentException("Unable to serialize "+data.getClass().getSimpleName()+" as ImportData");
         }
         json.flush();
     }
 
-    public void remote(RemoteData data, Object parent, int expand) throws IOException {
+    public void remote(FlushableJSONBuilder json,RemoteData data, Object parent, int expand) throws IOException {
 
         json.object();
 
@@ -600,7 +585,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.flush();
     }
 
-    public void file(FileData data, Object parent, int expand, boolean href) throws IOException {
+    public void file(FlushableJSONBuilder json,FileData data, Object parent, int expand, boolean href) throws IOException {
 
         json.object();
 
@@ -615,8 +600,8 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
             if (data.getCharsetEncoding() != null) {
                 json.key("charset").value(data.getCharsetEncoding());
             }
-            fileContents(data, parent, expand);
-            message(data);
+            fileContents(json, data, parent, expand);
+            message(json, data);
         } else {
             json.key("file").value(data.getFile().getName());
         }
@@ -625,7 +610,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.flush();
     }
 
-    void fileContents(FileData data, Object parent, int expand) throws IOException {
+    void fileContents(FlushableJSONBuilder json, FileData data, Object parent, int expand) throws IOException {
         // TODO: we should probably url encode to handle spaces and other chars
         String filename = data.getFile().getName();
         json.key("file").value(filename);
@@ -650,15 +635,15 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         }
     }
 
-    public void mosaic(Mosaic data, Object parent, int expand) throws IOException {
-        directory(data, "mosaic", parent, expand);
+    public void mosaic(FlushableJSONBuilder json, Mosaic data, Object parent, int expand) throws IOException {
+        directory(json, data, "mosaic", parent, expand);
     }
 
-    public void directory(Directory data, Object parent, int expand) throws IOException {
-        directory(data, "directory", parent, expand);
+    public void directory(FlushableJSONBuilder json,Directory data, Object parent, int expand) throws IOException {
+        directory(json,data, "directory", parent, expand);
     }
 
-    public void directory(Directory data, String typeName, Object parent, int expand)
+    public void directory(FlushableJSONBuilder json,Directory data, String typeName, Object parent, int expand)
             throws IOException {
 
         json.object();
@@ -676,14 +661,14 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
             }
 
             json.key("files");
-            files(data, parent, false, expand - 1);
-            message(data);
+            files(json,data, parent, false, expand - 1);
+            message(json,data);
         }
         json.endObject();
         json.flush();
     }
 
-    public void files(Directory data, Object parent, boolean top, int expand) throws IOException {
+    public void files(FlushableJSONBuilder json, Directory data, Object parent, boolean top, int expand) throws IOException {
 
         if (top) {
             json.object().key("files");
@@ -691,7 +676,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.array();
         for (FileData file : data.getFiles()) {
             json.object();
-            fileContents(file, parent, expand - 1);
+            fileContents(json, file, parent, expand - 1);
             json.endObject();
         }
         json.endArray();
@@ -701,7 +686,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.flush();
     }
 
-    public void database(Database data, Object parent, int expand) throws IOException {
+    public void database(FlushableJSONBuilder json,Database data, Object parent, int expand) throws IOException {
         json.object();
         json.key("type").value("database");
         json.key("format").value(data.getFormat() != null ? data.getFormat().getName() : null);
@@ -709,8 +694,8 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
         if (expand > 0) {
             json.key("parameters").object();
-            for (Map.Entry e : data.getParameters().entrySet()) {
-                json.key((String) e.getKey()).value(e.getValue());
+            for (Map.Entry<String,Serializable> e : data.getParameters().entrySet()) {
+                json.key(e.getKey()).value(e.getValue());
             }
 
             json.endObject();
@@ -720,14 +705,14 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
                 json.value(t.getName());
             }
 
-            message(data);
+            message(json,data);
             json.endArray();
         }
 
         json.endObject();
     }
 
-    void table(Table data, Object parent, int expand) throws IOException {
+    void table(FlushableJSONBuilder json, Table data, Object parent, int expand) throws IOException {
         json.object();
         json.key("type").value("table");
         json.key("name").value(data.getName());
@@ -736,13 +721,13 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
         json.endObject();
     }
 
-    void message(ImportData data) throws IOException {
+    void message(FlushableJSONBuilder json, ImportData data) throws IOException {
         if (data.getMessage() != null) {
             json.key("message").value(data.getMessage());
         }
     }
 
-    void messages(List<LogRecord> records) {
+    void messages(FlushableJSONBuilder json, List<LogRecord> records) {
         if (!records.isEmpty()) {
             json.key("messages");
             json.array();
@@ -772,7 +757,7 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
     }
 
     FlushableJSONBuilder builder(OutputStream out) {
-        return new FlushableJSONBuilder(new OutputStreamWriter(out));
+        return new FlushableJSONBuilder(out);
     }
 
     JSONObject toJSON(Object o) throws IOException {
@@ -856,6 +841,10 @@ public class ImportContextJSONConverterWriter extends BaseMessageConverter {
 
         public FlushableJSONBuilder(Writer w) {
             super(w);
+        }
+
+        public FlushableJSONBuilder(OutputStream out) {
+            this(new OutputStreamWriter(out));
         }
 
         public void flush() throws IOException {

@@ -182,7 +182,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         assertEquals("com.vividsolutions.jts.geom.MultiPolygon", attributes.getJSONObject(0).get("binding"));
         
         json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.json");
-        print(json);
+        // print(json);
         JSONArray features = json.getJSONArray("features");
         String octoberId = null;
         for (int i = 0; i < features.size(); i++) {
@@ -193,7 +193,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
             }
         }
         
-        json = (JSONObject) getAsJSON( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/" + octoberId + ".json");
+        json = (JSONObject) getAsJSON( RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/" + octoberId + ".json", 200);
         // print(json);
         features = json.getJSONArray("features");
         assertEquals(1, features.size());

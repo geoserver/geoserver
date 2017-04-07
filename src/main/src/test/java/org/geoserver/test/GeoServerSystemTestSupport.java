@@ -1277,6 +1277,16 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected JSON getAsJSON(final String path, int statusCode)
             throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path, statusCode);
+        int status = response.getStatus();
+        if( statusCode != status ){
+            String content = response.getContentAsString();
+            if( content == null || content.length() == 0 ){
+                throw new ServiceException("expected status <"+statusCode+"> but was <"+status+">");
+            }
+            else {
+                throw new ServiceException("expected status <"+statusCode+"> but was <"+status+">:"+content);
+            }
+        }
         return json(response);
     }
     
@@ -2009,13 +2019,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             myBody = body;
         }
         
-//        @Override
-//        public void setBodyContent(String body) {
-//            myBody = body.getBytes();
-//        }
-        
-        
-        
         @Override
         public BufferedReader getReader() {
             if (null == myBody)
@@ -2025,6 +2028,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         
         public ServletInputStream getInputStream() {
             return new GeoServerDelegatingServletInputStream(myBody);
+        }
+        
+        @Override
+        public String toString() {
+            return "GeoServerMockHttpServletRequest "+getMethod()+ " "+getRequestURI();
         }
     }
 

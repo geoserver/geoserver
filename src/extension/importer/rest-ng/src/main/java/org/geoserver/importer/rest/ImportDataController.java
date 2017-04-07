@@ -8,7 +8,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.importer.*;
-import org.geoserver.importer.rest.converters.ImportContextJSONConverterWriter;
+import org.geoserver.importer.rest.converters.ImportJSONWriter;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +28,7 @@ public class ImportDataController extends ImportBaseController {
         super(importer);
     }
 
-    protected ImportContextJSONConverterWriter converterWriter;
+    protected ImportJSONWriter converterWriter;
 
     @GetMapping(value = { "/imports/{importId}/data", "/imports/{importId}/tasks/{taskId}/data", }, produces = {
                     MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,

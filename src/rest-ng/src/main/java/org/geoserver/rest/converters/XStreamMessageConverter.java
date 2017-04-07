@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.geoserver.rest.RequestInfo;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
@@ -14,14 +15,13 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 /**
  * Base class for XStream based message converters
  */
-public abstract class XStreamMessageConverter extends BaseMessageConverter {
+public abstract class XStreamMessageConverter<T> extends BaseMessageConverter<T> {
 
     static final Logger LOGGER = Logging.getLogger(XStreamMessageConverter.class);
     
-    public XStreamMessageConverter() {
-        super();
+    public XStreamMessageConverter(MediaType... supportedMediaTypes) {
+        super(supportedMediaTypes);
     }
-
 
     /**
      * Encode the given link
@@ -55,7 +55,6 @@ public abstract class XStreamMessageConverter extends BaseMessageConverter {
     }
 
     protected String href( String link) {
-
         final RequestInfo pg = RequestInfo.get();
         String ext = getExtension();
 

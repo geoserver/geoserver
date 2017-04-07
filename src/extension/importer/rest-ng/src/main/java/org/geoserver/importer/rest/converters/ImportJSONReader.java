@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -21,7 +20,6 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.importer.Archive;
 import org.geoserver.importer.Database;
@@ -55,11 +53,6 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
 import net.sf.json.JSONArray;
@@ -69,62 +62,47 @@ import net.sf.json.JSONObject;
  * {@link BaseMessageConverter} implementation for reading {@link ImportContext} and {@link ImportTask} objects from JSON
  */
 @Component
-public class ImportContextJSONConverterReader extends BaseMessageConverter {
+public class ImportJSONReader {
 
     Importer importer;
-    JSONObject json;
-
+    
     @Autowired
-    public ImportContextJSONConverterReader(Importer importer)  {
+    public ImportJSONReader(Importer importer)  {
         this.importer = importer;
     }
     
-    public ImportContextJSONConverterReader(Importer importer, InputStream in) throws IOException {
-        this.importer = importer;
-        this.json = parse(in);
-    }
+//    public ImportContextJSONConverterReader(Importer importer, InputStream in) throws IOException {
+//        super(MediaType.APPLICATION_JSON,CatalogController.MEDIATYPE_TEXT_JSON);
+//        this.importer = importer;
+//        JSONObject json = parse(in);
+//    }
 
-    public JSONObject object() {
-        return json;
-    }
-    @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
-        return (ImportContext.class.isAssignableFrom(clazz) || ImportTask.class.isAssignableFrom(clazz) ||
-                ImportTransform.class.isAssignableFrom(clazz) || TransformChain.class.isAssignableFrom(clazz))
-                && isSupportedMediaType(mediaType);
-        
-    }
+//    @Override
+//    protected boolean supports(Class<?> clazz) {
+//        return (ImportContext.class.isAssignableFrom(clazz) || ImportTask.class.isAssignableFrom(clazz) ||
+//                ImportTransform.class.isAssignableFrom(clazz) || TransformChain.class.isAssignableFrom(clazz));
+//    }
+    
+//    @Override
+//    protected boolean canWrite(MediaType mediaType) {
+//        return false; // write not supported
+//    }
 
-    @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+//    @Override
+//    protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage inputMessage)
+//            throws IOException, HttpMessageNotReadableException {
+//        InputStream in = inputMessage.getBody();
+//        JSONObject json = parse(in);
+//        if (ImportContext.class.isAssignableFrom(clazz)) {
+//            return context(json);
+//        } else if (ImportTask.class.isAssignableFrom(clazz)) {
+//            return task(json);
+//        } else if (ImportTransform.class.isAssignableFrom(clazz) || TransformChain.class.isAssignableFrom(clazz)) {
+//            return transform(json);
+//        }
+//        return null;
+//    }
 
-    @Override
-    public List getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.APPLICATION_JSON,
-                MediaType.valueOf(CatalogController.TEXT_JSON));
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
-            throws IOException, HttpMessageNotReadableException {
-        InputStream in = inputMessage.getBody();
-        json = parse(in);
-        if (ImportContext.class.isAssignableFrom(clazz)) {
-            return context();
-        } else if (ImportTask.class.isAssignableFrom(clazz)) {
-            return task();
-        } else if (ImportTransform.class.isAssignableFrom(clazz) || TransformChain.class.isAssignableFrom(clazz)) {
-            return transform();
-        }
-        return null;
-    }
-
-    public ImportContext context() throws IOException {
-        return context(json);
-    }
     public ImportContext context(JSONObject json) throws IOException {
         ImportContext context = null;
         if (json.has("import")) {
@@ -159,9 +137,6 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
             }
         }
         return context;
-    }
-    public LayerInfo layer() throws IOException {
-        return layer(json);
     }
 
     LayerInfo layer(JSONObject json) throws IOException {
@@ -228,7 +203,11 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
         return l;
     }
 
-    public ImportTask task() throws IOException {
+    public ImportTask task(InputStream inputStream) throws IOException {
+        JSONObject json = parse(inputStream);
+        return task(json);
+    }
+    public ImportTask task(JSONObject json) throws IOException {
 
         if (json.has("task")) {
             json =  json.getJSONObject("task");
@@ -308,11 +287,14 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
         return result;
     }
 
-    public ImportTransform transform() throws IOException {
+    public ImportTransform transform(String json) throws IOException {
+        return transform(IOUtils.toInputStream(json));
+    }
+    public ImportTransform transform(InputStream inputStream) throws IOException {
+        JSONObject json = parse(inputStream);
         return transform(json);
     }
-
-    ImportTransform transform(JSONObject json) throws IOException {
+    public ImportTransform transform(JSONObject json) throws IOException {
         ImportTransform transform;
         String type = json.getString("type");
         if ("DateFormatTransform".equalsIgnoreCase(type)) {
@@ -374,10 +356,6 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
         return options;
     }
 
-    public ImportData data() throws IOException {
-        return data(json);
-    }
-
     ImportData data(JSONObject json) throws IOException {
         String type = json.getString("type");
         if (type == null) {
@@ -399,7 +377,7 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
         else if ("database".equalsIgnoreCase(type)) {
             return database(json);
         }
- else if ("remote".equalsIgnoreCase(type)) {
+        else if ("remote".equalsIgnoreCase(type)) {
             return remote(json);
         }
         else {
@@ -463,11 +441,7 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
         throw new UnsupportedOperationException("TODO: implement");
     }
 
-    public Directory directory() throws IOException {
-        return directory(json);
-    }
-
-    Directory directory(JSONObject json) throws IOException {
+    public Directory directory(JSONObject json) throws IOException {
         if (json.has("location")) {
             return new Directory(new File(json.getString("location")));
         }
@@ -499,7 +473,7 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
         }
     }
 
-    JSONObject parse(InputStream in) throws IOException {
+    public JSONObject parse(InputStream in) throws IOException {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         IOUtils.copy(in, bout);
         return JSONObject.fromObject(new String(bout.toByteArray()));
@@ -520,18 +494,4 @@ public class ImportContextJSONConverterReader extends BaseMessageConverter {
         return xp.load(new ByteArrayInputStream(json.toString().getBytes()), clazz);
     }
 
-    <T> T fromJSON(Class<T> clazz) throws IOException {
-        return fromJSON(json, clazz);
-    }
-    @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
-            throws IOException, HttpMessageNotWritableException {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public int getPriority() {
-        return super.getPriority()-5;
-    }
 }

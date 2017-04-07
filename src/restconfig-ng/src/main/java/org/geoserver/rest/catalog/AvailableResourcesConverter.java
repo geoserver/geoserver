@@ -1,11 +1,13 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.rest.catalog;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Arrays;
-import java.util.List;
 
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.jdom.Document;
@@ -22,40 +24,50 @@ import org.springframework.stereotype.Component;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+/**
+ * Outputs a named list of strings, as represented by {@link AvailableResources}.
+ * <p>
+ * This is used for WMS output.
+ * 
+ * 
+ * @author Kevin Smith (Boundless)
+ */
+// TODO: This is a duplicate of StringsListConverter
 @Component
-public class AvailableResourcesConverter extends BaseMessageConverter {
+public class AvailableResourcesConverter extends BaseMessageConverter<AvailableResources> {
     
-    static final List<MediaType> MEDIA_TYPES = Arrays.asList(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON);
+    //static final List<MediaType> MEDIA_TYPES = Arrays.asList(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON);
+    
+    public AvailableResourcesConverter(){
+        super(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON);
+    }
     
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
+    public boolean canRead(Class<?> clazz, MediaType mediaType) {
         return false;
     }
 
     @Override
-    public boolean canWrite(Class clazz, final MediaType mediaType) {
-        return AvailableResources.class.isAssignableFrom(clazz) && MEDIA_TYPES.stream()
-                .anyMatch(type->type.isCompatibleWith(mediaType));
+    protected boolean supports(Class<?> clazz) {
+        return AvailableResources.class.isAssignableFrom(clazz);
     }
+    
 
     @Override
-    public List getSupportedMediaTypes() {
-        return MEDIA_TYPES;
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage)
-            throws IOException, HttpMessageNotReadableException {
+    protected AvailableResources readInternal(Class<? extends AvailableResources> clazz,
+            HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
         throw new HttpMessageNotReadableException("AvailableResourceConverter does not support deserialization");
     }
     
     @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
+    protected void writeInternal(AvailableResources availableResources, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
+        MediaType contentType = outputMessage.getHeaders().getContentType();
+        
         if(MediaType.APPLICATION_XML.isCompatibleWith(contentType)) {
-            writeXML((AvailableResources)t, outputMessage);
+            writeXML(availableResources, outputMessage);
         } else if(MediaType.APPLICATION_JSON.isCompatibleWith(contentType)) {
-            writeJSON((AvailableResources)t, outputMessage);
+            writeJSON(availableResources, outputMessage);
         } else {
             throw new IllegalArgumentException();
         }

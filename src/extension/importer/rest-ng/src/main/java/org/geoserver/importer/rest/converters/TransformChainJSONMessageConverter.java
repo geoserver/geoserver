@@ -10,8 +10,8 @@ import java.io.InputStream;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.transform.TransformChain;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
@@ -30,7 +30,7 @@ public class TransformChainJSONMessageConverter extends BaseMessageConverter<Tra
 
     @Autowired
     public TransformChainJSONMessageConverter(Importer importer) {
-        super(MediaType.APPLICATION_JSON, CatalogController.MEDIATYPE_TEXT_JSON);
+        super(MediaType.APPLICATION_JSON, MediaTypeExtensions.TEXT_JSON);
         this.importer = importer;
     }
 

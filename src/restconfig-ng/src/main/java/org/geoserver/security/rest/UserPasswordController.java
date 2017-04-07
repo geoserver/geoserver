@@ -10,10 +10,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.impl.GeoServerRole;
@@ -46,8 +46,8 @@ public class UserPasswordController extends RestBaseController {
     @PutMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            CatalogController.TEXT_XML,
-            CatalogController.TEXT_JSON })
+            MediaType.TEXT_XML_VALUE,
+            MediaTypeExtensions.TEXT_JSON_VALUE})
     public void passwordPut(@RequestBody Map<String, String> putMap) {
         if (!getManager().checkAuthenticationForRole(
                 SecurityContextHolder.getContext().getAuthentication(),

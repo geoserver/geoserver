@@ -21,6 +21,7 @@ import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.util.logging.Logging;
@@ -97,7 +98,7 @@ public class CoverageStoreController extends CatalogController {
     
     @PostMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     public ResponseEntity<String> coverageStorePost(
@@ -120,7 +121,7 @@ public class CoverageStoreController extends CatalogController {
     
     @PutMapping(value = "{storeName}", consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     public void coverageStoreGet(

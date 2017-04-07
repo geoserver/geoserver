@@ -10,8 +10,8 @@ import java.io.OutputStreamWriter;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.rest.ImportWrapper;
 import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -30,7 +30,7 @@ public class ImportWrapperMessageConverter extends BaseMessageConverter<ImportWr
 
     @Autowired
     public ImportWrapperMessageConverter(Importer importer) {
-        super(MediaType.APPLICATION_JSON, CatalogController.MEDIATYPE_TEXT_JSON,
+        super(MediaType.APPLICATION_JSON, MediaTypeExtensions.TEXT_JSON,
                 MediaType.TEXT_HTML);
         this.importer = importer;
     }

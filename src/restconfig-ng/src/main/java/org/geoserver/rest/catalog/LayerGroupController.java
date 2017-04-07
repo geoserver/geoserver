@@ -17,6 +17,7 @@ import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +95,7 @@ public class LayerGroupController extends CatalogController {
 
     @PostMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE})
     public ResponseEntity<String> layerGroupPost(
@@ -140,7 +141,7 @@ public class LayerGroupController extends CatalogController {
 
     @PutMapping(value = "{layerGroupName}", consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE})
     public void layerGroupPut(

@@ -6,12 +6,12 @@
 package org.geoserver.service.rest;
 
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.WCSXStreamLoader;
 import org.geotools.util.logging.Logging;
@@ -44,7 +44,7 @@ public class WCSSettingsController extends ServiceSettingsController {
     public WCSSettingsController(GeoServer geoServer) { super(geoServer, WCSInfo.class); };
 
     @PutMapping( value = {"/settings", "/workspaces/{workspaceName}/settings"},
-            consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypeExtensions.TEXT_JSON_VALUE,
                     MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_XML_VALUE})
     public void serviceSettingsPut(@RequestBody WCSInfo info,
                                    @PathVariable(required = false) String workspaceName) {

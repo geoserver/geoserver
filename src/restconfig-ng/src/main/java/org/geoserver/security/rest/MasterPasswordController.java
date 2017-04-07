@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.rest.catalog.NamedMap;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
@@ -45,7 +45,7 @@ public class MasterPasswordController extends RestBaseController {
 
     @GetMapping(produces = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     public NamedMap<String, String> masterPasswordGet() throws IOException {
@@ -65,7 +65,7 @@ public class MasterPasswordController extends RestBaseController {
 
     @PutMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     public void masterPasswordPut(@RequestBody Map<String, String> putMap) throws IOException {

@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -26,7 +27,7 @@ import net.sf.json.JSONObject;
 public class StringsListJSONConverter extends BaseMessageConverter<StringsList> {
 
     public StringsListJSONConverter() {
-        super(MediaType.APPLICATION_JSON, CatalogController.MEDIATYPE_TEXT_JSON);
+        super(MediaType.APPLICATION_JSON, MediaTypeExtensions.TEXT_JSON);
     }
 
     @Override

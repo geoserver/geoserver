@@ -16,7 +16,6 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -37,6 +36,7 @@ import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.SLDParser;
@@ -109,7 +109,7 @@ public class StyleController extends CatalogController {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON })
+            MediaTypeExtensions.TEXT_JSON_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public String stylePost(
             @RequestBody StyleInfo style,
@@ -319,7 +319,7 @@ public class StyleController extends CatalogController {
     }
 
     @PostMapping(value = {"/styles", "/workspaces/{workspaceName}/styles"}, consumes = {
-            CatalogController.APPLICATION_ZIP})
+            MediaTypeExtensions.APPLICATION_ZIP_VALUE})
     public ResponseEntity<String> stylePost(
             InputStream stream,
             @RequestParam(required = false) String name,
@@ -376,7 +376,7 @@ public class StyleController extends CatalogController {
     }
 
     @PutMapping( value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
-            CatalogController.APPLICATION_ZIP})
+            MediaTypeExtensions.APPLICATION_ZIP_VALUE})
     public void styleZipPut(
             InputStream is,
             @PathVariable String styleName,
@@ -463,7 +463,7 @@ public class StyleController extends CatalogController {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON })
+            MediaTypeExtensions.TEXT_JSON_VALUE})
     public void stylePut(
             @RequestBody StyleInfo info,
             @PathVariable String styleName,

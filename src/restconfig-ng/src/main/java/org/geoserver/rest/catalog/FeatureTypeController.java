@@ -22,6 +22,7 @@ import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
@@ -142,7 +143,7 @@ public class FeatureTypeController extends CatalogController {
     }
 
     @PostMapping(consumes = {
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE })

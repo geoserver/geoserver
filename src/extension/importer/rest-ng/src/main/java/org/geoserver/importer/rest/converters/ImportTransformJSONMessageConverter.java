@@ -6,21 +6,16 @@ package org.geoserver.importer.rest.converters;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 
-import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
-import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
 import org.geoserver.importer.transform.ImportTransform;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
 import net.sf.json.JSONObject;
@@ -35,7 +30,7 @@ public class ImportTransformJSONMessageConverter extends BaseMessageConverter<Im
 
     @Autowired
     public ImportTransformJSONMessageConverter(Importer importer) {
-        super(MediaType.APPLICATION_JSON, CatalogController.MEDIATYPE_TEXT_JSON);
+        super(MediaType.APPLICATION_JSON, MediaTypeExtensions.TEXT_JSON);
         this.importer = importer;
     }
 

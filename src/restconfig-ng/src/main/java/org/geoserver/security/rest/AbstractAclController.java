@@ -18,10 +18,10 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.AbstractAccessRuleDAO;
 import org.geoserver.security.impl.DataAccessRule;
@@ -50,7 +50,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
 
     @GetMapping(produces = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     @ResponseBody
@@ -67,7 +67,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
 
     @PostMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     public void rulesPost(@RequestBody RuleMap map) throws IOException {
@@ -82,7 +82,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
 
     @PutMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     public void rulesPut(@RequestBody RuleMap map) throws IOException {

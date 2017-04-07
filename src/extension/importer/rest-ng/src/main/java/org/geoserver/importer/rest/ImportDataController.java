@@ -6,11 +6,11 @@ package org.geoserver.importer.rest;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.importer.*;
 import org.geoserver.importer.rest.converters.ImportJSONWriter;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/imports/{importId}", produces = {
         MediaType.APPLICATION_JSON_VALUE,
-        CatalogController.TEXT_JSON})
+        MediaTypeExtensions.TEXT_JSON_VALUE})
 public class ImportDataController extends ImportBaseController {
 
     public ImportDataController(Importer importer) {

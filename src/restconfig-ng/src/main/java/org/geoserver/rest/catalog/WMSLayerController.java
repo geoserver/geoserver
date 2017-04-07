@@ -31,6 +31,7 @@ import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.wms.WebMapServer;
@@ -213,7 +214,7 @@ public class WMSLayerController extends CatalogController {
     
     @PutMapping(value = "/{layerName}", consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE})
     public void layerPut(
@@ -267,7 +268,7 @@ public class WMSLayerController extends CatalogController {
     
     @PostMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE})
     public ResponseEntity<String> layerPost(

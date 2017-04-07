@@ -27,38 +27,9 @@ import java.util.List;
  * Base controller for catalog info requests
  */
 public abstract class CatalogController extends RestBaseController {
-    
-    /**
-     * Not an official MIME type, but GeoServer used to support it
-     */
-    public static final String TEXT_JSON = "text/json";
-    
-    /**
-     * Not an official MIME type, but GeoServer used to support it
-     */
-    public static final MediaType MEDIATYPE_TEXT_JSON = MediaType.valueOf(CatalogController.TEXT_JSON);
-    
-    /**
-     * Not an official MIME type, but GeoServer used to support it
-     */
-    public static final String TEXT_XML = "text/xml";
-    
-    public static final MediaType MEDIATYPE_TEXT_XML =  MediaType.valueOf(TEXT_XML);
-    
-    /**
-     * Not an official MIME type, but GeoServer used to support it
-     */
-    public static final String APPLICATION_ZIP = "application/zip";
-    
-    public static final String MEDIATYPE_FTL_EXTENSION = "ftl";
-    public static final String MEDIATYPE_FTL_VALUE = "text/plain";
-    public static final MediaType MEDIATYPE_FTL = new MediaType("text","plain");
-
-    public static final String APPLICATION_XSLT = "application/xslt+xml";
 
     protected final Catalog catalog;
     protected final GeoServerDataDirectory dataDir;
-
     protected final List<String> validImageFileExtensions;
 
     public CatalogController(Catalog catalog) {

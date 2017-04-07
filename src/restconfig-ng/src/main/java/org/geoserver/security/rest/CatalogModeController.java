@@ -6,12 +6,12 @@ package org.geoserver.security.rest;
 
 import java.util.Map;
 
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.rest.catalog.NamedMap;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.impl.DataAccessRuleDAO;
@@ -53,7 +53,7 @@ public class CatalogModeController {
 
     @GetMapping(produces = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     @ResponseBody
@@ -68,7 +68,7 @@ public class CatalogModeController {
 
     @PutMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     protected void mapPut(@RequestBody Map map) throws Exception {

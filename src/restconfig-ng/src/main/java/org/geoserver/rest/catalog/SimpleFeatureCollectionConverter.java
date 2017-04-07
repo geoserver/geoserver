@@ -6,6 +6,7 @@ package org.geoserver.rest.catalog;
 
 import java.io.IOException;
 
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -20,7 +21,7 @@ public class SimpleFeatureCollectionConverter
         extends FeatureCollectionConverter<SimpleFeatureCollection> {
 
     public SimpleFeatureCollectionConverter() {
-        super(MediaType.APPLICATION_JSON, CatalogController.MEDIATYPE_TEXT_JSON,
+        super(MediaType.APPLICATION_JSON, MediaTypeExtensions.TEXT_JSON,
                 MediaType.APPLICATION_XML);
     }
 
@@ -39,7 +40,7 @@ public class SimpleFeatureCollectionConverter
             throws IOException, HttpMessageNotWritableException {
         MediaType mediaType = outputMessage.getHeaders().getContentType();
         if (MediaType.APPLICATION_JSON.includes(mediaType)
-                || CatalogController.MEDIATYPE_TEXT_JSON.includes(mediaType)) {
+                || MediaTypeExtensions.TEXT_JSON.includes(mediaType)) {
             writeGeoJsonl(content, outputMessage);
         } else if (MediaType.APPLICATION_XML.includes(mediaType)) {
             writeGML(content, outputMessage);

@@ -7,13 +7,13 @@ package org.geoserver.importer.rest;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.Template;
 import org.apache.commons.lang.NotImplementedException;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +24,6 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Type;
 
 @RestController
@@ -82,7 +81,7 @@ public class ImportTransformController extends ImportBaseController {
 
     @PutMapping(path = { "/tasks/{taskId}/transforms/{transformId}" }, consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON})
+            MediaTypeExtensions.TEXT_JSON_VALUE})
     public ImportWrapper putTransform(
             @PathVariable Long importId,
             @PathVariable Integer taskId,

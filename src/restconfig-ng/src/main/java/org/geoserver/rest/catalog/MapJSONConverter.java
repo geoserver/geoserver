@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -36,7 +37,7 @@ import net.sf.json.JSONObject;
 public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
 
     public MapJSONConverter() {
-        super(MediaType.APPLICATION_JSON, CatalogController.MEDIATYPE_TEXT_JSON);
+        super(MediaType.APPLICATION_JSON, MediaTypeExtensions.TEXT_JSON);
     }
 
     @Override

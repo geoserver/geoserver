@@ -18,6 +18,7 @@ import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
@@ -91,7 +92,7 @@ public class CoverageController extends CatalogController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
-            TEXT_JSON})
+            MediaTypeExtensions.TEXT_JSON_VALUE})
     public Object coveragesGet(
             @RequestParam(name = "list", required = false) String list,
             @PathVariable String workspaceName) {
@@ -118,7 +119,7 @@ public class CoverageController extends CatalogController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
-            TEXT_JSON})
+            MediaTypeExtensions.TEXT_JSON_VALUE})
     public RestWrapper<CoverageInfo> coverageGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
@@ -142,7 +143,7 @@ public class CoverageController extends CatalogController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.TEXT_HTML_VALUE,
-            TEXT_JSON})
+            MediaTypeExtensions.TEXT_JSON_VALUE})
     public RestWrapper<CoverageInfo> coverageGet(
             @PathVariable String workspaceName,
             @PathVariable String coverageName) {

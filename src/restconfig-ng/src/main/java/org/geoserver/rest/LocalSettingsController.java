@@ -3,12 +3,12 @@ package org.geoserver.rest;
 import freemarker.template.ObjectWrapper;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.config.*;
 import org.geoserver.config.impl.SettingsInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,7 +56,7 @@ public class LocalSettingsController extends GeoServerController {
 
     @PostMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
@@ -75,7 +75,7 @@ public class LocalSettingsController extends GeoServerController {
 
     @PutMapping(consumes = {
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     public void localSettingsPut(@PathVariable String workspaceName, @RequestBody SettingsInfo settingsInfo) {

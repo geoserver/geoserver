@@ -25,6 +25,7 @@ import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GranuleStore;
@@ -94,7 +95,7 @@ public class StructuredCoverageController extends CatalogController {
     @GetMapping(produces = {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON })
+            MediaTypeExtensions.TEXT_JSON_VALUE})
     public RestWrapper<IndexSchema> indexGet(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
@@ -113,7 +114,7 @@ public class StructuredCoverageController extends CatalogController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON })
+            MediaTypeExtensions.TEXT_JSON_VALUE})
     @ResponseBody
     public SimpleFeatureCollection granulesGet(
             @PathVariable String workspaceName,

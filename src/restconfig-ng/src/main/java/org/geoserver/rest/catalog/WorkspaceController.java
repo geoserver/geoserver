@@ -26,6 +26,7 @@ import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,9 +96,9 @@ public class WorkspaceController extends CatalogController {
     }
 
     @PostMapping(consumes = {
-            CatalogController.TEXT_XML,
+            MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_JSON_VALUE })
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> workspacePost(
@@ -137,9 +138,9 @@ public class WorkspaceController extends CatalogController {
     }
 
     @PutMapping(value = "/{workspaceName}", consumes = {
-            CatalogController.TEXT_XML,
-                MediaType.APPLICATION_XML_VALUE,
-            CatalogController.TEXT_JSON,
+            MediaType.TEXT_XML_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaTypeExtensions.TEXT_JSON_VALUE,
             MediaType.APPLICATION_JSON_VALUE })
     public void workspacePut(
             @RequestBody WorkspaceInfo workspace,

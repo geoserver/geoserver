@@ -14,7 +14,6 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.StoreInfoImpl;
-import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.importer.*;
 import org.geoserver.importer.rest.converters.ImportJSONReader;
 import org.geoserver.importer.rest.converters.ImportJSONWriter;
@@ -23,6 +22,7 @@ import org.geoserver.rest.PutIgnoringExtensionContentNegotiationStrategy;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.FactoryException;
@@ -136,7 +136,7 @@ public class ImportTaskController extends ImportBaseController {
         return acceptData(data, context(id), response);
     }
 
-    @PutMapping(path = "/{taskId}", consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON})
+    @PutMapping(path = "/{taskId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypeExtensions.TEXT_JSON_VALUE})
     public ImportWrapper taskPut(
             @PathVariable Long id,
             @PathVariable Integer taskId,

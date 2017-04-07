@@ -23,6 +23,7 @@ import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.util.RESTUtils;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
@@ -89,7 +90,7 @@ public class TemplateController extends CatalogController {
             @PathVariable(required = false) String featureTypeName,
             @PathVariable String templateName) {
 
-        String filename = templateName+"."+MEDIATYPE_FTL_EXTENSION;
+        String filename = templateName+"."+ MediaTypeExtensions.FTL_EXTENSION;
         String path = Paths.path(path(workspaceName, storeName, featureTypeName ), filename);
         Resource resource = resources.get(path);
         
@@ -108,7 +109,7 @@ public class TemplateController extends CatalogController {
      * @return Template Definitin
      */
     @GetMapping(value = "/{templateName}", produces = {
-            MEDIATYPE_FTL_VALUE})
+            MediaTypeExtensions.TEXT_FTL_VALUE})
     public void templateGet(
             @PathVariable(required = false) String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -116,7 +117,7 @@ public class TemplateController extends CatalogController {
             @PathVariable String templateName,
             HttpServletResponse response) {
 
-        String filename = templateName+"."+MEDIATYPE_FTL_EXTENSION;
+        String filename = templateName+"."+ MediaTypeExtensions.FTL_EXTENSION;
         String path = Paths.path(path(workspaceName, storeName, featureTypeName ), filename);
         Resource resource = resources.get(path);
         
@@ -127,7 +128,7 @@ public class TemplateController extends CatalogController {
         try {
             bytes = resource.getContents();
             
-            response.setContentType(MEDIATYPE_FTL_VALUE);
+            response.setContentType(MediaTypeExtensions.TEXT_FTL_VALUE);
             response.setContentLength(bytes.length);
             
             try( ServletOutputStream output = response.getOutputStream() ){
@@ -145,7 +146,7 @@ public class TemplateController extends CatalogController {
      * @return All templates
      */
     @PutMapping(value = "/{templateName}", consumes = {
-            MEDIATYPE_FTL_VALUE,
+            MediaTypeExtensions.TEXT_FTL_VALUE,
             MediaType.TEXT_PLAIN_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public void templatePut(
@@ -155,7 +156,7 @@ public class TemplateController extends CatalogController {
             @PathVariable String templateName,
             HttpServletRequest request) {
 
-        String filename = templateName + "." + MEDIATYPE_FTL_EXTENSION;
+        String filename = templateName + "." + MediaTypeExtensions.FTL_EXTENSION;
         String path = path(workspaceName, storeName, featureTypeName);
         Resource directory = resources.get(path);
     

@@ -43,6 +43,7 @@
   <bean id="JDBCGeoServerFacade" class="org.geoserver.jdbcconfig.config.JDBCGeoServerFacade">
     <constructor-arg ref="JDBCConfigDB" />
     <property name="resourceLoader" ref="resourceLoader" />
+    <property name="ddResourceStore" ref="dataDirectoryResourceStore" />
   </bean>
 
   <bean id="JDBCGeoServerLoader" class="org.geoserver.jdbcconfig.JDBCGeoServerLoader">

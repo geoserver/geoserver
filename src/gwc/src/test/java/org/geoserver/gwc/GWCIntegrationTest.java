@@ -27,10 +27,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
@@ -66,6 +68,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
 import org.geoserver.wms.WMSInfo;
+import org.geotools.feature.NameImpl;
 import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
@@ -90,7 +93,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 @TestSetup(run=TestSetupFrequency.REPEAT)
 public class GWCIntegrationTest extends GeoServerSystemTestSupport {
-    
+
+    static final String SIMPLE_LAYER_GROUP = "SIMPLE_LAYER_GROUP";
+
     static final String FLAT_LAYER_GROUP = "flatLayerGroup";
     static final String NESTED_LAYER_GROUP = "nestedLayerGroup";
     static final String CONTAINER_LAYER_GROUP = "containerLayerGroup";
@@ -126,6 +131,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         LayerInfo li = catalog.getLayerByName(getLayerId(WORKSPACED_LAYER_QNAME));
         li.setDefaultStyle(catalog.getStyleByName(wi, WORKSPACED_STYLE_NAME));
         catalog.save(li);
+
+        // add a simple layer group with two layers
+        createLayerGroup(SIMPLE_LAYER_GROUP, MockData.BUILDINGS, MockData.BRIDGES);
         
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
     }
@@ -1034,5 +1042,34 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             getGeoServer().getService(WMTSInfo.class).setEnabled(initialValue);
             LocalWorkspace.set(null);
         }
+    }
+
+    @Test
+    public void testGetCapabilitiesRequest() throws Exception {
+        // getting the capabilities document
+        MockHttpServletResponse response = getAsServletResponse("/gwc/service/wmts?request=GetCapabilities");
+        // check that the request was successful
+        assertThat(response.getStatus(), is(200));
+    }
+
+    /**
+     * Helper method that creates a layer group using the provided name and layers names.
+     */
+    private void createLayerGroup(String layerGroupName, QName... layersNames) throws Exception {
+        // get layers that match the layers names
+        List<LayerInfo> layers = Arrays.stream(layersNames)
+                .map(layerName -> getCatalog().getLayerByName(new NameImpl(layerName)))
+                .collect(Collectors.toList());
+        // create a new layer group using the provided name
+        LayerGroupInfo layerGroup = getCatalog().getFactory().createLayerGroup();
+        layerGroup.setName(layerGroupName);
+        // add the provided layers
+        for (LayerInfo layerInfo : layers) {
+            layerGroup.getLayers().add(layerInfo);
+        }
+        // set the layer group bounds by merging all layers bounds
+        CatalogBuilder catalogBuilder = new CatalogBuilder(getCatalog());
+        catalogBuilder.calculateLayerGroupBounds(layerGroup);
+        getCatalog().add(layerGroup);
     }
 }

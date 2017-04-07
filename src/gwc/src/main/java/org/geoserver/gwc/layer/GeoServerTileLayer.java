@@ -1276,7 +1276,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     public Map<String, org.geowebcache.config.legends.LegendInfo> getLayerLegendsInfo() {
         LayerInfo layerInfo = getLayerInfo();
         if (layerInfo == null) {
-            return null;
+            return Collections.emptyMap();
         }
         Map<String, org.geowebcache.config.legends.LegendInfo> legends = new HashMap<>();
         Set<StyleInfo> styles = new HashSet<>(layerInfo.getStyles());

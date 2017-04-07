@@ -160,7 +160,7 @@ public class ImportJSONWriter {
                 remote(json, (RemoteData) data, parent, expand);
             }
         } else if (ImportWrapper.class.isAssignableFrom(t.getClass())) {
-            ((ImportWrapper) t).write(json, this);
+            ((ImportWrapper) t).write(writer,json, this);
         } else  {
                 throw new RestException("Trying to write an unknown object " + t,
                         HttpStatus.I_AM_A_TEAPOT);

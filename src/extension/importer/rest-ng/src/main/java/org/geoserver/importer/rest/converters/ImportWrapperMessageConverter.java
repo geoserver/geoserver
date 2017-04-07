@@ -77,11 +77,11 @@ public class ImportWrapperMessageConverter extends BaseMessageConverter<ImportWr
         outputWriter.write("</pre></body></html>");
     }
 
-    private void writeJSON(ImportWrapper wrapper, OutputStreamWriter outputWriter) {
+    private void writeJSON(ImportWrapper wrapper, OutputStreamWriter outputWriter) throws IOException {
         FlushableJSONBuilder json = new FlushableJSONBuilder(outputWriter);
         ImportJSONWriter writer = new ImportJSONWriter(importer);
 
-        wrapper.write(json, writer);
+        wrapper.write(outputWriter, json, writer);
     }
 
 }

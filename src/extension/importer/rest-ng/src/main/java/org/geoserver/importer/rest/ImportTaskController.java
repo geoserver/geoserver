@@ -63,7 +63,7 @@ public class ImportTaskController extends ImportBaseController {
     @GetMapping(path = "", produces = { MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
     public ImportWrapper tasksGet(@PathVariable Long id) {
-        return (writer, converter) -> converter.tasks(context(id).getTasks(), true, converter.expand(0));
+        return (writer, builder, converter) -> converter.tasks(builder,context(id).getTasks(), true, converter.expand(0));
     }
 
     @GetMapping(path = "/{taskId}", produces = { MediaType.APPLICATION_JSON_VALUE,
@@ -106,7 +106,7 @@ public class ImportTaskController extends ImportBaseController {
         if (task.getStore() == null) {
             throw new RestException("Task has no target store", HttpStatus.NOT_FOUND);
         }
-        return (writer, converter) -> converter.store(task.getStore(), task, true, converter.expand(1));
+        return (writer, builder, converter) -> converter.store(builder,task.getStore(), task, true, converter.expand(1));
 
     }
 
@@ -114,7 +114,7 @@ public class ImportTaskController extends ImportBaseController {
             CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
     public ImportWrapper layersGet(@PathVariable Long id, @PathVariable Integer taskId) {
         ImportTask task = task(id, taskId);
-        return (writer, converter) -> converter.layer(task, true, converter.expand(1));
+        return (writer, builder, converter) -> converter.layer(builder,task, true, converter.expand(1));
     }
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE},
@@ -145,7 +145,7 @@ public class ImportTaskController extends ImportBaseController {
 
     @PutMapping(path = "/{taskId}", consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON})
     public ImportWrapper taskPut(@PathVariable Long id, @PathVariable Integer taskId, HttpServletRequest request, HttpServletResponse response) {
-        return (writer, converter) -> handleTaskPut(id, taskId, request, response, converter);
+        return (writer, builder, converter) -> handleTaskPut(id, taskId, request, response, converter);
     }
 
     /**
@@ -187,10 +187,10 @@ public class ImportTaskController extends ImportBaseController {
     public ImportWrapper layerPut(@PathVariable Long id, @PathVariable Integer taskId, @RequestBody LayerInfo layer) {
         ImportTask task = task(id, taskId);
 
-        return (writer, converter) -> {
+        return (writer, builder, converter) -> {
             updateLayer(task, layer, importer, converter);
             importer.changed(task);
-            converter.task(task, true, converter.expand(1));
+            converter.task(builder,task, true, converter.expand(1));
         };
     }
 
@@ -219,12 +219,12 @@ public class ImportTaskController extends ImportBaseController {
             }
             response.setStatus(HttpStatus.CREATED.value());
 
-            return (ImportWrapper) (writer, converter) -> {
+            return (ImportWrapper) (writer, builder,converter) -> {
                 if (result.size() == 1) {
-                    converter.task(result.get(0), true, converter.expand(1));
+                    converter.task(builder,result.get(0), true, converter.expand(1));
                 }
                 else {
-                    converter.tasks(result, true, converter.expand(0));
+                    converter.tasks(builder,result, true, converter.expand(0));
                 }
             };
         }

@@ -4,6 +4,9 @@
  */
 package org.geoserver.importer.rest;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import org.geoserver.importer.rest.converters.ImportJSONWriter;
 import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
 
@@ -11,5 +14,5 @@ import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuil
  * Wrapper used by {@link ImportJSONWriter} to write custom json content
  */
 public interface ImportWrapper {
-    void write(FlushableJSONBuilder json, ImportJSONWriter builder );
+    void write(Writer writer, FlushableJSONBuilder json, ImportJSONWriter builder ) throws IOException;
 }

@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.service.rest;
+package org.geoserver.rest.service;
 
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
@@ -12,8 +12,8 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
-import org.geoserver.wfs.WFSInfo;
-import org.geoserver.wfs.WFSXStreamLoader;
+import org.geoserver.wms.WMSInfo;
+import org.geoserver.wms.WMSXStreamLoader;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
@@ -29,19 +29,19 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * WFS Settings controller
+ * WMS Settings controller
  */
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH + "/services/wfs", produces = {
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/services/wms", produces = {
         MediaType.APPLICATION_JSON_VALUE,
         MediaType.APPLICATION_XML_VALUE,
         MediaType.TEXT_HTML_VALUE})
-public class WFSSettingsController extends ServiceSettingsController {
-    private static final Logger LOGGER = Logging.getLogger(WFSSettingsController.class);
+public class WMSSettingsController extends ServiceSettingsController {
+    private static final Logger LOGGER = Logging.getLogger(WMSSettingsController.class);
 
     @Autowired
-    public WFSSettingsController(GeoServer geoServer) { super(geoServer, WFSInfo.class); };
+    public WMSSettingsController(GeoServer geoServer) { super(geoServer, WMSInfo.class); };
 
     @PutMapping(value = {"/settings", "/workspaces/{workspaceName}/settings"}, consumes = {
             MediaType.APPLICATION_JSON_VALUE,
@@ -49,7 +49,7 @@ public class WFSSettingsController extends ServiceSettingsController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE})
     public void serviceSettingsPut(
-            @RequestBody WFSInfo info,
+            @RequestBody WMSInfo info,
             @PathVariable(required = false) String workspaceName) {
 
         super.serviceSettingsPut(info, workspaceName);
@@ -57,12 +57,12 @@ public class WFSSettingsController extends ServiceSettingsController {
 
     @Override
     public String getTemplateName(Object object) {
-        return "wfsSettings";
+        return "wmsSettings";
     }
 
     @Override
     public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return WFSInfo.class.isAssignableFrom(methodParameter.getParameterType());
+        return WMSInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
@@ -76,18 +76,18 @@ public class WFSSettingsController extends ServiceSettingsController {
                 ServiceInfo service;
                 if (workspace != null) {
                     WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
-                    service = geoServer.getService(ws, WFSInfo.class);
+                    service = geoServer.getService(ws, WMSInfo.class);
                 } else {
-                    service = geoServer.getService(WFSInfo.class);
+                    service = geoServer.getService(WMSInfo.class);
                 }
                 return service;
             }
             @Override
-            protected Class<WFSInfo> getObjectClass() {
-                return WFSInfo.class;
+            protected Class<WMSInfo> getObjectClass() {
+                return WMSInfo.class;
             }
         });
-        WFSXStreamLoader.initXStreamPersister(persister);
+        WMSXStreamLoader.initXStreamPersister(persister);
     }
 
 

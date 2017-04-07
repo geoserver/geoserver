@@ -75,7 +75,7 @@ public class ImportTaskController extends ImportBaseController {
 
     @GetMapping(path = {"/{taskId}/progress"}, produces = { MediaType.APPLICATION_JSON_VALUE,
             CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
-    public ImportJSONWrapper progressGet(@PathVariable Long id, @PathVariable Integer taskId) {
+    public ImportWrapper progressGet(@PathVariable Long id, @PathVariable Integer taskId) {
 
         JSONObject progress = new JSONObject();
         ImportTask inProgress = importer.getCurrentlyProcessingTask(id);
@@ -96,7 +96,7 @@ public class ImportTaskController extends ImportBaseController {
         } catch (JSONException jex) {
             throw new RestException("Internal Error", HttpStatus.INTERNAL_SERVER_ERROR, jex);
         }
-        return new ImportJSONWrapper(progress);
+        return (writer,builder,converter) -> writer.write(progress.toString());
     }
 
     @GetMapping(path = {"/{taskId}/target"}, produces = { MediaType.APPLICATION_JSON_VALUE,

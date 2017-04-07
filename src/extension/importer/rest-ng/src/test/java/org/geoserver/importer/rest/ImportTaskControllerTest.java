@@ -192,7 +192,7 @@ public class ImportTaskControllerTest extends ImporterTestSupport {
 
     @Test
     public void testGetTaskProgress() throws Exception {
-        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports/0/tasks/0/progress");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH+"/imports/0/tasks/0/progress",200);
         assertEquals("READY", json.get("state"));
         //TODO: trigger import and check progress
     }

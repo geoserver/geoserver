@@ -11,6 +11,7 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +32,7 @@ import java.util.Arrays;
 public class LocalSettingsController extends GeoServerController {
 
     @Autowired
-    public LocalSettingsController(GeoServer geoServer) {
+    public LocalSettingsController(@Qualifier("geoServer") GeoServer geoServer) {
         super(geoServer);
     }
 

@@ -16,6 +16,7 @@ import org.geoserver.rest.RestException;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +34,7 @@ public abstract class ServiceSettingsController extends GeoServerController {
     private Class clazz;
 
     @Autowired
-    public ServiceSettingsController(GeoServer geoServer, Class clazz) {
+    public ServiceSettingsController(@Qualifier("geoServer") GeoServer geoServer, Class clazz) {
         super(geoServer);
         this.clazz = clazz;
     };

@@ -6,6 +6,7 @@ package org.geoserver.rest;
 
 import org.geoserver.config.GeoServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CatalogReloadController extends GeoServerController {
 
     @Autowired
-    public CatalogReloadController(GeoServer geoServer) {
+    public CatalogReloadController(@Qualifier("geoServer") GeoServer geoServer) {
         super(geoServer);
     }
 

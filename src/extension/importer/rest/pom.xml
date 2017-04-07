@@ -6,7 +6,7 @@
     <version>2.12-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.importer</groupId>
-  <artifactId>gs-importer-rest-ng</artifactId>
+  <artifactId>gs-importer-rest</artifactId>
   <name>Importer REST Api Module-ng</name>
   
   <dependencies>
@@ -17,7 +17,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-restconfig-ng</artifactId>
+      <artifactId>gs-restconfig</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

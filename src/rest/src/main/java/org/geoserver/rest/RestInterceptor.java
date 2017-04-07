@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
- * Interceptor for all rest-ng requests
+ * Interceptor for all rest requests
  *
  * Adds a {@link RequestInfo} to the request attributes
  */

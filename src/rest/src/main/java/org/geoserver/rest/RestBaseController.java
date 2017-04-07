@@ -23,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Base class for all rest-ng controllers
+ * Base class for all rest controllers
  *
  * Extending classes should be annotated with {@link org.springframework.web.bind.annotation.RestController} so that
  * they are automatically instantiated as a Controller bean.

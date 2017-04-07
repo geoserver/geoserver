@@ -19,12 +19,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>gs-rest-ng</artifactId>
+			<artifactId>gs-rest</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>gs-restconfig-ng</artifactId>
+			<artifactId>gs-restconfig</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

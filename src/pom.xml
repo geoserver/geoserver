@@ -1784,8 +1784,8 @@
   <module>kml</module>
   <module>ows</module>
   <module>gwc</module>
-  <module>rest-ng</module>
-  <module>restconfig-ng</module>
+  <module>rest</module>
+  <module>restconfig</module>
   <module>web</module>
   <module>community</module>
   <module>extension</module>

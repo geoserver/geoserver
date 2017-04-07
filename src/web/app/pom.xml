@@ -115,12 +115,12 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-rest-ng</artifactId>
+      <artifactId>gs-rest</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-restconfig-ng</artifactId>
+      <artifactId>gs-restconfig</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -1048,7 +1048,7 @@
         </dependency>
         <dependency>
           <groupId>org.geoserver.importer</groupId>
-          <artifactId>gs-importer-rest-ng</artifactId>
+          <artifactId>gs-importer-rest</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

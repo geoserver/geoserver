@@ -37,13 +37,6 @@ public abstract class FeatureCollectionConverter<T> extends BaseMessageConverter
         return false;
     }
     
-    @Override
-    protected T readInternal(Class<? extends T> clazz,
-            HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        throw new HttpMessageNotReadableException(
-                getClass().getName() + " does not support deserialization");
-    }
-    
     /**
      * Access features, unwrapping if necessary.
      * @param o

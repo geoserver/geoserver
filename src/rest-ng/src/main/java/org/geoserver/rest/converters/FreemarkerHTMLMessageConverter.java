@@ -31,8 +31,6 @@ import freemarker.template.TemplateException;
  */
 public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWrapper<?>> {
 
-    private static final Logger LOGGER = Logging.getLogger("org.geoserver.rest.converters");
-
     /**
      * Encoding (null for default)
      */

@@ -1,7 +1,6 @@
 package org.geoserver.importer.rest.converters;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import org.geoserver.importer.ImportContext;

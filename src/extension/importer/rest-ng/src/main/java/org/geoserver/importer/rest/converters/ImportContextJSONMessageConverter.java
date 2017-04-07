@@ -2,15 +2,11 @@ package org.geoserver.importer.rest.converters;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import org.geoserver.importer.ImportContext;
-import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
-import org.geoserver.importer.transform.ImportTransform;
-import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.rest.catalog.CatalogController;
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +20,7 @@ import org.springframework.stereotype.Component;
 import net.sf.json.JSONObject;
 
 /**
- * {@link BaseMessageConverter} implementation for reading {@link ImportContext} and {@link ImportTask} objects from JSON
+ * Convert {@link ImportContext} to from {@link MediaType#APPLICATION_JSON}.
  */
 @Component
 public class ImportContextJSONMessageConverter extends BaseMessageConverter<ImportContext> {

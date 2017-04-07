@@ -99,7 +99,8 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
         EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
         for (StyleHandler sh : Styles.handlers()) {
             for (Version ver : sh.getVersions()) {
-                gsConverters.add(new StyleConverter(sh.mimeType(ver), ver, sh, entityResolver));
+                gsConverters.add(new StyleReaderConverter(sh.mimeType(ver), ver, sh, entityResolver));
+                gsConverters.add(new StyleWriterConverter(sh.mimeType(ver), ver, sh));
             }
         }
 

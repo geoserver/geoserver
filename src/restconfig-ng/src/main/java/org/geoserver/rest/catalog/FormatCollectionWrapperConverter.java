@@ -13,35 +13,29 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
+/**
+ * Convert FormatCollectionWrapper to JSON or GML as required.
+ */
 @Component
-public class FormatCollectionWrapperConverter extends FeatureCollectionConverter<FormatCollectionWrapper> {
+public class FormatCollectionWrapperConverter
+        extends FeatureCollectionConverter<FormatCollectionWrapper> {
 
-    public FormatCollectionWrapperConverter(){
+    public FormatCollectionWrapperConverter() {
         super(MediaType.APPLICATION_XML);
     }
 
-    /**
-     * Access features, unwrapping if necessary.
-     * @param o
-     * @return features
-     */
-    protected SimpleFeatureCollection getFeatures(FormatCollectionWrapper content){
-        return content.getCollection();
-    }
-    
     @Override
     protected void writeInternal(FormatCollectionWrapper content, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         MediaType mediaType = outputMessage.getHeaders().getContentType();
         if (MediaType.APPLICATION_JSON.includes(mediaType)
                 || CatalogController.MEDIATYPE_TEXT_JSON.includes(mediaType)) {
-            writeGeoJsonl(content, outputMessage);
+            writeGeoJsonl(content.getCollection(), outputMessage);
+        } else if (MediaType.APPLICATION_XML.includes(mediaType)) {
+            writeGML(content.getCollection(), outputMessage);
         }
-        else if (MediaType.APPLICATION_XML.includes(mediaType)) {
-            writeGML(content, outputMessage);
-        } 
     }
-    
+
     @Override
     protected boolean supports(Class<?> clazz) {
         return XMLCollectionWrapper.class.isAssignableFrom(clazz);

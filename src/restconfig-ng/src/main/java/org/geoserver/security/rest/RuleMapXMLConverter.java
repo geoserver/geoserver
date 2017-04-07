@@ -7,10 +7,9 @@ package org.geoserver.security.rest;
 import java.util.List;
 import java.util.Map;
 
-import org.geoserver.rest.catalog.MapXMLConverter;
 import org.geoserver.platform.ExtensionPriority;
+import org.geoserver.rest.catalog.MapXMLConverter;
 import org.jdom.Element;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,19 +31,12 @@ public class RuleMapXMLConverter extends MapXMLConverter {
     }
 
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
-        return RuleMap.class.isAssignableFrom(clazz)
-                && isSupportedMediaType(mediaType);
+    protected boolean supports(Class<?> clazz) {
+        return RuleMap.class.isAssignableFrom(clazz);
     }
 
     @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        return RuleMap.class.isAssignableFrom(clazz)
-                && isSupportedMediaType(mediaType);
-    }
-
-    @Override
-    protected String getMapName(Map map) {
+    protected String getMapName(Map<?,?> map) {
         return ROOTELEMENT;
     }
 
@@ -55,6 +47,7 @@ public class RuleMapXMLConverter extends MapXMLConverter {
      * @param ruleMap
      */
 
+    @SuppressWarnings("unchecked")
     protected final void insert(Element elem, Object o) {
         if(o instanceof RuleMap) {
             Map<String, String> ruleMap = (Map<String, String>) o;
@@ -78,6 +71,7 @@ public class RuleMapXMLConverter extends MapXMLConverter {
      */
     protected Map<String, String> convert(Element elem) {
         Map<String, String> ruleMap = new RuleMap<String, String>();
+        @SuppressWarnings("unchecked")
         List<Element> children = elem.getChildren();
         for (Element ruleElement : children) {
             String resource = ruleElement.getAttributeValue(RESOURCEATTR);

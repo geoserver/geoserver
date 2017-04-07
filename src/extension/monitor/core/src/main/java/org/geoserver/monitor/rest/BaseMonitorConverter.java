@@ -13,6 +13,7 @@ import org.geoserver.monitor.Query;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestDataVisitor;
 import org.geoserver.platform.ExtensionPriority;
+import org.geoserver.rest.converters.BaseMessageConverter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
@@ -21,20 +22,12 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 /**
  * Base class for monitor requests converters, handles visiting results.
  */
-public abstract class BaseMonitorConverter
-        extends AbstractHttpMessageConverter<MonitorQueryResults> implements ExtensionPriority {
-    
+public abstract class BaseMonitorConverter extends BaseMessageConverter<MonitorQueryResults> {
+
     protected BaseMonitorConverter(MediaType... mediaType) {
         super(mediaType);
     }
 
-    /**
-     * Returns the priority of the {@link BaseMessageConverte}.
-     */
-    public int getPriority() {
-        return ExtensionPriority.LOWEST;
-    }
-    
     @Override
     protected boolean supports(Class<?> clazz) {
         return MonitorQueryResults.class.isAssignableFrom(clazz);
@@ -43,12 +36,6 @@ public abstract class BaseMonitorConverter
     @Override
     protected boolean canRead(MediaType mediaType) {
         return false;
-    }
-    /* Default implementation provided for consistent not-implemented message */
-    @Override
-    protected MonitorQueryResults readInternal(Class<? extends MonitorQueryResults> clazz,
-            HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        throw new HttpMessageNotReadableException(getClass().getName() + " does not support deserialization");
     }
 
     @SuppressWarnings("unchecked")

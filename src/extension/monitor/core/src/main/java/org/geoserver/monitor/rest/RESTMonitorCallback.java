@@ -61,7 +61,7 @@ public class RESTMonitorCallback extends DispatcherCallbackAdapter {
             // do not import these classes, dynamic lookup allows to break the dependency
             // on restconfig at runtime
             Object controllerBean = DispatcherCallback.getControllerBean(handler);
-            if (controllerBean instanceof org.geoserver.catalog.rest.CatalogController
+            if (controllerBean instanceof org.geoserver.rest.catalog.CatalogController
                     || controllerBean instanceof org.geoserver.rest.GeoServerController) {
                 data.setService("RESTConfig");
             }

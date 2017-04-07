@@ -7,7 +7,6 @@ package org.geoserver.importer.rest.converters;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
@@ -19,15 +18,15 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
 /**
- * Convert {@link ImportContext} to HTML.
+ * Convert {@link ImportTask} to HTML.
  */
 @Component
-public class ImportContextHTMLMessageConverter extends BaseMessageConverter<ImportContext> {
+public class ImportTaskHTMLMessageConverter extends BaseMessageConverter<ImportTask> {
 
     Importer importer;
 
     @Autowired
-    public ImportContextHTMLMessageConverter(Importer importer) {
+    public ImportTaskHTMLMessageConverter(Importer importer) {
         super(MediaType.TEXT_HTML);
         this.importer = importer;
     }
@@ -39,7 +38,7 @@ public class ImportContextHTMLMessageConverter extends BaseMessageConverter<Impo
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return ImportContext.class.isAssignableFrom(clazz);
+        return ImportTask.class.isAssignableFrom(clazz);
     }
 
     //
@@ -54,20 +53,22 @@ public class ImportContextHTMLMessageConverter extends BaseMessageConverter<Impo
     // writing
     //
     @Override
-    protected void writeInternal(ImportContext context, HttpOutputMessage outputMessage)
+    protected void writeInternal(ImportTask task, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
 
-        try (OutputStreamWriter output = new OutputStreamWriter(outputMessage.getBody())) {
-            output.write("<html><body><pre>");
+        try (OutputStreamWriter outputStream = new OutputStreamWriter(outputMessage.getBody())) {
 
-            FlushableJSONBuilder json = new FlushableJSONBuilder(output);
-            ImportJSONWriter writer = new ImportJSONWriter(
-                    importer);
+            outputStream.write("<html><body><pre>");
 
-            writer.context(json, context, true, writer.expand(1));
+            FlushableJSONBuilder json = new FlushableJSONBuilder(outputStream);
+            ImportJSONWriter writer = new ImportJSONWriter(importer);
 
-            output.write("</pre></body></html>");
-            output.flush();
+            int expand = writer.expand(1);
+
+            writer.task(json, task, true, expand);
+
+            outputStream.write("</pre></body></html>");
+            outputStream.flush();
         }
     }
 }

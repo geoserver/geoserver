@@ -12,20 +12,25 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
+/**
+ * Convert SimpleFeatureCollectionConverter to JSON or GML as required.
+ */
 @Component
-public class SimpleFeatureCollectionConverter extends FeatureCollectionConverter<SimpleFeatureCollection> {
+public class SimpleFeatureCollectionConverter
+        extends FeatureCollectionConverter<SimpleFeatureCollection> {
 
-    public SimpleFeatureCollectionConverter(){
+    public SimpleFeatureCollectionConverter() {
         super(MediaType.APPLICATION_JSON, CatalogController.MEDIATYPE_TEXT_JSON,
                 MediaType.APPLICATION_XML);
     }
-    
+
     /**
      * Access features, unwrapping if necessary.
+     * 
      * @param o
      * @return features
      */
-    protected SimpleFeatureCollection getFeatures(SimpleFeatureCollection content){
+    protected SimpleFeatureCollection getFeatures(SimpleFeatureCollection content) {
         return content;
     }
 
@@ -36,10 +41,9 @@ public class SimpleFeatureCollectionConverter extends FeatureCollectionConverter
         if (MediaType.APPLICATION_JSON.includes(mediaType)
                 || CatalogController.MEDIATYPE_TEXT_JSON.includes(mediaType)) {
             writeGeoJsonl(content, outputMessage);
-        }
-        else if (MediaType.APPLICATION_XML.includes(mediaType)) {
+        } else if (MediaType.APPLICATION_XML.includes(mediaType)) {
             writeGML(content, outputMessage);
-        } 
+        }
     }
 
     @Override

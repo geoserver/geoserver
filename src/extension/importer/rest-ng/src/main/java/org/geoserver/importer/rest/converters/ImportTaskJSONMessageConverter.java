@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 
 import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
 import org.geoserver.rest.catalog.CatalogController;
@@ -24,15 +25,15 @@ import org.springframework.stereotype.Component;
 import net.sf.json.JSONObject;
 
 /**
- * Convert {@link ImportContext} to/from {@link MediaType#APPLICATION_JSON}.
+ * Convert {@link ImportTask} to/from JSON.
  */
 @Component
-public class ImportContextJSONMessageConverter extends BaseMessageConverter<ImportContext> {
+public class ImportTaskJSONMessageConverter extends BaseMessageConverter<ImportTask> {
 
     Importer importer;
 
     @Autowired
-    public ImportContextJSONMessageConverter(Importer importer) {
+    public ImportTaskJSONMessageConverter(Importer importer) {
         super(MediaType.APPLICATION_JSON, CatalogController.MEDIATYPE_TEXT_JSON);
         this.importer = importer;
     }
@@ -44,21 +45,21 @@ public class ImportContextJSONMessageConverter extends BaseMessageConverter<Impo
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return ImportContext.class.isAssignableFrom(clazz);
+        return ImportTask.class.isAssignableFrom(clazz);
     }
 
     //
     // Reading
     //
     @Override
-    protected ImportContext readInternal(Class<? extends ImportContext> clazz,
+    protected ImportTask readInternal(Class<? extends ImportTask> clazz,
             HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
         try (InputStream in = inputMessage.getBody()) {
             ImportJSONReader reader = new ImportJSONReader(importer);
             JSONObject json = reader.parse(in);
-            ImportContext context = reader.context(json);
+            ImportTask task = reader.task(json);
 
-            return context;
+            return task;
         }
     }
 
@@ -66,17 +67,17 @@ public class ImportContextJSONMessageConverter extends BaseMessageConverter<Impo
     // writing
     //
     @Override
-    protected void writeInternal(ImportContext context, HttpOutputMessage outputMessage)
+    protected void writeInternal(ImportTask task, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
 
-        try (OutputStreamWriter output = new OutputStreamWriter(outputMessage.getBody())) {
-            FlushableJSONBuilder json = new FlushableJSONBuilder(output);
+        try (OutputStreamWriter outputStream = new OutputStreamWriter(outputMessage.getBody())) {
+            FlushableJSONBuilder json = new FlushableJSONBuilder(outputStream);
             ImportJSONWriter writer = new ImportJSONWriter(importer);
+            int expand = writer.expand(1);
 
-            writer.context(json, context, true, writer.expand(1));
+            writer.task(json, task, true, expand);
 
-            output.flush();
+            outputStream.flush();
         }
     }
-
 }

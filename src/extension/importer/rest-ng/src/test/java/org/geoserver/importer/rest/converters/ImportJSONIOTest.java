@@ -5,11 +5,19 @@
  */
 package org.geoserver.importer.rest.converters;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+
 import org.geoserver.catalog.StoreInfo;
-import org.geoserver.importer.*;
+import org.geoserver.importer.Directory;
+import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.ImporterTestSupport;
+import org.geoserver.importer.RemoteData;
 import org.geoserver.importer.rest.TransformTestSupport;
+import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuilder;
 import org.geoserver.importer.transform.DateFormatTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.rest.RequestInfo;
@@ -17,24 +25,28 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.web.context.request.AbstractRequestAttributes;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  *
  * @author Ian Schneider <ischneider@opengeo.org>
  */
 public class ImportJSONIOTest extends ImporterTestSupport {
+    
     private ImportJSONWriter writer;
-
-    private ByteArrayOutputStream buf;
+    FlushableJSONBuilder builder;
+    
+    private ImportJSONReader reader;
+    
+    private ByteArrayOutputStream outputStream;
 
     private RequestAttributes oldAttributes;
+
+    
 
     @Before
     public void prepareData() throws Exception {
@@ -46,8 +58,10 @@ public class ImportJSONIOTest extends ImporterTestSupport {
         info.setBaseURL("baseURL");
         info.setPagePath("pagePath");
 
-        newBuffer();
-        writer = new ImportJSONWriter(importer, buf);
+        newOutputStreamAndBuilder();
+        
+        writer = new ImportJSONWriter(importer);
+        reader = new ImportJSONReader(importer);
 
         oldAttributes = RequestContextHolder.getRequestAttributes();
         RequestContextHolder.setRequestAttributes(new TransformTestSupport.MapRequestAttributes());
@@ -60,35 +74,26 @@ public class ImportJSONIOTest extends ImporterTestSupport {
         RequestContextHolder.setRequestAttributes(oldAttributes);
     }
 
-    private ImportJSONReader reader() throws IOException {
-        return new ImportJSONReader(importer, stream(buffer()));
+    private void newOutputStreamAndBuilder() {
+        outputStream = new ByteArrayOutputStream();
+        builder = new FlushableJSONBuilder(outputStream);
     }
 
-    private ImportJSONReader reader(JSONObject json) throws IOException {
-        ImportJSONReader reader = new ImportJSONReader(importer, stream(buffer()));
-        reader.json = json;
-        return reader;
-    }
-
-    private void newBuffer() {
-        buf = new ByteArrayOutputStream();
-    }
-
-    private JSONObject buffer() {
-        return JSONObject.fromObject(new String(buf.toByteArray()));
-    }
-
-    private InputStream stream(JSONObject json) {
-        return new ByteArrayInputStream(json.toString().getBytes());
+    /**
+     * Parse json from {@link #outputStream}.
+     * @return json representation of text
+     */
+    private JSONObject parseJson(ByteArrayOutputStream buffer) {
+        String text = new String(buffer.toByteArray());
+        return JSONObject.fromObject(text);
     }
 
     @Test
     public void testSettingTargetStore() throws IOException {
         ImportTask task = importer.getContext(0).getTasks().get(0);
-        writer.task(task, true, 1);
+        writer.task(builder,task, true, 1);
 
         // update with new target
-        JSONObject json = buffer();
         JSONObject target = new JSONObject();
         JSONObject dataStore = new JSONObject();
         JSONObject workspace = new JSONObject();
@@ -96,9 +101,11 @@ public class ImportJSONIOTest extends ImporterTestSupport {
         workspace.put("name", getCatalog().getDefaultWorkspace().getName());
         dataStore.put("workspace", workspace);
         target.put("dataStore", dataStore);
+        
+        JSONObject json = parseJson( outputStream );
         json.getJSONObject("task").put("target", target);
-
-        ImportTask parsed = reader(json).task();
+        
+        ImportTask parsed = reader.task(json);
         StoreInfo store = parsed.getStore();
         Assert.assertNotNull(store);
         Assert.assertEquals("foobar", store.getName());
@@ -108,10 +115,10 @@ public class ImportJSONIOTest extends ImporterTestSupport {
     @Test
     public void testAddingDateTransform() throws IOException {
         ImportTask task = importer.getContext(0).getTasks().get(0);
-        writer.task(task, true, 1);
+        writer.task(builder,task, true, 1);
         
         // update with transform
-        JSONObject json = buffer();
+        JSONObject json = parseJson(outputStream);
 
         JSONArray transforms = 
             json.getJSONObject("task").getJSONObject("transformChain").getJSONArray("transforms");
@@ -124,10 +131,11 @@ public class ImportJSONIOTest extends ImporterTestSupport {
         //hack, remove href
         json.getJSONObject("task").getJSONObject("target").remove("href");
 
-        task = reader(json).task();
+        ImportJSONReader reader = new ImportJSONReader(importer);
+        task = reader.task(json);
         Assert.assertNotNull(task);
 
-        TransformChain chain = task.getTransform();
+        TransformChain<?> chain = task.getTransform();
         Assert.assertNotNull(chain);
         Assert.assertEquals(1, chain.getTransforms().size());
         DateFormatTransform dft = (DateFormatTransform) chain.getTransforms().get(0);
@@ -139,10 +147,10 @@ public class ImportJSONIOTest extends ImporterTestSupport {
     public void testRemoteDataFreeAccess() throws IOException {
         ImportContext context = importer.registerContext(null);
         context.setData(new RemoteData("http://www.geoserver.org/data"));
-
-        writer.context(context, true, 3);
-        ByteArrayInputStream inbuf = new ByteArrayInputStream(buf.toByteArray());
-        ImportContext readBack = new ImportJSONReader(importer, inbuf).context();
+        writer.context(builder,context, true, 3);
+        
+        JSONObject json = parseJson(outputStream);
+        ImportContext readBack = reader.context(json);
 
         Assert.assertEquals(context.getData(), readBack.getData());
     }
@@ -155,10 +163,10 @@ public class ImportJSONIOTest extends ImporterTestSupport {
         data.setPassword("bar");
         data.setDomain("myDomain");
         context.setData(data);
-
-        writer.context(context, true, 3);
-        ByteArrayInputStream inbuf = new ByteArrayInputStream(buf.toByteArray());
-        ImportContext readBack = new ImportJSONReader(importer, inbuf).context();
+        
+        writer.context(builder, context, true, 3);
+        ByteArrayInputStream inbuf = new ByteArrayInputStream(outputStream.toByteArray());
+        ImportContext readBack = reader.context( reader.parse(inbuf));
 
         Assert.assertEquals(context.getData(), readBack.getData());
     }

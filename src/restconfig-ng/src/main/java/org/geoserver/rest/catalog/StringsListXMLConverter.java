@@ -18,34 +18,34 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Write a named {@link StringsList} to XML.
+ */
 @Component
-public class StringsListXMLConverter extends BaseMessageConverter {
+public class StringsListXMLConverter extends BaseMessageConverter<StringsList> {
+    public StringsListXMLConverter() {
+        super(MediaType.TEXT_XML, MediaType.APPLICATION_XML);
+    }
 
     @Override
-    public boolean canRead(Class clazz, MediaType mediaType) {
+    protected boolean supports(Class<?> clazz) {
+        return StringsList.class.isAssignableFrom(clazz);
+    }
+
+    //
+    // reading
+    //
+    @Override
+    protected boolean canRead(MediaType mediaType) {
         return false;
     }
 
+    //
+    // writing
+    //
     @Override
-    public boolean canWrite(Class clazz, MediaType mediaType) {
-        return StringsList.class.isAssignableFrom(clazz)
-                && isSupportedMediaType(mediaType);
-    }
-
-    @Override
-    public List getSupportedMediaTypes() {
-        return Arrays.asList(MediaType.TEXT_XML, MediaType.APPLICATION_XML);
-    }
-
-    @Override
-    public Object read(Class clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void write(Object t, MediaType contentType, HttpOutputMessage outputMessage)
+    public void writeInternal(StringsList stringsList, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        StringsList stringsList = (StringsList) t;
         XStream xstream = new SecureXStream();
         xstream.alias(stringsList.getAlias(), String.class);
         xstream.toXML(stringsList.getValues(), outputMessage.getBody());

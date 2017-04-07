@@ -62,11 +62,9 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
@@ -113,16 +111,6 @@ public class ImportJSONWriter {
                 || ImportTask.class.isAssignableFrom(clazz)
                 || ImportWrapper.class.isAssignableFrom(clazz)
                 || ImportData.class.isAssignableFrom(clazz);
-    }
-//    @Override
-    protected boolean canRead(MediaType mediaType) {
-        return false;
-    }
-    
-//    @Override
-    protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage inputMessage)
-            throws IOException, HttpMessageNotReadableException {
-        throw new HttpMessageNotReadableException(getClass().getName() + " does not support deserialization");
     }
     
 //    @Override
@@ -571,6 +559,9 @@ public class ImportJSONWriter {
         } else if (data instanceof RemoteData) {
             remote(json, (RemoteData) data, parent, expand);
         }
+        else {
+            throw new IllegalArgumentException("Unable to serialize "+data.getClass().getSimpleName()+" as ImportData");
+        }
         json.flush();
     }
 
@@ -766,7 +757,7 @@ public class ImportJSONWriter {
     }
 
     FlushableJSONBuilder builder(OutputStream out) {
-        return new FlushableJSONBuilder(new OutputStreamWriter(out));
+        return new FlushableJSONBuilder(out);
     }
 
     JSONObject toJSON(Object o) throws IOException {
@@ -850,6 +841,10 @@ public class ImportJSONWriter {
 
         public FlushableJSONBuilder(Writer w) {
             super(w);
+        }
+
+        public FlushableJSONBuilder(OutputStream out) {
+            this(new OutputStreamWriter(out));
         }
 
         public void flush() throws IOException {

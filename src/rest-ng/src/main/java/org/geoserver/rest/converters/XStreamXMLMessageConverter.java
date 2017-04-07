@@ -28,16 +28,17 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter<Object> 
         super(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
     }
 
+    @Override
+    protected boolean supports(Class<?> clazz) {
+        return RestWrapper.class.isAssignableFrom(clazz) && !RestListWrapper.class.isAssignableFrom(clazz);
+    }
     
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
         return !RestListWrapper.class.isAssignableFrom(clazz) && canRead(mediaType);
     }
 
-    @Override
-    protected boolean supports(Class<?> clazz) {
-        return RestWrapper.class.isAssignableFrom(clazz) && !RestListWrapper.class.isAssignableFrom(clazz);
-    }
+
     
     @Override
     protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage inputMessage)

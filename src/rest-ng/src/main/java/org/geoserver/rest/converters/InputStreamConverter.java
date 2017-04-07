@@ -1,3 +1,7 @@
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.rest.converters;
 
 import org.apache.commons.io.IOUtils;
@@ -14,7 +18,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by tbarsballe on 2017-03-31.
+ * Convert InputStream directly to provided output.
+ * 
+ * @author Torben Barsballe (Boundless)
  */
 public class InputStreamConverter extends BaseMessageConverter<InputStream> {
     

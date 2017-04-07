@@ -12,10 +12,8 @@ import org.geotools.GML;
 import org.geotools.GML.Version;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geojson.feature.FeatureJSON;
-import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
 /**
@@ -37,17 +35,8 @@ public abstract class FeatureCollectionConverter<T> extends BaseMessageConverter
         return false;
     }
     
-    /**
-     * Access features, unwrapping if necessary.
-     * @param o
-     * @return features
-     */
-    abstract SimpleFeatureCollection getFeatures(T content);
-
-    
-    protected void writeGeoJsonl(T content, HttpOutputMessage outputMessage)
+    protected void writeGeoJsonl(SimpleFeatureCollection features, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        SimpleFeatureCollection features = getFeatures(content);
         final FeatureJSON json = new FeatureJSON();
         boolean geometryless = features.getSchema().getGeometryDescriptor() == null;
         json.setEncodeFeatureCollectionBounds(!geometryless);
@@ -55,9 +44,8 @@ public abstract class FeatureCollectionConverter<T> extends BaseMessageConverter
         json.writeFeatureCollection(features, outputMessage.getBody());
     }
     
-    protected void writeGML(T content, HttpOutputMessage outputMessage)
+    protected void writeGML(SimpleFeatureCollection features, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        SimpleFeatureCollection features = getFeatures(content);
         GML gml = new GML(Version.WFS1_0);
         gml.setNamespace("gf", features.getSchema().getName().getNamespaceURI());
         // gml.setFeatureBounding(false);

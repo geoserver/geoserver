@@ -7,8 +7,12 @@ package org.geoserver.notification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.List;
 
 import net.sf.json.JSONObject;
@@ -199,6 +203,47 @@ public class IntegrationTest extends CatalogRESTTestSupport {
         KombuWMSLayerInfo source3 = (KombuWMSLayerInfo) deleteMsg.getSource();
         assertEquals("WMSLayerInfo", source3.getType());
         assertEquals("states", source3.getName());
+        catalog.remove(wms);
+    }
+
+    @Test
+    public void cpuLoadTest() throws Exception {
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        threadMXBean.setThreadContentionMonitoringEnabled(true);
+        threadMXBean.setThreadCpuTimeEnabled(true);
+        ReceiverService service = new ReceiverService(3);
+        rc.receive(service);
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.setWorkspace(catalog.getWorkspaceByName("sf"));
+        WMSStoreInfo wms = cb.buildWMSStore("demo");
+        wms.setCapabilitiesURL("http://demo.opengeo.org/geoserver/wms?");
+        try {
+            catalog.add(wms);
+        } catch (Exception e) {
+        }
+        addStatesWmsLayer();
+        assertNotNull(catalog.getResourceByName("sf", "states", WMSLayerInfo.class));
+        deleteAsServletResponse("/rest/workspaces/sf/wmsstores/demo/wmslayers/states");
+        List<byte[]> ret = service.getMessages();
+        assertEquals(3, ret.size());
+        Thread.sleep(1000);
+        ThreadInfo[] threadInfo = threadMXBean.getThreadInfo(threadMXBean.getAllThreadIds());
+        for (ThreadInfo threadInfo2 : threadInfo) {
+            if (threadInfo2.getThreadName().equals(NotifierInitializer.THREAD_NAME)) {
+                long blockedTime = threadInfo2.getBlockedTime();
+                long waitedTime = threadInfo2.getWaitedTime();
+                long cpuTime = threadMXBean.getThreadCpuTime(threadInfo2.getThreadId());
+                long userTime = threadMXBean.getThreadUserTime(threadInfo2.getThreadId());
+                String msg = String.format(
+                        "%s: %d ms cpu time, %d ms user time, blocked for %d ms, waited %d ms",
+                        threadInfo2.getThreadName(), cpuTime / 1000000, userTime / 1000000,
+                        blockedTime, waitedTime);
+                System.out.println(msg);
+                assertTrue(waitedTime > 0);
+                break;
+            }
+        }
+        catalog.remove(wms);
     }
 
     @Test

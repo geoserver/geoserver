@@ -19,7 +19,6 @@ import org.geoserver.importer.ValidationException;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
-import org.geoserver.rest.catalog.CatalogController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

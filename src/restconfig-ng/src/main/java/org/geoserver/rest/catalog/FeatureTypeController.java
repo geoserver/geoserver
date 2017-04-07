@@ -69,7 +69,7 @@ import freemarker.template.SimpleHash;
 @RequestMapping(path = {
         RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/featuretypes",
         RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{dataStoreName}/featuretypes"})
-public class FeatureTypeController extends CatalogController {
+public class FeatureTypeController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageStoreController.class);
 

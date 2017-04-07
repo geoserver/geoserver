@@ -26,13 +26,13 @@ import java.util.List;
 /**
  * Base controller for catalog info requests
  */
-public abstract class CatalogController extends RestBaseController {
+public abstract class AbstractCatalogController extends RestBaseController {
 
     protected final Catalog catalog;
     protected final GeoServerDataDirectory dataDir;
     protected final List<String> validImageFileExtensions;
 
-    public CatalogController(Catalog catalog) {
+    public AbstractCatalogController(Catalog catalog) {
         super();
         this.catalog = catalog;
         this.dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());

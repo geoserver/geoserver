@@ -16,7 +16,7 @@ import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
-public abstract class AbstractStoreUploadController extends CatalogController {
+public abstract class AbstractStoreUploadController extends AbstractCatalogController {
 
     static final Logger LOGGER = Logging.getLogger(AbstractStoreUploadController.class);
 

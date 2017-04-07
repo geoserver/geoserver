@@ -71,7 +71,7 @@ import freemarker.template.TemplateModelException;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores")
-public class DataStoreController extends CatalogController {
+public class DataStoreController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(DataStoreController.class);
 

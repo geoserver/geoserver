@@ -72,7 +72,7 @@ public class ImportJSONReader {
     }
     
 //    public ImportContextJSONConverterReader(Importer importer, InputStream in) throws IOException {
-//        super(MediaType.APPLICATION_JSON,CatalogController.TEXT_JSON);
+//        super(MediaType.APPLICATION_JSON,AbstractCatalogController.TEXT_JSON);
 //        this.importer = importer;
 //        JSONObject json = parse(in);
 //    }

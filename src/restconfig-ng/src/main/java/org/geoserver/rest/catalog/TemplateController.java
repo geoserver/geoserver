@@ -66,7 +66,7 @@ import org.springframework.web.bind.annotation.RestController;
         RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}/templates",
         RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/coveragestores/{storeName}/templates",
         RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{featureTypeName}/templates"})
-public class TemplateController extends CatalogController {
+public class TemplateController extends AbstractCatalogController {
     
     private GeoServerResourceLoader resources;
     static Logger LOGGER = Logging.getLogger("org.geoserver.catalog.rest");

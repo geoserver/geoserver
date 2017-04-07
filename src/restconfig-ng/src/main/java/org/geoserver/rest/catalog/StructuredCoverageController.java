@@ -68,7 +68,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH
         + "/workspaces/{workspaceName}/coveragestores/{storeName}/coverages/{coverageName}/index")
-public class StructuredCoverageController extends CatalogController {
+public class StructuredCoverageController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(StructuredCoverageController.class);
 

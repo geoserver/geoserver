@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH)
-public class CatalogReloadController extends GeoServerController {
+public class CatalogReloadController extends AbstractGeoServerController {
 
     @Autowired
     public CatalogReloadController(@Qualifier("geoServer") GeoServer geoServer) {

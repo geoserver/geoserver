@@ -64,7 +64,7 @@ import freemarker.template.TemplateModelException;
         MediaType.APPLICATION_JSON_VALUE,
         MediaType.APPLICATION_XML_VALUE,
         MediaType.TEXT_HTML_VALUE })
-public class WorkspaceController extends CatalogController {
+public class WorkspaceController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(WorkspaceController.class);
 

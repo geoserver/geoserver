@@ -64,7 +64,7 @@ import freemarker.template.TemplateModelException;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/wmsstores")
-public class WMSStoreController extends CatalogController {
+public class WMSStoreController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(WMSStoreController.class);
 

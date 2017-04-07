@@ -74,7 +74,7 @@ import freemarker.template.SimpleHash;
 @ControllerAdvice
 @RequestMapping(path = {RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/wmslayers",
         RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/wmsstores/{storeName}/wmslayers"})
-public class WMSLayerController extends CatalogController {
+public class WMSLayerController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(WMSLayerController.class);
 

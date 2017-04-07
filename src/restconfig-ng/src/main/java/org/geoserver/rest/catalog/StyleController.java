@@ -77,7 +77,7 @@ import com.google.common.io.Files;
     MediaType.APPLICATION_JSON_VALUE,
     MediaType.APPLICATION_XML_VALUE,
     MediaType.TEXT_HTML_VALUE})
-public class StyleController extends CatalogController {
+public class StyleController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(StyleController.class);
 

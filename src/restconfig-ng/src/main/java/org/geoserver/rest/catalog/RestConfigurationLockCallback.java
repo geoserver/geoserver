@@ -12,7 +12,7 @@ import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.GeoServerConfigurationLock.LockType;
 import org.geoserver.rest.CatalogReloadController;
 import org.geoserver.rest.DispatcherCallback;
-import org.geoserver.rest.GeoServerController;
+import org.geoserver.rest.AbstractGeoServerController;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -42,7 +42,7 @@ public class RestConfigurationLockCallback implements DispatcherCallback {
     public void dispatched(HttpServletRequest request, HttpServletResponse response,
             Object handler) {
         Object controller = DispatcherCallback.getControllerBean(handler);
-        if (controller instanceof CatalogController || controller instanceof GeoServerController) {
+        if (controller instanceof AbstractCatalogController || controller instanceof AbstractGeoServerController) {
             if (controller instanceof CatalogReloadController
                     || isWriteMethod(request.getMethod())) {
                 // this requires a full lock, it affects part of GeoTools that are not thread safe

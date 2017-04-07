@@ -100,7 +100,7 @@ public class ImportJSONWriter {
     }
     
 //    public ImportContextJSONConverterWriter(Importer importer, OutputStream out) {
-//        super(MediaType.APPLICATION_JSON,CatalogController.TEXT_JSON,MediaType.TEXT_HTML);
+//        super(MediaType.APPLICATION_JSON,AbstractCatalogController.TEXT_JSON,MediaType.TEXT_HTML);
 //        this.importer = importer;
 //        this.json = new FlushableJSONBuilder(new OutputStreamWriter(out));
 //    }

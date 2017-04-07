@@ -60,7 +60,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH+"/workspaces/{workspaceName}/coveragestores")
-public class CoverageStoreController extends CatalogController {
+public class CoverageStoreController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageStoreController.class);
 

@@ -29,7 +29,7 @@ import java.util.Arrays;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/settings")
-public class LocalSettingsController extends GeoServerController {
+public class LocalSettingsController extends AbstractGeoServerController {
 
     @Autowired
     public LocalSettingsController(@Qualifier("geoServer") GeoServer geoServer) {

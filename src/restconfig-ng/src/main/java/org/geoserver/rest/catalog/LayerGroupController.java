@@ -56,7 +56,7 @@ import java.util.logging.Logger;
                 MediaType.APPLICATION_JSON_VALUE,
                 MediaType.APPLICATION_XML_VALUE,
                 MediaType.TEXT_HTML_VALUE})
-public class LayerGroupController extends CatalogController {
+public class LayerGroupController extends AbstractCatalogController {
     private static final Logger LOGGER = Logging.getLogger(LayerGroupController.class);
 
     @Autowired

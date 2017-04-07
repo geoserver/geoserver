@@ -25,7 +25,7 @@ import java.util.Arrays;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/settings")
-public class SettingsController extends GeoServerController {
+public class SettingsController extends AbstractGeoServerController {
 
     @Autowired
     public SettingsController(@Qualifier("geoServer") GeoServer geoServer) {

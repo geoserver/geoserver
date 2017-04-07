@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}")
-public class CoverageController extends CatalogController {
+public class CoverageController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(CoverageController.class);
 

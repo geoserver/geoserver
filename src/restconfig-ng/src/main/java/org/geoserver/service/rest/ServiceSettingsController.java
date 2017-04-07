@@ -10,7 +10,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.util.OwsUtils;
-import org.geoserver.rest.GeoServerController;
+import org.geoserver.rest.AbstractGeoServerController;
 import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.wrapper.RestWrapper;
@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 /**
  * Service Settings controller
  */
-public abstract class ServiceSettingsController extends GeoServerController {
+public abstract class ServiceSettingsController extends AbstractGeoServerController {
     private static final Logger LOGGER = Logging.getLogger(ServiceSettingsController.class);
     private Class clazz;
 

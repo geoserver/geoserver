@@ -83,8 +83,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     private FeatureType buildCollectionFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(COLLECTION);
 
-        TypeBuilder typeBuilder = new TypeBuilder(
-                CommonFactoryFinder.getFeatureTypeFactory(null));
+        TypeBuilder typeBuilder = new TypeBuilder(CommonFactoryFinder.getFeatureTypeFactory(null));
 
         // map the source attributes
         for (AttributeDescriptor ad : flatSchema.getAttributeDescriptors()) {
@@ -118,32 +117,43 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
             typeBuilder.add(mappedDescriptor);
         }
-        
+
         // adding the metadata property
-        AttributeDescriptor metadataDescriptor = buildSimpleDescriptor(METADATA_PROPERTY_NAME, String.class);
+        AttributeDescriptor metadataDescriptor = buildSimpleDescriptor(METADATA_PROPERTY_NAME,
+                String.class);
         typeBuilder.add(metadataDescriptor);
 
-        // TODO: map OGC links and extra attributes
+        // map OGC links
+        AttributeDescriptor linksDescriptor = buildFeatureListDescriptor(OGC_LINKS_PROPERTY_NAME,
+                delegate.getSchema("collection_ogclink"));
+        typeBuilder.add(linksDescriptor);
 
         typeBuilder.setName(COLLECTION);
         typeBuilder.setNamespaceURI(namespaceURI);
         return typeBuilder.feature();
     }
 
-    private AttributeDescriptor buildSimpleDescriptor(Name name, Class binding ) {
+    private AttributeDescriptor buildSimpleDescriptor(Name name, Class binding) {
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
         ab.name(name.getLocalPart()).namespaceURI(name.getNamespaceURI());
         ab.setBinding(String.class);
         AttributeDescriptor descriptor = ab.buildDescriptor(name, ab.buildType());
         return descriptor;
+    }
 
+    private AttributeDescriptor buildFeatureListDescriptor(Name name, SimpleFeatureType schema) {
+        AttributeTypeBuilder ab = new AttributeTypeBuilder();
+        ab.name(name.getLocalPart()).namespaceURI(name.getNamespaceURI());
+        ab.setMinOccurs(0);
+        ab.setMaxOccurs(Integer.MAX_VALUE);
+        AttributeDescriptor descriptor = ab.buildDescriptor(name, schema);
+        return descriptor;
     }
 
     private FeatureType buildProductFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(PRODUCT);
 
-        TypeBuilder typeBuilder = new TypeBuilder(
-                CommonFactoryFinder.getFeatureTypeFactory(null));
+        TypeBuilder typeBuilder = new TypeBuilder(CommonFactoryFinder.getFeatureTypeFactory(null));
 
         // map the source attributes
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
@@ -187,15 +197,19 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
             typeBuilder.add(mappedDescriptor);
         }
         // adding the metadata property
-        AttributeDescriptor metadataDescriptor = buildSimpleDescriptor(METADATA_PROPERTY_NAME, String.class);
+        AttributeDescriptor metadataDescriptor = buildSimpleDescriptor(METADATA_PROPERTY_NAME,
+                String.class);
         typeBuilder.add(metadataDescriptor);
-        
+
         // adding the quicklook property
-        AttributeDescriptor quicklookDescriptor = buildSimpleDescriptor(QUICKLOOK_PROPERTY_NAME, byte[].class);
+        AttributeDescriptor quicklookDescriptor = buildSimpleDescriptor(QUICKLOOK_PROPERTY_NAME,
+                byte[].class);
         typeBuilder.add(quicklookDescriptor);
 
-
-        // TODO: map OGC links and extra attributes
+        // map OGC links
+        AttributeDescriptor linksDescriptor = buildFeatureListDescriptor(OGC_LINKS_PROPERTY_NAME,
+                delegate.getSchema("product_ogclink"));
+        typeBuilder.add(linksDescriptor);
 
         typeBuilder.setName(PRODUCT);
         typeBuilder.setNamespaceURI(namespaceURI);

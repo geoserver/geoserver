@@ -132,7 +132,7 @@ VALUES(31, 'LANDSAT8', NULL, '<table>
   </tr>
 </table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '1988-02-26 10:20:21.000', '2013-03-01 10:20:21.000', NULL, NULL, 'LANDSAT8', NULL, '', NULL, 'OLI', 'OPTICAL', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 -- metadata
-INSERT INTO collection_metadata ("id","metadata") VALUES (
+INSERT INTO collection_metadata ("mid","metadata") VALUES (
 17,'<?xml version="1.0" encoding="UTF-8"?>
 <gmi:MI_Metadata xmlns:gmi="http://www.isotc211.org/2005/gmi" xmlns:atom="http://www.w3.org/2005/Atom"
   xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:eo="http://a9.com/-/opensearch/extensions/eo/1.0/"
@@ -556,7 +556,7 @@ INSERT INTO collection_metadata ("id","metadata") VALUES (
     </gmi:MI_AcquisitionInformation>
   </gmi:acquisitionInformation>
 </gmi:MI_Metadata>');
-INSERT INTO collection_metadata ("id","metadata") VALUES (
+INSERT INTO collection_metadata ("mid","metadata") VALUES (
 32,'<?xml version="1.0" encoding="UTF-8"?>
 <gmi:MI_Metadata xmlns:gmi="http://www.isotc211.org/2005/gmi" xmlns:atom="http://www.w3.org/2005/Atom"
   xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:eo="http://a9.com/-/opensearch/extensions/eo/1.0/"
@@ -990,7 +990,7 @@ INSERT INTO collection_metadata ("id","metadata") VALUES (
     </gmi:MI_AcquisitionInformation>
   </gmi:acquisitionInformation>
 </gmi:MI_Metadata>');
-INSERT INTO collection_metadata ("id","metadata") VALUES (
+INSERT INTO collection_metadata ("mid","metadata") VALUES (
 31,'<?xml version="1.0" encoding="UTF-8"?>
 <gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dif="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/" xmlns:eo="http://a9.com/-/opensearch/extensions/eo/1.0/" xmlns:fn="http://www.w3.org/2005/02/xpath-functions" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:geo="http://a9.com/-/opensearch/extensions/geo/1.0/" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:georss="http://www.georss.org/georss" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:os="http://a9.com/-/spec/opensearch/1.1/" xmlns:semantic="http://a9.com/-/opensearch/extensions/semantic/1.0/" xmlns:sru="http://a9.com/-/opensearch/extensions/sru/2.0/" xmlns:time="http://a9.com/-/opensearch/extensions/time/1.0/" xmlns:util="java:java.util.UUID">
   <gmd:fileIdentifier>
@@ -3322,3 +3322,13 @@ INSERT INTO collection_metadata ("id","metadata") VALUES (
     </gmd:MD_MaintenanceInformation>
   </gmd:metadataMaintenance>
 </gmd:MD_Metadata>');
+-- collection ogc links
+INSERT INTO public.collection_ogclink
+("lid", "collection_id", "offering", "method", "code", "type", "href")
+VALUES(1, 17, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities');
+INSERT INTO public.collection_ogclink
+("lid", "collection_id", "offering", "method", "code", "type", "href")
+VALUES(2, 31, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/landsat8/ows?service=wms&version=1.3.0&request=GetCapabilities');
+INSERT INTO public.collection_ogclink
+("lid", "collection_id", "offering", "method", "code", "type", "href")
+VALUES(3, 32, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel1/ows?service=wms&version=1.3.0&request=GetCapabilities');

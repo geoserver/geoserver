@@ -4,32 +4,43 @@
  */
 package org.geoserver.opensearch.eo.store;
 
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.METADATA_PROPERTY_NAME;
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.OGC_LINKS_PROPERTY_NAME;
+
 import java.awt.RenderingHints.Key;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import org.geotools.data.DataAccess;
+import org.geotools.data.DataSourceException;
 import org.geotools.data.DefaultResourceInfo;
 import org.geotools.data.FeatureListener;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Join;
+import org.geotools.data.Join.Type;
 import org.geotools.data.Query;
 import org.geotools.data.QueryCapabilities;
 import org.geotools.data.ResourceInfo;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.store.EmptyFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
+import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
@@ -37,6 +48,7 @@ import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 
@@ -59,12 +71,27 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
 
     protected SortBy[] defaultSort;
 
+    private SimpleFeatureType linkFeatureType;
+
     public AbstractMappingSource(JDBCOpenSearchAccess openSearchAccess,
             FeatureType collectionFeatureType) throws IOException {
         this.openSearchAccess = openSearchAccess;
         this.schema = collectionFeatureType;
         this.propertyMapper = new SourcePropertyMapper(schema);
         this.defaultSort = buildDefaultSort(schema);
+        this.linkFeatureType = buildLinkFeatureType();
+    }
+
+    protected SimpleFeatureType buildLinkFeatureType() throws IOException {
+        SimpleFeatureType source = openSearchAccess.getDelegateStore().getSchema(getLinkTable());
+        try {
+            SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
+            b.init(source);
+            b.setName(openSearchAccess.OGC_LINKS_PROPERTY_NAME);
+            return b.buildFeatureType();
+        } catch (Exception e) {
+            throw new DataSourceException("Could not build the renamed feature type.", e);
+        }
     }
 
     /**
@@ -161,7 +188,7 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
 
     @Override
     public ReferencedEnvelope getBounds(Query query) throws IOException {
-        Query mapped = mapToSimpleCollectionQuery(query);
+        Query mapped = mapToSimpleCollectionQuery(query, false);
         return getDelegateCollectionSource().getBounds(mapped);
     }
 
@@ -178,9 +205,8 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
 
     @Override
     public int getCount(Query query) throws IOException {
-        // TODO: check if the query hits linked tables, and in that case, run getFeatures(), scan
-        // and count
-        return getDelegateCollectionSource().getCount(mapToSimpleCollectionQuery(query));
+        final Query mappedQuery = mapToSimpleCollectionQuery(query, false);
+        return getDelegateCollectionSource().getCount(mappedQuery);
     }
 
     /**
@@ -190,7 +216,7 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
      * @return
      * @throws IOException
      */
-    protected Query mapToSimpleCollectionQuery(Query query) throws IOException {
+    protected Query mapToSimpleCollectionQuery(Query query, boolean addJoins) throws IOException {
         Query result = new Query(getDelegateCollectionSource().getSchema().getTypeName());
         if (query.getFilter() != null) {
             MappingFilterVisitor visitor = new MappingFilterVisitor(propertyMapper);
@@ -225,16 +251,31 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
             // get stable results for paging
             result.setSortBy(defaultSort);
         }
-        result.setStartIndex(query.getStartIndex());
-        result.setMaxFeatures(query.getMaxFeatures());
 
-        // join to metadata table if necessary
-        if (hasOutputProperty(query, OpenSearchAccess.METADATA_PROPERTY_NAME)) {
-            Filter filter = FF.equal(FF.property("id"), FF.property("metadata.id"), true);
-            final String metadataTable = getMetadataTable();
-            Join join = new Join(metadataTable, filter);
-            join.setAlias("metadata");
-            result.getJoins().add(join);
+        if(addJoins) {
+            // join to metadata table if necessary
+            if (hasOutputProperty(query, METADATA_PROPERTY_NAME, false)) {
+                Filter filter = FF.equal(FF.property("id"), FF.property("metadata.mid"), true);
+                final String metadataTable = getMetadataTable();
+                Join join = new Join(metadataTable, filter);
+                join.setAlias("metadata");
+                result.getJoins().add(join);
+            }
+            
+            // same goes for OGC links (they might be missing, so outer join is used)
+            if (hasOutputProperty(query, OGC_LINKS_PROPERTY_NAME, true)) {
+                final String linkTable = getLinkTable(); 
+                final String linkForeignKey = getLinkForeignKey();
+                Filter filter = FF.equal(FF.property("id"), FF.property("link." + linkForeignKey), true);
+                Join join = new Join(linkTable, filter);
+                join.setAlias("link");
+                join.setType(Type.OUTER);
+                result.getJoins().add(join);
+            }
+        } else {
+            // only non joined requests are pageable
+            result.setStartIndex(query.getStartIndex());
+            result.setMaxFeatures(query.getMaxFeatures());
         }
 
         return result;
@@ -246,6 +287,21 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
      * @return
      */
     protected abstract String getMetadataTable();
+    
+    /**
+     * Name of the link table to join in case the {@link OpenSearchAccess#OGC_LINKS_PROPERTY_NAME} property is requested
+     * 
+     * @return
+     */
+    protected abstract String getLinkTable();
+    
+    /**
+     * Name of the field linking back to the main table in case the {@link OpenSearchAccess#OGC_LINKS_PROPERTY_NAME} property is requested
+     * 
+     * @return
+     */
+    protected abstract String getLinkForeignKey();
+
 
     /**
      * Searches for an optional property among the query attributes. Returns true only if the property is explicitly listed
@@ -254,9 +310,9 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
      * @param property
      * @return
      */
-    protected boolean hasOutputProperty(Query query, Name property) {
+    protected boolean hasOutputProperty(Query query, Name property, boolean includedByDefault) {
         if (query.getProperties() == null) {
-            return false;
+            return includedByDefault;
         }
 
         for (PropertyName pn : query.getProperties()) {
@@ -271,11 +327,25 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
 
     @Override
     public FeatureCollection<FeatureType, Feature> getFeatures(Query query) throws IOException {
-        // TODO: check if the query hits the OGC links and do post filtering on it
-        Query mappedQuery = mapToSimpleCollectionQuery(query);
-        SimpleFeatureCollection fc = getDelegateCollectionSource().getFeatures(mappedQuery);
-        LOGGER.severe(
-                "Still need to write the code that actually performs the joins and maps the result into a complex feature");
+        // first get the ids of the features we are going to return, no joins to support paging
+        Query idsQuery = mapToSimpleCollectionQuery(query, false);
+        // idsQuery.setProperties(Query.NO_PROPERTIES); (no can do, there are mandatory fields)
+        SimpleFeatureCollection idFeatureCollection = getDelegateCollectionSource().getFeatures(idsQuery);
+        
+        Set<FeatureId> ids = new LinkedHashSet<>();
+        idFeatureCollection.accepts(f -> ids.add(f.getIdentifier()), null);
+        
+        // if no features, return immediately
+        SimpleFeatureCollection fc;
+        if(ids.isEmpty()) {
+            fc = new EmptyFeatureCollection(getDelegateCollectionSource().getSchema());
+        } else {
+            // the run a joined query with the specified ids
+            Query dataQuery = mapToSimpleCollectionQuery(query, true);
+            dataQuery.setFilter(FF.id(ids));
+            fc = getDelegateCollectionSource().getFeatures(dataQuery);
+        }
+        
         return new MappingFeatureCollection(schema, fc, this::mapToComplexFeature);
 
     }
@@ -293,6 +363,32 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
 
         // allow subclasses to perform custom mappings while reusing the common ones
         mapProperties(builder, fi);
+        
+        // the OGC links can be more than one
+        Object link = fi.getAttribute("link");
+        while(link instanceof SimpleFeature) {
+            // retype the feature to have the right name
+            SimpleFeature linkFeature = SimpleFeatureBuilder.retype((SimpleFeature) link, linkFeatureType);
+            builder.append(OGC_LINKS_PROPERTY_NAME, linkFeature);
+            
+            // see if there are more links
+            if(it.hasNext()) {
+                SimpleFeature next = it.next();
+                // same feature?
+                if(next.getID().equals(fi.getID())) {
+                    link = next.getAttribute("link");
+                } else {
+                    // moved to the next feature, push it back,
+                    // we're done for the current one
+                    it.pushBack();
+                    break;
+                }
+            } else {
+                break;
+            }
+            
+        }
+
 
         //
         Feature feature = builder.buildFeature(fi.getID());
@@ -323,14 +419,15 @@ public abstract class AbstractMappingSource implements FeatureSource<FeatureType
             Attribute attribute = ab.buildSimple(null, value);
             builder.append(pd.getName(), attribute);
         }
+        
         // handle joined metadata
         Object metadataValue = fi.getAttribute("metadata");
         if (metadataValue instanceof SimpleFeature) {
             SimpleFeature metadataFeature = (SimpleFeature) metadataValue;
             ab.setDescriptor((AttributeDescriptor) schema
-                    .getDescriptor(OpenSearchAccess.METADATA_PROPERTY_NAME));
+                    .getDescriptor(METADATA_PROPERTY_NAME));
             Attribute attribute = ab.buildSimple(null, metadataFeature.getAttribute("metadata"));
-            builder.append(OpenSearchAccess.METADATA_PROPERTY_NAME, attribute);
+            builder.append(METADATA_PROPERTY_NAME, attribute);
         }
 
     }

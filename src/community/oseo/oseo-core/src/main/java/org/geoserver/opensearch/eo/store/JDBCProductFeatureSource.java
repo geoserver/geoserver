@@ -42,14 +42,24 @@ public class JDBCProductFeatureSource extends AbstractMappingSource {
     protected String getMetadataTable() {
         return "product_metadata";
     }
+    
+    @Override
+    protected String getLinkTable() {
+        return "product_ogclink";
+    }
 
     @Override
-    protected Query mapToSimpleCollectionQuery(Query query) throws IOException {
-        Query result = super.mapToSimpleCollectionQuery(query);
+    protected String getLinkForeignKey() {
+        return "product_id";
+    }
+
+    @Override
+    protected Query mapToSimpleCollectionQuery(Query query, boolean addJoins) throws IOException {
+        Query result = super.mapToSimpleCollectionQuery(query, addJoins);
 
         // join to quicklook table if necessary
-        if (hasOutputProperty(query, OpenSearchAccess.QUICKLOOK_PROPERTY_NAME)) {
-            Filter filter = FF.equal(FF.property("id"), FF.property("quicklook.id"), true);
+        if (addJoins && hasOutputProperty(query, OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, false)) {
+            Filter filter = FF.equal(FF.property("id"), FF.property("quicklook.tid"), true);
             Join join = new Join("product_thumb", filter);
             join.setAlias("quicklook");
             result.getJoins().add(join);

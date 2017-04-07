@@ -4,4 +4,5 @@
   <import namespace="http://a9.com/-/spec/opensearch/1.1/" schemaLocation="./OpenSearch.xsd"/>
   <import namespace="http://www.georss.org/georss" schemaLocation="./georss.xsd"/>
   <import namespace="http://a9.com/-/opensearch/extensions/geo/1.0/" schemaLocation="./opensearch-geo.xsd"/>
+  <import namespace="http://www.opengis.net/owc/1.0" schemaLocation="./owc.xsd"/>
 </schema>

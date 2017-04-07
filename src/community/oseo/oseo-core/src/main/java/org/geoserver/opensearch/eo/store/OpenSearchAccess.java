@@ -30,6 +30,11 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
     public static Name METADATA_PROPERTY_NAME = new NameImpl(EO_NAMESPACE, "metadata");
     
     /**
+     * The optional property in collection and product containing the OGC links (it's a collection)
+     */
+    public static Name OGC_LINKS_PROPERTY_NAME = new NameImpl(EO_NAMESPACE, "ogcLinks");
+    
+    /**
      * The optional property in product containing the quicklook
      */
     public static Name QUICKLOOK_PROPERTY_NAME = new NameImpl(EO_NAMESPACE, "quicklook");

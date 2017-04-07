@@ -8,7 +8,9 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
@@ -17,6 +19,9 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.geoserver.opensearch.eo.response.AtomSearchResponse;
+import org.geotools.data.DataStore;
+import org.geotools.data.simple.SimpleFeatureStore;
+import org.geotools.filter.text.cql2.CQL;
 import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
 import org.junit.Test;
@@ -80,12 +85,48 @@ public class SearchTest extends OSEOTestSupport {
         // parse html using JSoup (DOM not usable, HTML is not valid/well formed XML in general
         org.jsoup.nodes.Document sd = Jsoup.parse(summary);
         String isoHRef = sd.select("a[title=ISO format]").attr("href");
-        assertThat(isoHRef, equalTo("http://localhost:8080/geoserver/oseo/metadata?uid=SENTINEL2&httpAccept=application%2Fvnd.iso.19139%2Bxml"));
+        assertThat(isoHRef, equalTo(
+                "http://localhost:8080/geoserver/oseo/metadata?uid=SENTINEL2&httpAccept=application%2Fvnd.iso.19139%2Bxml"));
         String atomHRef = sd.select("a[title=ATOM format]").attr("href");
-        assertThat(atomHRef, equalTo("http://localhost:8080/geoserver/oseo/search?uid=SENTINEL2&httpAccept=application%2Fatom%2Bxml"));
+        assertThat(atomHRef, equalTo(
+                "http://localhost:8080/geoserver/oseo/search?uid=SENTINEL2&httpAccept=application%2Fatom%2Bxml"));
+
+        // check owc:offering
+        assertThat(dom, hasXPath("count(/at:feed/at:entry/owc:offering)", equalTo("3")));
+        // single offering check
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/owc:offering/@code",
+                equalTo("http://www.opengis.net/spec/owc/1.0/req/atom/wms")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/owc:offering/owc:operation/@code",
+                equalTo("GetCapabilities")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/owc:offering/owc:operation/@method",
+                equalTo("GET")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/owc:offering/owc:operation/@type",
+                equalTo("application/xml")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/owc:offering/owc:operation/@href", equalTo(
+                "http://localhost:8080/geoserver/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities")));
 
         // overall schema validation for good measure
         checkValidAtomFeed(dom);
+    }
+
+    @Test
+    public void testOgcLinksOuterJoin() throws Exception {
+        // remove one OGC link
+        DataStore dataStore = (DataStore) getCatalog().getDataStoreByName("oseo_jdbc").getDataStore(null);
+        SimpleFeatureStore store = (SimpleFeatureStore) dataStore.getFeatureSource("COLLECTION_OGCLINK");
+        store.removeFeatures(CQL.toFilter("href like '%landsat8%'"));
+        
+        // run request, we should get 3 feeds but only two links
+        MockHttpServletResponse response = getAsServletResponse(
+                "oseo/search?httpAccept=" + AtomSearchResponse.MIME);
+        assertEquals(AtomSearchResponse.MIME, response.getContentType());
+        assertEquals(200, response.getStatus());
+
+        Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
+        // print(dom);
+
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("3")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry/owc:offering)", equalTo("2")));
     }
 
     protected XPath getXPath() {
@@ -197,6 +238,21 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:link[@rel='" + rel + "']/@href",
                 containsString("count=" + count)));
     }
+    
+    @Test
+    public void testProductById() throws Exception {
+        Document dom = getAsDOM(
+                "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04&httpAccept=" + AtomSearchResponse.MIME);
+        // print(dom);
+
+        // check that filtering worked and offerings have been properly grouped
+        assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry/at:title", equalTo("S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry/owc:offering)", equalTo("3")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry/owc:offering[@code='http://www.opengis.net/spec/owc/1.0/req/atom/wcs']/owc:operation)", equalTo("2")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry/owc:offering[@code='http://www.opengis.net/spec/owc/1.0/req/atom/wms']/owc:operation)", equalTo("2")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry/owc:offering[@code='http://www.opengis.net/spec/owc/1.0/req/atom/wmts']/owc:operation)", equalTo("2")));
+    }
 
     @Test
     public void testAllSentinel2Products() throws Exception {
@@ -208,6 +264,10 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:entry/at:title", startsWith("S2A")));
         assertThat(dom, not(hasXPath("/at:feed/at:entry[at:title='S1A']")));
         assertThat(dom, not(hasXPath("/at:feed/at:entry[at:title='LS08']")));
+        
+        // there are two products only with links, verify, three offerings each
+        assertThat(dom, hasXPath("count(/at:feed/at:entry[at:title='S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04']/owc:offering)", equalTo("3")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry[at:title='S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T32TPL_N02.01']/owc:offering)", equalTo("3")));
     }
 
     @Test
@@ -236,33 +296,36 @@ public class SearchTest extends OSEOTestSupport {
         // parse html using JSoup (DOM not usable, HTML is not valid/well formed XML in general
         org.jsoup.nodes.Document sd = Jsoup.parse(summary);
         String isoHRef = sd.select("a[title=O&M format]").attr("href");
-        assertThat(isoHRef, equalTo("http://localhost:8080/geoserver/oseo/metadata?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fgml%2Bxml"));
+        assertThat(isoHRef, equalTo(
+                "http://localhost:8080/geoserver/oseo/metadata?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fgml%2Bxml"));
         String atomHRef = sd.select("a[title=ATOM format]").attr("href");
-        assertThat(atomHRef, equalTo("http://localhost:8080/geoserver/oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fatom%2Bxml"));
+        assertThat(atomHRef, equalTo(
+                "http://localhost:8080/geoserver/oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept=application%2Fatom%2Bxml"));
         String quickLookRef = sd.select("a[title='View browse image'").attr("href");
-        assertThat(quickLookRef, equalTo("http://localhost:8080/geoserver/oseo/quicklook?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04"));
+        assertThat(quickLookRef, equalTo(
+                "http://localhost:8080/geoserver/oseo/quicklook?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04"));
     }
-    
+
     @Test
     public void testSearchByBox() throws Exception {
         Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&box=-118,33,-117,34");
         // print(dom);
-        
+
         // only one feature should be matching
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry/at:title",
                 equalTo("S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04")));
     }
-    
+
     @Test
     public void testSearchByBoxOutsideData() throws Exception {
         // look for data close to the south pole
         Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&box=0,-89,1,-88");
         // print(dom);
-        
+
         assertNoResults(dom);
     }
-    
+
     @Test
     public void testSearchByDistance() throws Exception {
         // test distance search, this distance is just good enough
@@ -273,7 +336,7 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:entry/at:title",
                 equalTo("S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04")));
     }
-    
+
     @Test
     public void testSearchByDistanceWhereNoDataIsAvailable() throws Exception {
         // since H2 does not support well distance searches, use a point inside the data area
@@ -281,13 +344,13 @@ public class SearchTest extends OSEOTestSupport {
 
         assertNoResults(dom);
     }
-    
+
     @Test
     public void testSearchCollectionByTimeRange() throws Exception {
         // only LANDSAT matches
         Document dom = getAsDOM("oseo/search?timeStart=1988-01-01&timeEnd=2000-01-01");
         // print(dom);
-        
+
         // basics
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
@@ -303,13 +366,13 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("LANDSAT8")));
     }
-    
+
     @Test
     public void testSearchCollectionByTimeRangeDuring() throws Exception {
         // only SENTINEL-* matches
         Document dom = getAsDOM("oseo/search?timeStart=2012-01-01&timeRelation=during");
         // print(dom);
-        
+
         // basics
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("2")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
@@ -326,13 +389,14 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL1")));
     }
-    
+
     @Test
     public void testProductByTimeRange() throws Exception {
         // only LANDSAT matches
-        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&timeStart=2017-03-08&timeEnd=2017-03-09");
+        Document dom = getAsDOM(
+                "oseo/search?parentId=SENTINEL2&timeStart=2017-03-08&timeEnd=2017-03-09");
         // print(dom);
-        
+
         // basics
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
@@ -349,13 +413,13 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:entry/at:title",
                 equalTo("S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04")));
     }
-    
+
     @Test
     public void testSearchOptical() throws Exception {
         // sentinel-2 and landsat8 match, sentinel1 does not
         Document dom = getAsDOM("oseo/search?sensorType=OPTICAL");
         // print(dom);
-        
+
         // basics
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("2")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
@@ -369,12 +433,12 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("LANDSAT8")));
     }
-    
+
     @Test
     public void testSearchRadar() throws Exception {
         Document dom = getAsDOM("oseo/search?sensorType=RADAR");
         // print(dom);
-        
+
         // basics
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
@@ -387,12 +451,12 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL1")));
     }
-    
+
     @Test
     public void testSearchOpticalRadar() throws Exception {
         Document dom = getAsDOM("oseo/search?sensorType=OPTICAL,RADAR");
         // print(dom);
-        
+
         // basics
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("3")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
@@ -407,13 +471,13 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[3]/at:title", equalTo("LANDSAT8")));
     }
-    
+
     @Test
     public void testProductByCloudCover() throws Exception {
         // match cloud cover < 2
         Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&cloudCover=2]");
-        print(dom);
-        
+        // print(dom);
+
         // basics
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("12")));
         assertThat(dom, hasXPath("/at:feed/os:startIndex", equalTo("1")));
@@ -423,7 +487,7 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
         assertThat(dom, hasXPath("/at:feed/os:Query[@opt:cloudCover='2]']"));
     }
-    
+
     @Test
     public void testGetSentinel2Metadata() throws Exception {
         Document dom = getAsDOM("oseo/metadata?uid=SENTINEL2", 200, MetadataRequest.ISO_METADATA);
@@ -477,7 +541,7 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom,
                 hasXPath("/rss/channel/item/title", containsString(MetadataRequest.OM_METADATA)));
     }
-    
+
     @Test
     public void testQuicklook() throws Exception {
         String path = "oseo/quicklook?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01";

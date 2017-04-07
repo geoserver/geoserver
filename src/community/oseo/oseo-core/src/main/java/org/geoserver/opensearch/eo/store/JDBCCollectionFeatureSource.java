@@ -35,4 +35,14 @@ public class JDBCCollectionFeatureSource extends AbstractMappingSource {
         return "collection_metadata";
     }
 
+    @Override
+    protected String getLinkTable() {
+        return "collection_ogclink";
+    }
+
+    @Override
+    protected String getLinkForeignKey() {
+        return "collection_id";
+    }
+
 }

@@ -60,7 +60,7 @@ CREATE INDEX "idx_collection_eoAcquisitionStation" ON collection ("eoAcquisition
 
 -- the iso metadata storage (large files, not used for search, thus separate table)
 create table collection_metadata (
-  "id" int primary key references collection("id"),
+  "mid" int primary key references collection("id"),
   "metadata" text
 );
 
@@ -158,19 +158,19 @@ create index "idx_product_footprint" on product using GIST("footprint");
 
  -- the eo metadata storage (large files, not used for search, thus separate table)
 create table product_metadata (
-  "id" int primary key references product("id"),
+  "mid" int primary key references product("id"),
   "metadata" text
 );
 
 -- the eo thumbs storage (small binary files, not used for search, thus separate table)
 create table product_thumb (
-	"id" int primary key references product("id"),
+	"tid" int primary key references product("id"),
 	"thumb" bytea
 );
 
 -- links for collections
 create table collection_ogclink (
-  "id" serial primary key,
+  "lid" serial primary key,
   "collection_id" int references collection("id"),
   "offering" varchar,
   "method" varchar,
@@ -181,7 +181,7 @@ create table collection_ogclink (
 
 -- links for products
 create table product_ogclink (
-  "id" serial primary key,
+  "lid" serial primary key,
   "product_id" int references product("id"),
   "offering" varchar,
   "method" varchar,
@@ -192,7 +192,7 @@ create table product_ogclink (
 
 -- the granules table (might be abstract, and we can use partitioning)
 create table granule (
-  "id" serial primary key,
+  "gid" serial primary key,
   product_id int references product("id"),
   location varchar,
   the_geom geometry(Polygon, 4326)

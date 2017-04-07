@@ -2009,13 +2009,6 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             myBody = body;
         }
         
-//        @Override
-//        public void setBodyContent(String body) {
-//            myBody = body.getBytes();
-//        }
-        
-        
-        
         @Override
         public BufferedReader getReader() {
             if (null == myBody)
@@ -2025,6 +2018,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         
         public ServletInputStream getInputStream() {
             return new GeoServerDelegatingServletInputStream(myBody);
+        }
+        
+        @Override
+        public String toString() {
+            return "GeoServerMockHttpServletRequest "+getMethod()+ " "+getRequestURI();
         }
     }
 

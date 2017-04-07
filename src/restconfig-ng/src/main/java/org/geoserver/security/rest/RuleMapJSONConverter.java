@@ -36,7 +36,7 @@ public class RuleMapJSONConverter extends MapJSONConverter {
         // superclass generates a generic JSON map, we need a specific one to please Spring
         
         @SuppressWarnings("unchecked")
-        Map<String, String> source = (Map<String, String>) super.read(clazz, inputMessage);
+        Map<String, String> source = (Map<String, String>) super.readInternal(clazz, inputMessage);
         return new RuleMap<String,String>(source);
     }
 }

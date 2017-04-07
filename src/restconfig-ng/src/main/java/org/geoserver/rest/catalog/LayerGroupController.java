@@ -64,7 +64,7 @@ public class LayerGroupController extends CatalogController {
     }
 
     @GetMapping
-    public RestWrapper layerGroupsGet(@PathVariable(required = false) String workspaceName) {
+    public RestWrapper<?> getLayerGroups(@PathVariable(required = false) String workspaceName) {
 
         if(workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
@@ -75,7 +75,7 @@ public class LayerGroupController extends CatalogController {
     }
 
     @GetMapping(value = "{layerGroupName}")
-    public RestWrapper layerGroupGet(
+    public RestWrapper<?> getLayerGroup(
             @PathVariable String layerGroupName,
             @PathVariable(required = false) String workspaceName,
             @RequestParam(name = "quietOnNotFound", required = false) Boolean quietOnNotFound) {

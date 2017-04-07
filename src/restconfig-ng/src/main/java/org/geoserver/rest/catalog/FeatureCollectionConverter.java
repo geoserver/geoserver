@@ -30,11 +30,16 @@ public abstract class FeatureCollectionConverter<T> extends BaseMessageConverter
         return SimpleFeatureCollection.class.isAssignableFrom(clazz)
                 || JSONCollectionWrapper.class.isAssignableFrom(clazz);
     }
+    //
+    // reading
+    //
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
         return false;
     }
-    
+    //
+    // writing
+    //
     protected void writeGeoJsonl(SimpleFeatureCollection features, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         final FeatureJSON json = new FeatureJSON();

@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import javax.print.attribute.standard.Media;
+
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
@@ -40,31 +42,29 @@ public abstract class XStreamCatalogListConverter
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return RestListWrapper.class.isAssignableFrom(clazz);
+        return RestListWrapper.class.isAssignableFrom(clazz); // can write RestListWrapper 
     }
 
     //
     // reading
     //
     @Override
-    protected boolean canRead(MediaType mediaType) {
+    public boolean canRead(Class<?> clazz, MediaType mediaType) {
         return false;
     }
-    //
-    // writing
-    //
-
+    
     @Override
     public RestListWrapper<?> readInternal(Class<? extends RestListWrapper<?>> clazz,
             HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
         throw new HttpMessageNotReadableException(
                 getClass().getName() + " does not support deserialization of catalog lists");
     }
-
+    //
+    // writing
+    //
     @Override
     public void writeInternal(RestListWrapper<?> wrapper, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-
         XStream xstream = this.createXStreamInstance();
 
         Class<?> targetClass = wrapper.getObjectClass();
@@ -154,7 +154,7 @@ public abstract class XStreamCatalogListConverter
     public static class XMLXStreamListConverter extends XStreamCatalogListConverter {
 
         public XMLXStreamListConverter() {
-            super();
+            super(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
         }
 
         @Override
@@ -173,11 +173,6 @@ public abstract class XStreamCatalogListConverter
         }
 
         @Override
-        public List<MediaType> getSupportedMediaTypes() {
-            return Arrays.asList(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
-        }
-
-        @Override
         public String getMediaType() {
             return MediaType.APPLICATION_ATOM_XML_VALUE;
         }
@@ -191,7 +186,7 @@ public abstract class XStreamCatalogListConverter
     public static class JSONXStreamListConverter extends XStreamCatalogListConverter {
 
         public JSONXStreamListConverter() {
-            super();
+            super(MediaType.APPLICATION_JSON,XStreamJSONMessageConverter.TEXT_JSON);
         }
 
         @Override
@@ -219,11 +214,6 @@ public abstract class XStreamCatalogListConverter
         @Override
         public String getMediaType() {
             return MediaType.APPLICATION_JSON_VALUE;
-        }
-
-        @Override
-        public List<MediaType> getSupportedMediaTypes() {
-            return Arrays.asList(MediaType.APPLICATION_JSON);
         }
     }
 }

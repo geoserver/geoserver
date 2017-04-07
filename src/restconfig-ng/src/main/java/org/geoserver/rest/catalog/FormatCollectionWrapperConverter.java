@@ -6,6 +6,7 @@ package org.geoserver.rest.catalog;
 
 import java.io.IOException;
 
+import org.geoserver.rest.catalog.FormatCollectionWrapper.JSONCollectionWrapper;
 import org.geoserver.rest.catalog.FormatCollectionWrapper.XMLCollectionWrapper;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.springframework.http.HttpOutputMessage;
@@ -21,24 +22,24 @@ public class FormatCollectionWrapperConverter
         extends FeatureCollectionConverter<FormatCollectionWrapper> {
 
     public FormatCollectionWrapperConverter() {
-        super(MediaType.APPLICATION_XML);
+        super(MediaType.APPLICATION_XML, CatalogController.MEDIATYPE_TEXT_XML,
+                CatalogController.MEDIATYPE_TEXT_JSON, MediaType.APPLICATION_JSON);
     }
 
     @Override
     protected void writeInternal(FormatCollectionWrapper content, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         MediaType mediaType = outputMessage.getHeaders().getContentType();
-        if (MediaType.APPLICATION_JSON.includes(mediaType)
-                || CatalogController.MEDIATYPE_TEXT_JSON.includes(mediaType)) {
+        if (MediaType.APPLICATION_JSON.includes(mediaType) || CatalogController.MEDIATYPE_TEXT_JSON.includes(mediaType)) {
             writeGeoJsonl(content.getCollection(), outputMessage);
-        } else if (MediaType.APPLICATION_XML.includes(mediaType)) {
+        } else if (MediaType.APPLICATION_XML.includes(mediaType) || CatalogController.MEDIATYPE_TEXT_JSON.includes(mediaType) ) {
             writeGML(content.getCollection(), outputMessage);
         }
     }
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return XMLCollectionWrapper.class.isAssignableFrom(clazz);
+        return FormatCollectionWrapper.class.isAssignableFrom(clazz);
     }
 
 }

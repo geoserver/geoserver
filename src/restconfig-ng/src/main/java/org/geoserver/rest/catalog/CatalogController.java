@@ -43,6 +43,8 @@ public abstract class CatalogController extends RestBaseController {
      */
     public static final String TEXT_XML = "text/xml";
     
+    public static final MediaType MEDIATYPE_TEXT_XML =  MediaType.valueOf(TEXT_XML);
+    
     /**
      * Not an official MIME type, but GeoServer used to support it
      */

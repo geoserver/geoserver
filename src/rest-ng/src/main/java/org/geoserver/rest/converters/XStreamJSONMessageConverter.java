@@ -39,16 +39,10 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter<Object>
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        /*
-         * Actually, this should largely be dependent on clazz and not by the passed in media type.
-         *
-         * During my research I found that:
-         *
-         * - Unless "produces" was set on the controller object, the passed media type was null
-         * - So, you can't actually rely on media type not being null
-         * - BUT, this method is only called anyway if they requested media type (via Accepts header) is in the list of getSupportedMediaTypes
-         */
-        return RestWrapper.class.isAssignableFrom(clazz) && !RestListWrapper.class.isAssignableFrom(clazz);
+//        if( RestWrapper.class.isAssignableFrom(clazz) ){
+//            return !RestListWrapper.class.isAssignableFrom(clazz); // we can only write RestWrapper, not RestListWrapper
+//        }
+        return true; // reading objects is fine
     }
     //
     // reading
@@ -68,6 +62,13 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter<Object>
     //
     // writing
     //
+    @Override
+    public boolean canWrite(Class<?> clazz, MediaType mediaType) {
+        if( RestListWrapper.class.isAssignableFrom(clazz) ){
+            return false; // we can only write RestWrapper, not RestListWrapper
+        }
+        return RestWrapper.class.isAssignableFrom(clazz) && canWrite(mediaType);
+    }
     @Override
     public void writeInternal(Object o, HttpOutputMessage outputMessage)
         throws IOException, HttpMessageNotWritableException {

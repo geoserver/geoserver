@@ -85,7 +85,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     public void testGetAsVersionsJSON() throws Exception {
         // make the request, parsing the result into a json object
         JSONObject json = (JSONObject) getAsJSON(BASEPATH + "/about/version.json");
-        print(json);
+        //print(json);
         checkJSONModel(json);
     }
 
@@ -186,7 +186,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
 
             txformer.transform(domSrc, sr);
 
-            System.out.println(sw.toString());
+            //System.out.println(sw.toString());
         } catch (TransformerConfigurationException ex) {
             ex.printStackTrace();
             throw ex;

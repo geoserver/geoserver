@@ -23,7 +23,7 @@ import org.w3c.dom.NodeList;
 import net.sf.json.JSONObject;
 
 /**
- * Test for {@link DataAccessControlResource},{@link ServiceAccessControlResource} and {@link RESTAccessControlResource}
+ * Test for {@link DataAccessController},{@link ServiceAccessController} and {@link RestAccessController}
  * 
  * @author christian
  *

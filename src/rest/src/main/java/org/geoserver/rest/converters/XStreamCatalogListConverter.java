@@ -5,11 +5,7 @@
 package org.geoserver.rest.converters;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-
-import javax.print.attribute.standard.Media;
 
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
@@ -105,14 +101,14 @@ public abstract class XStreamCatalogListConverter
             public void marshal(Object source, HierarchicalStreamWriter writer,
                     MarshallingContext context) {
 
-                String ref = null;
+                String ref;
                 if (OwsUtils.getter(clazz, "name", String.class) != null) {
                     ref = (String) OwsUtils.get(source, "name");
                 } else if (OwsUtils.getter(clazz, "id", String.class) != null) {
                     ref = (String) OwsUtils.get(source, "id");
                 } else if (OwsUtils.getter(clazz, "id", Long.class) != null) {
                     // For some reason Importer objects have Long ids so this catches that case
-                    ref = (String) OwsUtils.get(source, "id").toString();
+                    ref = OwsUtils.get(source, "id").toString();
                 }
 
                 else {

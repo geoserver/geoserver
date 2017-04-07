@@ -41,7 +41,7 @@ public class WFSSettingsController extends ServiceSettingsController {
     private static final Logger LOGGER = Logging.getLogger(WFSSettingsController.class);
 
     @Autowired
-    public WFSSettingsController(GeoServer geoServer) { super(geoServer, WFSInfo.class); };
+    public WFSSettingsController(GeoServer geoServer) { super(geoServer, WFSInfo.class); }
 
     @PutMapping(value = {"/settings", "/workspaces/{workspaceName}/settings"}, consumes = {
             MediaType.APPLICATION_JSON_VALUE,

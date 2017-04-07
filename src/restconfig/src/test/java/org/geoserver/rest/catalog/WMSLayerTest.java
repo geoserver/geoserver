@@ -11,15 +11,12 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.geoserver.rest.catalog.HttpTestUtils.hasHeader;
 import static org.geoserver.rest.catalog.HttpTestUtils.hasStatus;
 import static org.geoserver.rest.catalog.HttpTestUtils.istream;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
@@ -50,6 +47,7 @@ import org.geoserver.test.http.MockHttpResponse;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -57,7 +55,6 @@ import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
-import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
 import junit.framework.AssertionFailedError;
@@ -68,8 +65,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class WMSLayerTest extends CatalogRESTTestSupport {
     @Rule
     public TestHttpClientRule clientMocker = new TestHttpClientRule();
-    private String capabilities;
-    
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -87,7 +83,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
 
     @Before
     public void addStatesWmsLayer() throws Exception {
-        capabilities = clientMocker.getServer()+"/geoserver/wms?REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS";
+        String capabilities = clientMocker.getServer() + "/geoserver/wms?REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS";
         WMSLayerInfo wml = catalog.getResourceByName("sf", "states", WMSLayerInfo.class);
         if (wml == null) {
             wml = catalog.getFactory().createWMSLayer();
@@ -181,7 +177,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
 
         JSON json = json(response);
         JSONArray names = (JSONArray) ((JSONObject)((JSONObject)json).get("list")).get("string");
-        assertThat(names, (Matcher)containsInAnyOrder(equalTo("world4326"),equalTo("anotherLayer")));
+        assertThat(names, (Matcher) containsInAnyOrder(equalTo("world4326"),equalTo("anotherLayer")));
    }
     
     @Override

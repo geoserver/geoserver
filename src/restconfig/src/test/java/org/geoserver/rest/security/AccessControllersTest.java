@@ -64,7 +64,7 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
     final private static String TEST_ROLELIST = TEST_ROLE1 + "," + TEST_ROLE2;
 
     String createXMLBody(String[][] rules) {
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         buff.append("<").append(RuleMapXMLConverter.ROOTELEMENT).append(">\n");
         for (String[] rule : rules) {
             buff.append("<").append(RuleMapXMLConverter.RULEELEMENT).append(" ");
@@ -115,16 +115,16 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
         if (roleArray1.length != roleArray2.length)
             return false;
 
-        Set<String> roleSet1 = new HashSet<String>();
+        Set<String> roleSet1 = new HashSet<>();
         for (String role : roleArray1)
             roleSet1.add(role.trim());
 
-        Set<String> roleSet2 = new HashSet<String>();
+        Set<String> roleSet2 = new HashSet<>();
         for (String role : roleArray2)
             roleSet2.add(role.trim());
 
         for (String role : roleSet1) {
-            if (roleSet2.contains(role) == false)
+            if (!roleSet2.contains(role))
                 return false;
         }
         return true;

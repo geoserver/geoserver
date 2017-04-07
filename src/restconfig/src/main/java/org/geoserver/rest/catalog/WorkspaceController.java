@@ -138,7 +138,7 @@ public class WorkspaceController extends AbstractCatalogController {
         UriComponents uriComponents = getUriComponents(name, builder);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
-        return new ResponseEntity<String>(name, headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(name, headers, HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{workspaceName}", consumes = {

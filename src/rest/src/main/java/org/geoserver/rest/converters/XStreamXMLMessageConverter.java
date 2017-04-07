@@ -5,15 +5,12 @@
 package org.geoserver.rest.converters;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.wrapper.RestHttpInputWrapper;
 import org.geoserver.rest.wrapper.RestListWrapper;
 import org.geoserver.rest.wrapper.RestWrapper;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -34,10 +31,8 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter<Object> 
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        if( RestWrapper.class.isAssignableFrom(clazz) ){
-            return !RestListWrapper.class.isAssignableFrom(clazz); // we can only read RestWrapper, not RestListWrapper
-        }
-        return true; // reading objects is fine
+        // we can only read RestWrapper, not RestListWrapper
+        return !RestWrapper.class.isAssignableFrom(clazz) || !RestListWrapper.class.isAssignableFrom(clazz);
     }
     
     //
@@ -50,7 +45,7 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter<Object> 
 
     
     @Override
-    protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage inputMessage)
+    protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         XStreamPersister p = xpf.createXMLPersister();
         if (inputMessage instanceof RestHttpInputWrapper) {
@@ -65,10 +60,8 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter<Object> 
     //
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        if( RestListWrapper.class.isAssignableFrom(clazz) ){
-            return false; // we can only write RestWrapper, not RestListWrapper
-        }
-        return RestWrapper.class.isAssignableFrom(clazz) && canWrite(mediaType);
+        // we can only write RestWrapper, not RestListWrapper
+        return !RestListWrapper.class.isAssignableFrom(clazz) && RestWrapper.class.isAssignableFrom(clazz) && canWrite(mediaType);
     }
     @Override
     protected void writeInternal(Object o, HttpOutputMessage outputMessage)

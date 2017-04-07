@@ -118,12 +118,12 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
      * @return
      */
     protected Map<String, Object> objectToMap(Object object, Class clazz) {
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        HashMap<String, Object> map = new HashMap<>();
 
         ClassProperties cp = OwsUtils.getClassProperties(clazz);
         for ( String p : cp.properties() ) {
             if ( "Class".equals( p ) ) continue;
-            Object value = null;
+            Object value;
             try {
                 value = OwsUtils.get(object, p);
             } catch(Exception e) {
@@ -165,7 +165,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
     }
     private static Set<Class<?>> getValueTypes()
     {
-        Set<Class<?>> ret = new HashSet<Class<?>>();
+        Set<Class<?>> ret = new HashSet<>();
         //primitives
         ret.add(Boolean.class);
         ret.add(Character.class);

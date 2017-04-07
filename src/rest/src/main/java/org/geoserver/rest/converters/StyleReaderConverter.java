@@ -5,26 +5,15 @@
 package org.geoserver.rest.converters;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.StyleHandler;
-import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
-import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
 import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.xml.sax.EntityResolver;
 
 /**

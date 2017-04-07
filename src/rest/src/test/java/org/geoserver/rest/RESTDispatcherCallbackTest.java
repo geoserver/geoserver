@@ -11,9 +11,6 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.easymock.EasyMock;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -34,12 +31,12 @@ public class RESTDispatcherCallbackTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testCallback() throws Exception {
-        callback.init((HttpServletRequest) anyObject(), (HttpServletResponse) anyObject());
+        callback.init(anyObject(), anyObject());
         expectLastCall();
-        callback.dispatched((HttpServletRequest) anyObject(), (HttpServletResponse) anyObject(),
+        callback.dispatched(anyObject(), anyObject(),
                 anyObject());
         expectLastCall();
-        callback.finished((HttpServletRequest) anyObject(), (HttpServletResponse) anyObject());
+        callback.finished(anyObject(), anyObject());
         expectLastCall();
         replay(callback);
 
@@ -50,15 +47,15 @@ public class RESTDispatcherCallbackTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testCallbackException() throws Exception {
-        callback.init((HttpServletRequest) anyObject(), (HttpServletResponse) anyObject());
+        callback.init(anyObject(), anyObject());
         expectLastCall();
-        callback.dispatched((HttpServletRequest) anyObject(), (HttpServletResponse) anyObject(),
+        callback.dispatched(anyObject(), anyObject(),
                 anyObject());
         expectLastCall();
-        callback.exception((HttpServletRequest) anyObject(), (HttpServletResponse) anyObject(),
-                (Exception) anyObject());
+        callback.exception(anyObject(), anyObject(),
+                anyObject());
         expectLastCall();
-        callback.finished((HttpServletRequest) anyObject(), (HttpServletResponse) anyObject());
+        callback.finished(anyObject(), anyObject());
         expectLastCall();
         replay(callback);
 

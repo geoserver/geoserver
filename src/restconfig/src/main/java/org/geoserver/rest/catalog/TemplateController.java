@@ -193,7 +193,7 @@ public class TemplateController extends AbstractCatalogController {
             throw new ResourceNotFoundException("Directory not found: '"+path+"'"); 
         default:
             List<Resource> files = Resources.list(directory, new Resources.ExtensionFilter("FTL"), false);
-            List<TemplateInfo> list = new ArrayList<TemplateInfo>();
+            List<TemplateInfo> list = new ArrayList<>();
             for (Resource file : files) {
                 list.add(new TemplateInfo(file));
             }
@@ -213,8 +213,7 @@ public class TemplateController extends AbstractCatalogController {
                     + directory.path());
         }
         try {
-            Resource upload = RESTUtils.handleBinUpload(filename, directory, false, request);
-            return upload;
+            return RESTUtils.handleBinUpload(filename, directory, false, request);
         } catch (IOException problem) {
             throw new RestException(problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     problem);
@@ -229,7 +228,7 @@ public class TemplateController extends AbstractCatalogController {
      * @return template path
      */
     public static String path(String workspace, String store, String type) {
-        List<String> path = new ArrayList<String>();
+        List<String> path = new ArrayList<>();
         path.add("workspaces");
         
         if (workspace != null) {

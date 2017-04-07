@@ -5,7 +5,6 @@
 package org.geoserver.rest.converters;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.logging.Logger;
 
@@ -75,7 +74,7 @@ public abstract class BaseMessageConverter<T> extends AbstractHttpMessageConvert
     }
     
     /**
-     * Returns the priority of the {@link BaseMessageConverte}.
+     * Returns the priority of the {@link BaseMessageConverter}.
      */
     public int getPriority() {
         return ExtensionPriority.LOWEST;

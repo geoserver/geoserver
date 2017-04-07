@@ -65,9 +65,6 @@ import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateModelException;
 
-/**
- * Created by vickdw on 3/27/17.
- */
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/datastores")
@@ -122,7 +119,7 @@ public class DataStoreController extends AbstractCatalogController {
 
         if ( dataStore.getWorkspace() != null ) {
              //ensure the specifried workspace matches the one dictated by the uri
-             WorkspaceInfo ws = (WorkspaceInfo) dataStore.getWorkspace();
+             WorkspaceInfo ws = dataStore.getWorkspace();
              if ( !workspaceName.equals( ws.getName() ) ) {
                  throw new RestException( "Expected workspace " + workspaceName + 
                      " but client specified " + ws.getName(), HttpStatus.FORBIDDEN );
@@ -167,7 +164,7 @@ public class DataStoreController extends AbstractCatalogController {
                 .buildAndExpand(workspaceName, storeName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
-        return new ResponseEntity<String>(storeName, headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(storeName, headers, HttpStatus.CREATED);
     }
 
     @PutMapping(value = "{storeName}", consumes = {

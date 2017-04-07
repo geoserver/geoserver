@@ -44,8 +44,7 @@ public interface DispatcherCallback {
      */
     static Object getControllerBean(Object handler) {
         if (handler instanceof HandlerMethod) {
-            Object controller = ((HandlerMethod) handler).getBean();
-            return controller;
+            return ((HandlerMethod) handler).getBean();
         }
         return handler;
     }

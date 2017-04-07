@@ -112,7 +112,7 @@ public class WMSStoreController extends AbstractCatalogController {
 
         if ( wmsStore.getWorkspace() != null ) {
              //ensure the specified workspace matches the one dictated by the uri
-             WorkspaceInfo ws = (WorkspaceInfo) wmsStore.getWorkspace();
+             WorkspaceInfo ws = wmsStore.getWorkspace();
              if ( !workspaceName.equals( ws.getName() ) ) {
                  throw new RestException( "Expected workspace " + workspaceName + 
                      " but client specified " + ws.getName(), HttpStatus.FORBIDDEN );
@@ -131,7 +131,7 @@ public class WMSStoreController extends AbstractCatalogController {
             .buildAndExpand(workspaceName, storeName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
-        return new ResponseEntity<String>(storeName, headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(storeName, headers, HttpStatus.CREATED);
     }
 
     

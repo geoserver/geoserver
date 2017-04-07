@@ -83,11 +83,8 @@ public class StyleWriterConverter extends BaseMessageConverter<Object> {
     void copyDefinition(StyleInfo style, OutputStream out) throws IOException {
         GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
         Resource resource = dd.style(style);
-        InputStream in = resource.in();
-        try {
+        try (InputStream in = resource.in()) {
             IOUtils.copy(in, out);
-        } finally {
-            in.close();
         }
     }
 }

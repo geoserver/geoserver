@@ -78,7 +78,7 @@ public class UserPasswordController extends RestBaseController {
             throw new RestException("Cannot calculate if PUT is allowed (" + e.getMessage() + ")",
                     HttpStatus.UNPROCESSABLE_ENTITY, e);
         }
-        String newpass = (String) putMap.get(UP_NEW_PW);
+        String newpass = putMap.get(UP_NEW_PW);
 
         if (StringUtils.isBlank(newpass))
             throw new RestException("Missing '" + UP_NEW_PW + "'", HttpStatus.BAD_REQUEST);

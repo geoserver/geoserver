@@ -7,7 +7,6 @@ package org.geoserver.rest.catalog;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -43,13 +42,13 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
     @Override
     public Map<?, ?> readInternal(Class<? extends Map<?, ?>> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
-        Object result = null;
+        Object result;
         SAXBuilder builder = new SAXBuilder();
         Document doc;
         try {
             doc = builder.build(inputMessage.getBody());
         } catch (JDOMException e) {
-            throw (IOException) new IOException("Error building document").initCause(e);
+            throw new IOException("Error building document", e);
         }
 
         Element elem = doc.getRootElement();
@@ -95,18 +94,16 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
         } else if (children.get(0) instanceof Element) {
             Element child = (Element) children.get(0);
             if (child.getName().equals("entry")) {
-                List<Object> l = new ArrayList<Object>();
-                Iterator<?> it = elem.getChildren("entry").iterator();
-                while (it.hasNext()) {
-                    Element curr = (Element) it.next();
+                List<Object> l = new ArrayList<>();
+                for (Object o : elem.getChildren("entry")) {
+                    Element curr = (Element) o;
                     l.add(convert(curr));
                 }
                 return l;
             } else {
-                Map<String, Object> m = new NamedMap<String, Object>(child.getName());
-                Iterator<?> it = children.iterator();
-                while (it.hasNext()) {
-                    Element curr = (Element) it.next();
+                Map<String, Object> m = new NamedMap<>(child.getName());
+                for (Object aChildren : children) {
+                    Element curr = (Element) aChildren;
                     m.put(curr.getName(), convert(curr));
                 }
                 return m;

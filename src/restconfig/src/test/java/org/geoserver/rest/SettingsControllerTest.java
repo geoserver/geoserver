@@ -6,7 +6,6 @@ package org.geoserver.rest;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
-import org.geoserver.catalog.StoreInfo;
 import org.geoserver.config.*;
 import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.ows.LocalWorkspace;
@@ -16,10 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import java.util.List;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.*;

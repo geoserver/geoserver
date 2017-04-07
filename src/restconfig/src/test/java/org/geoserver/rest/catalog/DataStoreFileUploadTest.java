@@ -44,9 +44,6 @@ import java.util.zip.ZipOutputStream;
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.junit.Assert.*;
 
-/**
- * Created by vickdw on 3/30/17.
- */
 public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -68,7 +65,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         LoggingFilter filter = new LoggingFilter();
         filter.setEnabled(true);
         filter.setLogBodies(true);
-        return Collections.singletonList((Filter) filter);
+        return Collections.singletonList(filter);
     }
 
     @Before
@@ -183,7 +180,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     byte[] toBytes(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        int c = -1;
+        int c;
         while ( ( c = in.read() ) != -1 ) {
             out.write( c );
         }
@@ -452,7 +449,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         InputStream in = getClass().getResourceAsStream( "/test-data/mappedPolygons.xml" );
         if (in != null) {
             byte[] original = toBytes(in);
-            byte[] modified = null;
+            byte[] modified;
 
             String originalAsString = new String(original, Charset.forName("UTF-8"));
             // modify paths in the original mapping file

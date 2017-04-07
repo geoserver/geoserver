@@ -136,7 +136,7 @@ public class LayerGroupController extends AbstractCatalogController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(uriComponents.toUri());
 
-        return new ResponseEntity<String>(layerGroupName, httpHeaders, HttpStatus.CREATED);
+        return new ResponseEntity<>(layerGroupName, httpHeaders, HttpStatus.CREATED);
     }
 
     @PutMapping(value = "{layerGroupName}", consumes = {
@@ -155,7 +155,7 @@ public class LayerGroupController extends AbstractCatalogController {
         checkFullAdminRequired(workspaceName);
         
         LOGGER.info( "PUT layer group " + layerGroupName
-                + (workspaceName == null ? ", workspace " + workspaceName : ""));
+                + (workspaceName != null ? ", workspace " + workspaceName : ""));
         LayerGroupInfo original = workspaceName != null ?
                 catalog.getLayerGroupByName(workspaceName, layerGroupName) : catalog.getLayerGroupByName(layerGroupName);
 
@@ -220,7 +220,7 @@ public class LayerGroupController extends AbstractCatalogController {
             protected void postEncodeReference(Object obj, String ref, String prefix,
                     HierarchicalStreamWriter writer, MarshallingContext context) {
                 if ( obj instanceof StyleInfo ) {
-                    StringBuffer link = new StringBuffer();
+                    StringBuilder link = new StringBuilder();
                     if (prefix != null) {
                         link.append("/workspaces/").append(converter.encode(prefix));
                     }

@@ -20,7 +20,6 @@ import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.LocalWorkspace;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.wms.WMSInfo;
 import org.junit.After;
 import org.junit.Before;

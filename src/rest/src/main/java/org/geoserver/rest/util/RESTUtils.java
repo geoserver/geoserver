@@ -36,16 +36,13 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
-import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.rest.RestException;
 import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.vfny.geoserver.global.ConfigurationException;
 
 /**
  * Utility class for Restlets.
@@ -109,7 +106,7 @@ public class RESTUtils {
             String baseName = FilenameUtils.getBaseName(fileName);
             String itemName = FilenameUtils.getName(fileName);
             // Store parameters used for mapping the file path
-            Map<String, String> storeParams = new HashMap<String, String>();
+            Map<String, String> storeParams = new HashMap<>();
             // Mapping item path
             remapping(workSpace, baseName, itemPath, itemName, storeParams);
         }
@@ -120,7 +117,7 @@ public class RESTUtils {
             if (deleteDirectoryContent) {
                 for (Resource file : directory.list()) {
                     file.delete();
-                };
+                }
             } else {
                 // delete the file, otherwise replacing it with a smaller one will leave bytes at the end
                 newFile.delete();
@@ -132,28 +129,7 @@ public class RESTUtils {
         }
         return newFile;
     }
-    
-    /**
-     * Handles the upload of a dataset using the URL method.
-     * 
-     * @param datasetName the name of the uploaded dataset.
-     * @param extension the extension of the uploaded dataset.
-     * @param request the incoming request.
-     * @return a {@link File} that points to the final uploaded dataset.
-     * 
-     * @throws IOException
-     * @throws ConfigurationException
-     * 
-     * @deprecated use {@link #handleURLUpload(String, File, HttpServletRequest)}.
-     */
-    public static org.geoserver.platform.resource.Resource handleURLUpload(String datasetName, String workSpace, String extension, HttpServletRequest request) throws IOException, ConfigurationException {
-        // Get the dir where to write and create a file there
-        
-        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        Resource data = loader.get("data");
-        return handleURLUpload(datasetName + "." + extension, workSpace, data, request);
-    }
-    
+
     /**
      * Reads a url from the body of a request, reads the contents of the url and writes it to a file.
      *   
@@ -178,7 +154,7 @@ public class RESTUtils {
         if(mediaType == null || !isZipMediaType( mediaType )){
             String baseName = FilenameUtils.getBaseName(fileName);
             // Store parameters used for mapping the file path
-            Map<String, String> storeParams = new HashMap<String, String>();
+            Map<String, String> storeParams = new HashMap<>();
             String itemName = FilenameUtils.getName(fileName);
             // Mapping item path
             remapping(workSpace, baseName, itemPath, itemName, storeParams);
@@ -261,9 +237,7 @@ public class RESTUtils {
      * 
      * @param zipFile The zip file.
      * @param outputDirectory The directory to unpack the contents to.
-     * @param request HTTP request sent.
-     * @param files Empty List to be filled with the zip files.
-     * 
+     *
      * @throws IOException Any I/O errors that occur.
      * 
      * TODO: move this to IOUtils
@@ -296,24 +270,6 @@ public class RESTUtils {
 
         IOUtils.inflate(archive, outputDirectory, null, workspace, store, files, external);
         zipFile.delete();
-    }
-    
-    /**
-     * Unzip a zipped dataset.
-     * 
-     * @param storeName the name of the store to handle.
-     * @param zipFile the zipped archive 
-     * @return null if the zip file does not point to a valid zip file, the output directory otherwise.
-     * 
-     * @deprecated use {@link #unzipFile(File, File)}
-     *  
-     */
-    public static org.geoserver.platform.resource.Resource unpackZippedDataset(String storeName, org.geoserver.platform.resource.Resource zipFile) throws IOException, ConfigurationException {
-        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        String outputPath = Paths.path("data",Paths.convert(storeName));
-        Resource directory = loader.get(outputPath);
-        unzipFile(zipFile, directory, null, null, null, null, false);
-        return directory;
     }
 
     /**
@@ -357,7 +313,7 @@ public class RESTUtils {
      */
     public static String getItem(String workspaceName, String storeName, Catalog catalog, String key) {
         // Initialization of a null String containing the root directory to use for the input store config
-        String item = null;
+        String item;
 
         // ////////////////////////////////////
         //
@@ -403,8 +359,7 @@ public class RESTUtils {
         }
         // If the Store is present, then the associated MetadataMap is selected
         if(storeInfo != null){
-            MetadataMap map = storeInfo.getMetadata();
-            return map;
+            return storeInfo.getMetadata();
         }
        return null;
     }
@@ -422,8 +377,7 @@ public class RESTUtils {
        if(wsInfo != null){
            GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
            SettingsInfo info = gs.getSettings(wsInfo);
-           MetadataMap map = info != null ? info.getMetadata() : null;
-           return map;
+           return info != null ? info.getMetadata() : null;
        }
        return null;
     }
@@ -438,8 +392,7 @@ public class RESTUtils {
        // Global info should be always not null
        if(gsInfo != null){
            SettingsInfo info = gsInfo.getSettings();
-           MetadataMap map = info != null ? info.getMetadata() : null;
-           return map;
+           return info != null ? info.getMetadata() : null;
        }
        return null;
     }
@@ -518,7 +471,7 @@ public class RESTUtils {
                 FileOutputStream output = null;
                 try {
                     output = new FileOutputStream(outpath);
-                    int len = 0;
+                    int len;
                     while ((len = zin.read(buffer)) > 0)
                     {
                         output.write(buffer, 0, len);

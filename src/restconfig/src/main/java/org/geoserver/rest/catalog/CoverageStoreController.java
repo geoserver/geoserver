@@ -115,7 +115,7 @@ public class CoverageStoreController extends AbstractCatalogController {
             .buildAndExpand(workspaceName, storeName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
-        return new ResponseEntity<String>(storeName, headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(storeName, headers, HttpStatus.CREATED);
     }
 
     
@@ -177,9 +177,9 @@ public class CoverageStoreController extends AbstractCatalogController {
      * @throws IOException
      */
     private void delete(String deleteType, CoverageStoreInfo cs) throws IOException {
-        if (deleteType.equalsIgnoreCase("none")) {
-            return;
-        } else if (deleteType.equalsIgnoreCase("all") || deleteType.equalsIgnoreCase("metadata")) {
+        if (!deleteType.equalsIgnoreCase("none") &&
+                (deleteType.equalsIgnoreCase("all") || deleteType.equalsIgnoreCase("metadata"))) {
+
             final boolean deleteData = deleteType.equalsIgnoreCase("all");
             GridCoverageReader reader = cs.getGridCoverageReader(null, null);
             if (reader instanceof StructuredGridCoverage2DReader) {

@@ -29,13 +29,9 @@ import java.util.Properties;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.*;
 
-/**
- * Created by vickdw on 3/27/17.
- */
 public class DataStoreControllerTest extends CatalogRESTTestSupport {
 
     @Before

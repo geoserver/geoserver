@@ -27,12 +27,12 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
     /**
      * The ways a file upload can be achieved
      */
-    protected static enum UploadMethod {
+    protected enum UploadMethod {
         file(true), external(false), url(true);
 
         boolean inline;
 
-        private UploadMethod(boolean inline) {
+        UploadMethod(boolean inline) {
             this.inline = inline;
         }
 
@@ -40,7 +40,7 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
             return inline;
         }
 
-    };
+    }
 
     public AbstractStoreUploadController(Catalog catalog) {
         super(catalog);
@@ -56,9 +56,9 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
     protected List<Resource> handleFileUpload(String store, String workspace, UploadMethod method,
             String format, Resource directory, HttpServletRequest request) {
 
-        List<Resource> files = new ArrayList<Resource>();
+        List<Resource> files = new ArrayList<>();
 
-        Resource uploadedFile = null;
+        Resource uploadedFile;
         boolean external = false;
         try {
             if (method == UploadMethod.file) {

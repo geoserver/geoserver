@@ -7,12 +7,9 @@ package org.geoserver.rest.catalog;
 
 import static org.junit.Assert.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import javax.servlet.ServletResponse;
 
 import org.geoserver.data.test.SystemTestData;
 import org.junit.Before;
@@ -39,8 +36,7 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         if (format != null) {
             indexUrl += "." + format;
         }
-        String indexContent = getAsString(indexUrl);
-        return indexContent;
+        return getAsString(indexUrl);
     }
 
     private static String getName(String path) {
@@ -92,7 +88,7 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
     }
 
     private List<String> getAllPaths() {
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
 
         paths.add(ROOT_PATH+"/templates/aTemplate.ftl");
         paths.add(ROOT_PATH+"/templates/anotherTemplate.ftl");

@@ -106,7 +106,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
 
         StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
         // This method returns a List of the harvested files.
-        final List<File> uploadedFiles = new ArrayList<File>();
+        final List<File> uploadedFiles = new ArrayList<>();
         for (Resource res : doFileUpload(method, workspaceName, storeName, format, request)) {
             uploadedFiles.add(Resources.find(res));
         }
@@ -223,7 +223,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
 
         GridCoverage2DReader reader = null;
         try {
-            reader = (GridCoverage2DReader) ((AbstractGridFormat) coverageFormat)
+            reader = ((AbstractGridFormat) coverageFormat)
                     .getReader(uploadedFileURL);
             if (reader == null) {
                 throw new RestException("Could not aquire reader for coverage.",
@@ -286,8 +286,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         }
 
         try {
-            Format coverageFormat = CoverageStoreUtils.acquireFormat(coverageFormatName);
-            return coverageFormat;
+            return CoverageStoreUtils.acquireFormat(coverageFormatName);
         } catch (Exception e) {
             throw new RestException("Coveragestore format unavailable: " + coverageFormatName,
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -296,7 +295,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
 
     private void configureCoverageInfo(CatalogBuilder builder, CoverageStoreInfo storeInfo,
             boolean add, String nativeName, String coverageName, GridCoverage2DReader reader,
-            final Map customParameters) throws Exception, IOException {
+            final Map customParameters) throws Exception {
         CoverageInfo cinfo = builder.buildCoverage(reader, customParameters);
 
         if (coverageName != null) {
@@ -399,7 +398,6 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
      * @param method The method, one of 'file.' (inline), 'url.' (via url), or 'external.' (already on server)
      * @param storeName The name of the store being added
      * @param format The store format.
-     * @param postRequest True if the request is a POST one
      * @throws IOException
      */
     protected List<Resource> doFileUpload(UploadMethod method, String workspaceName,
@@ -430,8 +428,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             // Check if the coverage already exists
             CoverageStoreInfo coverage = catalog.getCoverageStoreByName(storeName);
             if (coverage != null) {
-                if (workspaceName == null || (workspaceName != null
-                        && coverage.getWorkspace().getName().equalsIgnoreCase(workspaceName))) {
+                if (workspaceName == null || coverage.getWorkspace().getName().equalsIgnoreCase(workspaceName)) {
                     // If the coverage exists then the associated directory is defined by its URL
                     directory = Resources.fromPath(
                             DataUtilities.urlToFile(new URL(coverage.getURL())).getPath(),
@@ -448,7 +445,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         // Selection of the original ROOT directory path
         StringBuilder root = new StringBuilder(directory.path());
         // StoreParams to use for the mapping.
-        Map<String, String> storeParams = new HashMap<String, String>();
+        Map<String, String> storeParams = new HashMap<>();
         // Listing of the available pathMappers
         List<RESTUploadPathMapper> mappers = GeoServerExtensions
                 .extensions(RESTUploadPathMapper.class);

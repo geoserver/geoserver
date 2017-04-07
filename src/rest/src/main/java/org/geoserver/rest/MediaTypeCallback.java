@@ -11,5 +11,5 @@ import org.springframework.web.servlet.config.annotation.ContentNegotiationConfi
  */
 public interface MediaTypeCallback {
 
-    public void configure(ContentNegotiationConfigurer configurer);
+    void configure(ContentNegotiationConfigurer configurer);
 }

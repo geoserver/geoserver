@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.geoserver.ManifestLoader.AboutModel;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
@@ -23,7 +22,6 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +33,6 @@ import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.CollectionModel;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
-import freemarker.template.Template;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
@@ -105,20 +102,14 @@ public class AboutStatusController extends RestBaseController {
                                 hash.put("name", status.getName());
                                 hash.put("isAvailable", Boolean.toString(status.isAvailable()));
                                 hash.put("isEnabled", Boolean.toString(status.isEnabled()));
-                                status.getComponent().ifPresent(component -> {
-                                    hash.put("component", component);
-                                });
-                                status.getVersion().ifPresent(version -> {
-                                    hash.put("version", version);
-                                });
-                                status.getMessage().ifPresent(message -> {
-                                    hash.put("message", message.replace("\n", "<br/>"));
-                                });
+                                status.getComponent().ifPresent(component -> hash.put("component", component));
+                                status.getVersion().ifPresent(version -> hash.put("version", version));
+                                status.getMessage().ifPresent(message -> hash.put("message", message.replace("\n", "<br/>")));
 
                                 return hash;
                             }
                             return super.wrap(object);
-                        };
+                        }
                     }));
                     return hash;
                 }

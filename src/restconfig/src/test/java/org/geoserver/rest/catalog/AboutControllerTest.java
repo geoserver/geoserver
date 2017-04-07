@@ -12,7 +12,6 @@ import java.io.StringWriter;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -23,8 +22,6 @@ import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.web.accept.ContentNegotiationManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -141,7 +138,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         // System.out.println(sw.toString());
 
         // make assertions
-        assertTrue(json instanceof JSONObject);
+        assertTrue(json != null);
         Object obj = json.get("about");
 
         assertTrue(obj instanceof JSONObject);
@@ -187,13 +184,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
             txformer.transform(domSrc, sr);
 
             //System.out.println(sw.toString());
-        } catch (TransformerConfigurationException ex) {
-            ex.printStackTrace();
-            throw ex;
-        } catch (TransformerFactoryConfigurationError ex) {
-            ex.printStackTrace();
-            throw ex;
-        } catch (TransformerException ex) {
+        } catch (TransformerFactoryConfigurationError | TransformerException ex) {
             ex.printStackTrace();
             throw ex;
         }

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.logging.Logger;
 
 /**
@@ -37,7 +37,7 @@ public abstract class ServiceSettingsController extends AbstractGeoServerControl
     public ServiceSettingsController(@Qualifier("geoServer") GeoServer geoServer, Class clazz) {
         super(geoServer);
         this.clazz = clazz;
-    };
+    }
 
     @GetMapping( value = {"/settings", "/workspaces/{workspaceName}/settings"}, produces = {
             MediaType.APPLICATION_JSON_VALUE,
@@ -99,7 +99,7 @@ public abstract class ServiceSettingsController extends AbstractGeoServerControl
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<>(clazz, Arrays.asList(WorkspaceInfo.class));
+        return new ObjectToMapWrapper<>(clazz, Collections.singletonList(WorkspaceInfo.class));
     }
 
 }

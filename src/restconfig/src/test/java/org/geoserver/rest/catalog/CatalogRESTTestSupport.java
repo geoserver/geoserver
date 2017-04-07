@@ -33,7 +33,7 @@ public abstract class CatalogRESTTestSupport extends GeoServerSystemTestSupport 
 
         catalog = getCatalog();
         
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("html", "http://www.w3.org/1999/xhtml");
         namespaces.put("sld", "http://www.opengis.net/sld");
         namespaces.put("ogc", "http://www.opengis.net/ogc");

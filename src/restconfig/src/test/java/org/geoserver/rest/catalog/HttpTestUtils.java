@@ -64,11 +64,7 @@ public class HttpTestUtils {
             public boolean matches(Object item) {
                 if(item instanceof HttpServletResponse) {
                     String value = ((HttpServletResponse) item).getHeader(name);
-                    if(Objects.isNull(value)) {
-                        return false;
-                    } else {
-                        return valueMatcher.matches(value);
-                    }
+                    return !Objects.isNull(value) && valueMatcher.matches(value);
                 } else {
                     return false;
                 }

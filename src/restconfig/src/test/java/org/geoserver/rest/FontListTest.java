@@ -8,14 +8,6 @@ package org.geoserver.rest;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.StringWriter;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;

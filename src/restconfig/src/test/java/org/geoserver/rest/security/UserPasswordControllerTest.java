@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.springframework.http.HttpStatus;
 
 /**
- * Test for {@link UserPasswordResource}
+ * Test for {@link UserPasswordController}
  *
  * @author Emanuele Tajariol <etj at geo-solutions.it>
  */

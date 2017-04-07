@@ -17,7 +17,6 @@ import org.geoserver.catalog.PropertyStyleHandler;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -25,7 +24,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.data.DataUtilities;
 import org.geotools.styling.Style;
-import org.hamcrest.core.StringEndsWith;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -97,7 +95,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         NodeList links = xp.getMatchingNodes("//html:a", dom);
 
         for ( int i = 0; i < styles.size(); i++ ) {
-            StyleInfo s = (StyleInfo) styles.get( i );
+            StyleInfo s = styles.get( i );
             Element link = (Element) links.item( i );
 
             final String href = link.getAttribute("href");
@@ -691,14 +689,10 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
         // check style on disk to ensure the exact contents was preserved
         Resource style = getDataDirectory().style(getCatalog().getStyleByName("foo"));
-        InputStream in = style.in();
-        try {
+        try (InputStream in = style.in()) {
             out = new StringWriter();
             IOUtils.copy(in, out);
             assertTrue(out.toString().startsWith("#comment!"));
-        }
-        finally {
-            in.close();
         }
     }
 

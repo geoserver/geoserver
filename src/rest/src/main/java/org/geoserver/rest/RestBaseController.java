@@ -195,7 +195,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      * @return
      */
     protected <T> RestWrapper<T> wrapList(Collection<T> list, Class<T> clazz) {
-        return new RestListWrapper<T>(list, clazz, this, getTemplate(list, clazz));
+        return new RestListWrapper<>(list, clazz, this, getTemplate(list, clazz));
     }
 
     /**
@@ -206,7 +206,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      * @return
      */
     protected <T> RestWrapper<T> wrapObject(T object, Class<T> clazz) {
-        return new RestWrapperAdapter<T>(object, clazz, this, getTemplate(object, clazz));
+        return new RestWrapperAdapter<>(object, clazz, this, getTemplate(object, clazz));
     }
 
     /**
@@ -223,7 +223,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
         if (object == null){
             throw new RestException(errorMessage, HttpStatus.NOT_FOUND);
         }
-        return new RestWrapperAdapter<T>(object, clazz, this, getTemplate(object, clazz));
+        return new RestWrapperAdapter<>(object, clazz, this, getTemplate(object, clazz));
     }
 
     @Override

@@ -46,7 +46,7 @@ public class CatalogModeController {
     }
 
     protected void checkUserIsAdmin() {
-        if (getManager().checkAuthenticationForAdminRole() == false) {
+        if (!getManager().checkAuthenticationForAdminRole()) {
             throw new RestException("Amdinistrative priveleges required", HttpStatus.FORBIDDEN);
         }
     }
@@ -60,7 +60,7 @@ public class CatalogModeController {
     public NamedMap mapGet() throws Exception {
         checkUserIsAdmin();
 
-        CatalogMode mode = ((DataAccessRuleDAO) ruleDAO).getMode();
+        CatalogMode mode = ruleDAO.getMode();
         NamedMap modeMap = new NamedMap(XML_ROOT_ELEM);
         modeMap.put(MODE_ELEMENT, mode.toString());
         return modeMap;
@@ -90,7 +90,7 @@ public class CatalogModeController {
         if (modeValue == null)
             throw new RestException("Not a valid mode: " + mode, HttpStatus.UNPROCESSABLE_ENTITY);
 
-        ((DataAccessRuleDAO) ruleDAO).setCatalogMode(modeValue);
+        ruleDAO.setCatalogMode(modeValue);
         ruleDAO.storeRules();
 
     }

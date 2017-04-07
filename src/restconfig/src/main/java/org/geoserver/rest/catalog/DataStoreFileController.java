@@ -18,7 +18,6 @@ import org.geotools.data.*;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.JDBCDataStoreFactory;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +45,6 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-/**
- * Created by vickdw on 3/30/17.
- */
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH
@@ -93,8 +89,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         if (factoryClassName != null) {
             try {
                 Class factoryClass = Class.forName(factoryClassName);
-                DataAccessFactory factory = (DataAccessFactory) factoryClass.newInstance();
-                return factory;
+                return (DataAccessFactory) factoryClass.newInstance();
             } catch (Exception e) {
                 throw new RestException("Datastore format unavailable: " + factoryClassName,
                         HttpStatus.INTERNAL_SERVER_ERROR);
@@ -119,7 +114,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
 
     public static String lookupDataStoreFactoryFormat(String type) {
         for (DataAccessFactory factory : DataStoreUtils.getAvailableDataStoreFactories()) {
-            if (!(factory instanceof DataAccessFactory)) {
+            if (factory == null) {
                 continue;
             }
 
@@ -202,11 +197,9 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 zipOutputStream.closeEntry();
             }
 
-            if (zipOutputStream != null) {
-                zipOutputStream.finish();
-                zipOutputStream.flush();
-                IOUtils.closeQuietly(zipOutputStream);
-            }
+            zipOutputStream.finish();
+            zipOutputStream.flush();
+            IOUtils.closeQuietly(zipOutputStream);
             IOUtils.closeQuietly(bufferedOutputStream);
             IOUtils.closeQuietly(byteArrayOutputStream);
 
@@ -266,8 +259,6 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         boolean save = false;
         boolean canRemoveFiles = false;
 
-        String charset = characterset;
-
         if (info == null) {
             LOGGER.info("Auto-configuring datastore: " + storeName);
 
@@ -275,8 +266,8 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             add = true;
 
             //TODO: should check if the store actually supports charset
-            if (charset != null && charset.length() > 0) {
-                info.getConnectionParameters().put("charset", charset);
+            if (characterset != null && characterset.length() > 0) {
+                info.getConnectionParameters().put("charset", characterset);
             }
             DataAccessFactory targetFactory = factory;
             if (!targetDataStoreFormat.equals(sourceDataStoreFormat)) {
@@ -295,8 +286,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             }
 
             info.setType(targetFactory.getDisplayName());
-        }
-        else {
+        } else {
             LOGGER.info("Using existing datastore: " + storeName);
 
             // look up the target data store factory
@@ -319,20 +309,17 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         if ( add ) {
             catalog.validate(info, true).throwIfInvalid();
             catalog.add( info );
-        }
-        else {
-            if (save) {
-                catalog.validate(info, false).throwIfInvalid();
-                catalog.save( info );
-            }
+        } else if (save) {
+            catalog.validate(info, false).throwIfInvalid();
+            catalog.save( info );
         }
 
-        boolean createNewSource = false;
-        DataAccess<?, ?> source = null;
+        boolean createNewSource;
+        DataAccess<?, ?> source;
         try {
             HashMap params = new HashMap();
-            if (charset != null && charset.length() > 0) {
-                params.put("charset", charset);
+            if (characterset != null && characterset.length() > 0) {
+                params.put("charset", characterset);
             }
             params.put( "namespace", namespace.getURI() );
             updateParameters(params, factory, uploadedFile);
@@ -358,11 +345,10 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                 DataStore sourceDataStore = (DataStore) source;
                 DataStore targetDataStore = (DataStore) ds;
                 for (String featureTypeName : sourceDataStore.getTypeNames()) {
-                    SimpleFeatureType featureType = null;
 
                     // does the feature type already exist in the target?
                     try {
-                        featureType = targetDataStore.getSchema(featureTypeName);
+                        targetDataStore.getSchema(featureTypeName);
                     } catch (Exception e) {
                         LOGGER.info(featureTypeName
                                 + " does not exist in data store " + storeName
@@ -371,7 +357,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
                         // schema does not exist, create it by first creating an instance
                         // of the source datastore and copying over its schema
                         targetDataStore.createSchema(sourceDataStore.getSchema(featureTypeName));
-                        featureType = sourceDataStore.getSchema(featureTypeName);
+                        sourceDataStore.getSchema(featureTypeName);
                     }
 
                     FeatureSource featureSource = targetDataStore.getFeatureSource(featureTypeName);
@@ -386,7 +372,6 @@ public class DataStoreFileController extends AbstractStoreUploadController {
 
                     try {
                         // figure out update mode, whether we should kill existing data or append
-                        String updateMode = update;
                         if ("overwrite".equalsIgnoreCase(update)) {
                             LOGGER.fine("Removing existing features from " + featureTypeName);
                             // kill all features
@@ -419,7 +404,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             //load the target datastore
             //DataStore ds = (DataStore) info.getDataStore(null);
             Map<String, FeatureTypeInfo> featureTypesByNativeName =
-                    new HashMap<String, FeatureTypeInfo>();
+                    new HashMap<>();
             for (FeatureTypeInfo ftInfo : catalog.getFeatureTypesByDataStore(info)) {
                 featureTypesByNativeName.put(ftInfo.getNativeName(), ftInfo);
             }
@@ -483,8 +468,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
 
                     LOGGER.info("Added feature type " + ftinfo.getName());
 
-                }
-                else {
+                } else {
                     LOGGER.info("Updated feature type " + ftinfo.getName());
                     catalog.validate(ftinfo, false).throwIfInvalid();
                     catalog.save( ftinfo );
@@ -492,9 +476,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
 
                 response.setStatus( HttpStatus.CREATED.value() );
             }
-            //}
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             //TODO: report a proper error code
             throw new RuntimeException ( e );
         } finally {
@@ -551,8 +533,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
             // Check if the coverage already exists
             CoverageStoreInfo coverage = catalog.getCoverageStoreByName(storeName);
             if (coverage != null) {
-                if (workspaceName == null || (workspaceName != null
-                        && coverage.getWorkspace().getName().equalsIgnoreCase(workspaceName))) {
+                if (workspaceName == null || coverage.getWorkspace().getName().equalsIgnoreCase(workspaceName)) {
                     // If the coverage exists then the associated directory is defined by its URL
                     directory = Resources.fromPath(
                             DataUtilities.urlToFile(new URL(coverage.getURL())).getPath(),
@@ -569,7 +550,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
         // Selection of the original ROOT directory path
         StringBuilder root = new StringBuilder(directory.path());
         // StoreParams to use for the mapping.
-        Map<String, String> storeParams = new HashMap<String, String>();
+        Map<String, String> storeParams = new HashMap<>();
         // Listing of the available pathMappers
         List<RESTUploadPathMapper> mappers = GeoServerExtensions
                 .extensions(RESTUploadPathMapper.class);

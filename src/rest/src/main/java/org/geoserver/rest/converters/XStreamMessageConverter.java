@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 import org.geoserver.rest.RequestInfo;
 import org.geotools.util.logging.Logging;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 
 import com.thoughtworks.xstream.XStream;

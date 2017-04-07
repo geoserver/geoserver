@@ -17,7 +17,7 @@ import org.springframework.web.context.request.RequestContextHolder;
  * An object which contains information about the "page" or "resource" being accessed
  * in a rest request.
  *
- * Equivalent of {@link PageInfo} used by the old rest module.
+ * Equivalent of PageInfo used by the old rest module.
  * <p>
  * An instance of this class can be referenced by any restlet via:
  * <pre>

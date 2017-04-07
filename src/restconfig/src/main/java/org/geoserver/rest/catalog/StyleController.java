@@ -372,7 +372,7 @@ public class StyleController extends AbstractCatalogController {
         UriComponents uriComponents = getUriComponents(name, workspaceName, builder);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
-        return new ResponseEntity<String>(name, headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(name, headers, HttpStatus.CREATED);
     }
 
     @PutMapping( value = {"/styles/{styleName}", "/workspaces/{workspaceName}/styles/{styleName}"}, consumes = {
@@ -434,7 +434,7 @@ public class StyleController extends AbstractCatalogController {
                         Style style = Styles.style(sld);
                         if( format instanceof SLDHandler){
                             s.setFormat(format.getFormat());
-                            resourcePool.writeStyle(s, (Style) style, true);
+                            resourcePool.writeStyle(s, style, true);
                             catalog.save(s);
                         }
                         else {
@@ -507,11 +507,7 @@ public class StyleController extends AbstractCatalogController {
      *
      */
     private File retrieveSldFile(File directory) {
-        File[] matchingFiles = directory.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith("sld");
-            }
-        });
+        File[] matchingFiles = directory.listFiles((dir, name) -> name.endsWith("sld"));
 
         if (matchingFiles.length == 0) {
             throw new RestException("No sld file provided:", HttpStatus.FORBIDDEN);
@@ -587,13 +583,8 @@ public class StyleController extends AbstractCatalogController {
      *
      */
     private File[] retrieveImageFiles(File directory) {
-        File[] matchingFiles = directory.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return validImageFileExtensions.contains(FilenameUtils.getExtension(name).toLowerCase());
-            }
-        });
-
-        return matchingFiles;
+        return directory.listFiles((dir, name) ->
+                validImageFileExtensions.contains(FilenameUtils.getExtension(name).toLowerCase()));
     }
 
     /**
@@ -627,7 +618,7 @@ public class StyleController extends AbstractCatalogController {
         
         File directory = null;
         try {
-            directory = unzipSldPackage((InputStream) is);
+            directory = unzipSldPackage(is);
             File uploadedFile = retrieveSldFile(directory);
 
             Style styleSld = parseSld(uploadedFile);

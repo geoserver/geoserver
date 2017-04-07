@@ -98,7 +98,7 @@ public class LayerController extends AbstractCatalogController {
             @PathVariable String layerName,
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse) throws IOException {
         
-        LayerInfo layer = (LayerInfo) catalog.getLayerByName(layerName);
+        LayerInfo layer = catalog.getLayerByName(layerName);
         if(layer == null) {
             throw new ResourceNotFoundException(layerName);
         }
@@ -167,7 +167,7 @@ public class LayerController extends AbstractCatalogController {
                     HierarchicalStreamWriter writer, MarshallingContext context) {
                 if (obj instanceof StyleInfo) {
                     StyleInfo style = (StyleInfo) obj;
-                    StringBuffer link = new StringBuffer();
+                    StringBuilder link = new StringBuilder();
                     if (style.getWorkspace() != null) {
                         String wsName = style.getWorkspace().getName();
                         writer.startNode("workspace");
@@ -180,7 +180,7 @@ public class LayerController extends AbstractCatalogController {
                 }
                 if (obj instanceof ResourceInfo) {
                     ResourceInfo r = (ResourceInfo) obj;
-                    StringBuffer link = new StringBuffer("/workspaces/")
+                    StringBuilder link = new StringBuilder("/workspaces/")
                             .append(converter.encode(r.getStore().getWorkspace().getName())).append("/");
 
                     if (r instanceof FeatureTypeInfo) {

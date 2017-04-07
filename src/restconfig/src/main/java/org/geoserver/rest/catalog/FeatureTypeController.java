@@ -85,7 +85,7 @@ public class FeatureTypeController extends AbstractCatalogController {
     public Object featureTypesGet(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String dataStoreName,
-            @RequestParam(name = "list", required = true, defaultValue = "configured") String list) {
+            @RequestParam(defaultValue = "configured") String list) {
 
         if ("available".equalsIgnoreCase(list) || "available_with_geom".equalsIgnoreCase(list)) {
             DataStoreInfo info = getExistingDataStore(workspaceName, dataStoreName);
@@ -94,7 +94,7 @@ public class FeatureTypeController extends AbstractCatalogController {
             boolean skipNoGeom = "available_with_geom".equalsIgnoreCase(list);
 
             // list of available feature types
-            List<String> available = new ArrayList<String>();
+            List<String> available = new ArrayList<>();
             try {
                 DataStore ds = (DataStore) info.getDataStore(null);
 
@@ -256,7 +256,7 @@ public class FeatureTypeController extends AbstractCatalogController {
         headers.setLocation(
                 builder.path("/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes/"
                         + ftInfo.getName()).buildAndExpand(workspaceName, dataStoreName).toUri());
-        return new ResponseEntity<String>("", headers, HttpStatus.CREATED);
+        return new ResponseEntity<>("", headers, HttpStatus.CREATED);
     }
 
     @GetMapping(path = "/{featureTypeName}", produces = {

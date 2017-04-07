@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 public class EnviromentInjectionCallback extends DispatcherCallbackAdapter {
 
     public void init(HttpServletRequest request, HttpServletResponse response) {
-        Map<String, Object> envVars = new HashMap<String, Object>();
+        Map<String, Object> envVars = new HashMap<>();
         
         // TODO: do we want to support a OWS like "env" param here?
 

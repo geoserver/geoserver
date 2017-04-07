@@ -191,8 +191,7 @@ public class StructuredCoverageController extends AbstractCatalogController {
         } else if(granuleId.endsWith(".json")) {
             granuleId = granuleId.substring(0, granuleId.length() - 5);
         }
-        Filter filter = FF.id(FF.featureId(granuleId));
-        return filter;
+        return FF.id(FF.featureId(granuleId));
     }
     
     /*
@@ -253,8 +252,7 @@ public class StructuredCoverageController extends AbstractCatalogController {
                 .getGridCoverageReader(null, null);
         String nativeCoverageName = getNativeCoverageName(coverage, reader);
 
-        GranuleSource source = reader.getGranules(nativeCoverageName, true);
-        return source;
+        return reader.getGranules(nativeCoverageName, true);
     }
 
     private GranuleStore getGranuleStore(String workspaceName, String storeName,
@@ -270,8 +268,7 @@ public class StructuredCoverageController extends AbstractCatalogController {
         }
         String nativeCoverageName = getNativeCoverageName(coverage, reader);
 
-        GranuleStore store = (GranuleStore) reader.getGranules(nativeCoverageName, false);
-        return store;
+        return (GranuleStore) reader.getGranules(nativeCoverageName, false);
     }
 
     private String getNativeCoverageName(CoverageInfo coverage,
@@ -296,14 +293,13 @@ public class StructuredCoverageController extends AbstractCatalogController {
         if (sourceSchema.getName().getNamespaceURI() == null) {
             try {
                 String targetNs = "http://www.geoserver.org/rest/granules";
-                AttributeDescriptor[] attributes = (AttributeDescriptor[]) sourceSchema
+                AttributeDescriptor[] attributes = sourceSchema
                         .getAttributeDescriptors().toArray(new AttributeDescriptor[sourceSchema
                                 .getAttributeDescriptors().size()]);
                 SimpleFeatureType targetSchema = FeatureTypes.newFeatureType(attributes,
                         sourceSchema.getName().getLocalPart(), new URI(targetNs));
-                RetypingFeatureCollection retyped = new RetypingFeatureCollection(features,
+                return new RetypingFeatureCollection(features,
                         targetSchema);
-                return retyped;
             } catch (Exception e) {
                 throw new IOException(
                         "Failed to retype the granules feature schema, in order to force "
@@ -330,8 +326,7 @@ public class StructuredCoverageController extends AbstractCatalogController {
         if (!optCoverage.isPresent()) {
             throw new ResourceNotFoundException("No such coverage in store: " + coverageName);
         }
-        CoverageInfo coverage = optCoverage.get();
-        return coverage;
+        return optCoverage.get();
     }
 
     private Query toQuery(String filter, Integer offset, Integer limit) {

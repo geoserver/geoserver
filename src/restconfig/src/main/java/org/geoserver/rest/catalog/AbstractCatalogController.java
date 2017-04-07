@@ -15,7 +15,6 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
@@ -56,7 +55,7 @@ public abstract class AbstractCatalogController extends RestBaseController {
             boolean changedLatLonBounds = message.getLatLonBoundingBox() == null ||
                     !message.getLatLonBoundingBox().equals(resource.getLatLonBoundingBox());
             boolean changedNativeInterpretation = changedProjectionPolicy || changedProjection;
-            fieldsToCalculate = new ArrayList<String>();
+            fieldsToCalculate = new ArrayList<>();
             if (changedNativeInterpretation && !changedNativeBounds) {
                 fieldsToCalculate.add("nativebbox");
             }
@@ -105,11 +104,7 @@ public abstract class AbstractCatalogController extends RestBaseController {
      * Determines if the current user is authenticated as full administrator.
      */
     protected boolean isAuthenticatedAsAdmin() {
-        if (SecurityContextHolder.getContext() == null) {
-            return false;
-        }
-        return GeoServerExtensions.bean(GeoServerSecurityManager.class).
-                checkAuthenticationForAdminRole();
+        return SecurityContextHolder.getContext() != null && GeoServerExtensions.bean(GeoServerSecurityManager.class).checkAuthenticationForAdminRole();
     }
     
     /**

@@ -58,8 +58,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         checkUserIsAdmin();
 
         try {
-            RuleMap<String, String> map = getMap();
-            return map;
+            return getMap();
         } catch (Exception e) {
             throw createRestException(e);
         }
@@ -99,7 +98,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
     public void rulesDelete(HttpServletRequest request) throws UnsupportedEncodingException {
         checkUserIsAdmin();
 
-        String thePath = (String) request.getPathInfo();
+        String thePath = request.getPathInfo();
         String ruleString = thePath.substring(getBasePath().length() + 1);
         ruleString = URLDecoder.decode(ruleString, "utf-8");
 
@@ -116,7 +115,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         }
 
         if (rule == null) {
-            throw new ResourceNotFoundException("Rule not found: " + rule);
+            throw new ResourceNotFoundException("Rule not found: " + ruleString);
         }
 
         try {
@@ -136,7 +135,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
     protected abstract String getBasePath();
 
     protected void checkUserIsAdmin() {
-        if (getManager().checkAuthenticationForAdminRole() == false) {
+        if (!getManager().checkAuthenticationForAdminRole()) {
             throw new RestException("Amdinistrative priveleges required", HttpStatus.FORBIDDEN);
         }
     }
@@ -150,7 +149,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
     protected abstract void addRuleToMap(Comparable rule, Map<String, String> map);
 
     public RuleMap<String, String> getMap() throws Exception {
-        RuleMap<String, String> result = new RuleMap<String, String>();
+        RuleMap<String, String> result = new RuleMap<>();
         for (Comparable<?> rule : ruleDAO.getRules()) {
             addRuleToMap(rule, result);
         }
@@ -159,17 +158,14 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
 
     /**
      * Calculate the the intersection of the keys
-     * 
-     * 
-     * @param props
-     * @param map
      *
+     * @param map
      */
     protected Set<Object> intersection(Map map) {
 
-        Set<Object> result = new HashSet<Object>();
+        Set<Object> result = new HashSet<>();
 
-        Set<Object> ruleKeys = new HashSet<Object>();
+        Set<Object> ruleKeys = new HashSet<>();
         for (Comparable<?> rule : ruleDAO.getRules()) {
             ruleKeys.add(keyFor(rule));
         }
@@ -186,11 +182,8 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
 
     /**
      * Calculate the keys not contained in the rule data access object
-     * 
-     * 
-     * @param props
-     * @param map
      *
+     * @param map
      */
     protected Set<Object> nonExistingKeys(Map map) {
 
@@ -199,13 +192,13 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         if (rules.isEmpty())
             return map.keySet();
 
-        Set<Object> result = new HashSet<Object>();
-        Set<Object> ruleKeys = new HashSet<Object>();
+        Set<Object> result = new HashSet<>();
+        Set<Object> ruleKeys = new HashSet<>();
         for (Comparable<?> rule : rules) {
             ruleKeys.add(keyFor(rule));
         }
         for (Object key : map.keySet()) {
-            if (ruleKeys.contains(key) == false)
+            if (!ruleKeys.contains(key))
                 result.add(key);
         }
         return result;
@@ -223,8 +216,6 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
      * Validate a rule, return an error message or <code>null</code> if the rule is ok
      * 
      * @param ruleKey ,ruleValue
-     * @param rule
-     *
      */
     protected String validateRule(String ruleKey, String ruleValue) {
         return validateRuleKey(ruleKey);
@@ -268,7 +259,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
 
         Set<Object> commonKeys = intersection(map);
 
-        if (commonKeys.isEmpty() == false) {
+        if (!commonKeys.isEmpty()) {
             String msg = "Already existing rules: " + StringUtils.join(commonKeys.iterator(), ",");
             throw new RestException(msg, HttpStatus.CONFLICT);
         }
@@ -285,7 +276,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         validateMap(map);
         Set<Object> nonExisting = nonExistingKeys(map);
 
-        if (nonExisting.isEmpty() == false) {
+        if (!nonExisting.isEmpty()) {
             String msg = "Unknown rules: " + StringUtils.join(nonExisting.iterator(), ",");
             throw new RestException(msg, HttpStatus.CONFLICT);
         }
@@ -308,7 +299,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         // regexp: treat extra spaces as separators, ignore extra commas
         // "a,,b, ,, c" --> ["a","b","c"]
         String[] rolesArray = roleCsv.split("[\\s,]+");
-        Set<String> roles = new HashSet<String>(rolesArray.length);
+        Set<String> roles = new HashSet<>(rolesArray.length);
         roles.addAll(Arrays.asList(rolesArray));
 
         // if any of the roles is * we just remove all of the others

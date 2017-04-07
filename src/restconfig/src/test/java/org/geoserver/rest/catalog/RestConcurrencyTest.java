@@ -88,7 +88,7 @@ public class RestConcurrencyTest extends CatalogRESTTestSupport {
         addPropertyDataStores(typeCount);
         ExecutorService es = Executors.newCachedThreadPool();
         try {
-            List<Future<Integer>> futures = new ArrayList<Future<Integer>>();
+            List<Future<Integer>> futures = new ArrayList<>();
             for (int i = 0; i < typeCount; i++) {
                 futures.add(es.submit(new AddRemoveFeatureTypeWorker("gs", "pds", "pds" + i, 5)));
             }

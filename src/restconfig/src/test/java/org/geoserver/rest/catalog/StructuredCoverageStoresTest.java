@@ -7,7 +7,6 @@ package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -25,7 +24,6 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.data.test.MockData;
@@ -39,7 +37,6 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -47,7 +44,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     
     protected static QName WATTEMP = new QName(MockData.WCS_PREFIX, "watertemp", MockData.WCS_PREFIX);
     
-    List<File> movedFiles = new ArrayList<File>();
+    List<File> movedFiles = new ArrayList<>();
 
     private XpathEngine xpath;
 
@@ -83,10 +80,10 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
                 assertTrue(target.delete());
             }
             assertTrue(file.renameTo(target));
-        };
+        }
         for (File file : FileUtils.listFiles(mosaic, new RegexFileFilter("watertemp.*"), null)) {
             assertTrue(file.delete());
-        };
+        }
     }
     
     @Override
@@ -96,7 +93,7 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         testData.addWorkspace(SystemTestData.WCS_PREFIX, SystemTestData.WCS_URI, getCatalog());
 
         // setup the namespace context for this test
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("gml", "http://www.opengis.net/gml");
         namespaces.put("gf", "http://www.geoserver.org/rest/granules");
         namespaces.put("wfs", "http://www.opengis.net/wfs");

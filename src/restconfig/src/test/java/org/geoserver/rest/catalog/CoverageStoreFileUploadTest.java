@@ -41,7 +41,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.w3c.dom.Document;
 
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -169,7 +168,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         request.setContent(bytes);
         request.addHeader("Content-type", "application/zip");
         // Get The response
-        response = dispatch( request );
+        dispatch( request );
         // Get the Mosaic Reader
         GridCoverageReader reader = storeInfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
         // Test if all the TIME DOMAINS are present
@@ -254,7 +253,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         request.setContent(("file:///" + outputDirectory.dir().getAbsolutePath()).getBytes("UTF-8"));
         request.addHeader("Content-type", "text/plain");
         // Get The response
-        response = dispatch(request);
+        dispatch(request);
         // Get the Mosaic Reader
         GridCoverageReader reader = storeInfo.getGridCoverageReader(null,
                 GeoTools.getDefaultHints());
@@ -413,7 +412,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             // Extract the first file as payload (the tiff)
             byte[] bytes = null;
             try(ZipInputStream zis = new ZipInputStream(zipHarvest.openStream())) {
-                ZipEntry entry = null;
+                ZipEntry entry;
                 while((entry = zis.getNextEntry()) != null) {
                     if("NCOM_wattemp_000_20081102T0000000_12.tiff".equals(entry.getName())) {
                         bytes = IOUtils.toByteArray(zis);
@@ -448,7 +447,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
     }
 
     private StructuredGridCoverage2DReader uploadGeotiffAndCheck(CoverageStoreInfo storeInfo,
-            byte[] bytes, String filename) throws Exception, IOException {
+            byte[] bytes, String filename) throws Exception {
         StructuredGridCoverage2DReader reader2;
         // Create the POST request
         MockHttpServletRequest request = createRequest(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/watertemp5/file.imagemosaic?filename=" + filename);
@@ -471,7 +470,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         return reader2;
     }
 
-    private Resource readMosaic() throws NoSuchAuthorityCodeException, FactoryException, IOException {
+    private Resource readMosaic() throws FactoryException, IOException {
         // Select the zip file containing the mosaic
         URL mosaicZip = getClass().getResource("test-data/watertemp2.zip");
         Resource zipFile = Files.asResource(DataUtilities.urlToFile(mosaicZip));
@@ -489,7 +488,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
     }
 
     private void configureCoverageInfo(CatalogBuilder builder, CoverageStoreInfo storeInfo,
-            GridCoverage2DReader reader) throws Exception, IOException {
+            GridCoverage2DReader reader) throws Exception {
         // coverage read params
         final Map customParameters = new HashMap();
 

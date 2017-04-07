@@ -45,7 +45,7 @@ public class RestAccessController extends AbstractAclController {
 
     @Override
     protected String validateRuleKey(String ruleKey) {
-        if (KEYPATTERN.matcher(ruleKey).matches() == false)
+        if (!KEYPATTERN.matcher(ruleKey).matches())
             return "Invalid '" + ruleKey + "' not matching " + KEYPATTERN;
         return null;
     }

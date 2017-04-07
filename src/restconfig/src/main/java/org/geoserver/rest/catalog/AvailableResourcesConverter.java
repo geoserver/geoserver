@@ -92,9 +92,9 @@ public class AvailableResourcesConverter extends BaseMessageConverter<AvailableR
         final Document doc = new Document(root);
         XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
         
-        ((AvailableResources) t).stream()
-            .map(name-> new Element(((AvailableResources) t).getName()).addContent(name))
-            .forEach(element-> root.addContent(element));
+        t.stream()
+            .map(name-> new Element(t.getName()).addContent(name))
+            .forEach(root::addContent);
         
         try(OutputStream os = outputMessage.getBody()) {
             outputter.output(doc, os);

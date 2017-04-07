@@ -7,16 +7,12 @@ package org.geoserver.rest.catalog;
 import com.thoughtworks.xstream.XStream;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.rest.converters.BaseMessageConverter;
-import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Write a named {@link StringsList} to XML.

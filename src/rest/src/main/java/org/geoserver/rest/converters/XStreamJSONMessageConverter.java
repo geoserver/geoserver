@@ -68,10 +68,8 @@ public class XStreamJSONMessageConverter extends XStreamMessageConverter<Object>
     //
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        if( RestListWrapper.class.isAssignableFrom(clazz) ){
-            return false; // we can only write RestWrapper, not RestListWrapper
-        }
-        return RestWrapper.class.isAssignableFrom(clazz) && canWrite(mediaType);
+        // we can only write RestWrapper, not RestListWrapper
+        return !RestListWrapper.class.isAssignableFrom(clazz) && RestWrapper.class.isAssignableFrom(clazz) && canWrite(mediaType);
     }
     @Override
     public void writeInternal(Object o, HttpOutputMessage outputMessage)

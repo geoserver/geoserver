@@ -28,7 +28,6 @@ public class SimpleFeatureCollectionConverter
     /**
      * Access features, unwrapping if necessary.
      * 
-     * @param o
      * @return features
      */
     protected SimpleFeatureCollection getFeatures(SimpleFeatureCollection content) {

@@ -64,10 +64,10 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
 
         FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
         FORMAT_HEADER.setTimeZone(TimeZone.getTimeZone("GMT"));
-        Map<String, String> mapXML = new HashMap<String, String>();
+        Map<String, String> mapXML = new HashMap<>();
         mapXML.put("atom", "http://www.w3.org/2005/Atom");
         NS_XML = new SimpleNamespaceContext(mapXML);
-        Map<String, String> mapHTML = new HashMap<String, String>();        
+        Map<String, String> mapHTML = new HashMap<>();
         mapHTML.put("x", "http://www.w3.org/1999/xhtml");
         NS_HTML = new SimpleNamespaceContext(mapHTML);        
     }          

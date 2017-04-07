@@ -7,22 +7,17 @@ package org.geoserver.rest.catalog;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.geoserver.ManifestLoader;
 import org.geoserver.ManifestLoader.AboutModel;
 import org.geoserver.ManifestLoader.AboutModel.AboutModelType;
 import org.geoserver.ManifestLoader.AboutModel.ManifestModel;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.platform.ModuleStatus;
 import org.geoserver.rest.ObjectToMapWrapper;
 import org.geoserver.rest.RestBaseController;
-import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.core.MethodParameter;
@@ -43,7 +38,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
-import freemarker.template.Template;
 
 @RestController
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/about",
@@ -142,23 +136,18 @@ public class AboutController extends RestBaseController {
             return new ObjectToMapWrapper<AboutModel>(AboutModel.class) {
                 @Override
                 protected void wrapInternal(Map properties, SimpleHash model, AboutModel object) {
-                    final List<Map<String, Object>> manifests = new ArrayList<Map<String, Object>>();
-                    final Iterator<ManifestModel> it = object.getManifests().iterator();
-                    while (it.hasNext()) {
-                        final ManifestModel manifest = it.next();
-
-                        final Map<String, Object> map = new HashMap<String, Object>();
+                    final List<Map<String, Object>> manifests = new ArrayList<>();
+                    for (ManifestModel manifest : object.getManifests()) {
+                        final Map<String, Object> map = new HashMap<>();
                         map.put("name", manifest.getName());
 
-                        final List<String> props = new ArrayList<String>();
+                        final List<String> props = new ArrayList<>();
                         map.put("properties", props);
 
-                        final List<String> values = new ArrayList<String>();
+                        final List<String> values = new ArrayList<>();
                         map.put("valuez", values);
 
-                        final Iterator<String> innerIt = manifest.getEntries().keySet().iterator();
-                        while (innerIt.hasNext()) {
-                            String key = innerIt.next();
+                        for (String key : manifest.getEntries().keySet()) {
                             props.add(key);
                             values.add(manifest.getEntries().get(key));
                         }
@@ -201,9 +190,7 @@ public class AboutController extends RestBaseController {
 
                         @Override
                         public boolean canConvert(Class type) {
-                            if (java.util.Map.Entry.class.isAssignableFrom(type))
-                                return true;
-                            return false;
+                            return Entry.class.isAssignableFrom(type);
                         }
 
                         @Override

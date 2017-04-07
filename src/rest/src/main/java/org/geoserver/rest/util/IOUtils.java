@@ -127,7 +127,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
                     if (!FILES_PATH.contains(fileToDelete.getAbsolutePath())) {
                         FILES_PATH.add(fileToDelete.getAbsolutePath());
                         FILE_ATTEMPTS_COUNTS.put(fileToDelete.getAbsolutePath(),
-                                new Integer(0));
+                                0);
     
                     }
                 }
@@ -181,7 +181,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
                                 final String sFile = it.next();
                                 if(LOGGER.isLoggable(Level.INFO))
                                         LOGGER.info("Trying to remove file " + sFile);
-                                int attempts = FILE_ATTEMPTS_COUNTS.get(sFile).intValue();
+                                int attempts = FILE_ATTEMPTS_COUNTS.get(sFile);
                                 if (!new File(sFile).exists()) {
                                     it.remove();
                                     FILE_ATTEMPTS_COUNTS.remove(sFile);
@@ -208,7 +208,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
                                                                 + sFile);
                                         } else {
                                             FILE_ATTEMPTS_COUNTS.remove(sFile);
-                                            FILE_ATTEMPTS_COUNTS.put(sFile,new Integer(attempts));
+                                            FILE_ATTEMPTS_COUNTS.put(sFile, attempts);
                                             // might help, see
                                             // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4715154
                                             Runtime.getRuntime().gc();
@@ -468,8 +468,8 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
                 sourceFile.getAbsolutePath()))
             throw new IllegalArgumentException("Cannot copy a file on itself");
 
-        FileChannel source = null;
-        FileChannel destination = null;
+        FileChannel source;
+        FileChannel destination;
         source = new RandomAccessFile(sourceFile, "r").getChannel();
         destination = new RandomAccessFile(destinationFile, "rw").getChannel();
         try {
@@ -517,14 +517,15 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
         final File[] files = (filter != null ? sourceDirectory.listFiles(filter) : sourceDirectory.listFiles());
         for (File file:files) {
             if (file.isDirectory()) {
-                if(recursive)
-                    deleteDirectory(file, filter,recursive,deleteItself);
+                if(recursive) {
+                    deleteDirectory(file, filter, recursive, deleteItself);
+                }
             } else {
                 if(!file.delete())
                     return false;
             }
         }
-        return deleteItself?sourceDirectory.delete():true;
+        return !deleteItself || sourceDirectory.delete();
 
         
     }
@@ -562,8 +563,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      * @return a <code>FileChannel</code>
      * @throws IOException in case something bad happens.
      */
-    public static FileChannel getInputChannel(File source)
-            throws IOException {
+    public static FileChannel getInputChannel(File source) {
         inputNotNull(source);
         if(!source.exists()||!source.canRead()||!source.isDirectory())
             throw new IllegalStateException("Source is not in a legal state.");            
@@ -624,9 +624,8 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
     public static File URLToFile(URL fileURL) {
         inputNotNull(fileURL);
         try {
-            
-            final File retFile= DataUtilities.urlToFile(fileURL);
-            return retFile;
+
+            return DataUtilities.urlToFile(fileURL);
         
         }catch (Throwable t) {
             if(LOGGER.isLoggable(Level.FINE))
@@ -668,7 +667,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
         
         inputNotNull(sourceStream,destinationStream);
         byte[] buf = new byte[size];
-        int n = -1;
+        int n;
         try {
             while (-1 != (n = sourceStream.read(buf))) {
                 destinationStream.write(buf, 0, n);
@@ -683,12 +682,8 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
                     if (closeOutput)
                         destinationStream.close();
                 } finally {
-                    try {
-                        if (closeInput)
-                            sourceStream.close();
-                    } finally {
-
-                    }
+                    if (closeInput)
+                        sourceStream.close();
                 }
             }
         }
@@ -758,7 +753,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      * @throws FileNotFoundException in case something bad happens.
      */
     public static void inflate(ZipFile archive, Resource outputDirectory, String fileName)
-            throws IOException, FileNotFoundException {
+            throws IOException {
         inflate(archive, outputDirectory, fileName, null, null, null, false);
     }
 
@@ -768,20 +763,18 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      * @param archive the {@link ZipFile} to inflate.
      * @param outputDirectory the directory where to inflate the archive.
      * @param fileName name of the file if present.
-     * @param request HTTP request sent.
      * @param external
      * @param files empty list of the extracted files (or null if there is no desire to collect the list)
      * @throws IOException in case something bad happens.
-     * @throws FileNotFoundException in case something bad happens.
      */
     public static void inflate(ZipFile archive, Resource outputDirectory, String fileName,
             String workspace, String store, List<Resource> files,
-            boolean external) throws IOException, FileNotFoundException {
+            boolean external) throws IOException {
 
         final Enumeration<? extends ZipEntry> entries = archive.entries();
         try {
             while (entries.hasMoreElements()) {
-                ZipEntry entry = (ZipEntry) entries.nextElement();
+                ZipEntry entry = entries.nextElement();
 
                 if (!entry.isDirectory()) {
                     final String name = entry.getName();
@@ -796,7 +789,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
                             : FilenameUtils.getName(name);
                     // If the RESTUploadPathMapper are present then the output file position is changed
                     if (!external) {
-                        Map<String, String> storeParams = new HashMap<String, String>();
+                        Map<String, String> storeParams = new HashMap<>();
                         RESTUtils.remapping(workspace, store, itemPath, initialFileName,
                                 storeParams);
                     }

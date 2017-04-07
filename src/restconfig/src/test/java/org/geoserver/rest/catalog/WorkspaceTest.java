@@ -58,9 +58,7 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
 			}
 			String nodeValue = node.getTextContent().trim();
 
-			if (nodeValue != null) {
-				assertNotNull(catalog.getWorkspaceByName(nodeValue));
-			}
+			assertNotNull(catalog.getWorkspaceByName(nodeValue));
 		}
 
 	}

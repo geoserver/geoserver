@@ -181,12 +181,7 @@ public class WMSLayerController extends AbstractCatalogController {
         if(Objects.isNull(storeName)) {
             throw new NullPointerException();
         } else {
-            WMSStoreInfo store = catalog.getStoreByName(ns.getPrefix(), storeName, WMSStoreInfo.class);
-            if(Objects.isNull(ns)) {
-                throw new ResourceNotFoundException("Could not find WMSStore "+storeName + " in workspace "+ns.getPrefix());
-            } else {
-                return store;
-            }
+            return catalog.getStoreByName(ns.getPrefix(), storeName, WMSStoreInfo.class);
         }
     }
     protected WMSLayerInfo getResourceInternal(final String workspaceName, @Nullable final String storeName, final String layerName) {
@@ -327,7 +322,6 @@ public class WMSLayerController extends AbstractCatalogController {
         
         if ( foundns == null){
             //infer from workspace
-            foundns = ns;
             resource.setNamespace( ns );
         }
         

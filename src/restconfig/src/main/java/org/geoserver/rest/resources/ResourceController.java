@@ -214,7 +214,7 @@ public class ResourceController extends RestBaseController {
                     result = new ResponseEntity(resource.in(), responseHeaders, HttpStatus.OK);
                 }
                 response.setHeader("Location", href(resource.path()));
-                response.setHeader("Last-Modified", FORMAT_HEADER.format(resource.lastmodified()).toString());
+                response.setHeader("Last-Modified", FORMAT_HEADER.format(resource.lastmodified()));
                 if (!"".equals(resource.path())) {
                     response.setHeader("Resource-Parent", href(resource.parent().path()));
                 }
@@ -248,7 +248,7 @@ public class ResourceController extends RestBaseController {
         
         boolean isNew = resource.getType() == Type.UNDEFINED;
         if (operation == Operation.COPY || operation == Operation.MOVE) {
-            String path = null;
+            String path;
             try {
                 path = IOUtils.toString( request.getInputStream());
             } catch (IOException e) {
@@ -327,8 +327,7 @@ public class ResourceController extends RestBaseController {
                     + directory.path());
         }
         try {
-            Resource upload = RESTUtils.handleBinUpload(filename, directory, false, request);
-            return upload;
+            return RESTUtils.handleBinUpload(filename, directory, false, request);
         } catch (IOException problem) {
             throw new RestException(problem.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR,
                     problem);
@@ -357,13 +356,13 @@ public class ResourceController extends RestBaseController {
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<T>(clazz, Arrays.asList(AtomLink.class,
+        return new ObjectToMapWrapper<>(clazz, Arrays.asList(AtomLink.class,
                 ResourceDirectoryInfo.class, ResourceMetadataInfo.class, ResourceParentInfo.class, ResourceChildInfo.class));
     }
     /**
      * Operation requested from the REST endpoint.
      */
-    public static enum Operation {
+    public enum Operation {
         /** Depends on context (different functionality for directory, resource, undefined) */
         DEFAULT,
         /** Requests metadata summary of resource */
@@ -486,7 +485,7 @@ public class ResourceController extends RestBaseController {
     @XStreamAlias("ResourceDirectory")
     protected static class ResourceDirectoryInfo extends ResourceMetadataInfo {
 
-        private List<ResourceChildInfo> children = new ArrayList<ResourceChildInfo>();
+        private List<ResourceChildInfo> children = new ArrayList<>();
 
         public ResourceDirectoryInfo(String name, ResourceParentInfo parent, Date lastModified,
                                      String type) {

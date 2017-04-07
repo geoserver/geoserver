@@ -50,7 +50,7 @@ public class MasterPasswordController extends RestBaseController {
             MediaType.TEXT_XML_VALUE })
     public NamedMap<String, String> masterPasswordGet() throws IOException {
 
-        if (getManager().checkAuthenticationForAdminRole() == false) {
+        if (!getManager().checkAuthenticationForAdminRole()) {
             throw new RestException("Amdinistrative privelges required", HttpStatus.FORBIDDEN);
         }
 
@@ -69,7 +69,7 @@ public class MasterPasswordController extends RestBaseController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.TEXT_XML_VALUE })
     public void masterPasswordPut(@RequestBody Map<String, String> putMap) throws IOException {
-        if (getManager().checkAuthenticationForAdminRole() == false) {
+        if (!getManager().checkAuthenticationForAdminRole()) {
             // yes, for backwards compat, it's really METHOD_NOT_ALLOWED
             throw new RestException("Amdinistrative privelges required",
                     HttpStatus.METHOD_NOT_ALLOWED);
@@ -87,13 +87,13 @@ public class MasterPasswordController extends RestBaseController {
                     HttpStatus.METHOD_NOT_ALLOWED);
         }
 
-        String current = (String) putMap.get(MP_CURRENT_KEY);
-        String newpass = (String) putMap.get(MP_NEW_KEY);
+        String current = putMap.get(MP_CURRENT_KEY);
+        String newpass = putMap.get(MP_NEW_KEY);
 
-        if (StringUtils.isNotBlank(current) == false)
+        if (!StringUtils.isNotBlank(current))
             throw new RestException("no master password", HttpStatus.BAD_REQUEST);
 
-        if (StringUtils.isNotBlank(newpass) == false)
+        if (!StringUtils.isNotBlank(newpass))
             throw new RestException("no master password", HttpStatus.BAD_REQUEST);
 
         char[] currentArray = current.trim().toCharArray();

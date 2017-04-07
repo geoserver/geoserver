@@ -15,7 +15,7 @@ import org.geoserver.security.AdminRequest;
 import org.springframework.stereotype.Component;
 
 /**
- * Rest callback that sets the {@link AdminHttpServletRequest} thread local.
+ * Rest callback that sets the {@link AdminRequest} thread local.
  * 
  * @author Justin Deoliveira, OpenGeo
  */

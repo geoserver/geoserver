@@ -15,12 +15,10 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.RequestInfo;
 import org.geoserver.rest.wrapper.RestWrapper;
-import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -114,22 +112,19 @@ public class FreemarkerHTMLMessageConverter extends BaseMessageConverter<RestWra
         try {
             String href = href(link);
             URL url2 = new URL(href);
-            return (List<URL>) Collections.singletonList(url2);
+            return Collections.singletonList(url2);
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        return new ArrayList<URL>();
+        return new ArrayList<>();
     }
 
     protected String href(String link) {
 
         final RequestInfo pg = RequestInfo.get();
-        String ext = "html";
-
-        if (ext != null && ext.length() > 0)
-            link = link + "." + ext;
+        link += ".html";
 
         // encode as relative or absolute depending on the link type
         if (link.startsWith("/")) {

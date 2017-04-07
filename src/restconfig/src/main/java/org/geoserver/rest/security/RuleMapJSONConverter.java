@@ -37,6 +37,6 @@ public class RuleMapJSONConverter extends MapJSONConverter {
         
         @SuppressWarnings("unchecked")
         Map<String, String> source = (Map<String, String>) super.readInternal(clazz, inputMessage);
-        return new RuleMap<String,String>(source);
+        return new RuleMap<>(source);
     }
 }

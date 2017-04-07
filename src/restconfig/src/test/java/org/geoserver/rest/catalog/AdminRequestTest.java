@@ -9,7 +9,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -65,8 +65,8 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
         s.setFilename("cite.sld");
         cat.add(s);
 
-        addUser("cite", "cite", null, Arrays.asList("ROLE_CITE_ADMIN"));
-        addUser("sf", "sf", null, Arrays.asList("ROLE_SF_ADMIN"));
+        addUser("cite", "cite", null, Collections.singletonList("ROLE_CITE_ADMIN"));
+        addUser("sf", "sf", null, Collections.singletonList("ROLE_SF_ADMIN"));
 
         addLayerAccessRule("*", "*", AccessMode.ADMIN, "ROLE_ADMINISTRATOR");
         addLayerAccessRule("cite", "*", AccessMode.ADMIN, "ROLE_CITE_ADMIN");

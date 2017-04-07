@@ -23,7 +23,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Local Settings controller
@@ -46,16 +46,13 @@ public class LocalSettingsController extends AbstractGeoServerController {
             MediaType.TEXT_HTML_VALUE })
     public RestWrapper<SettingsInfo> localSettingsGet(@PathVariable String workspaceName) {
 
-        if (workspaceName != null) {
-            WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
-            SettingsInfo settingsInfo = geoServer.getSettings(workspaceInfo);
-            if (settingsInfo == null) {
-                settingsInfo = new SettingsInfoImpl();
-                settingsInfo.setVerbose(false);
-            }
-            return wrapObject(settingsInfo, SettingsInfo.class);
+        WorkspaceInfo workspaceInfo = geoServer.getCatalog().getWorkspaceByName(workspaceName);
+        SettingsInfo settingsInfo = geoServer.getSettings(workspaceInfo);
+        if (settingsInfo == null) {
+            settingsInfo = new SettingsInfoImpl();
+            settingsInfo.setVerbose(false);
         }
-        throw new RestException("Workspace " + workspaceName + " not found", HttpStatus.BAD_REQUEST);
+        return wrapObject(settingsInfo, SettingsInfo.class);
     }
 
     @PostMapping(consumes = {
@@ -119,7 +116,7 @@ public class LocalSettingsController extends AbstractGeoServerController {
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<>(clazz, Arrays.asList(WorkspaceInfo.class));
+        return new ObjectToMapWrapper<>(clazz, Collections.singletonList(WorkspaceInfo.class));
     }
 
     @Override

@@ -52,7 +52,7 @@ public class MapJSONConverter extends BaseMessageConverter<Map<?, ?>> {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputMessage.getBody()));
         StringBuilder text = new StringBuilder();
-        String line = null;
+        String line;
         while ((line = reader.readLine()) != null) {
             text.append(line);
         }

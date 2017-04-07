@@ -60,21 +60,17 @@ public class ImportTaskController extends ImportBaseController {
         super(importer);
     }
 
-    @GetMapping(path = "", produces = { MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @GetMapping
     public ImportWrapper tasksGet(@PathVariable Long id) {
         return (writer, builder, converter) -> converter.tasks(builder,context(id).getTasks(), true, converter.expand(0));
     }
 
-    @GetMapping(path = "/{taskId}", produces = { MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @GetMapping(path = "/{taskId}")
     public ImportTask taskGet(@PathVariable Long id, @PathVariable Integer taskId) {
         return task(id, taskId, false);
     }
 
-
-    @GetMapping(path = {"/{taskId}/progress"}, produces = { MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @GetMapping(path = "/{taskId}/progress")
     public ImportWrapper progressGet(@PathVariable Long id, @PathVariable Integer taskId) {
 
         JSONObject progress = new JSONObject();
@@ -99,8 +95,7 @@ public class ImportTaskController extends ImportBaseController {
         return (writer,builder,converter) -> writer.write(progress.toString());
     }
 
-    @GetMapping(path = {"/{taskId}/target"}, produces = { MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @GetMapping(path = "/{taskId}/target")
     public ImportWrapper targetGet(@PathVariable Long id, @PathVariable Integer taskId) {
         final ImportTask task = task(id, taskId);
         if (task.getStore() == null) {
@@ -110,15 +105,13 @@ public class ImportTaskController extends ImportBaseController {
 
     }
 
-    @GetMapping(path = {"/{taskId}/layer"}, produces = { MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @GetMapping(path = "/{taskId}/layer")
     public ImportWrapper layersGet(@PathVariable Long id, @PathVariable Integer taskId) {
         ImportTask task = task(id, taskId);
         return (writer, builder, converter) -> converter.layer(builder,task, true, converter.expand(1));
     }
 
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE},
-            produces  = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
     public Object taskPost(@PathVariable Long id, HttpServletRequest request, HttpServletResponse response) {
         ImportData data = null;
 
@@ -144,7 +137,11 @@ public class ImportTaskController extends ImportBaseController {
     }
 
     @PutMapping(path = "/{taskId}", consumes = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON})
-    public ImportWrapper taskPut(@PathVariable Long id, @PathVariable Integer taskId, HttpServletRequest request, HttpServletResponse response) {
+    public ImportWrapper taskPut(
+            @PathVariable Long id,
+            @PathVariable Integer taskId,
+            HttpServletRequest request, HttpServletResponse response) {
+
         return (writer, builder, converter) -> handleTaskPut(id, taskId, request, response, converter);
     }
 
@@ -161,7 +158,11 @@ public class ImportTaskController extends ImportBaseController {
         }
     }
     @PutMapping(path = "/{taskId:.+}")
-    public Object taskPutFile(@PathVariable Long id, @PathVariable Object taskId, HttpServletRequest request, HttpServletResponse response) {
+    public Object taskPutFile(
+            @PathVariable Long id,
+            @PathVariable Object taskId,
+            HttpServletRequest request, HttpServletResponse response) {
+
         ImportContext context = context(id);
         //TODO: Task id is the file name here. This functionality is completely undocumented
         return acceptData(handleFileUpload(context, taskId, request), context, response);
@@ -169,10 +170,13 @@ public class ImportTaskController extends ImportBaseController {
 
 
 
-    @PutMapping(path = {"/{taskId}/target"}, produces = { MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @PutMapping(path = "/{taskId}/target")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void targetPut(@PathVariable Long id, @PathVariable Integer taskId, @RequestBody StoreInfo store) {
+    public void targetPut(
+            @PathVariable Long id,
+            @PathVariable Integer taskId,
+            @RequestBody StoreInfo store) {
+
         if (store == null) {
             throw new RestException("Task has no target store", HttpStatus.NOT_FOUND);
         } else {
@@ -181,8 +185,7 @@ public class ImportTaskController extends ImportBaseController {
         }
     }
 
-    @PutMapping(path = {"/{taskId}/layer"}, produces = { MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @PutMapping(path = "/{taskId}/layer")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ImportWrapper layerPut(@PathVariable Long id, @PathVariable Integer taskId, @RequestBody LayerInfo layer) {
         ImportTask task = task(id, taskId);
@@ -194,9 +197,9 @@ public class ImportTaskController extends ImportBaseController {
         };
     }
 
-    @DeleteMapping(path = "/{taskId}", produces = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @DeleteMapping(path = "/{taskId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void taskDelete(@PathVariable Long id, @PathVariable Integer taskId, HttpServletRequest request, HttpServletResponse response) {
+    public void taskDelete(@PathVariable Long id, @PathVariable Integer taskId) {
         ImportTask task = task(id, taskId);
         task.getContext().removeTask(task);
         importer.changed(task.getContext());

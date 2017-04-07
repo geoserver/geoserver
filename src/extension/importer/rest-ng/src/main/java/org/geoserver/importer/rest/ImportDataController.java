@@ -21,7 +21,9 @@ import java.util.NoSuchElementException;
 
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH)
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/imports/{importId}", produces = {
+        MediaType.APPLICATION_JSON_VALUE,
+        CatalogController.TEXT_JSON})
 public class ImportDataController extends ImportBaseController {
 
     public ImportDataController(Importer importer) {
@@ -30,13 +32,10 @@ public class ImportDataController extends ImportBaseController {
 
     protected ImportJSONWriter converterWriter;
 
-    @GetMapping(value = { "/imports/{importId}/data", "/imports/{importId}/tasks/{taskId}/data", }, produces = {
-                    MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON,
-                    MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE })
-    public ImportData getData(@PathVariable(required = true, name = "importId") Long importId,
-            @PathVariable(required = false, name = "taskId") Integer taskId/*,
-            @PathVariable(required = false, name = "fileName:.+") String fileName,
-            HttpServletRequest request, HttpServletResponse response*/) throws Exception {
+    @GetMapping(value = { "/data", "/tasks/{taskId}/data", })
+    public ImportData getData(
+            @PathVariable Long importId,
+            @PathVariable(required = false) Integer taskId) throws Exception {
 
         ImportData data = null;
 
@@ -56,28 +55,26 @@ public class ImportDataController extends ImportBaseController {
     }
 
     //We need to force spring to ignore the .shp here (we don't want a .shp encoded response!
-    @GetMapping(value = {"/imports/{importId}/data/files",
-            "/imports/{importId}/tasks/{taskId}/data/files",
-            "/imports/{importId}/data/files/{fileName:.+}",
-            "/imports/{importId}/tasks/{taskId}/data/files/{fileName:\\.+}" },
-            produces = {MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON})
-    public ImportData getDirectory(@PathVariable(required = true, name = "importId") Long importId,
-                                   @PathVariable(required = false, name = "taskId") Integer taskId,
-                                   @PathVariable(required = false, name = "fileName") String fileName) throws Exception {
-
+    @GetMapping(value = {
+            "/data/files", "/tasks/{taskId}/data/files",
+            "/data/files/{fileName:.+}", "/tasks/{taskId}/data/files/{fileName:\\.+}" })
+    public ImportData getDirectory(
+            @PathVariable Long importId,
+            @PathVariable(required = false) Integer taskId,
+            @PathVariable(required = false) String fileName) throws Exception {
 
         return getDataImport(importId, fileName);
     }
             
     
     //We need to force spring to ignore the .shp here (we don't want a .shp encoded response!
-    @DeleteMapping(value = {"/imports/{importId}/data/files",
-            "/imports/{importId}/tasks/{taskId}/data/files",
-            "/imports/{importId}/data/files/{fileName:.+}",
-            "/imports/{importId}/tasks/{taskId}/data/files/{fileName:\\.+}" })
-    public ResponseEntity deleteDirectory(@PathVariable(required = true, name = "importId") Long importId,
-            @PathVariable(required = false, name = "taskId") Integer taskId,
-            @PathVariable(required = false, name = "fileName") String fileName) throws Exception {
+    @DeleteMapping(value = {
+            "/data/files", "/tasks/{taskId}/data/files",
+            "/data/files/{fileName:.+}", "/tasks/{taskId}/data/files/{fileName:\\.+}" })
+    public ResponseEntity deleteDirectory(
+            @PathVariable Long importId,
+            @PathVariable(required = false) Integer taskId,
+            @PathVariable(required = false) String fileName) throws Exception {
         
         Directory dir = lookupDirectory(importId);
         ImportData file = lookupFile(fileName, dir);

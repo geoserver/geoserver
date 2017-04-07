@@ -48,13 +48,14 @@ public class ImportController extends ImportBaseController {
         super(importer);
     }
 
-    @PostMapping(value = {"/{id}",""}, produces = { MediaType.APPLICATION_JSON_VALUE })
+    @PostMapping(value = {"/{id}",""})
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> postImports(
-            @PathVariable(name="id",required=false) Long id,
+            @PathVariable(required=false) Long id,
             @RequestParam(name="async", required = false, defaultValue = "false") boolean async,
             @RequestParam(name="exec", required = false, defaultValue = "false") boolean exec,
             @RequestBody(required=false) ImportContext obj, UriComponentsBuilder builder) throws IOException {
+
         ImportContext context = (ImportContext) context(id, true, false);
         if (context != null) {
              try {
@@ -80,8 +81,7 @@ public class ImportController extends ImportBaseController {
         return new ResponseEntity<>(context, headers, HttpStatus.CREATED);
     }
 
-    @GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON })
+    @GetMapping
     public ImportWrapper getImports() {
         Object lookupContext = context(null, true, true);
         if (lookupContext == null) {
@@ -92,8 +92,7 @@ public class ImportController extends ImportBaseController {
         }
     }
 
-    @GetMapping(value = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @GetMapping(value = "/{id}")
     public ImportContext getImports(@PathVariable Long id) {
         return context(id);
     }
@@ -105,6 +104,7 @@ public class ImportController extends ImportBaseController {
             @RequestParam(name="async", required = false, defaultValue = "false") boolean async,
             @RequestParam(name="exec", required = false, defaultValue = "false") boolean exec,
             UriComponentsBuilder builder) {
+
         if (id != null) {
             ImportContext context = createImport(id, null, async, exec);
             assert context.getId() >= id;
@@ -117,8 +117,7 @@ public class ImportController extends ImportBaseController {
         }
     }
 
-    @DeleteMapping(value = {"", "/{id}"}, produces = { MediaType.APPLICATION_JSON_VALUE,
-            CatalogController.TEXT_JSON , MediaType.TEXT_HTML_VALUE})
+    @DeleteMapping(value = {"", "/{id}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteImports(@PathVariable(required = false) Long id) {
         Iterator<ImportContext> contexts = null;

@@ -29,7 +29,9 @@ import java.lang.reflect.Type;
 
 @RestController
 @ControllerAdvice
-@RequestMapping(path = RestBaseController.ROOT_PATH)
+@RequestMapping(path = RestBaseController.ROOT_PATH + "/imports/{importId}", produces = {
+        MediaType.APPLICATION_JSON_VALUE,
+        MediaType.TEXT_HTML_VALUE })
 public class ImportTransformController extends ImportBaseController {
 
     @Autowired
@@ -37,35 +39,33 @@ public class ImportTransformController extends ImportBaseController {
         super(importer);
     }
 
-    @PostMapping(path = { "/imports/{importId}/tasks/{taskId}/transforms" })
-    public ResponseEntity postTransform(@PathVariable("importId") String importIdStr,
-            @PathVariable("taskId") String taskIdStr,
+    @PostMapping(path = { "/tasks/{taskId}/transforms" })
+    public ResponseEntity postTransform(
+            @PathVariable Long importId,
+            @PathVariable Integer taskId,
             @RequestParam(value = "expand", required = false) String expand,
-            @RequestBody ImportTransform importTransform, HttpServletRequest request,
+            @RequestBody ImportTransform importTransform,
             UriComponentsBuilder builder) {
 
-        Long taskId = taskIdStr == null ? null : Long.valueOf(taskIdStr);
-        Integer importId = importIdStr == null ? null : Integer.valueOf(importIdStr);
-
         ImportTransform tx = importTransform;
-        ImportTask task = task(taskId, importId);
+        ImportTask task = task(importId, taskId);
         task.getTransform().add(tx);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(
                 builder.path("/imports/{importId}/tasks/{taskId}/transforms/{transformId}")
-                        .buildAndExpand(importIdStr, taskIdStr,
+                        .buildAndExpand(importId.toString(), taskId.toString(),
                                 task.getTransform().getTransforms().size() - 1)
                         .toUri());
         return new ResponseEntity<String>("", headers, HttpStatus.CREATED);
     }
 
-    @GetMapping(path = {"/imports/{importId}/tasks/{taskId}/transforms",
-            "/imports/{importId}/tasks/{taskId}/transforms/{transformId}" },
-            produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE })
-    public ImportWrapper getTransform(@PathVariable("importId") Long importId, @PathVariable("taskId") Integer taskId,
-                               @PathVariable(value = "transformId", required = false) Integer transformId,
-                               @RequestParam(value = "expand", required = false) String expand, HttpServletRequest request) {
+    @GetMapping(path = {"/tasks/{taskId}/transforms", "/tasks/{taskId}/transforms/{transformId}" })
+    public ImportWrapper getTransform(
+            @PathVariable Long importId,
+            @PathVariable Integer taskId,
+            @PathVariable(required = false) Integer transformId,
+            @RequestParam(value = "expand", required = false) String expand) {
 
         return (writer, builder, converter) -> {
             ImportTransform tx = transform(importId, taskId, transformId, true);
@@ -80,13 +80,15 @@ public class ImportTransformController extends ImportBaseController {
         };
     }
 
-    @PutMapping(path = { "/imports/{importId}/tasks/{taskId}/transforms/{transformId}" },
-            consumes = { MediaType.APPLICATION_JSON_VALUE, CatalogController.TEXT_JSON},
-            produces = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE })
-    public ImportWrapper putTransform(@PathVariable("importId") Long importId,
-            @PathVariable("taskId") Integer taskId, @PathVariable("transformId") Integer transformId,
+    @PutMapping(path = { "/tasks/{taskId}/transforms/{transformId}" }, consumes = {
+            MediaType.APPLICATION_JSON_VALUE,
+            CatalogController.TEXT_JSON})
+    public ImportWrapper putTransform(
+            @PathVariable Long importId,
+            @PathVariable Integer taskId,
+            @PathVariable Integer transformId,
             @RequestParam(value = "expand", required = false) String expand,
-            @RequestBody ImportTransform importTransform, HttpServletRequest request) {
+            @RequestBody ImportTransform importTransform) {
 
         ImportTransform orig = transform(importId, taskId, transformId);
         OwsUtils.copy(importTransform, orig, (Class) orig.getClass());
@@ -99,12 +101,12 @@ public class ImportTransformController extends ImportBaseController {
         };
     }
 
-    @DeleteMapping(path = { "/imports/{importId}/tasks/{taskId}/transforms/{transformId}" })
-    public ResponseEntity deleteTransform(@PathVariable("importId") Long importId,
-            @PathVariable("taskId") Integer taskId,
-            @PathVariable("transformId") Integer transformId,
-            @RequestParam(value = "expand", required = false) String expand,
-            HttpServletRequest request) {
+    @DeleteMapping(path = { "/tasks/{taskId}/transforms/{transformId}" })
+    public ResponseEntity deleteTransform(
+            @PathVariable Long importId,
+            @PathVariable Integer taskId,
+            @PathVariable Integer transformId,
+            @RequestParam(value = "expand", required = false) String expand) {
 
         ImportTask task = task(importId, taskId);
         ImportTransform tx = transform(importId, taskId, transformId);

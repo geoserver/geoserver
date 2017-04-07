@@ -7,8 +7,9 @@ package org.geoserver.notification;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.notification.common.Notification;
@@ -18,7 +19,7 @@ import org.geotools.util.logging.Logging;
 
 public class MessageMultiplexer implements Runnable {
 
-    protected static Queue<Notification> mainQueue;
+    protected static BlockingQueue<Notification> mainQueue;
 
     private static List<MessageProcessor> messageProcessors;
 
@@ -42,7 +43,11 @@ public class MessageMultiplexer implements Runnable {
     @Override
     public void run() {
         while (true) {
-            consume(mainQueue.poll());
+            try {
+                consume(mainQueue.take());
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.WARNING, e.getMessage(), e);
+            }
         }
     }
 

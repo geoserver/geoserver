@@ -1211,14 +1211,27 @@ public class GeoServerDataDirectory {
                         //GEOS-7025: Just get the path; don't try to create the file
                         file = Paths.toFile(root(), resource.path());
                     }
+                    
                     URL u = fileToUrlPreservingCqlTemplates(file);
+                    
                     if (url.getQuery() != null) {
                         try {
-                            return new URL(u.toString() + "?" + url.getQuery());
+                            u = new URL(u.toString() + "?" + url.getQuery());
                         } catch (MalformedURLException ex) {
+                            GeoServerPersister.LOGGER.log(Level.WARNING, "Error processing query string for resource with uri: " + uri, ex);
                             return null;
                         }
                     }
+                    
+                    if (url.getRef() != null) {
+                        try {
+                            u = new URL(u.toString() + "#" + url.getRef());
+                        } catch (MalformedURLException ex) {
+                            GeoServerPersister.LOGGER.log(Level.WARNING, "Error processing # fragment for resource with uri: " + uri, ex);
+                            return null;
+                        }
+                    }
+                    
                     return u;
                 } else {
                     return url;

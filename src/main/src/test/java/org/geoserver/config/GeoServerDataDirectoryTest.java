@@ -113,5 +113,48 @@ public class GeoServerDataDirectoryTest {
         
         //GEOS-7025: verify the icon file is not created if it doesn't already exist
         assertFalse(iconFile.exists());
-    } 
+    }    
+
+    /**
+     * Test loading a parsed style with an external graphic URL that contains both ?queryParams and
+     * a URL #fragment, and assert that those URL components are preserved. 
+     *  
+     * @throws IOException
+     */
+    @Test
+    public void testParsedStyleExternalWithParamsAndFragment() throws IOException {
+        File styleDir = new File(dataDir.root(), "styles");
+        styleDir.mkdir();
+
+        // Copy the sld to the temp style dir
+        File styleFile = new File(styleDir, "external_with_params_and_fragment.sld");
+        Files.copy(this.getClass().getResourceAsStream("external_with_params_and_fragment.sld"),
+                styleFile.toPath());
+
+        File iconFile = new File(styleDir, "icon.png");
+        assertFalse(iconFile.exists());
+
+        StyleInfoImpl si = new StyleInfoImpl(null);
+        si.setName("");
+        si.setId("");
+        si.setFormat("sld");
+        si.setFormatVersion(new Version("1.0.0"));
+        si.setFilename(styleFile.getName());
+
+        Style s = dataDir.parsedStyle(si);
+        // Verify style is actually parsed correctly
+        Symbolizer symbolizer = s.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
+        assertTrue(symbolizer instanceof PointSymbolizer);
+        GraphicalSymbol graphic = ((PointSymbolizer) symbolizer).getGraphic().graphicalSymbols()
+                .get(0);
+        assertTrue(graphic instanceof ExternalGraphic);
+        assertEquals(((ExternalGraphic) graphic).getLocation().getPath(),
+                iconFile.toURI().toURL().getPath());
+
+        assertEquals("param1=1", ((ExternalGraphic) graphic).getLocation().getQuery());
+        assertEquals("textAfterHash", ((ExternalGraphic) graphic).getLocation().getRef());
+
+        // GEOS-7025: verify the icon file is not created if it doesn't already exist
+        assertFalse(iconFile.exists());
+    }
 }

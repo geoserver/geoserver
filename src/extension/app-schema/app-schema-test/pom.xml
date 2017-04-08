@@ -217,6 +217,7 @@
                             <include>**/*.sql</include>
                             <include>**/*.sld</include>
                             <include>**/*.png</include>
+                            <include>**/*.json</include>
                         </includes>
                     </testResource>
                 </testResources>
@@ -272,11 +273,11 @@
                             <include>**/*.sql</include>
                             <include>**/*.sld</include>
                             <include>**/*.png</include>
+					        <include>**/*.json</include>
                         </includes>
                     </testResource>
                 </testResources>
             </build>
         </profile>
     </profiles>
-
 </project>

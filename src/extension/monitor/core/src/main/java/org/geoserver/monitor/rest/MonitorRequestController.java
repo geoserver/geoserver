@@ -107,7 +107,7 @@ public class MonitorRequestController extends RestBaseController {
     /**
      * Template method to get a custom template name
      *
-     * @param object The object being serialized.
+     * @param o The object being serialized.
      */
     protected String getTemplateName(Object o) {
         if (o instanceof RequestData) {

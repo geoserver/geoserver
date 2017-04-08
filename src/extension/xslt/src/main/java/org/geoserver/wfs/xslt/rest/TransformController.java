@@ -19,8 +19,9 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
-import org.geoserver.rest.catalog.CatalogController;
+import org.geoserver.rest.catalog.AbstractCatalogController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
+import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.xslt.config.TransformInfo;
@@ -50,10 +51,11 @@ import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
+
 @RestController
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/services/wfs/transforms")
-public class TransformController extends CatalogController {
+public class TransformController extends AbstractCatalogController {
 
     @Autowired
     private TransformRepository repository;
@@ -80,7 +82,7 @@ public class TransformController extends CatalogController {
         return wrapObject(getTransformInfo(transformInfoName), TransformInfo.class);
     }
 
-    @GetMapping(path = "{transform}", produces = APPLICATION_XSLT)
+    @GetMapping(path = "{transform}", produces = MediaTypeExtensions.APPLICATION_XSLT_VALUE)
     public void getTransforms(
             @PathVariable(name = "transform") String transformInfoName, OutputStream output) {
         InputStream transform = getTransform(transformInfoName);
@@ -101,7 +103,7 @@ public class TransformController extends CatalogController {
         return buildResponse(builder, transformInfo.getName(), HttpStatus.CREATED);
     }
 
-    @PostMapping(consumes = APPLICATION_XSLT)
+    @PostMapping(consumes = MediaTypeExtensions.APPLICATION_XSLT_VALUE)
     public ResponseEntity<String> postTransform(
             InputStream transform,
             @RequestParam(name = "name", required = false) String transformInfoName,
@@ -142,7 +144,7 @@ public class TransformController extends CatalogController {
         saveTransFormInfo(transformInfo);
     }
 
-    @PutMapping(path = "{transform}", consumes = APPLICATION_XSLT)
+    @PutMapping(path = "{transform}", consumes = MediaTypeExtensions.APPLICATION_XSLT_VALUE)
     public void putTransform(
             InputStream transform,
             @PathVariable(name = "transform") String transformInfoName) {

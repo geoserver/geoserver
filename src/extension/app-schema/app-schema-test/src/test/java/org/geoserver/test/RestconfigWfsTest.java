@@ -30,9 +30,9 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.rest.CatalogRESTTestSupport;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
+import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestOracleSetup;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
@@ -42,9 +42,8 @@ import org.geotools.data.complex.DataAccessRegistry;
 import org.geotools.xml.AppSchemaXSDRegistry;
 import org.geotools.xml.resolver.SchemaCache;
 import org.junit.Test;
-import org.w3c.dom.Document;
-
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 /**
  * Test REST configuration of app-schema. Note that the mapping and properties file are still copied

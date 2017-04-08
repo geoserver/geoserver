@@ -314,7 +314,7 @@ public class GetFeatureTest extends WFSTestSupport {
         testGetFifteenAll("cdf/Fifteen/wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
         testGetFifteenAll("cdf/Fifteen/wfs?request=GetFeature&typename=Fifteen&version=1.0.0&service=wfs");
     
-        Document doc = getAsDOM("sf/Fifteen/wfs?request=GetFeature&typename=cdf:Seven&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("cdf/Fifteen/wfs?request=GetFeature&typename=cdf:Seven&version=1.0.0&service=wfs");
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", doc);
     }
     

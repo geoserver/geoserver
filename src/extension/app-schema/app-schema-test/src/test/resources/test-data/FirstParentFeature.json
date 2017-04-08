@@ -1,0 +1,46 @@
+{
+  "crs": null,
+  "features": [
+    {
+      "geometry": null,
+      "id": "cc.1",
+      "properties": {
+        "nestedFeature": [
+          {
+            "someAttribute": "string_one"
+          },
+          {
+            "someAttribute": "string_two"
+          }
+        ]
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": null,
+      "id": "cc.2",
+      "properties": {},
+      "type": "Feature"
+    },
+    {
+      "geometry": null,
+      "id": "cc.3",
+      "properties": {},
+      "type": "Feature"
+    },
+    {
+      "geometry": null,
+      "id": "cc.4",
+      "properties": {},
+      "type": "Feature"
+    },
+    {
+      "geometry": null,
+      "id": "cc.5",
+      "properties": {},
+      "type": "Feature"
+    }
+  ],
+  "totalFeatures": "unknown",
+  "type": "FeatureCollection"
+}

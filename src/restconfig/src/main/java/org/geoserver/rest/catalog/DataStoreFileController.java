@@ -565,7 +565,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
 
     @Override
     protected Resource findPrimaryFile(Resource directory, String format) {
-        if ("shp".equalsIgnoreCase(format) || "data.db".equalsIgnoreCase(format)) {
+        if ("shp".equalsIgnoreCase(format) || "h2".equalsIgnoreCase(format)) {
             // special case for shapefiles, since shapefile datastore can handle directories just
             // return the directory, this handles the case of a user uploading a zip with multiple
             // shapefiles in it and the same happens for H2

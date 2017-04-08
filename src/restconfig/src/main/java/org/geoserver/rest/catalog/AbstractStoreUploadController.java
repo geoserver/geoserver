@@ -67,13 +67,13 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
                 boolean cleanPreviousContents = HttpMethod.PUT.name().equals(request.getMethod());
                 String filename = request.getParameter("filename");
                 if (filename == null) {
-                    filename = store + "." + format;
+                    filename = buildUploadedFilename(store, format);
                 }
                 uploadedFile = RESTUtils.handleBinUpload(filename, directory, cleanPreviousContents,
                         request, workspace);
             } else if (method == UploadMethod.url) {
-                uploadedFile = RESTUtils.handleURLUpload(store + "." + format, workspace, directory,
-                        request);
+                uploadedFile = RESTUtils.handleURLUpload(buildUploadedFilename(store, format),
+                        workspace, directory, request);
             } else if (method == UploadMethod.external) {
                 uploadedFile = RESTUtils.handleEXTERNALUpload(request);
                 external = true;
@@ -134,6 +134,17 @@ public abstract class AbstractStoreUploadController extends AbstractCatalogContr
         }
 
         return files;
+    }
+
+    /**
+     * Build name for an uploaded file.
+     */
+    private String buildUploadedFilename(String store, String format) {
+        if ("h2".equalsIgnoreCase(format)) {
+            return store + ".data.db";
+        } else {
+            return store + "." + format;
+        }
     }
 
     /**

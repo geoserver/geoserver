@@ -1052,6 +1052,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         Node geologicUnit = resultQuality.getFirstChild();
         assertEquals("gu.25699", geologicUnit.getAttributes().getNamedItem("gml:id").getNodeValue());
         // om:result
+        assertXpathEvaluatesTo("", "(//om:Observation)[1]/om:result/text()", doc);
         assertXpathEvaluatesTo(id, "(//om:Observation)[1]/om:result/gsml:MappedFeature/@gml:id",
                 doc);
 
@@ -1065,6 +1066,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         geologicUnit = resultQuality.getFirstChild();
         assertEquals("gu.25678", geologicUnit.getAttributes().getNamedItem("gml:id").getNodeValue());
         // om:result
+        assertXpathEvaluatesTo("", "(//om:Observation)[2]/om:result/text()", doc);
         assertXpathEvaluatesTo(id, "(//om:Observation)[2]/om:result/gsml:MappedFeature/@gml:id",
                 doc);
 
@@ -1078,6 +1080,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         assertEquals("#gu.25678", resultQuality.getAttributes().getNamedItem("xlink:href")
                 .getNodeValue());
         // om:result
+        assertXpathEvaluatesTo("", "(//om:Observation)[3]/om:result/text()", doc);
         assertXpathEvaluatesTo(id, "(//om:Observation)[3]/om:result/gsml:MappedFeature/@gml:id",
                 doc);
 
@@ -1091,6 +1094,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         geologicUnit = resultQuality.getFirstChild();
         assertEquals("gu.25682", geologicUnit.getAttributes().getNamedItem("gml:id").getNodeValue());
         // om:result
+        assertXpathEvaluatesTo("", "(//om:Observation)[4]/om:result/text()", doc);
         assertXpathEvaluatesTo(id, "(//om:Observation)[4]/om:result/gsml:MappedFeature/@gml:id",
                 doc);
     }

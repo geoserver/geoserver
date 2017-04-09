@@ -160,4 +160,8 @@
     class="org.geoserver.security.OperationSecurityCallback">
     <constructor-arg ref="serviceRulesDao"/>
   </bean>
+  
+  <bean id="bruteForceListener" class="org.geoserver.security.BruteForceListener">
+    <constructor-arg ref="geoServerSecurityManager"/>
+  </bean>
 </beans>

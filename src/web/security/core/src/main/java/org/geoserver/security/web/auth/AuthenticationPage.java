@@ -35,26 +35,38 @@ import javax.servlet.http.Part;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.HTTPMethod;
 import org.geoserver.security.RequestFilterChain;
+import org.geoserver.security.config.BruteForcePreventionConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.SSLFilterConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.web.wicket.HelpLink;
+import org.geoserver.web.wicket.ParamResourceModel;
+import org.h2.bnf.Bnf;
+import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
 /**
  * Main menu page for authentication.
@@ -73,6 +85,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
         initComponents();
     }
 
+    @SuppressWarnings("serial")
     void initComponents() {
         
         // The request filter chain objects have to be cloned
@@ -105,7 +118,57 @@ public class AuthenticationPage extends AbstractSecurityPage {
             throw new RuntimeException(e1);
         }
         form.add(new TextField<Integer>("sslPort",new PropertyModel<Integer>(this, "sslFilterConfig.sslPort")));
+        
+        // brute force attack
+        form.add(new CheckBox("bfEnabled", new PropertyModel<Boolean>(this, "config.bruteForcePrevention.enabled")));
+        final TextField<Integer> bfMinDelay = new TextField<Integer>("bfMinDelaySeconds", new PropertyModel<Integer>(this, "config.bruteForcePrevention.minDelaySeconds"));
+        bfMinDelay.add(RangeValidator.minimum(0));
+        form.add(bfMinDelay);
+        final TextField<Integer> bfMaxDelay = new TextField<Integer>("bfMaxDelaySeconds", new PropertyModel<Integer>(this, "config.bruteForcePrevention.maxDelaySeconds"));
+        bfMaxDelay.add(RangeValidator.minimum(0));
+        form.add(bfMaxDelay);
+        
+        final TextField<List<String>> netmasks = new TextField<List<String>>("bfWhitelistedNetmasks", new PropertyModel<List<String>>(this, "config.bruteForcePrevention.whitelistedMasks")) {
+            @Override
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                return (IConverter<C>) new CommaSeparatedListConverter();
+            }
+        };
+        netmasks.add(new IValidator<List<String>>() {
 
+            @Override
+            public void validate(IValidatable<List<String>> validatable) {
+                List<String> masks = validatable.getValue();
+                for (String mask : masks) {
+                    try {
+                        new IpAddressMatcher(mask);
+                    } catch(Exception e) {
+                        form.error(new ParamResourceModel("invalidMask", getPage(), mask).getString());
+                    }
+                }
+            }
+            
+        });
+        form.add(netmasks);
+        form.add(new AbstractFormValidator() {
+            
+            @Override
+            public void validate(Form<?> form) {
+                Integer min = bfMinDelay.getConvertedInput();
+                Integer max = bfMaxDelay.getConvertedInput();
+                if(max < min) {
+                    form.error(new ParamResourceModel("bfInvalidMinMax", getPage()).getString());
+                }
+            }
+            
+            @Override
+            public FormComponent<?>[] getDependentFormComponents() {
+                return new FormComponent[] {bfMinDelay, bfMaxDelay};
+            }
+        });
+        final TextField<Integer> bfMaxBlockedThreads = new TextField<Integer>("bfMaxBlockedThreads", new PropertyModel<Integer>(this, "config.bruteForcePrevention.maxBlockedThreads"));
+        bfMaxBlockedThreads.add(RangeValidator.minimum(0));
+        form.add(bfMaxBlockedThreads);
 
         form.add(new AuthenticationFiltersPanel("authFilters"));
         form.add(new HelpLink("authFiltersHelp").setDialog(dialog));

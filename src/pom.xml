@@ -1378,7 +1378,7 @@
       <exclude>${test.exclude.pattern}</exclude>
      </excludes>
      <forkMode>once</forkMode>
-     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d}-DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
+     <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
      <enableAssertions>true</enableAssertions>
      <printSummary>true</printSummary>
      <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
@@ -1801,6 +1801,7 @@
   <imageio-ext.version>1.1.17</imageio-ext.version>
   <jaiext.version>1.0.13</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
+  <sun.java2d.d3d>true</sun.java2d.d3d>
   <jvm.opts></jvm.opts>
   <jalopy.phase>disabled</jalopy.phase>
   <jalopy.srcExcludesPattern>disabled</jalopy.srcExcludesPattern>
@@ -1815,7 +1816,7 @@
   <fork.javac>true</fork.javac>
   <javac.maxHeapSize>256m</javac.maxHeapSize>
   <image.tests>true</image.tests>
-  <interactive.tests>false</interactive.tests>
+  <interactive.image>false</interactive.image>
   <windows.leniency>true</windows.leniency>
   <gf.version>3.2-SNAPSHOT</gf.version>
   <hibernate-version>3.6.0.Final</hibernate-version>

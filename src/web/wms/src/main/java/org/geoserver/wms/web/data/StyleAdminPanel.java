@@ -1,4 +1,4 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2016 - 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -298,8 +298,9 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                     //No external legend, use generated legend
                     GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class, stylePage.getGeoServerApplication().getApplicationContext());
                     StyleInfo si = new StyleInfoImpl(stylePage.getCatalog());
+                    si.setFormat(stylePage.getStyleInfo().getFormat());
                     String styleName = "tmp" + UUID.randomUUID().toString();
-                    String styleFileName =  styleName + ".sld";
+                    String styleFileName = styleName + '.' + Styles.handler(si.getFormat()).getFileExtension();
                     si.setFilename(styleFileName);
                     si.setName(styleName);
                     si.setWorkspace(stylePage.styleModel.getObject().getWorkspace());

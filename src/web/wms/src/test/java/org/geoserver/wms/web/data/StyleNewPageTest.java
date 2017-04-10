@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -65,6 +65,32 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         
         tester.assertRenderedPage(StyleNewPage.class);
         tester.assertModelValue("styleForm:styleEditor", sld);
+    }
+
+    @Test
+    public void testPreviewNoLegendSLD() throws Exception {
+        FormTester form = tester.newFormTester("styleForm");
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("context:panel:name", "previewsld");
+        form.setValue("context:panel:format", "sld");
+        form.submit();
+        tester.executeAjaxEvent("styleForm:context:panel:preview", "click");
+        tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testPreviewNoLegendZIP() throws Exception {
+        FormTester form = tester.newFormTester("styleForm");
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        form.setValue("context:panel:name", "previewzip");
+        form.setValue("context:panel:format", "zip");
+        form.submit();
+        tester.executeAjaxEvent("styleForm:context:panel:preview", "click");
+        tester.assertErrorMessages("Failed to build legend preview. Check to see if the style is valid.");
     }
     
     @Test

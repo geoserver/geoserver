@@ -7,6 +7,7 @@ package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
@@ -264,5 +265,36 @@ public class LayerTest extends CatalogRESTTestSupport {
         assertXpathExists("/layer/styles/style/workspace[text() = 'cite']", dom);
         assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/workspaces/cite/styles/foo.xml", 
             "//styles/style/atom:link/@href", dom );
+    }
+
+    @Test
+    public void testPutDefaultWMSInterpolationMethod() throws Exception {
+        Catalog cat = getCatalog();
+        LayerInfo l = cat.getLayerByName("cite:Buildings");
+        assertNotNull(l);
+        assertNull(l.getDefaultWMSInterpolationMethod());
+
+        Document dom = getAsDOM("/rest/layers/cite:Buildings.xml");
+        assertEquals("layer", dom.getDocumentElement().getNodeName());
+        assertXpathNotExists("/layer/defaultWMSInterpolationMethod", dom);
+
+        String xml =
+            "<layer>" +
+                "<defaultWMSInterpolationMethod>" +
+                    "Nearest" +
+                "</defaultWMSInterpolationMethod>" +
+                "<enabled>true</enabled>" +
+            "</layer>";
+        MockHttpServletResponse response =
+            putAsServletResponse("/rest/layers/cite:Buildings", xml, "application/xml");
+        assertEquals(200, response.getStatus());
+
+        l = cat.getLayerByName("cite:Buildings");
+        assertNotNull(l.getDefaultWMSInterpolationMethod());
+        assertEquals(LayerInfo.WMSInterpolation.Nearest, l.getDefaultWMSInterpolationMethod());
+
+        dom = getAsDOM("/rest/layers/cite:Buildings.xml");
+        assertXpathEvaluatesTo("1", "count(/layer/defaultWMSInterpolationMethod)", dom);
+        assertXpathExists("/layer/defaultWMSInterpolationMethod[text() = 'Nearest']", dom);
     }
 }

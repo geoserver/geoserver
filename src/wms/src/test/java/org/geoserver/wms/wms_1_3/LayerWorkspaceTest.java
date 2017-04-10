@@ -16,6 +16,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class LayerWorkspaceTest extends WMSTestSupport{
 
@@ -47,5 +48,17 @@ public class LayerWorkspaceTest extends WMSTestSupport{
     public void testWorkspaceCapabilities() throws Exception {
         Document doc = getAsDOM("/sf/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
         assertXpathExists("//wms:Layer[wms:Name='" + MockData.PRIMITIVEGEOFEATURE.getLocalPart()+ "']", doc);
+    }
+    
+    public void testWorkspaceRequestWithoutParametersShouldShowUserFriendlyError() throws Exception {
+        Document doc = getAsDOM("/sf/wms", true);
+        Element node = (Element) doc.getDocumentElement();
+        assertEquals("ows:ExceptionReport", node.getNodeName());
+        
+        node = (Element) node.getElementsByTagName("ows:Exception").item(0);
+        assertEquals("MissingParameterValue", node.getAttributes().getNamedItem("exceptionCode").getTextContent());
+
+        node = (Element) node.getElementsByTagName("ows:ExceptionText").item(0);
+        assertEquals("Missing required WMS parameters", node.getTextContent());
     }
 }

@@ -15,6 +15,7 @@ import org.geoserver.ows.WorkspaceQualifyingCallback;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
+import org.geoserver.platform.ServiceException;
 
 public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
 
@@ -25,6 +26,11 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     @Override
     protected void qualifyRequest(WorkspaceInfo ws, PublishedInfo l, Service service, Request request) {
         if (WebMapService.class.isInstance(service.getService())) {
+            if (request.getRawKvp() == null) {
+                String msg = "Missing required WMS parameters";
+                throw new ServiceException(msg, "MissingParameterValue", "request");
+            }
+            
             String layers = (String) request.getRawKvp().get("LAYERS");
             if (layers != null) {
                 request.getRawKvp().put("LAYERS", qualifyLayerNamesKVP(layers, ws));

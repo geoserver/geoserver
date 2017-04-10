@@ -63,6 +63,9 @@
     <!-- 
         core modules
      -->
+	<!--  Request tracing filter -->
+	<bean id="requestTraceFilter" class="org.geoserver.filters.RequestTraceFilter">
+	</bean>
      
     <!-- configuration module -->
         <!-- note: we use depends to ensure that all datastore plugins are 

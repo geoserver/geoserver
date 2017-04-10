@@ -8,6 +8,8 @@ package org.geoserver.rest;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.geoserver.rest.util.RESTUtils;
 import org.geotools.filter.function.EnvFunction;
 import org.restlet.Restlet;
 import org.restlet.data.Request;
@@ -34,6 +36,13 @@ public class EnviromentInjectionCallback implements DispatcherCallback {
         if (auth != null && !(auth instanceof AnonymousAuthenticationToken)) {
             String name = auth.getName();
             envVars.put("GSUSER", name);
+        }
+
+        // inject the current request TraceID
+        String traceID = (String)request.getAttributes().get("org.geoserver.requestTraceID");
+        if (traceID != null) {
+            traceID = StringUtils.left(traceID, 64);  // PostgreSQL & Oracle both limit to 64 chars
+            envVars.put("TRACEID", traceID);
         }
 
         // set it into the EnvFunction

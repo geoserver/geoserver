@@ -20,6 +20,7 @@
     <id column="ID" name="id">
       <generator class="native"/>
     </id>
+    <property column="TRACE_ID" name="traceID" />
     <property column="STATUS" name="status" type="Status" index="REQ_STATUS_IDX"/>
     <property column="CATEGORY" name="category" type="Category" index="REQ_CATEGORY_IDX"/>
     

@@ -1,5 +1,5 @@
 <#escape x as x?xml>
-<Request id="${id!""}">
+<Request id="${id!""}" traceID="${traceID!""}">
    <Service>${service!""}</Service>
    <Version>${owsVersion!""}</Version>
    <Operation>${operation!""}</Operation>

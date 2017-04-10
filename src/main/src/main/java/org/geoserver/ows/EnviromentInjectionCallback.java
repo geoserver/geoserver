@@ -8,6 +8,7 @@ package org.geoserver.ows;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.geotools.filter.function.EnvFunction;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,6 +38,16 @@ public class EnviromentInjectionCallback extends AbstractDispatcherCallback {
                 envVars = new HashMap<String, Object>();
             }
             envVars.put("GSUSER", name);
+        }
+        
+        // inject the current request TraceID
+        String traceID = request.getTraceID();
+        if (traceID != null) {
+            if(envVars == null) {
+                envVars = new HashMap<String, Object>();
+            }
+            traceID = StringUtils.left(traceID, 64);  // PostgreSQL & Oracle both limit to 64 chars
+            envVars.put("TRACEID", traceID);
         }
         
         // set it into the EnvFunction

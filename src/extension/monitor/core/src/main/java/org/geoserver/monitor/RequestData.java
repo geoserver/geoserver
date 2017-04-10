@@ -50,6 +50,11 @@ public class RequestData implements Serializable {
     private long id = -1;
 
     /**
+     * identifier used for tracing requests, typically a UUID.
+     */
+    private String traceID;
+    
+    /**
      * Request status / state
      */
     private Status status = Status.WAITING;
@@ -225,6 +230,14 @@ public class RequestData implements Serializable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getTraceID() {
+        return traceID;
+    }
+    
+    public void setTraceID(String traceID) {
+        this.traceID = traceID;
     }
 
     public Status getStatus() {
@@ -493,6 +506,7 @@ public class RequestData implements Serializable {
     public RequestData clone() {
         RequestData clone = new RequestData();
         clone.setId(id);
+        clone.setTraceID(traceID);
         clone.setStatus(status);
         clone.setPath(path);
         clone.setQueryString(queryString);

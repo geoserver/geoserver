@@ -69,4 +69,22 @@ public class FeatureDataConverterTest {
 
         assertEquals("goodname", badname.getName().getLocalPart());
     }
+    
+    @Test
+    public void testLayerNameFromTask() {
+        SimpleFeatureTypeBuilder typeBuilder = new SimpleFeatureTypeBuilder();
+        typeBuilder.setName("badname");
+        SimpleFeatureType badname = typeBuilder.buildFeatureType();
+        
+        ImportTask task = new ImportTask();
+        LayerInfo layer = new LayerInfoImpl();
+        ResourceInfo resource = new FeatureTypeInfoImpl((Catalog)null);
+        layer.setResource(resource);
+        layer.setName("goodname");
+        task.setLayer(layer);
+        
+        badname = FeatureDataConverter.DEFAULT.convertType(badname, null, null, task);
+
+        assertEquals("goodname", badname.getName().getLocalPart());
+    }
 }

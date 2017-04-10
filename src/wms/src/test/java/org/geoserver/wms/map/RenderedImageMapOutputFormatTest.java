@@ -7,6 +7,7 @@ package org.geoserver.wms.map;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.geoserver.catalog.*;
+import org.geoserver.catalog.LayerInfo.WMSInterpolation;
 import org.geoserver.catalog.CoverageView.CompositionType;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
@@ -31,6 +32,7 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ChannelSelectionImpl;
@@ -348,6 +350,164 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                 getPixelColor(imageBicubic, 200, 200).getRGB());
         assertNotEquals(getPixelColor(imageNearest, 300, 300).getRGB(),
                 getPixelColor(imageBicubic, 300, 300).getRGB());
+    }
+
+    @Test
+    public void testInterpolationFromLayerConfig() throws IOException, IllegalFilterException, Exception {
+        final Catalog catalog = getCatalog();
+
+        LayerInfo layerInfo = catalog.getLayerByName(MockData.TASMANIA_DEM.getLocalPart());
+
+        MapLayerInfo mapLayer = new MapLayerInfo(layerInfo);
+        assertNull(layerInfo.getDefaultWMSInterpolationMethod());
+
+        Envelope env = layerInfo.getResource().boundingBox();
+        double shift = env.getWidth() / 6;
+
+        env = new Envelope(env.getMinX() - shift, env.getMaxX() + shift, env.getMinY() - shift,
+                env.getMaxY() + shift);
+
+        // set Nearest Neighbor interpolation on layer
+        GetMapRequest request = new GetMapRequest();
+        request.setFormat(getMapFormat());
+        request.setLayers(Arrays.asList(mapLayer));
+
+        layerInfo.setDefaultWMSInterpolationMethod(WMSInterpolation.Nearest);
+        assertEquals(WMSInterpolation.Nearest,
+                request.getLayers().get(0).getLayerInfo().getDefaultWMSInterpolationMethod());
+        assertTrue(request.getInterpolations().isEmpty());
+
+        WMSMapContent map = createWMSMap(env);
+        map.setRequest(request);
+
+        RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
+        RenderedOp op = (RenderedOp)imageMap.getImage();
+        BufferedImage imageNearest = op.getAsBufferedImage();
+        imageMap.dispose();
+        assertNotBlank("testInterpolationsNearest", imageNearest);
+
+        // set Bicubic interpolation on layer
+        request = new GetMapRequest();
+        request.setFormat(getMapFormat());
+        request.setLayers(Arrays.asList(mapLayer));
+
+        layerInfo.setDefaultWMSInterpolationMethod(WMSInterpolation.Bicubic);
+        assertEquals(WMSInterpolation.Bicubic,
+                request.getLayers().get(0).getLayerInfo().getDefaultWMSInterpolationMethod());
+        assertTrue(request.getInterpolations().isEmpty());
+
+        map = createWMSMap(env);
+        map.setRequest(request);
+
+        imageMap = this.rasterMapProducer.produceMap(map);
+        op = (RenderedOp)imageMap.getImage();
+        BufferedImage imageBicubic = op.getAsBufferedImage();
+        imageMap.dispose();
+        assertNotBlank("testInterpolationsBicubic", imageBicubic);
+        // test some sample pixels to check rendering is different using different interpolations
+        assertNotEquals(getPixelColor(imageNearest, 200, 200).getRGB(),
+                getPixelColor(imageBicubic, 200, 200).getRGB());
+        assertNotEquals(getPixelColor(imageNearest, 300, 300).getRGB(),
+                getPixelColor(imageBicubic, 300, 300).getRGB());
+
+        // check also the *non* direct raster render path
+        request = new GetMapRequest();
+        request.setFormat(getMapFormat());
+        // adding layer twice on purpose to disable direct raster render
+        request.setLayers(Arrays.asList(mapLayer, mapLayer));
+
+        layerInfo.setDefaultWMSInterpolationMethod(WMSInterpolation.Bicubic);
+        assertEquals(WMSInterpolation.Bicubic,
+                request.getLayers().get(0).getLayerInfo().getDefaultWMSInterpolationMethod());
+        assertTrue(request.getInterpolations().isEmpty());
+
+        map = createWMSMap(env);
+        map.setRequest(request);
+        // adding layer twice on purpose to disable direct raster render
+        addRasterToMap(map, MockData.TASMANIA_DEM);
+
+        imageMap = this.rasterMapProducer.produceMap(map);
+        checkByLayerInterpolation(imageMap, Interpolation.getInstance(Interpolation.INTERP_BICUBIC));
+
+        // interpolation method specified in the request overrides service and layer configuration
+        request = new GetMapRequest();
+        // request says "Bicubic"
+        request.setInterpolations(
+                Arrays.asList(Interpolation.getInstance(Interpolation.INTERP_BICUBIC)));
+        request.setFormat(getMapFormat());
+        // adding layer twice on purpose to disable direct raster render
+        request.setLayers(Arrays.asList(mapLayer, mapLayer));
+
+        // layer config says "Bilinear"
+        layerInfo.setDefaultWMSInterpolationMethod(WMSInterpolation.Bilinear);
+        assertEquals(WMSInterpolation.Bilinear,
+                request.getLayers().get(0).getLayerInfo().getDefaultWMSInterpolationMethod());
+
+        // service config says "Nearest"
+        assertEquals(WMSInfo.WMSInterpolation.Nearest, getWMS().getServiceInfo().getInterpolation());
+
+        map = createWMSMap(env);
+        map.setRequest(request);
+        // adding layer twice on purpose to disable direct raster render
+        addRasterToMap(map, MockData.TASMANIA_DEM);
+
+        imageMap = this.rasterMapProducer.produceMap(map);
+        checkByLayerInterpolation(imageMap, Interpolation.getInstance(Interpolation.INTERP_BICUBIC));
+
+        // if default interpolation method is not specified, service default is used
+        request = new GetMapRequest();
+        request.setFormat(getMapFormat());
+        request.setLayers(Arrays.asList(mapLayer));
+
+        layerInfo.setDefaultWMSInterpolationMethod(null);
+        assertEquals(null,
+                request.getLayers().get(0).getLayerInfo().getDefaultWMSInterpolationMethod());
+        assertTrue(request.getInterpolations().isEmpty());
+
+        assertEquals(WMSInfo.WMSInterpolation.Nearest, getWMS().getServiceInfo().getInterpolation());
+
+        map = createWMSMap(env);
+        map.setRequest(request);
+
+        imageMap = this.rasterMapProducer.produceMap(map);
+        op = (RenderedOp)imageMap.getImage();
+        BufferedImage imageServiceDefault = op.getAsBufferedImage();
+        imageMap.dispose();
+        assertNotBlank("testInterpolationServiceDefault", imageServiceDefault);
+        // test produced image is equal to imageNearest
+        assertEquals(getPixelColor(imageNearest, 200, 200).getRGB(),
+                getPixelColor(imageServiceDefault, 200, 200).getRGB());
+        assertEquals(getPixelColor(imageNearest, 300, 300).getRGB(),
+                getPixelColor(imageServiceDefault, 300, 300).getRGB());
+        assertEquals(getPixelColor(imageNearest, 250, 250).getRGB(),
+                getPixelColor(imageServiceDefault, 250, 250).getRGB());
+        assertEquals(getPixelColor(imageNearest, 150, 150).getRGB(),
+                getPixelColor(imageServiceDefault, 150, 150).getRGB());
+    }
+
+    /*
+     * NOTE: this check is valid only if the direct raster render path is *not* taken
+     */
+    private void checkByLayerInterpolation(RenderedImageMap imageMap, Interpolation expected) {
+        Layer layer = imageMap.getMapContext().layers().get(0);
+        Interpolation actual = (Interpolation) layer.getUserData().get(StreamingRenderer.BYLAYER_INTERPOLATION);
+        assertEquals(expected, actual);
+    }
+
+    private WMSMapContent createWMSMap(Envelope bounds) throws Exception {
+        WMSMapContent map = new WMSMapContent();
+
+        int w = 400;
+        int h = (int) Math.round((bounds.getHeight() * w) /bounds.getWidth());
+        map.setMapWidth(w);
+        map.setMapHeight(h);
+        map.setBgColor(BG_COLOR);
+        map.setTransparent(true);
+        addRasterToMap(map, MockData.TASMANIA_DEM);
+
+        map.getViewport().setBounds(new ReferencedEnvelope(bounds, DefaultGeographicCRS.WGS84));
+
+        return map;
     }
 
     private void addRasterToMap(final WMSMapContent map, final QName typeName) throws IOException, FactoryRegistryException, TransformException, SchemaException {

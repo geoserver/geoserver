@@ -7,6 +7,7 @@ package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
@@ -267,5 +268,36 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         assertXpathExists("/layer/styles/style/workspace[text() = 'cite']", dom);
         assertXpathEvaluatesTo("http://localhost:8080/geoserver"+ROOT_PATH+"/workspaces/cite/styles/foo.xml", 
             "//styles/style/atom:link/@href", dom );
+    }
+
+    @Test
+    public void testPutDefaultWMSInterpolationMethod() throws Exception {
+        Catalog cat = getCatalog();
+        LayerInfo l = cat.getLayerByName("cite:Buildings");
+        assertNotNull(l);
+        assertNull(l.getDefaultWMSInterpolationMethod());
+
+        Document dom = getAsDOM(ROOT_PATH + "/layers/cite:Buildings.xml",200);
+        assertEquals("layer", dom.getDocumentElement().getNodeName());
+        assertXpathNotExists("/layer/defaultWMSInterpolationMethod", dom);
+
+        String xml =
+            "<layer>" +
+                "<defaultWMSInterpolationMethod>" +
+                    "Nearest" +
+                "</defaultWMSInterpolationMethod>" +
+                "<enabled>true</enabled>" +
+            "</layer>";
+        MockHttpServletResponse response =
+            putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "application/xml");
+        assertEquals(200, response.getStatus());
+
+        l = cat.getLayerByName("cite:Buildings");
+        assertNotNull(l.getDefaultWMSInterpolationMethod());
+        assertEquals(LayerInfo.WMSInterpolation.Nearest, l.getDefaultWMSInterpolationMethod());
+
+        dom = getAsDOM(ROOT_PATH + "/layers/cite:Buildings.xml",200);
+        assertXpathEvaluatesTo("1", "count(/layer/defaultWMSInterpolationMethod)", dom);
+        assertXpathExists("/layer/defaultWMSInterpolationMethod[text() = 'Nearest']", dom);
     }
 }

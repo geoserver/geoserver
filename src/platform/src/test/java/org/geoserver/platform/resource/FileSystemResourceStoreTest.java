@@ -1,22 +1,15 @@
 package org.geoserver.platform.resource;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ System.class, Files.class})
 public class FileSystemResourceStoreTest {
 
     TemporaryFolder folder = new TemporaryFolder();
@@ -33,54 +26,70 @@ public class FileSystemResourceStoreTest {
     }
 
     @Test
-    public void renameDirNamesDifferLinux() throws IOException, InterruptedException {
-        PowerMockito.mockStatic(System.class);
-        Mockito.when(System.getProperty("os.name")).thenReturn("linux");
-        String newName = "DirB";
+    public void renameSameFileName() throws IOException, InterruptedException {
+        String sameName = "Filea";
 
-        attemptRename("DirA", newName);
+        attemptRenameFile(sameName, sameName);
+
+        assertEquals(sameName, folder.getRoot().list()[0]);
+    }
+
+    @Test
+    public void renameFileNamesCaseDiffer() throws IOException, InterruptedException {
+        String newName = "Filea";
+
+        attemptRenameFile("FileA", newName);
 
         assertEquals(newName, folder.getRoot().list()[0]);
     }
 
     @Test
-    public void renameDirNamesCaseDifferLinux() throws IOException, InterruptedException {
-        PowerMockito.mockStatic(System.class);
-        Mockito.when(System.getProperty("os.name")).thenReturn("linux");
+    public void renameFileNamesDiffer() throws IOException, InterruptedException {
+        String newName = "FileB";
+
+        attemptRenameFile("FileA", newName);
+
+        assertEquals(newName, folder.getRoot().list()[0]);
+    }
+
+    @Test
+    public void renameSameDirName() throws IOException, InterruptedException {
+        String sameName = "Dira";
+
+        attemptRenameDir(sameName, sameName);
+
+        assertEquals(sameName, folder.getRoot().list()[0]);
+    }
+
+    @Test
+    public void renameDirNamesCaseDiffer() throws IOException, InterruptedException {
         String newName = "Dira";
 
-        attemptRename("DirA", newName);
+        attemptRenameDir("DirA", newName);
 
         assertEquals(newName, folder.getRoot().list()[0]);
     }
 
-
     @Test
-    public void renameDirNamesDifferWindows() throws IOException, InterruptedException {
-        PowerMockito.mockStatic(System.class);
-        Mockito.when(System.getProperty("os.name")).thenReturn("Windows");
+    public void renameDirNamesDiffer() throws IOException, InterruptedException {
         String newName = "DirB";
 
-        attemptRename("DirA", newName);
+        attemptRenameDir("DirA", newName);
 
         assertEquals(newName, folder.getRoot().list()[0]);
-
     }
 
-    @Test
-    public void renameDirNamesCaseDifferWindows() throws IOException, InterruptedException {
-        PowerMockito.mockStatic(System.class);
-        Mockito.when(System.getProperty("os.name")).thenReturn("Windows");
-        String oldName = "DirA";
-        String newName = "Dira";
+    private void attemptRenameDir(String oldName, String newName) throws IOException {
+        File toBeRenamed = folder.newFolder(oldName);
+        attemptRename(oldName, newName);
+    }
 
-        attemptRename("DirA", newName);
-
-        assertEquals(oldName, folder.getRoot().list()[0]);
+    private void attemptRenameFile(String oldName, String newName) throws IOException {
+        File toBeRenamed = folder.newFile(oldName);
+        attemptRename(oldName, newName);
     }
 
     private void attemptRename(String oldName, String newName) throws IOException {
-        File toBeRenamed = folder.newFolder(oldName);
         assertEquals(1, folder.getRoot().list().length);
         FileSystemResourceStore toTest = new FileSystemResourceStore(folder.getRoot());
 

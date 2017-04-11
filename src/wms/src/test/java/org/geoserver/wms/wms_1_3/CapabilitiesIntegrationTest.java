@@ -19,6 +19,7 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributionInfo;
+import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataLinkInfo;
@@ -32,19 +33,33 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
+import org.geoserver.catalog.impl.AbstractDecorator;
+import org.geoserver.catalog.impl.DataStoreInfoImpl;
+import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.impl.ModificationProxy;
+import org.geoserver.catalog.impl.NamespaceInfoImpl;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.OpenLayersMapOutputFormat;
+import org.geotools.feature.NameImpl;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import java.lang.reflect.Proxy;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * WMS 1.3 GetCapabilities integration tests
@@ -204,7 +219,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         assertEquals(0, xpath
                 .getMatchingNodes("//wms:Layer/wms:Name[starts-with(., 'cite:Forests')]", dom)
                 .getLength());
-        assertEquals(3, xpath.getMatchingNodes("//wms:Layer/wms:Layer", dom).getLength());
+        assertEquals(1, xpath.getMatchingNodes("//wms:Layer/wms:Layer", dom).getLength());
 
         NodeList nodes = xpath.getMatchingNodes("//wms:Layer//wms:OnlineResource", dom);
         assertTrue(nodes.getLength() > 0);
@@ -634,4 +649,219 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         }
     }
 
+    @Test
+    public void testGlobalBoundingBoxForLayerGroups() throws Exception {
+        Catalog catalog = getCatalog();
+        // create a new workspace for this tests
+        WorkspaceInfoImpl workspace = new WorkspaceInfoImpl();
+        workspace.setName("NON_ADVERTISED");
+        NamespaceInfoImpl nameSpace = new NamespaceInfoImpl();
+        nameSpace.setPrefix("NON_ADVERTISED");
+        nameSpace.setURI("http://non-advertised.org");
+        // remove all layer groups and store them
+        List<LayerGroupInfo> layerGroups = catalog.getLayerGroups().stream()
+                .map(this::unwrapLayerGroup).collect(Collectors.toList());
+        catalog.getLayerGroups().forEach(layerGroup -> new CascadeDeleteVisitor(catalog).visit(layerGroup));
+        try {
+            catalog.add(workspace);
+            catalog.add(nameSpace);
+            // add some layers by duplicating existing layers and create a layer group
+            LayerInfo layer1 = cloneVectorLayerIntoWorkspace(workspace, nameSpace, MockData.BUILDINGS.getLocalPart());
+            LayerInfo layer2 = cloneVectorLayerIntoWorkspace(workspace, nameSpace, MockData.BRIDGES.getLocalPart());
+            LayerGroupInfo layerGroup = createLayerGroup(workspace, "NON_ADVERTISED", layer1, layer2);
+            // reduce layer group bounds and store the original bounds which correspond to all layers bounds
+            ReferencedEnvelope layersBounds = layerGroup.getBounds();
+            ReferencedEnvelope layerGroupBounds = new ReferencedEnvelope(-10, 10, -20, 20, layersBounds.getCoordinateReferenceSystem());
+            layerGroup.setBounds(layerGroupBounds);
+            catalog.save(layerGroup);
+            // perform a get capabilities request targeting only the created workspace
+            Document document = getAsDOM("NON_ADVERTISED/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+            checkGlobalBoundingBox(layersBounds, document);
+            // make layers non advertised
+            layer1.setAdvertised(false);
+            layer2.setAdvertised(false);
+            catalog.save(layer1);
+            catalog.save(layer2);
+            // perform a get capabilities request targeting only the created workspace
+            document = getAsDOM("NON_ADVERTISED/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+            checkGlobalBoundingBox(layerGroupBounds, document);
+        } finally {
+            // add layer groups back
+            layerGroups.forEach(catalog::add);
+            // remove the created workspace and namespace
+            CascadeDeleteVisitor deleteVisitor = new CascadeDeleteVisitor(catalog);
+            deleteVisitor.visit(workspace);
+            catalog.remove(nameSpace);
+            catalog.remove(workspace);
+        }
+    }
+
+    @Test
+    public void testLayerGroupsPerWorkspace() throws Exception {
+        Catalog catalog = getCatalog();
+        // create workspace A
+        WorkspaceInfoImpl workspaceA = new WorkspaceInfoImpl();
+        workspaceA.setName("LG_TEST_WORKSPACE_A");
+        NamespaceInfoImpl nameSpaceA = new NamespaceInfoImpl();
+        nameSpaceA.setPrefix("LG_TEST_WORKSPACE_A");
+        nameSpaceA.setURI("http://lg-test-workspace-a.org");
+        // create workspace B
+        WorkspaceInfoImpl workspaceB = new WorkspaceInfoImpl();
+        workspaceB.setName("LG_TEST_WORKSPACE_B");
+        NamespaceInfoImpl nameSpaceB = new NamespaceInfoImpl();
+        nameSpaceB.setPrefix("LG_TEST_WORKSPACE_B");
+        nameSpaceB.setURI("http://lg-test-workspace-b.org");
+        // keep global layers group reference
+        LayerGroupInfo globalLayerGroup = null;
+        try {
+            // save workspace A
+            catalog.add(workspaceA);
+            catalog.add(nameSpaceA);
+            // save workspace B
+            catalog.add(workspaceB);
+            catalog.add(nameSpaceB);
+            // create layers groups
+            createLayerGroup(workspaceA, "LAYER_GROUP_A",
+                    cloneVectorLayerIntoWorkspace(workspaceA, nameSpaceA, MockData.BUILDINGS.getLocalPart()),
+                    cloneVectorLayerIntoWorkspace(workspaceA, nameSpaceA, MockData.BRIDGES.getLocalPart()));
+            createLayerGroup(workspaceB, "LAYER_GROUP_B",
+                    cloneVectorLayerIntoWorkspace(workspaceB, nameSpaceB, MockData.BUILDINGS.getLocalPart()),
+                    cloneVectorLayerIntoWorkspace(workspaceB, nameSpaceB, MockData.BRIDGES.getLocalPart()));
+            globalLayerGroup = createLayerGroup("LAYER_GROUP_C",
+                    catalog.getLayerByName(MockData.BUILDINGS.getLocalPart()),
+                    catalog.getLayerByName(MockData.BRIDGES.getLocalPart()));
+            // perform a get capabilities request targeting the global service
+            Document document = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+            assertXpathEvaluatesTo("1", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LG_TEST_WORKSPACE_A:LAYER_GROUP_A'])", document);
+            assertXpathEvaluatesTo("1", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LG_TEST_WORKSPACE_B:LAYER_GROUP_B'])", document);
+            assertXpathEvaluatesTo("0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_A'])", document);
+            assertXpathEvaluatesTo("0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_B'])", document);
+            assertXpathEvaluatesTo("1", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_C'])", document);
+            // perform a get capabilities request targeting workspace A service
+            document = getAsDOM("LG_TEST_WORKSPACE_A/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+            assertXpathEvaluatesTo("0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LG_TEST_WORKSPACE_A:LAYER_GROUP_A'])", document);
+            assertXpathEvaluatesTo("0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LG_TEST_WORKSPACE_B:LAYER_GROUP_B'])", document);
+            assertXpathEvaluatesTo("1", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_A'])", document);
+            assertXpathEvaluatesTo("0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_B'])", document);
+            assertXpathEvaluatesTo("0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_C'])", document);
+            // perform a get capabilities request targeting workspace B service
+            document = getAsDOM("LG_TEST_WORKSPACE_B/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+            assertXpathEvaluatesTo("0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LG_TEST_WORKSPACE_A:LAYER_GROUP_A'])", document);
+            assertXpathEvaluatesTo("0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LG_TEST_WORKSPACE_B:LAYER_GROUP_B'])", document);
+            assertXpathEvaluatesTo("0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_A'])", document);
+            assertXpathEvaluatesTo("1", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_B'])", document);
+            assertXpathEvaluatesTo("0", "count(//wms:Capability/wms:Layer/wms:Layer[wms:Name='LAYER_GROUP_C'])", document);
+        } finally {
+            // remove the created workspaces and namespaces
+            CascadeDeleteVisitor deleteVisitor = new CascadeDeleteVisitor(catalog);
+            deleteVisitor.visit(workspaceA);
+            catalog.remove(nameSpaceA);
+            catalog.remove(workspaceA);
+            deleteVisitor.visit(workspaceB);
+            catalog.remove(nameSpaceB);
+            catalog.remove(workspaceB);
+            // remove global layer group
+            if (globalLayerGroup != null) {
+                catalog.remove(globalLayerGroup);
+            }
+        }
+    }
+
+    /**
+     * Check that the global bounding box matches the expected envelope
+     */
+    private void checkGlobalBoundingBox(ReferencedEnvelope expectedBoundingBox, Document capabilitiesResult) throws Exception {
+        // check that the returned capabilities document contains the correct bounding box
+        assertXpathEvaluatesTo("1", String.format("count(//wms:Capability/wms:Layer" +
+                        "/wms:EX_GeographicBoundingBox" +
+                        "[wms:westBoundLongitude='%.1f'][wms:eastBoundLongitude='%.1f']" +
+                        "[wms:southBoundLatitude='%.1f'][wms:northBoundLatitude='%.1f'])",
+                expectedBoundingBox.getMinX(), expectedBoundingBox.getMaxX(),
+                expectedBoundingBox.getMinY(), expectedBoundingBox.getMaxY()), capabilitiesResult);
+    }
+
+    /**
+     * Helper method that unwraps a layer group making him suitable to be added
+     * to the catalog. If proxyfied the proxy will also be removed.
+     */
+    private LayerGroupInfo unwrapLayerGroup(LayerGroupInfo layerGroup) {
+        // get the original layer group object
+        while (layerGroup instanceof AbstractDecorator) {
+            AbstractDecorator decorator = (AbstractDecorator) layerGroup;
+            layerGroup = (LayerGroupInfo) decorator.unwrap(LayerGroupInfo.class);
+        }
+        // catalog detach doesn't work for layer groups
+        if (Proxy.isProxyClass(layerGroup.getClass())) {
+            // we have a proxy we need to get rid of the proxy
+            ModificationProxy proxy = (ModificationProxy) Proxy.getInvocationHandler(layerGroup);
+            proxy.commit();
+            layerGroup = (LayerGroupInfo) proxy.getProxyObject();
+        }
+        return layerGroup;
+    }
+
+    /**
+     * Helper method that creates a layer group using the provided name and layers.
+     */
+    private LayerGroupInfo createLayerGroup(String layerGroupName, LayerInfo... layers) throws Exception {
+        return createLayerGroup(null, layerGroupName, layers);
+    }
+
+    /**
+     * Helper method that creates a layer group using the provided name, workspace and layers.
+     */
+    private LayerGroupInfo createLayerGroup(WorkspaceInfo workspace, String layerGroupName, LayerInfo... layers) throws Exception {
+        // create a new layer group using the provided name
+        LayerGroupInfo layerGroup = getCatalog().getFactory().createLayerGroup();
+        layerGroup.setName(layerGroupName);
+        // set workspace
+        layerGroup.setWorkspace(workspace);
+        // add the provided layers
+        for (LayerInfo layerInfo : layers) {
+            layerGroup.getLayers().add(layerInfo);
+        }
+        // set the layer group bounds by merging all layers bounds
+        CatalogBuilder catalogBuilder = new CatalogBuilder(getCatalog());
+        catalogBuilder.calculateLayerGroupBounds(layerGroup);
+        getCatalog().add(layerGroup);
+        // retrieve the created layer group by name
+        if (workspace == null) {
+            return getCatalog().getLayerGroupByName(layerGroupName);
+        }
+        return getCatalog().getLayerGroupByName(workspace, layerGroupName);
+    }
+
+    /**
+     * Helper method that clones vector layer into a certain workspace.
+     */
+    private LayerInfo cloneVectorLayerIntoWorkspace(WorkspaceInfoImpl workspace, NamespaceInfoImpl nameSpace, String layerName) {
+        Catalog catalog = getCatalog();
+        // get the original object from the catalog
+        LayerInfo originalLayerInfo = catalog.getLayerByName(layerName);
+        FeatureTypeInfo originalFeatureTypeInfo = (FeatureTypeInfo) originalLayerInfo.getResource();
+        DataStoreInfo originalStoreInfo = originalFeatureTypeInfo.getStore();
+        // copy the data store, changing is workspace, id and name
+        DataStoreInfoImpl copyDataStoreInfo = new DataStoreInfoImpl(catalog);
+        OwsUtils.copy(originalStoreInfo, copyDataStoreInfo, DataStoreInfo.class);
+        copyDataStoreInfo.setId(UUID.randomUUID().toString());
+        copyDataStoreInfo.setName(UUID.randomUUID().toString());
+        copyDataStoreInfo.setWorkspace(workspace);
+        // copy the feature type info, changing the data store and name space
+        FeatureTypeInfoImpl copyFeatureTypeInfo = new FeatureTypeInfoImpl(catalog);
+        OwsUtils.copy(originalFeatureTypeInfo, copyFeatureTypeInfo, FeatureTypeInfo.class);
+        copyFeatureTypeInfo.setNamespace(nameSpace);
+        copyFeatureTypeInfo.setStore(copyDataStoreInfo);
+        // copy the layer, changing the feature type
+        LayerInfoImpl copyLayerInfo = new LayerInfoImpl();
+        OwsUtils.copy(originalLayerInfo, copyLayerInfo, LayerInfo.class);
+        copyLayerInfo.setId(layerName);
+        copyLayerInfo.setName(layerName);
+        copyLayerInfo.setResource(copyFeatureTypeInfo);
+        // add everything to the catalog
+        catalog.add(copyDataStoreInfo);
+        catalog.add(copyFeatureTypeInfo);
+        catalog.add(copyLayerInfo);
+        // retrieve the cloned layer by name
+        return catalog.getLayerByName(workspace.getName() + ":" + layerName);
+    }
 }

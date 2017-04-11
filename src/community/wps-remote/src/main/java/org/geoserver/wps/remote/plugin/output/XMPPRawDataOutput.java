@@ -373,7 +373,7 @@ public class XMPPRawDataOutput implements XMPPOutputType {
                 // process the template and stream out the result
                 content = FileUtils.readFileToString(new File(wmcTemplatePath));
                 Template template = new Template("name", new StringReader(content),
-                        new Configuration());
+                        new Configuration(Configuration.VERSION_2_3_25));
 
                 template.setOutputEncoding("UTF-8");
                 ByteArrayOutputStream buff = new ByteArrayOutputStream();

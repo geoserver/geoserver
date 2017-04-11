@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import freemarker.core.HTMLOutputFormat;
 import org.geoserver.template.FeatureWrapper;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.opengis.feature.simple.SimpleFeature;
@@ -63,7 +64,8 @@ public class FeatureTemplate {
     static {
         //initialize the template engine, this is static to maintain a cache 
         // over instantiations of kml writer
-        templateConfig = new Configuration();
+        templateConfig = new Configuration(Configuration.VERSION_2_3_25);
+        templateConfig.setOutputFormat(HTMLOutputFormat.INSTANCE);
         templateConfig.setObjectWrapper(new FeatureWrapper());
         
         //set the default output formats for dates

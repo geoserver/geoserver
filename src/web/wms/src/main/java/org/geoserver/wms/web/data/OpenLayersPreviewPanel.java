@@ -58,7 +58,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     final static Configuration templates;
     
     static {
-        templates = new Configuration();
+        templates = new Configuration(Configuration.VERSION_2_3_25);
         templates.setClassForTemplateLoading(OpenLayersPreviewPanel.class, "");
         templates.setObjectWrapper(new DefaultObjectWrapper());
     }

@@ -78,7 +78,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
         this.config = config;
         Resource monitoring = loader.get("monitoring");        
         defaultPath = monitoring.dir().getAbsolutePath();
-        templateConfig = new Configuration();
+        templateConfig = new Configuration(Configuration.VERSION_2_3_25);
         templateConfig.setTemplateLoader(new AuditTemplateLoader(loader));
     }
 

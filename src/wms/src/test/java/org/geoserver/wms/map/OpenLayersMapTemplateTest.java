@@ -39,7 +39,7 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
     
     @Test
     public void test() throws Exception {
-        Configuration cfg = new Configuration();
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
         cfg.setClassForTemplateLoading(OpenLayersMapOutputFormat.class, "");
         cfg.setObjectWrapper(new BeansWrapper());
 

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import freemarker.core.HTMLOutputFormat;
 import org.geoserver.ows.util.ClassProperties;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.PageInfo;
@@ -241,7 +242,8 @@ public class ReflectiveHTMLFormat extends DataFormat {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected Configuration createConfiguration(Object data, Class<?> clazz) {
-        Configuration cfg = new Configuration( );
+        Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
+        cfg.setOutputFormat(HTMLOutputFormat.INSTANCE);
         cfg.setObjectWrapper( new ObjectToMapWrapper( clazz ));
         cfg.setClassForTemplateLoading(ReflectiveHTMLFormat.class,"");
         if (encoding != null) {

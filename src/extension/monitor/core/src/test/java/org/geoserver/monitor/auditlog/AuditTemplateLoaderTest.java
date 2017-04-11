@@ -20,7 +20,7 @@ public class AuditTemplateLoaderTest {
     public void testLoadDefaultTemplates() throws IOException {
         GeoServerResourceLoader rloader = new GeoServerResourceLoader(new File("./target"));
         AuditTemplateLoader tloader = new AuditTemplateLoader(rloader);
-        Configuration config = new Configuration();
+        Configuration config = new Configuration(Configuration.VERSION_2_3_25);
         config.setTemplateLoader(tloader);
         
         assertNotNull(config.getTemplate("header.ftl"));

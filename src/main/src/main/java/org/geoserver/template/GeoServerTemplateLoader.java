@@ -35,7 +35,7 @@ import freemarker.template.Configuration;
  * method:
  * <pre>
  *         <code>
- *  Configuration cfg = new Configuration();
+ *  Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
  *  cfg.setTemplateLoader( new GeoServerTemplateLoader() );
  *  ...
  *  Template template = cfg.getTemplate( "foo.ftl" );

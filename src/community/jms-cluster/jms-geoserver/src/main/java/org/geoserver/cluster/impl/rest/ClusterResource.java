@@ -123,7 +123,7 @@ public class ClusterResource extends ReflectiveResource {
 
 		@Override
 		protected Configuration createConfiguration(Object data, Class clazz) {
-			Configuration cfg = new Configuration();
+			Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
 			cfg.setClassForTemplateLoading(ClusterResource.class, "templates");
 
 			cfg.setObjectWrapper(new ObjectToMapWrapper<Properties>(

@@ -91,7 +91,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
     public static final String GS_SHAPEFILE_CHARSET = "GS-SHAPEFILE-CHARSET";
     public static final String SHAPE_ZIP_DEFAULT_PRJ_IS_ESRI = "SHAPE-ZIP_DEFAULT_PRJ_IS_ESRI";
     
-    private static final Configuration templateConfig = new Configuration();
+    private static final Configuration templateConfig = new Configuration(Configuration.VERSION_2_3_25);
     
     private ApplicationContext applicationContext;
     private Catalog catalog;

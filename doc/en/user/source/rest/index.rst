@@ -11,10 +11,26 @@ Operations on resources are implemented with the standard primitives of HTTP:  G
 
 The follow REST Reference provides both a REST API definition and examples of using each endpoint:
 
-* :doc:`fonts` - `API Reference <../api/styles/index.html>`__
-* :doc:`layers` - `API Reference <../api/layers/index.html>`__
-* :doc:`styles` - `API Reference <../api/styles/index.html>`__
-* :doc:`workspaces` - `API Reference <../api/workspaces/index.html>`__
+* coverages - `API Reference <../api/coverages/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/coverages.yaml>`__ )
+* coveragestores - `API Reference <../api/coveragestores/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/coveragestores.yaml>`__ )
+* featuretypes - `API Reference <../api/featuretypes/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/featuretypes.yaml>`__ )
+* :doc:`fonts` - `API Reference <../api/styles/fonts.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/fonts.yaml>`__ )
+* layergroups - `API Reference <../api/layergroups/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/layergroups.yaml>`__ )
+* :doc:`layers` - `API Reference <../api/layers/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/layers.yaml>`__ )
+* manifests - `API Reference <../api/manifests/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/manifests.yaml>`__ )
+* monitoring - `API Reference <../api/monitoring/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/monitoring.yaml>`__ )
+* namespaces - `API Reference <../api/namespaces/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/namespaces.yaml>`__ )
+* owsservices - `API Reference <../api/owsservices/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/owsservices.yaml>`__ )
+* reload - `API Reference <../api/reload/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/reload.yaml>`__ )
+* security - `API Reference <../api/security/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/security.yaml>`__ )
+* settings - `API Reference <../api/settings/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/settings.yaml>`__ )
+* structuredcoverages - `API Reference <../api/structuredcoverages/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/structuredcoverages.yaml>`__ )
+* :doc:`styles` - `API Reference <../api/styles/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/styles.yaml>`__ )
+* templates - `API Reference <../api/templates/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/templates.yaml>`__ )
+* transforms - `API Reference <../api/transforms/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/transforms.yaml>`__ )
+* wmslayers - `API Reference <../api/wmslayers/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/wmslayers.yaml>`__ )
+* wmsstores - `API Reference <../api/wmsstores/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/wmsstores.yaml>`__ )
+* :doc:`workspaces` - `API Reference <../api/workspaces/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/workspaces.yaml>`__ )
 
 .. toctree::
    :maxdepth: 1

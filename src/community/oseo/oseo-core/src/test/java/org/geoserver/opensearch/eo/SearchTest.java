@@ -57,6 +57,7 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("3")));
         // ... sorted by date
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:title", equalTo("SENTINEL2")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SENTINEL2")));
         assertThat(dom, hasXPath("/at:feed/at:entry[2]/at:title", equalTo("SENTINEL1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[3]/at:title", equalTo("LANDSAT8")));
 
@@ -247,6 +248,8 @@ public class SearchTest extends OSEOTestSupport {
 
         // check that filtering worked and offerings have been properly grouped
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry/at:id", containsString("S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04")));
+        
         assertThat(dom, hasXPath("/at:feed/at:entry/at:title", equalTo("S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry/owc:offering)", equalTo("3")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry/owc:offering[@code='http://www.opengis.net/spec/owc/1.0/req/atom/wcs']/owc:operation)", equalTo("2")));

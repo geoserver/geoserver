@@ -8,8 +8,6 @@ import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_NAMESPACE;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -304,6 +302,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
                 final String identifierLink, Map<String, String> descriptionVariables) {
             element("id", identifierLink);
             element("title", name);
+            element("dc:identifier", name);
             // TODO: need an actual update column
             Date updated = (Date) value(feature, "timeStart");
             if (updated != null) {

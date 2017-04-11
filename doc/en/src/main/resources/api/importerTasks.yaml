@@ -1,0 +1,173 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Importer Extension - Tasks
+  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The tasks endpoint controls individual tasks within an import job.
+
+paths:
+  /imports/{importId}/tasks:
+    get:
+      operationId: getTasks
+      summary: Retrieve all tasks for import with id {importId}
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200:
+          description: OK
+          examples:
+           application/json:
+             '{
+              "tasks": [
+                {
+                  "id": 0,
+                  "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/0",
+                  "state": "READY"
+                }
+              ]
+            }'
+    post:
+      operationId: postTask
+      summary: Create a new task
+      description: 'A new task can be created by issuing a POST to imports/<importId>/tasks as a "Content-type: multipart/form-data" multipart encoded data as defined by RFC 2388. One or more file can be uploaded this way, and a task will be created for importing them. In case the file being uploaded is a zip file, it will be unzipped on the server side and treated as a directory of files. 
+      
+        Alternatively, a new task can be created by issuing a POST as a "Content-type: application/x-www-form-urlencoded" 
+        form url encoded data containing a url paramerter with the location of the uploaded file.'
+      consumes:
+        $ref: "#/definitions/ConsumesFile"
+      produces:
+        $ref: "#/definitions/Produces:"
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: href to the newly created task
+          examples:
+           application/json:
+             '{
+              "task": {
+                "id": 1,
+                "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1",
+                "state": "READY",
+                "updateMode": "CREATE",
+                "data": {
+                  "type": "file",
+                  "format": "Shapefile",
+                  "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/data",
+                  "file": "bugsites.shp"
+                },
+                "target": {
+                  "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/target",
+                  "dataStore": {
+                    "name": "shapes",
+                    "type": "PostGIS"
+                  }
+                },
+                "progress": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/progress",
+                "layer": {
+                  "name": "bugsites",
+                  "href": "http://localhost:8080/geoserver/rest/imports/2/tasks/1/layer"
+                },
+                "transformChain": {
+                  "type": "vector",
+                  "transforms": []
+                }
+              }
+            }'
+  /imports/{importId}/tasks/{taskId}:
+    get:
+      operationId: getTask
+      summary: Retrieve task with id {taskId} within import with id {importId}  
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200: 
+          description: OK
+    put:
+      operationId: putTask
+      summary: Modify task with id {taskId} within import with id {importId}
+      description: 'A PUT request over an existing task can be used to update its representation. The representation can be partial, and just contains the elements that need to be updated.
+
+        The updateMode of a task normally starts as "CREATE", that is, create the target resource if missing. Other possible values are "REPLACE", that is, delete the existing features in the target layer and replace them with the task source ones, or "APPEND", to just add the features from the task source into an existing layer.'
+      consumes:
+        $ref: "#/definitions/ConsumesJSON"
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200: 
+          description: OK
+    delete:
+      operationId: deleteTask
+      summary: Remove task with id {taskId} within import with id {importId}
+      responses:
+        200: 
+          description: OK
+  /imports/{importId}/tasks/{filename}:
+    put:
+      operationId: putTaskFile
+      summary: Create a new task
+      description: 'A new task can be created by issuing a PUT containing the raw file content to this endpoint. The name of the uploaded file will be {filename}. The location of the uploaded file will be the top level directory associated with the import, or the "uploads" directory in the data directory if no directory is associated with the current import.'
+      consumes:
+        - \*/*
+      responses:
+        201:
+          description: Created
+  /imports/{importId}/tasks/{taskId}/progress:
+    get:
+      operationId: getTaskProgress
+      summary: Retrieve the current state and import progress of a task with id {taskId} within import with id {importId}
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200: 
+          description: OK
+  /imports/{importId}/tasks/{taskId}/target:
+    get:
+      operationId: getTaskTarget
+      summary: Retrieve the store of a task with id {taskId} within import with id {importId}
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200: 
+          description: OK
+    put:
+      operationId: putTaskTarget
+      summary: Modify the target store for a task with id {taskId} within import with id {importId}
+      consumes:
+        $ref: "#/definitions/ConsumesJSON"
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200: 
+          description: OK
+  /imports/{importId}/tasks/{taskId}/layer:
+    get:
+      operationId: getTaskLayer
+      summary: Retrieve the layer of a task with id {taskId} within import with id {importId}
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200: 
+          description: OK
+    put:
+      operationId: putTaskLayer
+      summary: Modify the target layer for a task with id {taskId} within import with id {importId}
+      consumes:
+        $ref: "#/definitions/ConsumesJSON"
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200: 
+          description: OK
+
+definitions:
+  Produces:
+    - application/json
+    - text/html
+  ConsumesJSON:
+    - application/json
+    - text/json
+  ConsumesFile:
+    - multipart/form-data
+    - application/x-www-form-urlencoded

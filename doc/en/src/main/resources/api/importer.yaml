@@ -1,0 +1,112 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Importer Extension - Main
+  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The main endpoint manages individual import jobs.
+
+paths:
+  /imports:
+    get:
+      operationId: getImports
+      summary: Get a list of all imports
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200:
+          description: OK
+          examples:
+            application/json:
+              '{
+                 "imports": [{
+                   "id": 0,
+                   "state": "COMPLETE",
+                   "href": "http://localhost:8080/geoserver/rest/imports/0"
+
+                 }, {
+                   "id": 1,
+                   "state": "PENDING",
+                   "href": "http://localhost:8080/geoserver/rest/imports/1"
+                 }]
+              }'
+    post:
+      operationId: postImports
+      summary: Create a new import
+      description: Creates a new import. If the exec parameter is true, that import is immediately executed.
+      produces:
+        $ref: "#/definitions/Produces"
+      parameters:
+        $ref: "#/definitions/PostParameters"
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: href to the newly created import
+    delete:
+      operationId: deleteImport
+      summary: Delete all imports
+      description: Deletes all imports that are not in the COMPLETE state.
+      responses:
+        204:
+          description: No Content.
+  /imports/{importId}:
+    get:
+      operationId: getImport
+      summary: Retrieve import by id
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200:
+          description: OK
+    post:
+      operationId: postImport
+      summary: Create a new import, or execute an existing import
+      description: If an import with the id {importId} exists and is not in the INIT state, it is executed. If an import with that id does not exist, a new import is created with that id. If the exec parameter is true, this new import is immediately executed.
+      produces:
+        $ref: "#/definitions/Produces"
+      parameters:
+        $ref: "#/definitions/PostParameters"
+      responses:
+        201:
+          description: Created. Returned if the import was created.
+        204:
+          description: No Content. Returned if the import already existed and was executed.
+        412:
+          description: Precondition Failed. Returned if the import already existed and was in the INIT state.
+    put:
+      operationId: putImport
+      summary: Tries to create a new import with the provided id.
+      description: Creates a new import with the next unclaimed id >= {importId}. If the exec parameter is true, that import is immediately executed.
+      consumes:
+        - application/json
+        - text/json
+      produces:
+        $ref: "#/definitions/Produces"
+      parameters:
+        $ref: "#/definitions/PostParameters"
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: href to the newly created import
+    delete:
+      operationId: deleteImport
+      summary: Delete an import
+      description: Deletes the import with id {importId}, as long as it is not in the COMPLETE state.
+      responses:
+        204:
+          description: No Content.
+
+definitions:
+  Produces:
+    - application/json
+    - text/html
+  PostParameters:
+    - name: async
+      description: Run the import asyncronously. Defaults to false.
+      type: boolean
+    - name: exec
+      description: Run the import when it is created. Defaults to false.
+      type: boolean

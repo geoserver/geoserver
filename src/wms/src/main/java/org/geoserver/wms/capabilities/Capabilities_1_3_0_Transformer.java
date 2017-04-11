@@ -658,13 +658,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
             
             // filter the layers if a namespace filter has been set
-            if (request.getNamespace() != null) {
-                //build a query predicate for the namespace prefix
-                final String nsPrefix = request.getNamespace();
-                final String nsProp = "resource.namespace.prefix";
-                Filter equals = equal(nsProp, nsPrefix);
-                filter = and(filter, equals);
-            }
+            filter = addNameSpaceFilterIfNeed(filter, "resource.namespace.prefix");
 
             final Catalog catalog = wmsConfig.getCatalog();
                         
@@ -682,10 +676,17 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
             handleRootCrsList(srs);
 
-            CloseableIterator<LayerInfo> layers;
-            layers = catalog.list(LayerInfo.class, filter);
+            // create layer groups filter
+            Filter lgFilter = Predicates.acceptAll();
+
+            // filter layer groups by namespace if needed
+            lgFilter = addNameSpaceFilterIfNeed(lgFilter, "workspace.name");
+
+            // handle root bounding box
+            CloseableIterator<LayerInfo> layers = catalog.list(LayerInfo.class, filter);
+            CloseableIterator<LayerGroupInfo> layerGroups = catalog.list(LayerGroupInfo.class, lgFilter);
             try{
-                handleRootBbox(layers);
+                handleRootBbox(layers, layerGroups);
             }finally{
                 layers.close();
             }
@@ -699,9 +700,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
             
             // encode layer groups
-            CloseableIterator<LayerGroupInfo> layerGroups;
             {
-                final Filter lgFilter = Predicates.acceptAll();
                 SortBy layerGroupOrder = asc("name");
                 layerGroups = catalog.list(LayerGroupInfo.class, lgFilter, null, null,
                         layerGroupOrder);
@@ -725,6 +724,21 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
 
             end("Layer");
+        }
+
+        /**
+         * If the current request contains a namespace we build a filter using
+         * the provided property and request namespace and adds it to the provided
+         * filter. If the request doesn't contain a namespace the original filter
+         * is returned as is.
+         */
+        private Filter addNameSpaceFilterIfNeed(Filter filter, String nameSpaceProperty) {
+            String nameSpacePrefix = request.getNamespace();
+            if (nameSpacePrefix == null) {
+                return filter;
+            }
+            Filter equals = equal(nameSpaceProperty, nameSpacePrefix);
+            return and(filter, equals);
         }
 
         /**
@@ -785,32 +799,49 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         /**
-         * Called by <code>handleLayers()</code>, iterates over the available featuretypes and
-         * coverages to summarize their LatLonBBox'es and write the aggregated bounds for the root
-         * layer.
-         * 
-         * @param ftypes
-         *            the collection of FeatureTypeInfo and CoverageInfo objects to traverse
+         * Called by <code>handleLayers()</code>, iterates over the available layers and
+         * layers groups to summarize their LatLonBBox'es and write the aggregated bounds
+         * for the root layer.
+         *
+         * @param layers available layers iterator
+         * @param layersGroups available layer groups iterator
          */
-        private void handleRootBbox(Iterator<LayerInfo> layers) {
+        private void handleRootBbox(Iterator<LayerInfo> layers, Iterator<LayerGroupInfo> layersGroups) {
 
             final Envelope world = new Envelope(-180, 180, -90, 90);
-            
             Envelope latlonBbox = new Envelope();
-            Envelope layerBbox = null;
 
             LOGGER.finer("Collecting summarized latlonbbox and common SRS...");
 
-            while(layers.hasNext()) {
-                LayerInfo layer = layers.next();
-                ResourceInfo resource = layer.getResource();
-                layerBbox = resource.getLatLonBoundingBox();
-                if (layerBbox != null) {
-                    latlonBbox.expandToInclude(layerBbox);    
+            // handle layers
+            while (layers.hasNext()) {
+                if (expandEnvelopeToContain(world, latlonBbox,
+                        layers.next().getResource().getLatLonBoundingBox())) {
+                    // our envelope already contains the world
+                    break;
                 }
+            }
 
-                //short cut for the case where we already reached the whole world bounds
-                if(latlonBbox.contains(world)){
+            // handle layer groups
+            while (layersGroups.hasNext()) {
+                LayerGroupInfo layerGroup = layersGroups.next();
+                ReferencedEnvelope referencedEnvelope = layerGroup.getBounds();
+                if (referencedEnvelope == null) {
+                    // no bounds available move on
+                    continue;
+                }
+                if (!CRS.equalsIgnoreMetadata(referencedEnvelope, DefaultGeographicCRS.WGS84)) {
+                    try {
+                        // we need to reproject the envelope to lat / lon
+                        referencedEnvelope = referencedEnvelope.transform(DefaultGeographicCRS.WGS84, true);
+                    } catch (Exception exception) {
+                        LOGGER.log(Level.WARNING, String.format(
+                                "Failed to transform layer group '%s' bounds to WGS84.",
+                                layerGroup.getName()), exception);
+                    }
+                }
+                if (expandEnvelopeToContain(world, latlonBbox, referencedEnvelope)) {
+                    // our envelope already contains the world
                     break;
                 }
             }
@@ -823,6 +854,17 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             handleBBox(latlonBbox, "CRS:84");
             handleAdditionalBBox(
                 new ReferencedEnvelope(latlonBbox, DefaultGeographicCRS.WGS84), null, null);
+        }
+
+        /**
+         * Helper method that expand a provided envelope to contain a resource envelope.
+         * If the extended envelope contains the world envelope TRUE is returned.
+         */
+        private boolean expandEnvelopeToContain(Envelope world, Envelope envelope, Envelope resourceEnvelope) {
+            if (resourceEnvelope != null) {
+                envelope.expandToInclude(resourceEnvelope);
+            }
+            return envelope.contains(world);
         }
 
         private void handleLayerTree(final Iterator<LayerInfo> layers, Set<LayerInfo> layersAlreadyProcessed) {

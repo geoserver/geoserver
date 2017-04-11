@@ -14,32 +14,19 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.IOUtils;
 import org.geotools.data.DataAccess;
-import org.geotools.data.DataStore;
-import org.geotools.data.DataStoreFinder;
-import org.geotools.data.DataUtilities;
-import org.geotools.data.DefaultTransaction;
 import org.geotools.data.Query;
-import org.geotools.data.Transaction;
-import org.geotools.data.collection.ListFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.NameImpl;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -57,7 +44,6 @@ public final class RestTest extends GeoServerSystemTestSupport {
 
     private static File ROOT_DIRECTORY;
     private static File DATABASE_DIR;
-    private static File DATABASE_FILE;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -78,8 +64,7 @@ public final class RestTest extends GeoServerSystemTestSupport {
         ROOT_DIRECTORY = IOUtils.createTempDirectory("h2-tests");
         // create the test database
         DATABASE_DIR = new File(ROOT_DIRECTORY, "testdb");
-        DATABASE_FILE = new File(DATABASE_DIR, "test.data.db");
-        createTestDatabase();
+        DATABASE_DIR.mkdirs();
     }
 
     @AfterClass
@@ -145,50 +130,12 @@ public final class RestTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Helper method that just creates the test data store using GeoTools APIs.
-     */
-    private static void createTestDatabase() throws Exception {
-        // connect to the test data store
-        Map<String, String> params = new HashMap<>();
-        params.put("dbtype", "h2");
-        params.put("database", new File(DATABASE_DIR, "test").getAbsolutePath());
-        DataStore datastore = DataStoreFinder.getDataStore(params);
-        // create the points table (feature type)
-        SimpleFeatureType featureType = DataUtilities.createType("points", "id:Integer,name:String,geometry:Point:srid=4326");
-        datastore.createSchema(featureType);
-        // get write access to the data store
-        SimpleFeatureSource featureSource = datastore.getFeatureSource("points");
-        if (!(featureSource instanceof SimpleFeatureStore)) {
-            throw new RuntimeException("SpatiaLite data store doesn't support write access.");
-        }
-        SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
-        Transaction transaction = new DefaultTransaction("create");
-        featureStore.setTransaction(transaction);
-        // create some features
-        SimpleFeatureCollection features = new ListFeatureCollection(featureType,
-                new SimpleFeature[]{
-                        DataUtilities.createFeature(featureType, "1|point_a|POINT(-1,1)"),
-                        DataUtilities.createFeature(featureType, "2|point_b|POINT(-1,-1)"),
-                        DataUtilities.createFeature(featureType, "3|point_c|POINT(1,-1)"),
-                        DataUtilities.createFeature(featureType, "4|point_d|POINT(1,1)"),
-                });
-        try {
-            // insert the features
-            featureStore.addFeatures(features);
-            transaction.commit();
-        } finally {
-            transaction.close();
-        }
-        features.features().close();
-    }
-
-    /**
      * Helper method that just reads the test H2 database file
      * and stores it in a array of bytes.
      */
     private static byte[] readSqLiteDatabaseFile() throws Exception {
         // open the database file
-        InputStream input = new FileInputStream(DATABASE_FILE);
+        InputStream input = RestTest.class.getResourceAsStream("/test-database.data.db");
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             // copy the input stream to the output stream
@@ -204,13 +151,17 @@ public final class RestTest extends GeoServerSystemTestSupport {
      * an array of bytes.
      */
     private static byte[] readSqLiteDatabaseDir() throws Exception {
+        // copy database file to database directory
+        File outputFile = new File(DATABASE_DIR, "test-database.data.db");
+        InputStream input = RestTest.class.getResourceAsStream("/test-database.data.db");
+        IOUtils.copy(input, new FileOutputStream(outputFile));
         // zip the database directory
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ZipOutputStream zip = new ZipOutputStream(output);
         // ignore the lock files
         IOUtils.zipDirectory(DATABASE_DIR, zip, (dir, name) -> !name.toLowerCase().contains("lock"));
         zip.close();
-        // jus return the output stream content
+        // just return the output stream content
         return output.toByteArray();
     }
 }

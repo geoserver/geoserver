@@ -149,7 +149,7 @@ public class CoverageStoreController extends AbstractCatalogController {
     }
     
     @DeleteMapping(value = "{storeName}")
-    public void overageStoreDelete(
+    public void coverageStoreDelete(
             @PathVariable String workspaceName,
             @PathVariable String storeName,
             @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse,

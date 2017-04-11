@@ -33,7 +33,7 @@
      <artifactId>gs-wps-download</artifactId>
      <version>${project.version}</version>
    </dependency>   
-   <dependency>
+   <!-- <dependency>
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-py</artifactId>
      <version>${project.version}</version>
@@ -47,7 +47,7 @@
      <groupId>org.geoserver.script</groupId>
      <artifactId>gs-script-groovy</artifactId>
      <version>${project.version}</version>
-   </dependency>
+   </dependency> -->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-jdbcconfig</artifactId>
@@ -93,11 +93,11 @@
      <artifactId>gs-dyndimension</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <dependency>
+   <!-- <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-rest-ext</artifactId>
      <version>${project.version}</version>
-   </dependency>
+   </dependency> -->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-pgraster</artifactId>
@@ -113,36 +113,36 @@
      <artifactId>gs-gpxppio</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <dependency>
+   <!-- <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-jms-geoserver</artifactId>
      <version>${project.version}</version>
-   </dependency>  
+   </dependency>
    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-jms-commons</artifactId>
      <version>${project.version}</version>
-   </dependency>
+   </dependency> -->
    <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-hz-cluster</artifactId>
       <version>${project.version}</version>
    </dependency>  
-   <dependency>
+   <!-- <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-geofence</artifactId>
      <version>${project.version}</version>
-   </dependency>   
+   </dependency> -->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-geofence-server</artifactId>
      <version>${project.version}</version>
    </dependency>   
-   <dependency>
+   <!-- <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-sldservice</artifactId>
      <version>${project.version}</version>
-   </dependency>
+   </dependency> -->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-web-solr</artifactId>
@@ -193,12 +193,12 @@
      <artifactId>gs-gwc-sqlite</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <dependency>
+   <!-- <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-geogig</artifactId>
      <version>${project.version}</version>
-   </dependency>
-   <dependency>
+   </dependency>. -->
+   <!-- <dependency>
      <groupId>org.geoserver.community.backuprestore</groupId>
      <artifactId>gs-backup-restore-core</artifactId>
      <version>${project.version}</version>
@@ -217,7 +217,7 @@
      <groupId>org.geoserver.community.backuprestore</groupId>
      <artifactId>gs-backup-restore-web</artifactId>
      <version>${project.version}</version>
-   </dependency>
+   </dependency> -->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-wmts-multi-dimensional</artifactId>
@@ -243,11 +243,11 @@
      <artifactId>gs-onelogin</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <dependency>
+   <!-- <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-notification</artifactId>
      <version>${project.version}</version>
-   </dependency>
+   </dependency> -->
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-notification-common</artifactId>

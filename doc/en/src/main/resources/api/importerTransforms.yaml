@@ -1,0 +1,81 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Importer Extension - Main
+  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The main endpoint manages individual import jobs.
+
+paths:
+  /imports/{importId}/tasks/{taskId}/transforms:
+    get:
+      operationId: getTransforms
+      summary: Retrieve the list of transformations of a task with id {taskId} within import with id {importId}
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200:
+          description: OK
+          examples:
+            application/json:
+              '{
+                "transforms": [
+                  {
+                    "type": "ReprojectTransform",
+                    "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/1/transforms/0",
+                    "source": null,
+                    "target": "EPSG:4326"
+                  },
+                  {
+                    "type": "DateFormatTransform",
+                    "href": "http://localhost:8080/geoserver/rest/imports/0/tasks/1/transforms/1",
+                    "field": "date",
+                    "format": "yyyyMMdd"
+                  }
+                ]
+              }'
+    post:
+      operationId: postTransform
+      summary: Create a new transormation and append it inside a task with id {taskId} within import with id {importId}
+      consumes:
+        $ref: "#/definitions/ConsumesJSON"
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: href to the newly created transform
+  /imports/{importId}/tasks/{taskId}/transforms/{transformId}:
+    get:
+      operationId: getTransform
+      summary: Retrieve a transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200:
+          description: OK
+    put:
+      operationId: putTransform
+      summary: Modifies the definition of a transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
+      consumes:
+        $ref: "#/definitions/ConsumesJSON"
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deleteTransform
+      summary:  Removes the transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
+      responses:
+        200:
+          description: OK
+
+definitions:
+  Produces:
+    - application/json
+    - text/html
+  ConsumesJSON:
+    - application/json
+    - text/json

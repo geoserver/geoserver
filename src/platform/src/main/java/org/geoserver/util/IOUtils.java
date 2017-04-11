@@ -8,6 +8,7 @@ package org.geoserver.util;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,6 +30,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -56,25 +58,27 @@ public class IOUtils {
     }
     
     /**
-     * Copies the provided input stream onto an outputstream
+     * Copies the provided input stream onto an outputstream.
+     * <p>
+     * Please note that both from input stream and out output stream will be closed.
      * 
-     * @param from
+     * @param in
      * @param to
      * @throws IOException
      */
-    public static void copy(InputStream from, OutputStream out) throws IOException {
-        try {        
+    public static void copy(InputStream in, OutputStream out) throws IOException {
+        try {
             byte[] buffer = new byte[1024 * 16];
             int bytes = 0;
-            while ((bytes = from.read(buffer)) != -1)
+            while ((bytes = in.read(buffer)) != -1)
                 out.write(buffer, 0, bytes);
 
             out.flush();
         } finally {
-            if(from != null) {
-                from.close();
+            if (in != null) {
+                in.close();
             }
-            if(out != null) {
+            if (out != null) {
                 out.close();
             }
         }
@@ -94,7 +98,27 @@ public class IOUtils {
             throws IOException {
         filteredCopy(new BufferedReader(new FileReader(from)), to, filters);
     }
-
+    /**
+     * Capture contents of {@link InputStream} as a String.
+     * @param input InputStream, closed after use. 
+     * @return contents of input
+     */
+    public static String toString(InputStream input) throws IOException {
+        if( input == null){
+            return null;
+        }
+        ByteArrayOutputStream output;
+        try {
+            output = new ByteArrayOutputStream();
+            copy( input, output );
+        }
+        finally {
+            input.close();
+            input.close();
+        }
+        return output.toString();
+    }
+    
     /**
      * Copies from a reader to a file by performing a filtering on certain
      * specified tokens. In particular, each key in the filters map will be

@@ -58,7 +58,7 @@
       <artifactId>gs-web-sec-ldap</artifactId>
       <version>${project.version}</version>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-rest</artifactId>
       <version>${project.version}</version>

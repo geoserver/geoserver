@@ -5,26 +5,36 @@
  */
 package org.geoserver.monitor.rest;
 
+import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestData.Category;
-import org.geoserver.rest.BeanDelegatingRestlet;
 import org.geoserver.rest.DispatcherCallback;
-import org.restlet.Restlet;
-import org.restlet.Route;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.geoserver.rest.DispatcherCallbackAdapter;
+import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class RESTMonitorCallback implements DispatcherCallback {
+@Component
+public class RESTMonitorCallback extends DispatcherCallbackAdapter {
+    
+    static final Logger LOGGER = Logging.getLogger(RESTMonitorCallback.class);
 
     Monitor monitor;
     
+    @Autowired
     public RESTMonitorCallback(Monitor monitor) {
         this.monitor = monitor;
     }
     
-    public void init(Request request, Response response) {
+    public void init(HttpServletRequest request, HttpServletResponse response) {
         RequestData data = monitor.current();
         if (data == null) {
             //will happen in cases where the filter is not active
@@ -32,41 +42,34 @@ public class RESTMonitorCallback implements DispatcherCallback {
         }
         
         data.setCategory(Category.REST);
-        if (request.getResourceRef() != null) {
-            String resource = request.getResourceRef().getLastSegment();
+        if (request.getPathInfo() != null) {
+            String resource = Paths.get(request.getPathInfo()).getFileName().toString();
             resource = FilenameUtils.getBaseName(resource);
             data.getResources().add(resource);
         }
         monitor.update();
     }
 
-    public void dispatched(Request request, Response response, Restlet restlet) {
+    public void dispatched(HttpServletRequest request, HttpServletResponse response, Object handler) {
         RequestData data = monitor.current();
         if (data == null) {
-            //will happen in cases where the filter is not active
+            // will happen in cases where the filter is not active
             return;
         }
         
-        if (restlet instanceof Route) {
-            restlet = ((Route)restlet).getNext();
-        }
-        
-        if (restlet instanceof BeanDelegatingRestlet) {
-            restlet = ((BeanDelegatingRestlet)restlet).getBean();
-        }
-        
-        if (restlet != null) {
-            if (restlet.getClass().getPackage().getName().startsWith("org.geoserver.catalog.rest")) {
-               data.setService("RESTConfig");
+        try {
+            // do not import these classes, dynamic lookup allows to break the dependency
+            // on restconfig at runtime
+            Object controllerBean = DispatcherCallback.getControllerBean(handler);
+            if (controllerBean instanceof org.geoserver.rest.catalog.AbstractCatalogController
+                    || controllerBean instanceof org.geoserver.rest.AbstractGeoServerController) {
+                data.setService("RESTConfig");
             }
+        } catch(Exception e) {
+            // no problem, happens if restconfig is not in the classpath
+            LOGGER.log(Level.FINE, "Error finding out if the call is a restconfig one", e);
         }
         
         monitor.update();
-    }
-
-    public void exception(Request request, Response response, Exception error) {
-    }
-    
-    public void finished(Request request, Response response) {
     }
 }

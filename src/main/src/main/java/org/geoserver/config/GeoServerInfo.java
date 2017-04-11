@@ -148,13 +148,16 @@ public interface GeoServerInfo extends Info {
     void setNumDecimals(int numDecimals);
 
     /**
-     * TODO: not sure what this is supposed to do.
+     * Provider web site (used for default contact information, or service provider information if user has not filled in contact details.
+     * 
      * @deprecated use {@link #getSettings()}
      */
     String getOnlineResource();
     
     /**
-     * @deprecated use {@link #getSettings()}
+     * Provider web site (used for default contact information, or service provider information if user has not filled in contact details.
+     * 
+     * @param onlineResource Provider website
      */
     void setOnlineResource(String onlineResource);
 

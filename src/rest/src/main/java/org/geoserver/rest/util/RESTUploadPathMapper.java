@@ -18,7 +18,7 @@ public interface RESTUploadPathMapper{
      * 
      * @throws IOException
      */
-    public void mapStorePath(StringBuilder rootDir, String workspace, String store,
+    void mapStorePath(StringBuilder rootDir, String workspace, String store,
             Map<String, String> storeParams) throws IOException;
 
     /**
@@ -27,6 +27,6 @@ public interface RESTUploadPathMapper{
      * 
      * @throws IOException
      */
-    public void mapItemPath(String workspace, String store,
+    void mapItemPath(String workspace, String store,
             Map<String, String> storeParams, StringBuilder itemPath, String itemName) throws IOException;
 }

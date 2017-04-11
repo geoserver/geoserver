@@ -144,15 +144,16 @@ public interface LayerInfo extends PublishedInfo {
     /**
      * Sets the opaque status
      * 
-     * @param opaque {@code true} to set this Layer as opaque, {@code false} to make the layer not opaque.
+     * @param opaque {@code true} to set this Layer as opaque, {@code false} to make the layer transparent.
      */
     void setOpaque(boolean opaque);
 
     /**
-     * Whether the layer is opaque
+     * Controls layer transparency (whether the layer is opaque or transparent).
      * <p>
-     * Defaults to {@code false}
+     * Defaults to {@code false}.
      * </p>
+     * @return Returns {@code true} for opaque layer, {@code false} for transparent.
      */
     boolean isOpaque();    
     /**

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -25,6 +26,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Parameter;
 import org.geotools.data.Query;
+import org.geotools.data.memory.MemoryFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
@@ -217,7 +219,14 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         int totalResults = featureSource.getCount(countQuery);
 
         // get actual features
-        FeatureCollection<FeatureType, Feature> features = featureSource.getFeatures(resultsQuery);
+        FeatureCollection<FeatureType, Feature> features; 
+        if(resultsQuery.getMaxFeatures() == 0) {
+            // pure count query
+            features = new ListComplexFeatureCollection(featureSource.getSchema(), Collections.emptyList());
+        } else {
+            features = featureSource.getFeatures(resultsQuery);
+        }
+        
         SearchResults results = new SearchResults(request, features, totalResults);
 
         return results;

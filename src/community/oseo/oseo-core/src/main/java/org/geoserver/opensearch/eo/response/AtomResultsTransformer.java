@@ -436,7 +436,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
 
         private int getLastPageStart(int total, int itemsPerPage) {
             // all in one page?
-            if (total <= itemsPerPage) {
+            if (total <= itemsPerPage || itemsPerPage == 0) {
                 return 1;
             }
             // check how many items in the last page, is the last page partial or full?

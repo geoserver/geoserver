@@ -1276,8 +1276,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         delegate.fireModified(object, propertyNames, oldValues, newValues);
     }
     
-    public void firePostModified(CatalogInfo object) {
-        delegate.firePostModified(object);
+    public void firePostModified(CatalogInfo object, List<String> propertyNames, List oldValues,
+            List newValues) {
+        delegate.firePostModified(object, propertyNames, oldValues, newValues);
     }
     
     public void fireRemoved(CatalogInfo object) {

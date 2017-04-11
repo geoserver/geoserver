@@ -1593,7 +1593,8 @@ public interface Catalog extends CatalogInfo {
      * interally by the catalog subsystem.
      * </p>
      */
-    void firePostModified(CatalogInfo object);
+    void firePostModified(CatalogInfo object, List<String> propertyNames, List oldValues,
+            List newValues);
     
     /**
      * Fires the event for an object being removed from the catalog.

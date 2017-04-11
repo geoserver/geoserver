@@ -58,27 +58,26 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
     }
 
     /**
-     * @deprecated use {@link #beforeSaved(CatalogInfo)} and {@link #afterSaved(CatalogInfo)} as
+     * @deprecated use {@link #beforeSaved(CatalogInfo, List, List, List)} and {@link #afterSaved(CatalogInfo, List, List, List)} as
      *             appropriate
      */
     @Deprecated
     protected void saved(CatalogInfo object) {
-        beforeSaved(object);
-        commitProxy(object);
-        afterSaved(object);
-    }
-
-    protected void beforeSaved(CatalogInfo object) {
         // this object is a proxy
         ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(object);
-
-        // get the real object
-        CatalogInfo real = (CatalogInfo) h.getProxyObject();
 
         // fire out what changed
         List propertyNames = h.getPropertyNames();
         List newValues = h.getNewValues();
         List oldValues = h.getOldValues();
+
+        beforeSaved(object, propertyNames, oldValues, newValues);
+        commitProxy(object);
+        afterSaved(object, propertyNames, oldValues, newValues);
+    }
+
+    protected void beforeSaved(CatalogInfo object, List propertyNames, List oldValues, List newValues) {
+        CatalogInfo real = ModificationProxy.unwrap(object);
 
         // TODO: protect this original object, perhaps with another proxy
         getCatalog().fireModified(real, propertyNames, oldValues, newValues);
@@ -97,11 +96,11 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
         return real;
     }
     
-    protected void afterSaved(CatalogInfo object) {
+    protected void afterSaved(CatalogInfo object, List propertyNames, List oldValues, List newValues) {
         CatalogInfo real = ModificationProxy.unwrap(object);
 
         // fire the post modify event
-        getCatalog().firePostModified(real);
+        getCatalog().firePostModified(real, propertyNames, oldValues, newValues);
     }
 
     protected void resolve(LayerInfo layer) {

@@ -157,6 +157,19 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             String updated = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
             element("updated", updated);
             buildPaginationLinks(results);
+            buildSearchLink(results.getRequest());
+            encodeEntries(results.getResults(), results.getRequest());
+        }
+
+        private void buildSearchLink(SearchRequest request) {
+            Map<String, String> kvp = null;
+            if(request.getParentId() != null) {
+                kvp = Collections.singletonMap("parentId", request.getParentId());
+            }
+            String href = ResponseUtils.buildURL(request.getBaseUrl(), "oseo/search/description", kvp, URLType.SERVICE);
+            element("link", NO_CONTENTS,
+                    attributes("rel", "search", "href", href, "type", DescriptionResponse.OS_DESCRIPTION_MIME));
+            
         }
 
         private int getQueryStartIndex(SearchResults results) {
@@ -185,7 +198,6 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             }
             encodePaginationLink("last", getLastPageStart(total, itemsPerPage), itemsPerPage,
                     request);
-            encodeEntries(results.getResults(), results.getRequest());
         }
 
         private void encodeEntries(FeatureCollection results, SearchRequest request) {

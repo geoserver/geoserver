@@ -50,6 +50,8 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
         assertThat(dom, hasXPath("/at:feed/at:author/at:name", equalTo("GeoServer")));
         assertThat(dom, hasXPath("/at:feed/at:updated"));
+        assertThat(dom, hasXPath("/at:feed/at:link[@rel='search']/@href", 
+                equalTo("http://localhost:8080/geoserver/oseo/search/description")));
 
         assertNoResults(dom);
 
@@ -267,6 +269,9 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:entry/at:title", startsWith("S2A")));
         assertThat(dom, not(hasXPath("/at:feed/at:entry[at:title='S1A']")));
         assertThat(dom, not(hasXPath("/at:feed/at:entry[at:title='LS08']")));
+        assertThat(dom, hasXPath("/at:feed/at:link[@rel='search']/@href", 
+                equalTo("http://localhost:8080/geoserver/oseo/search/description?parentId=SENTINEL2")));
+
         
         // there are two products only with links, verify, three offerings each
         assertThat(dom, hasXPath("count(/at:feed/at:entry[at:title='S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04']/owc:offering)", equalTo("3")));

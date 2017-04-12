@@ -31,6 +31,12 @@ The follow REST Reference provides both a REST API definition and examples of us
 * wmslayers - `API Reference <../api/wmslayers/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/wmslayers.yaml>`__ )
 * wmsstores - `API Reference <../api/wmsstores/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/wmsstores.yaml>`__ )
 * :doc:`workspaces` - `API Reference <../api/workspaces/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/workspaces.yaml>`__ )
+* Importer Extension:
+
+  * imports - `API Reference <../api/importer/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/importer.yaml>`__ )
+  * import tasks - `API Reference <../api/importerTasks/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/importerTasks.yaml>`__ )
+  * import transforms - `API Reference <../api/importerTransforms/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/importerTransforms.yaml>`__ )
+  * import data - `API Reference <../api/importerData/index.html>`__ ( `online <http://docs.geoserver.org/api/#/api/docs/importerData.yaml>`__ )
 
 .. toctree::
    :maxdepth: 1

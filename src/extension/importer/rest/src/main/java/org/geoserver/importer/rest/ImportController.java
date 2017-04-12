@@ -81,13 +81,13 @@ public class ImportController extends ImportBaseController {
     }
 
     @GetMapping
-    public ImportWrapper getImports() {
+    public ImportWrapper getImports(@RequestParam(required=false) String expand) {
         Object lookupContext = context(null, true, true);
         if (lookupContext == null) {
             // this means a specific lookup failed
             throw new RestException("Failed to find import context", HttpStatus.NOT_FOUND);
         } else {
-            return (writer, builder, converter) -> converter.contexts(builder,(Iterator<ImportContext>)lookupContext, converter.expand(0));
+            return (writer, builder, converter) -> converter.contexts(builder,(Iterator<ImportContext>)lookupContext, converter.expand(expand, 0));
         }
     }
 

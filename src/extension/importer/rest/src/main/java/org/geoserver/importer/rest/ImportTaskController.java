@@ -61,8 +61,8 @@ public class ImportTaskController extends ImportBaseController {
     }
 
     @GetMapping
-    public ImportWrapper tasksGet(@PathVariable Long id) {
-        return (writer, builder, converter) -> converter.tasks(builder,context(id).getTasks(), true, converter.expand(0));
+    public ImportWrapper tasksGet(@PathVariable Long id, @RequestParam(required=false) String expand) {
+        return (writer, builder, converter) -> converter.tasks(builder,context(id).getTasks(), true, converter.expand(expand, 0));
     }
 
     @GetMapping(path = "/{taskId}")
@@ -96,23 +96,23 @@ public class ImportTaskController extends ImportBaseController {
     }
 
     @GetMapping(path = "/{taskId}/target")
-    public ImportWrapper targetGet(@PathVariable Long id, @PathVariable Integer taskId) {
+    public ImportWrapper targetGet(@PathVariable Long id, @PathVariable Integer taskId, @RequestParam(required=false) String expand) {
         final ImportTask task = task(id, taskId);
         if (task.getStore() == null) {
             throw new RestException("Task has no target store", HttpStatus.NOT_FOUND);
         }
-        return (writer, builder, converter) -> converter.store(builder,task.getStore(), task, true, converter.expand(1));
+        return (writer, builder, converter) -> converter.store(builder,task.getStore(), task, true, converter.expand(expand, 1));
 
     }
 
     @GetMapping(path = "/{taskId}/layer")
-    public ImportWrapper layersGet(@PathVariable Long id, @PathVariable Integer taskId) {
+    public ImportWrapper layersGet(@PathVariable Long id, @PathVariable Integer taskId, @RequestParam(required=false) String expand) {
         ImportTask task = task(id, taskId);
-        return (writer, builder, converter) -> converter.layer(builder,task, true, converter.expand(1));
+        return (writer, builder, converter) -> converter.layer(builder,task, true, converter.expand(expand, 1));
     }
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public Object taskPost(@PathVariable Long id, HttpServletRequest request, HttpServletResponse response) {
+    public Object taskPost(@PathVariable Long id, @RequestParam(required=false) String expand, HttpServletRequest request, HttpServletResponse response) {
         ImportData data = null;
 
         LOGGER.info("Handling POST of " + request.getContentType());
@@ -133,7 +133,7 @@ public class ImportTaskController extends ImportBaseController {
         }
 
         //Construct response
-        return acceptData(data, context(id), response);
+        return acceptData(data, context(id), response, expand);
     }
 
     @PutMapping(path = "/{taskId}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaTypeExtensions.TEXT_JSON_VALUE})
@@ -161,11 +161,12 @@ public class ImportTaskController extends ImportBaseController {
     public Object taskPutFile(
             @PathVariable Long id,
             @PathVariable Object taskId,
+            @RequestParam(required=false) String expand,
             HttpServletRequest request, HttpServletResponse response) {
 
         ImportContext context = context(id);
         //TODO: Task id is the file name here. This functionality is completely undocumented
-        return acceptData(handleFileUpload(context, taskId, request), context, response);
+        return acceptData(handleFileUpload(context, taskId, request), context, response, expand);
     }
 
 
@@ -187,13 +188,13 @@ public class ImportTaskController extends ImportBaseController {
 
     @PutMapping(path = "/{taskId}/layer")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ImportWrapper layerPut(@PathVariable Long id, @PathVariable Integer taskId, @RequestBody LayerInfo layer) {
+    public ImportWrapper layerPut(@PathVariable Long id, @PathVariable Integer taskId, @RequestParam(required=false) String expand, @RequestBody LayerInfo layer) {
         ImportTask task = task(id, taskId);
 
         return (writer, builder, converter) -> {
             updateLayer(task, layer, importer, converter);
             importer.changed(task);
-            converter.task(builder,task, true, converter.expand(1));
+            converter.task(builder,task, true, converter.expand(expand, 1));
         };
     }
 
@@ -205,7 +206,7 @@ public class ImportTaskController extends ImportBaseController {
         importer.changed(task.getContext());
     }
 
-    public Object acceptData(ImportData data, ImportContext context, HttpServletResponse response) {
+    public Object acceptData(ImportData data, ImportContext context, HttpServletResponse response, String expand) {
         List<ImportTask> newTasks = null;
         try {
             newTasks = importer.update(context, data);
@@ -224,10 +225,10 @@ public class ImportTaskController extends ImportBaseController {
 
             return (ImportWrapper) (writer, builder,converter) -> {
                 if (result.size() == 1) {
-                    converter.task(builder,result.get(0), true, converter.expand(1));
+                    converter.task(builder,result.get(0), true, converter.expand(expand, 1));
                 }
                 else {
-                    converter.tasks(builder,result, true, converter.expand(0));
+                    converter.tasks(builder,result, true, converter.expand(expand, 0));
                 }
             };
         }

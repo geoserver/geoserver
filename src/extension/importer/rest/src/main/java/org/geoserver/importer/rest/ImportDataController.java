@@ -68,9 +68,7 @@ public class ImportDataController extends ImportBaseController {
             
     
     //We need to force spring to ignore the .shp here (we don't want a .shp encoded response!
-    @DeleteMapping(value = {
-            "/data/files", "/tasks/{taskId}/data/files",
-            "/data/files/{fileName:.+}", "/tasks/{taskId}/data/files/{fileName:\\.+}" })
+    @DeleteMapping(value = {"/data/files/{fileName:.+}", "/tasks/{taskId}/data/files/{fileName:\\.+}" })
     public ResponseEntity deleteDirectory(
             @PathVariable Long importId,
             @PathVariable(required = false) Integer taskId,

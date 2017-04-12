@@ -10,12 +10,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
-    <version>2.11-SNAPSHOT</version>
+    <version>2.12-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.web</groupId>
   <artifactId>gs-web-app</artifactId>
   <packaging>jar</packaging>
-  <version>2.11-SNAPSHOT</version>
+  <version>2.12-SNAPSHOT</version>
   <name>GeoServer Web Application</name>
   <dependencies>
     <dependency>
@@ -58,7 +58,7 @@
       <artifactId>gs-web-sec-ldap</artifactId>
       <version>${project.version}</version>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-rest</artifactId>
       <version>${project.version}</version>
@@ -390,7 +390,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-arcsde</artifactId>
-          <version>2.11-SNAPSHOT</version>
+          <version>2.12-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -419,7 +419,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-sqlserver</artifactId>
-          <version>2.11-SNAPSHOT</version>
+          <version>2.12-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -429,7 +429,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-oracle</artifactId>
-          <version>2.11-SNAPSHOT</version>
+          <version>2.12-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -439,7 +439,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-oracle</artifactId>
-          <version>2.11-SNAPSHOT</version>
+          <version>2.12-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.oracle</groupId>
@@ -453,7 +453,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-mysql</artifactId>
-          <version>2.11-SNAPSHOT</version>
+          <version>2.12-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1252,7 +1252,7 @@
       <id>vectortiles</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-vectortiles</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1322,7 +1322,7 @@
       <id>ysld</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-ysld</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1504,6 +1504,21 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-mbstyle</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>oseo</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-oseo-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-oseo</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

@@ -26,7 +26,7 @@ public abstract class ImportData implements Serializable{
      * the format for this data
      */
     DataFormat format;
-    
+    Object parent; //either the task or inputcontext - that owns this data
     String charsetEncoding;
 
     /**
@@ -179,4 +179,22 @@ public abstract class ImportData implements Serializable{
         return "ImportData [format=" + format + ", charsetEncoding=" + charsetEncoding
                 + ", message=" + message + "]";
     }
+
+    public void setParent(ImportTask task) {
+        parent = task;
+        
+    }
+
+    public void setParent(ImportContext context) {
+        parent = context;
+    }
+
+    /**
+     * @return the parent
+     */
+    public Object getParent() {
+        return parent;
+    }
+    
+    
 }

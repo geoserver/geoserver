@@ -10,6 +10,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -32,6 +34,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -40,6 +43,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
@@ -89,6 +93,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * A facade providing access to the WMS configuration details
@@ -131,6 +136,8 @@ public class WMS implements ApplicationContextAware {
     
     public static final Boolean SCALEHINT_MAPUNITS_PIXEL_DEFAULT = Boolean.FALSE;
     
+    public static final String DYNAMIC_STYLING_DISABLED = "dynamicStylingDisabled";
+
     static final Logger LOGGER = Logging.getLogger(WMS.class);
 
     public static final String WEB_CONTAINER_KEY = "WMS";
@@ -351,6 +358,10 @@ public class WMS implements ApplicationContextAware {
 
     public WMSInterpolation getInterpolation() {
         return getServiceInfo().getInterpolation();
+    }
+
+    public boolean isDynamicStylingDisabled() {
+        return getServiceInfo().isDynamicStylingDisabled();
     }
 
     public JAIInfo.PngEncoderType getPNGEncoderType() {
@@ -1101,7 +1112,7 @@ public class WMS implements ApplicationContextAware {
             List<String> values = request.getCustomDimension(domain);
             if (values != null) {
                 readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
-                        values, domain);
+                        dimensions.convertDimensionValue(domain, values), domain);
                 customDomains.remove(domain);
             }
         }
@@ -1112,8 +1123,9 @@ public class WMS implements ApplicationContextAware {
                 final DimensionInfo customInfo = metadata.get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + name,
                         DimensionInfo.class);
                 if (customInfo != null && customInfo.isEnabled()) {
-                    final ArrayList<String> val = new ArrayList<String>(1);
-                    val.add(getDefaultCustomDimensionValue(name, coverage, String.class));
+                    Object val = dimensions.convertDimensionValue(name,
+                            getDefaultCustomDimensionValue(name, coverage, String.class));
+
                     readParameters = CoverageUtils.mergeParameter(
                         parameterDescriptors, readParameters, val, name);
                 }
@@ -1629,4 +1641,32 @@ public class WMS implements ApplicationContextAware {
         return GeoServerExtensions.bean(WMS.class);
     }
 
+    /**
+     * Checks if the layer can be drawn, that is, if it's raster, or vector with a geometry attribute
+     * @param lyr
+     * @return
+     */
+    public static boolean isWmsExposable(LayerInfo lyr) {
+        if (lyr.getType() == PublishedType.RASTER || lyr.getType() == PublishedType.WMS) {
+            return true;
+        }
+
+        if (lyr.getType() == PublishedType.VECTOR) {
+            final ResourceInfo resource = lyr.getResource();
+            try {
+                for (AttributeTypeInfo att : ((FeatureTypeInfo) resource).attributes()) {
+                    if (att.getBinding() != null
+                            && Geometry.class.isAssignableFrom(att.getBinding())) {
+                        return true;
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE,
+                        "An error occurred trying to determine if" + " the layer is geometryless",
+                        e);
+            }
+        }
+
+        return false;
+    }
 }

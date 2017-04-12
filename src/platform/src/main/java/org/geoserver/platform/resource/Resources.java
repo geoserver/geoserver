@@ -390,10 +390,7 @@ public class Resources {
     }
 
     /**
-     * 
      * File Extension based filtering
-     * 
-     *
      */
     public static class ExtensionFilter implements Filter<Resource> {
         

@@ -721,7 +721,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
      * @author Gabriel Roldan
      * @version $Id: DefaultRasterMapOutputFormatTest.java 6797 2007-05-16 10:23:50Z aaime $
      */
-    private static class DummyRasterMapProducer extends RenderedImageMapOutputFormat {
+    static class DummyRasterMapProducer extends RenderedImageMapOutputFormat {
 
         public DummyRasterMapProducer(WMS wms) {
             super("image/gif", new String[] { "image/gif" }, wms);

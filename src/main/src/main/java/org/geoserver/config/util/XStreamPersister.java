@@ -402,6 +402,7 @@ public class XStreamPersister {
         xs.registerLocalConverter(impl(StoreInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
         xs.registerLocalConverter(impl(StoreInfo.class), "connectionParameters", new BreifMapConverter() );
         xs.registerLocalConverter(impl(StoreInfo.class), "metadata", new MetadataMapConverter());
+        xs.registerLocalConverter(impl(WMSStoreInfo.class), "password", new EncryptedFieldConverter());
         
         // StyleInfo
         xs.omitField(impl(StyleInfo.class), "catalog");
@@ -2352,6 +2353,47 @@ public class XStreamPersister {
                 }
             }
             return emptyObject;
+        }
+    }
+    
+    /**
+     * Converts a specific string though encryption and decryption
+     *
+     * @author Andrea Aime - GeoSolutions
+     */
+    class EncryptedFieldConverter extends AbstractSingleValueConverter {
+
+        @Override
+        public boolean canConvert(Class type) {
+            return String.class.equals(type);
+        }
+
+        @Override
+        public Object fromString(String str) {
+            if (str == null) {
+                return null;
+            }
+            if (encryptPasswordFields) {
+                GeoServerSecurityManager secMgr = getSecurityManager();
+                if (secMgr != null) {
+                    return secMgr.getConfigPasswordEncryptionHelper().decode(str);
+                }
+            }
+            return str;
+        }
+
+        @Override
+        public String toString(Object obj) {
+            if (obj == null) {
+                return null;
+            }
+            if (encryptPasswordFields) {
+                GeoServerSecurityManager secMgr = getSecurityManager();
+                if (secMgr != null) {
+                    return secMgr.getConfigPasswordEncryptionHelper().encode((String) obj);
+                }
+            }
+            return obj.toString();
         }
     }
 }

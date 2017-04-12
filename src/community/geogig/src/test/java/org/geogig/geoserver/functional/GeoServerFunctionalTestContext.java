@@ -61,6 +61,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
     private GeoServerRepositoryProvider repoProvider = null;
 
+    private GeoGigTestData testData;
     /**
      * Helper class for running mock http requests.
      */
@@ -115,22 +116,23 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
         }
         
         /**
-         * Issue a POST request to the provided URL with the given text.
+         * Issue a POST request to the provided URL with the given content.
          *
+         * @param contentType the content type of the data
          * @param resourceUri   the url to issue the request to
-         * @param postText      the text to be posted
+         * @param postContent     the content to be posted
          *
          * @return the response to the request
          */
-        public MockHttpServletResponse postText(String resourceUri, String postText)
+        public MockHttpServletResponse postContent(String contentType, String resourceUri, String postContent)
                 throws Exception {
 
             MockHttpServletRequest req = createRequest(resourceUri);
 
-            req.setContentType("text/plain");
-            req.addHeader("Content-Type", "text/plain");
+            req.setContentType(contentType);
+            req.addHeader("Content-Type", contentType);
             req.setMethod("POST");
-            req.setContent(postText == null ? null : postText.getBytes());
+            req.setContent(postContent == null ? null : postContent.getBytes());
 
             return dispatch(req);
         }
@@ -184,6 +186,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected void setUp() throws Exception {
+        testData = new GeoGigTestData(this.tempFolder);
         if (helper == null) {
             helper = new TestHelper();
             helper.doSetup();
@@ -192,6 +195,7 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 
             RepositoryManager.get().setCatalog(helper.getCatalog());
         }
+        setVariable("@systemTempPath", tempFolder.getRoot().getCanonicalPath().replace("\\", "/"));
 
     }
 
@@ -204,6 +208,9 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
             if (helper != null) {
                 RepositoryManager.close();
                 helper.doTearDown();
+            }
+            if (testData != null) {
+                testData.tearDown();
             }
         } finally {
             helper = null;
@@ -234,7 +241,6 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
      */
     @Override
     protected TestData createRepo(String name) throws Exception {
-        GeoGigTestData testData = new GeoGigTestData(RunWebAPIFunctionalTest.TEMP_ROOT.getRoot());
         testData.setUp(name);
         testData.init().config("user.name", "John").config("user.email", "John.Doe@example.com");
         GeoGIG geogig = testData.getGeogig();
@@ -411,10 +417,11 @@ public class GeoServerFunctionalTestContext extends FunctionalTestContext {
 	}
 
 	@Override
-	protected void postTextInternal(String resourceUri, String postText) {
+	protected void postContentInternal(String contentType, String resourceUri, String postContent) {
         resourceUri = replaceVariables(resourceUri);
+        postContent = replaceVariables(postContent);
         try {
-            lastResponse = helper.postText("/geogig" + resourceUri, postText);
+            lastResponse = helper.postContent(contentType, "/geogig" + resourceUri, postContent);
         } catch (Exception e) {
             Throwables.propagate(e);
         }

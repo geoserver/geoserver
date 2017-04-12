@@ -8,13 +8,14 @@ package org.geoserver.rest;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.geotools.filter.function.EnvFunction;
-import org.restlet.Restlet;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 /**
  * Injects the environment variables into the {@link EnvFunction} and clears them up at the end
@@ -22,10 +23,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @author Andrea Aime - GeoSolutions
  * 
  */
-public class EnviromentInjectionCallback implements DispatcherCallback {
+@Component
+public class EnviromentInjectionCallback extends DispatcherCallbackAdapter {
 
-    public void init(Request request, Response response) {
-        Map<String, Object> envVars = new HashMap<String, Object>();
+    public void init(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> envVars = new HashMap<>();
         
         // TODO: do we want to support a OWS like "env" param here?
 
@@ -42,15 +44,7 @@ public class EnviromentInjectionCallback implements DispatcherCallback {
         }
     }
 
-    public void dispatched(Request request, Response response, Restlet restlet) {
-        // nothing to do
-    }
-
-    public void exception(Request request, Response response, Exception error) {
-        // nothing to do
-    }
-
-    public void finished(Request request, Response response) {
+    public void finished(HttpServletRequest request, HttpServletResponse response) {
         // clean up when we're done
         EnvFunction.clearLocalValues();
     }

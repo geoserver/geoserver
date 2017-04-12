@@ -1,0 +1,28 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+  <h3><wicket:message key="ConfigEditPanel.title">Config Edit</wicket:message></h3>
+  <form wicket:id="form">
+  	<ul>
+  	  <li>
+    	<fieldset>
+          <legend><span><wicket:message key="configTitle">Config</wicket:message></span></legend>
+          <label for="name"><wicket:message key="configKey">Name</wicket:message></label>
+          <input id="name" class="text" type="text" wicket:id="name"></input>
+          <label for="value"><wicket:message key="configValue">Value</wicket:message></label>
+          <input id="value" class="text" type="text" wicket:id="value"></input>
+    	</fieldset>
+	  </li>
+	  <li>
+        <div wicket:id="feedback"></div>
+		<div class="button-group selfclear">
+		  <a href="#" wicket:id="submit"><wicket:message key="save">Save</wicket:message></a>
+		  <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+		</div>
+	  </li>
+	</ul>
+  </form>
+</wicket:panel>
+</body>
+</html>

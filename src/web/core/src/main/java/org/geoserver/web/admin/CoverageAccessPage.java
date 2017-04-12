@@ -113,7 +113,7 @@ public class CoverageAccessPage extends ServerAdminPage {
         imageIOCacheThreshold.add(RangeValidator.minimum(0l));
         form.add(imageIOCacheThreshold);
                 
-        Button submit = new Button("submit", new StringResourceModel("submit", this, null)) {
+        Button submit = new Button("submit") {
             private static final long serialVersionUID = 4149741045073254811L;
             @Override
             public void onSubmit() {

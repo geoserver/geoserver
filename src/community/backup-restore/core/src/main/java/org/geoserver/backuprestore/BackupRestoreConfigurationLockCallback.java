@@ -42,7 +42,7 @@ public class BackupRestoreConfigurationLockCallback implements BackupRestoreCall
         LockType type = THREAD_LOCK.get();
         if (type != null) {
             THREAD_LOCK.remove();
-            locker.unlock(type);
+            locker.unlock();
         }
     }
 }

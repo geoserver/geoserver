@@ -9,6 +9,8 @@ import java.net.URI;
 
 import org.geogig.geoserver.config.RepositoryInfo;
 import org.geogig.geoserver.config.RepositoryManager;
+import org.locationtech.geogig.web.api.ParameterSet;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
@@ -22,8 +24,14 @@ public class InitCommandResource extends org.locationtech.geogig.rest.repository
     }
 
     @Override
-    protected Representation runCommand(Variant variant, Request request) {
-        Representation representation = super.runCommand(variant, request);
+    protected ParameterSet handleRequestEntity(Request request) {
+    	// the request handler will take care of the entity.
+    	return null;
+    }
+    
+    @Override
+    protected Representation runCommand(Variant variant, Request request, MediaType outputFormat) {
+        Representation representation = super.runCommand(variant, request, outputFormat);
 
         if (getResponse().getStatus() == Status.SUCCESS_CREATED) {
             // save the repo in the Manager
@@ -34,7 +42,7 @@ public class InitCommandResource extends org.locationtech.geogig.rest.repository
 
     private RepositoryInfo saveRepository() {
         // repo was just created, need to register it with an ID in the manager
-        // cretae a RepositoryInfo object
+        // create a RepositoryInfo object
         RepositoryInfo repoInfo = new RepositoryInfo();
         URI location = geogig.get().getLocation().normalize();
         if ("file".equals(location.getScheme())) {

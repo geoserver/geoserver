@@ -171,6 +171,17 @@ public interface WMSInfo extends ServiceInfo {
 	 */
 	public void setRootLayerAbstract(String rootLayerAbstract);
     
-    
-    
+
+    /**
+     * Sets the status of dynamic styling (SLD and SLD_BODY params) allowance
+     *
+     * @param dynamicStylesEnabled
+     */
+    void setDynamicStylingDisabled(Boolean dynamicStylesDisabled);
+
+    /**
+     * @return the status of dynamic styling (SLD and SLD_BODY params) allowance
+     */
+    Boolean isDynamicStylingDisabled();
+
 }

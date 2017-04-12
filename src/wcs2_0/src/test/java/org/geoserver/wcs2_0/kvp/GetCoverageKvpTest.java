@@ -1,7 +1,12 @@
 package org.geoserver.wcs2_0.kvp;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
+import java.awt.image.Raster;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -9,11 +14,14 @@ import javax.xml.namespace.QName;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wcs2_0.WCS20Const;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.data.DataSourceException;
+import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
 import org.junit.Test;
-
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import net.opengis.wcs20.GetCoverageType;
@@ -37,6 +45,8 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
+        testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
+                "raster-filter-test.zip",null, null ,SystemTestData.class, getCatalog());
     }
 
     @Test
@@ -231,5 +241,28 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
         checkOws20Exception(response, 404, "NoSuchCoverage", "coverageId");
     }
     
+    @Test
+    public void testCqlFilterRed() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__mosaic&CQL_FILTER=location like 'red%25'");
+        assertOriginPixelColor(response, new int[] {255, 0, 0});
+    }
+
+    @Test
+    public void testCqlFilterGreen() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__mosaic&CQL_FILTER=location like 'green%25'");
+        assertOriginPixelColor(response, new int[] {0, 255, 0});
+    }
     
+    private void assertOriginPixelColor(MockHttpServletResponse response, int[] expected)
+            throws DataSourceException, IOException {
+        assertEquals("image/tiff", response.getContentType());
+        byte[] bytes = response.getContentAsByteArray();
+        
+        GeoTiffReader reader = new GeoTiffReader(new ByteArrayInputStream(bytes));
+        GridCoverage2D coverage = reader.read(null);
+        Raster raster = coverage.getRenderedImage().getData();
+        int[] pixel = new int[3];
+        raster.getPixel(0, 0, pixel);
+        assertThat(pixel, equalTo(expected));
+    }
 }

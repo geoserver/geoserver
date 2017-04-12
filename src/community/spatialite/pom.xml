@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.11-SNAPSHOT</version>
+    <version>2.12-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -25,7 +25,7 @@
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-wfs</artifactId>
-   <version>2.11-SNAPSHOT</version>
+   <version>2.12-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>junit</groupId>
@@ -35,14 +35,14 @@
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-wfs</artifactId>
-   <version>2.11-SNAPSHOT</version>
+   <version>2.12-SNAPSHOT</version>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-main</artifactId>
-   <version>2.11-SNAPSHOT</version>
+   <version>2.12-SNAPSHOT</version>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>
@@ -60,6 +60,13 @@
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-spatialite</artifactId>
       <version>${gt.version}</version>
+   </dependency>
+   <!-- used for testing the REST api -->
+   <dependency>
+     <groupId>org.geoserver</groupId>
+     <artifactId>gs-restconfig</artifactId>
+     <version>${gs.version}</version>
+     <scope>test</scope>
    </dependency>
   </dependencies>
 

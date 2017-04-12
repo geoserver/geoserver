@@ -7,6 +7,8 @@ package org.geoserver.wms.web.data;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
@@ -19,6 +21,7 @@ import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,6 +37,7 @@ import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTesterHelper;
+import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.Catalog;
@@ -46,6 +50,11 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
@@ -57,6 +66,7 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.styling.Style;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -543,6 +553,53 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
      */
     @Test
     public void testMoveWorkspaceAndEdit() throws Exception {
+        // add catalog listener so we can validate the style modified event
+        final boolean[] gotValidEvent = {false};
+        getCatalog().addListener(new CatalogListener() {
+
+            @Override
+            public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
+                // not interest, ignore this events
+            }
+
+            @Override
+            public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
+                // not interest, ignore this events
+            }
+
+            @Override
+            public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
+                // not interest, ignore this events
+            }
+
+            @Override
+            public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
+                assertThat(event, notNullValue());
+                assertThat(event.getSource(), notNullValue());
+                if (!(event.getSource() instanceof StyleInfo)) {
+                    // only interested in style info events
+                    return;
+                }
+                try {
+                    // get the associated style and check that you got the correct content
+                    StyleInfo styleInfo = (StyleInfo) event.getSource();
+                    assertThat(styleInfo, notNullValue());
+                    Style style = getCatalog().getResourcePool().getStyle(styleInfo);
+                    assertThat(style, notNullValue());
+                    assertThat(style.featureTypeStyles().size(), is(2));
+                    // ok everything looks good
+                    gotValidEvent[0] = true;
+                } catch (Exception exception) {
+                    LOGGER.log(Level.SEVERE, "Error handling catalog modified style event.", exception);
+                }
+            }
+
+            @Override
+            public void reloaded() {
+                // not interest, ignore this events
+            }
+        });
+
         edit = new StyleEditPage(styleInfoToMove);
         tester.startPage(edit);
 
@@ -578,6 +635,16 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         assertNotNull(si.getWorkspace());
         assertEquals("sf", si.getWorkspace().getName());
         assertEquals(2, si.getStyle().featureTypeStyles().size());
+
+        // check the correct style modified event was published
+        assertThat(gotValidEvent[0], is(true));
+    }
+    
+    @Test
+    public void applyThenSubmit() throws Exception {
+        tester.executeAjaxEvent("apply", "click");
+        tester.executeAjaxEvent("submit", "click");
+        tester.assertNoErrorMessage();
     }
     
 }

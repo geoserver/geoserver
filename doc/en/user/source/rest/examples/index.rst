@@ -4,7 +4,9 @@ REST configuration examples
 ===========================
 
 This section contains a number of examples which illustrate various uses of the
-:ref:`REST configuration API <rest_api>`. The examples are grouped by the language or environment used.
+:ref:`REST configuration API <rest_api>`.
+
+The examples were originally grouped by the language or environment used:
 
 .. toctree::
    :maxdepth: 1
@@ -15,3 +17,13 @@ This section contains a number of examples which illustrate various uses of the
    java
    ruby
 
+But we're changing this to be based on endpoint:
+
+.. toctree::
+   :maxdepth: 1
+
+   fonts
+   layers
+   styles
+
+So this section is under construction.

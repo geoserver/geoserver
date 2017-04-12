@@ -86,7 +86,7 @@ public class JAIPage extends ServerAdminPage {
         }
         form.add(jaiExtPanel);
 
-        Button submit = new Button("submit", new StringResourceModel("submit", this, null)) {
+        Button submit = new Button("submit") {
             private static final long serialVersionUID = -2842881187264147131L;
             @Override
             public void onSubmit() {

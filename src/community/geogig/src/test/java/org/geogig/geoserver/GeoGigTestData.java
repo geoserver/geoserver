@@ -49,6 +49,7 @@ import org.locationtech.geogig.cli.test.functional.CLITestContextBuilder;
 import org.locationtech.geogig.data.FeatureBuilder;
 import org.locationtech.geogig.geotools.data.GeoGigDataStore;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
+import org.locationtech.geogig.model.NodeRef;
 import org.locationtech.geogig.model.ObjectId;
 import org.locationtech.geogig.model.RevFeature;
 import org.locationtech.geogig.model.RevFeatureType;
@@ -68,7 +69,6 @@ import org.locationtech.geogig.porcelain.InitOp;
 import org.locationtech.geogig.repository.AbstractGeoGigOp;
 import org.locationtech.geogig.repository.Context;
 import org.locationtech.geogig.repository.FeatureInfo;
-import org.locationtech.geogig.repository.NodeRef;
 import org.locationtech.geogig.repository.WorkingTree;
 import org.locationtech.geogig.repository.impl.GeoGIG;
 import org.locationtech.geogig.repository.impl.GlobalContextBuilder;
@@ -92,16 +92,23 @@ public class GeoGigTestData extends ExternalResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GeoGigTestData.class);
 
-    private TemporaryFolder tmpFolder;
+    private final TemporaryFolder tmpFolder;
 
     private GeoGIG geogig;
 
     private File repoDir;
 
-    private final File tempRoot;
-
-    public GeoGigTestData(File tempRoot) {
-        this.tempRoot = tempRoot;
+    public GeoGigTestData(TemporaryFolder tmpFolder) {
+        if (tmpFolder == null) {
+            this.tmpFolder = new TemporaryFolder();
+            try {
+                this.tmpFolder.create();
+            } catch (IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        } else {
+            this.tmpFolder = tmpFolder;
+        }
     }
 
     public GeoGigTestData() {
@@ -114,8 +121,6 @@ public class GeoGigTestData extends ExternalResource {
     }
 
     public void setUp(String repoName) throws Exception {
-        tmpFolder = new TemporaryFolder(tempRoot);
-        tmpFolder.create();
         this.geogig = createRepository(repoName);
     }
 
@@ -132,7 +137,9 @@ public class GeoGigTestData extends ExternalResource {
             }
         } finally {
             RepositoryManager.close();
-            tmpFolder.delete();
+            if (tmpFolder != null) {
+                tmpFolder.delete();
+            }
         }
     }
 
@@ -384,7 +391,7 @@ public class GeoGigTestData extends ExternalResource {
                 context.command(RevObjectParse.class).setObjectId(featureRef.getObjectId()));
 
         String id = featureRef.name();
-        Feature feature = new FeatureBuilder(type).build(id, revFeature.get());
+        Feature feature = new FeatureBuilder(RevFeatureTypeBuilder.build(type)).build(id, revFeature.get());
         return (SimpleFeature) feature;
     }
 

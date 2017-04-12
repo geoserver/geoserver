@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  THIS SCHEMA HAS BEEN AUTO-GENERATE FROM owc.rng using trang and then manually simplified to serve the purpose
+  of validating the offering elements in the opensearch output
+  -*- rnc -*-
+  RELAX NG Compact Syntax Grammar for OGC Context Atom Encoding
+  ATOM encoding and OWC classes as defined in OGC 12-084 
+  
+  OGC Web Services Context Atom Encoding 1.0 is an OGC Standard.
+  Copyright (c) 2014 Open Geospatial Consortium.
+  To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+  
+  Version: 1.0.0 modified 2014-05-08
+  
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.opengis.net/owc/1.0" 
+  xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:gml="http://www.opengis.net/gml" 
+  xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:georss="http://www.georss.org/georss" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:owc="http://www.opengis.net/owc/1.0">
+  <xs:import schemaLocation="local.xsd"/>
+  <xs:import namespace="http://www.georss.org/georss" schemaLocation="georss.xsd"/>
+  <xs:import namespace="http://www.w3.org/2005/Atom" schemaLocation="./atom.xsd"/>
+  <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="./rec-dcmes.xsd"/>
+  <!-- Define date time interval -->
+  <xs:simpleType name="datetimeInterval">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\s*[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?(Z|[\+\-][0-9]{2}:[0-9]{2})?(/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?(Z|[\+\-][0-9]{2}:[0-9]{2})|)\s*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="minScaleDenominator" type="xs:double"/>
+  <xs:element name="maxScaleDenominator" type="xs:double"/>
+  <!-- owcContent attribute extensions -->
+  <xs:simpleType name="owcURL">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(ftp|http)s?://.*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!-- owcOffering -->
+  <xs:element name="offering">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="owc:operation"/>
+        <xs:element ref="owc:content"/>
+        <xs:element ref="owc:styleSet"/>
+        
+      </xs:choice>
+      
+      <xs:attribute name="code" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- owcOperation -->
+  <xs:element name="operation">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="owc:result"/>
+        <xs:element ref="owc:request"/>
+        
+      </xs:choice>
+      
+      <xs:attribute name="code" use="required"/>
+      <xs:attribute name="href" use="required" type="owc:owcURL"/>
+      <xs:attribute name="type"/>
+      <xs:attribute name="method" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="result" type="owc:owcContentConstruct"/>
+  <xs:element name="request" type="owc:owcContentConstruct"/>
+  <!-- owcContent -->
+  <xs:complexType name="owcContentConstruct" mixed="true">
+    
+    <xs:attribute name="type" use="required"/>
+    <xs:attribute name="href" type="owc:owcURL"/>
+  </xs:complexType>
+  <xs:element name="content" type="owc:owcContentConstruct"/>
+  <!-- owcStyleSet -->
+  <xs:element name="styleSet">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="owc:name"/>
+        <xs:element ref="owc:title"/>
+        <xs:element ref="owc:abstract"/>
+        <xs:element ref="owc:legendURL"/>
+        <xs:element ref="owc:content"/>
+        
+      </xs:choice>
+      
+      <xs:attribute name="default" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="abstract" type="xs:string"/>
+  <xs:element name="legendURL">
+    <xs:complexType>
+      <xs:attribute name="type" use="required"/>
+      <xs:attribute name="href" use="required" type="owc:owcURL"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- owc:display  -->
+  <xs:element name="display">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:choice>
+          <xs:element ref="owc:pixelWidth"/>
+          <xs:element ref="owc:pixelHeight"/>
+          <xs:element ref="owc:mmPerPixel"/>
+        </xs:choice>
+        
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="pixelWidth" type="xs:integer"/>
+  <xs:element name="pixelHeight" type="xs:integer"/>
+  <xs:element name="mmPerPixel" type="xs:float"/>
+  <!-- Define georss:where on georss/1.1 -->
+  <!-- Replacing definitions on RFC4287 atom/2005 -->
+  <!-- Redefine the Simple Extension to exclude owc:* elements -->
+  <xs:group name="simpleExtensionElement">
+    <xs:sequence>
+      <xs:any processContents="skip"/>
+    </xs:sequence>
+  </xs:group>
+  <!-- Redefine the Structured Extension to exclude owc:* elements -->
+  <xs:group name="structuredExtensionElement">
+    <xs:sequence>
+      <xs:any processContents="skip"/>
+    </xs:sequence>
+  </xs:group>
+  <!-- Redefine Atom rules    -->
+</xs:schema>
+<!-- EOF -->

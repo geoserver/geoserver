@@ -54,7 +54,7 @@ public class InterpolationKvpParser extends KvpParser {
         String[] components = value.split("\\s*,\\s*");
         for (String component : components) {
             // minimal validation of the content
-            if (!component.matches("http://www.opengis.net/def/axis/OGC/1/.*:http://www.opengis.net/def/interpolation/OGC/1/.*")) {
+            if (!component.matches(".*:http://www.opengis.net/def/interpolation/OGC/1/.*")) {
                 // not a regular axis:interpolation structure
                 throwInvalidSyntaxException();
             } else if (component.matches(".*:\\s*:.*")) {
@@ -62,7 +62,7 @@ public class InterpolationKvpParser extends KvpParser {
                 throwInvalidSyntaxException();
             }
             
-            int idx = component.indexOf(":", "http://www.opengis.net/def/axis/OGC/1/".length());
+            int idx = component.lastIndexOf(":", component.lastIndexOf(":") - 1);
             InterpolationAxisType ia = Wcs20Factory.eINSTANCE.createInterpolationAxisType();
             ia.setAxis(component.substring(0, idx));
             ia.setInterpolationMethod(component.substring(idx + 1));

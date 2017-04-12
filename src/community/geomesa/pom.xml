@@ -12,13 +12,13 @@ application directory.
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.11-SNAPSHOT</version>
+    <version>2.12-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-web-geomesa</artifactId>
   <packaging>jar</packaging>
-  <version>2.11-SNAPSHOT</version>  
+  <version>2.12-SNAPSHOT</version>  
   <name>GeoMesa Web Module</name>
 
   <description>GeoMesa GeoServer extensions</description>

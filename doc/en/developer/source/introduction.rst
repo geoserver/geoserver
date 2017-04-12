@@ -38,7 +38,7 @@ Question and answer:
 License
 -------
 
-For complete license information review :download:`LICENSE.txt </../../../../src/LICENSE.txt>`.
+For complete license information review :download:`LICENSE.txt </../../../../LICENSE.txt>`.
 
 * GeoServer is free software and is licensed under the :download:`GNU General Public License </../../../../src/release/GPL.txt>`::
 

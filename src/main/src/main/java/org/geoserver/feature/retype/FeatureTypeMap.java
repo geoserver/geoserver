@@ -5,6 +5,10 @@
  */
 package org.geoserver.feature.retype;
 
+import org.geotools.data.Join;
+import org.geotools.data.Query;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
@@ -48,6 +52,37 @@ class FeatureTypeMap {
 
     public SimpleFeatureType getFeatureType() {
         return featureType;
+    }
+    
+    /***
+     * Takes into account eventual joins
+     * 
+     * @param query
+     * @return
+     */
+    public SimpleFeatureType getFeatureType(Query query) {
+        SimpleFeatureType result;
+        if ( query.getPropertyNames() != Query.ALL_NAMES ) {
+            result = SimpleFeatureTypeBuilder.retype(featureType, query.getPropertyNames());
+        } else {
+            result = featureType;
+        }
+
+        // add back the joined features in case of join
+        if(!query.getJoins().isEmpty()) {
+            SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+            tb.init(result);
+            for (Join join : query.getJoins()) {
+                String joinedFeatureAttribute = join.getAlias();
+                if(joinedFeatureAttribute == null) {
+                    joinedFeatureAttribute = join.getTypeName();
+                }
+                tb.add(joinedFeatureAttribute, SimpleFeature.class);
+            }
+            result = tb.buildFeatureType();
+        }
+        
+        return result;
     }
 
     public boolean isUnchanged() {

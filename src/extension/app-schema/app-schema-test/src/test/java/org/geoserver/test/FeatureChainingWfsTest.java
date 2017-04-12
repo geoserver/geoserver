@@ -6,21 +6,30 @@
 
 package org.geoserver.test;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geotools.data.DataUtilities;
@@ -403,7 +412,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
      * Test whether GetFeature returns wfs:FeatureCollection.
      */
     @Test
-    public void testGetFeature() {
+    public void testGetFeatureGML() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
@@ -412,6 +421,11 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         LOGGER.info("WFS GetFeature&typename=gsml:CompositionPart response, exception expected:\n"
                 + prettyString(doc));
         assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
+    }
+
+    @Test
+    public void testGetFeatureJSON() throws Exception {
+        testJsonRequest("gsml:MappedFeature", "/test-data/MappedFeature.json");
     }
     
     @Test
@@ -443,7 +457,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
      * feature type can have multiple FEATURE_LINK to be referred by different types.
      */
     @Test
-    public void testComplexTypeWithSimpleContent() {
+    public void testComplexTypeWithSimpleContentGML() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:FirstParentFeature");
         LOGGER
                 .info("WFS GetFeature&typename=ex:FirstParentFeature response:\n"
@@ -488,6 +502,11 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 "string_three",
                 "//ex:SecondParentFeature[@gml:id='cc.2']/ex:nestedFeature[3]/ex:SimpleContent/ex:someAttribute",
                 doc);
+    }
+
+    @Test
+    public void testComplexTypeWithSimpleContentJSON() throws Exception {
+        testJsonRequest("ex:FirstParentFeature", "/test-data/FirstParentFeature.json");
     }
 
     /**
@@ -1059,7 +1078,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
      * <any/> element.
      */
     @Test
-    public void testAnyTypeAndAnyElement() {
+    public void testAnyTypeAndAnyElementGML() {
         final String OBSERVATION_ID_PREFIX = "observation:";
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=om:Observation");
         LOGGER.info("WFS GetFeature&typename=om:Observation response:\n" + prettyString(doc));
@@ -1077,6 +1096,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         Node geologicUnit = resultQuality.getFirstChild();
         assertEquals("gu.25699", geologicUnit.getAttributes().getNamedItem("gml:id").getNodeValue());
         // om:result
+        assertXpathEvaluatesTo("", "(//om:Observation)[1]/om:result/text()", doc);
         assertXpathEvaluatesTo(id, "(//om:Observation)[1]/om:result/gsml:MappedFeature/@gml:id",
                 doc);
 
@@ -1090,6 +1110,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         geologicUnit = resultQuality.getFirstChild();
         assertEquals("gu.25678", geologicUnit.getAttributes().getNamedItem("gml:id").getNodeValue());
         // om:result
+        assertXpathEvaluatesTo("", "(//om:Observation)[2]/om:result/text()", doc);
         assertXpathEvaluatesTo(id, "(//om:Observation)[2]/om:result/gsml:MappedFeature/@gml:id",
                 doc);
 
@@ -1103,6 +1124,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         assertEquals("#gu.25678", resultQuality.getAttributes().getNamedItem("xlink:href")
                 .getNodeValue());
         // om:result
+        assertXpathEvaluatesTo("", "(//om:Observation)[3]/om:result/text()", doc);
         assertXpathEvaluatesTo(id, "(//om:Observation)[3]/om:result/gsml:MappedFeature/@gml:id",
                 doc);
 
@@ -1116,8 +1138,14 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         geologicUnit = resultQuality.getFirstChild();
         assertEquals("gu.25682", geologicUnit.getAttributes().getNamedItem("gml:id").getNodeValue());
         // om:result
+        assertXpathEvaluatesTo("", "(//om:Observation)[4]/om:result/text()", doc);
         assertXpathEvaluatesTo(id, "(//om:Observation)[4]/om:result/gsml:MappedFeature/@gml:id",
                 doc);
+    }
+
+    @Test
+    public void testAnyTypeAndAnyElementJSON() throws Exception {
+        testJsonRequest("om:Observation", "/test-data/Observation.json");
     }
 
     /**
@@ -1355,7 +1383,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
      * Test FeatureCollection is encoded with one featureMembers element
      */
     @Test
-    public void testEncodeFeatureMembers() throws Exception {
+    public void testEncodeFeatureMembersGML() throws Exception {
         // change fixture settings (must restore this at end)
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         boolean encodeFeatureMember = wfs.isEncodeFeatureMember();
@@ -1414,6 +1442,11 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         wfs = getGeoServer().getService(WFSInfo.class);
         wfs.setEncodeFeatureMember(encodeFeatureMember);
         getGeoServer().save(wfs);
+    }
+
+    @Test
+    public void testEncodeFeatureMembersJSON() throws Exception {
+        testJsonRequest("gsml:MappedFeature,gsml:GeologicUnit", "/test-data/MultipleCollections.json");
     }
 
     @Test
@@ -1574,5 +1607,37 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.3']/ex:nestedFeature/ex:nestedValue[text()='1GRAV']", result);
         assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.3']/ex:nestedFeature/ex:nestedValue[text()='1TILL']", result);
         assertXpathCount(1, "//ex:ParentFeature[@gml:id='sc.3']/ex:nestedFeature/ex:nestedValue[text()='6ALLU']", result);
+    }
+
+    @Test
+    public void testNonValidNestedJSON() throws Exception {
+        testJsonRequest("ex:ParentFeature", "/test-data/ParentFeature.json");
+    }
+
+    private void testJsonRequest(String featureType, String expectResultPath) throws Exception {
+        // get the complex features encoded in JSON
+        String request = String.format(
+                "wfs?request=GetFeature&version=1.1.0&typename=%s&outputFormat=application/json", featureType);
+        JSON result = getAsJSON(request);
+        // check that we got a valida JSON object
+        assertThat(result, instanceOf(JSONObject.class));
+        JSONObject resultJson = (JSONObject) result;
+        // check the returned JSON againts the expected result
+        JSONObject expectedJson = readJsonObject(expectResultPath);
+        assertThat(resultJson, is(expectedJson));
+    }
+
+    /**
+     * Helper method that just reads a JSON object from a resource file.
+     */
+    private JSONObject readJsonObject(String resourcePath) throws Exception {
+        // read the JSON file content
+        InputStream input = this.getClass().getResourceAsStream(resourcePath);
+        assertThat(input, notNullValue());
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        IOUtils.copy(input, output);
+        // parse the JSON file
+        String jsonText = new String(output.toByteArray());
+        return JSONObject.fromObject(jsonText);
     }
 }

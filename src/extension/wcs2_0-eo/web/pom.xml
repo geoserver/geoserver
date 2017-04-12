@@ -12,7 +12,7 @@ application directory.
     <parent>
         <groupId>org.geoserver.extension</groupId>
         <artifactId>gs-wcs2_0-eo</artifactId>
-        <version>2.11-SNAPSHOT</version>
+        <version>2.12-SNAPSHOT</version>
     </parent>
 
     <groupId>org.geoserver.extension</groupId>

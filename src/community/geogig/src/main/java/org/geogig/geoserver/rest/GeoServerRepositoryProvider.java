@@ -8,6 +8,7 @@ import static org.locationtech.geogig.web.api.RESTUtils.getStringAttribute;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +19,11 @@ import org.geogig.geoserver.config.RepositoryManager;
 import org.locationtech.geogig.plumbing.ResolveGeogigURI;
 import org.locationtech.geogig.repository.Hints;
 import org.locationtech.geogig.repository.Repository;
+import org.locationtech.geogig.repository.RepositoryConnectionException;
+import org.locationtech.geogig.repository.RepositoryResolver;
 import org.locationtech.geogig.repository.impl.GeoGIG;
 import org.locationtech.geogig.rest.RestletException;
+import org.locationtech.geogig.rest.repository.InitRequestUtil;
 import org.locationtech.geogig.rest.repository.RepositoryProvider;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -41,6 +45,11 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
      * Init request command string.
      */
     public static final String INIT_CMD = "init";
+
+    /**
+     * Import Existing Repository command string.
+     */
+    public static final String IMPORT_CMD = "importExistingRepo";
 
     private Optional<String> getRepositoryName(Request request) {
         final String repo = getStringAttribute(request, "repository");
@@ -139,6 +148,20 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         return false;
     }
 
+    private boolean isImportRequest(Request request) {
+        // if the request is a POST, and the request path ends in "importExistingRepo"
+        if (Method.POST.equals(request.getMethod())) {
+            Map<String, Object> attributes = request.getAttributes();
+            if (attributes != null && attributes.containsKey("command")) {
+                return IMPORT_CMD.equals(attributes.get("command"));
+            } else if (request.getResourceRef() != null) {
+                String path = request.getResourceRef().getPath();
+                return path != null && path.contains(IMPORT_CMD);
+            }
+        }
+        return false;
+    }
+
     @Override
     public Optional<Repository> getGeogig(Request request) {
         Optional<String> repositoryName = getRepositoryName(request);
@@ -147,9 +170,14 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         }
         // look for one with the provided name first
         Optional<Repository> geogig = getGeogig(repositoryName.get());
-        if (!geogig.isPresent() && isInitRequest(request)) {
-            // special handling of INIT requests
-            geogig = InitRequestHandler.createGeoGIG(request);
+        if (!geogig.isPresent()) {
+            if (isInitRequest(request)) {
+                // special handling of INIT requests
+                geogig = AddRepoRequestHandler.createGeoGIG(request);
+            } else if (isImportRequest(request)){
+                // handles IMPORT requests
+                geogig = AddRepoRequestHandler.importGeogig(request);
+            }
         }
         if (!geogig.isPresent()) {
             // if it's still not present, just generate one.
@@ -181,4 +209,51 @@ public class GeoServerRepositoryProvider implements RepositoryProvider {
         }
     }
 
+    private static class AddRepoRequestHandler {
+
+        private static Optional<Repository> createGeoGIG(Request request) {
+            try {
+                final Hints hints = InitRequestUtil.createHintsFromRequest(request);
+                // now build the repo with the Hints
+                return Optional.fromNullable(RepositoryManager.get().createRepo(hints));
+            } catch (Exception ex) {
+                Throwables.propagate(ex);
+            }
+            return Optional.absent();
+        }
+
+        private static Optional<Repository> importGeogig(Request request) {
+
+            try {
+                // build URI
+                Hints hint = InitRequestUtil.createHintsFromRequest(request);
+
+                // now build the repo with the Hints
+                RepositoryInfo repoInfo = new RepositoryInfo();
+
+                // set the repo location from the URI
+                if (!hint.get(Hints.REPOSITORY_URL).isPresent()) {
+                	return Optional.absent();
+                }
+                URI uri = new URI(hint.get(Hints.REPOSITORY_URL).get().toString());
+                repoInfo.setLocation(uri);
+
+                // check to see if repo is initialized
+                RepositoryResolver repoResolver = RepositoryResolver.lookup(uri);
+                if(!repoResolver.repoExists(uri)) {
+                    return Optional.absent();
+                }
+
+                // save the repo, this will set a UUID
+                RepositoryManager.get().save(repoInfo);
+
+                return Optional.of(RepositoryManager.get().getRepository(repoInfo.getId()));
+            } catch (IOException | URISyntaxException e) {
+                Throwables.propagate(e);
+            } catch (RepositoryConnectionException e) {
+                e.printStackTrace();
+            }
+            return Optional.absent();
+        }
+    }
 }

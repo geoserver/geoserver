@@ -36,7 +36,7 @@ import org.geotools.coverage.processing.operation.Scale;
 import org.geotools.factory.Hints;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.Utilities;
-import org.jaitools.imageutils.ImageLayout2;
+import it.geosolutions.jaiext.utilities.ImageLayout2;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.coverage.processing.Operation;
 import org.opengis.parameter.ParameterValueGroup;
@@ -247,9 +247,9 @@ enum ScalingPolicy {
             TargetAxisExtentType xExtent = null, yExtent = null;
             for (TargetAxisExtentType axisExtentType : targetAxisExtentElements) {
                 final String axisName = axisExtentType.getAxis();
-                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i")) {
+                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i") || axisName.equals("i")) {
                     xExtent = axisExtentType;
-                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j")) {
+                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j") || axisName.equals("j")) {
                     yExtent = axisExtentType;
                 } else {
                     // TODO remove when supporting TIME and ELEVATION
@@ -482,9 +482,9 @@ enum ScalingPolicy {
         TargetAxisSizeType xSize = null, ySize = null;
         for (TargetAxisSizeType axisSizeType : targetAxisSizeElements) {
             final String axisName = axisSizeType.getAxis();
-            if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i")) {
+            if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i") || axisName.equals("i")) {
                 xSize = axisSizeType;
-            } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j")) {
+            } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j") || axisName.equals("j")) {
                 ySize = axisSizeType;
             } else {
                 // TODO remove when supporting TIME and ELEVATION
@@ -530,9 +530,9 @@ enum ScalingPolicy {
             yScale = null;
             for (ScaleAxisType scaleAxisType : targetAxisScaleElements) {
                 final String axisName = scaleAxisType.getAxis();
-                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i")) {
+                if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/i") || axisName.equals("i")) {
                     xScale = scaleAxisType;
-                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j")) {
+                } else if (axisName.equals("http://www.opengis.net/def/axis/OGC/1/j") || axisName.equals("j")) {
                     yScale = scaleAxisType;
                 } else {
                     // TODO remove when supporting TIME and ELEVATION

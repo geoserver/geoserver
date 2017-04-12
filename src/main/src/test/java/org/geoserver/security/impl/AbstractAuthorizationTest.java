@@ -309,11 +309,30 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(layerGroup.prefixedName()).andReturn((ws != null ? ws.getName() + ":" : "") + name).anyTimes();
         expect(layerGroup.getMode()).andReturn(type).anyTimes();
         expect(layerGroup.getLayers()).andReturn(new ArrayList<PublishedInfo>(Arrays.asList(contents))).anyTimes();
+        expect(layerGroup.getStyles()).andReturn(buildUniqueStylesForLayers(contents)).anyTimes();
         expect(layerGroup.getWorkspace()).andReturn(ws).anyTimes();
         expect(layerGroup.layers()).andAnswer(() -> new LayerGroupHelper(layerGroup).allLayers()).anyTimes();
         expect(layerGroup.getId()).andAnswer(() -> (ws == null ? name : ws.getName() + ":" + name) + "-id").anyTimes(); 
         replay(layerGroup);
         return layerGroup;
+    }
+
+    private List<StyleInfo> buildUniqueStylesForLayers(PublishedInfo[] contents) {
+        if(contents == null) {
+            return null;
+        }
+        
+        List<StyleInfo> result = new ArrayList<>();
+        for (PublishedInfo pi : contents) {
+            if(pi instanceof LayerInfo) {
+                StyleInfo style = buildStyle(pi.prefixedName().replace(':',  '-') + "-style", null);
+                result.add(style);
+            } else {
+                // group
+                result.add(null);
+            }
+        }
+        return result;
     }
 
     protected LayerGroupInfo buildEOLayerGroup(String name, LayerInfo rootLayer, StyleInfo style, WorkspaceInfo ws, PublishedInfo... contents) {

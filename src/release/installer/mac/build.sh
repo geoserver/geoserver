@@ -39,6 +39,7 @@ rm *.dmg
 # https://pypi.python.org/pypi/dmgbuild
 # note: dmgbuild does not need Finder.app or an active GUI login
 dmgbuild -s ./dmgbuild_settings.py -D app=$APP "${VOL}" "${VOL}.dmg"
+check_rc $? "generating DMG"
 
 exit 0
 

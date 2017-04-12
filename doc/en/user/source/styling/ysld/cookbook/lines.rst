@@ -228,7 +228,7 @@ Offset line
 
 This example alters the :ref:`ysld_cookbook_lines_simpleline` to add a perpendicular offset line on the left side of the line, at five pixels distance.
 
-.. figure:: ../../sld/cookbook/images/line_dashoffset.png
+.. figure:: ../../sld/cookbook/images/line_offset.png
 
    Dashed line
 

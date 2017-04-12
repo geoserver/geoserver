@@ -10,7 +10,7 @@ The Symbology Encoding 1.1 specification defines the following **transformation 
 * ``Interpolate`` transforms a continuous-valued attribute into another continuous range of values
 
 These functions provide a concise way to compute styling parameters from feature attribute values.
-Geoserver implements them as :ref:`filter_function` with the same names.
+GeoServer implements them as :ref:`filter_function` with the same names.
 
 .. note::
 

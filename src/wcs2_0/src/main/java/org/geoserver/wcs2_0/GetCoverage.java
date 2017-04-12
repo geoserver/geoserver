@@ -83,6 +83,7 @@ import org.opengis.coverage.SampleDimension;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.coverage.processing.Operation;
+import org.opengis.filter.Filter;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
@@ -199,6 +200,12 @@ public class GetCoverage {
      */
     public GridCoverage run(GetCoverageType request) {
 
+        // get same support filter as in WCS 1.0 and WCS 1.1
+        Filter filter = WCSUtils.getRequestFilter();
+        if(filter != null) {
+            request.setFilter(filter);
+        }
+        
         //
         // get the coverage info from the catalog or throw an exception if we don't find it
         //

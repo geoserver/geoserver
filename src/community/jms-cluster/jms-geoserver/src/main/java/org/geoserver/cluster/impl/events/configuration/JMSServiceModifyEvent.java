@@ -26,6 +26,9 @@ public class JMSServiceModifyEvent extends JMSModifyEvent<ServiceInfo> {
 
     private static final long serialVersionUID = 1L;
 
+    // identifies the type of event (added, removed or service configuration modified)
+    private final JMSEventType eventType;
+
     public JMSServiceModifyEvent(ServiceInfo source, List<String> propertyNames,
                                  List<Object> oldValues, List<Object> newValues) {
         this(source, propertyNames, oldValues, newValues, JMSEventType.MODIFIED);
@@ -38,5 +41,10 @@ public class JMSServiceModifyEvent extends JMSModifyEvent<ServiceInfo> {
     public JMSServiceModifyEvent(ServiceInfo source, List<String> propertyNames,
                                  List<Object> oldValues, List<Object> newValues, JMSEventType eventType) {
         super(source, propertyNames, oldValues, newValues, eventType);
+        this.eventType = eventType;
+    }
+
+    public JMSEventType getEventType() {
+        return eventType;
     }
 }

@@ -5,6 +5,7 @@ package org.geoserver.ows;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
+import com.vividsolutions.jts.geom.Coordinate;
 import net.sf.json.util.JSONStringer;
 import org.apache.commons.lang.ClassUtils;
 import org.eclipse.emf.ecore.EObject;
@@ -17,12 +18,19 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.GetFeatureInfoRequest;
+import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.WMS;
 import org.geotools.data.FeatureSource;
 import org.geotools.filter.text.cql2.CQL;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
+import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
+import org.opengis.referencing.operation.MathTransform;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -31,9 +39,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 
 /**
  * Dispatcher callback that adds an option to "simulate" requests handled by the 
@@ -49,6 +61,8 @@ public class SimulateCallback implements DispatcherCallback {
   public static final String OPT_DEPTH = "depth";
   
   static Converter<String,String> KEY_CONVERTER = CaseFormat.UPPER_CAMEL.converterTo(CaseFormat.LOWER_UNDERSCORE);
+
+  static Logger LOG = Logging.getLogger(SimulateCallback.class);
 
   @Override
   public Request init(Request request) {
@@ -147,6 +161,7 @@ public class SimulateCallback implements DispatcherCallback {
         out.key("x2").value(e.getMinimum(1));
         out.key("y2").value(e.getMaximum(1));
       }
+
       out.endObject();
       return;
     }
@@ -211,6 +226,40 @@ public class SimulateCallback implements DispatcherCallback {
           }
         });
 
+    if (obj instanceof GetFeatureInfoRequest) {
+      // special case for GetFeatureInto to provide lon/lat corresponding to x/y
+      try {
+        GetFeatureInfoRequest info = (GetFeatureInfoRequest) obj;
+        GetMapRequest map = info.getGetMapRequest();
+
+        Coordinate c = WMS.pixelToWorld(info.getXPixel(), info.getYPixel(), 
+            new ReferencedEnvelope(map.getBbox(), map.getCrs()), map.getWidth(), map.getHeight());
+        double[] p = new double[]{c.getOrdinate(0), c.getOrdinate(1)};
+        MathTransform tx = CRS.findMathTransform(map.getCrs(), WGS84, true);
+        tx.transform(p, 0, p, 0, 1);
+        out.key("lon").value(p[0]);
+        out.key("lat").value(p[1]);
+      }
+      catch(Exception e) {
+        LOG.log(Level.WARNING, "Error calculating lon/lat for GetFeatureInfo i/j", e);
+      }
+    }
+    if (obj instanceof GetMapRequest) {
+      try {
+        GetMapRequest map = (GetMapRequest) obj;
+        ReferencedEnvelope llbox = new ReferencedEnvelope(map.getBbox(), map.getCrs()).transform(WGS84, true);
+
+        out.key("bbox_wgs84").object();
+        out.key("west").value(llbox.getMinX());
+        out.key("east").value(llbox.getMaxX());
+        out.key("south").value(llbox.getMinY());
+        out.key("north").value(llbox.getMaxY());
+        out.endObject();
+      }
+      catch(Exception e) {
+        LOG.log(Level.WARNING, "Error calculating lon/lat bbox for GetMap bbox", e);
+      }
+    }
     out.endObject();
   }
 

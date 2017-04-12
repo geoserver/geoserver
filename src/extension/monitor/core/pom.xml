@@ -9,7 +9,7 @@
  <parent>
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-monitor</artifactId>
-  <version>2.11-SNAPSHOT</version>
+  <version>2.12-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.extension</groupId>
  <artifactId>gs-monitor-core</artifactId>
@@ -20,22 +20,22 @@
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-main</artifactId>
-   <version>2.11-SNAPSHOT</version>
+   <version>2.12-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>gs-rest</artifactId>
-   <version>2.11-SNAPSHOT</version>
+   <artifactId>gs-restconfig</artifactId>
+   <version>2.12-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.web</groupId>
    <artifactId>gs-web-core</artifactId>
-   <version>2.11-SNAPSHOT</version>
+   <version>2.12-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-wms</artifactId>
-   <version>2.11-SNAPSHOT</version>
+   <version>2.12-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>com.maxmind</groupId>
@@ -59,6 +59,16 @@
    <groupId>xmlunit</groupId>
    <artifactId>xmlunit</artifactId>
    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.jsoup</groupId>
+    <artifactId>jsoup</artifactId>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.hamcrest</groupId>
+    <artifactId>hamcrest-library</artifactId>
+    <scope>test</scope>
   </dependency>
  </dependencies>
 

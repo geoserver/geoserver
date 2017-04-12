@@ -1,36 +1,33 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.rest;
 
-import org.restlet.Restlet;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.method.HandlerMethod;
 
 /**
  * Provides callbacks for the life cycle of a rest request.
- * 
- * @author Justin Deoliveira, OpenGeo
- *
  */
 public interface DispatcherCallback {
 
     /**
      * Called at the start of a request cycle.
      */
-    void init(Request request, Response response);
+    void init(HttpServletRequest request, HttpServletResponse response);
 
     /**
-     * Called once a restlet has been dispatched or routed for a request.
+     * Called once a handler has been located.
      */
-    void dispatched(Request request, Response response, Restlet restlet);
+    void dispatched(HttpServletRequest request, HttpServletResponse response, Object handler);
     
     /**
      * Called in the event of an exception occurring during a request. 
      */
-    void exception(Request request, Response response, Exception error);
+    void exception(HttpServletRequest request, HttpServletResponse response, Exception error);
     
     /**
      * Final callback called once a request has been completed. 
@@ -38,5 +35,17 @@ public interface DispatcherCallback {
      * This method is always called, even in the event of an exception during request processing. 
      * </p>
      */
-    void finished(Request request, Response response);
+    void finished(HttpServletRequest request, HttpServletResponse response);
+
+    /**
+     * Attempts to unwrap the Controller in case the handler is annotation driven, returns the handler otherwise
+     * @param handler
+     * @return
+     */
+    static Object getControllerBean(Object handler) {
+        if (handler instanceof HandlerMethod) {
+            return ((HandlerMethod) handler).getBean();
+        }
+        return handler;
+    }
 }

@@ -5,7 +5,10 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -13,6 +16,7 @@ import java.awt.Color;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -64,11 +68,15 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.OpenLayersMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
+import org.geotools.image.GTWarpPropertyGenerator;
+import org.geotools.image.ImageWorker;
 import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import it.geosolutions.jaiext.JAIExt;
 
 public class GetMapIntegrationTest extends WMSTestSupport {
 
@@ -77,6 +85,8 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     private static final QName MOSAIC_HOLES = new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX);
 
     private static final QName MOSAIC = new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX);
+    
+    private static final QName MASKED = new QName(MockData.SF_URI, "masked", MockData.SF_PREFIX);
 
     public static QName GIANT_POLYGON = new QName(MockData.CITE_URI, "giantPolygon",
             MockData.CITE_PREFIX);
@@ -188,12 +198,16 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         testData.addRasterLayer(MOSAIC,
                 "mosaic.zip", null, properties,GetMapIntegrationTest.class,catalog);
+        
+        testData.addRasterLayer(MASKED, "masked.tif", null, properties,  GetMapIntegrationTest.class, catalog);
 
         testData.addVectorLayer(GIANT_POLYGON, Collections.EMPTY_MAP, "giantPolygon.properties",
                 GetMapTest.class, getCatalog());
 
         testData.addVectorLayer(LARGE_POLYGON, Collections.EMPTY_MAP, "slightlyLessGiantPolygon.properties",
                 GetMapTest.class, getCatalog());
+        
+        
 
         addCoverageViewLayer();
         
@@ -1198,6 +1212,101 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             XMLAssert.assertXpathEvaluatesTo("1", "count(/ServiceExceptionReport)", dom);
             XMLAssert.assertXpathEvaluatesTo("layers", "//ServiceException/@locator", dom);
             XMLAssert.assertXpathEvaluatesTo("LayerNotDefined", "//ServiceException/@code", dom);
+        }
+    }
+    
+    @Test
+    public void testReprojectRGBTransparent() throws Exception {
+        // UTM53N, close enough to tasmania but sure to add rotation
+        BufferedImage image = getAsImage("wms/reflect?layers=" + getLayerId(MockData.TASMANIA_BM) + "&SRS=EPSG:32753&format=image/png&transparent=true", "image/png");
+        
+        // it's transparent
+        assertTrue(image.getColorModel().hasAlpha());
+        assertEquals(4, image.getSampleModel().getNumBands());
+        // assert pixels in the 4 corners, the rotation should have made them all transparent
+        assertPixelIsTransparent(image, 0, 0);
+        assertPixelIsTransparent(image, image.getWidth() - 1, 0);
+        assertPixelIsTransparent(image, image.getWidth() - 1, image.getHeight() - 1);
+        assertPixelIsTransparent(image, 0, image.getHeight() - 1);
+        
+    }
+    
+    @Test
+    public void testReprojectRGBWithBgColor() throws Exception {
+        // UTM53N, close enough to tasmania but sure to add rotation
+        BufferedImage image = getAsImage("wms/reflect?layers=" + getLayerId(MockData.TASMANIA_BM) + "&SRS=EPSG:32753&format=image/png&bgcolor=#FF0000", "image/png");
+        
+        // it's not transparent
+        assertFalse(image.getColorModel().hasAlpha());
+        assertEquals(3, image.getSampleModel().getNumBands());
+        // assert pixels in the 4 corners, the rotation should have made them all red
+        assertPixel(image, 0, 0, Color.RED);
+        assertPixel(image, image.getWidth() - 1, 0, Color.RED);
+        assertPixel(image, image.getWidth() - 1, image.getHeight() - 1, Color.RED);
+        assertPixel(image, 0, image.getHeight() - 1, Color.RED);
+        
+    }
+    
+    @Test
+    public void testReprojectedDemWithTransparency() throws Exception {
+        // UTM53N, close enough to tasmania but sure to add rotation
+        BufferedImage image = getAsImage("wms/reflect?layers=" + getLayerId(MockData.TASMANIA_DEM) + "&styles=demTranslucent&SRS=EPSG:32753&format=image/png&transparent=true", "image/png");
+
+        // RenderedImageBrowser.showChain(image);
+        
+        // it's transparent
+        assertTrue(image.getColorModel().hasAlpha());
+        assertEquals(1, image.getSampleModel().getNumBands());
+        // assert pixels in the 4 corners, the rotation should have made them all dark gray
+        assertPixelIsTransparent(image, 0, 0);
+        assertPixelIsTransparent(image, image.getWidth() - 1, 0);
+        assertPixelIsTransparent(image, image.getWidth() - 1, image.getHeight() - 1);
+        assertPixelIsTransparent(image, 0, image.getHeight() - 1);
+
+    }
+    
+    @Test
+    public void testDemWithBgColor() throws Exception {
+        // UTM53N, close enough to tasmania but sure to add rotation
+        BufferedImage image = getAsImage("wms/reflect?layers=" + getLayerId(MockData.TASMANIA_DEM) + "&styles=demTranslucent&SRS=EPSG:32753&format=image/png&bgcolor=#404040", "image/png");
+
+        // RenderedImageBrowser.showChain(image);
+        
+        // it's transparent
+        assertFalse(image.getColorModel().hasAlpha());
+        assertEquals(1, image.getSampleModel().getNumBands());
+        // assert pixels in the 4 corners, the rotation should have made them all dark gray
+        assertPixel(image, 0, 0, Color.DARK_GRAY);
+        assertPixel(image, image.getWidth() - 1, 0, Color.DARK_GRAY);
+        assertPixel(image, image.getWidth() - 1, image.getHeight() - 1, Color.DARK_GRAY);
+        assertPixel(image, 0, image.getHeight() - 1, Color.DARK_GRAY);
+    }
+    
+    @Test
+    public void testMaskedNoAPH() throws Exception {
+        // used to fail when hitting a tiff with ROI with reprojection (thus buffer) in an area
+        // close to, but not hitting, the ROI
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        Serializable oldValue = wms.getMetadata().get(WMS.ADVANCED_PROJECTION_KEY);
+        try {
+            wms.getMetadata().put(WMS.ADVANCED_PROJECTION_KEY, false);
+            gs.save(wms);
+
+            BufferedImage image = getAsImage(
+                    "wms/reflect?layers=" + getLayerId(MASKED)
+                            + "&SRS=AUTO%3A97002%2C9001%2C-1%2C40&BBOX=694182%2C-4631295%2C695092%2C-4630379&format=image/png&transparent=true",
+                    "image/png");
+            // transparent model
+            assertTrue(image.getColorModel().hasAlpha());
+            assertThat(image.getColorModel(), instanceOf(ComponentColorModel.class));
+            double[] maximums = new ImageWorker(image).getMaximums();
+            // last band, alpha, is fully at zero, so transparent
+            assertEquals(0, maximums[maximums.length - 1], 0d);
+
+        } finally {
+            wms.getMetadata().put(WMS.ADVANCED_PROJECTION_KEY, oldValue);
+            gs.save(wms);
         }
     }
 }

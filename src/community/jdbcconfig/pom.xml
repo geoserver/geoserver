@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.11-SNAPSHOT</version>
+    <version>2.12-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-jdbcconfig</artifactId>
   <packaging>jar</packaging>
-  <version>2.11-SNAPSHOT</version>
+  <version>2.12-SNAPSHOT</version>
   <name>GeoServer JDBC KV Catalog</name>
   <properties>
       <jdbcconfig.postgres.skip>true</jdbcconfig.postgres.skip>
@@ -52,7 +52,6 @@
       <!-- blazing fast LZW compression/decompression -->
       <groupId>com.ning</groupId>
       <artifactId>compress-lzf</artifactId>
-      <version>0.9.1</version>
     </dependency>
 
     <!-- Testing -->

@@ -16,11 +16,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class EnviromentInjectionCallbackTest extends GeoServerSystemTestSupport {
-    
+
     @Override
-        protected void setUpTestData(SystemTestData testData) throws Exception {
-            // no test data needed
-        }
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // no test data needed
+    }
 
     @Before
     public void logout() {
@@ -29,18 +29,19 @@ public class EnviromentInjectionCallbackTest extends GeoServerSystemTestSupport 
 
     @Test
     public void testNoUser() throws Exception {
-        MockHttpServletResponse r = getAsServletResponse("/rest/gsuser");
+        MockHttpServletResponse r = getAsServletResponse(RestBaseController.ROOT_PATH + "/gsuser");
         assertEquals(200, r.getStatus());
         assertTrue(r.getContentType().startsWith("text/plain"));
         assertEquals("USER_NOT_FOUND", r.getContentAsString());
     }
-    
+
     @Test
     public void testUser() throws Exception {
         login("testUser", "testPassword");
-        MockHttpServletResponse r = getAsServletResponse("/rest/gsuser");
+        MockHttpServletResponse r = getAsServletResponse(RestBaseController.ROOT_PATH + "/gsuser");
         assertEquals(200, r.getStatus());
-        assertTrue(r.getContentType().startsWith("text/plain"));
+        String contentType = r.getContentType();
+        assertTrue(contentType.startsWith("text/plain"));
         assertEquals("testUser", r.getContentAsString());
     }
 }

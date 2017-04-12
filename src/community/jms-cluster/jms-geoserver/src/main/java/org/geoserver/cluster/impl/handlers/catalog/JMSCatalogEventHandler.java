@@ -5,17 +5,20 @@
  */
 package org.geoserver.cluster.impl.handlers.catalog;
 
-import java.util.logging.Level;
-
-import javax.jms.JMSException;
-
+import com.thoughtworks.xstream.XStream;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.event.CatalogEvent;
+import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.cluster.JMSEventHandler;
 import org.geoserver.cluster.JMSEventHandlerSPI;
 
-import com.thoughtworks.xstream.XStream;
+import javax.jms.JMSException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Abstract class which use Xstream as message serializer/de-serializer.
@@ -47,7 +50,7 @@ public abstract class JMSCatalogEventHandler extends
 
 	@Override
 	public String serialize(CatalogEvent  event) throws Exception {
-		return xstream.toXML(event);
+		return xstream.toXML(removeCatalogProperties(event));
 	}
 
 	@Override
@@ -66,5 +69,50 @@ public abstract class JMSCatalogEventHandler extends
 			throw new JMSException("Unable to deserialize the following object:\n"+s);
 		}
 
+	}
+
+	/**
+	 * Make sure that properties of type catalog are not serialized
+	 * for catalog modified events.
+	 */
+	private CatalogEvent removeCatalogProperties(CatalogEvent event) {
+		if (!(event instanceof CatalogModifyEvent)) {
+			// not a modify event so nothing to do
+			return event;
+		}
+		CatalogModifyEvent modifyEvent = (CatalogModifyEvent) event;
+		// index all the properties that are not of catalog type
+		List<Integer> indexes = new ArrayList<>();
+		int totalProperties = modifyEvent.getPropertyNames().size();
+		for (int i = 0; i < totalProperties; i++) {
+			// we only need to check the new values
+			Object value = modifyEvent.getNewValues().get(i);
+			if (!(value instanceof Catalog)) {
+				// not a property of type catalog
+				indexes.add(i);
+			}
+		}
+		// let's see if we need to do anything
+		if (indexes.size() == totalProperties) {
+			// no properties of type catalog, we can use the original event
+			return event;
+		}
+		// well we need to create a new modify event and ignore the properties of catalog type
+		List<String> properties = new ArrayList<>();
+		List<Object> oldValues = new ArrayList<>();
+		List<Object> newValues = new ArrayList<>();
+		for (int index : indexes) {
+			// add all the properties that are not of catalog type
+			properties.add(modifyEvent.getPropertyNames().get(index));
+			oldValues.add(modifyEvent.getOldValues().get(index));
+			newValues.add(modifyEvent.getNewValues().get(index));
+		}
+		// crete the new event
+		CatalogModifyEventImpl newEvent = new CatalogModifyEventImpl();
+		newEvent.setPropertyNames(properties);
+		newEvent.setOldValues(oldValues);
+		newEvent.setNewValues(newValues);
+		newEvent.setSource(modifyEvent.getSource());
+		return newEvent;
 	}
 }

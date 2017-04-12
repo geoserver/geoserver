@@ -7,7 +7,6 @@ package org.geogig.geoserver.wms;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory.REPOSITORY;
-import static org.locationtech.geogig.model.impl.RevObjectTestSupport.hashString;
 
 import java.io.Serializable;
 import java.util.List;
@@ -60,6 +59,9 @@ public class GeogigLayerIntegrationListenerTest extends GeoServerSystemTestSuppo
                 "l2=geom:LINESTRING(0 0, 180 0)");
 
         geogigData.add().commit("Added test features");
+
+        // add a branch for the explicit HEAD test
+        geogigData.branch("fakeBranch");
         // need to instantiate the listerner so it can register with the test GeoServer instance
         new GeogigLayerIntegrationListener(getGeoServer());
 
@@ -128,9 +130,7 @@ public class GeogigLayerIntegrationListenerTest extends GeoServerSystemTestSuppo
         CatalogBuilder catalogBuilder = geogigData.newCatalogBuilder(catalog);
         DataStoreInfo store = catalog.getDataStoreByName(catalogBuilder.storeName());
 
-        final String fakeHead = hashString("something").toString();
-
-        store.getConnectionParameters().put(GeoGigDataStoreFactory.HEAD.key, fakeHead);
+        store.getConnectionParameters().put(GeoGigDataStoreFactory.HEAD.key, "fakeBranch");
         catalog.save(store);
 
         String layerName = catalogBuilder.workspaceName() + ":points";

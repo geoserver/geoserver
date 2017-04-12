@@ -16,7 +16,7 @@ Most of the relevant information about how to approach template writing is inclu
 Template Lookup
 ```````````````
 
-Geoserver looks up templates in three different places, allowing for various level of customization. For example given the ``content.ftl`` template used to generate WMS GetFeatureInfo content:
+GeoServer looks up templates in three different places, allowing for various level of customization. For example given the ``content.ftl`` template used to generate WMS GetFeatureInfo content:
 
 * Look into ``GEOSERVER_DATA_DIR/workspaces/<workspace>/<datastore>/<featuretype>/content.ftl`` to see if there is a feature type specific template
 * Look into ``GEOSERVER_DATA_DIR/workspaces/<workspace>/<datastore>/content.ftl`` to see if there is a store specific template
@@ -30,7 +30,7 @@ Each templated output format tutorial should provide you with the template names
 Common Data Models
 ``````````````````
 
-Freemarker calls "data model" the set of data provided to the template. Each output format used by Geoserver will inject a different data model according to the informations it's managing, yet there are three very common elements that appear in almost each template, Feature, FeatureType and FeatureCollection. Here we provide a data model of each.
+Freemarker calls "data model" the set of data provided to the template. Each output format used by GeoServer will inject a different data model according to the informations it's managing, yet there are three very common elements that appear in almost each template, Feature, FeatureType and FeatureCollection. Here we provide a data model of each.
 
 The data model is a sort of a tree, where each element has a name and a type. Besides basic types, we'll use:
 

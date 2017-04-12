@@ -5,6 +5,11 @@
  */
 package org.geoserver.ows;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertThat;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -957,5 +962,21 @@ public class DispatcherTest extends TestCase {
         dispatcher.handleRequestInternal(request, response);
 
         assertEquals("Hello world!", response.getContentAsString());
+    }
+    
+    public void testErrorThrowingResponse() throws Exception {
+        URL url = getClass().getResource("applicationContext-errorResponse.xml");
+
+        try(FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString())) {
+            Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+            MockHttpServletRequest request = setupRequest();
+            MockHttpServletResponse response = new MockHttpServletResponse();
+            dispatcher.handleRequest(request, response);
+            // the output is not there
+            final String outputContent = response.getContentAsString();
+            assertThat(outputContent, not(containsString("Hello world!")));
+            // only the exception
+            assertThat(outputContent, startsWith("<ows:Exception"));
+        }
     }
 }

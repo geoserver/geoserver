@@ -60,7 +60,7 @@ public class CatalogRepository implements Repository, Serializable {
 
         DataStoreInfo info = getCatalog().getDataStoreByName(workspace, localName);
         if (info == null) {
-            throw new RuntimeException("Cannot find datastore " + localName + "in workspace "
+            throw new RuntimeException("Cannot find datastore " + localName + " in workspace "
                     + workspace);
         }
         try {

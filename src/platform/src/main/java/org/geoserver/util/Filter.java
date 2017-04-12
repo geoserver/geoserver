@@ -13,6 +13,7 @@ package org.geoserver.util;
  *
  * @param <T>
  */
+@FunctionalInterface
 public interface Filter<T> {
 
     public boolean accept(T obj);

@@ -327,6 +327,15 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     });
                 }
             }
+
+            @Override
+            protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
+                // Re-initialize the Legend model object, if it is null.
+                if (styleModel.getObject().getLegend() == null) {
+                    styleModel.getObject().setLegend(getCatalog().getFactory().createLegend());
+                }
+            }
+
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 target.add(feedbackPanel);

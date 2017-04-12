@@ -6,18 +6,36 @@
 package org.geoserver.catalog.impl;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static org.geoserver.catalog.Predicates.*;
-import static org.junit.Assert.*;
+import static org.geoserver.catalog.Predicates.acceptAll;
+import static org.geoserver.catalog.Predicates.asc;
+import static org.geoserver.catalog.Predicates.contains;
+import static org.geoserver.catalog.Predicates.desc;
+import static org.geoserver.catalog.Predicates.equal;
+import static org.geoserver.catalog.Predicates.or;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
@@ -35,6 +53,7 @@ import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -48,6 +67,7 @@ import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.util.logging.Logging;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -403,6 +423,9 @@ public class CatalogImplTest {
         assertEquals( 1, l.modified.size() );
         assertEquals( catalog, l.modified.get(0).getSource());
         assertEquals( "defaultNamespace", l.modified.get(0).getPropertyNames().get(0));
+        assertEquals( 1, l.postModified.size() );
+        assertEquals( catalog, l.postModified.get(0).getSource());
+        assertEquals( "defaultNamespace", l.postModified.get(0).getPropertyNames().get(0));
         
         ns = catalog.getNamespaceByPrefix( "ns2Prefix" );
         ns.setURI( "changed");
@@ -413,6 +436,11 @@ public class CatalogImplTest {
         assertTrue(l.modified.get(1).getPropertyNames().get(0).equalsIgnoreCase("uri" ));
         assertTrue(l.modified.get(1).getOldValues().contains( "ns2URI" ));
         assertTrue(l.modified.get(1).getNewValues().contains( "changed" ));
+        assertEquals( 2, l.postModified.size() );
+        assertEquals( 1, l.postModified.get(1).getPropertyNames().size());
+        assertTrue(l.postModified.get(1).getPropertyNames().get(0).equalsIgnoreCase("uri" ));
+        assertTrue(l.postModified.get(1).getOldValues().contains( "ns2URI" ));
+        assertTrue(l.postModified.get(1).getNewValues().contains( "changed" ));
         
         assertTrue( l.removed.isEmpty() );
         catalog.remove( ns );
@@ -617,6 +645,8 @@ public class CatalogImplTest {
         assertEquals( ws, l.added.get(0).getSource());
         assertEquals( catalog, l.modified.get(0).getSource());
         assertEquals( "defaultWorkspace", l.modified.get(0).getPropertyNames().get(0));
+        assertEquals( catalog, l.postModified.get(0).getSource());
+        assertEquals( "defaultWorkspace", l.postModified.get(0).getPropertyNames().get(0));
         
         ws = catalog.getWorkspaceByName( "ws2" );
         ws.setName( "changed");
@@ -626,6 +656,9 @@ public class CatalogImplTest {
         assertTrue(l.modified.get(1).getPropertyNames().contains( "name" ));
         assertTrue(l.modified.get(1).getOldValues().contains( "ws2" ));
         assertTrue(l.modified.get(1).getNewValues().contains( "changed" ));
+        assertTrue(l.postModified.get(1).getPropertyNames().contains( "name" ));
+        assertTrue(l.postModified.get(1).getOldValues().contains( "ws2" ));
+        assertTrue(l.postModified.get(1).getNewValues().contains( "changed" ));
         
         assertTrue( l.removed.isEmpty() );
         catalog.remove( ws );
@@ -822,6 +855,8 @@ public class CatalogImplTest {
         assertEquals( ds, l.added.get(0).getSource() );
         assertEquals( 1, l.modified.size() );
         assertEquals( catalog, l.modified.get(0).getSource() );
+        assertEquals( 1, l.postModified.size() );
+        assertEquals( catalog, l.postModified.get(0).getSource() );
         
         DataStoreInfo ds2 = catalog.getDataStoreByName( ds.getName() );
         ds2.setDescription( "changed" );
@@ -834,12 +869,23 @@ public class CatalogImplTest {
         assertEquals( ds2, me.getSource() );
         assertEquals( 1, me.getPropertyNames().size() );
         assertEquals( "description", me.getPropertyNames().get(0));
-        
+
         assertEquals( 1, me.getOldValues().size() );
         assertEquals( 1, me.getNewValues().size() );
-        
+
         assertEquals( "dsDescription", me.getOldValues().get(0));
         assertEquals( "changed", me.getNewValues().get(0));
+
+        CatalogPostModifyEvent pme = l.postModified.get(1);
+        assertEquals( ds2, pme.getSource() );
+        assertEquals( 1, pme.getPropertyNames().size() );
+        assertEquals( "description", pme.getPropertyNames().get(0));
+
+        assertEquals( 1, pme.getOldValues().size() );
+        assertEquals( 1, pme.getNewValues().size() );
+
+        assertEquals( "dsDescription", pme.getOldValues().get(0));
+        assertEquals( "changed", pme.getNewValues().get(0));
         
         assertEquals( 0, l.removed.size() );
         catalog.remove( ds );
@@ -1149,6 +1195,11 @@ public class CatalogImplTest {
         assertTrue( l.modified.get(0).getPropertyNames().contains( "description"));
         assertTrue( l.modified.get(0).getOldValues().contains( "ftDescription"));
         assertTrue( l.modified.get(0).getNewValues().contains( "changed"));
+        assertEquals( 1, l.modified.size() );
+        assertEquals( ft, l.postModified.get(0).getSource() );
+        assertTrue( l.postModified.get(0).getPropertyNames().contains( "description"));
+        assertTrue( l.postModified.get(0).getOldValues().contains( "ftDescription"));
+        assertTrue( l.postModified.get(0).getNewValues().contains( "changed"));
         
         assertTrue( l.removed.isEmpty() );
         catalog.remove( ft );
@@ -1415,6 +1466,27 @@ public class CatalogImplTest {
     }
     
     @Test
+    public void testModifyDefaultStyle() {
+        // create new style
+        CatalogFactory factory = catalog.getFactory();
+        StyleInfo s2 = factory.createStyle();
+        s2.setName("styleName2");
+        s2.setFilename("styleFilename2");
+        catalog.add(s2);
+
+        // change the layer style
+        addLayer();
+        LayerInfo l2 = catalog.getLayerByName( l.getName() );
+        l2.setDefaultStyle(catalog.getStyleByName("styleName2"));
+        catalog.save(l2);
+        
+        // get back and compare with itself
+        LayerInfo l3 = catalog.getLayerByName( l.getName() );
+        LayerInfo l4 = catalog.getLayerByName( l.getName() );
+        assertEquals(l3, l4);
+    }
+    
+    @Test
     public void testEnableLayer() {
         addLayer();
         
@@ -1458,6 +1530,11 @@ public class CatalogImplTest {
         assertTrue( tl.modified.get(0).getPropertyNames().contains( "path") );
         assertTrue( tl.modified.get(0).getOldValues().contains( null ) );
         assertTrue( tl.modified.get(0).getNewValues().contains( "newPath") );
+        assertEquals( 1, tl.postModified.size() );
+        assertEquals( l2, tl.postModified.get(0).getSource() );
+        assertTrue( tl.postModified.get(0).getPropertyNames().contains( "path") );
+        assertTrue( tl.postModified.get(0).getOldValues().contains( null ) );
+        assertTrue( tl.postModified.get(0).getNewValues().contains( "newPath") );
         
         assertTrue( tl.removed.isEmpty() );
         catalog.remove( l2 );
@@ -1691,12 +1768,18 @@ public class CatalogImplTest {
         s2.setFilename( "changed");
         
         assertTrue( l.modified.isEmpty() );
+        assertTrue( l.postModified.isEmpty() );
         catalog.save( s2 );
         assertEquals( 1, l.modified.size() );
         assertEquals( s2, l.modified.get(0).getSource() );
         assertTrue( l.modified.get(0).getPropertyNames().contains( "filename") );
         assertTrue( l.modified.get(0).getOldValues().contains( "styleFilename") );
         assertTrue( l.modified.get(0).getNewValues().contains( "changed") );
+        assertEquals( 1, l.postModified.size() );
+        assertEquals( s2, l.postModified.get(0).getSource() );
+        assertTrue( l.postModified.get(0).getPropertyNames().contains( "filename") );
+        assertTrue( l.postModified.get(0).getOldValues().contains( "styleFilename") );
+        assertTrue( l.postModified.get(0).getNewValues().contains( "changed") );
         
         assertTrue( l.removed.isEmpty() );
         catalog.remove( s2 );
@@ -2260,10 +2343,10 @@ public class CatalogImplTest {
     }
     
     static class TestListener implements CatalogListener {
-
-        public List<CatalogAddEvent> added = new ArrayList();
-        public List<CatalogModifyEvent> modified = new ArrayList();
-        public List<CatalogRemoveEvent> removed = new ArrayList();
+        public List<CatalogAddEvent> added = new CopyOnWriteArrayList<>();
+        public List<CatalogModifyEvent> modified = new CopyOnWriteArrayList<>();
+        public List<CatalogPostModifyEvent> postModified = new CopyOnWriteArrayList<>();
+        public List<CatalogRemoveEvent> removed = new CopyOnWriteArrayList<>();
         
         public void handleAddEvent(CatalogAddEvent event) {
             added.add( event );
@@ -2274,6 +2357,7 @@ public class CatalogImplTest {
         }
 
         public void handlePostModifyEvent(CatalogPostModifyEvent event) {
+            postModified.add( event );
         }
         
         public void handleRemoveEvent(CatalogRemoveEvent event) {
@@ -2930,6 +3014,94 @@ public class CatalogImplTest {
         ft2.setName(name);
         ft2.setStore(ds);
         return ft2;
+    }
+
+    @Test
+    public void testConcurrentCatalogModification() throws Exception {
+        Logger logger = Logging.getLogger(CatalogImpl.class);
+        final int tasks = 8;
+        ExecutorService executor = Executors.newFixedThreadPool(tasks / 2);
+        Level previousLevel = logger.getLevel();
+        // clear previous listeners
+        new ArrayList<>(catalog.getListeners()).forEach(l -> catalog.removeListener(l));
+        try {
+            // disable logging for this test, it will stay a while in case of failure otherwise
+            logger.setLevel(Level.OFF);
+            ExecutorCompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
+            for (int i = 0; i < tasks; i++) {
+                 completionService.submit(() -> {
+                     // attach listeners
+                     List<TestListener> listeners = new ArrayList<>();
+                     for (int j = 0; j < 3; j++) {
+                         TestListener tl = new TestListener();
+                         listeners.add(tl);
+                         catalog.addListener(tl);
+                     }
+    
+                     // simulate catalog removals, check the events get to destination
+                     CatalogInfo catalogInfo = new CoverageInfoImpl();
+                     catalog.fireRemoved(catalogInfo);
+                     // make sure each listener actually got the message
+                     for (TestListener testListener : listeners) {
+                         assertTrue("Did not find the expected even in the listener", 
+                                 testListener.removed.stream().anyMatch(event -> event.getSource() == catalogInfo));
+                     }
+    
+                     // clear the listeners
+                     listeners.forEach(l -> catalog.removeListener(l));
+                 }, null);
+            }
+            for (int i = 0; i < tasks; ++i) {
+                completionService.take().get();
+            }
+        } finally {
+            executor.shutdown();
+            logger.setLevel(previousLevel);
+        }
+    }
+    
+    @Test
+    public void testChangeLayerGroupOrder() {
+        addLayerGroup();
+        
+        // create second layer
+        FeatureTypeInfo ft2 = catalog.getFactory().createFeatureType();
+        ft2.setName("ft2Name");
+        ft2.setStore( ds );
+        ft2.setNamespace(ns);
+        catalog.add( ft2 );
+        LayerInfo l2 = catalog.getFactory().createLayer();
+        l2.setResource( ft2 );
+        l2.setDefaultStyle( s );
+        catalog.add(l2);
+        
+        // add to the group
+        LayerGroupInfo group = catalog.getLayerGroupByName(lg.getName());
+        group.getLayers().add(l2);
+        group.getStyles().add(null);
+        catalog.save(group);
+        
+        // change the layer group order
+        group = catalog.getLayerGroupByName(lg.getName());
+        PublishedInfo pi = group.getLayers().remove(1);
+        group.getLayers().add(0, pi);
+        catalog.save(group);
+        
+        // create a new style
+        StyleInfo s2 = catalog.getFactory().createStyle();
+        s2.setName( "s2Name");
+        s2.setFilename( "s2Filename");
+        catalog.add( s2 );
+        
+        // change the default style of l
+        LayerInfo ll = catalog.getLayerByName(l.prefixedName());
+        ll.setDefaultStyle(catalog.getStyleByName(s2.getName()));
+        catalog.save(ll);
+        
+        // now check that the facade can be compared to itself
+        LayerGroupInfo g1 = catalog.getFacade().getLayerGroupByName(lg.getName());
+        LayerGroupInfo g2 = catalog.getFacade().getLayerGroupByName(lg.getName());
+        assertTrue(LayerGroupInfo.equals(g1, g2));
     }
 
 }

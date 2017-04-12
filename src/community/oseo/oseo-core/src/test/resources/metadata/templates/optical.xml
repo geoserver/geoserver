@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opt:EarthObservation xmlns:opt="http://www.opengis.net/opt/2.1" xmlns:gml="http://www.opengis.net/gml/3.2"
+  xmlns:eop="http://www.opengis.net/eop/2.1" xmlns:gmlov="http://www.opengis.net/gml" xmlns:om="http://www.opengis.net/om/2.0"
+  xmlns:ows="http://www.opengis.net/ows/2.0" xmlns:swe="http://www.opengis.net/swe/1.0" xmlns:wrs="http://www.opengis.net/cat/wrs/1.0"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  gml:id="IDN10020" xsi:schemaLocation="http://www.opengis.net/opt/2.1 http://geo.spacebel.be/opensearch/xsd/opt.xsd"
+>
+<!-- NOTE: the various gml:id need to be generated -->
+  <om:phenomenonTime>
+    <gml:TimePeriod gml:id="TPN10020">
+      <gml:beginPosition>${timeStart}</gml:beginPosition>
+      <gml:endPosition>${timeEnd}</gml:endPosition>
+    </gml:TimePeriod>
+  </om:phenomenonTime>
+  <om:resultTime>
+    <gml:TimeInstant gml:id="instantIdentifier">
+      <gml:timePosition>${availabilityTime}</gml:timePosition>
+    </gml:TimeInstant>
+  </om:resultTime>
+  <om:procedure>
+    <eop:EarthObservationEquipment gml:id="EOEN10020">
+      <eop:platform>
+        <eop:Platform>
+          <eop:shortName>${eo:platform}</eop:shortName>
+          <eop:serialIdentifier>${eo:platformSerialIdentifier</eop:serialIdentifier>
+          <eop:orbitType>${eo:orbitType}</eop:orbitType>
+        </eop:Platform>
+      </eop:platform>
+      <eop:instrument>
+        <eop:Instrument>
+          <eop:shortName>${instrument}</eop:shortName>
+        </eop:Instrument>
+      </eop:instrument>
+      <eop:sensor>
+        <eop:Sensor>
+          <eop:sensorType>OPTICAL</eop:sensorType>
+          <eop:operationalMode>${eo:sensorMode</eop:operationalMode>
+          <eop:resolution uom="m">${eo:resolution}</eop:resolution>
+          <eop:swathIdentifier>${eo:swathIdentifier}</eop:swathIdentifier>
+          <eop:wavelengthInformation>
+            <eop:WavelengthInformation>
+              <eop:discreteWavelengths uom="nm">${eo:wavelenghts}
+              </eop:discreteWavelengths>
+              <eop:spectralRange>${eo:spectralRange}</eop:spectralRange>
+            </eop:WavelengthInformation>
+          </eop:wavelengthInformation>
+        </eop:Sensor>
+      </eop:sensor>
+      <eop:acquisitionParameters>
+        <eop:Acquisition>
+          <eop:orbitNumber>${eo:orbitNumber}</eop:orbitNumber>
+          <eop:orbitDirection>${eo:orbitDirection}</eop:orbitDirection>
+          <eop:wrsLongitudeGrid codeSpace="">${eo:track}</eop:wrsLongitudeGrid>
+          <eop:wrsLatitudeGrid codeSpace="">${eo:frame}</eop:wrsLatitudeGrid>
+          <eop:startTimeFromAscendingNode uom="s">${eo:startTimeFromAscendingNode}
+          </eop:startTimeFromAscendingNode>
+          <eop:completionTimeFromAscendingNode uom="s">${eo:startTimeFromAscendingNode}
+          </eop:completionTimeFromAscendingNode>
+          <eop:illuminationAzimuthAngle uom="deg">${eo:illuminationAzimuthAngle}
+          </eop:illuminationAzimuthAngle>
+          <eop:illuminationZenithAngle uom="deg">${eo:illuminationZenithAngle}
+          </eop:illuminationZenithAngle>
+          <eop:illuminationElevationAngle uom="deg">${eo:illuminationElevationAngle}
+          </eop:illuminationElevationAngle>
+        </eop:Acquisition>
+      </eop:acquisitionParameters>
+    </eop:EarthObservationEquipment>
+  </om:procedure>
+  <om:observedProperty xlink:href="#phenom1" />
+  <om:featureOfInterest>
+    <eop:Footprint gml:id="FPN10020">
+      <eop:multiExtentOf>
+        <gml:MultiSurface gml:id="MULSFN10021" srsName="EPSG:4326">
+          <gml:surfaceMembers>
+            <Polygon xmlns="http://www.opengis.net/gml/3.2" gml:id="PON10074"
+              srsName="urn:ogc:def:crs:EPSG:6.15:4326"
+            >
+              <exterior>
+                <LinearRing>
+                  <pos>72.663 18.116</pos>
+                  <pos>72.112 17.123</pos>
+                  <pos>71.801 18.922</pos>
+                  <pos>72.343 19.953</pos>
+                  <pos>72.663 18.116</pos>
+                </LinearRing>
+              </exterior>
+            </Polygon>
+          </gml:surfaceMembers>
+        </gml:MultiSurface>
+      </eop:multiExtentOf>
+    </eop:Footprint>
+  </om:featureOfInterest>
+  <om:result>
+    <opt:EarthObservationResult gml:id="EORN10020">
+      <eop:browse>
+        <eop:BrowseInformation>
+          <eop:type>QUICKLOOK</eop:type>
+          <eop:subType>LISS-IV.P-QL</eop:subType>
+          <eop:referenceSystemIdentifier codeSpace="EPSG">epsg:4326
+          </eop:referenceSystemIdentifier>
+          <eop:fileName>
+            <!-- This will link to the WMS service -->
+            <ows:ServiceReference
+              xlink:href="$baseUrl/ows?service=WMS&version=1.1.0&....">
+              <ows:RequestMessage />
+            </ows:ServiceReference>
+          </eop:fileName>
+        </eop:BrowseInformation>
+      </eop:browse>
+      <eop:browse>
+        <eop:BrowseInformation>
+          <eop:type>THUMBNAIL</eop:type>
+          <eop:subType>LISS-IV.P-QL</eop:subType>
+          <eop:referenceSystemIdentifier codeSpace="EPSG">epsg:4326</eop:referenceSystemIdentifier>
+          <eop:fileName>
+            <!--  This will link back to the opensearch server -->
+            <ows:ServiceReference
+              xlink:href="$baseUl/oseo?request=GetThumbnail&id=..."
+            >
+              <ows:RequestMessage />
+            </ows:ServiceReference>
+          </eop:fileName>
+        </eop:BrowseInformation>
+      </eop:browse>
+      <eop:parameter>
+        <eop:ParameterInformation>
+          <eop:unitOfMeasure uom="c" />
+          <eop:phenomenon>
+            <swe:Phenomenon xmlns:ns1="http://www.opengis.net/gml" ns1:id="phenom1">
+              <name xmlns="http://www.opengis.net/gml">xyzdef</name>
+            </swe:Phenomenon>
+          </eop:phenomenon>
+        </eop:ParameterInformation>
+      </eop:parameter>
+      <opt:cloudCoverPercentage uom="%">${eo:cloudCover}</opt:cloudCoverPercentage>
+      <opt:snowCoverPercentage uom="%">${eo:snowCover}</opt:snowCoverPercentage>
+    </opt:EarthObservationResult>
+  </om:result>
+  <eop:metaDataProperty>
+    <eop:EarthObservationMetaData>
+      <eop:identifier>${eo:productIdentifier}</eop:identifier>
+      <eop:creationDate>${eo:creationDate}</eop:creationDate>
+      <eop:modificationDate>${eo:modificationDate}</eop:modificationDate>
+      <eop:parentIdentifier>${eo:parentIdentifier}</eop:parentIdentifier>
+      <eop:acquisitionType>${eo:acquisitionType}</eop:acquisitionType>
+      <eop:acquisitionSubType codeSpace="">${eo:acquisitionSubType}</eop:acquisitionSubType>
+      <eop:productType>${eo:productType}</eop:productType>
+      <eop:status>${eo:productionStatus}</eop:status>
+      <eop:downlinkedTo>
+        <eop:DownlinkInformation>
+          <eop:acquisitionStation codeSpace="urn:eop:PHR:stationCode">${eo:acquisitionStation}</eop:acquisitionStation>
+          <eop:acquisitionDate>${eo:acquisitionDate}</eop:acquisitionDate>
+        </eop:DownlinkInformation>
+      </eop:downlinkedTo>
+      <eop:archivedIn>
+        <eop:ArchivingInformation>
+          <eop:archivingCenter codeSpace="urn:eop:PHR:stationCode">${archivingCenter}</eop:archivingCenter>
+          <eop:archivingDate>${eo:archivingDate}</eop:archivingDate>
+          <eop:archivingIdentifier codeSpace="urn:eop:PHR:stationCode">041028P600160013MC_00_4</eop:archivingIdentifier>
+        </eop:ArchivingInformation>
+      </eop:archivedIn>
+      <eop:productQualityDegradation uom="">${eo:productQualityStatus}</eop:productQualityDegradation>
+      <eop:productQualityDegradationTag codeSpace="">${eo:productQualityDegradationTag}</eop:productQualityDegradationTag>
+      <eop:processing>
+        <eop:ProcessingInformation>
+          <eop:processingCenter>${eo:processingCenter}</eop:processingCenter>
+          <eop:processingDate>${eo:processingDate}</eop:processingDate>
+          <eop:compositeType>${eo:compositeType}</eop:compositeType>
+          <eop:processorName>${eo:processorName}</eop:processorName>
+          <eop:processingLevel>${eo:processingLevel}</eop:processingLevel>
+          <eop:processingMode>${eo:processingMode}</eop:processingMode>
+        </eop:ProcessingInformation>
+      </eop:processing>
+    </eop:EarthObservationMetaData>
+  </eop:metaDataProperty>
+</opt:EarthObservation>

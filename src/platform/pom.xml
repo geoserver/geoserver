@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.11-SNAPSHOT</version>
+  <version>2.12-SNAPSHOT</version>
  </parent>
 
  <groupId>org.geoserver</groupId>
@@ -72,7 +72,14 @@
   <dependency>
    <groupId>junit</groupId>
    <artifactId>junit</artifactId>
-   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>org.powermock</groupId>
+   <artifactId>powermock-module-junit4</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.powermock</groupId>
+   <artifactId>powermock-api-mockito</artifactId>
   </dependency>
   <dependency>
    <groupId>xmlunit</groupId>

@@ -5,23 +5,15 @@
  */
 package org.geoserver.importer.rest;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
-
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import org.geoserver.importer.DatePattern;
 import org.geoserver.importer.Dates;
 import org.geoserver.importer.transform.DateFormatTransform;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  *

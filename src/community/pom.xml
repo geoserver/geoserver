@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.11-SNAPSHOT</version>
+    <version>2.12-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -37,8 +37,8 @@
       <configuration>
         <descriptors>
           <descriptor>release/ext-authkey.xml</descriptor>
-          <descriptor>release/ext-groovy.xml</descriptor>
-          <descriptor>release/ext-javascript.xml</descriptor>
+          <!-- <descriptor>release/ext-groovy.xml</descriptor> -->
+          <!-- <descriptor>release/ext-javascript.xml</descriptor> -->
           <descriptor>release/ext-spatialite.xml</descriptor>
           <descriptor>release/ext-jdbcconfig.xml</descriptor>
           <descriptor>release/ext-dds.xml</descriptor>
@@ -49,17 +49,17 @@
           <descriptor>release/ext-geopkg.xml</descriptor>
           <descriptor>release/ext-pgraster.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
-          <descriptor>release/ext-rest-ext.xml</descriptor>
+          <!-- <descriptor>release/ext-rest-ext.xml</descriptor> -->
           <descriptor>release/ext-kmlppio.xml</descriptor>
           <descriptor>release/ext-gpx.xml</descriptor>
           <descriptor>release/ext-wps-download.xml</descriptor>
-          <descriptor>release/ext-jms-cluster.xml</descriptor>
+          <!-- <descriptor>release/ext-jms-cluster.xml</descriptor> -->
           <descriptor>release/ext-hz-cluster.xml</descriptor>
           <descriptor>release/ext-activeMQ.xml</descriptor>	
           <descriptor>release/ext-solr.xml</descriptor>		  
-          <descriptor>release/ext-geofence.xml</descriptor>
-          <descriptor>release/ext-sldservice.xml</descriptor>
-          <descriptor>release/ext-rest-upload.xml</descriptor>
+          <!-- <descriptor>release/ext-geofence.xml</descriptor> -->
+          <!-- <descriptor>release/ext-sldservice.xml</descriptor> -->
+          <!-- <descriptor>release/ext-rest-upload.xml</descriptor> -->
           <descriptor>release/ext-gwc-distributed.xml</descriptor>  
           <descriptor>release/ext-geofence-server.xml</descriptor>
           <descriptor>release/ext-gwc-s3.xml</descriptor>	
@@ -72,15 +72,17 @@
           <descriptor>release/ext-jdbcstore.xml</descriptor>
           <descriptor>release/ext-ncwms.xml</descriptor>
           <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
-          <descriptor>release/ext-geogig.xml</descriptor>
+          <!-- <descriptor>release/ext-geogig.xml</descriptor> -->
           <descriptor>release/ext-oauth2-google.xml</descriptor>
           <descriptor>release/ext-oauth2-github.xml</descriptor>
           <descriptor>release/ext-oauth2-geonode.xml</descriptor>
-          <descriptor>release/ext-backup-restore.xml</descriptor>
+          <!-- <descriptor>release/ext-backup-restore.xml</descriptor> -->
           <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor> 
           <descriptor>release/ext-onelogin.xml</descriptor> 
-          <descriptor>release/ext-notification.xml</descriptor> 
+          <!-- <descriptor>release/ext-notification.xml</descriptor> -->
           <descriptor>release/ext-ows-simulate.xml</descriptor> 
+          <descriptor>release/ext-jdbc-metrics.xml</descriptor>
+          <descriptor>release/ext-opensearch-eo.xml</descriptor>  
         </descriptors>
       </configuration>
      </plugin>
@@ -197,34 +199,34 @@
         <module>spatialite</module>
         <module>jdbcconfig</module>
         <module>feature-aggregate</module>
-        <module>script</module>
+        <!-- <module>script</module> -->
         <module>wms-eo</module>
         <module>colormap</module>
         <module>mbtiles</module>
         <module>geopkg</module>
         <module>pgraster</module>
         <module>dyndimension</module>
-        <module>rest-ext</module>
+        <!-- <module>rest-ext</module> -->
         <module>gpxppio</module>
         <module>kmlppio</module>
         <module>wps-download</module>
-        <module>jms-cluster</module>
+        <!-- <module>jms-cluster</module> -->
         <module>hz-cluster</module>
         <module>solr</module>
-        <module>rest-upload</module>
-        <module>geofence</module>
+        <!-- <module>rest-upload</module> -->
+        <!-- <module>geofence</module> -->
         <module>geofence-server</module>
-        <module>sldService</module>
+        <!-- <module>sldService</module> -->
         <module>params-extractor</module>
         <module>wps-remote</module>
         <module>wps-jdbc</module>
         <module>release</module>
-        <module>geogig</module>
+        <!-- <module>geogig</module> -->
         <module>gwc-distributed</module>
         <module>jdbcstore</module>
         <module>gdal</module>
         <module>gwc-s3</module>
-        <module>backup-restore</module>
+        <!-- <module>backup-restore</module> -->
         <module>ncwms</module>
         <module>web-resource</module>
         <module>gwc-sqlite</module>
@@ -234,10 +236,12 @@
         <module>security/oauth2-geonode</module>
         <module>wmts-multi-dimensional</module>
         <module>onelogin</module>
-        <module>notification</module>
+        <!-- <module>notification</module> -->
         <module>notification-common</module>
         <module>notification-geonode</module>
         <module>ows-simulate</module>
+        <module>jdbc-metrics</module>
+        <module>oseo</module>
       </modules>
     </profile>
     <profile>
@@ -491,18 +495,21 @@
     <profile>
       <id>oauth2-google</id>
       <modules>
+        <module>security/oauth2</module>
         <module>security/oauth2-google</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-github</id>
       <modules>
+        <module>security/oauth2</module>
         <module>security/oauth2-github</module>
       </modules>
     </profile>
     <profile>
       <id>oauth2-geonode</id>
       <modules>
+        <module>security/oauth2</module>
         <module>security/oauth2-geonode</module>
       </modules>
     </profile>
@@ -516,6 +523,18 @@
       <id>ows-simulate</id>
       <modules>
         <module>ows-simulate</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>oseo</id>
+      <modules>
+        <module>oseo</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>jdbc-metrics</id>
+      <modules>
+        <module>jdbc-metrics</module>
       </modules>
     </profile>
   </profiles>

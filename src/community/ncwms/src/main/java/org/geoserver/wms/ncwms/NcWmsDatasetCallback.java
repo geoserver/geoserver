@@ -62,7 +62,7 @@ public class NcWmsDatasetCallback extends AbstractDispatcherCallback implements 
     public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp,
             URLType type) {
         Request request = Dispatcher.REQUEST.get();
-        if (request != null && "GetCapabilities".equals(request.getRequest())) {
+        if (request != null && "GetCapabilities".equals(request.getRequest()) && request.getRawKvp() != null) {
             String dataset = Converters.convert(request.getRawKvp().get("DATASET"), String.class);
             if (dataset != null) {
                 kvp.put("DATASET", dataset);

@@ -83,22 +83,9 @@ public class GML32OutputFormat extends GML3OutputFormat {
         
         FeatureTypeSchemaBuilder schemaBuilder = new FeatureTypeSchemaBuilder.GML32(geoServer);
         
-        Map<String, Set<FeatureTypeInfo>> featureTypes = new HashMap<String, Set<FeatureTypeInfo>>();
-        for (Map.Entry<String, Set<ResourceInfo>> entry : resources.entrySet()) {
-            Set<FeatureTypeInfo> fts = new HashSet<FeatureTypeInfo>();
-            for(ResourceInfo ri : entry.getValue()) {
-                if(ri instanceof FeatureTypeInfo) {
-                    fts.add((FeatureTypeInfo) ri);
-                }
-            }
-            
-            if(!fts.isEmpty()) {
-                featureTypes.put(entry.getKey(), fts);
-            }
-        }
-        
-        ApplicationSchemaXSD2 xsd = new ApplicationSchemaXSD2(schemaBuilder, featureTypes);
+        ApplicationSchemaXSD2 xsd = new ApplicationSchemaXSD2(schemaBuilder);
         xsd.setBaseURL(GetFeatureRequest.adapt(request).getBaseURL());
+        xsd.setResources(resources);
 
         org.geotools.wfs.v2_0.WFSConfiguration wfs = new org.geotools.wfs.v2_0.WFSConfiguration();
         wfs.getDependency(GMLConfiguration.class).setSrsSyntax(

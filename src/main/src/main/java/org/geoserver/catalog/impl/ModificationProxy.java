@@ -184,6 +184,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         return properties();
     }
     
+    @SuppressWarnings("rawtypes")
     public void commit() {
         synchronized (proxyObject) {
             //commit changes to the proxy object
@@ -199,11 +200,19 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                     if ( Collection.class.isAssignableFrom( g.getReturnType() ) ) {
                         Collection c = (Collection) g.invoke(proxyObject,null);
                         c.clear();
-                        c.addAll( (Collection) v );
+                        for (Object o : (Collection) v) {
+                            c.add(unwrap(o));
+                        }
                     } else if( Map.class.isAssignableFrom( g.getReturnType() )) {
+                        Map proxied = (Map) v;
                         Map m = (Map) g.invoke(proxyObject, null);
                         m.clear();
-                        m.putAll( (Map) v);
+                        for (Object key : proxied.keySet()) {
+                            Object uk = unwrap(key);
+                            final Object value = proxied.get(key);
+                            Object uv = unwrap(value);
+                            m.put(uk, uv);
+                        }
                     } else {
                         Method s = setter(p,g.getReturnType());
                         
@@ -229,8 +238,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                             else {
                                 throw new IllegalStateException( "New info object set, but no setter for it.");
                             }
-                        }
-                        else {
+                        } else {
                             //call the setter
                             s.invoke( proxyObject, v );
                         }

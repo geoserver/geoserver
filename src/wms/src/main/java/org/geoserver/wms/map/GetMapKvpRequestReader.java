@@ -37,6 +37,7 @@ import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.ows.HttpServletRequestAware;
 import org.geoserver.ows.KvpRequestReader;
+import org.geoserver.ows.LocalHttpServletRequest;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
@@ -75,7 +76,6 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.Requests;
 import org.vfny.geoserver.util.SLDValidator;
@@ -83,11 +83,6 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 
 public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServletRequestAware {
-
-    /**
-     * current request
-     */
-    private HttpServletRequest httpRequest;
 
     private static Map<String, Integer> interpolationMethods;
     
@@ -145,7 +140,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
      * @see org.geoserver.ows.HttpServletRequestAware#setHttpRequest(javax.servlet.http.HttpServletRequest)
      */
     public void setHttpRequest(HttpServletRequest httpRequest) {
-        this.httpRequest = httpRequest;
+        LocalHttpServletRequest.set(httpRequest);
     }
 
     public void setStyleFactory(StyleFactory styleFactory) {
@@ -168,6 +163,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     @Override
     public GetMapRequest createRequest() throws Exception {
         GetMapRequest request = new GetMapRequest();
+        HttpServletRequest httpRequest = LocalHttpServletRequest.get();
         if (httpRequest != null) {
             request.setRequestCharset(httpRequest.getCharacterEncoding());
             request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()));
@@ -283,6 +279,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         
         // pre parse filters
         List<Filter> filters = parseFilters(getMap);
+
+        if ((getMap.getSldBody() != null || getMap.getSld() != null) && wms.isDynamicStylingDisabled()) {
+            throw new ServiceException("Dynamic style usage is forbidden");
+        }
 
         // styles
         // process SLD_BODY, SLD, then STYLES parameter

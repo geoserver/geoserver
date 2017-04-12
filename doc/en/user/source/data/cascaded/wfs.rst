@@ -61,7 +61,7 @@ Connecting to an external WFS layer via a proxy server
 
 In a corporate environment it may be necessary to connect to an external WFS through a proxy server. To achieve this, various java variables need to be set.
 
-For a Windows install running Geoserver as a service, this is done by modifying the wrapper.conf file. For a default Windows install, modify :file:`C:\\Program Files\\GeoServer x.x.x\\wrapper\\wrapper.conf` similarly to the following.
+For a Windows install running GeoServer as a service, this is done by modifying the wrapper.conf file. For a default Windows install, modify :file:`C:\\Program Files\\GeoServer x.x.x\\wrapper\\wrapper.conf` similarly to the following.
 
    # Java Additional Parameters
 
@@ -76,6 +76,6 @@ For a Windows install running Geoserver as a service, this is done by modifying 
 
 Note that the :command:`http.proxySet=true` parameter is required. Also, the parameter numbers must be consecutive - ie. no gaps.
 
-For a Windows install not running Geoserver as a service, modify :file:`startup.bat` so that the :command:`java` command runs with similar -D parameters.
+For a Windows install not running GeoServer as a service, modify :file:`startup.bat` so that the :command:`java` command runs with similar -D parameters.
 
 For a Linux/UNIX install, modify :file:`startup.sh` so that the :command:`java` command runs with similar -D parameters.

@@ -88,21 +88,22 @@ import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.renderer.lite.gridcoverage2d.ChannelSelectionUpdateStyleVisitor;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.resources.image.ColorUtilities;
-import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
+import org.opengis.coverage.grid.Format;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.expression.Expression;
 import org.opengis.geometry.BoundingBox;
+import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterDescriptorGroup;
+import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
-
 
 /**
  * A {@link GetMapOutputFormat} that produces {@link RenderedImageMap} instances to be encoded in
@@ -136,7 +137,14 @@ import org.opengis.referencing.datum.PixelInCell;
  * @see JPEGMapResponse
  */
 public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
-    
+
+    /** An object keeping track of the reader and related params used to perform the rendering */
+    static class ReadingContext {
+
+        GridCoverage2DReader reader;
+        Object params;
+    }
+
     private final static Interpolation NN_INTERPOLATION = new InterpolationNearest();
 
     private final static Interpolation BIL_INTERPOLATION = new InterpolationBilinear();
@@ -938,6 +946,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 ChannelSelectionUpdateStyleVisitor.getBandIndicesFromSelectionChannels(symbolizer);
         
         // actual read
+        final ReadingContext context = new ReadingContext();
         RenderedImage image = null;
         GridCoverage2D coverage=null; 
         RenderingHints interpolationHints = new RenderingHints(JAI.KEY_INTERPOLATION, interpolation);
@@ -1016,19 +1025,20 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
                         protected GridCoverage2D readCoverage(GridCoverage2DReader reader,
                                 Object params, GridGeometry2D readGG) throws IOException {
-                            return readBestCoverage(reader, params,
-                                    ReferencedEnvelope.reference(readGG.getEnvelope()),
+                            context.reader = reader;
+                            context.params = params;
+                            return readBestCoverage(context, ReferencedEnvelope.reference(readGG.getEnvelope()),
                                     readGG.getGridRange2D(), interpolation, readerBgColor, bandIndices);
                         }
-
                     };
-                    
+
                     Object result = helper.applyRenderingTransformation(transformation, layer.getFeatureSource(), 
                             layer.getQuery(), Query.ALL, readGG, coverageCRS, interpolationHints);
                     if(result == null) {
                         coverage = null;
                     } else if(result instanceof GridCoverage2D) {
                         coverage = (GridCoverage2D) result;
+                        symbolizer = updateSymbolizerForBandSelection(context, symbolizer, bandIndices);
                     } else {
                         // we don't know how to handle this case, we'll let streaming renderer fall back on this one
                         return null;
@@ -1044,21 +1054,13 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     // render via grid coverage renderer, that will apply the advanced projection
                     // handling
                     final Object params = feature.getProperty("params").getValue();
-
-                    coverage = readBestCoverage(reader, params,
+                    context.reader = reader;
+                    context.params = params;
+                    coverage = readBestCoverage(context,
                             ReferencedEnvelope.reference(readGG.getEnvelope()),
                             readGG.getGridRange2D(), interpolation, readerBgColor, bandIndices);
 
-                    // If reader supports band selection, symbolizer channels should be reordered.
-                    if (reader.getFormat().getReadParameters().getDescriptor().descriptors().
-                    		contains(AbstractGridFormat.BANDS) && params!=null){
-            	        // if bands are selected, alter the symbolizer to use bands in order 0,1,2,...
-                    	// since the channel order defined by it previously is taken care of the reader
-						if (bandIndices != null) {
-							symbolizer = GridCoverageRenderer.setupSymbolizerForBandsSelection(symbolizer);
-						}
-                    }
-
+                    symbolizer = updateSymbolizerForBandSelection(context, symbolizer, bandIndices);
                 }
                 // Nothing found, we return a constant image with background value
                 if (coverage == null) {
@@ -1090,6 +1092,14 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             return null;
         }
         
+        // check if the image intersects the requested area at all return null and be done with it
+        final Rectangle imageBounds = PlanarImage.wrapRenderedImage(image).getBounds();
+        Rectangle intersection = imageBounds.intersection(mapRasterArea);
+        if(intersection.isEmpty()) {
+            return null;
+        }
+
+        
         ////
         //
         // Final Touch 
@@ -1101,7 +1111,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // since it does not support changing the bkg color.
         //
         ////        
-        final Rectangle imageBounds = PlanarImage.wrapRenderedImage(image).getBounds(); 
         
         // we need to do a mosaic, let's prepare a layout
         // prepare a final image layout should we need to perform a mosaic or a crop
@@ -1277,34 +1286,64 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         
         //
         // If we need to add a collar use mosaic or if we need to blend/apply a bkg color
-        if(!(imageBounds.contains(mapRasterArea) || imageBounds.equals(mapRasterArea))||transparencyType!=Transparency.OPAQUE) {
-            Rectangle roi = imageBounds.intersection(mapRasterArea);
-            ROI[] rois = new ROI[] { new ROIShape(!roi.isEmpty() ? roi : mapRasterArea) };
-
-            // build the transparency thresholds
-            double[][] thresholds = new double[][] { { ColorUtilities.getThreshold(image
-                    .getSampleModel().getDataType()) } };
-            // apply the mosaic
-            ImageWorker w = new ImageWorker(image);
-            w.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
-            w.setBackground(bgValues);
-            w.mosaic(new RenderedImage[] { image }, 
-                    alphaChannels != null && transparencyType==Transparency.TRANSLUCENT ? MosaicDescriptor.MOSAIC_TYPE_BLEND: MosaicDescriptor.MOSAIC_TYPE_OVERLAY, 
-                    alphaChannels, 
-                    rois, 
-                    thresholds, 
-                    null);
-            image = w.getRenderedImage();
+        ImageWorker iw = new ImageWorker(image);
+        Object roiCandidate = image.getProperty("roi");
+        if (!(imageBounds.contains(mapRasterArea) || imageBounds.equals(mapRasterArea)) 
+                || transparencyType != Transparency.OPAQUE
+                || iw.getNoData() != null || roiCandidate instanceof ROI) {
+            image = applyBackgroundTransparency(mapRasterArea, image, intersection, layout,
+                    bgValues, alphaChannels, transparencyType, iw, roiCandidate);
         } else {
             // Check if we need to crop a subset of the produced image, else return it right away
             if (imageBounds.contains(mapRasterArea) && !imageBounds.equals(mapRasterArea)) { // the produced image does not need a final mosaicking operation but a crop!
-                ImageWorker iw = new ImageWorker(image);
                 iw.setBackground(bgValues);
                 iw.crop(0, 0, mapWidth, mapHeight);
                 image = iw.getRenderedImage();
             }
         }
         
+        return image;
+    }
+
+    private RenderedImage applyBackgroundTransparency(final Rectangle mapRasterArea,
+            RenderedImage image, Rectangle intersection, final ImageLayout layout,
+            double[] bgValues, PlanarImage[] alphaChannels, final int transparencyType,
+            ImageWorker iw, Object roiCandidate) {
+        ROI roi;
+        if (roiCandidate instanceof ROI) {
+            ROI imageROI = (ROI) roiCandidate;
+            try {
+                roi = imageROI.intersect(new ROIShape(mapRasterArea));
+            } catch(IllegalArgumentException e) {
+                // in the unlikely event that the ROI does not intersect the target map
+                // area an exception will be thrown. Catching the exception instead of checking
+                // every time a full intersects test is less expensive, a ROI based image
+                // will allocate the full ROI as a single byte[] and then scan it posing
+                // memory boundness concerns
+                if(LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "Failed to intersect image ROI with target bounds, returning empty result", e);
+                }
+                return null;
+            }
+        } else {
+            roi = new ROIShape(!intersection.isEmpty() ? intersection : mapRasterArea);
+        }
+        ROI[] rois = new ROI[] {roi};
+
+        // build the transparency thresholds
+        double[][] thresholds = new double[][] { { ColorUtilities.getThreshold(image
+                .getSampleModel().getDataType()) } };
+        // apply the mosaic
+        
+        iw.setRenderingHint(JAI.KEY_IMAGE_LAYOUT, layout);
+        iw.setBackground(bgValues);
+        iw.mosaic(new RenderedImage[] { image }, 
+                alphaChannels != null && transparencyType==Transparency.TRANSLUCENT ? MosaicDescriptor.MOSAIC_TYPE_BLEND: MosaicDescriptor.MOSAIC_TYPE_OVERLAY, 
+                alphaChannels, 
+                rois, 
+                thresholds, 
+                null);
+        image = iw.getRenderedImage();
         return image;
     }
 
@@ -1321,6 +1360,28 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
         }
         return false;
+    }
+
+    private RasterSymbolizer updateSymbolizerForBandSelection(ReadingContext context,
+            RasterSymbolizer symbolizer, int[] bandIndices) {
+        GridCoverage2DReader reader = context != null ? context.reader : null;
+        Object params = context != null ? context.params : null;
+
+        if (params != null && reader != null && bandIndices != null) {
+            Format format = reader.getFormat();
+            ParameterValueGroup readParameters = null;
+            ParameterDescriptorGroup descriptorGroup = null;
+            List<GeneralParameterDescriptor> descriptors = null;
+            if (format != null && ((readParameters = format.getReadParameters()) != null)
+                    && ((descriptorGroup = readParameters.getDescriptor()) != null)
+                    && ((descriptors = descriptorGroup.descriptors()) != null)
+                    && (descriptors.contains(AbstractGridFormat.BANDS)) && bandIndices != null) {
+                // if bands are selected, alter the symbolizer to use bands in order 0,1,2,...
+                // since the channel order defined by it previously is taken care of the reader
+                symbolizer = GridCoverageRenderer.setupSymbolizerForBandsSelection(symbolizer);
+            }
+        }
+        return symbolizer;
     }
 
     private ReferencedEnvelope getEastNorthEnvelope(ReferencedEnvelope envelope)
@@ -1411,14 +1472,15 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @throws IOException
      */
     private static GridCoverage2D readBestCoverage(
-            final GridCoverage2DReader reader, 
-            final Object params,
+            final ReadingContext context,
             final ReferencedEnvelope envelope,
             final Rectangle requestedRasterArea,
             final Interpolation interpolation,
             final Color bgColor,
             final int[] bandIndices) throws IOException {
 
+        final GridCoverage2DReader reader = context.reader;
+        final Object params = context.params;
         ////
         //
         // Intersect the present envelope with the request envelope, also in WGS 84 to make sure
@@ -1451,7 +1513,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 requestedRasterArea, interpolation, bgColor, bandIndices);
 
         coverage = reader.read(readParams);
-
+        context.params = readParams;
         return coverage;
     }
 

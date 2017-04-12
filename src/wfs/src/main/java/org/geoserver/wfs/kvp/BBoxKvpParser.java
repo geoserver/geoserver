@@ -10,9 +10,12 @@ import java.util.List;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.WFSException;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.SingleCRS;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -36,8 +39,8 @@ public class BBoxKvpParser extends KvpParser {
         }
         
         int countco = 4;
-        if (unparsed.size() == 6) { //3d-coordinates 
-        	countco = 6;        	
+        if (unparsed.size() == 6 || unparsed.size() == 7) { // 3d-coordinates
+            countco = 6;
         }
 
         //if it does, store them in an array of doubles
@@ -99,7 +102,15 @@ public class BBoxKvpParser extends KvpParser {
             CoordinateReferenceSystem crs = srs != null ? CRS.decode(srs) : null;
             return new ReferencedEnvelope3D(minx, maxx, miny, maxy, minz, maxz, crs);
         } else {
-            return new SRSEnvelope(minx, maxx, miny, maxy, srs);
+            CoordinateReferenceSystem crs = srs != null ? CRS.decode(srs) : null;
+            if(crs == null || crs.getCoordinateSystem().getDimension() == 2) {
+                return new SRSEnvelope(minx, maxx, miny, maxy, srs);
+            } else if(crs.getCoordinateSystem().getDimension() == 3) {
+                return new ReferencedEnvelope3D(minx, maxx, miny, maxy, -Double.MAX_VALUE, Double.MAX_VALUE, crs);
+            } else {
+                throw new WFSException("Unexpected BBOX, can only handle 2D or 3D ones", "bbox", "InvalidParameterValue");
+            }
+            
         }
     }
 }

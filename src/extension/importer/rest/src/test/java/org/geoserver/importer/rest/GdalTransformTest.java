@@ -4,12 +4,12 @@
  */
 package org.geoserver.importer.rest;
 
-import java.util.Arrays;
-
 import org.geoserver.importer.transform.GdalAddoTransform;
 import org.geoserver.importer.transform.GdalTranslateTransform;
 import org.geoserver.importer.transform.GdalWarpTransform;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 public class GdalTransformTest extends TransformTestSupport {
 

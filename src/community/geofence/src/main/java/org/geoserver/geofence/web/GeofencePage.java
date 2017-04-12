@@ -134,8 +134,6 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(new CheckBox("allowRemoteAndInlineLayers",
                 new PropertyModel<Boolean>(configModel,
                         "allowRemoteAndInlineLayers")));
-        form.add(new CheckBox("allowDynamicStyles", new PropertyModel<Boolean>(
-                configModel, "allowDynamicStyles")));
         form.add(new CheckBox("grantWriteToWorkspacesToAuthenticatedUsers",
                 new PropertyModel<Boolean>(configModel,
                         "grantWriteToWorkspacesToAuthenticatedUsers")));
@@ -145,8 +143,7 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(new TextField<String>("acceptedRoles", new PropertyModel<String>(
                 configModel, "acceptedRoles")));
 
-        Button submit = new Button("submit", new StringResourceModel("submit",
-                this, null)) {
+        Button submit = new Button("submit") {
             private static final long serialVersionUID = 1L;
 
             @Override

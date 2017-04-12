@@ -31,6 +31,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     boolean getMapMimeTypeCheckingEnabled;
     Set<String> getMapMimeTypes = new HashSet<String>();
     
+    boolean dynamicStylingDisabled;
     
 
     /**
@@ -205,4 +206,22 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 		this.rootLayerAbstract = rootLayerAbstract;
 	}
     
+    /**
+     * Sets the status of dynamic styling (SLD and SLD_BODY params) allowance
+     *
+     * @param dynamicStylingDisabled
+     */
+    @Override
+    public void setDynamicStylingDisabled(Boolean dynamicStylingDisabled) {
+        this.dynamicStylingDisabled= dynamicStylingDisabled;
+    }
+
+    /**
+     * @return the status of dynamic styling (SLD and SLD_BODY params) allowance
+     */
+    @Override
+    public Boolean isDynamicStylingDisabled() {
+        return dynamicStylingDisabled;
+    }
+
 }

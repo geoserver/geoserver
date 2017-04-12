@@ -7,19 +7,19 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.11-SNAPSHOT</version>
+    <version>2.12-SNAPSHOT</version>
   </parent>
   
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-ows-simulate</artifactId>
   <name>OWS Dispatcher Simulate Plugin</name>
   <packaging>jar</packaging>
-  <version>2.11-SNAPSHOT</version>
+  <version>2.12-SNAPSHOT</version>
   
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-main</artifactId>
+      <artifactId>gs-wms</artifactId>
       <version>${gs.version}</version>
     </dependency>
     <dependency>
@@ -51,12 +51,6 @@
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
       <classifier>tests</classifier>
-      <scope>test</scope>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wms</artifactId>
       <scope>test</scope>
       <version>${project.version}</version>
     </dependency>

@@ -56,7 +56,7 @@ For stability reasons, it is not recommended to use the embedded GeoWebCache wit
 
 .. _gwc_data_security:
 
-Geoserver Data Security
+GeoServer Data Security
 -----------------------
 
 GWC Data Security is an option that can be turned on and turned off through the :ref:`gwc_webadmin_defaults` page. By default it is turned off. 

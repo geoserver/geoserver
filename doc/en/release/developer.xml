@@ -13,7 +13,7 @@
        $URL$
      ====================================================================== -->
 <assembly>
-  <id>docguide</id>
+  <id>developer</id>
   <formats>
     <format>zip</format>
   </formats>

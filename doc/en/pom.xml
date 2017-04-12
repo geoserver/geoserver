@@ -291,6 +291,18 @@
               <output>${project.build.directory}/api/importerTransforms</output>
             </configuration>
           </execution>
+          <execution>
+            <id>importer-tasks</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api/1.0.0/importerTasks.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/importerTasks</output>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>

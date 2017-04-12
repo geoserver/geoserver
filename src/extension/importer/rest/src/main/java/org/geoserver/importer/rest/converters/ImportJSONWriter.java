@@ -90,89 +90,21 @@ public class ImportJSONWriter {
 
     Importer importer;
 
-    // FlushableJSONBuilder json;
-
     private Callback callback;
 
     @Autowired
     public ImportJSONWriter(Importer importer) {
         this.importer = importer;
     }
-    
-//    public ImportContextJSONConverterWriter(Importer importer, OutputStream out) {
-//        super(MediaType.APPLICATION_JSON,AbstractCatalogController.TEXT_JSON,MediaType.TEXT_HTML);
-//        this.importer = importer;
-//        this.json = new FlushableJSONBuilder(new OutputStreamWriter(out));
-//    }
 
-//    @Override
-    protected boolean supports(Class<?> clazz) {
-        return ImportContext.class.isAssignableFrom(clazz)
-                || ImportTask.class.isAssignableFrom(clazz)
-                || ImportWrapper.class.isAssignableFrom(clazz)
-                || ImportData.class.isAssignableFrom(clazz);
-    }
-    
-//    @Override
-    protected void writeInternal(FlushableJSONBuilder json, Object t, HttpOutputMessage outputMessage)
-            throws IOException, HttpMessageNotWritableException {
-        MediaType contentType = outputMessage.getHeaders().getContentType();
-     
-//        if (!contentType.equals(MediaType.TEXT_HTML)) {
-//            outputMessage.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-//        } else {
-//            outputMessage.getHeaders().setContentType(MediaType.TEXT_HTML);
-//        }
-//        RequestInfo page = RequestInfo.get();
-//        String path = page.getPagePath();
-        OutputStream out = outputMessage.getBody();
-        OutputStreamWriter writer = new OutputStreamWriter(out);
-        if (contentType.equals(MediaType.TEXT_HTML)) {
-            writer.write("<html><body><pre>");
-        }
-
-        // json = new FlushableJSONBuilder(writer);
-        if (t instanceof ImportContext) {
-            this.context(json, (ImportContext) t, true, expand(1));
-        } else if (t instanceof ImportTask) {
-            this.task(json, (ImportTask) t, true, expand(1));
-
-        } else if (ImportData.class.isAssignableFrom(t.getClass())) {
-            ImportData data = (ImportData)t;
-            Object parent = data.getParent();
-            int expand = expand(1);
-            if (data  instanceof FileData) {
-                if (data instanceof Directory) {
-                    if (data instanceof Mosaic) {
-                        mosaic(json, (Mosaic) data, parent  ,expand );
-                    }
-                    else {
-                        directory(json, (Directory) data, parent, expand);
-                    }
-                } else {
-                    file(json, (FileData) data, parent, expand, false);
-                }
-            } else if (data instanceof Database) {
-                database(json, (Database) data, parent, expand);
-            } else if (data instanceof Table) {
-                table(json, (Table)data, parent, expand);
-            } else if (data instanceof RemoteData) {
-                remote(json, (RemoteData) data, parent, expand);
-            }
-        } else if (ImportWrapper.class.isAssignableFrom(t.getClass())) {
-            ((ImportWrapper) t).write(writer,json, this);
-        } else  {
-                throw new RestException("Trying to write an unknown object " + t,
-                        HttpStatus.I_AM_A_TEAPOT);
-        }
-        // insert new objects here
-
-        if (contentType.equals(MediaType.TEXT_HTML)) {
-            writer.write("</pre></body></html>");
-        }
-        writer.flush();
-    }
-
+    //TODO: Document this behavior
+    /**
+     * Determines the number of levels to expand the JSON result, by parsing the "expand" parameter from the
+     * query map.
+     *
+     * @param def The default value to fall back on
+     * @return
+     */
     public int expand(int def) {
         String ex = null;
         Map<String, String[]> queryMap = RequestInfo.get().getQueryMap();
@@ -182,14 +114,25 @@ public class ImportJSONWriter {
                 ex = params[0];
             }
         }
-        if (ex == null) {
+        return expand(ex, def);
+    }
+
+    /**
+     * Determines the number of levels to expand the JSON result
+     *
+     * @param expand The value of the "expand" parameter
+     * @param def The default value to fall back on
+     * @return
+     */
+    public int expand(String expand, int def) {
+        if (expand == null) {
             return def;
         }
 
         try {
-            return "self".equalsIgnoreCase(ex) ? 1
-                    : "all".equalsIgnoreCase(ex) ? Integer.MAX_VALUE
-                            : "none".equalsIgnoreCase(ex) ? 0 : Integer.parseInt(ex);
+            return "self".equalsIgnoreCase(expand) ? 1
+                    : "all".equalsIgnoreCase(expand) ? Integer.MAX_VALUE
+                    : "none".equalsIgnoreCase(expand) ? 0 : Integer.parseInt(expand);
         } catch (NumberFormatException e) {
             return def;
         }

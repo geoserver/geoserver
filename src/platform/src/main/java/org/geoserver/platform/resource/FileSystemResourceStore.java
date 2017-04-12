@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -136,7 +136,10 @@ public class FileSystemResourceStore implements ResourceStore {
 
         try {
             dest.getParentFile().mkdirs(); // Make sure there's somewhere to move to.
-            return Files.move(file, dest);
+            java.nio.file.Files.move(java.nio.file.Paths.get(file.getAbsolutePath()),
+                    java.nio.file.Paths.get(dest.getAbsolutePath()),
+                    StandardCopyOption.ATOMIC_MOVE);
+            return true;
         } catch (IOException e) {
             throw new IllegalStateException("Unable to move " + path + " to " + target, e);
         }

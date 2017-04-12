@@ -379,13 +379,14 @@ public final class Files {
         if( dest == null ){
             throw new NullPointerException("File dest required");
         }
-        // same path? Do nothing
-        if (source.getCanonicalPath().equalsIgnoreCase(dest.getCanonicalPath())){
-            return true;
-        }
+
+        boolean win = System.getProperty("os.name").startsWith("Windows");
+        boolean samePath = win ?
+            source.getCanonicalPath().equalsIgnoreCase(dest.getCanonicalPath()) :
+            source.getCanonicalPath().equals(dest.getCanonicalPath());
+        if (samePath) return true;
 
         // windows needs special treatment, we cannot rename onto an existing file
-        boolean win = System.getProperty("os.name").startsWith("Windows");
         if ( win && dest.exists() ) {
             // windows does not do atomic renames, and can not rename a file if the dest file
             // exists
@@ -422,7 +423,7 @@ public final class Files {
      * (but not the directory itself). For each
      * file that cannot be deleted a warning log will be issued.
      * 
-     * @param dir
+     * @param directory
      * @throws IOException
      * @returns true if all the directory contents could be deleted, false otherwise
      */

@@ -34,7 +34,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/coverages.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/coverages.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/coverages</output>
             </configuration>
@@ -46,9 +46,9 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/coverageStores.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/coveragestores.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/coverageStores</output>
+              <output>${project.build.directory}/api/coveragestores</output>
             </configuration>
           </execution>
           <execution>
@@ -58,7 +58,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/datastores.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/datastores.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/datastores</output>
             </configuration>
@@ -70,9 +70,9 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/featureTypes.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/featureTypes.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/featureTypes</output>
+              <output>${project.build.directory}/api/featuretypes</output>
             </configuration>
           </execution>          
           <execution>
@@ -82,7 +82,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/fonts.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/fonts.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/fonts</output>
             </configuration>
@@ -94,9 +94,9 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/layergroups.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/layergroups.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/layerGroups</output>
+              <output>${project.build.directory}/api/layergroups</output>
             </configuration>
           </execution>
           <execution>
@@ -106,7 +106,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/layers.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/layers.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/layers</output>
             </configuration>
@@ -118,7 +118,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/manifests.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/manifests.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/manifests</output>
             </configuration>
@@ -130,7 +130,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/namespaces.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/namespaces.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/namespaces</output>
             </configuration>
@@ -142,9 +142,9 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/owsServices.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/owsservices.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/owsServices</output>
+              <output>${project.build.directory}/api/owsservices</output>
             </configuration>
           </execution>
           <execution>
@@ -154,7 +154,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/reload.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/reload.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/reload</output>
             </configuration>
@@ -166,7 +166,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/security.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/security.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/security</output>
             </configuration>
@@ -178,7 +178,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/settings.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/settings.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/settings</output>
             </configuration>
@@ -190,9 +190,9 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/structuredCoverages.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/structuredcoverages.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/structuredCoverages</output>
+              <output>${project.build.directory}/api/structuredcoverages</output>
             </configuration>
           </execution>
           <execution>
@@ -202,7 +202,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/styles.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/styles.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/styles</output>
             </configuration>
@@ -214,9 +214,9 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/template.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/templates.yaml</inputSpec>
               <language>html</language>
-              <output>${project.build.directory}/api/template</output>
+              <output>${project.build.directory}/api/templates</output>
             </configuration>
           </execution>
           <execution>
@@ -226,7 +226,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/wmslayers.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/wmslayers.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/wmslayers</output>
             </configuration>
@@ -238,7 +238,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/wmsstores.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/wmsstores.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/wmsstores</output>
             </configuration>
@@ -250,7 +250,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/workspaces.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/workspaces.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/workspaces</output>
             </configuration>
@@ -262,7 +262,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/monitoring.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/api/monitoring.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/monitoring</output>
             </configuration>

@@ -11,10 +11,15 @@ paths:
       operationId: getTasks
       summary: Retrieve all tasks for import with id {importId}
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses:
         200:
           description: OK
+          schema:
+            $ref: "importer.yaml/definitions/Tasks"
           examples:
            application/json:
              '{
@@ -34,15 +39,23 @@ paths:
         Alternatively, a new task can be created by issuing a POST as a "Content-type: application/x-www-form-urlencoded" 
         form url encoded data containing a url paramerter with the location of the uploaded file.'
       consumes:
-        $ref: "#/definitions/ConsumesFile"
+        - multipart/form-data
+        - application/x-www-form-urlencoded
       produces:
-        $ref: "#/definitions/Produces:"
+        - application/json
+        - text/htm
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/TaskParameter"
       responses:
         201:
           description: Created
           headers:
             Location:
               description: href to the newly created task
+              type: string
+          schema:
+            $ref: "importer.yaml/definitions/Task"
           examples:
            application/json:
              '{
@@ -80,10 +93,15 @@ paths:
       operationId: getTask
       summary: Retrieve task with id {taskId} within import with id {importId}  
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses:
         200: 
           description: OK
+          schema:
+            $ref: "importer.yaml/definitions/Task"
     put:
       operationId: putTask
       summary: Modify task with id {taskId} within import with id {importId}
@@ -91,9 +109,13 @@ paths:
 
         The updateMode of a task normally starts as "CREATE", that is, create the target resource if missing. Other possible values are "REPLACE", that is, delete the existing features in the target layer and replace them with the task source ones, or "APPEND", to just add the features from the task source into an existing layer.'
       consumes:
-        $ref: "#/definitions/ConsumesJSON"
+        - application/json
+        - text/json
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/TaskParameter"
       responses:
         200: 
           description: OK
@@ -110,34 +132,50 @@ paths:
       description: 'A new task can be created by issuing a PUT containing the raw file content to this endpoint. The name of the uploaded file will be {filename}. The location of the uploaded file will be the top level directory associated with the import, or the "uploads" directory in the data directory if no directory is associated with the current import.'
       consumes:
         - \*/*
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses:
         201:
           description: Created
+          schema:
+            $ref: "importer.yaml/definitions/Tasks"
   /imports/{importId}/tasks/{taskId}/progress:
     get:
       operationId: getTaskProgress
       summary: Retrieve the current state and import progress of a task with id {taskId} within import with id {importId}
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/htm
       responses:
         200: 
           description: OK
+          schema:
+            $ref: "#/definitions/Progress"
   /imports/{importId}/tasks/{taskId}/target:
     get:
       operationId: getTaskTarget
       summary: Retrieve the store of a task with id {taskId} within import with id {importId}
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses:
         200: 
           description: OK
+          schema:
+            $ref: "importer.yaml/definitions/Store"
     put:
       operationId: putTaskTarget
       summary: Modify the target store for a task with id {taskId} within import with id {importId}
       consumes:
-        $ref: "#/definitions/ConsumesJSON"
+        - application/json
+        - text/json
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/TargetParameter"
       responses:
         200: 
           description: OK
@@ -146,28 +184,77 @@ paths:
       operationId: getTaskLayer
       summary: Retrieve the layer of a task with id {taskId} within import with id {importId}
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses:
         200: 
           description: OK
+          schema:
+            $ref: "importer.yaml/definitions/Layer"
     put:
       operationId: putTaskLayer
       summary: Modify the target layer for a task with id {taskId} within import with id {importId}
       consumes:
-        $ref: "#/definitions/ConsumesJSON"
+        - application/json
+        - text/json
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/LayerParameter"
       responses:
         200: 
           description: OK
+          schema:
+            $ref: "importer.yaml/definitions/Task"
+
+parameters:
+  ExpandParameter:
+    name: expand
+    type: string
+    in: path
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to. Defaults to "self" or "none", depending on the request.'
+    required: false
+  TaskParameter:
+    name: taskBody
+    description: The task to create or modify
+    in: body
+    required: true          
+    schema:
+      $ref: "importer.yaml/definitions/Task"
+  TargetParameter:
+    name: targetBody
+    description: The store to modify
+    in: body
+    required: true          
+    schema:
+      $ref: "importer.yaml/definitions/Task"
+  LayerParameter:
+    name: layerBody
+    description: The layer to modify
+    in: body
+    required: true          
+    schema:
+      $ref: "importer.yaml/definitions/Task"
 
 definitions:
-  Produces:
-    - application/json
-    - text/html
-  ConsumesJSON:
-    - application/json
-    - text/json
-  ConsumesFile:
-    - multipart/form-data
-    - application/x-www-form-urlencoded
+  Progress:
+    title: progress
+    type: object
+    description: Task progress
+    properties:
+      progress:
+        type: string
+        description: Number of operations completed
+      total: 
+        type: string
+        description: Total number of operations
+      state:
+        type: string
+        description: 'State of the task. One of: "PENDING", "READY", "RUNNING", "NO_CRS", "NO_BOUNDS", "NO_FORMAT", "BAD_FORMAT", "ERROR", "CANCELED", "COMPLETE"'
+      message:
+        type: string
+        description: 'Error message. Only shown if state is "ERROR"'

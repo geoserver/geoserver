@@ -303,6 +303,18 @@
               <output>${project.build.directory}/api/importerTasks</output>
             </configuration>
           </execution>
+          <execution>
+            <id>importer-data</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/api/1.0.0/importerData.yaml</inputSpec>
+              <language>html</language>
+              <output>${project.build.directory}/api/importerData</output>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>

@@ -91,6 +91,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         assertEquals(wms.getRootLayerTitle(), "test");
         assertEquals(wms.getRootLayerAbstract(), "abstract test");
+    }
 
     @Test
     public void testDynamicStylingDisabled() throws Exception {

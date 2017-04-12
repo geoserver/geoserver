@@ -12,73 +12,102 @@ paths:
       summary: Retrieve the database connection parameters for an import with id {importId}. Only applies to database imports.
       description:
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses:
         200: 
           description: OK
-          examples:
-            application/json: 'e'
+          schema:
+            $ref: "importer.yaml/definitions/Database"
   /imports/{importId}/tasks/{taskId}/data:
     get:
       operationId: getTaskData
       summary: Retrieve the table description for a task with id {taskId} within import with id {importId}. Only applies to database imports.
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses:
         200: 
           description: OK
-          examples:
-            application/json: 'e'
+          schema:
+            $ref: "importer.yaml/definitions/Table"
   /imports/{importId}/data/files:
     get:
       operationId: getDataFiles
       summary: Retrieve the list of files for an import with id {importId}. Only applies to file/directory imports.
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses: 
-        $ref: "#/definitions/GetResponse"
+        200: 
+          description: OK
+          schema:
+            $ref: "importer.yaml/definitions/Directory"
   /imports/{importId}/data/files/{filename}:
     get:
       operationId: getDataFile
       summary: Retrieve information about the file with id {fileId} from the data of an import with id {importId}. Only applies to file/directory imports.
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses: 
-        $ref: "#/definitions/GetResponse"
+        200: 
+          description: OK
+          schema:
+            $ref: "importer.yaml/definitions/File"
     delete:
       operationId: deleteTaskDataFile
       summary: Remove a specific file with id {filename} from the import with id {importId}. Only applies to file/directory imports.
       responses: 
-        $ref: "#/definitions/DeleteResponse"
+        202: 
+          description: No Content
   /imports/{importId}/tasks/{taskId}/data/files:
     get:
       operationId: getTaskDataFiles
       summary: Retrieve the list of files for a task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses: 
-        $ref: "#/definitions/GetResponse"
+        200: 
+          description: OK
+          schema:
+            $ref: "importer.yaml/definitions/Directory"
   /imports/{importId}/tasks/{taskId}/data/files/{filename}:
     get:
       operationId: getTaskDataFile
       summary: Retrieve information about the file with id {fileId} from the data of a task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses: 
-        $ref: "#/definitions/GetResponse"
+        200: 
+          description: OK
+          schema:
+            $ref: "importer.yaml/definitions/File"
     delete:
       operationId: deleteTaskDataFile
       summary: Remove a specific file with id {filename} from the task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
       responses: 
-        $ref: "#/definitions/DeleteResponse"
+        202: 
+          description: No Content
 
-definitions:
-  GetResponse:
-    200: 
-      description: OK
-  DeleteResponse:
-    202: 
-      description: No Content
-  Produces:
-    - application/json
-    - text/html
+parameters:
+  ExpandParameter:
+    name: expand
+    type: string
+    in: path
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to. Defaults to "self" or "none", depending on the request.'
+    required: false

@@ -29,14 +29,14 @@
 		<dependency>
 			<groupId>org.geoserver</groupId>
 			<artifactId>gs-restconfig</artifactId>
-			<version>2.12-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>gs-restconfig</artifactId>
-            <version>2.12-SNAPSHOT</version>
+			<version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 		<dependency>

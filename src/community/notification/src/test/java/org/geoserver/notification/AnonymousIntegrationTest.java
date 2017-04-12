@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.List;
 
-import org.geoserver.catalog.rest.CatalogRESTTestSupport;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.notification.common.Notification;
 import org.geoserver.notification.geonode.kombu.KombuMessage;
@@ -18,6 +17,7 @@ import org.geoserver.notification.support.BrokerManager;
 import org.geoserver.notification.support.Receiver;
 import org.geoserver.notification.support.ReceiverService;
 import org.geoserver.notification.support.Utils;
+import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

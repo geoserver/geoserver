@@ -11,10 +11,15 @@ paths:
       operationId: getImports
       summary: Get a list of all imports
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses:
         200:
           description: OK
+          schema:
+            $ref: "#/definitions/Contexts"
           examples:
             application/json:
               '{
@@ -33,13 +38,18 @@ paths:
       summary: Create a new import
       description: Creates a new import. If the exec parameter is true, that import is immediately executed.
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
       parameters:
         - $ref: "#/parameters/AsyncParameter"
         - $ref: "#/parameters/ExecParameter"
+        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/ContextParameter"
       responses:
         201:
           description: Created
+          schema:
+            $ref: "#/definitions/Context"
           headers:
             Location:
               description: href to the newly created import
@@ -56,22 +66,31 @@ paths:
       operationId: getImport
       summary: Retrieve import by id
       produces:
-        $ref: "#/definitions/Produces"
+        $ref: "#/types/Produces"
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses:
         200:
           description: OK
+          schema:
+            $ref: "#/definitions/Context"
     post:
       operationId: postImport
       summary: Create a new import, or execute an existing import
       description: If an import with the id {importId} exists and is not in the INIT state, it is executed. If an import with that id does not exist, a new import is created with that id. If the exec parameter is true, this new import is immediately executed.
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
       parameters:
         - $ref: "#/parameters/AsyncParameter"
         - $ref: "#/parameters/ExecParameter"
+        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/ContextParameter"
       responses:
         201:
           description: Created. Returned if the import was created.
+          schema:
+            $ref: "#/definitions/Context"
         204:
           description: No Content. Returned if the import already existed and was executed.
         412:
@@ -84,13 +103,18 @@ paths:
         - application/json
         - text/json
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
       parameters:
         - $ref: "#/parameters/AsyncParameter"
         - $ref: "#/parameters/ExecParameter"
+        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/ContextParameter"
       responses:
         201:
           description: Created
+          schema:
+            $ref: "#/definitions/Context"
           headers:
             Location:
               description: href to the newly created import
@@ -119,13 +143,17 @@ parameters:
   ExpandParameter:
     name: expand
     type: string
+    in: path
     description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to. Defaults to "self" or "none", depending on the request.'
     required: false
-
+  ContextParameter:
+    name: importBody
+    description: The import context to create.
+    in: body
+    required: true          
+    schema:
+      $ref: "#/definitions/Context"
 definitions:
-  Produces:
-    - application/json
-    - text/html
   Contexts:
     title: imports
     type: array
@@ -136,7 +164,7 @@ definitions:
     title: context
     type: object
     description: An import context
-    parameters:
+    properties:
       id:
         type: string
         description: The import id
@@ -173,7 +201,7 @@ definitions:
     title: task
     type: object
     description: An import task
-    parameters:
+    properties:
       id:
         type: string
         description: The task id
@@ -206,7 +234,7 @@ definitions:
     title: store
     type: object
     description: A store
-    parameters:
+    properties:
       href: 
         type: string
         description: URL to the task target endpoint
@@ -221,7 +249,7 @@ definitions:
     title: Store
     type: object
     description: A vector store
-    parameters:
+    properties:
       href: 
         type: string
         description: URL to the task target endpoint
@@ -231,7 +259,7 @@ definitions:
     title: Store
     type: object
     description: A raster store
-    parameters:
+    properties:
       href: 
         type: string
         description: URL to the task target endpoint
@@ -241,7 +269,7 @@ definitions:
     title: layer
     type: object
     description: A layer
-    parameters: 
+    properties: 
       name:
         type: string
         description: The name of the layer
@@ -279,7 +307,7 @@ definitions:
     items:
       type: object
       description: A feature type attribute.
-      parameters:
+      properties:
         name:
           type: string
           description: The name of the attribute
@@ -290,7 +318,7 @@ definitions:
     title: style
     type: object
     description: A layer style
-    parameters:
+    properties:
       name:
         type: string
         description: Name of the style
@@ -307,7 +335,7 @@ definitions:
     title: transformChain
     type: object
     description: A chain of tranform operations to apply during the import process
-    parameters:
+    properties:
       type:
         type: string
         description: 'The type of transforms in the chain. One of "vector" or "raster"'
@@ -323,7 +351,7 @@ definitions:
     title: transform
     type: object
     description: A data transform applied to the import data.
-    parameters:
+    properties:
       type:
         type: string
         description: The name of the transform
@@ -345,7 +373,7 @@ definitions:
     title: DataFormatTransform
     type: object
     description: A data transform that converts a non date attribute in a date attribute.
-    parameters:
+    properties:
       type:
         type: string
         description: '"DataFormatTransform"'
@@ -362,7 +390,7 @@ definitions:
     title: IntegerFieldToDateTransform
     type: object
     description: A data transform that allows a string or number field to be used as a year Date. The number is interpreted as an Integer.
-    parameters:
+    properties:
       type:
         type: string
         description: '"IntegerFieldToDateTransform"'
@@ -376,7 +404,7 @@ definitions:
     title: CreateIndexTransform
     type: object
     description: A data transform that creates an index in the data (assuming the import data is a database).
-    parameters:
+    properties:
       type:
         type: string
         description: '"CreateIndexTransform"'
@@ -390,7 +418,7 @@ definitions:
     title: AttributeRemapTransform
     type: object
     description: A data transform that maps an attribute from one type to another.
-    parameters:
+    properties:
       type:
         type: string
         description: '"AttributeRemapTransform"'
@@ -407,7 +435,7 @@ definitions:
     title: AttributesToPointGeometryTransform
     type: object
     description: A data transform that maps two numerical attributes to a point geometry.
-    parameters:
+    properties:
       type:
         type: string
         description: '"AttributesToPointGeometryTransform"'
@@ -424,7 +452,7 @@ definitions:
     title: ReprojectTransform
     type: object
     description: A data transform that reprojects the geometry from one CRS to another.
-    parameters:
+    properties:
       type:
         type: string
         description: '"ReprojectTransform"'
@@ -441,7 +469,7 @@ definitions:
     title: GdalTranslateTransform
     type: object
     description: A data transform that runs gdal_translate on a input raster file.
-    parameters:
+    properties:
       type:
         type: string
         description: '"GdalTranslateTransform"'
@@ -458,7 +486,7 @@ definitions:
     title: GdalWarpTransform
     type: object
     description: A data transform that runs gdalwarp on a input raster file.
-    parameters:
+    properties:
       type:
         type: string
         description: '"GdalWarpTransform"'
@@ -475,7 +503,7 @@ definitions:
     title: GdalAddoTransform
     type: object
     description: A data transform that runs gdaladdo on a input raster file.
-    parameters:
+    properties:
       type:
         type: string
         description: '"GdalAddoTransform"'
@@ -498,7 +526,7 @@ definitions:
     title: Bbox
     type: object
     description: A spatially referenced bounding box.
-    parameters:
+    properties:
       minx:
         type: string
         description: The minimum x value
@@ -514,14 +542,14 @@ definitions:
       crs:
         type: string
         description: The WKT representation of the CRS.
-Data:
-  title: data
-  type: object
-  description: A data representation. Paramaters vary depending on the type.
-  parameters:
-    type:
-      type: string
-      description: 'The type of the data. One of: "remote", "file", "directory", "mosaic", "database", "table"'
+  Data:
+    title: data
+    type: object
+    description: A data representation. Paramaters vary depending on the type.
+    properties:
+      type:
+        type: string
+        description: 'The type of the data. One of: "remote", "file", "directory", "mosaic", "database", "table"'
 #  Data:
 #    oneOf:
 #      - $ref: "#/definitions/Directory"
@@ -533,7 +561,7 @@ Data:
     title: remote
     type: object
     description: An import data object representing remote data.
-    parameters:
+    properties:
       type:
         type: string
         description: '"remote"'
@@ -559,7 +587,7 @@ Data:
     title: file
     type: object
     decription: An import data object representing a spatial file or granule
-    parameters:
+    properties:
       type:
         type: string
         description: '"file"'
@@ -593,7 +621,7 @@ Data:
     title: filecontents
     type: object
     description: Description of a spatial file or granule
-    parameters:
+    properties:
       file:
         type: string
         description: Name of the file
@@ -613,7 +641,7 @@ Data:
     title: directory
     type: object
     description: An import data object representing a directory of spatial files or an image mosaic
-    parameters:
+    properties:
       type:
         type: string
         description: '"directory" or "mosaic"'
@@ -632,7 +660,7 @@ Data:
     title: database
     type: object
     description: An import data object representing a database
-    parameters:
+    properties:
       type:
         type: string
         description: '"database"'
@@ -641,7 +669,7 @@ Data:
       href:
         type: string
         description: URL to the database endpoint
-      parameters:
+      properties:
         type: object
         description: Database connection parameters. Actual paramaters vary depending on the type of database.
       tables:
@@ -652,7 +680,7 @@ Data:
     title: table
     type: object
     description: An import data object representing a a database table
-    parameters:
+    properties:
       type:
         type: string
         description: '"table"'

@@ -274,7 +274,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>src/main/resources/api/importer.yaml</inputSpec>
+              <inputSpec>${project.basedir}/api/1.0.0/importer.yaml</inputSpec>
               <language>html</language>
               <output>${project.build.directory}/api/importer</output>
             </configuration>

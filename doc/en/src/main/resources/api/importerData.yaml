@@ -1,0 +1,84 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Importer Extension - Data
+  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The data endpoint controls uploading layer data to specific import jobs.
+
+paths:
+  /imports/{importId}/data:
+    get:
+      operationId: getData
+      summary: Retrieve the database connection parameters for an import with id {importId}. Only applies to database imports.
+      description:
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200: 
+          description: OK
+          examples:
+            application/json: 'e'
+  /imports/{importId}/tasks/{taskId}/data:
+    get:
+      operationId: getTaskData
+      summary: Retrieve the table description for a task with id {taskId} within import with id {importId}. Only applies to database imports.
+      produces:
+        $ref: "#/definitions/Produces"
+      responses:
+        200: 
+          description: OK
+          examples:
+            application/json: 'e'
+  /imports/{importId}/data/files:
+    get:
+      operationId: getDataFiles
+      summary: Retrieve the list of files for an import with id {importId}. Only applies to file/directory imports.
+      produces:
+        $ref: "#/definitions/Produces"
+      responses: 
+        $ref: "#/definitions/GetResponse"
+  /imports/{importId}/data/files/{filename}:
+    get:
+      operationId: getDataFile
+      summary: Retrieve information about the file with id {fileId} from the data of an import with id {importId}. Only applies to file/directory imports.
+      produces:
+        $ref: "#/definitions/Produces"
+      responses: 
+        $ref: "#/definitions/GetResponse"
+    delete:
+      operationId: deleteTaskDataFile
+      summary: Remove a specific file with id {filename} from the import with id {importId}. Only applies to file/directory imports.
+      responses: 
+        $ref: "#/definitions/DeleteResponse"
+  /imports/{importId}/tasks/{taskId}/data/files:
+    get:
+      operationId: getTaskDataFiles
+      summary: Retrieve the list of files for a task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
+      produces:
+        $ref: "#/definitions/Produces"
+      responses: 
+        $ref: "#/definitions/GetResponse"
+  /imports/{importId}/tasks/{taskId}/data/files/{filename}:
+    get:
+      operationId: getTaskDataFile
+      summary: Retrieve information about the file with id {fileId} from the data of a task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
+      produces:
+        $ref: "#/definitions/Produces"
+      responses: 
+        $ref: "#/definitions/GetResponse"
+    delete:
+      operationId: deleteTaskDataFile
+      summary: Remove a specific file with id {filename} from the task with id {taskId} within import with id {importId}. Only applies to file/directory imports.
+      responses: 
+        $ref: "#/definitions/DeleteResponse"
+
+definitions:
+  GetResponse:
+    200: 
+      description: OK
+  DeleteResponse:
+    202: 
+      description: No Content
+  Produces:
+    - application/json
+    - text/html

@@ -11,10 +11,15 @@ paths:
       operationId: getTransforms
       summary: Retrieve the list of transformations of a task with id {taskId} within import with id {importId}
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses:
         200:
           description: OK
+          schema:
+            $ref: "importer.yaml/definitions/Transforms"
           examples:
             application/json:
               '{
@@ -37,34 +42,52 @@ paths:
       operationId: postTransform
       summary: Create a new transormation and append it inside a task with id {taskId} within import with id {importId}
       consumes:
-        $ref: "#/definitions/ConsumesJSON"
+        - application/json
+        - text/json
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/TransformParameter"
       responses:
         201:
           description: Created
           headers:
             Location:
               description: href to the newly created transform
+              type: string
   /imports/{importId}/tasks/{taskId}/transforms/{transformId}:
     get:
       operationId: getTransform
       summary: Retrieve a transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
       responses:
         200:
           description: OK
+          schema:
+            $ref: "importer.yaml/definitions/Transform"
     put:
       operationId: putTransform
       summary: Modifies the definition of a transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
       consumes:
-        $ref: "#/definitions/ConsumesJSON"
+        - application/json
+        - text/json
       produces:
-        $ref: "#/definitions/Produces"
+        - application/json
+        - text/html
+      parameters:
+        - $ref: "#/parameters/ExpandParameter"
+        - $ref: "#/parameters/TransformParameter"
       responses:
         200:
           description: OK
+          schema:
+            $ref: "importer.yaml/definitions/Transform"
     delete:
       operationId: deleteTransform
       summary:  Removes the transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
@@ -72,10 +95,17 @@ paths:
         200:
           description: OK
 
-definitions:
-  Produces:
-    - application/json
-    - text/html
-  ConsumesJSON:
-    - application/json
-    - text/json
+parameters:
+  ExpandParameter:
+    name: expand
+    type: string
+    in: path
+    description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to. Defaults to "self" or "none", depending on the request.'
+    required: false
+  TransformParameter:
+    name: transformBody
+    description: The transform to add.
+    in: body
+    required: true          
+    schema:
+      $ref: "importer.yaml/definitions/Transform"

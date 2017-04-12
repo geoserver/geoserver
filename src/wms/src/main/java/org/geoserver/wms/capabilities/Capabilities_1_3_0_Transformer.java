@@ -670,11 +670,14 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                         
             WMSInfo serviceInfo = wmsConfig.getServiceInfo();
             if(StringUtils.isBlank(serviceInfo.getRootLayerTitle())) {
-            	element("Title", serviceInfo.getTitle());
-            	element("Abstract", serviceInfo.getAbstract());
+            	element("Title", serviceInfo.getTitle());            	
             } else {
             	element("Title", serviceInfo.getRootLayerTitle());
-            	element("Abstract", serviceInfo.getRootLayerAbstract());
+            }
+            if(StringUtils.isBlank(serviceInfo.getRootLayerAbstract())) {
+              element("Abstract", serviceInfo.getAbstract());
+            } else {
+              element("Abstract", serviceInfo.getRootLayerAbstract());
             }
             List<String> srsList = serviceInfo.getSRS();
             Set<String> srs = new HashSet<String>();

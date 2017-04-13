@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -12,10 +12,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSTestSupport;
 import org.junit.Test;
-
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
@@ -166,6 +164,31 @@ public class DXFOutputFormatTest extends WFSTestSupport {
         checkSequence(sResponse,new String[] {"LWPOLYLINE","LWPOLYLINE"},pos);        
     }
 
+    /**
+     * Bounding Box excludes all features. Envelope is empty Envelop.expandBy(1) is still empty.
+     * Division by zero. The result is an invalid character in DXF, entire file is invalid.
+     */
+    @Test
+    public void testEmptyBbox() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=MPolygons&outputFormat=dxf&bbox=929636,6013554.5,930744,6014601.5&srsName=EPSG:900913");
+        String sResponse = testBasicResult(resp, "MPolygons");
+        System.out.println(sResponse);
+        for (int i = 0; i < sResponse.length(); i++) {
+            char c = sResponse.charAt(i);
+            assertTrue("Invalid non-ASCII char: '"+c+"'", c < 128);
+        }
+    }
+
+    /**
+     * Test maxFeatures=0: No collection passed to writer, no geom. Result was: NPE
+     * Maybe exotic, but should not end in NPE.
+     */
+    @Test
+    public void testEmptyCount() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=MPolygons&outputFormat=dxf&maxFeatures=0");
+        testBasicResult(resp, "MPolygons");
+    }
+    
     /**
      * Test format option asblocks.
      * 

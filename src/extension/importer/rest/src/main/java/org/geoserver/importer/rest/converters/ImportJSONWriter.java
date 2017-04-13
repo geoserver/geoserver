@@ -97,7 +97,6 @@ public class ImportJSONWriter {
         this.importer = importer;
     }
 
-    //TODO: Document this behavior
     /**
      * Determines the number of levels to expand the JSON result, by parsing the "expand" parameter from the
      * query map.

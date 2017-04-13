@@ -3,7 +3,7 @@ swagger: '2.0'
 info:
   version: 1.0.0
   title: GeoServer Importer Extension - Main
-  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The main endpoint manages individual import jobs.
+  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The main endpoint manages individual import jobs. The importer extension is an optional install and may not be available on all deployments of GeoServer
 
 paths:
   /imports:
@@ -130,13 +130,15 @@ paths:
 parameters:
   AsyncParameter:
     name: async
-    description: Run the import asyncronously. Defaults to false.
+    description: Run the import asyncronously.
+    default: false
     in: path
     type: boolean
     required: false
   ExecParameter:
     name: exec
-    description: Run the import when it is created. Defaults to false.
+    description: Run the import when it is created.
+    default: false
     in: path
     type: boolean
     required: false
@@ -173,7 +175,13 @@ definitions:
         description: URL to the import context endpoint
       state: 
         type: string
-        description: 'State of the import. One of: "INIT", "INIT_ERROR", "PENDING", "RUNNING", "COMPLETE"'
+        description: State of the import.
+        enum:
+        - INIT
+        - INIT_ERROR
+        - PENDING
+        - RUNNING
+        - COMPLETE
       message:
         type: string
         description: The current context message, if any
@@ -210,10 +218,26 @@ definitions:
         description: URL to the task endpoint
       state: 
         type: string
-        description: 'State of the task. One of: "PENDING", "READY", "RUNNING", "NO_CRS", "NO_BOUNDS", "NO_FORMAT", "BAD_FORMAT", "ERROR", "CANCELED", "COMPLETE"'
+        description: State of the task.
+        enum:
+        - PENDING
+        - READY
+        - RUNNING
+        - NO_CRS
+        - NO_BOUNDS
+        - NO_FORMAT
+        - BAD_FORMAT
+        - ERROR
+        - CANCELED
+        - COMPLETE
       updateMode:
         type: string
-        description: 'Update mode of the task. One of: "CREATE", "REPLACE", "APPEND", "UPDATE"'
+        description: Update mode of the task.
+        enum:
+        - CREATE 
+        - REPLACE 
+        - APPEND 
+        - UPDATE
       data:
         $ref: "#/definitions/Data"
       target:
@@ -385,7 +409,7 @@ definitions:
         description: The field to apply the transform to
       format: 
         type: string
-        description: A format string used to construct the transformed date
+        description: "A date parsing pattern, setup using the Java SimpleDateFormat syntax. In case it's missing, a number of built-in formats will be tried instead (short and full ISO date formats, dates without any separators)."
   IntegerFieldToDateTransform:
     title: IntegerFieldToDateTransform
     type: object
@@ -549,7 +573,14 @@ definitions:
     properties:
       type:
         type: string
-        description: 'The type of the data. One of: "remote", "file", "directory", "mosaic", "database", "table"'
+        description: The type of the data
+        enum: 
+        - remote
+        - file
+        - directory
+        - mosaic
+        - database
+        - table
 #  Data:
 #    oneOf:
 #      - $ref: "#/definitions/Directory"

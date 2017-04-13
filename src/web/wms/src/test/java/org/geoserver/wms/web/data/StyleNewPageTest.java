@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -17,12 +17,24 @@ import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.junit.Before;
 import org.junit.Test;
 
 public class StyleNewPageTest extends GeoServerWicketTestSupport {
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        // Publish the legend.png so we can see it
+        java.io.File file = getResourceLoader().createFile("styles", "legend.png");
+        getResourceLoader().copyFromClassPath("legend.png", file, getClass());
+    }
     
     @Before
     public void setUp() throws Exception {
@@ -94,10 +106,6 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
         tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
         
-        //Publish the legend.png so we can see it
-        java.io.File file = getResourceLoader().createFile("styles","legend.png");
-        getResourceLoader().copyFromClassPath( "legend.png", file,  getClass());
-        
         FormTester form = tester.newFormTester("styleForm", false);
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
@@ -155,6 +163,46 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
         
         tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:list:autoFill", "click");
+    }
+
+    @Test
+    public void testPreviewExternalLegendWithSlash() throws Exception {
+        // Set the proxy base URL with an ending slash
+        Resource resource = getResourceLoader().get("styles/legend.png");
+        String url = resource.file().getParentFile().getParentFile().toURI().toURL().toString();
+        if (!url.endsWith("/")) {
+            url += '/';
+        }
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.getSettings().setProxyBaseUrl(url);
+        getGeoServer().save(global);
+
+        // Load legend.png
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
+        FormTester form = tester.newFormTester("styleForm", false);
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "legend.png");
+        tester.executeAjaxEvent("styleForm:context:panel:preview", "click");
+        tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testPreviewExternalLegendWithoutSlash() throws Exception {
+        // Set the proxy base URL without an ending slash
+        Resource resource = getResourceLoader().get("styles/legend.png");
+        String url = resource.file().getParentFile().getParentFile().toURI().toURL().toString();
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.getSettings().setProxyBaseUrl(url);
+        getGeoServer().save(global);
+
+        // Load legend.png
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
+        FormTester form = tester.newFormTester("styleForm", false);
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "legend.png");
+        tester.executeAjaxEvent("styleForm:context:panel:preview", "click");
+        tester.assertNoErrorMessage();
     }
     
     @Test

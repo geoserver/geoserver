@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -318,9 +318,9 @@ public class ExternalGraphicPanel extends Panel {
                 else {
                     WorkspaceInfo wsInfo = ((StyleInfo)getDefaultModelObject()).getWorkspace();
                     if (wsInfo != null) {
-                        url = new URL( baseUrl + "styles/"+wsInfo.getName()+"/"+external );
+                        url = new URL(ResponseUtils.appendPath(baseUrl, "styles", wsInfo.getName(), external));
                     } else {
-                        url = new URL( baseUrl + "styles/"+external );
+                        url = new URL(ResponseUtils.appendPath(baseUrl, "styles", external));
                     }
                 }
                 

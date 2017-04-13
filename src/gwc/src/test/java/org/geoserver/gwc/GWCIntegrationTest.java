@@ -7,13 +7,7 @@ package org.geoserver.gwc;
 
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
 import static org.geoserver.gwc.GWC.tileLayerName;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -986,6 +980,43 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(Integer.parseInt(xpath.evaluate("count(//wmts:Contents/wmts:Layer)", document)), lessThanOrEqualTo(citeLayers.size()));
         assertThat(xpath.evaluate("count(//wmts:Contents/wmts:Layer[ows:Identifier='" +
                 MockData.BUILDINGS.getLocalPart() + "'])", document), is("1"));
+    }
+    
+    @Test
+    public void testGetCapabilitiesWithLocalLayer() throws Exception {
+        // initiating the xpath engine
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
+        namespaces.put("wmts", "http://www.opengis.net/wmts/1.0");
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        // getting capabilities document for CITE workspace
+        Document document = getAsDOM(MockData.CITE_PREFIX + "/" + MockData.BUILDINGS.getLocalPart() + "/gwc/service/wmts?request=GetCapabilities");
+        // checking get capabilities result for CITE workspace
+        List<LayerInfo> citeLayers = getWorkspaceLayers(MockData.CITE_PREFIX);
+        assertThat(Integer.parseInt(xpath.evaluate("count(//wmts:Contents/wmts:Layer)", document)), equalTo(1));
+        assertThat(xpath.evaluate("count(//wmts:Contents/wmts:Layer[ows:Identifier='" +
+                MockData.BUILDINGS.getLocalPart() + "'])", document), is("1"));
+    }
+    
+    @Test
+    public void testGetCapabilitiesWithLocalGroup() throws Exception {
+        // initiating the xpath engine
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        namespaces.put("ows", "http://www.opengis.net/ows/1.1");
+        namespaces.put("wmts", "http://www.opengis.net/wmts/1.0");
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        // getting capabilities document for CITE workspace
+        Document document = getAsDOM(SIMPLE_LAYER_GROUP + "/gwc/service/wmts?request=GetCapabilities");
+        // checking get capabilities result for CITE workspace
+        assertThat(Integer.parseInt(xpath.evaluate("count(//wmts:Contents/wmts:Layer)", document)), equalTo(1));
+        assertThat(xpath.evaluate("count(//wmts:Contents/wmts:Layer[ows:Identifier='" +
+                SIMPLE_LAYER_GROUP + "'])", document), is("1"));
     }
 
     @Test

@@ -98,4 +98,9 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
         
         return h;
     }
+    
+    @Override
+    public String toString() {
+        return "OWSHandlerMapping[" + this.getHandlerMap() + "]";
+    }
 }

@@ -3,7 +3,7 @@ swagger: '2.0'
 info:
   version: 1.0.0
   title: GeoServer Importer Extension - Data
-  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The data endpoint controls uploading layer data to specific import jobs.
+  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The data endpoint controls uploading layer data to specific import jobs. The importer extension is an optional install and may not be available on all deployments of GeoServer
 
 paths:
   /imports/{importId}/data:

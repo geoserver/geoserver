@@ -3,7 +3,7 @@ swagger: '2.0'
 info:
   version: 1.0.0
   title: GeoServer Importer Extension - Tasks
-  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The tasks endpoint controls individual tasks within an import job.
+  description: The Importer extension gives a GeoServer administrator an alternate, more-streamlined method for uploading and configuring new layers. The tasks endpoint controls individual tasks within an import job. The importer extension is an optional install and may not be available on all deployments of GeoServer
 
 paths:
   /imports/{importId}/tasks:
@@ -254,7 +254,17 @@ definitions:
         description: Total number of operations
       state:
         type: string
-        description: 'State of the task. One of: "PENDING", "READY", "RUNNING", "NO_CRS", "NO_BOUNDS", "NO_FORMAT", "BAD_FORMAT", "ERROR", "CANCELED", "COMPLETE"'
-      message:
+        description: State of the task.
+        enum:
+        - PENDING
+        - READY
+        - RUNNING
+        - NO_CRS
+        - NO_BOUNDS
+        - NO_FORMAT
+        - BAD_FORMAT
+        - ERROR
+        - CANCELED
+        - COMPLETE      message:
         type: string
         description: 'Error message. Only shown if state is "ERROR"'

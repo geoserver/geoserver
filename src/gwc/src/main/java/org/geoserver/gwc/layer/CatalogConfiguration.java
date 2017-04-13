@@ -29,9 +29,11 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.GWC;
+import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.Configuration;
@@ -290,16 +292,17 @@ public class CatalogConfiguration implements Configuration {
             layer = layerCache.get(layerId);
             // let's see if this a virtual service request
             WorkspaceInfo localWorkspace = LocalWorkspace.get();
+            PublishedInfo localPublished = LocalPublished.get();
             if (localWorkspace != null) {
                 // yup this is a virtual service request, so we need to filter layers per workspace
                 WorkspaceInfo layerWorkspace;
-                LayerInfo layerInfo = layer.getLayerInfo();
-                if (layerInfo != null) {
+                PublishedInfo publishedInfo = layer.getPublishedInfo();
+                if (publishedInfo instanceof LayerInfo) {
                     // this is a normal layer
-                    layerWorkspace = layer.getLayerInfo().getResource().getStore().getWorkspace();
+                    layerWorkspace = ((LayerInfo) publishedInfo).getResource().getStore().getWorkspace();
                 } else {
                     // this is a layer group
-                    layerWorkspace = layer.getLayerGroupInfo().getWorkspace();
+                    layerWorkspace = ((LayerGroupInfo) publishedInfo).getWorkspace();
                 }
                 // check if the layer doesn't have an workspace (this is possible for layer groups)
                 if (layerWorkspace == null) {
@@ -307,7 +310,27 @@ public class CatalogConfiguration implements Configuration {
                     return null;
                 }
                 // if the layer matches the virtual service workspace we return the layer otherwise NULL is returned
-                return localWorkspace.getName().equals(layerWorkspace.getName()) ? layer : null;
+                if(!localWorkspace.getName().equals(layerWorkspace.getName())) {
+                    return null;
+                }
+                
+                // are we in a layer specific case too?
+                
+                if(localPublished != null && !localPublished.getName().equals(publishedInfo.getName())) {
+                    return null;
+                }
+            } else if(localPublished != null) {
+                // this implies we're looking at a global layer group, there is no such a thing
+                // as a global layer
+                PublishedInfo publishedInfo = layer.getPublishedInfo();
+                if(!(publishedInfo instanceof LayerGroupInfo)) {
+                    return null;
+                } else {
+                    LayerGroupInfo lg = (LayerGroupInfo) publishedInfo;
+                    if(lg.getWorkspace() != null || !lg.getName().equals(localPublished.getName())) {
+                        return null;
+                    }
+                }
             }
         } catch (ExecutionException e) {
             throw propagate(e.getCause());

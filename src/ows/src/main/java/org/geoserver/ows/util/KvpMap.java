@@ -38,6 +38,10 @@ public class KvpMap extends HashMap {
         return super.get(upper(key));
     }
 
+    public Object getOrDefault(Object key, Object defaultValue) {
+        return super.getOrDefault(upper(key), defaultValue);
+    }
+
     public Object put(Object key, Object value) {
         return super.put(upper(key), value);
     }

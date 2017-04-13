@@ -128,7 +128,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/workspace.dat" />
 						</bean>
 					</batch:writer>
@@ -173,7 +173,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/namespace.dat" />
 						</bean>
 					</batch:writer>
@@ -218,7 +218,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/store.dat" />
 						</bean>
 					</batch:writer>
@@ -263,7 +263,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/resource.dat" />
 						</bean>
 					</batch:writer>
@@ -308,7 +308,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/layer.dat" />
 						</bean>
 					</batch:writer>
@@ -353,7 +353,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/layerGroup.dat" />
 						</bean>
 					</batch:writer>
@@ -398,7 +398,7 @@
 									<property name="appendAllowed" value="true" />
 								</bean>
 							</property>
-							<property name="itemCountLimitPerResource" value="10000" />
+							<property name="itemCountLimitPerResource" value="1000" />
 							<property name="resource" value="#{jobParameters['output.file.path']}/style.dat" />
 						</bean>
 					</batch:writer>

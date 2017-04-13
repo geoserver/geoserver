@@ -9,9 +9,13 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
@@ -54,6 +58,7 @@ import org.geoserver.wms.map.OpenLayersMapOutputFormat;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -813,12 +818,37 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
      */
     private void checkGlobalBoundingBox(ReferencedEnvelope expectedBoundingBox, Document capabilitiesResult) throws Exception {
         // check that the returned capabilities document contains the correct bounding box
-        assertXpathEvaluatesTo("1", String.format("count(//wms:Capability/wms:Layer" +
-                        "/wms:EX_GeographicBoundingBox" +
-                        "[wms:westBoundLongitude='%.1f'][wms:eastBoundLongitude='%.1f']" +
-                        "[wms:southBoundLatitude='%.1f'][wms:northBoundLatitude='%.1f'])",
-                expectedBoundingBox.getMinX(), expectedBoundingBox.getMaxX(),
-                expectedBoundingBox.getMinY(), expectedBoundingBox.getMaxY()), capabilitiesResult);
+        XpathEngine xpath = newXpathEngine();
+        // extract bounding box values from the capabilities document
+        String minX = xpath.evaluate("//wms:Capability/wms:Layer/wms:EX_GeographicBoundingBox/wms:westBoundLongitude/text()", capabilitiesResult);
+        String maxX = xpath.evaluate("//wms:Capability/wms:Layer/wms:EX_GeographicBoundingBox/wms:eastBoundLongitude/text()", capabilitiesResult);
+        String minY = xpath.evaluate("//wms:Capability/wms:Layer/wms:EX_GeographicBoundingBox/wms:southBoundLatitude/text()", capabilitiesResult);
+        String maxY = xpath.evaluate("//wms:Capability/wms:Layer/wms:EX_GeographicBoundingBox/wms:northBoundLatitude/text()", capabilitiesResult);
+        // check bounding box values
+        checkNumberSimilar(minX, expectedBoundingBox.getMinX(), 0.0001);
+        checkNumberSimilar(maxX, expectedBoundingBox.getMaxX(), 0.0001);
+        checkNumberSimilar(minY, expectedBoundingBox.getMinY(), 0.0001);
+        checkNumberSimilar(maxY, expectedBoundingBox.getMaxY(), 0.0001);
+    }
+
+    /**
+     * Check that a number represent by a string is similar to the expected number
+     * A number is considered similar to another if the difference between them is
+     * inferior or equal to the provided precision.
+     */
+    private void checkNumberSimilar(String rawValue, double expected, double precision) {
+        // try to extract a double value
+        assertThat(rawValue, is(notNullValue()));
+        assertThat(rawValue.trim().isEmpty(), is(false));
+        double value = 0;
+        try {
+            value = Double.parseDouble(rawValue);
+        } catch (NumberFormatException exception) {
+            fail(String.format("Value '%s' is not a number.", rawValue));
+        }
+        // compare the parsed double value with the expected one
+        double difference = Math.abs(expected - value);
+        assertThat(difference <= precision, is(true));
     }
 
     /**

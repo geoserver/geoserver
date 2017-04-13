@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.vividsolutions.jts.geom.Envelope;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.utils.KmlCentroidBuilder;
+import org.geoserver.kml.utils.KmlCentroidOptions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
@@ -53,7 +55,9 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
         if (Placemark.class.isAssignableFrom(featureClass)) {
             boolean hasHeightTemplate = hasHeightTemplate(context);
             boolean isExtrudeEnabled = isExtrudeEnabled(context);
-            return new PlacemarkGeometryDecorator(hasHeightTemplate, isExtrudeEnabled);
+            KmlCentroidOptions centroidOpts = KmlCentroidOptions.create(context);
+            
+            return new PlacemarkGeometryDecorator(hasHeightTemplate, isExtrudeEnabled, centroidOpts);
         } else {
             return null;
         }
@@ -95,10 +99,12 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
         static final Logger LOGGER = Logging.getLogger(PlacemarkGeometryDecorator.class);
         private boolean hasHeightTemplate;
         private boolean extrudeEnabled;
+        private KmlCentroidOptions centroidOpts;
 
-        public PlacemarkGeometryDecorator(boolean hasHeightTemplate, boolean extrudeEnabled) {
+        public PlacemarkGeometryDecorator(boolean hasHeightTemplate, boolean extrudeEnabled, KmlCentroidOptions centroidOpts) {
             this.hasHeightTemplate = hasHeightTemplate;
             this.extrudeEnabled = extrudeEnabled;
+            this.centroidOpts = centroidOpts;
         }
 
         @Override
@@ -159,7 +165,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
                 MultiGeometry mg = new MultiGeometry();
 
                 // centroid + full geometry
-                Coordinate c = CENTROIDS.geometryCentroid(geometry);
+                Coordinate c = CENTROIDS.geometryCentroid(geometry, context.getRequest().getBbox(), centroidOpts);
                 if(!Double.isNaN(height)) {
                     c.setOrdinate(2, height);
                 }

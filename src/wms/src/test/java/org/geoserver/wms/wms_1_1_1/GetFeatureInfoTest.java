@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -67,6 +67,8 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     
     public static QName POINT_TEST_2D = new QName(MockData.CITE_URI, "point_test_2d", MockData.CITE_PREFIX);
     public static QName POINT_TEST_3D = new QName(MockData.CITE_URI, "point_test_3d", MockData.CITE_PREFIX);
+
+    public static QName STATES = new QName(MockData.SF_URI, "states", MockData.SF_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -139,6 +141,13 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         properties.put(LayerProperty.SRS, 4939);
         testData.addVectorLayer(POINT_TEST_3D, properties, "point_test_3d.properties",
                 GetFeatureInfoTest.class, catalog);
+
+        // set up a non-querable layer.
+        testData.addStyle("Population", "Population.sld", GetFeatureInfoTest.class, catalog);
+        testData.addVectorLayer(STATES, Collections.emptyMap(), "states.properties", GetFeatureInfoTest.class, catalog);
+        LayerInfo layer = catalog.getLayerByName(getLayerId(STATES));
+        layer.setQueryable(false);
+        catalog.save(layer);
     }
     
     
@@ -992,5 +1001,49 @@ public class GetFeatureInfoTest extends WMSTestSupport {
            XMLAssert.assertXpathEvaluatesTo("layers", "//ServiceException/@locator", dom);
            XMLAssert.assertXpathEvaluatesTo("LayerNotDefined", "//ServiceException/@code", dom);
        }
+   }
+
+   @Test
+   public void testQueryableAndNonQueryableLayersWithStyles() throws Exception {
+       String states = getLayerId(STATES);
+       String forests = getLayerId(MockData.FORESTS);
+       String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg" +
+           "&info_format=text/plain&request=GetFeatureInfo&width=20&height=20&x=10&y=10" +
+           "&layers=" + states + "," + forests + "&query_layers=" + states + "," + forests +
+           "&styles=Population,Forests";
+       String result = getAsString(request);
+       // System.out.println(result);
+       assertNotNull(result);
+       assertTrue(result.indexOf("Green Forest") > 0);
+   }
+
+   @Test
+   public void testQueryableAndNonQueryableLayersWithCqlFilter() throws Exception {
+       String states = getLayerId(STATES);
+       String forests = getLayerId(MockData.FORESTS);
+       String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg" +
+           "&info_format=text/plain&request=GetFeatureInfo&width=20&height=20&x=10&y=10" +
+           "&layers=" + states + "," + forests + "&query_layers=" + states + "," + forests +
+           "&styles=&cql_filter=PERSONS>25000000;NAME='Green Forest'";
+       String result = getAsString(request);
+       // System.out.println(result);
+       assertNotNull(result);
+       assertTrue(result.indexOf("Green Forest") > 0);
+   }
+
+   @Test
+   public void testQueryableAndNonQueryableLayersWithFilter() throws Exception {
+       String states = getLayerId(STATES);
+       String forests = getLayerId(MockData.FORESTS);
+       String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg" +
+           "&info_format=text/plain&request=GetFeatureInfo&width=20&height=20&x=10&y=10" +
+           "&layers=" + states + "," + forests + "&query_layers=" + states + "," + forests +
+           "&styles=&filter=" +
+           "(%3CFilter%3E%3CPropertyIsGreaterThan%3E%3CPropertyName%3EPERSONS%3C/PropertyName%3E%3CLiteral%3E25000000%3C/Literal%3E%3C/PropertyIsGreaterThan%3E%3C/Filter%3E)" +
+           "(%3CFilter%3E%3CPropertyIsEqualTo%3E%3CPropertyName%3ENAME%3C/PropertyName%3E%3CLiteral%3EGreen%20Forest%3C/Literal%3E%3C/PropertyIsEqualTo%3E%3C/Filter%3E)";
+       String result = getAsString(request);
+       // System.out.println(result);
+       assertNotNull(result);
+       assertTrue(result.indexOf("Green Forest") > 0);
    }
 }

@@ -1,4 +1,4 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2017 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -11,7 +11,9 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 
@@ -60,34 +62,36 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
                 String first = urlPath.substring(i, j);
                 String last = urlPath.substring(j);
                 
-                final boolean workspaceFound = catalog.getWorkspaceByName(first) != null;
-                if(!workspaceFound && LOGGER.isLoggable(Level.FINEST)) {
+                WorkspaceInfo ws = catalog.getWorkspaceByName(first);
+                if ((ws == null) && LOGGER.isLoggable(Level.FINEST)) {
                     LOGGER.fine("Could not find workspace " + first + ", trying a layer group lookup");
                 }
-                if (workspaceFound) {
+                if (ws != null) {
                     String wsName = first;
                     //check for a layer being specified as well
                     j = last.indexOf("/", 1);
                     if (j != -1) {
                         first = last.substring(1, j);
-                        final boolean layerFound = catalog.getLayerByName(first) != null;
-                        if(!layerFound && LOGGER.isLoggable(Level.FINEST)) {
-                            LOGGER.fine("Could not find layer " + first + ", trying a layer group lookup");
-                        }
-                        if (layerFound) {
-                            // found, strip off layer and allow call to fall through
-                            last = last.substring(j);
-                        } else if(catalog.getLayerGroupByName(wsName, first) != null) {
-                            //f ound, strip off layer and allow call to fall through
-                            last = last.substring(j);
-                        } else {
-                            LOGGER.fine("Could not a layer group named " + wsName + ":" + first);
+                        NamespaceInfo ns = catalog.getNamespaceByPrefix(wsName);
+                        if (ns != null) {
+                            final boolean layerFound = catalog.getLayerByName(new NameImpl(ns.getURI(), first)) != null;
+                            if(!layerFound && LOGGER.isLoggable(Level.FINEST)) {
+                                LOGGER.fine("Could not find layer " + first + ", trying a layer group lookup");
+                            }
+                            if (layerFound) {
+                                // found, strip off layer and allow call to fall through
+                                last = last.substring(j);
+                            } else if (catalog.getLayerGroupByName(ws, first) != null) {
+                                // found, strip off layer and allow call to fall through
+                                last = last.substring(j);
+                            } else {
+                                LOGGER.fine("Could not a layer group named " + wsName + ":" + first);
+                            }
                         }
                     }
                     
                     h = super.lookupHandler(last, request);
                 } else if(catalog.getLayerGroupByName(first) != null) {
-                    LayerGroupInfo lg = catalog.getLayerGroupByName(first);
                     h = super.lookupHandler(last, request);
                 } else {
                     LOGGER.fine("Could not a layer group named " + first);

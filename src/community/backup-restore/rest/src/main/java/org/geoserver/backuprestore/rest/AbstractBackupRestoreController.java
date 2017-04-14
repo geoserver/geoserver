@@ -1,4 +1,4 @@
-/* (c) 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2017 Open Source Geospatial Foundation - all rights reserved
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,9 +26,13 @@ import org.geoserver.backuprestore.RestoreExecutionAdapter;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.rest.AbstractResource;
+import org.geoserver.rest.ResourceNotFoundException;
+import org.geoserver.rest.RestBaseController;
 import org.geotools.factory.Hints;
+import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
+import org.opengis.filter.Filter;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.StepExecution;
@@ -44,29 +49,33 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.mapper.ClassAliasingMapper;
 import com.thoughtworks.xstream.mapper.Mapper;
 
-import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.filter.text.ecql.ECQL;
-import org.opengis.filter.Filter;
+public abstract class AbstractBackupRestoreController extends RestBaseController {
 
-/**
- * Abstract Class representing a Backup REST Resource. 
- * 
- * It contains a the {@link Backup} backupFacade reference and utility methods to read/write the
- * resources to/from JSON.
- * 
- * Based on Importer {@link BaseResource}
- * 
- * @author Justin Deoliveira, OpenGeo
- * @author Alessio Fabiani, GeoSolutions
- */
-public abstract class BaseResource extends AbstractResource {
+    protected static final Logger LOGGER = Logging.getLogger(BackupController.class);
+    protected Backup backupFacade;
 
-    static Logger LOGGER = Logging.getLogger(BaseResource.class);
-
-    private Backup backupFacade;
-
-    public BaseResource(Backup backupFacade) {
-        this.backupFacade = backupFacade;
+    /**
+     * 
+     * @author Alessio Fabiani, GeoSolutions S.A.S.
+     *
+     */
+    static public class ArchiveFileResourceConverter extends AbstractSingleValueConverter {
+        
+        @SuppressWarnings("rawtypes")
+        @Override
+        public boolean canConvert(Class type) {
+            return Resource.class.isAssignableFrom(type);
+        }
+    
+        @Override
+        public String toString(Object obj) {
+            return ((Resource)obj).path();
+        }
+    
+        @Override
+        public Object fromString(String str) {
+            return Files.asResource(new File(str));
+        }
     }
 
     /**
@@ -76,32 +85,71 @@ public abstract class BaseResource extends AbstractResource {
         return backupFacade;
     }
 
+    protected String getExecutionIdFilter(String executionId) {
+        if(executionId.endsWith(".xml") || executionId.endsWith(".zip")) {
+            executionId = executionId.substring(0, executionId.length() - 4);
+        } else if(executionId.endsWith(".json")) {
+            executionId = executionId.substring(0, executionId.length() - 5);
+        }
+        return executionId;
+    }
+
     /**
-     * @param backupFacade the backupFacade to set
+     * 
+     * @param allowAll
+     * @param mustExist
+     * @return
      */
-    public void setBackupFacade(Backup backupFacade) {
-        this.backupFacade = backupFacade;
+    protected Object lookupBackupExecutionsContext(String i, boolean allowAll, boolean mustExist) {
+        if (i != null) {
+            BackupExecutionAdapter backupExecution = null;
+            try {
+                backupExecution = getBackupFacade().getBackupExecutions().get(Long.parseLong(i));
+            } catch (NumberFormatException e) {
+            }
+            if (backupExecution == null && mustExist) {
+                throw new ResourceNotFoundException("No such backup execution: " + i);
+            }
+            return backupExecution;
+        }
+        else {
+            if (allowAll) {
+                return new ArrayList<BackupExecutionAdapter>(getBackupFacade().getBackupExecutions().values());
+            }
+            throw new ResourceNotFoundException("No backup execution specified");
+        }
     }
 
-    protected int expand(int def) {
-        String ex = getRequest().getResourceRef().getQueryAsForm().getFirstValue("expand");
-        if (ex == null) {
-            return def;
+    /**
+     * 
+     * @param allowAll
+     * @param mustExist
+     * @return
+     */
+    protected Object lookupRestoreExecutionsContext(String i, boolean allowAll, boolean mustExist) {
+        if (i != null) {
+            RestoreExecutionAdapter restoreExecution = null;
+            try {
+                restoreExecution = getBackupFacade().getRestoreExecutions().get(Long.parseLong(i));
+            } catch (NumberFormatException e) {
+            }
+            if (restoreExecution == null && mustExist) {
+                throw new ResourceNotFoundException("No such restore execution: " + i);
+            }
+            return restoreExecution;
         }
-
-        try {
-            return "self".equalsIgnoreCase(ex) ? 1
-                    : "all".equalsIgnoreCase(ex) ? Integer.MAX_VALUE
-                            : "none".equalsIgnoreCase(ex) ? 0 : Integer.parseInt(ex);
-        } catch (NumberFormatException e) {
-            return def;
+        else {
+            if (allowAll) {
+                return new ArrayList<RestoreExecutionAdapter>(getBackupFacade().getRestoreExecutions().values());
+            }
+            throw new ResourceNotFoundException("No backup execution specified");
         }
     }
-
+    
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected  Hints asParams(List<String> options) {
+    protected Hints asParams(List<String> options) {
         Hints hints = new Hints(new HashMap(2));
-
+    
         if (options != null) {
             for (String option : options) {
                 if (option.startsWith(Backup.PARAM_DRY_RUN_MODE)) {
@@ -112,7 +160,7 @@ public abstract class BaseResource extends AbstractResource {
                     }
                     hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_DRY_RUN_MODE), Backup.PARAM_DRY_RUN_MODE));
                 }
-
+    
                 if (option.startsWith(Backup.PARAM_BEST_EFFORT_MODE)) {
                     if (option.indexOf("=")>0) {
                         if (!option.toLowerCase().endsWith("true")) {
@@ -126,7 +174,7 @@ public abstract class BaseResource extends AbstractResource {
         
         return hints;
     }
-    
+
     /**
      * @param xStream
      */
@@ -141,7 +189,7 @@ public abstract class BaseResource extends AbstractResource {
         
         // Configure aliases and converters
         xStream.omitField(RestoreExecutionAdapter.class, "restoreCatalog");
-
+    
         Class synchronizedListType = Collections.synchronizedList(Collections.EMPTY_LIST).getClass();
         xStream.alias("synchList", synchronizedListType);
         
@@ -171,7 +219,7 @@ public abstract class BaseResource extends AbstractResource {
         Class resourceAdaptorType = Files.asResource(new File("/")).getClass();
         xStream.alias("resource", resourceAdaptorType);
         xStream.registerLocalConverter(AbstractExecutionAdapter.class, "archiveFile", new ArchiveFileResourceConverter());
-
+    
         //Delegate
         xStream.aliasAttribute(AbstractExecutionAdapter.class, "delegate", "execution");
         xStream.omitField(JobExecution.class, "version");
@@ -194,7 +242,7 @@ public abstract class BaseResource extends AbstractResource {
             public boolean canConvert(Class type) {
                 return CopyOnWriteArraySet.class.isAssignableFrom(type);
             }
-
+    
             @Override
             public void marshal(Object obj, HierarchicalStreamWriter writer,
                     MarshallingContext ctx) {
@@ -210,11 +258,11 @@ public abstract class BaseResource extends AbstractResource {
                     writer.startNode("name");
                     writer.setValue(exec.getStepName());
                     writer.endNode();
-
+    
                     writer.startNode("status");
                     writer.setValue(exec.getStatus().name());
                     writer.endNode();
-
+    
                     writer.startNode("exitStatus");
                     writer.startNode("exitCode");
                     writer.setValue(exec.getExitStatus().getExitCode());
@@ -290,31 +338,7 @@ public abstract class BaseResource extends AbstractResource {
         });
         
     }
-    
-    /**
-     * 
-     * @author Alessio Fabiani, GeoSolutions S.A.S.
-     *
-     */
-    static public class ArchiveFileResourceConverter extends AbstractSingleValueConverter {
-        
-        @SuppressWarnings("rawtypes")
-        @Override
-        public boolean canConvert(Class type) {
-            return Resource.class.isAssignableFrom(type);
-        }
 
-        @Override
-        public String toString(Object obj) {
-            return ((Resource)obj).path();
-        }
-
-        @Override
-        public Object fromString(String str) {
-            return Files.asResource(new File(str));
-        }
-    }
-    
     /**
      * 
      * @author Alessio Fabiani, GeoSolutions S.A.S.
@@ -323,18 +347,18 @@ public abstract class BaseResource extends AbstractResource {
     static public class JobExecutionConverter extends ReflectionConverter {
         
         private Backup backupFacade;
-
+    
         JobExecutionConverter(Mapper mapper,
                 ReflectionProvider reflectionProvider, Backup backupFacade) {
             super(mapper, reflectionProvider);
             this.backupFacade = backupFacade;
         }
-
+    
         @Override
         public void marshal(Object obj, HierarchicalStreamWriter writer,
                 MarshallingContext context) {
             super.marshal(obj,writer,context);
-
+    
             JobExecution dl = (JobExecution) obj;
             Integer numSteps = 0;
             if (dl.getJobInstance().getJobName().equals(Backup.BACKUP_JOB_NAME)) {
@@ -349,13 +373,13 @@ public abstract class BaseResource extends AbstractResource {
             writer.setValue(progress.toString());
             writer.endNode();
         }
-
+    
         @Override
         public Object unmarshal(HierarchicalStreamReader reader,
                 UnmarshallingContext context) {
             return super.unmarshal(reader,context);
         }
-
+    
         @SuppressWarnings("rawtypes")
         @Override
         public boolean canConvert(Class clazz) {
@@ -363,14 +387,14 @@ public abstract class BaseResource extends AbstractResource {
         }
         
     }
-    
+
     /**
      * 
      * @author Alessio Fabiani, GeoSolutions S.A.S.
      *
      */
     static public class FilterConverter extends ReflectionConverter {
-
+    
         /**
          * @param mapper
          * @param reflectionProvider
@@ -410,4 +434,9 @@ public abstract class BaseResource extends AbstractResource {
             return filter;
         }
     }
+
+    public AbstractBackupRestoreController() {
+        super();
+    }
+
 }

@@ -126,13 +126,13 @@ goto setMarlinRenderer
 
 :setMarlinRenderer
   cd %GEOSERVER_HOME%
-  for /f %%i in ('dir /b/s %GEOSERVER_HOME%\webapps\geoserver\WEB-INF\lib\*marlin*') do set MARLIN_JAR=%%i
-  IF [%MARLIN_JAR%] == [] (
+  for /f "delims=" %%i in ('dir /b/s "%GEOSERVER_HOME%\webapps\geoserver\WEB-INF\lib\marlin*.jar"') do set MARLIN_JAR=%%i
+  if "%MARLIN_JAR%" == "" (
     echo Marlin renderer jar not found
-  ) ELSE (
-    set MARLIN_ENABLER=-Xbootclasspath/a:"%MARLIN_JAR%" -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine
-    set JAVA_OPTS=%JAVA_OPTS% %MARLIN_ENABLER%
+    goto run
   )
+  set MARLIN_ENABLER=-Xbootclasspath/a:"%MARLIN_JAR%" -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine
+  set JAVA_OPTS=%JAVA_OPTS% %MARLIN_ENABLER%
 goto run
 
 :run

@@ -72,35 +72,42 @@ class TruncateHelper {
             minimalBounds = geomBuildCommand.call();
             sw.stop();
             if (minimalBounds.isEmpty()) {
-                LOGGER.debug(String.format(
-                    "Feature tree '%s' not affected by change %s...%s (took %s)",
-                        layerTreeName, oldCommit, newCommit, sw));
+                LOGGER.debug(
+                        String.format("Feature tree '%s' not affected by change %s...%s (took %s)",
+                                layerTreeName, oldCommit, newCommit, sw));
                 return;
             }
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(String.format(
-                    "Minimal bounds on layer '%s' computed in %s: %s", tileLayerName, sw,
-                        formattedWKT(minimalBounds)));
+                LOGGER.debug(String.format("Minimal bounds on layer '%s' computed in %s: %s",
+                        tileLayerName, sw, formattedWKT(minimalBounds)));
             }
         } catch (Exception e) {
             sw.stop();
             LOGGER.error(String.format(
-                "Error computing minimal bounds for %s...%s on layer '%s' after %s",
-                    oldCommit, newCommit, tileLayerName, sw));
+                    "Error computing minimal bounds for %s...%s on layer '%s' after %s", oldCommit,
+                    newCommit, tileLayerName, sw));
             throw Throwables.propagate(e);
         }
         final Set<String> gridSubsets = tileLayer.getGridSubsets();
 
         LayerInfo layerInfo = tileLayer.getLayerInfo();
         ResourceInfo resource = layerInfo.getResource();
-        final CoordinateReferenceSystem nativeCrs = resource.getNativeCRS();
-
+        final CoordinateReferenceSystem sourceCrs;
+        {
+            CoordinateReferenceSystem nativeCrs = resource.getNativeCRS();
+            if (nativeCrs == null) {
+                // no native CRS specified, layer must have been configured with an overriding one
+                sourceCrs = resource.getCRS();
+            } else {
+                sourceCrs = nativeCrs;
+            }
+        }
         for (String gridsetId : gridSubsets) {
             GridSubset gridSubset = tileLayer.getGridSubset(gridsetId);
             final CoordinateReferenceSystem gridSetCrs = getGridsetCrs(gridSubset);
 
             LOGGER.debug("Reprojecting geometry mask to gridset {}", gridsetId);
-            Geometry geomInGridsetCrs = transformToGridsetCrs(minimalBounds, nativeCrs, gridSetCrs);
+            Geometry geomInGridsetCrs = transformToGridsetCrs(minimalBounds, sourceCrs, gridSetCrs);
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("geometry mask reprojected to gridset {}: {}", gridsetId,
                         formattedWKT(geomInGridsetCrs));
@@ -148,7 +155,7 @@ class TruncateHelper {
         Geometry geometry = bufferOp.getResultGeometry(bufferRatio);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug(String.format(
-                "Geometry buffered by the size of a tile at zoom level %s (%s units): %s",
+                    "Geometry buffered by the size of a tile at zoom level %s (%s units): %s",
                     zoomStop, bufferRatio, formattedWKT(geometry)));
         }
         TopologyPreservingSimplifier simplifier = new TopologyPreservingSimplifier(geometry);
@@ -217,9 +224,8 @@ class TruncateHelper {
                 rasterMask, mimeType, parameters);
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(String.format(
-                "Truncating layer %s#%s#%s with geom mask %s", layerName, gridSetId,
-                    mimeType.getFormat(), formattedWKT(geomInGridsetCrs)));
+            LOGGER.debug(String.format("Truncating layer %s#%s#%s with geom mask %s", layerName,
+                    gridSetId, mimeType.getFormat(), formattedWKT(geomInGridsetCrs)));
         }
         try {
             GWCTask[] tasks = breeder.createTasks(tileRange, TYPE.TRUNCATE, 1, false);

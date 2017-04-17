@@ -25,16 +25,14 @@ import org.springframework.http.HttpStatus;
 
 /**
  * Adds proper caching headers to capabilites response clients paying attention to HTTP headers do 
- * not they are cacheable, yet allowing these same clients to perform conditional requests and avoid
- * the caps document computation if nothing has changed, via ETag support.
+ * not think they are cacheable
  * 
  * The callback can be turned off by setting "CAPABILITIES_CACHE_CONTROL_ENABLED" to "false", either
  * as a system, environment or servlet context variable.
  *  
  * @author Andrea Aime - GeoSolutions
  */
-public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
-        implements GeoServerLifecycleHandler {
+public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback {
 
     static final Logger LOGGER = Logging.getLogger(CapabilitiesCacheHeadersCallback.class);
 
@@ -42,11 +40,8 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
 
     GeoServer gs;
 
-    private long lastLoaded;
-
     public CapabilitiesCacheHeadersCallback(GeoServer gs) {
         this.gs = gs;
-        this.lastLoaded = System.currentTimeMillis();
         
         // initialize headers processing by grabbing the default from a property
         final String value = GeoServerExtensions.getProperty("CAPABILITIES_CACHE_CONTROL_ENABLED");
@@ -62,24 +57,10 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
     }
 
     @Override
-    public Operation operationDispatched(Request request, Operation operation) {
-        // check conditional requests on GetCapabilities
-        if (handleCachingHeaders(request)) {
-            String clientTag = request.getHttpRequest().getHeader(HttpHeaders.IF_NONE_MATCH);
-            String currentTag = computeTag();
-            if (clientTag != null && currentTag.equals(clientTag)) {
-                throw new HttpErrorCodeException(HttpStatus.NOT_MODIFIED.value());
-            }
-        }
-
-        return operation;
-    }
-
-    @Override
     public Response responseDispatched(Request request, Operation operation, Object result,
             Response response) {
         if (handleCachingHeaders(request)) {
-            return new RevalidateTagResponse(response, computeTag());
+            return new RevalidateTagResponse(response);
         }
 
         return response;
@@ -95,30 +76,6 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
     }
 
 
-    private String computeTag() {
-        return lastLoaded + "-" + gs.getGlobal().getUpdateSequence();
-    }
-
-    @Override
-    public void onReset() {
-        // nothing to do
-    }
-
-    @Override
-    public void onDispose() {
-        // nothing to do
-    }
-
-    @Override
-    public void beforeReload() {
-        // nothing to do
-    }
-
-    @Override
-    public void onReload() {
-        this.lastLoaded = System.currentTimeMillis();
-    }
-    
     /**
      * Returns true if the callback will handle cache headers in GetCapabilities requests/responses
      * @return
@@ -144,12 +101,9 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
 
         Response delegate;
 
-        String tag;
-
-        public RevalidateTagResponse(Response delegate, String tag) {
+        public RevalidateTagResponse(Response delegate) {
             super(delegate.getBinding());
             this.delegate = delegate;
-            this.tag = tag;
         }
 
         public boolean canHandle(Operation operation) {
@@ -167,13 +121,11 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
             String[][] headers = delegate.getHeaders(value, operation);
             if (headers == null) {
                 // if no headers at all, add and exit
-                return new String[][] { { HttpHeaders.CACHE_CONTROL, "max-age=0, must-revalidate" },
-                        { HttpHeaders.ETAG, tag } };
+                return new String[][] { { HttpHeaders.CACHE_CONTROL, "max-age=0, must-revalidate" }};
             } else {
                 // will add only if not already there
                 Map<String, String> map = ArrayUtils.toMap(headers);
                 map.putIfAbsent(HttpHeaders.CACHE_CONTROL, "max-age=0, must-revalidate");
-                map.putIfAbsent(HttpHeaders.ETAG, tag);
                 headers = new String[map.size()][2];
                 int i = 0;
                 for (Map.Entry<String, String> entry : map.entrySet()) {

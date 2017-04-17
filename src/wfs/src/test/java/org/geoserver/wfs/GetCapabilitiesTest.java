@@ -262,20 +262,13 @@ public class GetCapabilitiesTest extends WFSTestSupport {
     
     @Test
     public void testCachingHeaders() throws Exception {
-        // first request, get the etag
+        // Check the cache control headers are set
         MockHttpServletRequest request = createGetRequestWithHeaders("wfs?service=WFS&version=1.0.0&request=getCapabilities");
         MockHttpServletResponse response = dispatch(request);
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         
         // check caching headers
-        final String etag = response.getHeader(HttpHeaders.ETAG);
-        assertNotNull(etag);
         assertEquals("max-age=0, must-revalidate", response.getHeader(HttpHeaders.CACHE_CONTROL));
-        
-        // now make a conditional request
-        request = createGetRequestWithHeaders("wfs?service=WFS&version=1.0.0&request=getCapabilities", HttpHeaders.IF_NONE_MATCH, etag);
-        response = dispatch(request);
-        assertEquals(HttpStatus.NOT_MODIFIED.value(), response.getStatus());
     }
     
     @Test
@@ -297,38 +290,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
             callback.setCapabilitiesCacheHeadersEnabled(backup);
         }
     }
-    
-    @Test
-    public void testEtagModification() throws Exception {
-        // no changes, the etag should not change
-        String etag1 = getCapabilitiesEtag();
-        assertNotNull(etag1);
-        String etag2 = getCapabilitiesEtag();
-        assertEquals(etag2, etag1);
-        
-        // now force a reload
-        final GeoServer gs = getGeoServer();
-        gs.reload();
-        String etagAfterReload = getCapabilitiesEtag();
-        assertNotEquals(etagAfterReload, etag1);
-        
-        // and then also change something to force the update sequence up
-        final GeoServerInfo global = gs.getGlobal();
-        global.setFeatureTypeCacheSize(200);
-        gs.save(global);
-        
-        String etagAfterChanges = getCapabilitiesEtag();
-        assertNotEquals(etagAfterChanges, etag1);
-        assertNotEquals(etagAfterChanges, etagAfterReload);
-    }
-    
-    String getCapabilitiesEtag() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse("wfs?service=WFS&version=1.0.0&request=getCapabilities");
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
-        final String etag = response.getHeader(HttpHeaders.ETAG);
-        return etag;
-    }
-    
+       
     MockHttpServletRequest createGetRequestWithHeaders(String path, String... headers) {
         MockHttpServletRequest request = createRequest( path ); 
         request.setMethod( "GET" );

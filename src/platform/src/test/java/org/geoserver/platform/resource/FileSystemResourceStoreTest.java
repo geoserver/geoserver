@@ -5,25 +5,14 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 public class FileSystemResourceStoreTest {
 
-    TemporaryFolder folder = new TemporaryFolder();
-
-    @Before
-    public void initTmpFolder() throws IOException {
-        folder = new TemporaryFolder();
-        folder.create();
-    }
-
-    @After
-    public void deleteTmpFolder() throws IOException {
-        folder.delete();
-    }
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void renameSameFileName() throws IOException, InterruptedException {

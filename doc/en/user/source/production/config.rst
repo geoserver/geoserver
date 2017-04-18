@@ -74,3 +74,18 @@ In some circumstances, you might want to completely disable the web administrati
 * Set the Java system property GEOSERVER_CONSOLE_DISABLED to true by adding -DGEOSERVER_CONSOLE_DISABLED=true to your container's JVM options
 * Remove all of the gs-web*-.jar files from WEB-INF/lib
 
+X-Frame-Options Policy
+----------------------
+
+In order to prevent clickjacking attacks GeoServer defaults to setting the X-Frame-Options HTTP 
+header to SAMEORIGIN. This prevents GeoServer from being embedded into an iFrame, which prevents certain
+kinds of security vulnerabilities. See the `OWASP Clickjacking entry <https://www.owasp.org/index.php/Clickjacking_Defense_Cheat_Sheet>`_ for details.
+
+If you wish to change this behavior you can do so through the following properties:
+
+* geoserver.xframe.shouldSetPolicy: controls whether the X-Frame-Options filter should be set at all. Default is true.
+* geoserver.xframe.policy: controls what the set the X-Frame-Options header to. Default is SAMEORIGIN valid options are DENY, SAMEORIGIN and ALLOW-FROM [uri]
+
+These properties can be set either via Java system property, command line argument (-D), environment
+variable or web.xml init parameter.
+

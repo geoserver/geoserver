@@ -193,7 +193,6 @@ public abstract class AbstractDXFWriter implements DXFWriter {
      * Normalizes an envelope to get a usable viewport.
      * 
      * @param e2
-     *
      */
     private ReferencedEnvelope normalizeEnvelope(ReferencedEnvelope pEnv) {
         if (pEnv != null) {
@@ -202,13 +201,12 @@ public abstract class AbstractDXFWriter implements DXFWriter {
                 // no features or no geom, enable creation of valid empty file at least
                 pEnv.init(0d, 1d, 0d, 1d);
             }
-        }else{
+        } else {
             // no data, enable creation of empty file at least
             pEnv = new ReferencedEnvelope();
             pEnv.init(0d, 1d, 0d, 1d);
         }
         return pEnv;
-
     }
 
     /**

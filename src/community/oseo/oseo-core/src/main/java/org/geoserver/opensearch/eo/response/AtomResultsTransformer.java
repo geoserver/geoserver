@@ -50,6 +50,7 @@ import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
+import org.springframework.http.MediaType;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -308,6 +309,23 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
                     "type", MetadataRequest.OM_METADATA, "title", "O&M metadata"));
 
             encodeOgcLinksFromFeature(feature, request);
+            
+            encodeDownloadLink(feature, request);
+        }
+
+        private void encodeDownloadLink(Feature feature, SearchRequest request) {
+            String location  = (String) value(feature, null, OpenSearchAccess.ORIGINAL_PACKAGE_LOCATION);
+            if(location != null) {
+                String type = (String) value(feature, null, OpenSearchAccess.ORIGINAL_PACKAGE_TYPE);
+                if(type == null) {
+                    type = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+                }
+                String hrefBase = getHRefBase(request);
+                String locationExpanded = QuickTemplate.replaceVariables(location,
+                        Collections.singletonMap(BASE_URL_KEY, hrefBase));
+                element("link", NO_CONTENTS, attributes("rel", "enclosure", "href", locationExpanded,
+                        "type", type, "title", "Source package download"));
+            }
         }
 
         private void encodeGenericEntryContents(Feature feature, String name,
@@ -407,7 +425,12 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
         }
 
         private Object value(Feature feature, String prefix, String attribute) {
-            Property property = feature.getProperty(new NameImpl(prefix, attribute));
+            Property property; 
+            if(prefix != null) {
+                property = feature.getProperty(new NameImpl(prefix, attribute));
+            } else {
+                property = feature.getProperty(attribute);
+            }
             if (property == null) {
                 return null;
             } else {

@@ -289,7 +289,7 @@ public class SearchTest extends OSEOTestSupport {
     public void testAllSentinel2Products() throws Exception {
         Document dom = getAsDOM(
                 "oseo/search?parentId=SENTINEL2&httpAccept=" + AtomSearchResponse.MIME);
-        // print(dom);
+        print(dom);
         
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("19")));
 
@@ -299,11 +299,29 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, not(hasXPath("/at:feed/at:entry[at:title='LS08']")));
         assertThat(dom, hasXPath("/at:feed/at:link[@rel='search']/@href", 
                 equalTo("http://localhost:8080/geoserver/oseo/search/description?parentId=SENTINEL2")));
-
         
         // there are two products only with links, verify, three offerings each
         assertThat(dom, hasXPath("count(/at:feed/at:entry[at:title='S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04']/owc:offering)", equalTo("3")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry[at:title='S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T32TPL_N02.01']/owc:offering)", equalTo("3")));
+        
+        // there are two products with download links
+        assertThat(dom, hasXPath(
+                "/at:feed/at:entry[at:title='S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04']/at:link[@rel='enclosure']/@href",
+                equalTo("http://localhost:8080/geoserver/scihub/sentinel2/S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04.zip")));
+        assertThat(dom,
+                hasXPath(
+                        "/at:feed/at:entry[at:title='S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04']/at:link[@rel='enclosure']/@type",
+                        equalTo("application/zip")));
+        assertThat(dom, hasXPath(
+                "/at:feed/at:entry[at:title='S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T32TPL_N02.01']/at:link[@rel='enclosure']/@href",
+                equalTo("http://localhost:8080/geoserver/scihub/sentinel2/S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T32TPL_N02.01.zip")));
+        assertThat(dom,
+                hasXPath(
+                        "/at:feed/at:entry[at:title='S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T32TPL_N02.01']/at:link[@rel='enclosure']/@type",
+                        equalTo("application/octet-stream"))); // this one has no type in the database
+        // just two enclosure links, the other products have nothing that can be downloaded
+        assertThat(dom,
+                hasXPath("count(/at:feed/at:entry/at:link[@rel='enclosure'])", equalTo("2")));
     }
     
     @Test

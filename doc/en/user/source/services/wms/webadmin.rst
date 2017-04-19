@@ -13,6 +13,8 @@ Service Metadata
 ----------------
 
 See the section on :ref:`service_metadata`.   
+
+.. _services_webadmin_wms_raster_options:
    
 Raster Rendering Options
 ------------------------

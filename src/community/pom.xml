@@ -53,7 +53,7 @@
           <descriptor>release/ext-kmlppio.xml</descriptor>
           <descriptor>release/ext-gpx.xml</descriptor>
           <descriptor>release/ext-wps-download.xml</descriptor>
-          <!-- <descriptor>release/ext-jms-cluster.xml</descriptor> -->
+          <descriptor>release/ext-jms-cluster.xml</descriptor>
           <descriptor>release/ext-hz-cluster.xml</descriptor>
           <descriptor>release/ext-activeMQ.xml</descriptor>	
           <descriptor>release/ext-solr.xml</descriptor>		  
@@ -210,7 +210,7 @@
         <module>gpxppio</module>
         <module>kmlppio</module>
         <module>wps-download</module>
-        <!-- <module>jms-cluster</module> -->
+        <module>jms-cluster</module>
         <module>hz-cluster</module>
         <module>solr</module>
         <!-- <module>rest-upload</module> -->

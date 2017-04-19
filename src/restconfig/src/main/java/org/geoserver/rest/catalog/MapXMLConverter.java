@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.geoserver.rest.converters.BaseMessageConverter;
 import org.jdom.Document;
@@ -33,7 +34,7 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return Map.class.isAssignableFrom(clazz);
+        return Map.class.isAssignableFrom(clazz) && !Properties.class.isAssignableFrom(clazz);
     }
 
     //

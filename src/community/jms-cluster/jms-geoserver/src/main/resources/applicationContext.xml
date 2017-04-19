@@ -13,7 +13,7 @@
                            http://activemq.apache.org/schema/core
                            http://activemq.apache.org/schema/core/activemq-core.xsd">
 
-	<context:component-scan base-package="it.geosoutions.geoserver.jms" />
+	<context:component-scan base-package="org.geoserver.cluster" />
 	<context:annotation-config />
 	
     <bean id="clusterHomePageContentProvider" 
@@ -28,26 +28,8 @@
 	<bean id="JMSActiveMQEmbeddedBrokerConfiguration"
 		class="org.geoserver.cluster.impl.ActiveMQEmbeddedBrokerConfiguration" />
 
-	<!-- REST INTERFACE -->
-
-	<bean id="jmsRestConfigMapping" class="org.geoserver.rest.RESTMapping">
-		<property name="routes">
-			<map>
-				<entry>
-					<key>
-						<value>/cluster</value>
-					</key>
-					<value>JMSResourceFinder</value>
-				</entry>
-			</map>
-		</property>
-	</bean>
-	
-	<bean id="JMSResourceFinder"
-		class="org.geoserver.cluster.impl.rest.ClusterResourceFinder" />
-		
 	<bean id="JMSController"
-		class="org.geoserver.cluster.impl.rest.Controller" />
+				class="org.geoserver.cluster.impl.rest.Controller" />
 
 	<!-- CONFIGURATION EXTENSIONS -->
 

@@ -47,7 +47,7 @@ copyright = u'2016, Open Source Geospatial Foundation'
 # The short X.Y version.
 version = '2.10'
 # The full version, including alpha/beta/rc tags.
-release = '2.10-SNAPSHOT'
+release = '2.10.3'
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
    release = '2.10.x'

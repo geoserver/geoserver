@@ -39,7 +39,7 @@ Configuring a NetCDF data store
 Notes on supported NetCDFs
 --------------------------
 
-The NetCDF plugin for GeoServer supports gridded NetCDF files having dimensions following the COARDS convention (custom, Time, Elevation, Lat, Lon).
+The NetCDF plugin for GeoServer supports gridded NetCDF files having dimensions following the COARDS convention (custom, Time, Elevation, Lat, Lon). The NetCDF plugin supports plain NetCDF datasets (.NC files) as well .NCML files (which aggregate and/or modify one or more datasets) and Feature Collections. It supports Forecast Model Run Collection Aggregations (FMRC) either through the NCML or Feature Collection syntax. It supports an unlimited amount of custom dimensions, including runtime. 
 
 `ToolsUI <ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.6/toolsUI-4.6.jar>`_ is an useful java tool developed by UCAR which can be useful for a preliminary check on your dataset.
 Opening a sample NetCDF using that tool will show an output like this in the Viewer tab:
@@ -53,15 +53,34 @@ Opening a sample NetCDF using that tool will show an output like this in the Vie
 * Each dimension has an associated independent coordinate variable (marked by the green rectangle).
 * Finally, the dataset has 3 geophysical variables, marked by a red rectangle, each having 4 dimensions.
 
-The NetCDF plugin supports datasets where each variable's axis is identified by an independent coordinate variable, as shown in the previous example.
-Two dimensional non-independent latitude-longitude coordinate variables aren't currently supported. 
-A coordinate variable like this will be a coordinate variable having 2 dimensions to index it (such as y,x/rows,cols/i,j...).
+The NetCDF plugin fully supports datasets where each variable's axis is identified by an independent coordinate variable, as shown in the previous example. There is limited support for two dimensional coordinate variables (see :ref:`netcdf_multidim`). A coordinate variable like this will be a coordinate variable having 2 dimensions to index it. This can be part of the definition of a plain dataset (such as y,x/rows,cols/i,j/...) or the result of an aggregation (such as time,runtime - in the case of a runtime aggregation).
+
 A similar dataset will look like this in ToolsUI. Look at the red marked latitude and longitude coordinate variables, each one identified by a y,x 2D matrix.
 
 .. figure:: dataset2dcoords.png
    :align: center
 
    *NetCDF viewer in ToolsUI for 2D coordinate variables*
+
+.. _netcdf_multidim:
+
+Multi-Dimensional Coordinate Variables
+--------------------------------------
+
+Multi-dimension coordinate variables are exposed in GeoServer as single dimensions. Their domain is exposed in GetCapabilities as a flat list of possible values. However, they imply an interdependence between the different dimensions, where some combinations of values exist (have data) and other combinations do not. Because of this, some additional functionality was introduced to maximally exploit them:
+
+ * With requests that do not specify certain dimension values, we want to select default values that makes sense with regards to the dimensions values that *were* specified in the request. More specifically we want the maximum or minimum of the domain that matches the specified request's other dimension values; rather than the maximum or minimum of the entire domain.
+
+ * The user may want to query which combination of dimension values do exist and which don't. This can be done through an Auxiliary Vector Store that publishes the entire index. 
+
+A number of system properties allow us to configure this behavior:
+
+ * ``org.geotools.coverage.io.netcdf.param.max``
+     A comma separated list of dimensions that must be maximised when their value is absent in the request. In the layer configuration, the default value of these dimensions must be set to 'Built-in'.
+ * ``org.geotools.coverage.io.netcdf.param.min``
+     A comma separated list of dimensions that must be minimised when their value is absent in the request. In the layer configuration, the default value of these dimensions must be set to 'Built-in'.
+ * ``org.geotools.coverage.io.netcdf.auxiliary.store``
+     Set to TRUE to display the 'NetCDF Auxiliary Store' option in Geoserver. A NetCDF Auxiliary Stor must be published *after* publishing the actual NetCDF store.
 
 Supporting Custom NetCDF Coordinate Reference Systems
 -----------------------------------------------------

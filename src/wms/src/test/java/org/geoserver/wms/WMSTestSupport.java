@@ -46,6 +46,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
@@ -94,7 +95,8 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final Color COLOR_PLACES_GRAY = new Color(170, 170, 170);
     protected static final Color COLOR_LAKES_BLUE = new Color(64, 64, 192);
-    
+
+    protected static QName WORLD = new QName(MockData.SF_URI, "world", MockData.SF_PREFIX);
     
     /**
      * @return The global wms singleton from the application context.
@@ -128,6 +130,9 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         testData.registerNamespaces(namespaces);
         registerNamespaces(namespaces);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+
+        //Add a raster layer
+        testData.setUpRasterLayer(WORLD, "world.tiff", null, null, TestData.class);
         
 
     }

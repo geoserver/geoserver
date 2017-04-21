@@ -54,7 +54,8 @@ function upload_installer() {
 
   if [ -z $SKIP_UPLOAD ]; then
     echo "uploading $file"
-    scp $ssh_opts -P $DIST_PORT $file $DIST_USER@$DIST_HOST:$DIST_PATH/$tag
+    echo "$ssh_opts -P $DIST_PORT $file ${DIST_USER}@${DIST_HOST}:${DIST_PATH}/${tag}"
+    scp $ssh_opts -P $DIST_PORT $file ${DIST_USER}@${DIST_HOST}:${DIST_PATH}/$tag
   fi
 }
 

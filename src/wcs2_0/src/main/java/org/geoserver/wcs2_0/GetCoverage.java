@@ -891,7 +891,7 @@ public class GetCoverage {
             // let's create a subsetting GG2D (Taking overviews and requested scaling into account)
             MathTransform transform = getMathTransform(reader,
                     requestedEnvelope != null ? requestedEnvelope : subset, request,
-                    PixelInCell.CELL_CENTER, scaling, preAppliedScale);
+                    PixelInCell.CELL_CENTER, scaling);
             readGG = new GridGeometry2D(
                     PixelInCell.CELL_CENTER,
                     transform,
@@ -925,15 +925,22 @@ public class GetCoverage {
         // === read
         // check limits
         WCSUtils.checkInputLimits(wcs,cinfo,reader,readGG);
+        Hints readHints = new Hints();
+        if (hints != null) {
+            readHints.putAll(hints);
+        }
+        if (request.getOverviewPolicy() != null) {
+            readHints.add(new Hints(Hints.OVERVIEW_POLICY, request.getOverviewPolicy()));
+        }
         coverage= RequestUtils.readBestCoverage(
                 reader, 
                 readParameters,  
                 readGG, 
                 spatialInterpolation,
                 request.getOverviewPolicy(),
-                hints);
-        // check limits again
+                readHints);
         if (coverage != null) {
+            // check limits again
             if (incrementalInputSize == null) {
                 WCSUtils.checkInputLimits(wcs, coverage);
             } else {
@@ -941,21 +948,41 @@ public class GetCoverage {
                 // If the size is exceeded an exception is thrown
                 incrementalInputSize.addSize(coverage);
             }
+            
+            // see what scaling factors the reader actually applied
+            if (scaling != null) {
+                MathTransform cmt = coverage.getGridGeometry().getGridToCRS();
+                MathTransform rmt = reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER);
+                if (!(cmt instanceof AffineTransform2D) || !(rmt instanceof AffineTransform2D)) {
+                    LOGGER.log(Level.FINE, "Cannot check if the returned coverage "
+                            + "matched the requested resolution due to a non affine "
+                            + "grid to world backing it"); 
+                } else {
+                    AffineTransform2D cat = (AffineTransform2D) cmt;
+                    AffineTransform2D rat = (AffineTransform2D) rmt;
+                    preAppliedScale[0] = cat.getScaleX() / rat.getScaleX();
+                    preAppliedScale[1] = cat.getScaleY() / rat.getScaleY();
+                }
+            }
+
         }
 
         // return
         return coverage;
     }
 
-    private MathTransform getMathTransform(GridCoverage2DReader reader, Envelope subset, 
-            GridCoverageRequest request, PixelInCell pixelInCell, ScalingType scaling, double[] preAppliedScale) throws IOException {
-        final OverviewPolicy overviewPolicy = request.getOverviewPolicy();
+    MathTransform getMathTransform(GridCoverage2DReader reader, Envelope subset, 
+            GridCoverageRequest request, PixelInCell pixelInCell, ScalingType scaling) throws IOException {
+        // return the original grid to world only if there is no scaling, the overview policy
+        // is going to be taken care of when sending data to the image reader (failing to do
+        // so will cause OOM or get the processing thread blocked for a long time because 
+        // the reader is no more allowed to use subsampling)
         ScalingPolicy scalingPolicy = scaling == null ? null : ScalingPolicy.getPolicy(scaling);
-        if (overviewPolicy == null || overviewPolicy == OverviewPolicy.IGNORE || scaling == null ||
-                scalingPolicy == null || scalingPolicy == ScalingPolicy.ScaleToExtent) {
+        if (scalingPolicy == null || scalingPolicy == ScalingPolicy.DoNothing) {
             return reader.getOriginalGridToWorld(pixelInCell);
         }
 
+        // here we are already assuming to work off an affine transform
         MathTransform transform = reader.getOriginalGridToWorld(pixelInCell);
         AffineTransform af = (AffineTransform) transform;
    
@@ -966,14 +993,9 @@ public class GetCoverage {
         // Getting the requested resolution, taking the requested scaling into account 
         final double[] requestedResolution = computeRequestedResolution(scaling, subset, nativeResX, nativeResY);
 
-        // Getting the read resolution from the reader, based on the Overview Policy
-        final double[] readResolution = reader.getReadingResolutions(overviewPolicy, requestedResolution);
-
-        // setup a scaling to get the transformation to be used to access the specified overview 
+        // setup a scaling to get the desired resolution while allowing the reader to apply subsampling 
         AffineTransform scale = new AffineTransform();
-        preAppliedScale[0] = readResolution[0] / nativeResX;
-        preAppliedScale[1] = readResolution[1] / nativeResY;
-        scale.scale(preAppliedScale[0], preAppliedScale[1]);
+        scale.scale(requestedResolution[0] / nativeResX, requestedResolution[1] / nativeResY);
         AffineTransform finalTransform = new AffineTransform(af);
         finalTransform.concatenate(scale);
         return ProjectiveTransform.create(finalTransform);
@@ -991,7 +1013,7 @@ public class GetCoverage {
             double nativeResX, double nativeResY) {
         ScalingPolicy policy = ScalingPolicy.getPolicy(scaling);
         double[] requestedResolution = new double[2];
-        if (policy == ScalingPolicy.ScaleToSize) {
+        if (policy == ScalingPolicy.ScaleToSize || policy == ScalingPolicy.ScaleToExtent) {
             int[] scalingSize = ScalingPolicy.getTargetSize(scaling);
 
             // Getting the requested resolution (using envelope and requested scaleSize)

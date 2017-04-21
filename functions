@@ -54,8 +54,12 @@ function upload_installer() {
 
   if [ -z $SKIP_UPLOAD ]; then
     echo "uploading $file"
-    echo "$ssh_opts -P $DIST_PORT $file ${DIST_USER}@${DIST_HOST}:${DIST_PATH}/${tag}"
-    scp $ssh_opts -P $DIST_PORT $file ${DIST_USER}@${DIST_HOST}:${DIST_PATH}/$tag
+    # add an extra / to beginning of file path to overcome issue with MinGW text substitution
+    # where the :/ remote path is converted to ;z: (and connection fails to resolve hostname)
+    # http://www.mingw.org/wiki/Posix_path_conversion
+    scp $ssh_opts -P $DIST_PORT $file $DIST_USER@$DIST_HOST:/$DIST_PATH/$tag
+    # set access permissions for www 
+    ssh $ssh_opts -p $DIST_PORT $DIST_USER@$DIST_HOST "chmod 0644 '$DIST_PATH/$tag'"
   fi
 }
 

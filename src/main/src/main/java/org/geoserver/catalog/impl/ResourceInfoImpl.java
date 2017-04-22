@@ -28,6 +28,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.geoserver.catalog.DataLinkInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 
 /**
  * Default implementation of {@link ResourceInfo}.
@@ -79,6 +80,8 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     protected StoreInfo store;
     
     protected transient Catalog catalog;
+    
+    protected Integer sortIndex = ResourceInfo.DEFAULT_INDEX_FOR_NOT_SORTED;
 
     protected ResourceInfoImpl() {
     }
@@ -371,6 +374,19 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     @Override
     public void setAdvertised(boolean advertised) {
         this.advertised = advertised;
+    }
+    
+    @Override
+    public Integer getSortIndex() {
+        return sortIndex;
+    }
+
+    @Override
+    public void setSortIndex(Integer sortIndex) {
+        if(sortIndex==null) {
+            sortIndex = FeatureTypeInfo.DEFAULT_INDEX_FOR_NOT_SORTED;
+        }
+        this.sortIndex = sortIndex;
     }
 
     public int hashCode() {

@@ -15,7 +15,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -24,8 +23,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import net.opengis.wcs20.GetCapabilitiesType;
 
 import org.geoserver.ExtendedCapabilitiesProvider;
 import org.geoserver.catalog.CoverageInfo;
@@ -49,13 +46,15 @@ import org.geotools.wcs.v2_0.WCS;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.opengis.geometry.BoundingBox;
-import org.vfny.geoserver.global.CoverageInfoLabelComparator;
+import org.vfny.geoserver.global.CoverageInfoIndexComparator;
 import org.vfny.geoserver.wcs.WcsException;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.NamespaceSupport;
+
+import net.opengis.wcs20.GetCapabilitiesType;
 
 /**
  * Transformer for GetCapabilities
@@ -557,7 +556,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             start("wcs:Contents");
 
             @SuppressWarnings("unchecked")
-            final Set<CoverageInfo> coverages = new TreeSet<CoverageInfo>(new CoverageInfoLabelComparator());
+            final Set<CoverageInfo> coverages = new TreeSet<CoverageInfo>(new CoverageInfoIndexComparator());
             coverages.addAll(wcs.getGeoServer().getCatalog().getCoverages());
 
             // filter out disabled coverages

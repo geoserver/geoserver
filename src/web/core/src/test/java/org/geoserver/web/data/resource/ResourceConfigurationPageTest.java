@@ -5,21 +5,21 @@
  */
 package org.geoserver.web.data.resource;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.publish.PublishedConfigurationPage;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
@@ -84,6 +84,23 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         assertEquals(4.5, re.getMinY(), 0.1);
         assertEquals(-93, re.getMaxX(), 0.1);
         assertEquals(4.5, re.getMaxY(), 0.1);
+    }
+    
+    
+    @Test
+    public void testSortIndex() throws Exception {
+        final Catalog catalog = getCatalog();
+        
+        final CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.setStore(catalog.getStoreByName(MockData.POLYGONS.getPrefix(), DataStoreInfo.class));
+        FeatureTypeInfo feat = cb.buildFeatureType(new NameImpl(MockData.LINES));
+        LayerInfo layer = cb.buildLayer(feat); 
+        layer.setResource(feat);
+        layer.setSortIndex(33);
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, true));
+        tester.assertContains("33");
+        
     }
     
 }

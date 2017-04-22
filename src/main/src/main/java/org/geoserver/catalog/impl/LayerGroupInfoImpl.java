@@ -11,6 +11,7 @@ import java.util.List;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
@@ -316,5 +317,18 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     
     public void setMetadataLinks(List<MetadataLinkInfo> metadataLinks) {
         this.metadataLinks = metadataLinks;
+    }
+
+
+    @Override
+    public Integer getSortIndex() {
+        return FeatureTypeInfo.DEFAULT_INDEX_FOR_NOT_SORTED;
+    }
+
+
+    @Override
+    public void setSortIndex(Integer sortIndex) {
+        // Not supported
+        
     }
 }

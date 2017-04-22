@@ -59,6 +59,7 @@ import org.opengis.feature.type.Schema;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.capability.FunctionName;
 import org.opengis.parameter.Parameter;
+import org.vfny.geoserver.global.FeatureTypeInfoIndexComparator;
 import org.vfny.geoserver.global.FeatureTypeInfoTitleComparator;
 import org.vfny.geoserver.util.ResponseUtils;
 import org.xml.sax.Attributes;
@@ -690,7 +691,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     }
                 }
                 
-                Collections.sort(featureTypes, new FeatureTypeInfoTitleComparator());
+                Collections.sort(featureTypes, new FeatureTypeInfoIndexComparator());
                 for (Iterator it = featureTypes.iterator(); it.hasNext();) {
                     FeatureTypeInfo ftype = (FeatureTypeInfo) it.next();
                     try {
@@ -1412,7 +1413,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     }
                 }
                 
-                Collections.sort(featureTypes, new FeatureTypeInfoTitleComparator());
+                Collections.sort(featureTypes, new FeatureTypeInfoIndexComparator());
                 for (Iterator i = featureTypes.iterator(); i.hasNext();) {
                     FeatureTypeInfo featureType = (FeatureTypeInfo) i.next();
                     if(featureType.enabled()) {

@@ -314,4 +314,15 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
     public void setNativeCoverageName(String nativeCoverageName) {
         delegate.setNativeCoverageName(nativeCoverageName);
     }
+
+    @Override
+    public Integer getSortIndex() {
+        return delegate.getSortIndex();
+    }
+
+    @Override
+    public void setSortIndex(Integer sortIndex) {
+        delegate.setSortIndex(sortIndex);
+        
+    }
 }

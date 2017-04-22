@@ -715,7 +715,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }            
             
             // now encode each layer individually
-            SortBy layerOrder = asc("name");
+            SortBy layerOrder = asc("sortIndex");
             layers = catalog.list(LayerInfo.class, filter, null, null, layerOrder);
             try {
                 handleLayerTree(layers, layersAlreadyProcessed);

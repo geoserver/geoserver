@@ -272,6 +272,8 @@ The two possible values are:
 The two methods tend to return values rather close to each other near the equator, but they
 do diverge to larger differences as the latitude approaches the poles.
 
+.. _wms_vendor_parameter_interpolations:
+
 interpolations
 --------------
 
@@ -291,7 +293,7 @@ method<n> values can be one of the following:
 
 or empty if the default method has to be used for the related layer. 
 
-The parameter allows to override the global WMS Raster Rendering Options setting (see :ref:`WMS Settings <services_webadmin_wms>` for more info), on a layer by layer basis. 
+The parameter allows to override the global *WMS Raster Rendering Options* setting (see :ref:`WMS Settings <services_webadmin_wms>` for more info), as well as the layer specific *Default Interpolation Method* publishing parameter (see :ref:`Layers <data_webadmin_layers>` for more info), on a layer by layer basis.
 
 format
 ------

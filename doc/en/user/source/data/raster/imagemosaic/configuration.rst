@@ -238,6 +238,9 @@ In addition to the required envelope and location attributes, the schema for the
    * - Wildcard
      - N
      - Wildcard used to specify which files should be scanned by the indexer. (For instance: ".")
+   * - MosaicCRS
+     - N
+     - The "native" CRS of the mosaic, that is, the one in which footprints are collected. Useful when dealing with granules in multiple CRSs (see tutorial)
 
 Here is a sample :file:`indexer.properties` file::
 

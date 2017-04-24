@@ -61,4 +61,47 @@
 
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>testWithNativeJaiExt</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.12.3</version>
+            <configuration>
+              <runOrder>alphabetical</runOrder>
+              <source>1.8</source>
+              <target>1.8</target>
+              <includes>
+                <include>**/*Test.java</include>
+              </includes>
+              <excludes>
+                <exclude>${test.exclude.pattern}</exclude>
+              </excludes>
+              <forkMode>once</forkMode>
+              <argLine>-Djava.library.path=/opt/libjpeg-turbo/lib64:/usr/lib/jni -Xmx${test.maxHeapSize}
+                -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless}
+                -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests}
+                -Dorg.geotools.image.test.enabled=${image.tests}
+                -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone}
+                -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+              </argLine>
+              <enableAssertions>true</enableAssertions>
+              <printSummary>true</printSummary>
+              <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
+              <excludedGroups>${test.excludedGroups}</excludedGroups>
+              <additionalClasspathElements>
+                <additionalClasspathElement>/usr/share/java/mlibwrapper_jai.jar</additionalClasspathElement>
+                <additionalClasspathElement>/usr/share/java/jai_codec.jar</additionalClasspathElement>
+                <additionalClasspathElement>/usr/share/java/jai_core.jar</additionalClasspathElement>
+                <additionalClasspathElement>/usr/share/java/clibwrapper_jiio.jar</additionalClasspathElement>
+                <additionalClasspathElement>/usr/share/java/jai_imageio.jar</additionalClasspathElement>
+              </additionalClasspathElements>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

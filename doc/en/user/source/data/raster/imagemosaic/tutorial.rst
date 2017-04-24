@@ -328,13 +328,17 @@ In this example, we will serve up overlapping granules that have varying resolut
 
 #. Make any other configuration changes.
 
-#. Also, in order to allow for multiple CRSs in a single mosaic, an :file:`indexer.properties` file will need to be created. Use the following::
+#. Also, in order to allow for multiple CRSs in a single mosaic, an :file:`indexer.properties` file will need to be created. Use the following ::
 
       GranuleAcceptors=org.geotools.gce.imagemosaic.acceptors.HeterogeneousCRSAcceptorFactory
       GranuleHandler=org.geotools.gce.imagemosaic.granulehandler.ReprojectingGranuleHandlerFactory
       HeterogeneousCRS=true
+      MosaicCRS=EPSG\:4326
       PropertyCollectors=CRSExtractorSPI(crs),ResolutionExtractorSPI(resolution)
       Schema=*the_geom:Polygon,location:String,crs:String,resolution:String
+      
+   The MosaicCRS properyty is not mandatory, but it's a good idea to set a predictable target CRS that all granule footprints can be reprojected into,
+   otherwise the mosaic machinery will use the one of the first indexed granule.
 
 #. Save this file in the root of the mosaic directory (along with the index files). The result is the following:
 

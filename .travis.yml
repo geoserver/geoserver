@@ -12,3 +12,7 @@ notifications:
     on_success: never
     on_failure: never
 jdk: oraclejdk8
+addons:
+  apt:
+    packages:
+      - libnetcdf6

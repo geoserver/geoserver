@@ -32,6 +32,7 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
 
+import it.geosolutions.jaiext.JAIExt;
 import org.geotools.image.ImageWorker;
 import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.logging.Logging;
@@ -103,7 +104,7 @@ final class TurboJpegImageWorker extends ImageWorker {
         final int numBands = image.getSampleModel().getNumBands();
         if (hasAlpha) {
             final int requestedBands = numBands - 1;
-            if (ImageUtilities.isMediaLibAvailable()) {
+            if (ImageUtilities.isMediaLibAvailable() && !JAIExt.isJAIExtOperation("BandSelect")) {
                 retainBands(requestedBands);
             } else if (getNumBands() > requestedBands) {
                 removeAlpha(requestedBands);

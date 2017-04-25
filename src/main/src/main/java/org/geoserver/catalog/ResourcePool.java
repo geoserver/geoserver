@@ -934,7 +934,7 @@ public class ResourcePool {
     }
     
     FeatureType tryGetFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {
-        boolean cacheable = isCacheable(info) && handleProjectionPolicy;
+        boolean cacheable = isCacheable(info);
         return cacheable ? getCacheableFeatureType(info, handleProjectionPolicy): 
                            getNonCacheableFeatureType(info, handleProjectionPolicy);
     }
@@ -973,25 +973,7 @@ public class ResourcePool {
         FeatureTypeCallback initializer = getFeatureTypeInitializer(info, dataAccess);
         Name temporaryName = null;
         if (initializer != null) {
-            // use a highly random name, we don't want to actually add the
-            // virtual table to the store as this feature type is not cacheable,
-            // it is "dirty" or un-saved. The renaming below will take care
-            // of making the user see the actual name
-            // NT 14/8/2012: Removed synchronization on jstore as it blocked query
-            // execution and risk of UUID clash is considered acceptable.
-
-            List<Name> typeNames = dataAccess.getNames();
-            String nsURI = null;
-            if (typeNames.size() > 0) {
-                nsURI = typeNames.get(0).getNamespaceURI();
-            }
-            do {
-                String name = UUID.randomUUID().toString();
-                temporaryName = new NameImpl(nsURI, name);
-            } while (Arrays.asList(typeNames).contains(temporaryName));
-            if (!initializer.initialize(info, dataAccess, temporaryName)) {
-                temporaryName = null;
-            }
+            temporaryName = getTemporaryName(info, dataAccess, initializer);
         }
         ft = dataAccess.getSchema(temporaryName != null ? temporaryName : info
                 .getQualifiedNativeName());
@@ -1003,6 +985,42 @@ public class ResourcePool {
         }
 
         return ft;
+    }
+
+    /**
+     * Builds a temporary name for a feature type making sure there is no conflict with other
+     * existing type names in the store
+     * 
+     * @param info
+     * @param dataAccess
+     * @param initializer
+     * @return
+     * @throws IOException
+     */
+    protected Name getTemporaryName(FeatureTypeInfo info,
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
+            FeatureTypeCallback initializer) throws IOException {
+        Name temporaryName;
+        // use a highly random name, we don't want to actually add the
+        // virtual table to the store as this feature type is not cacheable,
+        // it is "dirty" or un-saved. The renaming below will take care
+        // of making the user see the actual name
+        // NT 14/8/2012: Removed synchronization on jstore as it blocked query
+        // execution and risk of UUID clash is considered acceptable.
+
+        List<Name> typeNames = dataAccess.getNames();
+        String nsURI = null;
+        if (typeNames.size() > 0) {
+            nsURI = typeNames.get(0).getNamespaceURI();
+        }
+        do {
+            String name = UUID.randomUUID().toString();
+            temporaryName = new NameImpl(nsURI, name);
+        } while (Arrays.asList(typeNames).contains(temporaryName));
+        if (!initializer.initialize(info, dataAccess, temporaryName)) {
+            temporaryName = null;
+        }
+        return temporaryName;
     }
 
     /**

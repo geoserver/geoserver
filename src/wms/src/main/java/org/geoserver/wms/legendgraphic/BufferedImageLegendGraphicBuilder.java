@@ -6,7 +6,6 @@
 package org.geoserver.wms.legendgraphic;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,11 +25,10 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 import org.geoserver.catalog.LegendInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
-import org.geoserver.wms.legendgraphic.LegendMerger.MergeOptions;
-import org.geoserver.wms.legendgraphic.LegendUtils.LegendLayout;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
@@ -50,7 +47,6 @@ import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StyledShapePainter;
 import org.geotools.renderer.style.SLDStyleFactory;
 import org.geotools.renderer.style.Style2D;
-import org.geotools.styling.Description;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.PointSymbolizer;
@@ -77,7 +73,6 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 import org.opengis.style.GraphicLegend;
-import org.opengis.util.InternationalString;
 import org.springframework.util.StringUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -182,10 +177,6 @@ public class BufferedImageLegendGraphicBuilder {
         
         
         List<LegendRequest> layers = request.getLegends();
-        //List<FeatureType> layers=request.getLayers();
-        //List<Style> styles=request.getStyles();
-        //List<String> rules=request.getRules();
-        
         
         boolean forceLabelsOn = false;
         boolean forceLabelsOff = false;
@@ -205,6 +196,11 @@ public class BufferedImageLegendGraphicBuilder {
                 forceTitlesOff = true;
             }
         }
+
+        FeatureCountProcessor countProcessor = null;
+        if(Boolean.TRUE.equals(request.getLegendOption(GetLegendGraphicRequest.COUNT_MATCHED_KEY, Boolean.class))) {
+            countProcessor = new FeatureCountProcessor(request);
+        }
         
         for(LegendRequest legend : layers ){
             FeatureType layer=legend.getFeatureType();
@@ -214,7 +210,7 @@ public class BufferedImageLegendGraphicBuilder {
             if (gt2Style == null) {
                 throw new NullPointerException("request.getStyle()");
             }
-
+            
             // get rule corresponding to the layer index
             // normalize to null for NO RULE
             String ruleName = legend.getRule(); // was null            
@@ -317,8 +313,7 @@ public class BufferedImageLegendGraphicBuilder {
                         new FeatureTypeStyle[0]);
                 final double scaleDenominator = request.getScale();
                 
-                final Rule[] applicableRules;
-                
+                Rule[] applicableRules;
                 if (ruleName != null) {
                     Rule rule = LegendUtils.getRule(ftStyles, ruleName);
                     if (rule == null) {
@@ -327,6 +322,11 @@ public class BufferedImageLegendGraphicBuilder {
                     applicableRules = new Rule[] {rule};
                 } else {
                     applicableRules = LegendUtils.getApplicableRules(ftStyles, scaleDenominator);
+                }
+                
+                // do we have to alter the style to do context sensitive feature counts?
+                if(countProcessor != null && !forceLabelsOff) {
+                    applicableRules = updateRuleTitles(countProcessor, legend, applicableRules);
                 }
                 
                 final NumberRange<Double> scaleRange = NumberRange.create(scaleDenominator,
@@ -435,8 +435,6 @@ public class BufferedImageLegendGraphicBuilder {
                     labelMargin = Integer.parseInt(request.getLegendOptions().get("labelMargin").toString());
                 }
                 LegendMerger.MergeOptions options = LegendMerger.MergeOptions.createFromRequest(legendsStack, 0, 0, 0, labelMargin, request, forceLabelsOn, forceLabelsOff);
-                // JD: changed legend behavior, see GEOS-812
-                // this.legendGraphic = scaleImage(mergeLegends(legendsStack), request);
                 BufferedImage image = LegendMerger.mergeLegends(applicableRules, request, options); 
                         
                 if(image != null) {
@@ -451,6 +449,11 @@ public class BufferedImageLegendGraphicBuilder {
             throw new IllegalArgumentException("no legend passed");
         }
         return finalLegend;
+    }
+
+    protected Rule[] updateRuleTitles(FeatureCountProcessor processor, LegendRequest legend,
+            Rule[] applicableRules) {
+        return processor.preProcessRules(legend, applicableRules);
     }
 
     /**

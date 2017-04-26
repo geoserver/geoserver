@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.AbstractDispatcherCallback;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.wms.GetLegendGraphicRequest;
@@ -92,9 +93,19 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             request.setTransparent(true);
             request.setScale(scaleDenominator);
             request.setStyle(layer.getStyle());
+            request.setWms(wms);
+            final Request dispatcherRequest = Dispatcher.REQUEST.get();
+            if(dispatcherRequest != null) {
+                request.setKvp(dispatcherRequest.getKvp());
+                request.setRawKvp(dispatcherRequest.getRawKvp());
+            }
+            
 
             Map legendOptions = new CaseInsensitiveMap(options);
             legendOptions.putAll(mapContext.getRequest().getFormatOptions());
+            if(dispatcherRequest != null && dispatcherRequest.getKvp().get("legend_options") != null) {
+                legendOptions.putAll((Map) dispatcherRequest.getKvp().get("legend_options"));
+            }
             request.setLegendOptions(legendOptions);
 
             LayerLegend legend = new LayerLegend();

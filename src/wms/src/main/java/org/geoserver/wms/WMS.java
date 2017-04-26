@@ -954,7 +954,7 @@ public class WMS implements ApplicationContextAware {
     public static String toInternalSRS(String srs, Version version) {
         if (VERSION_1_3_0.equals(version)) {
             if (srs != null && srs.toUpperCase().startsWith("EPSG:")) {
-                srs = srs.toUpperCase().replace("EPSG:", "urn:x-ogc:def:crs:EPSG:");
+                srs = srs.toUpperCase().replace("EPSG:", "urn:ogc:def:crs:EPSG:");
             }
         }
 

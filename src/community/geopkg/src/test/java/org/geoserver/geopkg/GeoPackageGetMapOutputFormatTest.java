@@ -5,15 +5,7 @@
  */
 package org.geoserver.geopkg;
 
-import static org.junit.Assert.*;
-import static org.geoserver.data.test.MockData.*;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import javax.xml.namespace.QName;
-
+import com.vividsolutions.jts.geom.Envelope;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.wms.GetMapRequest;
@@ -21,11 +13,24 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
+import org.geotools.data.DataUtilities;
 import org.geotools.geopkg.GeoPackage;
+import org.geotools.geopkg.Tile;
+import org.geotools.image.test.ImageAssert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vividsolutions.jts.geom.Envelope;
+import javax.imageio.ImageIO;
+import javax.xml.namespace.QName;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import static org.geoserver.data.test.MockData.LAKES;
+import static org.geoserver.data.test.MockData.WORLD;
+import static org.junit.Assert.*;
 
 /**
  * 
@@ -54,8 +59,6 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         WMSMapContent mapContent = createMapContent(WORLD, LAKES);
         mapContent.getRequest().setBbox(
             new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
-        mapContent.getRequest().getFormatOptions().put("min_zoom", "10");
-        mapContent.getRequest().getFormatOptions().put("max_zoom", "11");
         
         WebMap map = format.produceMap(mapContent);
         GeoPackage geopkg = createGeoPackage(map);
@@ -63,6 +66,39 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         assertTrue(geopkg.features().isEmpty());
         assertEquals(1, geopkg.tiles().size());
         assertNotNull(geopkg.tile("World_Lakes"));
+    }
+
+    @Test
+    /*
+     * From the OGC GeoPackage Specification [1]:
+     *
+     * "The tile coordinate (0,0) always refers to the tile in the upper left corner of the tile matrix at any zoom
+     * level, regardless of the actual availability of that tile"
+     *
+     * [1]: http://www.geopackage.org/spec/#tile_matrix
+     */
+    public void testTopLeftTile() throws Exception {
+        WMSMapContent mapContent = createMapContent(WORLD);
+        mapContent.getRequest().setBbox(new Envelope(-180, 180, -90, 90));
+
+        WebMap map = format.produceMap(mapContent);
+        GeoPackage geopkg = createGeoPackage(map);
+
+        assertTrue(geopkg.features().isEmpty());
+        assertEquals(1, geopkg.tiles().size());
+
+        Tile topLeftTile = geopkg.reader(geopkg.tiles().get(0), 1, 1, 0, 0, 0, 0).next();
+
+        /*
+        FileOutputStream fous = new FileOutputStream("toplefttile.png");
+        fous.write(topLeftTile.getData());
+        fous.flush();
+        fous.close();
+        */
+
+        BufferedImage tileImg = ImageIO.read(new ByteArrayInputStream(topLeftTile.getData()));
+
+        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("toplefttile.png")), tileImg, 250);
     }
 
     GeoPackage createGeoPackage(WebMap map) throws IOException {

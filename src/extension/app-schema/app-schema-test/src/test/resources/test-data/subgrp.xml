@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
-    xmlns:ogc="http://www.opengis.net/ogc" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ogc="http://www.opengis.net/ogc" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd
       http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/expr.xsd">
     <namespaces>
@@ -20,7 +19,7 @@
     </namespaces>
     <sourceDataStores>
         <DataStore>
-            <id>subgrp-coverage</id>
+            <id>subgrpcoverage</id>
             <parameters>
                 <Parameter>
                     <name>directory</name>
@@ -36,34 +35,28 @@
     </targetTypes>
     <typeMappings>
         <FeatureTypeMapping>
-            <!-- arbitrary mapping name -->
-            <mappingName>subgrp-coverage</mappingName>
-            <!-- datastore name from above-->
-            <sourceDataStore>subgrp-coverage</sourceDataStore>
-            <!-- source type must be a table or view from DataStore. For feature links, a sub-table. -->
-            <sourceType>subgrp-coverage</sourceType>
-            <!-- top level element this configuration maps to -->
+            <mappingName>subgrpcoverage</mappingName>
+            <sourceDataStore>subgrpcoverage</sourceDataStore>
+            <sourceType>subgrpcoverage</sourceType>
             <targetElement>test:DiscreteCoverage</targetElement>
-            <isDenormalized>false</isDenormalized>
-
-            <!-- Feature link needs to be the foreign key that associates this data set with the parent -->
+            <isDenormalised>false</isDenormalised>
             <attributeMappings>
                 <AttributeMapping>
                     <targetAttribute>test:DiscreteCoverage</targetAttribute>
-                    <targetAttributeNode>test:DiscreteCoverageType</targetAttributeNode>
                     <idExpression>
                         <OCQL>uuid</OCQL>
                     </idExpression>
+                    <targetAttributeNode>test:DiscreteCoverageType</targetAttributeNode>
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>gml:identifier</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>'http://www.geoserver.org/contour'</OCQL>
+                    </sourceExpression>
                     <ClientProperty>
                         <name>codeSpace</name>
                         <value>'urn:ietf:rfc:1738'</value>
                     </ClientProperty>
-                    <sourceExpression>
-                        <OCQL>'http://www.geoserver.org/contour'</OCQL>
-                    </sourceExpression>
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>test:domainSet</targetAttribute>
@@ -72,28 +65,26 @@
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>test:domainSet/test:DomainObject</targetAttribute>
-                    <targetAttributeNode>test:DomainObjectType</targetAttributeNode>
-                    <encodeIfEmpty>true</encodeIfEmpty>
                     <idExpression>
                         <OCQL>strConcat(uuid,'-domainObjectId')</OCQL>
                     </idExpression>
+                    <targetAttributeNode>test:DomainObjectType</targetAttributeNode>
+                    <encodeIfEmpty>true</encodeIfEmpty>
                 </AttributeMapping>
-
                 <AttributeMapping>
                     <targetAttribute>test:domainSet/test:DomainObject/test:elements</targetAttribute>
                     <targetAttributeNode>test:SpatioTemporalElementsPropertyType</targetAttributeNode>
                     <encodeIfEmpty>true</encodeIfEmpty>
                 </AttributeMapping>
-
                 <AttributeMapping>
                     <targetAttribute>test:domainSet/test:DomainObject/test:elements/gml:MultiCurve</targetAttribute>
-                    <encodeIfEmpty>true</encodeIfEmpty>
                     <idExpression>
                         <OCQL>strConcat(uuid,'-geomId')</OCQL>
                     </idExpression>
                     <sourceExpression>
                         <OCQL>geom</OCQL>
                     </sourceExpression>
+                    <encodeIfEmpty>true</encodeIfEmpty>
                     <ClientProperty>
                         <name>srsName</name>
                         <value>'http://www.opengis.net/def/crs/EPSG/0/4052'</value>
@@ -103,7 +94,6 @@
                         <value>'latitude longitude'</value>
                     </ClientProperty>
                 </AttributeMapping>
-
                 <AttributeMapping>
                     <targetAttribute>test:domainSet/test:DomainObject/test:elements/gml:Point</targetAttribute>
                     <idExpression>
@@ -129,13 +119,13 @@
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>gml:rangeSet/gml:ValueArray/gml:valueComponents/gml:Quantity</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>amount</OCQL>
+                    </sourceExpression>
                     <ClientProperty>
                         <name>uom</name>
                         <value>amount_uom</value>
                     </ClientProperty>
-                    <sourceExpression>
-                        <OCQL>amount</OCQL>
-                    </sourceExpression>
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>gml:coverageFunction/gml:CoverageMappingRule/gml:ruleDefinition</targetAttribute>

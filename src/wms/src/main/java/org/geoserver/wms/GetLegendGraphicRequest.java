@@ -16,8 +16,10 @@ import java.util.Map;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
+import org.geoserver.platform.ServiceException;
 import org.geotools.feature.NameImpl;
 import org.geotools.styling.Style;
+import org.geotools.util.Converters;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 
@@ -48,6 +50,7 @@ import org.opengis.feature.type.Name;
  *  </table>
  * </pre>
  * 
+ * 
  * </p>
  * <p>
  * There's also a custom {@code STRICT} parameter that defaults to {@code true} and controls whether the mandatory parameters are to be checked. This
@@ -71,6 +74,11 @@ import org.opengis.feature.type.Name;
  * @version $Id$
  */
 public class GetLegendGraphicRequest extends WMSRequest {
+    
+    /**
+     * Legend option to enable feature count matching
+     */
+    public static final String COUNT_MATCHED_KEY = "countMatched";
     
     /**
      * Details collected for an individual LegendGraphic including
@@ -252,29 +260,12 @@ public class GetLegendGraphicRequest extends WMSRequest {
     /** The featuretype(s) of the requested LAYER(s) */
     private List<LegendRequest> legends=new ArrayList<LegendRequest>();
     
-    /** The featuretype name -> title association map */
-    //private Map<Name,String> titles=new HashMap<Name,String>();
-    
-    /** The featuretype name -> legendinfo association map */
-    //private Map<Name,LegendInfo> legends = new HashMap<Name,LegendInfo>();
-
-    /**
-     * The Style object(s) for styling the legend graphic, or layer's default if not provided. This
-     * style can be acquired by evaluating the STYLE parameter, which provides one of the layer's
-     * named styles, the SLD parameter, which provides a URL for an external SLD document, or the
-     * SLD_BODY parameter, which provides the SLD body in the request body.
-     */
-    //private List<Style> styles=new ArrayList<Style>();
-
     /**
      * should hold FEATURETYPE parameter value, though not used by now, since GeoServer WMS still
      * does not supports nested layers and layers has only a single feature type. This should change
      * in the future.
      */
     private String featureType;
-
-    /** Holds RULE parameter value(s), or <code>null</code> if not provided */
-    // private List<String> rules=new ArrayList<String>();
 
     /**
      * holds the standarized scale denominator passed as the SCALE parameter value, or
@@ -319,6 +310,13 @@ public class GetLegendGraphicRequest extends WMSRequest {
      * 
      */
     private Locale locale;
+    
+    /**
+     * Contains the parsed kvp items
+     */
+    private Map<String, Object> kvp;
+    
+    private WMS wms;
 
     /**
      * Creates a new GetLegendGraphicRequest object.
@@ -678,4 +676,51 @@ public class GetLegendGraphicRequest extends WMSRequest {
     public Locale getLocale() {
         return this.locale;
     }
+
+    /**
+     * Parses and returns a legend option to a given type, if a value is present but cannot be
+     * converted to the target type an exception will be thrown
+     */
+    public <T> T getLegendOption(String key, Class<T> optionClass) {
+        if(legendOptions == null) {
+            return null;
+        }
+        
+        Object value = legendOptions.get(key);
+        if(value == null) {
+            return null;
+        }
+        
+        T converted = Converters.convert(value, optionClass);
+        if(converted == null) {
+            throw new ServiceException("Invalid syntax for option " 
+                    + key + ", cannot be convered to a " + optionClass.getSimpleName());
+        }
+        return converted;
+    }
+    
+    /**
+     * The parsed KVP map
+     * @return
+     */
+    public Map<String, Object> getKvp() {
+        return kvp;
+    }
+
+    /**
+     * Sets the parsed KVP map
+     * @param kvp
+     */
+    public void setKvp(Map<String, Object> kvp) {
+        this.kvp = kvp;
+    }
+
+    public WMS getWms() {
+        return wms;
+    }
+
+    public void setWms(WMS wms) {
+        this.wms = wms;
+    }
+    
 }

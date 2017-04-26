@@ -33,6 +33,7 @@ import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.renderer.style.ExpressionExtractor;
 import org.geotools.styling.ColorMapEntry;
+import org.geotools.styling.Description;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
@@ -45,6 +46,7 @@ import org.opengis.feature.type.PropertyType;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 import org.opengis.style.ChannelSelection;
+import org.opengis.util.InternationalString;
 
 /**
  * Utility class for building legends, it exposes many methods that could be reused anywhere.
@@ -789,6 +791,25 @@ public class LegendUtils {
         }
         
         return sldRule;
+    }
+
+    static String getRuleLabel(Rule rule, GetLegendGraphicRequest req) {
+        // What's the label on this rule? We prefer to use
+        // the 'title' if it's available, but fall-back to 'name'
+        final Description description = rule.getDescription();
+        
+        String label = "";
+        if (description != null && description.getTitle() != null) {
+            final InternationalString title = description.getTitle();
+            if (req.getLocale() != null) {
+                label = title.toString(req.getLocale());
+            } else {
+                label = title.toString();
+            }
+        } else if (rule.getName() != null) {
+            label = rule.getName();
+        }
+        return label;
     }
 
 }

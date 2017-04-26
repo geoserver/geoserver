@@ -1986,7 +1986,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         return caseInsensitiveKvp(input);
     }
 
-    protected Map caseInsensitiveKvp(HashMap input) {
+    protected Map caseInsensitiveKvp(Map input) {
         // make it case insensitive like the servlet+dispatcher maps
         Map result = new HashMap();
         for (Iterator it = input.keySet().iterator(); it.hasNext();) {

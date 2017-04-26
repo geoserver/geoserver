@@ -20,9 +20,7 @@ import java.util.Map;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.LegendUtils.LegendLayout;
 import org.geoserver.wms.map.ImageUtils;
-import org.geotools.styling.Description;
 import org.geotools.styling.Rule;
-import org.opengis.util.InternationalString;
 
 /**
  * 
@@ -767,21 +765,7 @@ public class LegendMerger {
             GetLegendGraphicRequest req, MergeOptions options) {
         BufferedImage labelImg = null;
         if (!options.isForceLabelsOff() && rule != null) {
-            // What's the label on this rule? We prefer to use
-            // the 'title' if it's available, but fall-back to 'name'
-            final Description description = rule.getDescription();
-            
-            String label = "";
-            if (description != null && description.getTitle() != null) {
-                final InternationalString title = description.getTitle();
-                if (req.getLocale() != null) {
-                    label = title.toString(req.getLocale());
-                } else {
-                    label = title.toString();
-                }
-            } else if (rule.getName() != null) {
-                label = rule.getName();
-            }
+            String label = LegendUtils.getRuleLabel(rule, req);
             if (label != null && label.length() > 0) {
                 final BufferedImage renderedLabel = getRenderedLabel((BufferedImage) img, label,
                         req);

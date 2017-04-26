@@ -104,6 +104,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
 
         GetLegendGraphicRequest request = (GetLegendGraphicRequest) super.read(req, kvp, rawKvp);
         request.setRawKvp(rawKvp);
+        request.setKvp(kvp);
+        request.setWms(wms);
 
         if (request.getVersion() == null || request.getVersion().length() == 0) {
             String version = (String) rawKvp.get("WMTVER");

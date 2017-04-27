@@ -9,6 +9,7 @@ import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.geoserver.data.test.MockData.WORLD;
 
 import java.awt.Color;
 import java.awt.Frame;
@@ -90,9 +91,6 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final Color COLOR_PLACES_GRAY = new Color(170, 170, 170);
     protected static final Color COLOR_LAKES_BLUE = new Color(64, 64, 192);
-
-    protected static QName WORLD = new QName(MockData.SF_URI, "world", MockData.SF_PREFIX);
-    
     /**
      * @return The global wms singleton from the application context.
      */

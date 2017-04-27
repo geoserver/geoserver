@@ -12,7 +12,9 @@ import org.geoserver.backuprestore.BackupRestoreTestSupport;
 import org.geoserver.backuprestore.utils.BackupUtils;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.rest.RestBaseController;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.Assert;
 
@@ -87,12 +89,11 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
     }
 
     JSONObject postNewBackup(String body) throws Exception {
-        MockHttpServletResponse resp = postAsServletResponse("/rest/br/backup", body,
-                "application/json");
+        MockHttpServletResponse resp =
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/br/backup", body, 
+                        MediaType.APPLICATION_JSON_VALUE);
 
         assertEquals(201, resp.getStatus());
-        assertNotNull(resp.getHeader("Location"));
-        assertTrue(resp.getHeader("Location").matches(".*/backup/\\d"));
         assertEquals("application/json", resp.getContentType());
 
         JSONObject json = (JSONObject) json(resp);

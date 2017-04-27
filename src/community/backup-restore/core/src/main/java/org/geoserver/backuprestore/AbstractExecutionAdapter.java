@@ -74,7 +74,10 @@ public abstract class AbstractExecutionAdapter {
      * @return
      */
     public Long getId() {
-        return delegate.getId();
+        if (delegate != null) {
+            return delegate.getId();
+        }
+        return null;
     }
 
     /**

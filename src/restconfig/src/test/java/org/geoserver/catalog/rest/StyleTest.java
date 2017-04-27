@@ -425,8 +425,9 @@ public class StyleTest extends CatalogRESTTestSupport {
         response = deleteAsServletResponse("/rest/styles/foo");
         assertEquals( 200, response.getStatus() );
         
-        //ensure the style not deleted on disk
-        assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
+        //ensure the style deleted on disk but backed up
+        assertFalse(new File(getDataDirectory().findStyleDir(), "foo.sld").exists());
+        assertTrue(new File(getDataDirectory().findStyleDir(), "foo.sld.bak").exists());
     }
     
     @Test

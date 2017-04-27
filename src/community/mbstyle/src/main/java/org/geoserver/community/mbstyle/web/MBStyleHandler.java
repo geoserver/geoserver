@@ -98,9 +98,8 @@ public class MBStyleHandler extends StyleHandler {
 
     @Override
     public List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
-            throws IOException {
-        // TODO Auto-generated method stub
-        return null;
+            throws IOException {        
+        return MapBoxStyle.validate(toReader(input));
     }
 
     @Override

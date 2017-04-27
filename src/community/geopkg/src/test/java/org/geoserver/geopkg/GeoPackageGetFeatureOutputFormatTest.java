@@ -79,10 +79,10 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         FeatureCollectionResponse fct = 
             FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         
-        FeatureSource<? extends FeatureType, ? extends Feature> fs = getFeatureSource(SystemTestData.SEVEN);;
+        FeatureSource<? extends FeatureType, ? extends Feature> fs = getFeatureSource(SystemTestData.LAKES);
         fct.getFeature().add(fs.getFeatures());
         
-        fs = getFeatureSource(SystemTestData.FIFTEEN);;
+        fs = getFeatureSource(SystemTestData.STREAMS);
         fct.getFeature().add(fs.getFeatures());
                 
         testGetFeature(fct, false);
@@ -93,7 +93,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         FeatureCollectionResponse fct = 
             FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
         
-        FeatureSource<? extends FeatureType, ? extends Feature> fs = getFeatureSource(SystemTestData.SEVEN);;
+        FeatureSource<? extends FeatureType, ? extends Feature> fs = getFeatureSource(SystemTestData.LAKES);
         fct.getFeature().add(fs.getFeatures());
         
         fs = getFeatureSource(SystemTestData.STREAMS);

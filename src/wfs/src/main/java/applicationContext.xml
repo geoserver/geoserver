@@ -397,7 +397,8 @@
     <bean id="strictKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
         <constructor-arg value="strict"/>
     </bean>
-    <bean id="wfsFormatOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser"/>
+    <!-- between WMS and WFS, we only need one generic FormatOptionsKvpParser, so these beans have the same name -->
+    <bean id="formatOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser"/>
     <bean id="charsetKvpParser" class="org.geoserver.ows.kvp.CharsetKVPParser">
         <constructor-arg value="charset"/>
     </bean>

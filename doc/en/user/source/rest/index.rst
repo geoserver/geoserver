@@ -15,32 +15,32 @@ API
 
 The following links provide direct access to the GeoServer REST API documentation, including definitions and examples of each endpoint:
 
-* `/about/manifests <http://docs.geoserver.org/api/#/1.0.0/manifests.yaml>`__
-* `/coverages <http://docs.geoserver.org/api/#/1.0.0/coverages.yaml>`__
-* `/coveragestores <http://docs.geoserver.org/api/#/1.0.0/coveragestores.yaml>`__
-* `/featuretypes <http://docs.geoserver.org/api/#/1.0.0/featuretypes.yaml>`__
-* `/fonts <http://docs.geoserver.org/api/#/1.0.0/fonts.yaml>`__
-* `/layergroups <http://docs.geoserver.org/api/#/1.0.0/layergroups.yaml>`__
-* `/layers <http://docs.geoserver.org/api/#/1.0.0/layers.yaml>`__
-* `/monitoring <http://docs.geoserver.org/api/#/1.0.0/monitoring.yaml>`__
-* `/namespaces <http://docs.geoserver.org/api/#/1.0.0/namespaces.yaml>`__
-* `/owsservices <http://docs.geoserver.org/api/#/1.0.0/owsservices.yaml>`__
-* `/reload <http://docs.geoserver.org/api/#/1.0.0/reload.yaml>`__
-* `/security <http://docs.geoserver.org/api/#/1.0.0/security.yaml>`__
-* `/settings <http://docs.geoserver.org/api/#/1.0.0/settings.yaml>`__
-* `/structuredcoverages <http://docs.geoserver.org/api/#/1.0.0/structuredcoverages.yaml>`__
-* `/styles <http://docs.geoserver.org/api/#/1.0.0/styles.yaml>`__
-* `/templates <http://docs.geoserver.org/api/#/1.0.0/templates.yaml>`__
-* `/transforms <http://docs.geoserver.org/api/#/1.0.0/transforms.yaml>`__
-* `/wmslayers <http://docs.geoserver.org/api/#/1.0.0/wmslayers.yaml>`__
-* `/wmsstores <http://docs.geoserver.org/api/#/1.0.0/wmsstores.yaml>`__
-* `/workspaces <http://docs.geoserver.org/api/#/1.0.0/workspaces.yaml>`__
+* :api:`/about/manifests <manifests.yaml>`
+* :api:`/coverages <coverages.yaml>`
+* :api:`/coveragestores <coveragestores.yaml>`
+* :api:`/featuretypes <featuretypes.yaml>`
+* :api:`/fonts <fonts.yaml>`
+* :api:`/layergroups <layergroups.yaml>`
+* :api:`/layers <layers.yaml>`
+* :api:`/monitoring <monitoring.yaml>`
+* :api:`/namespaces <namespaces.yaml>`
+* :api:`/owsservices <owsservices.yaml>`
+* :api:`/reload <reload.yaml>`
+* :api:`/security <security.yaml>`
+* :api:`/settings <settings.yaml>`
+* :api:`/structuredcoverages <structuredcoverages.yaml>`
+* :api:`/styles <styles.yaml>`
+* :api:`/templates <templates.yaml>`
+* :api:`/transforms <transforms.yaml>`
+* :api:`/wmslayers <wmslayers.yaml>`
+* :api:`/wmsstores <wmsstores.yaml>`
+* :api:`/workspaces <workspaces.yaml>`
 * Importer extension:
 
-  * `/imports <http://docs.geoserver.org/api/#/1.0.0/importer.yaml>`__
-  * `/imports (tasks) <http://docs.geoserver.org/api/#/1.0.0/importerTasks.yaml>`__
-  * `/imports (transforms) <http://docs.geoserver.org/api/#/1.0.0/importerTransforms.yaml>`__
-  * `/import (data) <http://docs.geoserver.org/api/#/1.0.0/importerData.yaml>`__
+  * :api:`/imports <importer.yaml>`
+  * :api:`/imports (tasks) <importerTasks.yaml>`
+  * :api:`/imports (transforms) <importerTransforms.yaml>`
+  * :api:`/imports (data) <importerData.yaml>`
 
 .. note:: You can also view the original :ref:`rest_api` section.
 

@@ -242,7 +242,8 @@
  	<bean id="heightKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
 		<constructor-arg value="height"/>
  	</bean>
- 	<bean id="wmsFormatOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser"/>
+    <!-- between WMS and WFS, we only need one generic FormatOptionsKvpParser, so these beans have the same name -->
+ 	<bean id="formatOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser"/>
  	<bean id="wmsEnviromentKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser">
  		<constructor-arg index="0" value="env"/>
  	</bean>

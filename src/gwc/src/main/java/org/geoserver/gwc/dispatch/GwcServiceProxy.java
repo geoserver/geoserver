@@ -19,6 +19,7 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCServiceEnablementInterceptor;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ows.DisabledServiceCheck;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Response;
@@ -30,6 +31,8 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
 import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheExtensions;
+import org.geowebcache.grid.GridSubset;
+import org.geowebcache.service.gmaps.GMapsConverter;
 
 import com.google.common.collect.ImmutableList;
 
@@ -148,11 +151,16 @@ public class GwcServiceProxy {
             
         } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/wmts")) {
             String layer = (String) parameters.get("LAYER");
-                        
+
             if (layer != null) {
-                GWC.get().verifyAccessLayer(layer, null);
+                String tileMatrix = (String) parameters.get("TileMatrix");
+                String srs = tileMatrix.substring(0, tileMatrix.lastIndexOf(":"));
+                int level = Integer.parseInt(tileMatrix.substring(tileMatrix.lastIndexOf(":") + 1));
+                long col = Long.parseLong((String) parameters.get("TileCol"));
+                long row = Long.parseLong((String) parameters.get("TileRow"));
+                GWC.get().verifyAccessTiledLayer(layer, srs, level, col, row);
             }
-            
+
         } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/tms/1.0.0/")) {
             String layer = rawRequest.getPathInfo().toLowerCase().substring("/service/tms/1.0.0/".length());
             if (layer.indexOf('/') >= 0) {
@@ -173,13 +181,31 @@ public class GwcServiceProxy {
         } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/gmaps") || rawRequest.getPathInfo().toLowerCase().startsWith("/service/ve")) {
             String layerstr = (String) parameters.get("LAYERS");
                         
-            if (layerstr != null) {                
-                String[] layers = layerstr.split(",");
-                for (String layerName: layers) {
-                    layerName = layerName.trim();
-                    GWC.get().verifyAccessLayer(layerName, null);
+            if (layerstr != null) {
+                int level = Integer.parseInt((String) parameters.get("zoom"));
+                long col = Long.parseLong((String) parameters.get("x"));
+                long row = Long.parseLong((String) parameters.get("y"));
+                try {
+                    long[] converted = GMapsConverter.convert(level, col, row);
+                    col = converted[0];
+                    row = converted[1];
+                } catch (org.geowebcache.service.ServiceException e) {
+                    throw new ServiceException(e);
                 }
-            }            
+
+                String[] layers = layerstr.split(",");
+                for (String layerName : layers) {
+                    layerName = layerName.trim();
+                    GeoServerTileLayer layer = (GeoServerTileLayer) GWC.get()
+                            .getTileLayerByName(layerName);
+                    String srs = "EPSG:3857";
+                    GridSubset gridSubset = layer.getGridSubset(srs);
+                    if (gridSubset == null) {
+                        srs = "EPSG:900913";
+                    }
+                    GWC.get().verifyAccessTiledLayer(layerName, srs, level, col, row);
+                }
+            }
         }
     }
 

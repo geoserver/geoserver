@@ -6,6 +6,7 @@
 package org.geoserver.wms;
 
 import static junit.framework.TestCase.fail;
+import static org.geoserver.data.test.MockData.WORLD;
 import static org.junit.Assert.*;
 
 import java.awt.Color;
@@ -47,7 +48,6 @@ import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
-import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -95,9 +95,6 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final Color COLOR_PLACES_GRAY = new Color(170, 170, 170);
     protected static final Color COLOR_LAKES_BLUE = new Color(64, 64, 192);
-
-    protected static QName WORLD = new QName(MockData.SF_URI, "world", MockData.SF_PREFIX);
-    
     /**
      * @return The global wms singleton from the application context.
      */

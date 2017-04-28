@@ -35,6 +35,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collections;
 
+import static org.geoserver.data.test.MockData.WORLD;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

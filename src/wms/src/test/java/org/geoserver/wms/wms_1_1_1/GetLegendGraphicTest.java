@@ -331,4 +331,13 @@ public class GetLegendGraphicTest extends WMSTestSupport {
                         "&format=image/png&width=20&height=20&scale=150000", "image/png");
         assertEquals(1, image.getHeight());
     }
+
+    @Test
+    public void testLegendHeight() throws Exception {
+        String base = "wms?service=WMS&version=1.1.1&request=GetLegendGraphic" +
+            "&layer=sf:states&style=Population" +
+            "&format=image/png&width=20&height=20";
+        BufferedImage image = getAsImage(base, "image/png");
+        assertEquals(80, image.getHeight());
+    }
 }

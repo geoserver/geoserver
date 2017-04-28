@@ -453,12 +453,12 @@ public class KvpUtils {
         for (Iterator<KvpParser> p = parsers.iterator(); p.hasNext();) {
             KvpParser parser = p.next();
 
-            if (parser.getService() != null && !parser.getService().equalsIgnoreCase(service)) {
+            if (service != null && parser.getService() != null && !parser.getService().equalsIgnoreCase(service)) {
                 p.remove();
-            } else if (parser.getVersion() != null
+            } else if (version != null && parser.getVersion() != null
                     && !parser.getVersion().toString().equals(version)) {
                 p.remove();
-            } else if (parser.getRequest() != null
+            } else if (request != null && parser.getRequest() != null
                     && !parser.getRequest().equalsIgnoreCase(request)) {
                 p.remove();
             }
@@ -487,26 +487,27 @@ public class KvpUtils {
                 if (parser == null) {
                     parser = candidate;
                 } else {
-                    // if target service matches, it is a closer match
+
                     String trgService = candidate.getService();
-                    if (trgService != null && trgService.equalsIgnoreCase(service)) {
+                    String curService = parser.getService();
+
+                    // if target service matches the request, it is a closer match.
+                    if (((service == null && trgService == null) || (trgService != null && trgService.equalsIgnoreCase(service))) ||
+                            // If target service matches the current parser, it may be a closer match
+                            (trgService == null && curService == null || (trgService != null && trgService.equalsIgnoreCase(trgService)))) {
+
                         // determine if this parser more closely matches the request
-                        String curService = parser.getService();
-                        if (curService == null) {
+                        if ((service != null && curService == null) || (service == null && curService != null)) {
                             parser = candidate;
                         } else {
                             // both match, filter by version
                             Version curVersion = parser.getVersion();
                             Version trgVersion = candidate.getVersion();
-                            if (trgVersion != null) {
-                                if (curVersion == null && trgVersion.toString().equals(version)) {
+                            if ((version == null && trgVersion == null) || (trgVersion != null && trgVersion.toString().equals(version))) {
+                                if ((version != null && curVersion == null) || (version == null && curVersion != null)) {
                                     parser = candidate;
-                                }
-                            } else {
-                                if (curVersion == null) {
-                                    // ambiguous, unable to match
-                                    throw new IllegalStateException("Multiple kvp parsers: "
-                                            + parser + "," + candidate);
+                                } else if (curVersion == null) {
+                                    throw new IllegalStateException("Multiple kvp parsers: " + parser + "," + candidate);
                                 }
                             }
                         }

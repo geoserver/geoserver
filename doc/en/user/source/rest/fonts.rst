@@ -5,9 +5,7 @@ Fonts
 
 The REST API allows you to list—but not modify—fonts available in GeoServer. It can be useful to use this operation to verify if a font used in a style file is available before uploading it.
 
-API Reference:
-
-* `Fonts API Reference <../api/fonts/index.html>`__
+.. note:: Read the `API reference for /fonts <http://docs.geoserver.org/api/#/1.0.0/fonts.yaml>`__.
 
 Getting a list of all fonts
 ---------------------------
@@ -21,14 +19,6 @@ Getting a list of all fonts
    ::
 
      curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/fonts.json
-
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
 
 *Response*
 
@@ -46,14 +36,6 @@ Getting a list of all fonts
    ::
 
      curl -u admin:geoserver -XGET http://localhost:8080/geoserver/rest/fonts.xml
-
-.. admonition:: python
-
-   TBD
-
-.. admonition:: java
-
-   TBD
 
 *Response*
 

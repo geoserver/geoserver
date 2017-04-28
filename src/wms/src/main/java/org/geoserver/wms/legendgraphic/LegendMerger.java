@@ -244,7 +244,7 @@ public class LegendMerger {
         }
 
         if (layout == LegendLayout.VERTICAL) {
-            Column[] columns = createColumns(nodes, mergeOptions.getColumnHeight(), mergeOptions.getColumns());
+            Column[] columns = createColumns(nodes, mergeOptions.getColumnHeight(), mergeOptions.getColumns(), null, false);
             finalLegend = buildFinalVLegend(columns, mergeOptions);
         }
 
@@ -263,7 +263,8 @@ public class LegendMerger {
      * @return the image with all the images on the argument list.
      * 
      */
-    public static BufferedImage mergeLegends(Rule[] rules, GetLegendGraphicRequest req, MergeOptions mergeOptions) {
+    public static BufferedImage mergeLegends(Rule[] rules, GetLegendGraphicRequest req,
+            MergeOptions mergeOptions) {
         List<RenderedImage> imageStack= mergeOptions.getImageStack();
         
         // Builds legend nodes (graphics + label)
@@ -297,7 +298,7 @@ public class LegendMerger {
         }
 
         if (layout == LegendLayout.VERTICAL) {
-            Column[] columns = createColumns(nodes, mergeOptions.getColumnHeight(), mergeOptions.getColumns());
+            Column[] columns = createColumns(nodes, mergeOptions.getColumnHeight(), mergeOptions.getColumns(), req, true);
             finalLegend = buildFinalVLegend(columns, mergeOptions);
         }
 
@@ -343,7 +344,7 @@ public class LegendMerger {
         }
 
         if (layout == LegendLayout.VERTICAL) {
-            Column[] columns = createColumns(nodes, 0, 0);
+            Column[] columns = createColumns(nodes, 0, 0, null, false);
             finalLegend = buildFinalVLegend(columns, mergeOptions);
         }
 
@@ -416,14 +417,21 @@ public class LegendMerger {
     }
 
     /**
-     * Creates legends columns for vertical layout according to max height and max columns limits
+     * Creates non-raster legend columns for vertical layout according to max height and max columns
+     * limits
      * 
      * @param nodes legend images
      * @param maxHeight maximum height of legend
      * @param maxColumns maximum number of columns
+     * @param req general mechanism for acquiring legend symbols
+     * @param checkColor check for presence of color in legend
      * 
      */
-    private static Column[] createColumns(List<BufferedImage> nodes, int maxHeight, int maxColumns) {
+    private static Column[] createColumns(List<BufferedImage> nodes, int maxHeight, int maxColumns,
+            GetLegendGraphicRequest req, boolean checkColor) {
+
+        // call new method
+
         Column[] legendMatrix = new Column[0];
         /*
          * Limit max height
@@ -467,10 +475,20 @@ public class LegendMerger {
             int rowNumber = (int) Math.ceil((float) nodes.size() / colNumber);
             int cn = 0;
             int rc = 0;
+            boolean colourPresent = false;
             for (int i = 0; i < nodes.size(); i++) {
                 if (rc < rowNumber) {
-                    legendMatrix[cn].addNode(nodes.get(i));
-                    rc++;
+                    if (checkColor) {
+                        // check for presence of colour (ie. non-empty legend row)
+                        colourPresent = checkColor(nodes.get(i), req);
+                        if(colourPresent){
+                            legendMatrix[cn].addNode(nodes.get(i));
+                            rc++;
+                        }
+                    } else {
+                        legendMatrix[cn].addNode(nodes.get(i));
+                        rc++;
+                    }
                 } else {
                     i--;
                     cn++;
@@ -481,6 +499,28 @@ public class LegendMerger {
         }
 
         return legendMatrix;
+    }
+
+    /**
+     * Checks the pixels for presence of colour against legend background
+     *
+     * @param img given row of the legend
+     * @param req general mechanism for acquiring legend symbols
+     * @return false if no colours are detected
+     *
+     */
+    public static boolean checkColor(BufferedImage img, GetLegendGraphicRequest req) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        boolean colourPresent = false;
+        for (int j=0; j<w; j++) {
+            for (int k=0; k<h; k++) {
+                if (img.getRGB(j, k) != LegendUtils.getBackgroundColor(req).getRGB()) {
+                    colourPresent = true;
+                }
+            }
+        }
+        return colourPresent;
     }
 
     /**

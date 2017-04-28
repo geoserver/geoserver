@@ -81,11 +81,15 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         properties.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX),
                 "raster-filter-test.zip",null, properties, SystemTestData.class, getCatalog());
-                
+        
+        testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic2", MockData.SF_PREFIX),
+                "raster-filter-test.zip",null, properties, SystemTestData.class, getCatalog());
+        
         GeoServerUserGroupStore ugStore= getSecurityManager().
                 loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME).createStore();
         
         ugStore.addUser(ugStore.createUserObject("cite", "cite", true));
+        ugStore.addUser(ugStore.createUserObject("cite_mosaic2", "cite", true));
         ugStore.addUser(ugStore.createUserObject("cite_nomosaic", "cite", true));
         ugStore.addUser(ugStore.createUserObject("cite_cropmosaic", "cite", true));
         ugStore.addUser(ugStore.createUserObject("cite_filtermosaic", "cite", true));
@@ -96,6 +100,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         GeoServerRole role = roleStore.createRoleObject("ROLE_DUMMY");
         roleStore.addRole(role);
         roleStore.associateRoleToUser(role, "cite");
+        roleStore.associateRoleToUser(role, "cite_mosaic2");
         roleStore.associateRoleToUser(role, "cite_nogroup");
         roleStore.associateRoleToUser(role, "cite_nomosaic");
         roleStore.associateRoleToUser(role, "cite_cropmosaic");  
@@ -109,6 +114,15 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         
 
         CoverageInfo coverage = catalog.getCoverageByName("sf:mosaic");
+        CoverageInfo coverage2 = catalog.getCoverageByName("sf:mosaic2");
+        
+        // set permissions on layer coverage
+        tam.putLimits("cite_mosaic2", coverage, new DataAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE));
+        tam.putLimits("cite", coverage, new DataAccessLimits(CatalogMode.HIDE, Filter.INCLUDE));
+        
+        // set permissions on layer coverage2
+        tam.putLimits("cite", coverage2, new DataAccessLimits(CatalogMode.CHALLENGE, Filter.EXCLUDE));
+        tam.putLimits("cite_mosaic2", coverage2, new DataAccessLimits(CatalogMode.CHALLENGE, Filter.INCLUDE));
         
         //layer disable
         tam.putLimits("cite_nomosaic", coverage, new CoverageAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE, null, null));
@@ -146,6 +160,76 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         assertEquals("application/xml", response.getContentType());
         String str = string(getBinaryInputStream(response));
         assertTrue(str.contains("org.geotools.ows.ServiceException: Could not find layer sf:mosaic"));
+    }
+    
+    @Test
+    public void testPermissionMosaicTileWmts() throws Exception {
+        GWC.get().getConfig().setSecurityEnabled(true);
+        
+        //first to cache
+        setRequestAuth("cite", "cite");
+        String path = "gwc/service/wmts?LAYER=sf:mosaic&FORMAT=image/png&SERVICE=WMTS&VERSION=1.0.0" +
+        "&REQUEST=GetTile&TILEMATRIXSET=EPSG:4326&TILEMATRIX=EPSG:4326:0&TILECOL=0&TILEROW=0";
+        MockHttpServletResponse response = getAsServletResponse(path);
+        assertEquals("image/png", response.getContentType() );
+        
+        // try again, now should be cached
+        response = getAsServletResponse(path);
+        assertEquals("image/png", response.getContentType());
+
+        // permission must be denied to cite user
+        String path2 = "gwc/service/wmts?LAYER=sf:mosaic2&FORMAT=image/png&SERVICE=WMTS&VERSION=1.0.0" +
+        "&REQUEST=GetTile&TILEMATRIXSET=EPSG:4326&TILEMATRIX=EPSG:4326:0&TILECOL=0&TILEROW=0";
+        response = getAsServletResponse(path2);
+        assertEquals("application/xml", response.getContentType() );
+        String str = string(getBinaryInputStream(response));
+        // mode challenge
+        assertTrue(str.contains("Access denied to bounding box on layer sf:mosaic2"));
+        
+        //try now as cite_mosaic2 user permission on sf:mosaic must be denied
+        setRequestAuth("cite_mosaic2", "cite");        
+        response = getAsServletResponse(path);
+        assertEquals("application/xml", response.getContentType());
+        str = string(getBinaryInputStream(response));
+        // mode hide
+        assertTrue(str.contains("Could not find layer sf:mosaic"));
+        // permission must be allowed on sf:mosaic2
+        response = getAsServletResponse(path2);
+        assertEquals("image/png", response.getContentType());
+    }
+    
+    @Test
+    public void testPermissionMosaicTileGmaps() throws Exception {
+        GWC.get().getConfig().setSecurityEnabled(true);
+        
+        //first to cache
+        setRequestAuth("cite", "cite");
+        String path = "gwc/service/gmaps?LAYERS=sf:mosaic&FORMAT=image/png&ZOOM=0&X=0&Y=0";
+        MockHttpServletResponse response = getAsServletResponse(path);
+        assertEquals("image/png", response.getContentType() );
+        
+        // try again, now should be cached
+        response = getAsServletResponse(path);
+        assertEquals("image/png", response.getContentType());
+
+        // permission must be denied to cite user
+        String path2 = "gwc/service/gmaps?LAYERS=sf:mosaic2&FORMAT=image/png&ZOOM=0&X=0&Y=0";
+        response = getAsServletResponse(path2);
+        assertEquals("application/xml", response.getContentType() );
+        String str = string(getBinaryInputStream(response));
+        // mode challenge
+        assertTrue(str.contains("Access denied to bounding box on layer sf:mosaic2"));
+        
+        //try now as cite_mosaic2 user permission on sf:mosaic must be denied
+        setRequestAuth("cite_mosaic2", "cite");        
+        response = getAsServletResponse(path);
+        assertEquals("application/xml", response.getContentType());
+        str = string(getBinaryInputStream(response));
+        // mode hide
+        assertTrue(str.contains("Could not find layer sf:mosaic"));
+        // permission must be allowed on sf:mosaic2
+        response = getAsServletResponse(path2);
+        assertEquals("image/png", response.getContentType());
     }
     
     @Test

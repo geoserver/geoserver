@@ -357,13 +357,6 @@ for a in `ls $artifacts/*.zip | grep -v plugin`; do
   cp $a $dist
 done
 
-# fire off mac and windows build machines
-if [ -z $SKIP_INSTALLERS ]; then
-  echo "starting installer jobs"
-  start_installer_job $WIN_JENKINS $WIN_JENKINS_USER $WIN_JENKINS_KEY $tag
-  start_installer_job $MAC_JENKINS $MAC_JENKINS_USER $MAC_JENKINS_KEY $tag
-fi
-
 # git commit changes on the release branch
 pushd .. > /dev/null
 
@@ -372,6 +365,13 @@ init_git $git_user $git_email
 git add . 
 git commit -m "updating version numbers and release notes for $tag" .
 popd > /dev/null
+
+# fire off mac and windows build machines
+if [ -z $SKIP_INSTALLERS ]; then
+  echo "starting installer jobs"
+  start_installer_job $WIN_JENKINS $WIN_JENKINS_USER $WIN_JENKINS_KEY $tag
+  start_installer_job $MAC_JENKINS $MAC_JENKINS_USER $MAC_JENKINS_KEY $tag
+fi
 
 popd > /dev/null
 

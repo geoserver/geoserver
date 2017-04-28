@@ -6,28 +6,28 @@
     service="WCS" version="2.0.1">
     <wcs:CoverageId>wcs__multiband</wcs:CoverageId>
     <wcs:Extension>    
-        <rsub:rangeSubset>
-            <rsub:rangeItem>
+        <rsub:RangeSubset>
+            <rsub:RangeItem>
                 <rsub:rangeComponent>Band1</rsub:rangeComponent>
-            </rsub:rangeItem>    
-            <rsub:rangeItem>
+            </rsub:RangeItem>    
+            <rsub:RangeItem>
                 <rsub:rangeComponent>Band6</rsub:rangeComponent>
-            </rsub:rangeItem>   
-            <rsub:rangeItem>
+            </rsub:RangeItem>   
+            <rsub:RangeItem>
                 <rsub:rangeComponent>Band4</rsub:rangeComponent>
-            </rsub:rangeItem>              
-            <rsub:rangeItem>
+            </rsub:RangeItem>              
+            <rsub:RangeItem>
                 <rsub:rangeComponent>Band9</rsub:rangeComponent>
-            </rsub:rangeItem> 
-            <rsub:rangeItem>
+            </rsub:RangeItem> 
+            <rsub:RangeItem>
                 <rsub:rangeComponent>Band8</rsub:rangeComponent>
-            </rsub:rangeItem>    
-            <rsub:rangeItem>
+            </rsub:RangeItem>    
+            <rsub:RangeItem>
                 <rsub:rangeComponent>Band7</rsub:rangeComponent>
-            </rsub:rangeItem>
-            <rsub:rangeItem>
+            </rsub:RangeItem>
+            <rsub:RangeItem>
                 <rsub:rangeComponent>Band2</rsub:rangeComponent>
-            </rsub:rangeItem>                                                                        
-        </rsub:rangeSubset>
+            </rsub:RangeItem>                                                                        
+        </rsub:RangeSubset>
     </wcs:Extension>
 </wcs:GetCoverage>

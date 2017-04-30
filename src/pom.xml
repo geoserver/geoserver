@@ -1216,6 +1216,18 @@
       <artifactId>jsoup</artifactId>
       <version>1.10.2</version>
     </dependency>
+    <dependency>
+      <groupId>com.github.svenmeier.wicket-dnd</groupId>
+      <artifactId>wicket-dnd</artifactId>
+      <version>0.7.3</version>
+      <exclusions>
+        <!-- wicket-dnd depends on wicket 7.0, we use a more recent version -->
+        <exclusion>
+           <groupId>org.apache.wicket</groupId>
+           <artifactId>wicket-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
  </dependencyManagement>
 

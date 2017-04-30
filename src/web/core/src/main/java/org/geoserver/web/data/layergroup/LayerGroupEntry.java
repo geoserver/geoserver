@@ -70,5 +70,43 @@ public class LayerGroupEntry implements Serializable {
             layerId = publishedInfo.getId();
         }
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((layerGroupId == null) ? 0 : layerGroupId.hashCode());
+        result = prime * result + ((layerId == null) ? 0 : layerId.hashCode());
+        result = prime * result + ((styleId == null) ? 0 : styleId.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LayerGroupEntry other = (LayerGroupEntry) obj;
+        if (layerGroupId == null) {
+            if (other.layerGroupId != null)
+                return false;
+        } else if (!layerGroupId.equals(other.layerGroupId))
+            return false;
+        if (layerId == null) {
+            if (other.layerId != null)
+                return false;
+        } else if (!layerId.equals(other.layerId))
+            return false;
+        if (styleId == null) {
+            if (other.styleId != null)
+                return false;
+        } else if (!styleId.equals(other.styleId))
+            return false;
+        return true;
+    }
+    
     
 }

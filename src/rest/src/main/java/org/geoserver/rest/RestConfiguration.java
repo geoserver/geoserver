@@ -133,8 +133,8 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
                 configurer.mediaType(handler.getFormat(), MediaType.valueOf(handler.mimeType(firstVersion)));
             }
         }
-        // manually force SLD to v11
-        configurer.mediaType("sld", MediaType.valueOf(SLDHandler.MIMETYPE_11));
+        // manually force SLD to v10 for backwards compatibility
+        configurer.mediaType("sld", MediaType.valueOf(SLDHandler.MIMETYPE_10));
         
         // other common media types
         configurer.mediaType("html", MediaType.TEXT_HTML);

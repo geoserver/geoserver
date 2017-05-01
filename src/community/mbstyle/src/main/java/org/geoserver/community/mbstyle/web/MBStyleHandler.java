@@ -22,6 +22,9 @@ import org.geotools.util.Version;
 import org.json.simple.parser.ParseException;
 import org.xml.sax.EntityResolver;
 
+/**
+ * Style handler for MBStyle
+ */
 public class MBStyleHandler extends StyleHandler {
 
     public static final String FORMAT = "json";
@@ -38,12 +41,9 @@ public class MBStyleHandler extends StyleHandler {
     @Override
     public StyledLayerDescriptor parse(Object input, Version version,
             ResourceLocator resourceLocator, EntityResolver entityResolver) throws IOException {
-        // see if we can use the SLD cache, some conversions are expensive.
+        // see if we can use the style cache, some conversions are expensive.
         if (input instanceof File) {
-            // convert to resource, to avoid code duplication (the code for file
-            // would be very
-            // similar to the resource one, but unfortunately using an unrelated
-            // set of classes
+            // convert to resource, to avoid code duplication
             File jsonFile = (File) input;
             input = new FileSystemResourceStore(jsonFile.getParentFile()).get(jsonFile.getName());
         }
@@ -54,6 +54,7 @@ public class MBStyleHandler extends StyleHandler {
                     .get(FilenameUtils.getBaseName(jsonResource.name()) + ".sld");
             if (sldResource.getType() != Resource.Type.UNDEFINED
                     && sldResource.lastmodified() > jsonResource.lastmodified()) {
+                // if sld resource exists, use it
                 return sldHandler.parse(sldResource, SLDHandler.VERSION_10, resourceLocator,
                         entityResolver);
             } else {
@@ -63,30 +64,23 @@ public class MBStyleHandler extends StyleHandler {
                     try (OutputStream fos = sldResource.out()) {
                         sldHandler.encode(sld, SLDHandler.VERSION_10, true, fos);
                     }
-                    // be consistent, have the SLD always be generated from and
-                    // SLD parse,
-                    // different code paths could result in different
-                    // defaults/results due
-                    // to inconsistencies/bugs happening over time
                     return sldHandler.parse(sldResource, SLDHandler.VERSION_10, resourceLocator,
                             entityResolver);
                 } catch (ParseException e) {
                     throw new IOException(e);
                 }
             }
-
         }
 
         // in this case, just do a plain on the fly conversion
         try (Reader reader = toReader(input)) {
-            StyledLayerDescriptor sld = convertToSLD(toReader(input));
-            return sld;
+            return convertToSLD(toReader(input));
         } catch (ParseException e) {
             throw new IOException(e);
         }
     }
 
-    StyledLayerDescriptor convertToSLD(Reader reader) throws IOException, ParseException {
+    private StyledLayerDescriptor convertToSLD(Reader reader) throws IOException, ParseException {
         return MapBoxStyle.parse(reader);
     }
 

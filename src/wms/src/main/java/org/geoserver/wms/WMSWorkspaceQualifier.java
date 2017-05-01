@@ -109,12 +109,7 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     }
 
     private String toCommaSeparatedList(List<String> list) {
-        StringBuffer sb = new StringBuffer();
-        for (String s : list) {
-            sb.append(s).append(",");
-        }
-        sb.setLength(sb.length() - 1);
-        return sb.toString();
+        return String.join(",", list);
     }
 
 }

@@ -15,7 +15,7 @@
                        "nth-mark(n)": 1, "nth-shield(n)": 1, "nth-fill(n)": 1,
                        "nth-symbol(n)": 1};
 
-  CodeMirror.registerHelper("hint", "geocss", function(cm) {
+  CodeMirror.registerHelper("hint", "css", function(cm) {
     var cur = cm.getCursor(), token = cm.getTokenAt(cur);
     var inner = CodeMirror.innerMode(cm.getMode(), token.state);
     if (inner.mode.name != "css") return;

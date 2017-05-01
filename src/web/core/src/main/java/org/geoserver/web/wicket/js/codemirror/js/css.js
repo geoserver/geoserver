@@ -729,7 +729,8 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     "raster-color-map-type","raster-contrast-enhancement","raster-gamma","raster-geometry","raster-opacity",
     "raster-z-index","rotation","shield","shield-mime","size","sort-by","sort-by-group","stroke","stroke-dasharray",
     "stroke-dashoffset","stroke-geometry","stroke-linecap","stroke-linejoin","stroke-mime","stroke-offset",
-    "stroke-opacity","stroke-repeat","stroke-rotation","stroke-size","stroke-width","transform", "z-index" ],
+    "stroke-opacity","stroke-repeat","stroke-rotation","stroke-size","stroke-width","transform", "z-index", "composite", 
+    "composite-base" ],
     geoPropertyKeywords = keySet(geoPropertyKeywords_);
     
   var geoNonStandardPropertyKeywords_ = [ "-gt-fill-label-obstacle",

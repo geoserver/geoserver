@@ -13,7 +13,7 @@
     <artifactId>gs-mbstyle</artifactId>
     <packaging>jar</packaging>
     <version>2.11-SNAPSHOT</version>
-    <name>GeoServer CSS Styling</name>
+    <name>GeoServer Mapbox Styling</name>
 
     <dependencies>
         <!-- Runtime/compile-time dependencies -->

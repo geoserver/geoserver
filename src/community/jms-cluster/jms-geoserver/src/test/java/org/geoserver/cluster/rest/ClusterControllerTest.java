@@ -32,7 +32,7 @@ public class ClusterControllerTest extends GeoServerSystemTestSupport {
         Document dom = getAsDOM("rest/cluster.xml");
         // print(dom);
         // checking a property that's unlikely to change
-        assertXpathEvaluatesTo("VirtualTopic.>", "/properties/property[@name='topicName']/@value", dom);
+        assertXpathEvaluatesTo("VirtualTopic.geoserver", "/properties/property[@name='topicName']/@value", dom);
     }
 
     @Test

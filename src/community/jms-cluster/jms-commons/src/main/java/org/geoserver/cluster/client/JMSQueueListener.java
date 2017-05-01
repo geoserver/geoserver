@@ -8,6 +8,7 @@ package org.geoserver.cluster.client;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
 import javax.jms.JMSException;
@@ -47,6 +48,8 @@ public class JMSQueueListener extends JMSApplicationListener implements
         super(ToggleType.SLAVE);
         this.jmsManager = jmsManager;
     }
+
+    private AtomicLong consumedEvents = new AtomicLong();
 
     @Override
     public void onMessage(Message message, Session session) throws JMSException {
@@ -149,8 +152,9 @@ public class JMSQueueListener extends JMSApplicationListener implements
                 final JMSException jmsE = new JMSException(e.getLocalizedMessage());
                 jmsE.initCause(e);
                 throw jmsE;
+            } finally {
+                this.consumedEvents.incrementAndGet();
             }
-
         } else
             throw new JMSException("Unrecognized message type for catalog incoming event");
     }
@@ -206,4 +210,11 @@ public class JMSQueueListener extends JMSApplicationListener implements
     // "Unrecognized message type for catalog incoming event");
     // }
 
+    public long getConsumedEvents() {
+        return consumedEvents.get();
+    }
+
+    public void resetconsumedevents() {
+        consumedEvents.set(0);
+    }
 }

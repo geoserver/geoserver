@@ -19,9 +19,9 @@ import java.util.function.Function;
 /**
  * A simple JMS events listener for our tests.
  */
-final class JmsEventsListener extends JMSApplicationListener implements SessionAwareMessageListener<Message> {
+public final class JmsEventsListener extends JMSApplicationListener implements SessionAwareMessageListener<Message> {
 
-    enum Status {
+    public enum Status {
         NO_STATUS, SELECT_CONTINUE, REJECT_CONTINUE, SELECT_STOP, REJECT_STOP
     }
 
@@ -39,7 +39,7 @@ final class JmsEventsListener extends JMSApplicationListener implements SessionA
         }
     }
 
-    static void clear() {
+    public static void clear() {
         synchronized (messages) {
             // clear the processing pending messages
             messages.clear();
@@ -51,7 +51,7 @@ final class JmsEventsListener extends JMSApplicationListener implements SessionA
      * The stop method will be used to check if we have all the messages we need. Only
      * messages that match one of the provided handlers keys will be selected.
      */
-    static List<Message> getMessagesByHandlerKey(int timeoutMs, Function<List<Message>, Boolean> stop, String... keys) {
+    public static List<Message> getMessagesByHandlerKey(int timeoutMs, Function<List<Message>, Boolean> stop, String... keys) {
         List<String> keysList = Arrays.asList(keys);
         return JmsEventsListener.getMessages(timeoutMs, stop,
                 (message) -> {
@@ -74,7 +74,7 @@ final class JmsEventsListener extends JMSApplicationListener implements SessionA
      * The stop method will be used to check if we have all the messages we need. The selector
      * method is used to select only certain messages.
      */
-    static List<Message> getMessages(int timeoutMs, Function<List<Message>, Boolean> stop, Function<Message, Status> selector) {
+    public static List<Message> getMessages(int timeoutMs, Function<List<Message>, Boolean> stop, Function<Message, Status> selector) {
         List<Message> selected = new ArrayList<>();
         Status status = Status.NO_STATUS;
         int max = (int) Math.ceil(timeoutMs / 10.0);
@@ -111,7 +111,7 @@ final class JmsEventsListener extends JMSApplicationListener implements SessionA
     /**
      * Searches the events that match a certain handler and apply the handler to those elements.
      */
-    static <T> List<T> getMessagesForHandler(List<Message> messages, String handlerName, JMSEventHandler<String, T> handler) {
+    public static <T> List<T> getMessagesForHandler(List<Message> messages, String handlerName, JMSEventHandler<String, T> handler) {
         List<T> found = new ArrayList<>();
         for (Message message : messages) {
             try {

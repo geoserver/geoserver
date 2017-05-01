@@ -105,10 +105,6 @@ public class JMSActiveMQFactory extends JMSFactory implements
 					configuration
 							.getProperty(TopicConfiguration.TOPIC_NAME_KEY));
 		}
-		if (topic == null) {
-			throw new IllegalStateException(
-					"Unable to load a JMS Topic destination");
-		}
 		return topic;
 	}
 

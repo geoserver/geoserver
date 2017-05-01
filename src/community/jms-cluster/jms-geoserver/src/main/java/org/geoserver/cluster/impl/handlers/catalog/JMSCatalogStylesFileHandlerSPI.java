@@ -10,6 +10,7 @@ import org.geoserver.cluster.JMSEventHandler;
 import org.geoserver.cluster.configuration.JMSConfiguration;
 import org.geoserver.cluster.impl.handlers.DocumentFile;
 import org.geoserver.cluster.impl.handlers.DocumentFileHandlerSPI;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.thoughtworks.xstream.XStream;
@@ -23,14 +24,17 @@ public class JMSCatalogStylesFileHandlerSPI extends DocumentFileHandlerSPI {
 	
 	final Catalog catalog;
 	final XStream xstream;
+	private final GeoServerResourceLoader loader;
 	
 	@Autowired
 	public JMSConfiguration config;
 	
-	public JMSCatalogStylesFileHandlerSPI(final int priority, Catalog cat, XStream xstream) {
+	public JMSCatalogStylesFileHandlerSPI(final int priority, Catalog cat,
+										  XStream xstream, GeoServerResourceLoader loader) {
 		super(priority,xstream);
 		this.catalog=cat;
 		this.xstream=xstream;
+		this.loader = loader;
 	}
 
 	@Override
@@ -43,7 +47,8 @@ public class JMSCatalogStylesFileHandlerSPI extends DocumentFileHandlerSPI {
 
 	@Override
 	public JMSEventHandler<String,DocumentFile> createHandler() {
-		JMSCatalogStylesFileHandler styleHandler = new JMSCatalogStylesFileHandler(catalog,xstream,JMSCatalogStylesFileHandlerSPI.class);
+		JMSCatalogStylesFileHandler styleHandler = new JMSCatalogStylesFileHandler(catalog,xstream,
+				JMSCatalogStylesFileHandlerSPI.class, loader);
 		styleHandler.setConfig(config);
 		return styleHandler;
 	}

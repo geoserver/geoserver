@@ -20,7 +20,7 @@ Plugin Description
 The upload service is published under the common prefix **/rest/resumableupload/${uploadId}**, where uploadId is the unique identifier of each upload request.
 
 
-The completed uploaded file is moved to REST *ROOT folder*, if configured, otherwise in *$GEOSERVER_DATA_DIR/data* folder (see documentation of Path Mapper at the `Path Mapper documentation page <http://docs.geoserver.org/latest/en/user/webadmin/server/globalsettings.html#rest-pathmapper-root-directory-path>`_
+The completed uploaded file is moved to REST *ROOT folder*, if configured, otherwise in *$GEOSERVER_DATA_DIR/data* folder (see documentation of Path Mapper at the :ref:`Global Settings documentation page <config_globalsettings>`
 
 Here is a description of general workflow that clients must follow to handle file upload, manage returned data and resume upload:
 

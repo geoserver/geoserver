@@ -7,7 +7,7 @@ The REST API allows you to create and modify layer groups in GeoServer.
 
 .. note:: The examples below specify global layer groups, but the examples will work in a workspace-specific construction as well.
 
-.. note:: Read the `API reference for /layergroups <http://docs.geoserver.org/api/#/1.0.0/layergroups.yaml>`__.
+.. note:: Read the :api:`API reference for /layergroups <layergroups.yaml>`.
 
 Creating a layer group
 ----------------------

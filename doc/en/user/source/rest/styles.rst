@@ -5,7 +5,7 @@ Styles
 
 The REST API allows you to list, create, upload, update, and delete styles in GeoServer.
 
-.. note:: Read the `API reference for /styles <http://docs.geoserver.org/api/#/1.0.0/styles.yaml>`__.
+.. note:: Read the :api:`API reference for /styles <styles.yaml>`.
 
 Listing all styles
 ------------------

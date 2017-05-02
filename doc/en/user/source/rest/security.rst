@@ -1,11 +1,11 @@
 .. _rest_security:
 
-Fonts
-=====
+Security
+========
 
 The REST API allows you to adjust GeoServer security settings.
 
-.. note:: Read the `API reference for /security <http://docs.geoserver.org/api/#/1.0.0/security.yaml>`__.
+.. note:: Read the :api:`API reference for /security <security.yaml>`.
 
 Listing the master password
 ---------------------------

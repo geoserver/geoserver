@@ -5,7 +5,7 @@ Layers
 
 The REST API allows you to list, create, upload, update, and delete layers in GeoServer.
 
-.. note:: Read the `API reference for /layers <http://docs.geoserver.org/api/#/1.0.0/layers.yaml>`__.
+.. note:: Read the :api:`API reference for /layers <layers.yaml>`.
 
 Listing all layers
 ------------------

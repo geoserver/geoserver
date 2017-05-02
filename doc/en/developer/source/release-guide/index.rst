@@ -22,7 +22,7 @@ asking a volunteer to perform the release.
 Notify developer list
 ^^^^^^^^^^^^^^^^^^^^^
 
-It is good practice to notify the `GeoServer developer list <https://lists.sourceforge.net/lists/listinfo/geoserver-devel>`_ of the intention to make the release a few days in advance, even though the release date has been agreed upon before hand.
+Send an email to the `GeoServer developer list <https://lists.sourceforge.net/lists/listinfo/geoserver-devel>`_ a few days in advance, even though the release date has been agreed upon before hand. It is a good idea to remind developers to get any fixes 24 hours prior to release day, and to start a team discussion to identify any known blockers.
 
 Prerequisites
 -------------

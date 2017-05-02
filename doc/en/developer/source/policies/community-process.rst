@@ -28,7 +28,7 @@ Adding features
 ^^^^^^^^^^^^^^^
 
 During the development cycle community members propose new features and improvements to 
-be included in the release. The following are the prerequisites for proposing a 
+be included in the next release. The following are the prerequisites for proposing a 
 new feature:
 
 #. The feature has a sponsor. This means either a developer willing to carry out
@@ -40,6 +40,17 @@ new feature:
 The determining factor for what release a feature should be included in is based on the estimate of the time to implement the feature, and the current :ref:`release_cycle`. The release cycle includes a "feature freeze" where new features are delayed while stabilize master and cut a new release candidate.
 
 New features may be back-ported to the stable series (if technically feasible) after being tried out on master for a month.
+
+Adding fixes
+^^^^^^^^^^^^
+
+During the release cycle community members contribute fixes to be included, and backported, to be included in subsequent releases. 
+
+#. Each fix requires an issue tracker entry, to be included in the release notes
+#. Each fix must be applied to the master branch, and then back ported.
+#. While a release may be held for a "blocking" issue this is determined by discussion on the developer email list.
+
+Please respect our release volunteers. We stop back porting fixes the day before release so CITE tests can verify the release includes all the changes needed.
 
 .. _release_cycle:
 

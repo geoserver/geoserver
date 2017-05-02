@@ -443,7 +443,7 @@ public class StyleController extends AbstractCatalogController {
                         }
                         return;
                     }
-                    catch(IOException invalid){
+                    catch(Exception invalid){
                         throw new RestException("Invalid style:"+invalid.getMessage(), HttpStatus.BAD_REQUEST, invalid);
                     }
                 }

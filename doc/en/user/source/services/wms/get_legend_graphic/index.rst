@@ -65,7 +65,9 @@ In the following table the whole set of GetLegendGraphic parameters that can be 
    * - *LANGUAGE*
      - Optional
      - Allows setting labels language for style titles and rules titles; needs a correctly localized SLD to work properly; if labels are not available in the requested language, the default text will be used; look at :ref:`sld_language` for further details.
-     
+
+.. _get_legend_graphic_options:
+
 Controlling legend appearance with LEGEND_OPTIONS
 -------------------------------------------------
 

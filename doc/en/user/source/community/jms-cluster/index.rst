@@ -130,7 +130,7 @@ Snyder Bosanac Davies - ActiveMQ in action - Manning
 http://docs.geoserver.org/
 
 [GeoServer REST]
-http://docs.geoserver.org/latest/en/user/restconfig/rest-config-api.html
+http://docs.geoserver.org/latest/en/user/rest/index.html#rest
 
 [ActiveMQ]
 http://activemq.apache.org/

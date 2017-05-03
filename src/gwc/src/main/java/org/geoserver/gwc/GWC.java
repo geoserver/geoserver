@@ -178,7 +178,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     /**
      * @see #getResponseEncoder(MimeType, RenderedImageMap)
      */
-    private static Map<String, Response> cachedTileEncoders = new HashMap<String, Response>();
+    private Map<String, Response> cachedTileEncoders = new HashMap<String, Response>();
 
     private final TileLayerDispatcher tld;
 

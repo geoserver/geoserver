@@ -121,6 +121,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             mapNamespacePrefix("xs", "http://www.w3.org/2001/XMLSchema");
             mapNamespacePrefix("sch", "http://www.ascc.net/xml/schematron");
             mapNamespacePrefix("owc", "http://www.opengis.net/owc/1.0");
+            mapNamespacePrefix("media", "http://search.yahoo.com/mrss/");
             for (OpenSearchAccess.ProductClass pc : OpenSearchAccess.ProductClass.values()) {
                 mapNamespacePrefix(pc.getPrefix(), pc.getNamespace());
             }
@@ -239,7 +240,14 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             element("link", NO_CONTENTS, attributes("rel", "alternate", "href", metadataLink,
                     "type", MetadataRequest.ISO_METADATA, "title", "ISO metadata"));
 
+            // OGC links
             encodeOgcLinksFromFeature(feature, request);
+        }
+
+        private void mediaContent(String quicklookLink) {
+            element("media:content", () -> {
+                element("media:category", "THUMBNAIL", attributes("scheme", "http://www.opengis.net/spec/EOMPOM/1.0"));
+            }, attributes("medium", "image", "type", "image/jpeg", "url", quicklookLink));
         }
 
         private void encodeOgcLinksFromFeature(Feature feature, SearchRequest request) {
@@ -308,6 +316,13 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             element("link", NO_CONTENTS, attributes("rel", "alternate", "href", metadataLink,
                     "type", MetadataRequest.OM_METADATA, "title", "O&M metadata"));
 
+            // and a quicklook as a link and as media
+            if(quicklookLink != null) {
+                element("link", NO_CONTENTS, attributes("rel", "icon", "href", quicklookLink,
+                        "type", "image/jpeg", "title", "Quicklook"));
+                element("media:group", () -> mediaContent(quicklookLink));
+            }
+            
             encodeOgcLinksFromFeature(feature, request);
             
             encodeDownloadLink(feature, request);

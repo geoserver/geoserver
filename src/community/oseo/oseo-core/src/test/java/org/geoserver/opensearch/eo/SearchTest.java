@@ -310,7 +310,7 @@ public class SearchTest extends OSEOTestSupport {
                 + "&availabilityTime=&acquisitionStation=&orbitNumber=&track=&frame="
                 + "&startTimeFromAscendingNode=&completionTimeFromAscendingNode="
                 + "&cloudCover=&snowCover=&httpAccept=atom");
-        print(dom);
+        // print(dom);
 
         assertFirstPageSentinel2Products(dom);
     }
@@ -642,5 +642,23 @@ public class SearchTest extends OSEOTestSupport {
         RenderedImage image = getAsImage(path, "image/jpeg");
         assertNotNull(image);
     }
+    
+    @Test
+    public void testQuicklookInAtom() throws Exception {
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01");
+        // print(dom);
+        
+        assertThat(dom, hasXPath("/at:feed/at:entry/at:link[@rel='icon']/@href", 
+                equalTo("http://localhost:8080/geoserver/oseo/quicklook?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry/media:group)", equalTo("1")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry/media:group/media:content)", equalTo("1")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry/media:group/media:content/media:category)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry/media:group/media:content/media:category", 
+                equalTo("THUMBNAIL")));
+        assertThat(dom, hasXPath("/at:feed/at:entry/media:group/media:content[@medium='image' and @type='image/jpeg']/@url", 
+                equalTo("http://localhost:8080/geoserver/oseo/quicklook?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01")));
+
+    }
+
 
 }

@@ -5,4 +5,5 @@
   <import namespace="http://www.georss.org/georss" schemaLocation="./georss.xsd"/>
   <import namespace="http://a9.com/-/opensearch/extensions/geo/1.0/" schemaLocation="./opensearch-geo.xsd"/>
   <import namespace="http://www.opengis.net/owc/1.0" schemaLocation="./owc.xsd"/>
+  <import namespace="http://search.yahoo.com/mrss/" schemaLocation="./mediarss.xsd"/>
 </schema>

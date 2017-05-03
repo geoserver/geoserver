@@ -95,6 +95,8 @@
 		depends-on="catalog" lazy-init="true">
 		<constructor-arg index="0" ref="rawCatalog" />
 		<constructor-arg index="1" ref="JMSPublisher" />
+		<constructor-arg index="2" ref="resourceLoader" />
+		<constructor-arg index="3" ref="dataDirectory" />
 	</bean>
 
 	<bean id="JMSConfigurationListener"
@@ -118,6 +120,7 @@
 		<constructor-arg index="0" value="-1" />
 		<constructor-arg index="1" ref="rawCatalog" />
 		<constructor-arg index="2" ref="JMSXstream" />
+		<constructor-arg index="3" ref="resourceLoader" />
 	</bean>
 
 	<bean id="JMSCatalogAddEventHandlerSPI"

@@ -39,7 +39,7 @@ public class SearchTest extends OSEOTestSupport {
         assertEquals(200, response.getStatus());
 
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-        // print(dom);
+        print(dom);
 
         // basics
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("3")));
@@ -50,7 +50,7 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
         assertThat(dom, hasXPath("/at:feed/at:author/at:name", equalTo("GeoServer")));
         assertThat(dom, hasXPath("/at:feed/at:updated"));
-        assertThat(dom, hasXPath("/at:feed/at:link[@rel='search']/@href", 
+       assertThat(dom, hasXPath("/at:feed/at:link[@rel='search']/@href", 
                 equalTo("http://localhost:8080/geoserver/oseo/search/description")));
 
         assertNoResults(dom);
@@ -68,6 +68,8 @@ public class SearchTest extends OSEOTestSupport {
                 "http://localhost:8080/geoserver/oseo/search?uid=SENTINEL2&httpAccept=application%2Fatom%2Bxml")));
         assertThat(dom,
                 hasXPath("/at:feed/at:entry[1]/at:updated", equalTo("2016-02-26T09:20:21Z")));
+        assertThat(dom,
+                hasXPath("/at:feed/at:entry[1]/dc:date", equalTo("2015-07-01T08:20:21Z/2016-02-26T09:20:21Z")));
         // ... mind the lat/lon order
         assertThat(dom,
                 hasXPath(
@@ -375,6 +377,8 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("count(/at:feed/at:entry)", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry/at:title",
                 equalTo("S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04")));
+        assertThat(dom, hasXPath("/at:feed/at:entry/at:updated", equalTo("2017-03-08T17:54:21.026Z")));
+        assertThat(dom, hasXPath("/at:feed/at:entry/dc:date", equalTo("2017-03-08T17:54:21.026Z")));
 
         // ... the links (self, metadata)
         assertThat(dom, hasXPath(

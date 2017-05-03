@@ -348,11 +348,24 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             element("id", identifierLink);
             element("title", name);
             element("dc:identifier", name);
-            // TODO: need an actual update column
-            Date updated = (Date) value(feature, "timeStart");
-            if (updated != null) {
+            Date start = (Date) value(feature, "timeStart");
+            Date end = (Date) value(feature, "timeEnd");
+            if(start != null || end != null) {
+                // TODO: need an actual update column
+                Date updated = end == null ? start : end;
                 String formattedUpdated = DateTimeFormatter.ISO_INSTANT.format(updated.toInstant());
                 element("updated", formattedUpdated);
+
+                // dc:date, can be a range
+                String spec;
+                if(start != null && end != null && start.equals(end)) {
+                    spec = DateTimeFormatter.ISO_INSTANT.format(start.toInstant());
+                } else {
+                    spec = start != null ? DateTimeFormatter.ISO_INSTANT.format(start.toInstant()) : "";
+                    spec += "/";
+                    spec += end != null ? DateTimeFormatter.ISO_INSTANT.format(end.toInstant()) : "";
+                }
+                element("dc:date", spec);
             }
             Geometry footprint = (Geometry) value(feature, "footprint");
             if (footprint != null) {

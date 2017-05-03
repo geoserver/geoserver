@@ -43,8 +43,12 @@ public class OSEOFilter implements GeoServerFilter {
     }
 
     private boolean requestNeedsWrapper(HttpServletRequest requestHTTP) {
-        return "GET".equalsIgnoreCase(requestHTTP.getMethod()) && !(new CaseInsensitiveMap(requestHTTP.getParameterMap()).containsKey("service")) 
-                && (requestHTTP.getPathInfo().endsWith("search") || requestHTTP.getPathInfo().endsWith("description"));
+        String pathInfo = requestHTTP.getPathInfo();
+        Map<String, String[]> parameterMap = requestHTTP.getParameterMap();
+        return pathInfo != null && parameterMap != null
+                && "GET".equalsIgnoreCase(requestHTTP.getMethod())
+                && !(new CaseInsensitiveMap(parameterMap).containsKey("service"))
+                && (pathInfo.endsWith("search") || pathInfo.endsWith("description"));
     }
 
     @Override

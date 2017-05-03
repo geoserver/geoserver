@@ -7,6 +7,7 @@ package org.geoserver.opensearch.eo.kvp;
 import static org.geoserver.opensearch.eo.OpenSearchParameters.*;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.COUNT_KEY;
 import static org.geoserver.opensearch.eo.kvp.SearchRequestKvpReader.PARENT_ID_KEY;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.*;
@@ -416,6 +417,13 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertBinaryFilter(children.get(0), OpenSearchAccess.EO_NAMESPACE, "sensorType", "OPTICAL");
         assertBinaryFilter(children.get(1), OpenSearchAccess.EO_NAMESPACE, "sensorType", "RADAR");
         assertBinaryFilter(children.get(2), OpenSearchAccess.EO_NAMESPACE, "sensorType", "ALTIMETRIC");
+    }
+    
+    @Test
+    public void testCloudCoverEmpty() throws Exception {
+        Map<String, String> map = toMap("parentId", "SENTINEL2", "cloudCover", "");
+        Filter filter = parseAndGetFilter(map);
+        assertThat(filter, equalTo(Filter.INCLUDE));
     }
     
     @Test

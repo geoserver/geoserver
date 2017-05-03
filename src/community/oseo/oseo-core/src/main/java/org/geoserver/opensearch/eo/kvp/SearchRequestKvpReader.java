@@ -52,6 +52,7 @@ import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.spatial.DWithin;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.springframework.util.StringUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -183,7 +184,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         List<Filter> filters = new ArrayList<>();
         for (Parameter<?> parameter : parameters) {
             Object value = rawKvp.get(parameter.key);
-            if (value != null && !NOT_FILTERS.contains(parameter.key)) {
+            if (!StringUtils.isEmpty(value) && !NOT_FILTERS.contains(parameter.key)) {
                 Filter filter = null;
                 if (SEARCH_TERMS.key.equals(parameter.key)) {
                     filter = buildSearchTermsFilter(value);
@@ -592,7 +593,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         Object converted = Converters.convert(value, parameter.getType(), SAFE_CONVERSION_HINTS);
         if (converted == null) {
             throw new OWS20Exception(
-                    value + " of key " + parameter.key + " cannot be converted to a "
+                    "Value '" + value + "' of key " + parameter.key + " cannot be converted to a "
                             + parameter.getType().getSimpleName(),
                     OWSExceptionCode.InvalidParameterValue, parameter.key);
         }

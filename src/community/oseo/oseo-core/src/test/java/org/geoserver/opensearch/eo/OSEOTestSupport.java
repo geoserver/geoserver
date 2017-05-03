@@ -10,8 +10,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
+import javax.servlet.Filter;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -59,6 +62,10 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the OpenSearch schemas", e);
         }
+    }
+    
+    protected List<Filter> getFilters() {
+        return Collections.singletonList(new OSEOFilter());
     }
 
     @Override

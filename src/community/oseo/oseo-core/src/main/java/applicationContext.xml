@@ -82,6 +82,8 @@
 
   <!-- Dispatcher callback to force kvp parsing in absence of any kvp param -->
   <bean id="oseoDispatcherCallback" class="org.geoserver.opensearch.eo.OSEODispatcherCallback" />
+  <!-- Filter to force service and version in case they are missing to avoid KVP parsing issues -->
+  <bean id="oseoServiceFilter" class="org.geoserver.opensearch.eo.OSEOFilter" />
 
   <!-- kvp request readers -->
   <bean id="oseoDescriptionRequestKvpParser" class="org.geoserver.opensearch.eo.kvp.DescriptionRequestKvpReader" />

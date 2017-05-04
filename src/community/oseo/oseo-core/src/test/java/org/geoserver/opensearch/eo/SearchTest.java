@@ -39,7 +39,7 @@ public class SearchTest extends OSEOTestSupport {
         assertEquals(200, response.getStatus());
 
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-        print(dom);
+        // print(dom);
 
         // basics
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("3")));

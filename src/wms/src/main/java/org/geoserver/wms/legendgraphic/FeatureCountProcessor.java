@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.vividsolutions.jts.geom.Envelope;
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.ows.util.CaseInsensitiveMap;
@@ -280,8 +281,16 @@ class FeatureCountProcessor {
         rawKvp.put("STYLES", "");
         // ... width and height
         rawKvp.put("WIDTH", rawKvp.get("SRCWIDTH"));
-        rawKvp.put("HEIGTH", rawKvp.get("SRCHEIGHT"));
-        
+        rawKvp.put("HEIGHT", rawKvp.get("SRCHEIGHT"));
+        // ... set default values if not yet set
+        rawKvp.putIfAbsent("HEIGHT", String.valueOf(GetLegendGraphicRequest.DEFAULT_HEIGHT));
+        rawKvp.putIfAbsent("WIDTH", String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH));
+        kvp.putIfAbsent("HEIGHT", String.valueOf(GetLegendGraphicRequest.DEFAULT_HEIGHT));
+        kvp.putIfAbsent("WIDTH", String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH));
+        // ... and bbox as well
+        rawKvp.putIfAbsent("BBOX", legend.getLayerInfo().getResource().boundingBox().toString());
+        kvp.putIfAbsent("BBOX", legend.getLayerInfo().getResource().boundingBox());
+
         // remove decoration to avoid infinite recursion
         final Map formatOptions = (Map) kvp.get("FORMAT_OPTIONS");
         if(formatOptions != null) {

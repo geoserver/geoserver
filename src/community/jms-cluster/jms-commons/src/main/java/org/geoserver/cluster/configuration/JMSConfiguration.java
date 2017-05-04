@@ -87,6 +87,13 @@ final public class JMSConfiguration {
             if (configuration.isEmpty()) {
                 initDefaults();
             }
+            // avoid ActiveMQ matching all pattern has virtual topic name
+            String topicName = configuration.getProperty(TopicConfiguration.TOPIC_NAME_KEY);
+            if (topicName.equalsIgnoreCase("VirtualTopic.>")) {
+                // override topic name with the default topic name
+                configuration.put(TopicConfiguration.TOPIC_NAME_KEY, TopicConfiguration.DEFAULT_TOPIC_NAME);
+                storeConfig();
+            }
             // if configuration is changed (since last boot) store changes
             // on disk
             boolean override = override();

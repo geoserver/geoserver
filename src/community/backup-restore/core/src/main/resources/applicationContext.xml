@@ -7,16 +7,12 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:batch="http://www.springframework.org/schema/batch"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
-		http://www.springframework.org/schema/beans
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
         http://www.springframework.org/schema/batch
-        http://www.springframework.org/schema/batch/spring-batch-3.0.xsd
-        http://www.springframework.org/schema/util
-        http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+        http://www.springframework.org/schema/batch/spring-batch-3.0.xsd">
 
 	<!-- core backup/restore setup -->
 
@@ -50,7 +46,14 @@
 		<!-- milliseconds: 10 minutes timeout for each step -->
 		<constructor-arg value="600000"/>
 	</bean>
-	
+
+  <!-- extension point for generic backup / restore tasklets -->
+  <bean id="genericTasklet" class="org.geoserver.backuprestore.tasklet.GenericTasklet">
+    <constructor-arg ref="backupFacade" />
+    <constructor-arg ref="xstreamPersisterFactory" />
+    <property name="timeout" value="600000"/>
+  </bean>
+
 	<!-- ********************** -->
 	<!-- Main Backup BATCH Flow -->
 	<!-- ********************** -->
@@ -89,6 +92,13 @@
 		    		<batch:tasklet ref="catalogSecurityManagerTasklet"/>
 		    	</batch:step>
 		    </batch:flow>
+
+        <!-- extension point for generic backup tasklets -->
+        <batch:flow>
+          <batch:step id="genericTaskletsBackup">
+            <batch:tasklet ref="genericTasklet"/>
+          </batch:step>
+        </batch:flow>
 
     		<batch:fail on="FAILED"/>
     		<batch:stop on="STOPPED" restart="backupWorkspaceInfos"/>
@@ -408,7 +418,7 @@
 
 	</batch:job>
 	<!-- The BACKUP Job definition ENDS here -->
-	
+
 
 	<!-- *********************** -->
 	<!-- Main Restore BATCH Flow -->
@@ -809,10 +819,22 @@
 
     	</batch:step>
 
-    	<batch:step id="restoreGeoServerSecurityManager">
-    		<batch:tasklet allow-start-if-complete="true" ref="catalogSecurityManagerTasklet"/>
-    	</batch:step>
-		
+    <batch:step id="restoreGeoServerSecurityManager">
+      <batch:tasklet allow-start-if-complete="true" ref="catalogSecurityManagerTasklet"/>
+      <batch:fail on="FAILED"/>
+      <batch:stop on="STOPPED" restart="genericTaskletsRestore"/>
+      <batch:next on="*" to="genericTaskletsRestore"/>
+
+      <batch:listeners>
+        <batch:listener ref="restoreExecutionPromotionListener"/>
+      </batch:listeners>
+    </batch:step>
+
+    <!-- extension point for generic restore tasklets -->
+    <batch:step id="genericTaskletsRestore">
+      <batch:tasklet allow-start-if-complete="true" ref="genericTasklet"/>
+    </batch:step>
+
 	</batch:job>
 	<!-- The RESTORE Job definition ENDS here -->
 	

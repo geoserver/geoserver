@@ -7,7 +7,6 @@ package org.geoserver.cluster.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.OutputStream;
 import java.util.Properties;
 
 import javax.jms.JMSException;
@@ -29,13 +28,11 @@ import org.geoserver.cluster.impl.handlers.DocumentFile;
 import org.geoserver.cluster.impl.utils.BeanUtils;
 import org.geoserver.cluster.server.events.StyleModifyEvent;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
-import org.geotools.data.Base64;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -51,6 +48,8 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
     private final static java.util.logging.Logger LOGGER = Logging.getLogger(JMSCatalogListener.class);
 
     private final JMSPublisher jmsPublisher;
+    private final GeoServerResourceLoader loader;
+    private final GeoServerDataDirectory dataDirectory;
 
     /**
      * Constructor
@@ -58,9 +57,12 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
      * @param topicTemplate the getJmsTemplate() object used to send message to the topic queue
      * 
      */
-    public JMSCatalogListener(final Catalog catalog, final JMSPublisher jmsPublisher) {
+    public JMSCatalogListener(final Catalog catalog, final JMSPublisher jmsPublisher,
+                              GeoServerResourceLoader loader, GeoServerDataDirectory dataDirectory) {
         super();
         this.jmsPublisher = jmsPublisher;
+        this.loader = loader;
+        this.dataDirectory = dataDirectory;
         catalog.addListener(this);
     }
 
@@ -84,7 +86,6 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
 
         try {
             // check if we may publish also the file
-        	GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             final CatalogInfo info = event.getSource();
             if (info instanceof StyleInfo) {
                 final StyleInfo sInfo=((StyleInfo) info);
@@ -191,7 +192,6 @@ public class JMSCatalogListener extends JMSAbstractGeoServerProducer implements 
                         styleInfo.getName()), exception);
             }
             // get style associated resource
-            GeoServerDataDirectory dataDirectory = GeoServerExtensions.bean(GeoServerDataDirectory.class);
             Resource resource = dataDirectory.get(styleInfo, styleInfo.getFilename());
             if (!resource.file().exists()) {
                 // this should not happen we throw an exception

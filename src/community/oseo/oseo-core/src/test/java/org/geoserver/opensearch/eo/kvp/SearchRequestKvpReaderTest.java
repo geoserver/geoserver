@@ -142,6 +142,28 @@ public class SearchRequestKvpReaderTest extends OSEOTestSupport {
         assertEquals(1, searchParameters.size());
         assertThat(searchParameters, hasEntry(OpenSearchParameters.GEO_BOX, "10,20,30,40"));
     }
+    
+    @Test
+    public void testParseBBoxWholeWorld() throws Exception {
+        Map<String, String> map = toMap(GEO_BOX.key, "-180,-90,180,90");
+        SearchRequest request = parseSearchRequest(map);
+        assertEquals(null, request.getParentId());
+        final Query query = request.getQuery();
+        assertNotNull(query);
+        final String expectedCql = "BBOX(, -180.0,-90.0,180.0,90.0)";
+        assertEquals(expectedCql, ECQL.toCQL(query.getFilter()));
+    }
+    
+    @Test
+    public void testParseBBoxDatelineCrossing() throws Exception {
+        Map<String, String> map = toMap(GEO_BOX.key, "170,-90,-170,90");
+        SearchRequest request = parseSearchRequest(map);
+        assertEquals(null, request.getParentId());
+        final Query query = request.getQuery();
+        assertNotNull(query);
+        final String expectedCql = "BBOX(, 170.0,-90.0,180.0,90.0) OR BBOX(, -180.0,-90.0,-170.0,90.0)";
+        assertEquals(expectedCql, ECQL.toCQL(query.getFilter()));
+    }
 
     @Test
     public void testPaging() throws Exception {

@@ -405,8 +405,8 @@ public class SearchTest extends OSEOTestSupport {
     }
 
     @Test
-    public void testSearchByBox() throws Exception {
-        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&box=-118,33,-117,34");
+    public void testSearchByBoxDatelineCrossing() throws Exception {
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&box=170,33,-117,34");
         // print(dom);
 
         // only one feature should be matching

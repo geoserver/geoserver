@@ -2193,20 +2193,20 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * Verify that a layer is accessible within a certain bounding box (calculated from tile) using the (secured) catalog
      * 
      * @param layerName name of the layer
-     * @param srs reference system
+     * @param gridSetId name of the gridset
      * @param level zoom level
      * @param tileColumn column of tile in tile grid
      * @param tileRow row  of tile in tile grid
      * @throws ServiceException
      */
-    public void verifyAccessTiledLayer(String layerName, String srs, int level, long tileColumn,
+    public void verifyAccessTiledLayer(String layerName, String gridSetId, int level, long tileColumn,
             long tileRow) throws ServiceException {
         // get bounding box of requested tile
         GeoServerTileLayer layer = (GeoServerTileLayer) getTileLayerByName(layerName);
-        GridSubset gridSubset = layer.getGridSubset(srs);
+        GridSubset gridSubset = layer.getGridSubset(gridSetId);
         if (gridSubset == null) {
             throw new ServiceException(
-                    "The specified grid " + srs + " is not defined on layer " + layerName,
+                    "The specified grid set " + gridSetId + " is not defined on layer " + layerName,
                     "AccessDenied");
         }
         long[] tileIndex = { tileColumn, tileRow, level };

@@ -7,8 +7,12 @@ package org.geoserver.gwc.dispatch;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +36,10 @@ import org.geotools.util.Version;
 import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheExtensions;
 import org.geowebcache.grid.GridSubset;
+import org.geowebcache.layer.TileLayer;
 import org.geowebcache.service.gmaps.GMapsConverter;
+import org.geowebcache.service.tms.TMSDocumentFactory;
+import org.geowebcache.util.ServletUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -106,6 +113,39 @@ public class GwcServiceProxy {
         return new GwcOperationProxy(contentType, headers, bytes);
     }
     
+    private  static Map<String,String> splitTMSParams(HttpServletRequest request) {
+        
+        // get all elements of the pathInfo after the leading "/tms/1.0.0/" part.
+        String pathInfo = request.getPathInfo();
+        pathInfo = pathInfo.substring(pathInfo.indexOf(TMSDocumentFactory.TILEMAPSERVICE_LEADINGPATH));
+        String[] params = pathInfo.split("/");
+        // {"tms", "1.0.0", "img states@EPSG:4326", ... } 
+        
+        int paramsLength = params.length;
+        
+        Map<String, String> parsed = new HashMap<>();
+        
+        if(params.length < 4) {
+            return Collections.emptyMap();
+        }
+        
+        String[] yExt = params[paramsLength - 1].split("\\.");
+        
+        parsed.put("x", params[paramsLength - 2]);
+        parsed.put("y", yExt[0]);
+        parsed.put("z", params[paramsLength - 3]);
+        
+        String layerNameAndSRS = params[2];
+        String[] lsf = ServletUtils.URLDecode(layerNameAndSRS, request.getCharacterEncoding()).split("@");
+        parsed.put("layerId", lsf[0]);
+        if(lsf.length >= 3) {
+           parsed.put("gridSetId", lsf[1]);
+        }
+        
+        parsed.put("fileExtension", yExt[1]);
+        
+        return parsed;
+    }
     /***
      * Do a security check using the geoserver internal catalog security for a specific gwc request 
      * WMS-C requests are handled as regular WMS requests
@@ -153,24 +193,27 @@ public class GwcServiceProxy {
             String layer = (String) parameters.get("LAYER");
 
             if (layer != null) {
-                String tileMatrix = (String) parameters.get("TileMatrix");
-                String srs = tileMatrix.substring(0, tileMatrix.lastIndexOf(":"));
-                int level = Integer.parseInt(tileMatrix.substring(tileMatrix.lastIndexOf(":") + 1));
+                TileLayer tileLayer = GWC.get().getTileLayerByName(layer);
+                GridSubset subSet = tileLayer.getGridSubset((String) parameters.get("TileMatrixSet"));
+                int level = (int) subSet.getGridIndex((String) parameters.get("TileMatrix"));
+                long height = subSet.getNumTilesHigh((int) level);
                 long col = Long.parseLong((String) parameters.get("TileCol"));
-                long row = Long.parseLong((String) parameters.get("TileRow"));
-                GWC.get().verifyAccessTiledLayer(layer, srs, level, col, row);
+                long row = height - Long.parseLong((String) parameters.get("TileRow")) - 1;
+                GWC.get().verifyAccessTiledLayer(layer, subSet.getName(), level, col, row);
             }
 
         } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/tms/1.0.0/")) {
-            String layer = rawRequest.getPathInfo().toLowerCase().substring("/service/tms/1.0.0/".length());
-            if (layer.indexOf('/') >= 0) {
-                layer = layer.substring(0, layer.indexOf('/'));
+            Map<String,String> tmsParameters = splitTMSParams(rawRequest);
+            String layer = tmsParameters.get("layerId");
+            String gridSet = tmsParameters.get("gridSetId");
+            if(Objects.isNull(gridSet)) {
+                gridSet = GWC.get().getTileLayerByName(layer)
+                            .getGridSubsets().iterator().next();
             }
-            if (layer.indexOf('@') >= 0) {
-                layer = layer.substring(0, layer.indexOf('@'));
-            }
-            
-            GWC.get().verifyAccessLayer(layer, null);
+            int level = Integer.parseInt(tmsParameters.get("z"));
+            long col = Long.parseLong(tmsParameters.get("x"));
+            long row = Long.parseLong(tmsParameters.get("y"));
+            GWC.get().verifyAccessTiledLayer(layer, gridSet, level, col, row);
         } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/kml/")) {
             String layer = rawRequest.getPathInfo().toLowerCase().substring("/service/kml/".length());
             if (layer.indexOf('.') >= 0) {

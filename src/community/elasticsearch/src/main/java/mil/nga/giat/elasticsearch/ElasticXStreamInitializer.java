@@ -27,4 +27,5 @@ public class ElasticXStreamInitializer implements XStreamPersisterInitializer {
         XStream xs = persister.getXStream();
         xs.alias("esAttribute", ElasticAttribute.class);
     }
+
 }

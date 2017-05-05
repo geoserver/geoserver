@@ -290,6 +290,11 @@ class FeatureCountProcessor {
         // ... and bbox as well
         rawKvp.putIfAbsent("BBOX", legend.getLayerInfo().getResource().boundingBox().toString());
         kvp.putIfAbsent("BBOX", legend.getLayerInfo().getResource().boundingBox());
+        // ... and dont forget srs
+        rawKvp.putIfAbsent("SRS", legend.getLayerInfo().getResource().getSRS());
+        kvp.putIfAbsent("SRS", legend.getLayerInfo().getResource().getSRS());
+
+        
 
         // remove decoration to avoid infinite recursion
         final Map formatOptions = (Map) kvp.get("FORMAT_OPTIONS");

@@ -245,7 +245,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
         assertLabel("(49)", rules[3]);
     }
 
-    /*@Test
+    @Test
     public void testStatesMissingHeightWidthBboxSrs() throws Exception {
         runGetLegendGraphics(
                 "wms?service=WMS&version=1.1.1&request=GetLegendGraphic&format=image/png"
@@ -263,7 +263,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
         // this is the rule for outline and text symbolizer, Alaska and Hawaii are not in the
         // map but Washington DC is and it's not a state (50 - 2 + 1)
         assertLabel("(49)", rules[3]);
-    }*/
+    }
 
     @Test
     public void testStatesCqlFilter() throws Exception {

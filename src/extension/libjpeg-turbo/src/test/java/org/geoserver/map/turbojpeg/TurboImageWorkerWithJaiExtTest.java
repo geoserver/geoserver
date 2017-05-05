@@ -57,7 +57,7 @@ public class TurboImageWorkerWithJaiExtTest extends Assert {
     private static final String BAND_SEQUENTIAL_DATA_TIF = "band_sequential_data.tif";
 
     // rasterRenderingBug, seems there is a trouble when removing alpha with jai-ext band select operation.
-    // in order the test to work (i.e. to fail), "testWithNativeJaiExt" profile has to be activated.
+    // in order the test to work (i.e. to fail), "testWithNativeJaiExt" profile can be used.
     // this profile redefine maven surefire plugin, adding:
     //   native jai in classpath:
     //     /usr/share/java/mlibwrapper_jai.jar

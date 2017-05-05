@@ -10,6 +10,8 @@ Styles are used to control the appearance of geospatial data. Styles for GeoServ
 * **Styled Layer Descriptor (SLD)**: An OGC standard for geospatial styling. Available by default.
 * **Cascading Style Sheets (CSS)**: A CSS-like syntax. Available via an :ref:`extension <css>`.
 * **YSLD**: An SLD-equivalent based on `YAML <http://yaml.org>`_ for improved authoring. Available via the :ref:`ysld extension <ysld_styling>` .
+* **MBStyle**: A syntax based on `JSON <http://json.org>`_ for improved interoperability. Available via the :ref:`mbstyle extension <mbstyle_styling>` .
+
 
 .. _styling_webadmin_styles:
 
@@ -19,7 +21,7 @@ Styles page
 On the Styles page, you can :ref:`add a new style <styling_webadmin_add>`, :ref:`remove a style <styling_webadmin_remove>`, or :ref:`view or edit an existing style <styling_webadmin_edit>`.
 
 .. figure:: img/styles.png
-   
+
    Styles page
 
 .. _styling_webadmin_add:
@@ -27,12 +29,12 @@ On the Styles page, you can :ref:`add a new style <styling_webadmin_add>`, :ref:
 Add a Style
 ~~~~~~~~~~~
 
-The buttons for adding and removing a style can be found at the top of the :guilabel:`Styles` page. 
+The buttons for adding and removing a style can be found at the top of the :guilabel:`Styles` page.
 
 .. figure:: img/styles_add_delete.png
 
    Adding or removing a style
-   
+
 To add a new style, click :guilabel:`Add a new style` button. You will be redirected to the new style page, which is the same as the Style Editor :ref:`Data <styling_webadmin_edit_data>` tab.
 
 The editor page provides several options for submitting a new style:
@@ -67,7 +69,7 @@ Remove a Style
 To remove a style, click the check box next to the style. Multiple styles can be selected at the same time. Click the :guilabel:`Remove selected style(s)` link at the top of the page. You will be asked for confirmation:
 
 .. figure:: img/styles_delete.png
-  
+
    Confirmation prompt for removing styles
 
 Click :guilabel:`OK` to remove the selected style(s).
@@ -94,7 +96,7 @@ The Style Editor page presents the :ref:`style definition <styling_webadmin_edit
 At the bottom of the Style Editor page is a number of options:
 
 .. list-table::
-   :widths: 25 75 
+   :widths: 25 75
    :header-rows: 1
 
    * - Option
@@ -120,13 +122,13 @@ Style definition
 On all tabs, the Style Editor will display the style definition at the bottom, allowing for direct editing of the style. Switch between the tabs in order to facilitate style creation and editing.
 
 .. figure:: img/styles_editor.png
-   
+
    Style editor
 
 The style editor supports line numbering, automatic indentation, and real-time syntax highlighting. You can also increase or decrease the font size of the editor.
 
 .. list-table::
-   :widths: 25 75 
+   :widths: 25 75
    :header-rows: 1
 
    * - Button
@@ -147,13 +149,13 @@ During editing and especially after editing is complete, you will want to check 
 If no errors are found, you will see this message:
 
 .. figure:: img/styles_editor_noerrors.png
-   
+
    No validation errors
 
-If any validation errors are found, they will be displayed:   
+If any validation errors are found, they will be displayed:
 
 .. figure:: img/styles_editor_error.png
-   
+
    Validation error message
 
 
@@ -167,7 +169,7 @@ The Data tab includes basic style information, the ability to generate a style, 
 The :guilabel:`Style Data` area has mandatory basic style information:
 
 .. list-table::
-   :widths: 25 75 
+   :widths: 25 75
    :header-rows: 1
 
    * - Option
@@ -177,7 +179,7 @@ The :guilabel:`Style Data` area has mandatory basic style information:
    * - :guilabel:`Workspace`
      - Workspace in which the style is contained. Styles can be inside workspaces, but can also be "global" (no workspace).
    * - :guilabel:`Format`
-     - Format of the style. Options are :guilabel:`SLD`, :guilabel:`CSS`, and :guilabel:`YSLD`, depending on availability.
+     - Format of the style. Options are :guilabel:`SLD`, :guilabel:`CSS`, and :guilabel:`YSLD`, :guilabel:`MBStyle` depending on availability.
 
 .. figure:: img/styles_editor_data_styledata.png
 
@@ -186,7 +188,7 @@ The :guilabel:`Style Data` area has mandatory basic style information:
 The :guilabel:`Style Content` area allows you to generate a style, copy an existing style, or upload an existing style:
 
 .. list-table::
-   :widths: 25 75 
+   :widths: 25 75
    :header-rows: 1
 
    * - Option
@@ -205,7 +207,7 @@ The :guilabel:`Style Content` area allows you to generate a style, copy an exist
 The :guilabel:`Legend` area allows you to add, modify, or delete a custom style, and preview the legend for the style. By default GeoServer will generate a legend based on your style file, but this can be customized here:
 
 .. list-table::
-   :widths: 25 75 
+   :widths: 25 75
    :header-rows: 1
 
    * - Option
@@ -240,7 +242,7 @@ Style Editor: Publishing tab
 The Publishing tab displays a list of all layers on the server, with the purpose of showing which layers are associated with the current style. Layers can set a single default style and have any number of additional styles. If this style is set to be either of these options for a layer, it will be shown with a check box in the table.
 
 .. list-table::
-   :widths: 25 75 
+   :widths: 25 75
    :header-rows: 1
 
    * - Option
@@ -250,9 +252,9 @@ The Publishing tab displays a list of all layers on the server, with the purpose
    * - :guilabel:`Layer`
      - Name of the layer
    * - :guilabel:`Default`
-     - Shows whether the style being edited is the default for a given layer 
+     - Shows whether the style being edited is the default for a given layer
    * - :guilabel:`Associated`
-     - Shows whether the style being edited is an additional style for a given layer 
+     - Shows whether the style being edited is an additional style for a given layer
 
 .. figure:: img/styles_editor_data_publishing.png
 
@@ -283,7 +285,7 @@ Most styles utilize the specific values of certain attributes of the associated 
 The Layer Attributes tab will display a list of attributes for the given associated layer. GeoServer tries to identify which layer should be shown (for example, a layer for which this style is the default), but if the layer being previewed is not the desired one, click the layer name above the table and select a layer.
 
 .. list-table::
-   :widths: 25 75 
+   :widths: 25 75
    :header-rows: 1
 
    * - Option
@@ -295,11 +297,11 @@ The Layer Attributes tab will display a list of attributes for the given associa
    * - :guilabel:`sample`
      - Sample value of the attribute taken from the data
    * - :guilabel:`min`
-     - Minimum value of the attribute in the data set, if applicable 
+     - Minimum value of the attribute in the data set, if applicable
    * - :guilabel:`max`
      - Minimum value of the attribute in the data set, if applicable
    * - :guilabel:`computeStats`
-     - Click :guilabel:`Compute` to calculate the :guilabel:`min` and :guilabel:`max` values for that attribute, if applicable 
+     - Click :guilabel:`Compute` to calculate the :guilabel:`min` and :guilabel:`max` values for that attribute, if applicable
 
 .. figure:: img/styles_editor_data_layerattributes.png
 

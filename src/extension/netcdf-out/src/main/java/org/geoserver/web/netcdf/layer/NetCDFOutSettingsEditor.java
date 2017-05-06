@@ -28,12 +28,11 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
-import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.netcdf.NetCDFPanel;
-import org.geoserver.web.netcdf.NetCDFSettingsContainer.GlobalAttribute;
 import org.geotools.coverage.io.netcdf.cf.Entry;
 import org.geotools.coverage.io.netcdf.cf.NetCDFCFParser;
 
@@ -124,7 +123,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
         container.add(availableNames);
 
         // Add Behaviour related to standard name choice
-        standardName.add(new AjaxFormComponentUpdatingBehavior("onChange") {
+        standardName.add(new AjaxFormComponentUpdatingBehavior("Change") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -149,27 +148,35 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
         });
     }
 
+
     @Override
     public void convertInput() {
-        globalAttributes.visitChildren((component, visit) -> {
+        IVisitor<Component, Object> formComponentVisitor = (component, visit) -> {
             if (component instanceof FormComponent) {
                 FormComponent<?> formComponent = (FormComponent<?>) component;
                 formComponent.processInput();
             }
-        });
+        };
+        globalAttributes.visitChildren(formComponentVisitor);
+        variableAttributes.visitChildren(formComponentVisitor);
+        extraVariables.visitChildren(formComponentVisitor);
         compressionLevel.processInput();
         dataPacking.processInput();
         shuffle.processInput();
+        copyAttributes.processInput();
         standardName.processInput();
         uom.processInput();
-        List<GlobalAttribute> info = globalAttributes.getModelObject();
         NetCDFLayerSettingsContainer convertedInput = new NetCDFLayerSettingsContainer();
         convertedInput.setCompressionLevel(compressionLevel.getModelObject());
-        convertedInput.setGlobalAttributes(info);
+        convertedInput.setGlobalAttributes(globalAttributes.getModelObject());
+        convertedInput.setVariableAttributes(variableAttributes.getModelObject());
+        convertedInput.setExtraVariables(extraVariables.getModelObject());
         convertedInput.setDataPacking(dataPacking.getModelObject());
         convertedInput.setShuffle(shuffle.getModelObject());
+        convertedInput.setCopyAttributes(copyAttributes.getModelObject());
         convertedInput.setLayerName(standardName.getModelObject());
         convertedInput.setLayerUOM(uom.getModelObject());
         setConvertedInput(convertedInput);
     }
+
 }

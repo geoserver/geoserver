@@ -27,7 +27,7 @@ on how to install and use GeoServer.
 GeoServer uses [Apache Maven](http://maven.apache.org/) for a build system. To 
 build the application run maven from the ```src``` directory.
 
-    % mvn clean install
+    mvn clean install
 
 See the [developer guide](http://docs.geoserver.org/latest/en/developer/) 
 for more details.

@@ -526,19 +526,34 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
     }
 
     /**
-     * Test extra variables, variable attributes, and global attributes of different types. Uses <code>Temperature_surface</code>.
+     * Test <code>Temperature_surface</code> extra variables, variable attributes, and global attributes of different types, for NetCDF-3 output.
      */
     @Test
-    public void testExtraVariables() throws Exception {
-        // for some reason the request only worka with netcdf4
-        // TODO: investigate what this test fails with format=application/x-netcdf
+    public void testExtraVariablesNetcdf3() throws Exception {
+        checkExtraVariables("application/x-netcdf");
+    }
+
+    /**
+     * Test <code>Temperature_surface</code> extra variables, variable attributes, and global attributes of different types, for NetCDF-4 output.
+     */
+    @Test
+    public void testExtraVariablesNetcdf4() throws Exception {
         assumeTrue(NetCDFUtilities.isNC4CAvailable());
+        checkExtraVariables("application/x-netcdf4");
+    }
+
+    /**
+     * Check <code>Temperature_surface</code> extra variables, variable attributes, and global attributes of different type.
+     * 
+     * @param format the output format MIME type
+     */
+    private void checkExtraVariables(String format) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(
                 "wcs?service=WCS&version=2.0.1&request=GetCoverage"
-                        + "&coverageid=wcs__Temperature_surface&format=application/x-netcdf4");
+                        + "&coverageid=wcs__Temperature_surface&format=" + format);
         assertNotNull(response);
         assertEquals(200, response.getStatus());
-        assertEquals("application/x-netcdf4", response.getContentType());
+        assertEquals(format, response.getContentType());
         byte[] responseBytes = getBinary(response);
         File file = File.createTempFile("extra-variable-", "-wcs__Temperature_surface.nc",
                 new File("./target"));

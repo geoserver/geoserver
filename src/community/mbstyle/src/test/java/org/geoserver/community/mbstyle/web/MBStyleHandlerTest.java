@@ -1,6 +1,7 @@
 package org.geoserver.community.mbstyle.web;
 
 import org.geoserver.catalog.Styles;
+import org.geoserver.community.mbstyle.MBStyleHandler;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.styling.*;
 import org.junit.Test;

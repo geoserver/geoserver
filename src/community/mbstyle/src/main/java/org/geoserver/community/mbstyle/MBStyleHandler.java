@@ -2,17 +2,22 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.community.mbstyle.web;
+package org.geoserver.community.mbstyle;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
+import org.geoserver.catalog.StyleType;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.mbstyle.MapBoxStyle;
@@ -30,6 +35,22 @@ public class MBStyleHandler extends StyleHandler {
     public static final String FORMAT = "json";
 
     public static final String MIME_TYPE = "application/vnd.geoserver.mbstyle+json";
+
+    static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+    static {
+        try {
+            TEMPLATES.put(StyleType.POINT, IOUtils.toString(MBStyleHandler.class
+                    .getResourceAsStream("template_point.json")));
+            TEMPLATES.put(StyleType.POLYGON, IOUtils.toString(MBStyleHandler.class
+                    .getResourceAsStream("template_polygon.json")));
+            TEMPLATES.put(StyleType.LINE, IOUtils.toString(MBStyleHandler.class
+                    .getResourceAsStream("template_line.json")));
+            TEMPLATES.put(StyleType.RASTER, IOUtils.toString(MBStyleHandler.class
+                    .getResourceAsStream("template_raster.json")));
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading up the style templates", e);
+        }
+    }
 
     private SLDHandler sldHandler;
 
@@ -101,4 +122,25 @@ public class MBStyleHandler extends StyleHandler {
         return MIME_TYPE;
     }
 
+    @Override
+    public String getFileExtension() {
+        return "json";
+    }
+
+    @Override
+    public String getCodeMirrorEditMode() {
+        return "application/json";
+    }
+
+    @Override
+    public String getStyle(StyleType type, Color color, String colorName, String layerName) {
+        String template = TEMPLATES.get(type);
+        if (template == null) {
+            throw new UnsupportedOperationException("MBStyle does not support generating " + type + " styles.");
+        }
+        String colorCode = Integer.toHexString(color.getRGB());
+        colorCode = colorCode.substring(2, colorCode.length());
+        return template.replace("${colorName}", colorName).replace(
+                "${colorCode}", "#" + colorCode).replace("${layerName}", layerName);
+    }
 }

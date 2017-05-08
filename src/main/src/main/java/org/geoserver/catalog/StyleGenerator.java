@@ -157,13 +157,30 @@ public class StyleGenerator {
             return handler.getStyle(styleType, color.color, color.name, layerName);
         } catch (UnsupportedOperationException e) {
             //Handler does not support loading from template; load SLD template and convert
-            SLDHandler sldHandler = new SLDHandler();
-            String sldTemplate =  sldHandler.getStyle(styleType, color.color, color.name, layerName);
-            
-            StyledLayerDescriptor sld = sldHandler.parse(sldTemplate, null, null, null);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            handler.encode(sld, null, true, out);
-            return out.toString();
+            try {
+                SLDHandler sldHandler = new SLDHandler();
+                String sldTemplate = sldHandler.getStyle(styleType, color.color, color.name, layerName);
+
+                StyledLayerDescriptor sld = sldHandler.parse(sldTemplate, null, null, null);
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                handler.encode(sld, null, true, out);
+                return out.toString();
+            } catch (UnsupportedOperationException e1) {
+                String message = "Error generating style";
+                boolean directMessage = e.getMessage() != null && !"".equals(e.getMessage().trim());
+                if (directMessage) {
+                    message += " - Direct generation failed with error: " + e.getMessage();
+                }
+                if (e1.getMessage() != null && !"".equals(e1.getMessage().trim())) {
+                    if (directMessage) {
+                        message += ", and ";
+                    } else {
+                        message += " - ";
+                    }
+                    message += "SLD conversion failed with error: " + e1.getMessage();
+                }
+                throw new UnsupportedOperationException(message, e1);
+            }
         }
     }
 

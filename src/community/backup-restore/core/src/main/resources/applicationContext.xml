@@ -63,6 +63,11 @@
 			<constructor-arg ref="backupFacade"/>
 		</bean>
 
+	<!-- Extension point for backup jobs listeners -->
+	<bean id="genericBackupJobExecutionListener" class="org.geoserver.backuprestore.listener.GenericListenersExecutor">
+		<constructor-arg value="true"/>
+	</bean>
+
 	<!-- CatalogAdditionalResourcesWriter extensions: those can be triggered by the CatalogWriter -->
 		<bean id="styleInfoAdditionalResourceWriter" class="org.geoserver.backuprestore.writer.StyleInfoAdditionalResourceWriter" />
 	
@@ -75,6 +80,7 @@
 	        <!-- Any job specific listeners here -->
 	        <batch:listener ref="backupFacade" />
 	        <batch:listener ref="backupJobExecutionListener" />
+					<batch:listener ref="genericBackupJobExecutionListener" />
 	    </batch:listeners>
     	
     	<!-- Backup GeoServer Globals/Logging/Services -->
@@ -429,6 +435,11 @@
 			<constructor-arg ref="backupFacade"/>
 		</bean>
 
+	<!-- Extensions point for restore jobs listeners -->
+	<bean id="genericRestoreJobExecutionListener" class="org.geoserver.backuprestore.listener.GenericListenersExecutor">
+		<constructor-arg value="false"/>
+	</bean>
+
 		<!-- This specific Listener allows to promote properties setted on Steps to Job Context Scope -->
 		<bean id="restoreExecutionPromotionListener" 
 				class="org.springframework.batch.core.listener.ExecutionContextPromotionListener">
@@ -444,6 +455,7 @@
 	        <!-- Any job specific listeners here -->
 	        <batch:listener ref="backupFacade" />
 	        <batch:listener ref="restoreJobExecutionListener" />
+				  <batch:listener ref="genericRestoreJobExecutionListener" />
 	    </batch:listeners>
 
 		<!-- Restore NamespaceInfos -->

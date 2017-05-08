@@ -7,7 +7,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd.spring-beans.dtd">
 
 <beans>
-  <bean id="MBStyleHandler" class="org.geoserver.community.mbstyle.web.MBStyleHandler">
+  <bean id="MBStyleHandler" class="org.geoserver.community.mbstyle.MBStyleHandler">
     <constructor-arg ref="sldHandler"/>
   </bean>
 </beans>

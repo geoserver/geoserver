@@ -133,6 +133,8 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.Or;
 import org.opengis.metadata.extent.GeographicBoundingBox;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.springframework.beans.BeansException;
@@ -2211,14 +2213,28 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (gridSubset == null) {
             throw new ServiceException(
                     "The specified grid set " + gridSetId + " is not defined on layer " + layerName,
-                    "AccessDenied");
+                    "InternalServerError");
         }
         long[] tileIndex = { tileColumn, tileRow, level };
         BoundingBox bounds = gridSubset.boundsFromIndex(tileIndex);
         double[] coords = bounds.getCoords();
-        ReferencedEnvelope envelope = new ReferencedEnvelope(coords[0], coords[1], coords[2],
-                coords[3], this.getDeclaredCrs(layerName));
+        CoordinateReferenceSystem crs;
+        try {
+            crs = getCRSForGridset(gridSubset);
+        } catch (FactoryException e) {
+            throw new ServiceException(
+                    "Could not decode SRS " + gridSubset.getSRS().toString() + " for gridset "+gridSubset.getGridSet().getName(),
+                    "InternalServerError");
+        }
+        
+        ReferencedEnvelope envelope = new ReferencedEnvelope(coords[0], coords[2], coords[1],
+                coords[3], crs);
         this.verifyAccessLayer(layerName, envelope);
+    }
+
+    CoordinateReferenceSystem getCRSForGridset(GridSubset gridSubset)
+            throws NoSuchAuthorityCodeException, FactoryException {
+        return CRS.decode(gridSubset.getSRS().toString());
     }
 
     public CoordinateReferenceSystem getDeclaredCrs(final String geoServerTileLayerName) {

@@ -13,6 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +40,9 @@ import org.geowebcache.GeoWebCacheExtensions;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.service.gmaps.GMapsConverter;
+import org.geowebcache.service.mgmaps.MGMapsConverter;
 import org.geowebcache.service.tms.TMSDocumentFactory;
+import org.geowebcache.service.ve.VEConverter;
 import org.geowebcache.util.ServletUtils;
 
 import com.google.common.collect.ImmutableList;
@@ -55,6 +59,9 @@ public class GwcServiceProxy {
 
     private final GeoWebCacheDispatcher gwcDispatcher;
 
+    private final Pattern kmlPattern = Pattern.compile("/service/kml/", Pattern.CASE_INSENSITIVE);
+    private final Pattern kmlXyzPattern = Pattern.compile(".*x(?<x>[0-9]+)y(?<y>[0-9]+)z(?<z>[0-9]+).*?", Pattern.CASE_INSENSITIVE);
+    
     public GwcServiceProxy() {
         serviceInfo = new ServiceInfoImpl();
         serviceInfo.setId("gwc");
@@ -215,21 +222,53 @@ public class GwcServiceProxy {
             long row = Long.parseLong(tmsParameters.get("y"));
             GWC.get().verifyAccessTiledLayer(layer, gridSet, level, col, row);
         } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/kml/")) {
-            String layer = rawRequest.getPathInfo().toLowerCase().substring("/service/kml/".length());
+            // attention preserve case of layer name!
+            
+            String layer = kmlPattern.matcher(rawRequest.getPathInfo()).replaceAll("");
+            // address can be something like: 
+            // /service/kml/<namespace>:<layername>/x68691y49819z16.png.kml
+            // /service/kml/<namespace>:<layername>.png.kml
             if (layer.indexOf('.') >= 0) {
                 layer = layer.substring(0, layer.indexOf('.'));
             }
+            if (layer.indexOf('/') >= 0) {
+                layer = layer.substring(0, layer.indexOf('/'));
+                GWC.get().verifyAccessLayer(layer, null);
+            }
             
-            GWC.get().verifyAccessLayer(layer, null);
-        } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/gmaps") || rawRequest.getPathInfo().toLowerCase().startsWith("/service/ve")) {
+            Matcher kmlXyzMatcher = kmlXyzPattern.matcher(rawRequest.getPathInfo());
+            if(kmlXyzMatcher.matches() && kmlXyzMatcher.groupCount() == 3){
+                try{
+                    long col = Long.parseLong(kmlXyzMatcher.group("x"));
+                    long row = Long.parseLong(kmlXyzMatcher.group("y"));
+                    long level = Long.parseLong(kmlXyzMatcher.group("z"));
+                    String gridset = GWC.get().getGridSetBroker().WORLD_EPSG4326.getName();
+                    GWC.get().verifyAccessTiledLayer(layer, gridset, (int)level, col, row);
+                } catch (NumberFormatException e) {
+                    throw new ServiceException(e);
+                }                
+            } else {
+                // It's a Super Overlay collecting tiles for the entire layer in a zip.
+                GWC.get().verifyAccessLayer(layer, ReferencedEnvelope.EVERYTHING);
+            }
+        } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/gmaps") || rawRequest.getPathInfo().toLowerCase().startsWith("/service/mgmaps")) {
             String layerstr = (String) parameters.get("LAYERS");
                         
             if (layerstr != null) {
-                int level = Integer.parseInt((String) parameters.get("zoom"));
-                long col = Long.parseLong((String) parameters.get("x"));
-                long row = Long.parseLong((String) parameters.get("y"));
+                int gmLevel = Integer.parseInt((String) parameters.get("zoom"));
+                long gmCol = Long.parseLong((String) parameters.get("x"));
+                long gmRow = Long.parseLong((String) parameters.get("y"));
+                int level;
+                long col;
+                long row;
                 try {
-                    long[] converted = GMapsConverter.convert(level, col, row);
+                    long[] converted;
+                    if(rawRequest.getPathInfo().toLowerCase().startsWith("/service/mgmaps")){
+                        converted = MGMapsConverter.convert(gmLevel, gmCol, gmRow);
+                    } else {
+                        converted = GMapsConverter.convert(gmLevel, gmCol, gmRow);
+                    }
+                    level = (int) converted[2];
                     col = converted[0];
                     row = converted[1];
                 } catch (org.geowebcache.service.ServiceException e) {
@@ -239,16 +278,30 @@ public class GwcServiceProxy {
                 String[] layers = layerstr.split(",");
                 for (String layerName : layers) {
                     layerName = layerName.trim();
-                    GeoServerTileLayer layer = (GeoServerTileLayer) GWC.get()
-                            .getTileLayerByName(layerName);
-                    String srs = "EPSG:3857";
-                    GridSubset gridSubset = layer.getGridSubset(srs);
-                    if (gridSubset == null) {
-                        srs = "EPSG:900913";
-                    }
-                    GWC.get().verifyAccessTiledLayer(layerName, srs, level, col, row);
+                    String gridSetName = GWC.get().getGridSetBroker().WORLD_EPSG3857.getName();
+                    GWC.get().verifyAccessTiledLayer(layerName, gridSetName, level, col, row);
                 }
-            }
+            } 
+        } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/ve") ) {
+            String layerstr = (String) parameters.get("LAYERS");
+                        
+            if (layerstr != null) {
+                long[] converted = VEConverter.convert((String) parameters.get("quadKey"));
+                int level = (int) converted[2];
+                long col = converted[0];
+                long row = converted[1];
+                
+                String[] layers = layerstr.split(",");
+                for (String layerName : layers) {
+                    layerName = layerName.trim();
+                    String gridSetName = GWC.get().getGridSetBroker().WORLD_EPSG3857.getName();
+                    GWC.get().verifyAccessTiledLayer(layerName, gridSetName, level, col, row);
+                }
+            } 
+        } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/") ) {
+            throw new ServiceException(
+                    "Unknown service "+rawRequest.getPathInfo().split("/")[1]+". could not apply layer security so denying",
+                    "AccessDenied");
         }
     }
 

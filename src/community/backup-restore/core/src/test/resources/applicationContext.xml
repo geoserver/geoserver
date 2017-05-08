@@ -22,4 +22,7 @@
 	</bean>
 
 	<bean id="continuableHandler" class="org.geoserver.backuprestore.ContinuableHandler"/>
+
+	<bean id="genericListener" class="org.geoserver.backuprestore.GenericListener"/>
+
 </beans>

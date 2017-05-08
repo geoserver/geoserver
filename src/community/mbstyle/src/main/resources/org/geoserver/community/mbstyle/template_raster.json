@@ -1,0 +1,13 @@
+{
+  "name": "${layerName}",
+  "version": 8,
+  "layers": [
+      {
+          "id": "${layerName} raster",
+          "type": "raster",
+          "paint": {
+              "raster-opacity": 1
+          }
+      }
+  ]
+}

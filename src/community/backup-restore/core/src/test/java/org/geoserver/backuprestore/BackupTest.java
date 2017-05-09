@@ -43,6 +43,8 @@ public class BackupTest extends BackupRestoreTestSupport {
     public void beforeTest() {
         // reset invocations counter of continuable handler
         ContinuableHandler.resetInvocationsCount();
+        // reset invocation of generic listener
+        GenericListener.reset();
     }
 
     @Test
@@ -77,6 +79,11 @@ public class BackupTest extends BackupRestoreTestSupport {
 
         assertTrue(backupExecution.getStatus() == BatchStatus.COMPLETED);
         assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
+        // check that generic listener was invoked for the backup job
+        assertThat(GenericListener.getBackupAfterInvocations(), is(1));
+        assertThat(GenericListener.getBackupBeforeInvocations(), is(1));
+        assertThat(GenericListener.getRestoreAfterInvocations(), is(0));
+        assertThat(GenericListener.getRestoreBeforeInvocations(), is(0));
     }
 
     @Test
@@ -182,6 +189,11 @@ public class BackupTest extends BackupRestoreTestSupport {
 
         checkExtraPropertiesExists();
         assertThat(ContinuableHandler.getInvocationsCount() > 2, is(true));
+        // check that generic listener was invoked for the backup job
+        assertThat(GenericListener.getBackupAfterInvocations(), is(0));
+        assertThat(GenericListener.getBackupBeforeInvocations(), is(0));
+        assertThat(GenericListener.getRestoreAfterInvocations(), is(1));
+        assertThat(GenericListener.getRestoreBeforeInvocations(), is(1));
     }
 
     @Test

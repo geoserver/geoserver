@@ -226,12 +226,14 @@ public class GwcServiceProxy {
                         
             if (layerstr != null) {
                 int level = Integer.parseInt((String) parameters.get("zoom"));
-                long col = Long.parseLong((String) parameters.get("x"));
-                long row = Long.parseLong((String) parameters.get("y"));
+                long gmCol = Long.parseLong((String) parameters.get("x"));
+                long gmRow = Long.parseLong((String) parameters.get("y"));
+                long gmLevel = level;
                 try {
-                    long[] converted = GMapsConverter.convert(level, col, row);
-                    col = converted[0];
-                    row = converted[1];
+                    long[] converted = GMapsConverter.convert(level, gmCol, gmRow);
+                    gmCol = converted[0];
+                    gmRow = converted[1];
+                    gmLevel = converted[2];
                 } catch (org.geowebcache.service.ServiceException e) {
                     throw new ServiceException(e);
                 }
@@ -246,7 +248,7 @@ public class GwcServiceProxy {
                     if (gridSubset == null) {
                         srs = "EPSG:900913";
                     }
-                    GWC.get().verifyAccessTiledLayer(layerName, srs, level, col, row);
+                    GWC.get().verifyAccessTiledLayer(layerName, srs, (int)gmLevel, gmCol, gmRow);
                 }
             }
         }

@@ -39,6 +39,8 @@ public class MBStyleHandler extends StyleHandler {
     static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
     static {
         try {
+            TEMPLATES.put(StyleType.GENERIC, IOUtils.toString(MBStyleHandler.class
+                    .getResourceAsStream("template_generic.json")));
             TEMPLATES.put(StyleType.POINT, IOUtils.toString(MBStyleHandler.class
                     .getResourceAsStream("template_point.json")));
             TEMPLATES.put(StyleType.POLYGON, IOUtils.toString(MBStyleHandler.class
@@ -135,9 +137,6 @@ public class MBStyleHandler extends StyleHandler {
     @Override
     public String getStyle(StyleType type, Color color, String colorName, String layerName) {
         String template = TEMPLATES.get(type);
-        if (template == null) {
-            throw new UnsupportedOperationException("MBStyle does not support generating " + type + " styles.");
-        }
         String colorCode = Integer.toHexString(color.getRGB());
         colorCode = colorCode.substring(2, colorCode.length());
         return template.replace("${colorName}", colorName).replace(

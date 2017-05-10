@@ -13,6 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +56,9 @@ public class GwcServiceProxy {
     private final ServiceInfoImpl serviceInfo;
 
     private final GeoWebCacheDispatcher gwcDispatcher;
+    
+    private final Pattern kmlPattern = Pattern.compile("/service/kml/", Pattern.CASE_INSENSITIVE);
+    private final Pattern kmlXyzPattern = Pattern.compile(".*x(?<x>[0-9]+)y(?<y>[0-9]+)z(?<z>[0-9]+).*?", Pattern.CASE_INSENSITIVE);
 
     public GwcServiceProxy() {
         serviceInfo = new ServiceInfoImpl();
@@ -215,12 +220,33 @@ public class GwcServiceProxy {
             long row = Long.parseLong(tmsParameters.get("y"));
             GWC.get().verifyAccessTiledLayer(layer, gridSet, level, col, row);
         } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/kml/")) {
-            String layer = rawRequest.getPathInfo().toLowerCase().substring("/service/kml/".length());
+            // attention preserve case of layer name!
+            
+            String layer = kmlPattern.matcher(rawRequest.getPathInfo()).replaceAll("");
+            // address can be something like: 
+            // /service/kml/<namespace>:<layername>/x68691y49819z16.png.kml
+            // /service/kml/<namespace>:<layername>.png.kml
             if (layer.indexOf('.') >= 0) {
                 layer = layer.substring(0, layer.indexOf('.'));
             }
+            if (layer.indexOf('/') >= 0) {
+                layer = layer.substring(0, layer.indexOf('/'));
+                GWC.get().verifyAccessLayer(layer, null);
+            }
             
-            GWC.get().verifyAccessLayer(layer, null);
+            Matcher kmlXyzMatcher = kmlXyzPattern.matcher(rawRequest.getPathInfo());
+            if(kmlXyzMatcher.matches() && kmlXyzMatcher.groupCount() == 3){
+                try{
+                    long kmlCol = Long.parseLong(kmlXyzMatcher.group("x"));
+                    long kmlRow = Long.parseLong(kmlXyzMatcher.group("y"));
+                    long kmlLevel = Long.parseLong(kmlXyzMatcher.group("z"));
+                    GWC.get().verifyAccessTiledLayer(layer, "EPSG:4326", (int)kmlLevel, kmlCol, kmlRow);
+                } catch (NumberFormatException e) {
+                    throw new ServiceException(e);
+                }                
+            }else{
+                throw new ServiceException("The kml request has no proper xyz tile coordinates!");
+            }
         } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/gmaps") || rawRequest.getPathInfo().toLowerCase().startsWith("/service/ve")) {
             String layerstr = (String) parameters.get("LAYERS");
                         

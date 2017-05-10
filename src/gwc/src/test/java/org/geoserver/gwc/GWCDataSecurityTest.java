@@ -83,7 +83,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX),
                 "raster-filter-test.zip",null, properties, SystemTestData.class, getCatalog());
         
-        testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic2", MockData.SF_PREFIX),
+        testData.addRasterLayer(new QName(MockData.SF_URI, "Mosaic2", MockData.SF_PREFIX),
                 "raster-filter-test.zip",null, properties, SystemTestData.class, getCatalog());
         
         GeoServerUserGroupStore ugStore= getSecurityManager().
@@ -115,7 +115,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         
 
         CoverageInfo coverage = catalog.getCoverageByName("sf:mosaic");
-        CoverageInfo coverage2 = catalog.getCoverageByName("sf:mosaic2");
+        CoverageInfo coverage2 = catalog.getCoverageByName("sf:Mosaic2");
         
         // set permissions on layer coverage
         tam.putLimits("cite_mosaic2", coverage, new DataAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE));
@@ -180,7 +180,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
 
         // first to cache on sf:mosaic2
         setRequestAuth("cite_mosaic2", "cite");
-        String path2 = pathForLayer.apply("sf:mosaic2");
+        String path2 = pathForLayer.apply("sf:Mosaic2");
         response = getAsServletResponse(path2);
         assertEquals("image/png", response.getContentType());
         
@@ -188,13 +188,13 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         response = getAsServletResponse(path2);
         assertEquals(tileFormat, response.getContentType());
         
-        // permission must be denied to cite user for sf:mosaic2
+        // permission must be denied to cite user for sf:Mosaic2
         setRequestAuth("cite", "cite");
         response = getAsServletResponse(path2);
         assertEquals(failFormat, response.getContentType() );
         String str = string(getBinaryInputStream(response));
         // mode challenge
-        assertTrue(str.contains("Access denied to bounding box on layer sf:mosaic2"));
+        assertTrue(str.contains("Access denied to bounding box on layer sf:Mosaic2"));
         
         //try now as cite_mosaic2 user permission on sf:mosaic must be denied
         setRequestAuth("cite_mosaic2", "cite");        
@@ -203,7 +203,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         str = string(getBinaryInputStream(response));
         // mode hide
         assertTrue(str.contains("Could not find layer sf:mosaic"));
-        // permission must be allowed on sf:mosaic2
+        // permission must be allowed on sf:Mosaic2
         response = getAsServletResponse(path2);
         assertEquals(tileFormat, response.getContentType());
     }
@@ -228,6 +228,14 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     public void testPermissionMosaicTileTms() throws Exception {
         doPermissionMosaicTileTest(
                 (layer)->String.format("gwc/service/tms/1.0.0/%s@EPSG:4326@png/0/0/0.png", layer), 
+                "application/xml");
+    }
+    
+    
+    @Test
+    public void testPermissionMosaicTileKml() throws Exception {
+        doPermissionMosaicTileTest(
+                (layer)->String.format("gwc/service/kml/%s/x0y0z0.png", layer), 
                 "application/xml");
     }
     

@@ -1,0 +1,14 @@
+{
+    "layers": [
+        {
+            "id": "test-layer",
+            "type": "circle",
+            "layout": {
+                "visibility": "visible"
+            },
+            "paint": {
+                "circle-color": "#FF0000"
+            }
+        }
+    ]
+}

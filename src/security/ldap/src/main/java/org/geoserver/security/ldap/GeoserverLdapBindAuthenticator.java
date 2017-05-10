@@ -43,6 +43,10 @@ public class GeoserverLdapBindAuthenticator extends BindAuthenticator {
 
     private String userFormat = "";
 
+    private String bindUsername = "";
+
+    private String bindPassword = "";
+
     public GeoserverLdapBindAuthenticator(
             BaseLdapPathContextSource contextSource) {
         super(contextSource);
@@ -51,6 +55,10 @@ public class GeoserverLdapBindAuthenticator extends BindAuthenticator {
     public void setUserFilter(String userFilter) {
         this.userFilter = userFilter;
     }
+
+    public void setBindUsername(String bindUsername) { this.bindUsername = bindUsername; }
+
+    public void setBindPassword(String bindPassword) { this.bindPassword = bindPassword; }
 
     @Override
     public DirContextOperations authenticate(Authentication authentication) {
@@ -91,8 +99,20 @@ public class GeoserverLdapBindAuthenticator extends BindAuthenticator {
 
         DirContext ctx = null;
         String userDnStr = "";
+        String fullUserDnStr = "";
         try {
-            ctx = getContextSource().getContext(username, password);
+            boolean useBindUsername = bindUsername != null && !bindUsername.equals("");
+            if (useBindUsername) {
+                // If a bind username has been specified, use it instead of using user credentials
+                if (!StringUtils.hasLength(bindPassword)) {
+                    logger.debug("Rejecting empty password for user " + bindUsername);
+                    throw new BadCredentialsException(messages.getMessage(
+                            "BindAuthenticator.emptyPassword", "Empty Password"));
+                }
+                ctx = getContextSource().getContext(bindUsername, bindPassword);
+            } else {
+                ctx = getContextSource().getContext(username, password);
+            }
 
             // Check for password policy control
             PasswordPolicyControl ppolicy = PasswordPolicyControlExtractor
@@ -104,9 +124,22 @@ public class GeoserverLdapBindAuthenticator extends BindAuthenticator {
 
             user = SpringSecurityLdapTemplate.searchForSingleEntryInternal(ctx,
                     searchCtls, "", userFilter, new Object[] { username, originalUser });
+            logger.debug("User filter: " + userFilter);
             userDnStr = user.getDn().toString();
+            fullUserDnStr = user.getNameInNamespace();
+            logger.debug("User DN: " + fullUserDnStr);
             if (ppolicy != null) {
                 user.setAttributeValue(ppolicy.getID(), ppolicy);
+            }
+            // If a bind username has been specified, check user provided credentials against found DN
+            if (useBindUsername) {
+                LdapUtils.closeContext(ctx);
+                try {
+                    ctx = getContextSource().getContext(fullUserDnStr, password);
+                } catch (Exception e) {
+                    user = null;
+                    throw e;
+                }
             }
 
         } catch (NamingException e) {

@@ -32,7 +32,7 @@ import org.xml.sax.EntityResolver;
  */
 public class MBStyleHandler extends StyleHandler {
 
-    public static final String FORMAT = "json";
+    public static final String FORMAT = "mbstyle";
 
     public static final String MIME_TYPE = "application/vnd.geoserver.mbstyle+json";
 

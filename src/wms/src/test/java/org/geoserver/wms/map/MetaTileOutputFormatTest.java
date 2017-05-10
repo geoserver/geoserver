@@ -9,9 +9,15 @@ import static org.junit.Assert.*;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ComponentSampleModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 
 import javax.media.jai.Interpolation;
+import javax.media.jai.PlanarImage;
+import javax.media.jai.TiledImage;
 
 import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.map.QuickTileCache.MapKey;
@@ -48,5 +54,17 @@ public class MetaTileOutputFormatTest {
         RenderedImage planar = new ImageWorker(bi).scale(3, 3, 0, 0, Interpolation.getInstance(Interpolation.INTERP_NEAREST)).getRenderedImage();
         MetatileMapOutputFormat.split(key, planar);
         assertEquals(1, cleaner.getImages().size());
+    }
+
+    @Test
+    public void testPlanarImageTranslatedChild() throws Exception {
+        SampleModel sm = new ComponentSampleModel(DataBuffer.TYPE_BYTE, 128, 128, 1, 128, new int[] {0});
+        TiledImage source = new TiledImage(0, 0, 512, 512, 0, 0, sm, PlanarImage.createColorModel(sm));
+        Raster[] tiles = source.getTiles();
+        assertEquals(16, tiles.length);
+
+        // Without fix for GEOS-8137, this split call will cause a
+        // java.lang.ClassCastException: java.awt.image.Raster cannot be cast to java.awt.image.WritableRaster
+        MetatileMapOutputFormat.split(key, source);
     }
 }

@@ -1151,6 +1151,10 @@ public class Dispatcher extends AbstractController {
         if (matches.size() > 1) {
             List vmatches = new ArrayList(matches);
 
+            if (isCiteCompliant() && version == null && "WFS".equals(id)) {
+                version = new Version("1.1.0");
+            }
+
             //match up the version
             if (version != null) {
                 //version specified, look for a match

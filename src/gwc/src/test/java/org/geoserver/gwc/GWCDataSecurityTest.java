@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
@@ -81,11 +82,15 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         properties.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX),
                 "raster-filter-test.zip",null, properties, SystemTestData.class, getCatalog());
-                
+        
+        testData.addRasterLayer(new QName(MockData.SF_URI, "Mosaic2", MockData.SF_PREFIX),
+                "raster-filter-test.zip",null, properties, SystemTestData.class, getCatalog());
+        
         GeoServerUserGroupStore ugStore= getSecurityManager().
                 loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME).createStore();
         
         ugStore.addUser(ugStore.createUserObject("cite", "cite", true));
+        ugStore.addUser(ugStore.createUserObject("cite_mosaic2", "cite", true));
         ugStore.addUser(ugStore.createUserObject("cite_nomosaic", "cite", true));
         ugStore.addUser(ugStore.createUserObject("cite_cropmosaic", "cite", true));
         ugStore.addUser(ugStore.createUserObject("cite_filtermosaic", "cite", true));
@@ -96,6 +101,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         GeoServerRole role = roleStore.createRoleObject("ROLE_DUMMY");
         roleStore.addRole(role);
         roleStore.associateRoleToUser(role, "cite");
+        roleStore.associateRoleToUser(role, "cite_mosaic2");
         roleStore.associateRoleToUser(role, "cite_nogroup");
         roleStore.associateRoleToUser(role, "cite_nomosaic");
         roleStore.associateRoleToUser(role, "cite_cropmosaic");  
@@ -109,6 +115,15 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         
 
         CoverageInfo coverage = catalog.getCoverageByName("sf:mosaic");
+        CoverageInfo coverage2 = catalog.getCoverageByName("sf:Mosaic2");
+        
+        // set permissions on layer coverage
+        tam.putLimits("cite_mosaic2", coverage, new DataAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE));
+        tam.putLimits("cite", coverage, new DataAccessLimits(CatalogMode.HIDE, Filter.INCLUDE));
+        
+        // set permissions on layer coverage2
+        tam.putLimits("cite", coverage2, new DataAccessLimits(CatalogMode.CHALLENGE, Filter.EXCLUDE));
+        tam.putLimits("cite_mosaic2", coverage2, new DataAccessLimits(CatalogMode.CHALLENGE, Filter.INCLUDE));
         
         //layer disable
         tam.putLimits("cite_nomosaic", coverage, new CoverageAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE, null, null));
@@ -146,6 +161,82 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         assertEquals("application/xml", response.getContentType());
         String str = string(getBinaryInputStream(response));
         assertTrue(str.contains("org.geotools.ows.ServiceException: Could not find layer sf:mosaic"));
+    }
+    
+    
+    protected void doPermissionMosaicTileTest(Function<String, String> pathForLayer, String failFormat) throws Exception {
+        final String tileFormat = "image/png";
+        GWC.get().getConfig().setSecurityEnabled(true);
+        
+        //first to cache sf:mosaic
+        setRequestAuth("cite", "cite");
+        String path = pathForLayer.apply("sf:mosaic");
+        MockHttpServletResponse response = getAsServletResponse(path);
+        assertEquals(tileFormat, response.getContentType() );
+        
+        // try again, now should be cached
+        response = getAsServletResponse(path);
+        assertEquals(tileFormat, response.getContentType());
+
+        // first to cache on sf:mosaic2
+        setRequestAuth("cite_mosaic2", "cite");
+        String path2 = pathForLayer.apply("sf:Mosaic2");
+        response = getAsServletResponse(path2);
+        assertEquals("image/png", response.getContentType());
+        
+        // try again, now should be cached
+        response = getAsServletResponse(path2);
+        assertEquals(tileFormat, response.getContentType());
+        
+        // permission must be denied to cite user for sf:Mosaic2
+        setRequestAuth("cite", "cite");
+        response = getAsServletResponse(path2);
+        assertEquals(failFormat, response.getContentType() );
+        String str = string(getBinaryInputStream(response));
+        // mode challenge
+        assertTrue(str.contains("Access denied to bounding box on layer sf:Mosaic2"));
+        
+        //try now as cite_mosaic2 user permission on sf:mosaic must be denied
+        setRequestAuth("cite_mosaic2", "cite");        
+        response = getAsServletResponse(path);
+        assertEquals(failFormat, response.getContentType());
+        str = string(getBinaryInputStream(response));
+        // mode hide
+        assertTrue(str.contains("Could not find layer sf:mosaic"));
+        // permission must be allowed on sf:Mosaic2
+        response = getAsServletResponse(path2);
+        assertEquals(tileFormat, response.getContentType());
+    }
+    
+    @Test
+    public void testPermissionMosaicTileWmts() throws Exception {
+        
+        doPermissionMosaicTileTest(
+                (layer)->String.format("gwc/service/wmts?LAYER=%s&FORMAT=image/png&SERVICE=WMTS&VERSION=1.0.0" +
+        "&REQUEST=GetTile&TILEMATRIXSET=EPSG:4326&TILEMATRIX=EPSG:4326:0&TILECOL=0&TILEROW=0", layer), 
+                "application/xml");
+    }
+    
+    @Test
+    public void testPermissionMosaicTileGmaps() throws Exception {
+        doPermissionMosaicTileTest(
+                (layer)->String.format("gwc/service/gmaps?LAYERS=%s&FORMAT=image/png&ZOOM=0&X=0&Y=0", layer), 
+                "application/xml");
+    }
+    
+    @Test
+    public void testPermissionMosaicTileTms() throws Exception {
+        doPermissionMosaicTileTest(
+                (layer)->String.format("gwc/service/tms/1.0.0/%s@EPSG:4326@png/0/0/0.png", layer), 
+                "application/xml");
+    }
+    
+    
+    @Test
+    public void testPermissionMosaicTileKml() throws Exception {
+        doPermissionMosaicTileTest(
+                (layer)->String.format("gwc/service/kml/%s/x0y0z0.png", layer), 
+                "application/xml");
     }
     
     @Test

@@ -418,8 +418,7 @@ Text symbology (labeling) - part 3
       * none
     - * ``-gt-label-underline-text``
       * one of ``true`` or ``false``
-      * If enabled, the render will underline labels. This is equivalent to the
-        :ref:`followLine<underlineText>` vendor parameter.
+      * If enabled, the render will underline labels. This is equivalent to the :ref:`underlineText <labeling_underline_text>` vendor parameter.
       * no
 
 .. _css_properties_raster:
@@ -481,6 +480,14 @@ Shared
       * Type
       * Meaning
       * Accepts Expression?
+    - * ``composite``
+      * string 
+      * The composite mode to be used and the optional opacity separated with a comma. See the :ref:`full list of available modes <sld-extensions_composite-blend_modes>`.
+      * no
+    - * ``composite-base``
+      * one of ``true`` or ``false`` 
+      * This will tell the rendering engine to use that FeatureTypeStyle as the destination, and will compose all subsequent FeatureTypeStyle/Layers on top of it, until another base is found.
+      * no
     - * ``geometry``
       * expression 
       * An expression to use for the geometry when rendering features. This
@@ -493,17 +500,17 @@ Shared
         and ``A`` or ``D`` are an optional direction specification, 
         ``A`` is ascending, ``D`` is descending.
         Determines the loading, and thus painting, order of the features 
-      * false
+      * no
     - * ``sort-by-group``
       * string
       * Rules with the different z-index but same sort-by-group id have  their features sorted
         as a single group. Useful to z-order across layers or across different feature groups, like
         roads and rails, especially when using z-index to support casing 
-      * false
+      * no
     - * ``transform``
       * function
       * Applies a rendering transformationon the current level. The function syntax is ``txName(key1:value1,key1:value2)``. Values can be single ones, or space separated lists. 
-      * false
+      * no
     
 .. _css_properties_symbol:
 

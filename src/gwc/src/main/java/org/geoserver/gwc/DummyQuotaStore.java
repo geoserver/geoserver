@@ -148,4 +148,8 @@ public class DummyQuotaStore implements QuotaStore {
     public void close() throws Exception {
     }
 
+    @Override
+    public void deleteParameters(String layerName, String parametersId) {
+    }
+
 }

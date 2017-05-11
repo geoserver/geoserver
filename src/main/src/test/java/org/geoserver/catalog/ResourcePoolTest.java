@@ -7,6 +7,7 @@
 package org.geoserver.catalog;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.*;
 
@@ -20,6 +21,8 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.media.jai.PlanarImage;
 import javax.xml.namespace.QName;
@@ -43,10 +46,17 @@ import org.geoserver.test.SystemTest;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataAccess;
+import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.VirtualTable;
+import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.ows.ServiceException;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.resources.image.ImageUtilities;
@@ -60,10 +70,14 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.style.ExternalGraphic;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+
+import com.vividsolutions.jts.geom.Point;
 
 /**
  * Tests for {@link ResourcePool}.
@@ -73,6 +87,10 @@ import org.xml.sax.SAXException;
 @Category(SystemTest.class)
 public class ResourcePoolTest extends GeoServerSystemTestSupport {
     
+    private static final String SQLVIEW_DATASTORE = "sqlviews";
+
+    private static final String VT_NAME = "pgeo_view";
+
     private static final String HUMANS = "humans";
 
     static {
@@ -112,7 +130,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         FileUtils.copyFileToDirectory(new File("./src/test/resources/geoserver-environment.properties"), 
                 testData.getDataDirectoryRoot());
     }
-
+    
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
@@ -528,5 +546,84 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
                 assertEquals("ttf://Webdings", mark.getExternalMark().getOnlineResource().getLinkage().toASCIIString());
             }
         });
+    }
+    
+    @Test
+    public void testDataStoreScan() throws Exception {
+        final Catalog catalog = getCatalog();
+
+        // prepare a store that supports sql views
+        Catalog cat = getCatalog();
+        DataStoreInfo ds = cat.getFactory().createDataStore();
+        ds.setName(SQLVIEW_DATASTORE);
+        WorkspaceInfo ws = cat.getDefaultWorkspace();
+        ds.setWorkspace(ws);
+        ds.setEnabled(true);
+
+        Map params = ds.getConnectionParameters();
+        params.put("dbtype", "h2");
+        File dbFile = new File(getTestData().getDataDirectoryRoot().getAbsolutePath(),
+                "data/h2test");
+        params.put("database", dbFile.getAbsolutePath());
+        cat.add(ds);
+
+        SimpleFeatureSource fsp = getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE);
+
+        DataStore store = (DataStore) ds.getDataStore(null);
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+
+        tb.init(fsp.getSchema());
+        tb.remove("surfaceProperty"); // the store cannot create multi-geom tables it seems
+        tb.remove("curveProperty"); // the store cannot create multi-geom tables it seems
+        tb.remove("uriProperty"); // this would render the store read only
+        tb.setName("pgeo");
+        SimpleFeatureType schema = tb.buildFeatureType();
+        store.createSchema(schema);
+        SimpleFeatureStore featureStore = (SimpleFeatureStore) store.getFeatureSource("pgeo");
+        featureStore.addFeatures(fsp.getFeatures());
+
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(ds);
+        FeatureTypeInfo tft = cb.buildFeatureType(featureStore);
+        cat.add(tft);
+
+        // create the sql view
+        JDBCDataStore jds = (JDBCDataStore) ds.getDataStore(null);
+        VirtualTable vt = new VirtualTable(VT_NAME,
+                "select \"name\", \"pointProperty\" from \"pgeo\" where \"booleanProperty\" = %bool% and \"name\" = '%name%'");
+        vt.addParameter(new VirtualTableParameter("bool", "true"));
+        vt.addParameter(new VirtualTableParameter("name", "name-f001"));
+        vt.addGeometryMetadatata("pointProperty", Point.class, 4326);
+        jds.createVirtualTable(vt);
+
+        FeatureTypeInfo vft = cb.buildFeatureType(jds.getFeatureSource(vt.getName()));
+        vft.getMetadata().put(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, vt);
+        cat.add(vft);
+
+        AtomicInteger counter = new AtomicInteger();
+        ResourcePool testPool = new ResourcePool() {
+
+            /*
+             * This is the method making the expensive call to the data store (especially if the store is an Oracle one without a schema specified).
+             * Make sure it's not being called unless the feature type is really not cacheable.
+             */
+            @Override
+            protected Name getTemporaryName(FeatureTypeInfo info,
+                    DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
+                    FeatureTypeCallback initializer) throws IOException {
+                if (VT_NAME.equals(info.getNativeName())) {
+                    counter.incrementAndGet();
+                }
+                return super.getTemporaryName(info, dataAccess, initializer);
+            }
+        };
+        testPool.setCatalog(catalog);
+        FeatureTypeInfo ft = catalog.getFeatureTypeByName(VT_NAME);
+        testPool.getFeatureSource(ft, null);
+        assertEquals(0, counter.get());
+        // now try with a dirty feature type, the call should be made
+        ft.setName("foobar");
+        testPool.getFeatureSource(ft, null);
+        assertThat(counter.get(), greaterThan(0));
     }
 }

@@ -12,13 +12,7 @@ schemes:
 securityDefinitions:
   basicAuth:
     type: basic
-    name: basicAuth
-    flow: password
     description: HTTP Basic Authentication. Works over `HTTP` and `HTTPS`
-    in: header
-    scopes: []
-    authorizationUrl: ""
-    tokenUrl: ""
 security:
   - basicAuth: []  
 
@@ -56,6 +50,7 @@ paths:
         - application/json
       responses:
         200:
+            description: Successful response containing featuretype list.
             schema:
               type: object
               properties:
@@ -186,6 +181,7 @@ paths:
           default: false
       responses:
         200:
+          description: Successful response containing feature type.
           schema:
             type: object
             properties:
@@ -493,6 +489,9 @@ paths:
     delete:
       operationId: deleteFeatureType
       description: Delete a feature type (optionally recursively deleting layers).
+      responses:
+        405:
+          description: Method not allowed.
 
 definitions:
   FeatureTypeInfo:
@@ -536,7 +535,7 @@ definitions:
         description: Wraps a collection of metadata links for the resource.
         properties:
           metadataLink:
-            type: list
+            type: array
             description: A collection of metadata links for the resource.
             items:
               type: object
@@ -555,7 +554,7 @@ definitions:
         description: Wraps a collection of data links for the resource.
         properties:
           metadataLink:
-            type: list
+            type: array
             description: A collection of data links for the resource.
             items:
               type: object

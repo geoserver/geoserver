@@ -36,7 +36,7 @@ paths:
           schema:
             $ref: "#/definitions/Schema"
           examples:
-            application/json: '
+            application/json: |
               {"Schema": {
                   "attributes": {"Attribute":   [
                         {
@@ -72,9 +72,8 @@ paths:
                     }
                   ]},
                   "href": "http://localhost:8080/geoserver/restng/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.json"
-                }}
-            '
-            application/xml: '
+                }}            
+            application/xml: |
               <?xml version="1.0" encoding="UTF-8"?>
               <Schema>
                 <attributes>
@@ -112,7 +111,6 @@ paths:
                 </attributes>
                 <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml" rel="alternate" type="application/xml"/>
               </Schema>
-            '
         401:
           description: Unauthorized
 
@@ -147,7 +145,8 @@ paths:
     get:
       operationId: getStructuredCoverageGranules
       summary: Get the attributes associated to the granules
-      description: Displays a list of all the attributes associated to a particular coverage's granules. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/index.xml" for XML). Defaults to XML representation. The XML output is actually WFS 1.0 GML, while the JSON output is GeoJSON
+      description: |
+        Displays a list of all the attributes associated to a particular coverage's granules. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/index.xml" for XML). Defaults to XML representation. The XML output is actually WFS 1.0 GML, while the JSON output is GeoJSON
       produces:
         - application/json
         - application/xml
@@ -188,7 +187,7 @@ paths:
         200:
           description: OK
           examples:
-            application/json: '
+            application/json: |
               {
                 "type": "FeatureCollection",
                 "bbox":   [
@@ -272,8 +271,8 @@ paths:
                   }
                 ]
               }
-            '
-            application/xml: '
+            
+            application/xml: |
               <?xml version="1.0" encoding="UTF-8"?>
               <wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gf="http://www.geoserver.org/rest/granules" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xs="http://www.w3.org/2001/XMLSchema">
               <gml:boundedBy>
@@ -340,7 +339,6 @@ paths:
               </gml:featureMember>
               </wfs:FeatureCollection>
 
-            '
         401:
           description: Unauthorized
 
@@ -393,6 +391,12 @@ paths:
           description: Method Not Allowed
 
   /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}/index/granules/{granuleId}:
+    parameters:
+      - name: granuleId
+        type: string
+        in: path
+        required: true
+        description: The granule ID
     get:
       operationId: getStructuredCoverageGranule
       summary: Get the attributes of a particular granule
@@ -420,7 +424,7 @@ paths:
         200:
           description: OK
           examples:
-            application/json: '
+            application/json: |
               {
                 "type": "FeatureCollection",
                 "bbox":   [
@@ -470,8 +474,8 @@ paths:
                   }
                 ]
               }
-            '
-            application/xml: '
+
+            application/xml: |
               <?xml version="1.0" encoding="UTF-8"?>
               <wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gf="http://www.geoserver.org/rest/granules" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xs="http://www.w3.org/2001/XMLSchema">
               <gml:boundedBy>
@@ -513,7 +517,6 @@ paths:
               </gml:featureMember>
               </wfs:FeatureCollection>
 
-            '
         401:
           description: Unauthorized
 
@@ -565,7 +568,7 @@ definitions:
   Schema:
     type: object
     required: [ attributes, link ]
-    example: '
+    example: |
         <?xml version="1.0" encoding="UTF-8"?>
         <Schema>
           <attributes>
@@ -603,7 +606,6 @@ definitions:
           </attributes>
           <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="http://localhost:8080/geoserver/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules.xml" rel="alternate" type="application/xml"/>
         </Schema>
-        '
     properties:
       attributes:
         type: array

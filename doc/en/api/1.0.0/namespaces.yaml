@@ -21,33 +21,33 @@ paths:
           schema:
             $ref: "#/definitions/NamespacesResponse"
           examples:
-            application/xml: 
-              '<namespaces>
-              <namespace>
-              <name>topp</name>
-              <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/topp.xml" type="application/xml"/>
-              </namespace>
-              <namespace>
-              <name>it.geosolutions</name>
-              <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/it.geosolutions.xml" type="application/xml"/>
-              </namespace>
-              </namespaces>'
+            application/xml: |
+              <namespaces>
+                <namespace>
+                  <name>topp</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/topp.xml" type="application/xml"/>
+                </namespace>
+                <namespace>
+                  <name>it.geosolutions</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/namespaces/it.geosolutions.xml" type="application/xml"/>
+                </namespace>
+              </namespaces>
 
-            application/json: 
-              '{
-              "namespaces": {
-              "namespace": [
+            application/json: |
               {
-              "name": "topp",
-              "href": "http://localhost:8080/geoserver/rest/namespaces/topp.json"
-              },
-              {
-              "name": "it.geosolutions",
-              "href": "http://localhost:8080/geoserver/rest/namespaces/it.geosolutions.json"
+                "namespaces": {
+                  "namespace": [
+                    {
+                    "name": "topp",
+                    "href": "http://localhost:8080/geoserver/rest/namespaces/topp.json"
+                    },
+                    {
+                    "name": "it.geosolutions",
+                    "href": "http://localhost:8080/geoserver/rest/namespaces/it.geosolutions.json"
+                    }
+                  ]
+                }
               }
-              ]
-              }
-              }'
         401:
           description: Unauthorized
           
@@ -187,6 +187,8 @@ paths:
 definitions:
   Namespace:
     title: Namespace
+    xml:
+      name: namespace
     type: object
     properties:
       prefix:

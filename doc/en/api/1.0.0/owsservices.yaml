@@ -984,6 +984,8 @@ paths:
 
 definitions:
   WMSInfo:
+    xml:
+      name: wms
     type: object
     properties:
       enabled:
@@ -1006,32 +1008,30 @@ definitions:
         description: description of the service
       accessConstraints:
         type: string
-        description:
+        description: ''
       fees:
         type: string
-        description:
+        description: ''
       versions:
         type: object
         description: The versions of the service that are available.
-        org.geotools.util.Version:
-          type: array
-          items:
-            version:
+        properties:
+          org.geotools.util.Version:
+            type: array
+            items:
               type: string
               description: version number
       keywords:
-        type: object
+        type: array
         description: Keywords associated with the service.
-        string:
-          type: array
-          items:
-            type: string
+        items:
+          type: string
       citeCompliant:
         type: boolean
         description: Status of service CITE compliance.
       onlineResource:
         type: string
-        description:
+        description: ''
       schemaBaseURL:
         type: string
         description: The base url for the schemas describing the service.
@@ -1039,10 +1039,10 @@ definitions:
         type: boolean
         description: Flag indicating if the service should be verbose or not.
       metadataLink:
-        type: object
-        entry:
-          type: array
-          items:
+        type: array
+        items:
+          type: object
+          properties:
             "@key":
               type: string
               description: Metadata key
@@ -1102,6 +1102,8 @@ definitions:
 
   WFSInfo:
     type: object
+    xml:
+      name: wfs
     properties:
       enabled:
         type: boolean
@@ -1126,26 +1128,23 @@ definitions:
         description: Any fees associated with the service
       versions:
         type: object
-        description: Versions of the service that are available
-        org.geotools.util.Version:
-          type: array
-          items:
-            version:
+        description: The versions of the service that are available.
+        properties:
+          org.geotools.util.Version:
+            type: array
+            items:
               type: string
               description: version number
       keywords:
-        type: object
-        description: Keywords associated with the service
-        string:
-          type: array
-          items:
-            type: string
-            description: Keyword associated with the service
+        type: array
+        description: Keywords associated with the service.
+        items:
+          type: string
       metadataLink:
-        type: object
-        entry:
-          type: array
-          items:
+        type: array
+        items:
+          type: object
+          properties:
             "@key":
               type: string
               description: Metadata key
@@ -1222,6 +1221,8 @@ definitions:
 
   WCSInfo:
     type: object
+    xml:
+      name: wcs
     properties:
       enabled:
         type: boolean
@@ -1246,26 +1247,23 @@ definitions:
         description: Any fees associated with the service
       versions:
         type: object
-        description: Versions of the service that are available
-        org.geotools.util.Version:
-          type: array
-          items:
-            version:
+        description: The versions of the service that are available.
+        properties:
+          org.geotools.util.Version:
+            type: array
+            items:
               type: string
               description: version number
       keywords:
-        type: object
-        description: Keywords associated with the service
-        string:
-          type: array
-          items:
-            type: string
-            description: Keyword associated with the service
+        type: array
+        description: Keywords associated with the service.
+        items:
+          type: string
       metadataLink:
-        type: object
-        entry:
-          type: array
-          items:
+        type: array
+        items:
+          type: object
+          properties:
             "@key":
               type: string
               description: Metadata key

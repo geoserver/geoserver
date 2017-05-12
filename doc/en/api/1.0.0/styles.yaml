@@ -22,7 +22,7 @@ paths:
           schema:
             $ref: "#/definitions/StyleList"
           examples:
-            application/xml: '
+            application/xml: |
               <styles>
                   <style>
                       <name>burg</name>
@@ -33,10 +33,13 @@ paths:
                       <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/styles/capitals.xml" type="application/xml"/>
                   </style>    
               </styles>
-            '
-            application/json: '
-              {"styles":{"style":[{"href":"http://localhost:8080/geoserver/rest/styles/burg.json","name":"burg"},{"href":"http://localhost:8080/geoserver/rest/styles/capitals.json","name":"capitals"}]}}
-            '
+            
+            application/json: |
+              {"styles":
+                {"style":
+                  [ {"href":"http://localhost:8080/geoserver/rest/styles/burg.json", "name":"burg"},
+                    {"href":"http://localhost:8080/geoserver/rest/styles/capitals.json", "name":"capitals"}]}}
+            
 
     post:
       operationId: postStyles
@@ -77,7 +80,15 @@ paths:
     get:
       operationId: getStyle
       summary: Retrieve a style
-      description: Retrieves a single style. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles/{style}.xml" for XML).
+      description: |
+        Retrieves a single style. Used to both request the style info and the style defintion body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
+        
+        The style definition body can be requested by either appending the file extension of the style file (e.g., "{style}.sld" or "{style}.css") or by specifying the correct media type for the style definition in the "Accept" header. Below are common style formats and the corresponding media types that can be used in the Accept header to request the style definition body.
+        
+        - application/vnd.ogc.sld+xml for SLDs
+        - application/vnd.geoserver.geocss+css for css styles
+        - application/vnd.geoserver.ysld+yaml for ysld styles
+        - application/vnd.geoserver.mbstyle+json for mb styles
       produces:
         - application/xml
         - application/json
@@ -110,7 +121,7 @@ paths:
           schema:
             $ref: "#/definitions/Style"
           examples:
-            application/xml: '
+            application/xml: |
               <style>
                 <name>rain</name>
                 <format>sld</format>
@@ -119,11 +130,13 @@ paths:
                 </languageVersion>
                 <filename>rain.sld</filename>
               </style>
-              '
-            application/json: '
-              {"style":{"name":"rain","format":"sld","languageVersion":{"version":"1.0.0"},"filename":"rain.sld"}}
-              '
-            application/vnd.ogc.sld+xml: '
+            application/json: |
+              {"style":
+                {"name":"rain", "format":"sld",
+                "languageVersion": {"version":"1.0.0"},
+                "filename":"rain.sld"}
+              }
+            application/vnd.ogc.sld+xml: |
               <?xml version="1.0" encoding="UTF-8"?>
               <StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
                 xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -149,7 +162,7 @@ paths:
                   </UserStyle>
                 </NamedLayer>
               </StyledLayerDescriptor>
-              '
+              
 
     post:
       operationId: postStyle
@@ -243,7 +256,7 @@ paths:
           schema:
             $ref: "#/definitions/StyleList"
           examples:
-            application/xml: '
+            application/xml: |
               <styles>
                 <style>
                   <name>burg</name>
@@ -254,10 +267,22 @@ paths:
                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/styles/dem.xml" type="application/xml"/>
                 </style>
               </styles>
-            '
-            application/json: '
-              {"styles":{"style":[{"name":"burg","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/sf\/styles\/burg.json"},{"name":"dem","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/sf\/styles\/dem.json"}]}}
-            '
+            
+            application/json: |
+              {
+                "styles": {
+                  "style": [
+                    {
+                      "name": "burg",
+                      "href": "http://localhost:8080/geoserver/rest/workspaces/sf/styles/burg.json"
+                    },
+                    {
+                      "name": "dem",
+                      "href": "http://localhost:8080/geoserver/rest/workspaces/sf/styles/dem.json"
+                    }
+                  ]
+                }
+              }
 
     post:
       operationId: postWorkspaceStyles
@@ -315,7 +340,15 @@ paths:
     get:
       operationId: getWorkspaceStyle
       summary: Retrieve a style from a given workspace
-      description: Retrieves a single style from a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/styles/{style}.xml" for XML).
+      description: |
+        Retrieves a single style. Used to both request the style info and the style defintion body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
+        
+        The style definition body can be requested by either appending the file extension of the style file (e.g., "{style}.sld" or "{style}.css") or by specifying the correct media type for the style definition in the "Accept" header. Below are common style formats and the corresponding media types that can be used in the Accept header to request the style definition body.
+        
+        - application/vnd.ogc.sld+xml for SLDs
+        - application/vnd.geoserver.geocss+css for css styles
+        - application/vnd.geoserver.ysld+yaml for ysld styles
+        - application/vnd.geoserver.mbstyle+json for mb styles
       produces:
         - application/xml
         - application/json
@@ -353,7 +386,7 @@ paths:
           schema:
             $ref: "#/definitions/StyleWorkspace"
           examples:
-            application/xml: '
+            application/xml: |
               <style>
                 <name>burg</name>
                 <workspace>
@@ -365,11 +398,14 @@ paths:
                 </languageVersion>
                 <filename>burg.sld</filename>
               </style>
-              '
-            application/json: '
-              {"style":{"name":"burg","workspace":{"name":"sf"},"format":"sld","languageVersion":{"version":"1.0.0"},"filename":"burg.sld"}}
-              '
-            application/vnd.ogc.sld+xml: '
+            application/json: |
+              {"style": 
+                {"name":"burg", 
+                 "workspace": {"name":"sf"},
+                 "format":"sld",
+                 "languageVersion":{"version":"1.0.0"},
+                 "filename":"burg.sld"}}
+            application/vnd.ogc.sld+xml: |
               <StyledLayerDescriptor version="1.0.0" xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc"
                 xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
@@ -399,9 +435,7 @@ paths:
                     </FeatureTypeStyle>
                   </UserStyle>
                 </NamedLayer>
-              </StyledLayerDescriptor>
-              '
-
+              </StyledLayerDescriptor>              
     post:
       operationId: postWorkspaceStyle
       description: Invalid. Use PUT to edit a style, or POST with /workspaces/{workspace}/styles to add a new style.
@@ -509,7 +543,7 @@ paths:
           schema:
             $ref: "#/definitions/StyleList"
           examples:
-            application/xml: '
+            application/xml: |
               <styles>
                 <style>
                   <name>pophatch</name>
@@ -520,10 +554,22 @@ paths:
                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layers/topp:states/styles/polygon.xml" type="application/xml"/>
                 </style>
               </styles>
-            '
-            application/json: '
-              {"styles":{"style":[{"name":"pophatch","href":"http:\/\/localhost:8080\/geoserver\/rest\/layers\/topp:states\/styles\/pophatch.json"},{"name":"polygon","href":"http:\/\/localhost:8080\/geoserver\/rest\/layers\/topp:states\/styles\/polygon.json"}]}}
-            '
+            
+            application/json: |
+              {
+                "styles": {
+                  "style": [
+                    {
+                      "name": "pophatch",
+                      "href": "http://localhost:8080/geoserver/rest/layers/topp:states/styles/pophatch.json"
+                    },
+                    {
+                      "name": "polygon",
+                      "href": "http://localhost:8080/geoserver/rest/layers/topp:states/styles/polygon.json"
+                    }
+                  ]
+                }
+              }
 
     post:
       operationId: postLayerStyles
@@ -715,6 +761,8 @@ definitions:
 
   StyleInfoPost:
     title: style
+    xml:
+      name: style
     type: object
     example: '
       {"text/xml": "<style><name>roads_style</name><filename>roads.sld</filename></style>"}

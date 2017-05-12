@@ -2,13 +2,15 @@ package org.geoserver.community.mbstyle.web;
 
 import org.geoserver.catalog.Styles;
 import org.geoserver.community.mbstyle.MBStyleHandler;
+import org.geoserver.rest.format.MediaTypes;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.styling.*;
 import org.junit.Test;
+import org.restlet.data.MediaType;
 
 import java.io.IOException;
+import static org.junit.Assert.*;
 
-import static org.junit.Assert.assertNotNull;
 
 public class MBStyleHandlerTest extends GeoServerSystemTestSupport {
 
@@ -26,5 +28,14 @@ public class MBStyleHandlerTest extends GeoServerSystemTestSupport {
 
         LineSymbolizer ls = SLD.lineSymbolizer(Styles.style(sld));
         assertNotNull(ls);
+    }
+    
+    /**
+     * Verify that the {@link MBStyleHandler} does not take precedence for the "json" extension in the {@link MediaTypes} registry.
+     */
+    @Test
+    public void testForFileExtensionCollision() {
+        MediaType mt = MediaTypes.getMediaTypeForExtension("json");
+        assertEquals(mt, new MediaType("application/json"));
     }
 }

@@ -27,10 +27,12 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.rest.format.MediaTypes;
 import org.geotools.data.DataUtilities;
 import org.geotools.styling.Style;
 import org.junit.Before;
 import org.junit.Test;
+import org.restlet.data.MediaType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -55,6 +57,28 @@ public class StyleTest extends CatalogRESTTestSupport {
         revertLayer(SystemTestData.BASIC_POLYGONS);
     }
 
+    /**
+     * Register a {@link StyleHandler} whose format and extension collide with the extension-based content negotiation, in order to verify that the
+     * conflicting StyleHandler does *not* take precedence for requests with that extension. In particular, this will register a
+     * {@link TestStyleHandlerExtensionConflict} handler with a file extension of ".xml", which is specifically created to conflict with the ".xml"
+     * extension in the REST API.
+     */
+    @Override
+    protected void setUpSpring(List<String> springContextLocations) {
+        springContextLocations.add("testStyleHandlerExtensionConflict.xml");
+        super.setUpSpring(springContextLocations);        
+    }
+    
+    /**
+     * Verify that the {@link MediaTypes} registry correctly maps the "xml" extension to the "application/xml" mime type, even though there is a
+     * {@link StyleHandler} with the same file extension (but a different mime type).
+     */
+    @Test
+    public void styleFinderConflictingExtensionTest() {
+        MediaType mt = MediaTypes.getMediaTypeForExtension("xml");
+        assertEquals("application/xml", mt.getName());
+    }
+    
     @Test
     public void testGetAllAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/styles.xml" );

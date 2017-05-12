@@ -21,7 +21,7 @@ paths:
           schema:
             $ref: "#/definitions/Global"
           examples:
-            application/xml: '
+            application/xml: |
               <global>
                 <settings>
                   <id>SettingsInfoImpl-68f6c583:154ca420c47:-8000</id>
@@ -66,10 +66,55 @@ paths:
                 <globalServices>true</globalServices>
                 <xmlPostRequestLogBufferSize>1024</xmlPostRequestLogBufferSize>
               </global>
-            '
-            application/json: '
-              {"global":{"settings":{"id":"SettingsInfoImpl-68f6c583:154ca420c47:-8000","contact":{"addressCity":"Alexandria","addressCountry":"Egypt","addressType":"Work","contactEmail":"claudius.ptolomaeus@gmail.com","contactOrganization":"The Ancient Geographers","contactPerson":"Claudius Ptolomaeus","contactPosition":"Chief Geographer"},"charset":"UTF-8","numDecimals":8,"onlineResource":"http:\/\/geoserver.org","verbose":false,"verboseExceptions":false,"localWorkspaceIncludesPrefix":false},"jai":{"allowInterpolation":false,"recycling":false,"tilePriority":5,"tileThreads":7,"memoryCapacity":0.5,"memoryThreshold":0.75,"imageIOCache":false,"pngAcceleration":true,"jpegAcceleration":true,"allowNativeMosaic":false,"allowNativeWarp":false},"coverageAccess":{"maxPoolSize":10,"corePoolSize":5,"keepAliveTime":30000,"queueType":"UNBOUNDED","imageIOCacheThreshold":10240},"updateSequence":180,"featureTypeCacheSize":0,"globalServices":true,"xmlPostRequestLogBufferSize":1024}}
-            '
+            
+            application/json: |
+              {
+                "global": {
+                  "settings": {
+                    "id": "SettingsInfoImpl-68f6c583:154ca420c47:-8000",
+                    "contact": {
+                      "addressCity": "Alexandria",
+                      "addressCountry": "Egypt",
+                      "addressType": "Work",
+                      "contactEmail": "claudius.ptolomaeus@gmail.com",
+                      "contactOrganization": "The Ancient Geographers",
+                      "contactPerson": "Claudius Ptolomaeus",
+                      "contactPosition": "Chief Geographer"
+                    },
+                    "charset": "UTF-8",
+                    "numDecimals": 8,
+                    "onlineResource": "http://geoserver.org",
+                    "verbose": false,
+                    "verboseExceptions": false,
+                    "localWorkspaceIncludesPrefix": false
+                  },
+                  "jai": {
+                    "allowInterpolation": false,
+                    "recycling": false,
+                    "tilePriority": 5,
+                    "tileThreads": 7,
+                    "memoryCapacity": 0.5,
+                    "memoryThreshold": 0.75,
+                    "imageIOCache": false,
+                    "pngAcceleration": true,
+                    "jpegAcceleration": true,
+                    "allowNativeMosaic": false,
+                    "allowNativeWarp": false
+                  },
+                  "coverageAccess": {
+                    "maxPoolSize": 10,
+                    "corePoolSize": 5,
+                    "keepAliveTime": 30000,
+                    "queueType": "UNBOUNDED",
+                    "imageIOCacheThreshold": 10240
+                  },
+                  "updateSequence": 180,
+                  "featureTypeCacheSize": 0,
+                  "globalServices": true,
+                  "xmlPostRequestLogBufferSize": 1024
+                }
+              }
+            
     post:
       operationId: postSettings
       description: Invalid. Use PUT to update settings.
@@ -123,7 +168,7 @@ paths:
           schema:
             $ref: "#/definitions/Contact"
           examples:
-            application/xml: '
+            application/xml: |
               <contact>
                 <addressCity>Alexandria</addressCity>
                 <addressCountry>Egypt</addressCountry>
@@ -133,10 +178,20 @@ paths:
                 <contactPerson>Claudius Ptolomaeus</contactPerson>
                 <contactPosition>Chief Geographer</contactPosition>
               </contact>
-            '
-            application/json: '
-              {"contact":{"addressCity":"Alexandria","addressCountry":"Egypt","addressType":"Work","contactEmail":"claudius.ptolomaeus@gmail.com","contactOrganization":"The Ancient Geographers","contactPerson":"Claudius Ptolomaeus","contactPosition":"Chief Geographer"}}            
-            '
+            
+            application/json: |
+              {
+                "contact": {
+                  "addressCity": "Alexandria",
+                  "addressCountry": "Egypt",
+                  "addressType": "Work",
+                  "contactEmail": "claudius.ptolomaeus@gmail.com",
+                  "contactOrganization": "The Ancient Geographers",
+                  "contactPerson": "Claudius Ptolomaeus",
+                  "contactPosition": "Chief Geographer"
+                }
+              }
+            
     post:
       operationId: postContactSettings
       description: Invalid. Use PUT to update contact settings.
@@ -176,6 +231,12 @@ paths:
 
 
   /workspaces/{workspace}/settings:
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        type: string
+        description: The workspace name
     get:
       operationId: getWorkspaceSettings
       summary: Get a list of all workspace-specific settings
@@ -190,7 +251,7 @@ paths:
           schema:
             $ref: "#/definitions/WorkspaceSettings"
           examples:
-            application/xml: '
+            application/xml: |
               <settings>
                 <contact>
                   <id>contact</id>
@@ -201,10 +262,21 @@ paths:
                 <verboseExceptions>false</verboseExceptions>
                 <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>
               </settings>
-            '
-            application/json: '
-              {"settings":{"contact":{"id":"contact"},"charset":"UTF-8","numDecimals":4,"verbose":false,"verboseExceptions":false,"localWorkspaceIncludesPrefix":false}}
-            '
+            
+            application/json: |
+              {
+                "settings": {
+                  "contact": {
+                    "id": "contact"
+                  },
+                  "charset": "UTF-8",
+                  "numDecimals": 4,
+                  "verbose": false,
+                  "verboseExceptions": false,
+                  "localWorkspaceIncludesPrefix": false
+                }
+              }
+            
     post:
       operationId: postWorkspaceSettings
       summary: Create workspace-specific settings
@@ -250,6 +322,8 @@ definitions:
 
   Global:
     type: object
+    xml:
+      name: global
     properties:
       settings:
         $ref: "#/definitions/Settings"
@@ -272,6 +346,8 @@ definitions:
 
   Settings:
     type: object
+    xml:
+      name: settings
     properties:
       id:
         type: string
@@ -299,6 +375,8 @@ definitions:
 
   Contact:
     type: object
+    xml:
+      name: contact
     properties:
       addressCity:
         type: string

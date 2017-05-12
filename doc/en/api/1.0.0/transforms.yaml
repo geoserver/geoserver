@@ -23,7 +23,7 @@ paths:
           schema:
             $ref: "#/definitions/TransformList"
           examples:
-            application/xml: '
+            application/xml: |
               <transforms>
                 <transform>
                   <name>test</name>
@@ -34,23 +34,22 @@ paths:
                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/restng/services/wfs/transforms/test1.xml" type="application/atom+xml"/>
                 </transform>
               </transforms>
-            '
-            application/json: '
+            
+            application/json: |
               {
-              	"transforms": {
-              		"transform": [
-              			{
-              				"name": "test",
-              				"href": "http:\/\/localhost:8080\/geoserver\/restng\/services\/wfs\/transforms\/test.json"
-              			},
-              			{
-              				"name": "test1",
-              				"href": "http:\/\/localhost:8080\/geoserver\/restng\/services\/wfs\/transforms\/test1.json"
-              			}
-              		]
-              	}
+                "transforms": {
+                  "transform": [
+                    {
+                      "name": "test",
+                      "href": "http://localhost:8080/geoserver/restng/services/wfs/transforms/test.json"
+                    },
+                    {
+                      "name": "test1",
+                      "href": "http://localhost:8080/geoserver/restng/services/wfs/transforms/test1.json"
+                    }
+                  ]
+                }
               }
-            '
 
     post:
       operationId: postTransform
@@ -82,7 +81,7 @@ paths:
           in: query
           required: false
           description: Output mime type of the transformation.
-          type: stringg
+          type: string
       consumes:
         - application/xslt+xml
       responses:
@@ -125,61 +124,60 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "#/definitions/TransformInfo"
+            $ref: "#/definitions/Transform"
           examples:
-            application/xml: '
+            application/xml: |
               <transform>
                 <name>test1</name>
                 <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>
                 <outputFormat>text/html</outputFormat>
                 <xslt>test1.xslt</xslt>
               </transform>
-            '
-            application/json: '
+            
+            application/json: |
               {
                 "transform": {
                   "name": "test1",
-                  "sourceFormat": "text\/xml; subtype=gml\/2.1.2",
-                  "outputFormat": "text\/html",
+                  "sourceFormat": "text/xml; subtype=gml/2.1.2",
+                  "outputFormat": "text/html",
                   "xslt": "test1.xslt"
                 }
               }
-            '
 
-            application/xslt+xml: '
-                          <?xml version="1.0" encoding="ISO-8859-1"?>
-                          <xsl:stylesheet version="1.0" xmlns:wfs="http://www.opengis.net/wfs"
-                            xmlns:tiger="http://www.census.gov" xmlns:gml="http://www.opengis.net/gml"
-                            xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-                            <xsl:template match="/">
-                              <html>
-                                <body>
-                                <xsl:for-each select="wfs:FeatureCollection/gml:featureMember/*">
-                                  <h2><xsl:value-of select="@fid"/></h2>
-                                  <table border="1">
-                                    <tr>
-                                      <th>Attribute</th>
-                                      <th>Value</th>
-                                    </tr>
-                                      <!-- [not(*)] strips away all nodes having
-                                           children, in particular, geometries -->
-                                      <xsl:for-each select="./*[not(*)]">
-                                      <tr>
-                                        <td>
-                                          <xsl:value-of select="name()" />
-                                        </td>
-                                        <td>
-                                          <xsl:value-of select="." />
-                                        </td>
-                                      </tr>
-                                      </xsl:for-each>
-                                  </table>
-                               </xsl:for-each>
-                               </body>
-                             </html>
-                            </xsl:template>
-                          </xsl:stylesheet>
-                        '
+            application/xslt+xml: |
+              <?xml version="1.0" encoding="ISO-8859-1"?>
+              <xsl:stylesheet version="1.0" xmlns:wfs="http://www.opengis.net/wfs"
+                xmlns:tiger="http://www.census.gov" xmlns:gml="http://www.opengis.net/gml"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+                <xsl:template match="/">
+                  <html>
+                    <body>
+                    <xsl:for-each select="wfs:FeatureCollection/gml:featureMember/*">
+                      <h2><xsl:value-of select="@fid"/></h2>
+                      <table border="1">
+                        <tr>
+                          <th>Attribute</th>
+                          <th>Value</th>
+                        </tr>
+                          <!-- [not(*)] strips away all nodes having
+                               children, in particular, geometries -->
+                          <xsl:for-each select="./*[not(*)]">
+                          <tr>
+                            <td>
+                              <xsl:value-of select="name()" />
+                            </td>
+                            <td>
+                              <xsl:value-of select="." />
+                            </td>
+                          </tr>
+                          </xsl:for-each>
+                      </table>
+                   </xsl:for-each>
+                   </body>
+                 </html>
+                </xsl:template>
+              </xsl:stylesheet>
+                        
 
     post:
       operationId: postTranform
@@ -236,7 +234,7 @@ definitions:
     title: transforms
     type: array
     items:
-    $ref: '#/definitions/TransformsInfoListItem'
+      $ref: '#/definitions/TransformListItem'
 
   TransformListItem:
     title: transform
@@ -251,6 +249,8 @@ definitions:
 
   Transform:
     title: transform
+    xml:
+      name: transform
     type: object
     properties:
       name:

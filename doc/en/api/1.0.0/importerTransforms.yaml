@@ -9,20 +9,23 @@ paths:
   /imports/{importId}/tasks/{taskId}/transforms:
     get:
       operationId: getTransforms
-      summary: Retrieve the list of transformations of a task with id {taskId} within import with id {importId}
+      summary: Retrieve transformation list
+      description: Retrieve the list of transformations of a task with id {taskId} within import with id {importId}
       produces:
         - application/json
         - text/html
       parameters:
+        - $ref: "#/parameters/ImportId"
+        - $ref: "#/parameters/TaskId"      
         - $ref: "#/parameters/ExpandParameter"
       responses:
         200:
           description: OK
           schema:
-            $ref: "importer.yaml/definitions/Transforms"
+            $ref: "#/definitions/Transforms"
           examples:
-            application/json:
-              '{
+            application/json: |
+              {
                 "transforms": [
                   {
                     "type": "ReprojectTransform",
@@ -37,10 +40,11 @@ paths:
                     "format": "yyyyMMdd"
                   }
                 ]
-              }'
+              }
     post:
       operationId: postTransform
-      summary: Create a new transormation and append it inside a task with id {taskId} within import with id {importId}
+      summary: Create a new transformation
+      description: Create a new transormation and append it inside a task with id {taskId} within import with id {importId}
       consumes:
         - application/json
         - text/json
@@ -60,20 +64,29 @@ paths:
   /imports/{importId}/tasks/{taskId}/transforms/{transformId}:
     get:
       operationId: getTransform
-      summary: Retrieve a transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
+      summary: Retrieve a transformation
+      description: Retrieve a transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
       produces:
         - application/json
         - text/html
       parameters:
+        - $ref: "#/parameters/ImportId"
+        - $ref: "#/parameters/TaskId"
         - $ref: "#/parameters/ExpandParameter"
+        - name: transformId
+          type: string
+          required: true
+          in: path
+          description: The transform ID
       responses:
         200:
           description: OK
           schema:
-            $ref: "importer.yaml/definitions/Transform"
+            $ref: "#/definitions/Transform"
     put:
       operationId: putTransform
-      summary: Modifies the definition of a transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
+      summary: Modifies a transformation
+      description: Modifies the definition of a transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
       consumes:
         - application/json
         - text/json
@@ -87,10 +100,11 @@ paths:
         200:
           description: OK
           schema:
-            $ref: "importer.yaml/definitions/Transform"
+            $ref: "#/definitions/Transform"
     delete:
       operationId: deleteTransform
-      summary:  Removes the transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
+      summary: Removes the transformation 
+      description: Removes the transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
       responses:
         200:
           description: OK
@@ -99,7 +113,7 @@ parameters:
   ExpandParameter:
     name: expand
     type: string
-    in: path
+    in: query
     description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to. Defaults to "self" or "none", depending on the request.'
     required: false
   TransformParameter:
@@ -108,4 +122,35 @@ parameters:
     in: body
     required: true          
     schema:
-      $ref: "importer.yaml/definitions/Transform"
+      $ref: "#/definitions/Transform"
+  ImportId:
+    name: importId
+    in: path
+    description: The ID of the import
+    required: true
+    type: string
+  TaskId:
+    name: taskId
+    in: path
+    description: The ID of the task
+    required: true
+    type: string 
+    
+definitions:      
+  Transforms:
+    title: transforms
+    type: array
+    description: A list of transforms
+    items:
+      $ref: "#/definitions/Transform"
+  Transform:
+    title: transform
+    type: object
+    description: A data transform applied to the import data.
+    properties:
+      type:
+        type: string
+        description: The name of the transform
+      href: 
+        type: string
+        description: URL to the transform endpoint

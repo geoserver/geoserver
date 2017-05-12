@@ -12,13 +12,7 @@ schemes:
 securityDefinitions:
   basicAuth:
     type: basic
-    name: basicAuth
-    flow: password
     description: HTTP Basic Authentication. Works over `HTTP` and `HTTPS`
-    in: header
-    scopes: []
-    authorizationUrl: ""
-    tokenUrl: ""
 security:
   - basicAuth: []  
 
@@ -265,6 +259,7 @@ paths:
           required: false
       responses:
         200:
+          description: Successfully retrieved status details.
           schema:
             $ref: "#/definitions/Status"
           examples: 

@@ -21,15 +21,15 @@ paths:
           schema:
             $ref: "#/definitions/dataStoreResponse"
           examples:
-            application/xml: '
+            application/xml: |
               <dataStore>
                 <name>sf</name>
                 <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf.xml" type="application/xml"/>
               </dataStore>
-            '
-            application/json: '
-              {"dataStores":{"dataStore":[{"name":"sf","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/sf\/datastores\/sf.json"}]}}
-            '
+            
+            application/json: |
+              {"dataStores":{"dataStore":[{"name":"sf","href":"http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf.json"}]}}
+            
     post:
       operationId: postDatastores
       summary: Create a new data store
@@ -98,7 +98,7 @@ paths:
           schema:
             $ref: "#/definitions/datastore"
           examples:
-            application/xml: '
+            application/xml: |
               <dataStore>
                 <name>sf</name>
                 <enabled>true</enabled>
@@ -115,10 +115,10 @@ paths:
                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf/featuretypes.xml" type="application/xml"/>
                 </featureTypes>
               </dataStore>
-              '
-            application/json: '
-              {"dataStore":{"name":"sf","enabled":true,"workspace":{"name":"sf","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/sf.json"},"connectionParameters":{"entry":[{"@key":"url","$":"file:data\/sf"},{"@key":"namespace","$":"http:\/\/www.openplans.org\/spearfish"}]},"_default":false,"featureTypes":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/sf\/datastores\/sf\/featuretypes.json"}}
-              '
+              
+            application/json: |
+              {"dataStore":{"name":"sf","enabled":true,"workspace":{"name":"sf","href":"http://localhost:8080/geoserver/rest/workspaces/sf.json"},"connectionParameters":{"entry":[{"@key":"url","$":"file:data/sf"},{"@key":"namespace","$":"http://www.openplans.org/spearfish"}]},"_default":false,"featureTypes":"http://localhost:8080/geoserver/rest/workspaces/sf/datastores/sf/featuretypes.json"}}
+              
     post:
       operationId: postDatastore
       description: Invalid. Use PUT to edit a data store definition, or POST with /datastore to add a new definition.

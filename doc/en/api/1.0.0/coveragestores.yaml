@@ -27,23 +27,23 @@ paths:
           schema:
             $ref: "#/definitions/CoverageStoreList"
           examples:
-            application/json: '
+            application/json: |
               {
                 "coverageStores": {
                   "coverageStore": [
                     {
                       "name": "arcGridSample",
-                      "href": "http:\/\/localhost:8080\/geoserver\/restng\/workspaces\/nurc\/coveragestores\/arcGridSample.json"
+                      "href": "http://localhost:8080/geoserver/restng/workspaces/nurc/coveragestores/arcGridSample.json"
                     },
                     {
                       "name": "worldImageSample",
-                      "href": "http:\/\/localhost:8080\/geoserver\/restng\/workspaces\/nurc\/coveragestores\/worldImageSample.json"
+                      "href": "http://localhost:8080/geoserver/restng/workspaces/nurc/coveragestores/worldImageSample.json"
                     }
                   ]
                 }
               }
-            '
-            application/xml: '
+            
+            application/xml: |
               <coverageStores>
                 <coverageStore>
                   <name>arcGridSample</name>
@@ -54,7 +54,7 @@ paths:
                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/restng/workspaces/nurc/coveragestores/worldImageSample.xml" type="application/atom+xml"/>
                 </coverageStore>
               </coverageStores>
-            '
+            
         401:
           description: Unauthorized
 
@@ -137,7 +137,7 @@ paths:
           schema:
             $ref: "#/definitions/CoverageStoreInfo"
           examples:
-            application/json: '
+            application/json: |
               {
                 "coverageStore": {
                   "name": "arcGridSample",
@@ -146,15 +146,15 @@ paths:
                   "enabled": true,
                   "workspace": {
                     "name": "nurc",
-                    "href": "http:\/\/localhost:8080\/geoserver\/restng\/workspaces\/nurc.json"
+                    "href": "http://localhost:8080/geoserver/restng/workspaces/nurc.json"
                   },
                   "_default": false,
-                  "url": "file:coverages\/arc_sample\/precip30min.asc",
-                  "coverages": "http:\/\/localhost:8080\/geoserver\/restng\/workspaces\/nurc\/coveragestores\/arcGridSample\/coverages.json"
+                  "url": "file:coverages/arc_sample/precip30min.asc",
+                  "coverages": "http://localhost:8080/geoserver/restng/workspaces/nurc/coveragestores/arcGridSample/coverages.json"
                 }
               }
-            '
-            application/xml: '
+            
+            application/xml: |
               <coverageStore>
                 <name>arcGridSample</name>
                 <description>Sample ASCII GRID coverage of Global rainfall.</description>
@@ -170,7 +170,7 @@ paths:
                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/restng/workspaces/nurc/coveragestores/arcGridSample/coverages.xml" type="application/atom+xml"/>
                 </coverages>
               </coverageStore>
-            '
+            
         401:
           description: Unauthorized
 
@@ -359,7 +359,7 @@ definitions:
   CoverageStoreInfo:
     type: object
     required: [ name, type ]
-    example: '
+    example: |
         <coverageStore>
           <name>arcGridSample</name>
           <description>Sample ASCII GRID coverage of Global rainfall.</description>
@@ -375,7 +375,7 @@ definitions:
             <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/nurc/coveragestores/arcGridSample/coverages.xml" type="application/xml"/>
           </coverages>
         </coverageStore>      
-        '
+        
     properties:
       name:
         type: string

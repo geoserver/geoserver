@@ -12,7 +12,8 @@ paths:
     get:
       operationId: getMasterPW
       summary: Get master password
-      description: Displays the master password. HTTPS is strongly suggested, otherwise password will be sent in plain text. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings.xml" for XML).
+      description: |
+        Displays the master password. HTTPS is strongly suggested, otherwise password will be sent in plain text. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings.xml" for XML).
       produces:
         - application/xml
         - application/json
@@ -22,15 +23,15 @@ paths:
           schema:
             $ref: "#/definitions/MasterPW"
           examples:
-            application/xml: '
+            application/xml: |
               <?xml version="1.0" encoding="UTF-8"?>
               <masterPassword>
                 <oldMasterPassword>geoserver</oldMasterPassword>
               </masterPassword>
-            '
-            application/json: '
+            
+            application/json: |
               {"oldMasterPassword":"GeoServer"}
-            '
+            
 
     post:
       operationId: postMasterPW
@@ -123,15 +124,15 @@ paths:
           schema:
             $ref: "#/definitions/CatalogMode"
           examples:
-            application/xml: '
+            application/xml: |
               <?xml version="1.0" encoding="UTF-8"?>
               <catalog>
                 <mode>HIDE</mode>
               </catalog>
-            '
-            application/json: '
+            
+            application/json: |
               {"mode":"HIDE"}
-            '
+            
     post:
       operationId: postCatalogMode
       description: Invalid. Use PUT to change catalog mode.
@@ -182,21 +183,22 @@ paths:
           schema:
             $ref: "#/definitions/ACLLayers"
           examples:
-            application/xml: '
+            application/xml: |
               <?xml version="1.0" encoding="UTF-8"?>
               <rules>
                 <rule resource="*.*.w">GROUP_ADMIN,ADMIN</rule>
                 <rule resource="*.*.r">*</rule>
               </rules>
-            '
-            application/json: '
+            
+            application/json: |
               {"*.*.w":"GROUP_ADMIN,ADMIN","*.*.r":"*"}
-            '
+            
 
     post:
       operationId: postACLLayers
       summary: Add layer rule(s)
-      description: Adds one or more new layer-based rules to the list of security rules.
+      description: |
+        Adds one or more new layer-based rules to the list of security rules.
       parameters:
         - name: ACLLayersBody
           description: The new rules to upload.
@@ -211,7 +213,8 @@ paths:
         200:
           description: OK
         409:
-          description: Conflict. Adding an already-added rule. Use PUT to edit the rule in this case. All rule additions are aborted.
+          description: |
+            Conflict. Adding an already-added rule. Use PUT to edit the rule in this case. All rule additions are aborted.
 
     put:
       operationId: putACLLayers
@@ -231,46 +234,52 @@ paths:
         200:
           description: OK
         409:
-          description: Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
+          description: |
+            Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
 
     delete:
       operationId: deleteACLLayers
       summary: Delete layer rule(s)
-      description: Deletes one or more layer-based rules in the list of security rules.
+      description: |
+        Deletes one or more layer-based rules in the list of security rules.
       responses:
         200:
           description: OK
         409:
-          description: Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
+          description: |
+            Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
 
 
   /rest/security/acl/layers/{rule}:
+    parameters:
+      - $ref: "#/parameters/Rule"
 
     get:
       operationId: getACLLayer
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
-        200:
-          description: OK
+        405:
+          description: Method not allowed
 
     post:
       operationId: postACLLayer
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
-        200:
-          description: OK
+        405:
+          description: Method not allowed.
 
     put:
       operationId: putACLLayer
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
-        200:
-          description: OK
+        405:
+          description: Method not allowed.
 
     delete:
       operationId: deleteACLLayer
       summary: Delete layer rule.
-      description: Deletes specific layer-based rule(s). {rule} must be of the form <workspace>.<layer>.[r|w|a]
+      description: |
+        Deletes specific layer-based rule(s). The {rule} must specified in the last part of the URL and of the form \<workspace\>.\<layer\>.[r|w|a]
       responses:
         200:
           description: OK
@@ -291,15 +300,15 @@ paths:
           schema:
             $ref: "#/definitions/ACLServices"
           examples:
-            application/xml: '
+            application/xml: |
               <?xml version="1.0" encoding="UTF-8"?>
               <rules>
                 <rule resource="*.*">*</rule>
               </rules>
-            '
-            application/json: '
+            
+            application/json: |
               {"*.*":"*"}
-            '
+            
 
     post:
       operationId: postACLServices
@@ -353,32 +362,35 @@ paths:
 
 
   /rest/security/acl/services/{rule}:
-
+    parameters:
+      - $ref: "#/parameters/Rule"
+      
     get:
       operationId: getACLService
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
-        200:
-          description: OK
+        405:
+          description: Method not allowed.
 
     post:
       operationId: postACLService
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
-        200:
-          description: OK
+        405:
+          description: Method not allowed.
 
     put:
       operationId: putACLService
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
-        200:
-          description: OK
+        405:
+          description: Method not allowed.
 
     delete:
       operationId: deleteACLService
       summary: Delete service rule.
-      description: Deletes specific service-based rule(s). {rule} must be of the form <service>.<operation>
+      description: |
+        Deletes specific service-based rule(s). The {rule} must be specified as the last part of the URL and must be of the form \<service\>.\<operation\>
       responses:
         200:
           description: OK
@@ -399,15 +411,14 @@ paths:
           schema:
             $ref: "#/definitions/ACLREST"
           examples:
-            application/xml: '
+            application/xml: |
               <rules>
                 <rule resource="/**:GET">ADMIN</rule>
                 <rule resource="/**:POST,DELETE,PUT">ADMIN</rule>
               </rules>
-            '
-            application/json: '
+            
+            application/json: |
               {"/**:GET":"ADMIN","/**:POST,DELETE,PUT":"ADMIN"}
-            '
 
     post:
       operationId: postACLRESTRules
@@ -460,6 +471,16 @@ paths:
           description: Conflict. Attempting to modify a non-existent rule. Use POST to create the rule in this case. All rule modifications are aborted.
 
   /rest/security/acl/rest/{rule}:
+    parameters:
+      - name: rule
+        type: string
+        in: path
+        required: true
+        description: |
+          The REST rule, specified as \<URL Ant pattern\>;\<comma separated list of HTTP methods\>. Examples are
+          
+          - /**;GET
+          - /**;POST,DELETE,PUT
 
     get:
       operationId: getACLRESTRule
@@ -485,11 +506,20 @@ paths:
     delete:
       operationId: deleteACLRESTRule
       summary: Delete REST access rule
-      description: Deletes specific REST access rule(s). {rule} must be of the form <URL Ant pattern>:<comma separated list of HTTP methods>
+      description: |
+        Deletes specific REST access rule(s). The {rule} must specified as the last part of the URL and must be of the form \<URL Ant pattern\>:\<comma separated list of HTTP methods\>
       responses:
         200:
           description: OK
 
+parameters:
+  Rule:
+    name: rule
+    in: path
+    required: true
+    type: string
+    description: |
+      The specified rule, as the last part in the URI, e.g. /security/acl/layers/\*.\*.r 
 
 definitions:
 
@@ -504,6 +534,8 @@ definitions:
   UpdateMasterPW:
     title: masterPassword
     type: object
+    xml:
+      name: masterPassword
     properties:
       oldMasterPassword:
         type: string
@@ -511,10 +543,15 @@ definitions:
       newMasterPassword:
         type: string
         description: New master password
-    example: ' application/xml: <masterPassword><oldMasterPassword>oldPassword</oldMasterPassword><newMasterPassword>newPassword</newMasterPassword></masterPassword> | application/json: { "oldMasterPassword":"oldPassword","newMasterPassword":"newPassword" } '
+    example: |
+      application/xml: <masterPassword><oldMasterPassword>oldPassword</oldMasterPassword><newMasterPassword>newPassword</newMasterPassword></masterPassword>
+      
+      application/json: { "oldMasterPassword":"oldPassword","newMasterPassword":"newPassword" }
 
   CatalogMode:
     title: catalog
+    xml:
+      name: catalog
     type: object
     properties:
       mode:
@@ -527,14 +564,21 @@ definitions:
   SelfPassword:
     title: userPassword
     type: object
+    xml:
+      name: userPassword
     properties:
       newPassword:
         type: string
         description: New password
-    example: ' application/xml: <userPassword><newPassword>newPassword</newPassword></userPassword> | application/json: { "newPassword":"newPassword" '
+        example: newPassword
+    example: |
+      application/xml: <userPassword><newPassword>newPassword</newPassword></userPassword>
+      application/json: { "newPassword":"newPassword" }
 
   ACLLayers:
     title: rules
+    xml:
+      name: rules    
     type: object
     properties:
       rule:
@@ -542,13 +586,16 @@ definitions:
         properties:
           '@resource':
             type: string
-            description: Security pattern of the form <workspace>.<layer>.[r|w|a]
+            description: |
+              Security pattern of the form <workspace>.<layer>.[r|w|a]
           text:
             type: string
             description: Comma-separated list of roles
 
   ACLServices:
     title: rules
+    xml:
+      name: rules
     type: object
     properties:
       rule:
@@ -556,13 +603,16 @@ definitions:
         properties:
           '@resource':
             type: string
-            description: Security pattern of the form <service>.<operation>
+            description: |
+              Security pattern of the form \<service\>.\<operation\>
           text:
             type: string
             description: Comma-separated list of roles
 
   ACLREST:
     title: rules
+    xml:
+      name: rules    
     type: object
     properties:
       rule:
@@ -570,7 +620,8 @@ definitions:
         properties:
           '@resource':
             type: string
-            description: Security pattern of the form <URL Ant pattern>:<comma separated list of HTTP methods>
+            description: |
+              Security pattern of the form \<URL Ant pattern\>:\<comma separated list of HTTP methods\>
           text:
             type: string
             description: Comma-separated list of roles

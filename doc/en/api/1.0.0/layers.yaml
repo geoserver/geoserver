@@ -21,7 +21,7 @@ paths:
           schema:
             $ref: "#/definitions/Layers"
           examples:
-            application/xml: '
+            application/xml: |
               <layers>
                  <layer>
                    <name>giant_polygon</name>
@@ -36,8 +36,8 @@ paths:
                      type="application/xml"/>
                  </layer>
                </layers>
-            '
-            application/json: '
+            
+            application/json: |
                {
                  "layers": {
                    "layer": [
@@ -52,7 +52,7 @@ paths:
                    ]
                  }
                }
-            '
+            
 
   /layers/{layerName}:
     get:
@@ -80,7 +80,7 @@ paths:
           schema:
             $ref: "#/definitions/Layer"
           examples:
-            application/xml: '
+            application/xml: |
               <layer>
                 <name>poi</name>
                 <path>/</path>
@@ -108,8 +108,8 @@ paths:
                   <logoHeight>0</logoHeight>
                 </attribution>
               </layer>
-              '
-            application/json: '
+              
+            application/json: |
               {
               
                   "layer": {
@@ -145,7 +145,7 @@ paths:
                   }
               
               }
-              '
+              
     put:
       operationId: layersNamePut
       summary: Modify a layer.
@@ -204,6 +204,8 @@ definitions:
         
   Layer:
     title: layer
+    xml:
+      name: layer
     type: object
     properties:
       name:

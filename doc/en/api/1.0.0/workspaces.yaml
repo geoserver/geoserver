@@ -21,33 +21,33 @@ paths:
           schema:
             $ref: "#/definitions/WorkspacesResponse"
           examples:
-            application/xml: 
-              '<workspaces>
-              <workspace>
-              <name>topp</name>
-              <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/topp.xml" type="application/xml"/>
-              </workspace>
-              <workspace>
-              <name>it.geosolutions</name>
-              <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/it.geosolutions.xml" type="application/xml"/>
-              </workspace>
-              </workspaces>'
+            application/xml: |
+              <workspaces>
+                <workspace>
+                  <name>topp</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/topp.xml" type="application/xml"/>
+                </workspace>
+                <workspace>
+                  <name>it.geosolutions</name>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/it.geosolutions.xml" type="application/xml"/>
+                </workspace>
+              </workspaces>
 
-            application/json: 
-              '{
-              "workspaces": {
-              "workspace": [
+            application/json: |
               {
-              "name": "topp",
-              "href": "http://localhost:8080/geoserver/rest/workspaces/topp.json"
-              },
-              {
-              "name": "it.geosolutions",
-              "href": "http://localhost:8080/geoserver/rest/workspaces/it.geosolutions.json"
+                "workspaces": {
+                "workspace": [
+                  {
+                   "name": "topp",
+                   "href": "http://localhost:8080/geoserver/rest/workspaces/topp.json"
+                  },
+                  {
+                    "name": "it.geosolutions",
+                    "href": "http://localhost:8080/geoserver/rest/workspaces/it.geosolutions.json"
+                  }
+                ]
+                }
               }
-              ]
-              }
-              }'
         401:
           description: Unauthorized
           
@@ -115,29 +115,29 @@ paths:
           schema:
             $ref: "#/definitions/WorkspaceResponse"
           examples:       
-            application/xml: 
-              '<workspace>
-              <name>topp</name>
-              <dataStores>
-              <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/topp/datastores.xml" type="application/xml"/>
-              </dataStores>
-              <coverageStores>
-              <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores.xml" type="application/xml"/>
-              </coverageStores>
-              <wmsStores>
-              <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/topp/wmsstores.xml" type="application/xml"/>
-              </wmsStores>
-              </workspace>'
+            application/xml: |
+              <workspace>
+                <name>topp</name>
+                <dataStores>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/topp/datastores.xml" type="application/xml"/>
+                </dataStores>
+                <coverageStores>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores.xml" type="application/xml"/>
+                </coverageStores>
+                <wmsStores>
+                  <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/topp/wmsstores.xml" type="application/xml"/>
+                </wmsStores>
+              </workspace>
 
-            application/json: 
-              '{
+            application/json: |
+              {
               "workspace": {
-              "name": "topp",
-              "dataStores": "http://localhost:8080/geoserver/rest/workspaces/topp/datastores.json",
-              "coverageStores": "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores.json",
-              "wmsStores": "http://localhost:8080/geoserver/rest/workspaces/topp/wmsstores.json"
+                "name": "topp",
+                "dataStores": "http://localhost:8080/geoserver/rest/workspaces/topp/datastores.json",
+                "coverageStores": "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores.json",
+                "wmsStores": "http://localhost:8080/geoserver/rest/workspaces/topp/wmsstores.json"
               }
-              }'
+              }
         404:
           description: workspace does not exist
     put:
@@ -189,15 +189,12 @@ paths:
           description: Can't delete default workspace
         403: 
           description: Workspace or related Namespace is not empty (and recurse not true) 
-             
-              
-                 
-      
-      
       
 definitions:
   Workspace:
     title: Workspace
+    xml:
+      name: workspace
     type: object
     properties:
       name:

@@ -21,17 +21,17 @@ paths:
           schema:
             $ref: "#/definitions/LayergroupResponse"
           examples:
-            application/xml: '
+            application/xml: |
               <layerGroups>
                 <layerGroup>
                   <name>spearfish</name>
                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/layergroups/spearfish.xml" type="application/xml"/>
                 </layerGroup>
               </layerGroups>
-            '
-            application/json: '
+            
+            application/json: |
               {"layerGroups":{"layerGroup":[{"name":"spearfish","href":"http:\/\/localhost:8080\/geoserver\/rest\/layergroups\/spearfish.json"},{"name":"tasmania","href":"http:\/\/localhost:8080\/geoserver\/rest\/layergroups\/tasmania.json"},{"name":"tiger-ny","href":"http:\/\/localhost:8080\/geoserver\/rest\/layergroups\/tiger-ny.json"}]}}
-            '
+            
     post:
       operationId: postLayergroups
       summary: Add a new layer group
@@ -100,7 +100,7 @@ paths:
           schema:
             $ref: "#/definitions/Layergroup"
           examples:
-            application/xml: '
+            application/xml: |
               <layerGroup>
                 <name>spearfish</name>
                 <mode>SINGLE</mode>
@@ -133,10 +133,33 @@ paths:
                   <entry key="rawStyleList"></entry>
                 </metadata>
               </layerGroup>
-              '
-            application/json: '
-              {"layerGroup":{"name":"spearfish","mode":"SINGLE","title":"Spearfish","abstractTxt":"Spearfish City in Lawrence County, South Dakota","publishables":{"published":[{"@type":"layer","name":"sfdem","href":"http://localhost:8080/geoserver/rest/layers/sfdem.json"},{"@type":"layer","name":"streams","href":"http://localhost:8080/geoserver/rest/layers/streams.json"}]},"styles":{"style":[{"name":"dem","href":"http://localhost:8080/geoserver/rest/styles/dem.json"},"null"]},"bounds":{"minx":589425.9342365642,"maxx":609518.6719560538,"miny":4913959.224611808,"maxy":4928082.949945881,"crs":{"@class":"projected","$":"EPSG:26713"}},"metadata":{"entry":{"@key":"rawStyleList","$":""}}}}
-              '
+              
+            application/json: |
+              {"layerGroup": { 
+                "name":"spearfish",
+                "mode":"SINGLE",
+                "title":"Spearfish",
+                "abstractTxt":"Spearfish City in Lawrence County, South Dakota",
+                "publishables":{"published":[
+                    {"@type":"layer",
+                    "name":"sfdem",
+                    "href":"http://localhost:8080/geoserver/rest/layers/sfdem.json"},
+                    {"@type":"layer",
+                    "name":"streams",
+                    "href":"http://localhost:8080/geoserver/rest/layers/streams.json"}]},
+                "styles": {"style":[
+                    {"name":"dem",
+                    "href":"http://localhost:8080/geoserver/rest/styles/dem.json"},
+                    "null"]},
+                "bounds": { "minx":589425.9342365642,
+                            "maxx":609518.6719560538,
+                            "miny":4913959.224611808,
+                            "maxy":4928082.949945881,
+                            "crs":{"@class":"projected","$":"EPSG:26713"}},
+                "metadata":{"entry":{"@key":"rawStyleList","$":""}}
+                }
+              }
+              
     post:
       operationId: postLayergroup
       description: Invalid. Use PUT to edit a layer group definition, or POST with /layergroups to add a new definition.
@@ -182,7 +205,7 @@ paths:
           description: OK
 
 
-  /workspaces/{workspaces}/layergroups:
+  /workspaces/{workspace}/layergroups:
     get:
       operationId: getWorkspaceLayergroups
       summary: Get a list of layer groups in a workspace
@@ -191,6 +214,8 @@ paths:
         - application/xml
         - application/json
         - text/html
+      parameters:
+        - $ref: "#/parameters/Workspace"
       responses:
         200:
           description: OK
@@ -244,7 +269,7 @@ paths:
           description: Method Not Allowed
 
     delete:
-      operationId: deleteLayergroups
+      operationId: deleteWorkspaceLayergroups
       description: Invalid. Use /workspaces/{workspace}/layergroups/{layergroup} instead.
       responses:
         405:
@@ -261,7 +286,8 @@ paths:
         - application/json
         - text/html
       parameters:
-        - name: layergroupName
+        - $ref: "#/parameters/Workspace"      
+        - name: layergroup
           in: path
           required: true
           description: The name of the layer group to retrieve.
@@ -277,10 +303,10 @@ paths:
           schema:
             $ref: "#/definitions/Layergroup"
           examples:
-            application/json: '
+            application/json: |
               {"layerGroup":{"name":"spearfish","mode":"SINGLE","title":"Spearfish","abstractTxt":"Spearfish City in Lawrence County, South Dakota","workspace":{"name":"sf"},"publishables":{"published":[{"@type":"layer","name":"sfdem","href":"http://localhost:8080/geoserver/rest/layers/sfdem.json"},{"@type":"layer","name":"streams","href":"http://localhost:8080/geoserver/rest/layers/streams.json"}]},"styles":{"style":[{"name":"dem","href":"http://localhost:8080/geoserver/rest/styles/dem.json"},"null"]},"bounds":{"minx":589425.9342365642,"maxx":609518.6719560538,"miny":4913959.224611808,"maxy":4928082.949945881,"crs":{"@class":"projected","$":"EPSG:26713"}},"metadata":{"entry":{"@key":"rawStyleList","$":""}}}}
-              '
-            application/xml: '
+              
+            application/xml: |
               <layerGroup>
                 <name>spearfish</name>
                 <mode>SINGLE</mode>
@@ -315,8 +341,7 @@ paths:
                 <metadata>
                   <entry key="rawStyleList"></entry>
                 </metadata>
-              </layerGroup>
-              '
+              </layerGroup>              
 
     post:
       operationId: postWorkspaceLayergroup
@@ -330,7 +355,8 @@ paths:
       summary: Modify a layer group.
       description: Modifies an existing layer group on the server in the given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/layergroups/{layergroup}.xml" for XML).
       parameters:
-        - name: layergroupName
+        - $ref: "#/parameters/Workspace"
+        - name: layergroup
           in: path
           required: true
           description: The name of the layer group to modify.
@@ -353,16 +379,24 @@ paths:
       summary: Delete layer group
       description: Deletes a layer group from the server in the given workspace.
       parameters:
-        - name: layergroupName
+        - name: layergroup
           in: path
           required: true
           description: The name of the layer group to delete.
           type: string
+        - $ref: "#/parameters/Workspace"
       responses:
         200:
           description: OK
 
-
+parameters:
+  Workspace:
+    name: workspace
+    type: string
+    in: path
+    description: The name of the workspace
+    required: true
+    
 definitions:
 
   LayergroupResponse:
@@ -385,6 +419,8 @@ definitions:
 
   Layergroup:
     title: layerGroup
+    xml:
+      name: layerGroup
     type: object
     properties:
       name:

@@ -21,8 +21,8 @@ paths:
           schema:
             $ref: "#/definitions/Contexts"
           examples:
-            application/json:
-              '{
+            application/json: |
+              {
                  "imports": [{
                    "id": 0,
                    "state": "COMPLETE",
@@ -32,7 +32,7 @@ paths:
                    "state": "PENDING",
                    "href": "http://localhost:8080/geoserver/rest/imports/1"
                  }]
-              }'
+              }
     post:
       operationId: postImports
       summary: Create a new import
@@ -55,7 +55,7 @@ paths:
               description: href to the newly created import
               type: string
     delete:
-      operationId: deleteImport
+      operationId: deleteImports
       summary: Delete all imports
       description: Deletes all imports that are not in the COMPLETE state.
       responses:
@@ -66,8 +66,15 @@ paths:
       operationId: getImport
       summary: Retrieve import by id
       produces:
-        $ref: "#/types/Produces"
+        - text/html
+        - application/json
+        - application/xml
       parameters:
+        - name: importId
+          in: path
+          description: The ID of the import
+          required: true
+          type: string
         - $ref: "#/parameters/ExpandParameter"
       responses:
         200:
@@ -132,20 +139,20 @@ parameters:
     name: async
     description: Run the import asyncronously.
     default: false
-    in: path
+    in: query
     type: boolean
     required: false
   ExecParameter:
     name: exec
     description: Run the import when it is created.
     default: false
-    in: path
+    in: query
     type: boolean
     required: false
   ExpandParameter:
     name: expand
     type: string
-    in: path
+    in: query
     description: 'What level to expand the response object to. Can be "self" (expand only the response object and its immediate children), "all" (expand all children), "none" (don''t include any children), or a nonnegative integer, indicating the depth of children to expand to. Defaults to "self" or "none", depending on the request.'
     required: false
   ContextParameter:
@@ -277,8 +284,16 @@ definitions:
       href: 
         type: string
         description: URL to the task target endpoint
-      dataStore:
-        $ref: "datastores.yaml/definitions/datastore"
+      datastore:
+        title: datastore
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of data store
+          link:
+            type: string
+            description: URL to data store definition
   CoverageStore:
     title: Store
     type: object
@@ -288,7 +303,61 @@ definitions:
         type: string
         description: URL to the task target endpoint
       coverageStore:
-        $ref: "coverageStores.yaml/definitions/CoverageStoreInfo"
+        type: object
+        required: [ name, type ]
+        example: |
+            <coverageStore>
+              <name>arcGridSample</name>
+              <description>Sample ASCII GRID coverage of Global rainfall.</description>
+              <type>ArcGrid</type>
+              <enabled>true</enabled>
+              <workspace>
+                <name>nurc</name>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/nurc.xml" type="application/xml"/>
+              </workspace>
+              <__default>false</__default>
+              <url>file:coverages/arc_sample/precip30min.asc</url>
+              <coverages>
+                <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/nurc/coveragestores/arcGridSample/coverages.xml" type="application/xml"/>
+              </coverages>
+            </coverageStore>      
+            
+        properties:
+          name:
+            type: string
+            description: Name of the coverage store
+          description:
+            type: string
+            description: Description of the coverage store
+          type:
+            type: string
+            description: Type of coverage store
+          enabled:
+            type: boolean
+            description: Whether the store is enabled, or not
+          workspace:
+            type: object
+            description: The workspace containing the store
+            required: [name]
+            properties:
+              name: 
+                type: string
+                description: Name of the workspace
+              link:
+                type: string
+                description: A link to the workspace representation
+          __default__:
+              type: boolean
+              description: Whether the store is the default store of the workspace
+          url:
+            type: string
+            description: Location of the raster data source (often, but not necessarily, a file). Can be relative to the data directory.
+          coverages:
+            type: object
+            properties:
+              link:
+                type: string
+                description: A link to the list of coverages contained in this store
   Layer:
     title: layer
     type: object
@@ -350,11 +419,17 @@ definitions:
         type: string
         description: "URL to the importer layer style endpoint"
       format:
-        $ref: "styles.yaml/definitions/Style/properties/format"
+        type: string
+        description: Format of style
       languageVersion:
-        $ref: "styles.yaml/definitions/Style/properties/languageVersion"
+        type: object
+        properties:
+          version:
+            type: string
+            description: Version of style format
       filename:
-        $ref: "styles.yaml/definitions/Style/properties/filename"
+        type: string
+        description: File name of the style
   TransformChain:
     title: transformChain
     type: object
@@ -617,7 +692,7 @@ definitions:
   File:
     title: file
     type: object
-    decription: An import data object representing a spatial file or granule
+    description: An import data object representing a spatial file or granule
     properties:
       type:
         type: string
@@ -642,7 +717,7 @@ definitions:
         description: Name of the .prj file, if applicable
       other:
         type: array
-        decription: List of other files that comprise this spatial file.
+        description: List of other files that comprise this spatial file.
         items:
           type: string
           description: Name of the file
@@ -664,7 +739,7 @@ definitions:
         description: Name of the .prj file, if applicable
       other:
         type: array
-        decription: List of other files that comprise this spatial file.
+        description: List of other files that comprise this spatial file.
         items:
           type: string
           description: Name of the file
@@ -739,4 +814,4 @@ definitions:
           description: Level of the log message.
         messsage:
           type: string
-          description: The log message
+          description: The log message        

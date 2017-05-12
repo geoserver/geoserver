@@ -20,10 +20,10 @@ paths:
           schema:
             $ref: "#/definitions/FontList"
           examples:
-            application/json: '
+            application/json: |
               {"fonts":["Calibri Light Italic","Microsoft PhagsPa Bold","Lucida Sans Typewriter Oblique","ChaparralPro-Regular","Californian FB Italic"]}
-              '
-            application/xml: '
+              
+            application/xml: |
               <root>
                 <fonts>
                   <entry>Calibri Light Italic</entry>
@@ -33,7 +33,7 @@ paths:
                   <entry>Californian FB Italic</entry>
                 </fonts>
               </root>
-              '
+              
         401:
           description: Unauthorized
 

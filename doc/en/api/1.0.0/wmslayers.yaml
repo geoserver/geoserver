@@ -550,6 +550,8 @@ definitions:
 
   WMSStoreLayerInfo:
     title: wmsLayer
+    xml:
+      name: wmsLayer
     type: object
     properties:
       name:

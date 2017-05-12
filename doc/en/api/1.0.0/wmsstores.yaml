@@ -23,17 +23,20 @@ paths:
           schema:
             $ref: "#/definitions/WMSStoresList"
           examples:
-            application/xml: '
+            application/xml: |
               <wmsStores>
                 <wmsStore>
                   <name>altgs</name>
                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs.xml" type="application/xml"/>
                 </wmsStore>
               </wmsStores>
-            '
-            application/json: '
-              {"wmsStores":{"wmsStore":[{"name":"altgs","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/cite\/wmsstores\/altgs.json"}]}}
-            '
+            
+            application/json: |
+              {"wmsStores":
+                {"wmsStore": [
+                  {"name":"altgs",
+                   "href":"http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs.json"}]}}
+            
 
     post:
       operationId: postWMSStores
@@ -115,10 +118,21 @@ paths:
           schema:
             $ref: "#/definitions/WMSStoreInfo"
           examples:
-            application/json: '
-              {"wmsStore":{"name":"altgs","type":"WMS","enabled":true,"workspace":{"name":"cite","href":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/cite.json"},"metadata":{"entry":{"@key":"useConnectionPooling","$":"true"}},"_default":false,"capabilitiesURL":"http:\/\/localhost:8081\/geoserver\/wms?request=GetCapabilities","maxConnections":6,"readTimeout":60,"connectTimeout":30,"wmsLayers":"http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/cite\/wmsstores\/altgs\/wmslayers.json"}}
-            '
-            application/xml: '
+            application/json: |
+              {"wmsStore": {
+                "name":"altgs",
+                "type":"WMS",
+                "enabled":true,
+                "workspace": {"name":"cite", "href":"http://localhost:8080/geoserver/rest/workspaces/cite.json"},
+                "metadata": {"entry":{"@key":"useConnectionPooling","$":"true"}},
+                "_default":false,
+                "capabilitiesURL":"http://localhost:8081/geoserver/wms?request=GetCapabilities",
+                "maxConnections":6,
+                "readTimeout":60,
+                "connectTimeout":30,
+                "wmsLayers":"http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs/wmslayers.json"}}
+            
+            application/xml: |
               <wmsStore>
                 <name>altgs</name>
                 <type>WMS</type>
@@ -139,7 +153,7 @@ paths:
                   <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/cite/wmsstores/altgs/wmslayers.xml" type="application/xml"/>
                 </wmsLayers>
               </wmsStore>
-            '
+            
         401:
           description: Unauthorized
 
@@ -231,6 +245,8 @@ definitions:
   WMSStoreInfo:
     type: object
     title: wmsStore
+    xml:
+      name: wmsStore
     properties:
       name:
         type: string
@@ -294,6 +310,8 @@ definitions:
       wmsLayers:
         type: array
         items:
-          link:
-            type: string
-            description: Link to the WMS layers representation
+          type: object
+          properties:
+            link:
+              type: string
+              description: Link to the WMS layers representation

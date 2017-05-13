@@ -315,6 +315,16 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     }
     
     @Override
+    public boolean isTotalCountBanned() {
+    	return delegate.isTotalCountBanned();
+    }
+    
+    @Override
+    public void setTotalCountBanned(boolean totalCountBanned) {
+    	delegate.setTotalCountBanned(totalCountBanned);
+    }
+    
+    @Override
     public void setCircularArcPresent(boolean enabled) {
     	delegate.setCircularArcPresent(enabled);
     }

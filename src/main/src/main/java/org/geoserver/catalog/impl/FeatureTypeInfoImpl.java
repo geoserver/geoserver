@@ -42,6 +42,7 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
     boolean overridingServiceSRS;
     boolean skipNumberMatched = false;
     boolean circularArcPresent;
+    boolean totalCountBanned;
     
     public boolean isCircularArcPresent() {
     	return circularArcPresent;
@@ -49,6 +50,14 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
 
 	public void setCircularArcPresent(boolean curveGeometryEnabled) {
 		this.circularArcPresent = curveGeometryEnabled;
+	}
+
+	public boolean isTotalCountBanned() {
+		return totalCountBanned;
+	}
+	
+	public void setTotalCountBanned(boolean totalCountBanned) {
+		this.totalCountBanned = totalCountBanned;
 	}
 
 	Measure linearizationTolerance;

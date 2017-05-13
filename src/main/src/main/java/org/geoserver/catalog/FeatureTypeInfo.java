@@ -193,4 +193,13 @@ public interface FeatureTypeInfo extends ResourceInfo {
 	
 	void setCircularArcPresent(boolean arcsPresent);
 
+
+	/**
+	 * Whether querying the full number of features is banned for this feature type.
+	 * 
+	 * @return True if a full feature count should not be attempted, false otherwise
+	 */
+	boolean isTotalCountBanned();
+
+	void setTotalCountBanned(boolean totalCountBanned);
 }

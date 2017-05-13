@@ -448,7 +448,7 @@ public class XStreamPersister {
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "rootLayerStyle", new ReferenceConverter(StyleInfo.class));        
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "layers", new ReferenceCollectionConverter( LayerInfo.class ));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "publishables", new ReferenceCollectionConverter( PublishedInfo.class, LayerInfo.class, LayerGroupInfo.class ));
-        xs.registerLocalConverter(impl(LayerGroupInfo.class), "styles", new ReferenceCollectionConverter( StyleInfo.class ));
+        xs.registerLocalConverter(impl(LayerGroupInfo.class), "styles", new LayerGroupStylesReferenceCollectionConverter( StyleInfo.class ));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "metadata", new MetadataMapConverter() );
         
         //ReferencedEnvelope
@@ -1129,6 +1129,51 @@ public class XStreamPersister {
             //            
         }
     }
+    
+    
+    class LayerGroupStylesReferenceCollectionConverter extends ReferenceCollectionConverter{
+
+        public LayerGroupStylesReferenceCollectionConverter(Class clazz) {
+            super(clazz);
+        }
+
+        public LayerGroupStylesReferenceCollectionConverter(Class clazz, Class... subclasses) {
+            super(clazz, subclasses);
+        }
+
+        @Override
+        protected void writeItem(Object item, MarshallingContext context,HierarchicalStreamWriter writer) {
+            ClassAliasingMapper cam = (ClassAliasingMapper) mapper().lookupMapperOfType( ClassAliasingMapper.class );
+            String elementName = cam.serializedClass( clazz );
+            if ( elementName == null ) {
+                elementName = cam.serializedClass( item.getClass() );
+            }
+            writer.startNode(elementName);
+            if(item != null) {
+                writer.addAttribute("default", "false");
+                if(subclasses != null) {
+                    Class theClass = null;
+                    for (Class clazz : subclasses) {
+                        if(clazz.isInstance(item)) {
+                            theClass = clazz;
+                            break;
+                        }
+                    }
+                    if(theClass == null) {
+                        throw new ConversionException("Unexpected item " 
+                                + item + " whose type is not among: " + subclasses);
+                    }
+                    String typeName = cam.serializedClass( theClass );
+                    writer.addAttribute("type", typeName);
+                }
+                context.convertAnother( item, new ReferenceConverter( clazz ) );
+            }
+            else
+                writer.addAttribute("default", "true");
+            writer.endNode();
+        }
+    }
+
     class ReferenceCollectionConverter extends LaxCollectionConverter {
         Class clazz;
         Class[] subclasses;
@@ -1944,8 +1989,7 @@ public class XStreamPersister {
         }
 
         @Override
-        protected void postDoMarshal(Object result,
-                HierarchicalStreamWriter writer, MarshallingContext context) {
+        protected void postDoMarshal(Object result,HierarchicalStreamWriter writer, MarshallingContext context) {
             callback.postEncodeLayerGroup((LayerGroupInfo)result, writer, context);
         }
         

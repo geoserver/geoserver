@@ -223,8 +223,12 @@ public abstract class CasAuthenticationHelper {
         if (getTicketGrantingCookie()==null || getTicketGrantingCookie().getValue().isEmpty()) {
             throw new IOException("na valid TGC ");
         }
-            
-        URL loginUrl = createURLFromCasURI(GeoServerCasConstants.LOGIN_URI+"?service="+service.toExternalForm());
+
+        String serviceUri = service.toExternalForm();
+        serviceUri = serviceUri.replace(":80/", "/");
+        serviceUri = serviceUri.replace("%3A80%2F", "%2F");
+        URL loginUrl = createURLFromCasURI(GeoServerCasConstants.LOGIN_URI+"?service="+serviceUri);
+
         HttpURLConnection conn = (HttpURLConnection) loginUrl.openConnection();
         conn.setInstanceFollowRedirects(false);        
         addCasCookies(conn);

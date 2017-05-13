@@ -1484,7 +1484,14 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         //TODO: put an upper limit on how many times to try
         StoreInfo store = resource.getStore();
-        NamespaceInfo ns = catalog.getNamespaceByPrefix(store.getWorkspace().getName());
+        NamespaceInfo ns;
+        // try to get the Namespace from the StoreInfo Worksapce
+        if (store != null) {
+            ns = catalog.getNamespaceByPrefix(store.getWorkspace().getName());
+        } else {
+            // store is not set for some reason, just use the Namespace from the resource
+            ns = resource.getNamespace();
+        }
         
         String name = resource.getName();
 

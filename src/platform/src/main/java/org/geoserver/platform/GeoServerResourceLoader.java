@@ -217,7 +217,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      */
     @Deprecated 
     public File url(String url) {
-        return Files.url(baseDirectory, url);
+        return Files.url(get(Paths.BASE).dir(), url);
     }
     
     /**

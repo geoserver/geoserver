@@ -30,7 +30,7 @@ import javax.servlet.http.HttpSessionListener;
  */
 public class GeoServerHttpSessionListenerProxy implements HttpSessionListener {
 
-    protected Set<HttpSessionListener> listeners;
+    private volatile Set<HttpSessionListener> listeners;
     
     /**
      * This constructor should be called only once 
@@ -43,25 +43,32 @@ public class GeoServerHttpSessionListenerProxy implements HttpSessionListener {
     }
     
     @Override
-    public void sessionCreated(HttpSessionEvent se) {
+    public final void sessionCreated(final HttpSessionEvent se) {
         for (HttpSessionListener listener : listeners()) {
             listener.sessionCreated(se);
         }
     }
 
     @Override
-    public void sessionDestroyed(HttpSessionEvent se) {
+    public final void sessionDestroyed(final HttpSessionEvent se) {
         for (HttpSessionListener listener : listeners()) {
             listener.sessionDestroyed(se);
         }
     }
 
-    public boolean contains(HttpSessionListener listener) {
+    /**
+     *
+     * @param listener
+     * @return
+     */
+    public final boolean contains(final HttpSessionListener listener) {
         return listeners.contains(listener);
     }
-    
-    
-    
+
+    /**
+     *
+     * @return
+     */
     protected Set<HttpSessionListener> listeners() {
         if (listeners == null) {
            synchronized(this) {

@@ -152,6 +152,11 @@ public class LockFile  {
 
             props.store(out, "Locking info");
         }
+        try {
+            super.finalize();
+        } catch (Throwable ex) {
+            LOGGER.severe(ex.getMessage());
+        }
     }
 
 }

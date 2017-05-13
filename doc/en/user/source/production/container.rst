@@ -3,7 +3,20 @@
 Container Considerations
 ========================
 
-Java web containers such as `Tomcat <http://tomcat.apache.org>`_ or `Jetty <http://www.mortbay.org/jetty/>`_ ship with configurations that allow for fast startup, but don't always deliver the best performance.
+Java web containers such as `Tomcat <http://tomcat.apache.org>`_ or `Jetty <http://www.mortbay.org/jetty/>`_ ship with configurations that allow for fast startup, but don't always deliver the best performance. 
+
+JAVA_OPTS
+---------
+
+Most of these settings can be configured or finetuned with the JAVA_OPTS variable which is used by the JVM. For example: To start GeoServer in tomcat with more performant Server-JVM extend JAVA_OPTS by dropping those two lines at the end of tomcat6.conf
+
+.. code-block:: xml
+
+   #Server JVM for better performance. 
+   JAVA_OPTS="$JAVA_OPTS -server"
+
+With this method JVM options can be chained together.
+Below is a list of more configurations with detailed explanation which can increase jvm performance. 
 
 Optimize your JVM
 -----------------

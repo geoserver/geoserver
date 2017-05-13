@@ -30,5 +30,5 @@ The engine will ask you for the capabilities url and other parameters. These are
 4. The grid resolutions: 0.1 and 0.1
 5. Verify that the server supports XML encoding: yes
 6. Verify that the server supports range set axis: yes
-7. The server implements the original or corrigendum schemas: original
+7. The server implements the original or corrigendum schemas: corrigendum
 

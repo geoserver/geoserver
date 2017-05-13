@@ -115,7 +115,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
         SimpleFeatureSource source = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
 
         FeatureTemplate template = new FeatureTemplate();
-        assertTrue(template.isTemplateEmpty(source.getSchema(), "height.ftl", FeatureTemplate.class, "0" + System.getProperty("line.separator")));
+        assertTrue(template.isTemplateEmpty(source.getSchema(), "height.ftl", FeatureTemplate.class, "0\n"));
         assertTrue(template.isTemplateEmpty(source.getSchema(), "time.ftl", FeatureTemplate.class, null));
         assertFalse(template.isTemplateEmpty(source.getSchema(), "title.ftl", FeatureTemplate.class, null));
     }

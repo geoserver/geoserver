@@ -108,6 +108,7 @@ class FeatureCountProcessor {
         @Override
         protected void onBeforeRender(StreamingRenderer renderer) {
             super.onBeforeRender(renderer);
+            renderer.setGeneralizationDistance(0);
             renderer.addRenderListener(new RenderListener() {
 
                 @Override

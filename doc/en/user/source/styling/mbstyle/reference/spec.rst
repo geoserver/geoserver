@@ -6,13 +6,13 @@ A Mapbox style is a document that defines the visual appearance of a map: what d
 The intended audience of this quick reference includes:
 
 -  Advanced designers and cartographers who want to write styles by hand
--  GeoServer developers using the mbstyle module
+-  GeoTools developers using the mbstyle module
 -  Authors of software that generates or processes Mapbox styles.
-- Feature support is provided for the `Mapbox GL JS <https://www.mapbox.com/mapbox-gl-js/api/>`__, `Open Layers <http://openlayers.org>`__ and the GeoServer mbstyle module.
+- Feature support is provided for the `Mapbox GL JS <https://www.mapbox.com/mapbox-gl-js/api/>`__, `Open Layers <http://openlayers.org>`__ and the GeoTools mbstyle module.
 - Where appropriate examples have been changed to reference `GeoWebCache <http://geowebcache.org/>`__.
 
 :info:
-      The `Mapbox Style Specification <https://www.mapbox.com/mapbox-gl-style-spec>`__ is generated from the BSD `Mapbox GL JS <https://github.com/mapbox/mapbox-gl-js>`__ github repository, reproduced here with details on this GeoServer implementation.
+      The `Mapbox Style Specification <https://www.mapbox.com/mapbox-gl-style-spec>`__ is generated from the BSD `Mapbox GL JS <https://github.com/mapbox/mapbox-gl-js>`__ github repository, reproduced here with details on this GeoTools implementation.
 
 
 Root Properties
@@ -60,7 +60,7 @@ A human-readable name for the style.
 
 Arbitrary properties useful to track with the stylesheet, but do not influence rendering. Properties should be prefixed to avoid collisions.
 
-:note: *unsupported.*
+:note: unsupported
 
 `center <#root-center>`__
 
@@ -76,7 +76,7 @@ Default map center in longitude and latitude. The style center will be used only
       -73.9749, 40.7736
     ]
 
-:note: *unsupported*
+:note: unsupported
 
 `zoom <#root-zoom>`__
 
@@ -102,7 +102,7 @@ will be used only if the map has not been positioned by other means
 
     "bearing": 29
 
-:note: *unsupported*
+:note: unsupported
 
 `pitch <#root-pitch>`__
 
@@ -118,13 +118,11 @@ interaction).
 
     "pitch": 50
 
-.. _root-light:
+
 
 Light
 
-.. raw:: html
-
-   <i>Optional <a href="#light">light</a>.</i>
+*Optional* :ref:`light`.
 
 
 The global light source.
@@ -225,19 +223,16 @@ Layers will be drawn in the order of this array.
 
 
 
-.. raw:: html
 
-   <div class="pad2 prose">
+.. _light:
 
-`Light <#light>`__
+Light
 ------------------
 
 A style's ``light`` property provides global light source for that
 style.
 
-.. raw:: html
 
-   <div class="space-bottom1 pad2x clearfix">
 
 ::
 
@@ -248,9 +243,7 @@ style.
     }
 
 
-.. raw:: html
 
-   <div class="pad2 keyline-all fill-white">
 
 `anchor <#light-anchor>`__
 
@@ -278,7 +271,7 @@ viewport
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.27.0
@@ -314,7 +307,7 @@ the light (from 0°, directly above, to 180°, directly below).
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.27.0
@@ -335,7 +328,7 @@ Color tint for lighting extruded geometries.
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.27.0
@@ -357,7 +350,7 @@ present as more extreme contrast.
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.27.0
@@ -386,9 +379,6 @@ done in several ways:
 -  By supplying TileJSON properties such as ``"tiles"``, ``"minzoom"``,
    and ``"maxzoom"`` directly in the source:
 
-   .. raw:: html
-
-      <div class="space-bottom1 clearfix">
 
    ::
 
@@ -401,15 +391,10 @@ done in several ways:
          "maxzoom": 14
        }
 
-   .. raw:: html
 
-      </div>
 
 -  By providing a ``"url"`` to a TileJSON resource:
 
-   .. raw:: html
-
-      <div class="space-bottom1 clearfix">
 
    ::
 
@@ -418,9 +403,6 @@ done in several ways:
          "url": "http://api.example.com/tilejson.json"
        }
 
-   .. raw:: html
-
-      </div>
 
 -  By providing a url to a WMS server that supports EPSG:3857 (or
    EPSG:900913) as a source of tiled data. The server url should contain
@@ -505,9 +487,7 @@ higher zoom levels.
      - >= 2.0.0
      - >= 0.1.0
 
-.. raw:: html
 
-   <div id="sources-raster" class="pad2 keyline-bottom">
 
 .. _sources-raster:
 
@@ -582,9 +562,6 @@ configurable for raster layers.
      - >= 0.1.0
 
 
-.. raw:: html
-
-   <div id="sources-geojson" class="pad2 keyline-bottom">
 
 .. _sources-geojson:
 
@@ -700,27 +677,7 @@ clustered).
      - >= 4.2.0
      - >= 3.4.0
      - >= 0.3.0
-..
-   SDK Requirements
-   Mapbox GL JS
-   Android SDK
-   iOS SDK
-   macOS SDK
-   basic functionality
-   >= 0.10.0
-   >= 2.0.1
-   >= 2.0.0
-   >= 0.1.0
-   clustering
-   >= 0.14.0
-   >= 4.2.0
-   >= 3.4.0
-   >= 0.3.0
 
-
-.. raw:: html
-
-   <div id="sources-image" class="pad2 keyline-bottom">
 
 .. _sources-image:
 
@@ -748,7 +705,7 @@ right, bottom left.
 
 `url <#sources-image-url>`__
 
-*Required* :ref:`types-string`. 
+*Required* :ref:`types-string`.
 
 
 
@@ -777,9 +734,7 @@ Corners of image specified in longitude, latitude pairs.
      - `Not yet supported <https://github.com/mapbox/mapbox-gl-native/issues/1350>`__
 
 
-.. raw:: html
 
-   <div id="sources-video" class="pad2 keyline-bottom">
 
 .. _sources-video:
 
@@ -843,25 +798,6 @@ Corners of video specified in longitude, latitude pairs.
      - `Not yet supported <https://github.com/mapbox/mapbox-gl-native/issues/1350>`__
      - `Not yet supported <https://github.com/mapbox/mapbox-gl-native/issues/1350>`__
 
-..
-   SDK Support
-   Mapbox GL JS
-   Android SDK
-   iOS SDK
-   macOS SDK
-   basic functionality
-   >= 0.10.0
-   `Not yet
-   supported <https://github.com/mapbox/mapbox-gl-native/issues/601>`__
-   `Not yet
-   supported <https://github.com/mapbox/mapbox-gl-native/issues/601>`__
-   `Not yet
-   supported <https://github.com/mapbox/mapbox-gl-native/issues/601>`__
-
-
-.. raw:: html
-
-   <div id="sources-canvas" class="pad2 keyline-bottom">
 
 .. _sources-canvas:
 
@@ -909,9 +845,7 @@ Corners of canvas specified in longitude, latitude pairs.
 
 `animate <#sources-canvas-animate>`__
 
-.. raw:: html
-
-   <i>Optional <a href="#boolean">boolean</a>. </i><i>Defaults to </i>true.
+*Optional* :ref:`types-boolean`. *Defaults to* true.
 
 
 
@@ -920,7 +854,7 @@ Whether the canvas source is animated. If the canvas is static,
 
 `canvas <#sources-canvas-canvas>`__
 
-*Required* :ref:`types-string`. 
+*Required* :ref:`types-string`.
 
 
 
@@ -942,9 +876,7 @@ HTML ID of the canvas from which to read pixels.
      - Not supported
      - Not supported
 
-.. raw:: html
 
-   <div class="pad2 prose">
 
 .. _sprite:
 
@@ -955,9 +887,7 @@ A style's ``sprite`` property supplies a URL template for loading small
 images to use in rendering ``background-pattern``, ``fill-pattern``,
 ``line-pattern``, and ``icon-image`` style properties.
 
-.. raw:: html
 
-   <div class="space-bottom1 pad2x clearfix">
 
 ::
 
@@ -975,9 +905,7 @@ A valid sprite source must supply two types of files:
    (``x`` and ``y``). For example, a sprite containing a single image
    might have the following index file contents:
 
-   .. raw:: html
 
-      <div class="space-bottom1 clearfix">
 
    ::
 
@@ -991,9 +919,6 @@ A valid sprite source must supply two types of files:
          }
        }
 
-   .. raw:: html
-
-      </div>
 
    Then the style could refer to this sprite image by creating a symbol
    layer with the layout property ``"icon-image": "poi"``, or with the
@@ -1022,9 +947,7 @@ line utility that builds Mapbox GL compatible sprite PNGs and index
 files from a directory of SVGs.
 
 
-.. raw:: html
 
-   <div class="pad2 prose">
 
 .. _glyphs:
 
@@ -1034,9 +957,7 @@ Glyphs
 A style's ``glyphs`` property provides a URL template for loading
 signed-distance-field glyph sets in PBF format.
 
-.. raw:: html
 
-   <div class="space-bottom1 pad2x clearfix">
 
 ::
 
@@ -1057,9 +978,7 @@ This URL template should include two tokens:
    at runtime based on what text needs to be displayed.
 
 
-.. raw:: html
 
-   <div class="pad2 prose">
 
 .. _transition:
 
@@ -1069,9 +988,7 @@ Transition
 A style's ``transition`` property provides global transition defaults
 for that style.
 
-.. raw:: html
 
-   <div class="space-bottom1 pad2x clearfix">
 
 ::
 
@@ -1081,20 +998,18 @@ for that style.
     }
 
 
-.. raw:: html
 
-   <div class="pad2 keyline-all fill-white">
 
 `duration <#transition-duration>`__
 
-*Optional* :ref:`types-number`. *Units in milliseconds. Defaults to* 300. 
+*Optional* :ref:`types-number`. *Units in milliseconds. Defaults to* 300.
 
 
 Time allotted for transitions to complete.
 
 `delay <#transition-delay>`__
 
-*Optional* :ref:`types-number`. *Units in milliseconds. Defaults to* 0. 
+*Optional* :ref:`types-number`. *Units in milliseconds. Defaults to* 0.
 
 
 
@@ -1104,9 +1019,7 @@ Length of time before a transition begins.
 
 
 
-.. raw:: html
 
-   <div class="pad2 prose">
 
 .. _layers:
 
@@ -1122,9 +1035,7 @@ Except for layers of the background type, each layer needs to refer to a
 source. Layers take the data that they get from a source, optionally
 filter features, and then define how those features are styled.
 
-.. raw:: html
 
-   <div class="space-bottom1 pad2x clearfix">
 
 ::
 
@@ -1141,15 +1052,13 @@ filter features, and then define how those features are styled.
     ]
 
 
-.. raw:: html
 
-   <div class="pad2 keyline-all fill-white">
 
 .. _layer_id:
 
 ``id``
 
-*Required* :ref:`types-string`. 
+*Required* :ref:`types-string`.
 
 
 Unique layer name.
@@ -1256,9 +1165,7 @@ layout properties for the layer
 *Optional* paint properties for the layer
 
 
-.. raw:: html
 
-   <div class="pad2 prose">
 
 Layers have two sub-properties that determine how data from that layer
 is rendered: ``layout`` and ``paint`` properties.
@@ -1279,13 +1186,6 @@ object.
 Key: `supports interpolated functions <#function>`__ `supports piecewise
 constant functions <#function>`__ transitionable
 
-.. raw:: html
-
-   <div class="space-bottom4 fill-white keyline-all">
-
-.. raw:: html
-
-   <div id="layers-background" class="pad2 keyline-bottom">
 
 
 `background <#layers-background>`__
@@ -1316,7 +1216,7 @@ none
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
@@ -1341,7 +1241,7 @@ The color with which the background will be drawn.
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
@@ -1365,7 +1265,7 @@ seamless patterns, image width and height must be a factor of two (2, 4,
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
@@ -1384,16 +1284,13 @@ The opacity at which the background will be drawn.
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
      - not yet supported
      - not yet supported
 
-.. raw:: html
-
-   <div id="layers-fill" class="pad2 keyline-bottom">
 
 `fill <#layers-fill>`__
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -1420,7 +1317,7 @@ none
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
@@ -1446,7 +1343,7 @@ Whether or not the fill should be antialiased.
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
@@ -1472,7 +1369,7 @@ stroke is used.
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
@@ -1500,7 +1397,7 @@ affect the opacity of the 1px stroke, if it is used.
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
@@ -1526,7 +1423,7 @@ unspecified.
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
@@ -1551,7 +1448,7 @@ and up, respectively.
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
@@ -1581,7 +1478,7 @@ viewport
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
@@ -1607,7 +1504,7 @@ patterns, image width and height must be a factor of two (2, 4, 8, ...,
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
@@ -1618,9 +1515,6 @@ patterns, image width and height must be a factor of two (2, 4, 8, ...,
      - 18.0
      - not yet supported
 
-.. raw:: html
-
-   <div id="layers-line" class="pad2 keyline-bottom">
 
 `line <#layers-line>`__
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -1656,7 +1550,7 @@ square
 
    * - Support
      - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - Basic
      - 0.10.0
@@ -1717,7 +1611,7 @@ miter
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -1758,7 +1652,7 @@ angles.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -1799,7 +1693,7 @@ angles.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -1846,7 +1740,7 @@ none
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -1889,7 +1783,7 @@ The opacity at which the line will be drawn.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -1929,7 +1823,7 @@ The color with which the line will be drawn.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -1970,7 +1864,7 @@ and up, respectively.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2019,7 +1913,7 @@ viewport
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2058,7 +1952,7 @@ Stroke thickness.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2100,7 +1994,7 @@ width of the inner gap.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2142,7 +2036,7 @@ inset, and a negative value results in an outset.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2182,7 +2076,7 @@ Blur applied to the line, in pixels.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2224,7 +2118,7 @@ a dash length to pixels, multiply the length by the current line width.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2265,7 +2159,7 @@ patterns, image width must be a factor of two (2, 4, 8, ..., 512).
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2292,9 +2186,7 @@ patterns, image width must be a factor of two (2, 4, 8, ..., 512).
      - Not yet supported
 
 
-.. raw:: html
 
-   <div id="layers-symbol" class="pad2 keyline-bottom">
 
 `symbol <#layers-symbol>`__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2325,7 +2217,7 @@ line
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2366,7 +2258,7 @@ Distance between two symbol anchors.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2409,7 +2301,7 @@ placed after a line symbol layer.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2450,7 +2342,7 @@ previously drawn symbols.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2491,7 +2383,7 @@ icon.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2533,7 +2425,7 @@ icon collides with other symbols and the text does not.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2589,7 +2481,7 @@ auto
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2633,7 +2525,7 @@ Scale factor for icon. 1 is original size, 3 triples the size.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2688,7 +2580,7 @@ both
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2729,7 +2621,7 @@ Size of the additional area added to dimensions determined by
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2771,7 +2663,7 @@ with {tokens} replaced, referencing the data property to pull from.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2811,7 +2703,7 @@ Rotates the icon clockwise.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2853,7 +2745,7 @@ detecting symbol collisions.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2895,7 +2787,7 @@ upside-down.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2937,7 +2829,7 @@ and down, while negative values indicate left and up. When combined with
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -2987,7 +2879,7 @@ auto
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3048,7 +2940,7 @@ auto
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3097,7 +2989,7 @@ literal ``text-field`` values--not for property functions.)
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3137,7 +3029,7 @@ Font stack to use for displaying text.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3179,7 +3071,7 @@ Font size.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3221,7 +3113,7 @@ The maximum line width for text wrapping.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3262,7 +3154,7 @@ Text leading value for multi-line text.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3303,7 +3195,7 @@ Text tracking amount.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3354,7 +3246,7 @@ right
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3424,7 +3316,7 @@ bottom-right
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3464,7 +3356,7 @@ Maximum angle change between adjacent characters.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3505,7 +3397,7 @@ Rotates the text clockwise.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3548,7 +3440,7 @@ detecting symbol collisions.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3591,7 +3483,7 @@ rendered upside-down.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3643,7 +3535,7 @@ lowercase
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3684,7 +3576,7 @@ and down, while negative values indicate left and up.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3727,7 +3619,7 @@ previously drawn symbols.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3770,7 +3662,7 @@ text.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3813,7 +3705,7 @@ text collides with other symbols and the icon does not.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3862,7 +3754,7 @@ none
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3906,7 +3798,7 @@ The opacity at which the icon will be drawn.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3947,7 +3839,7 @@ The color of the icon. This can only be used with sdf icons.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -3990,7 +3882,7 @@ icons.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4031,7 +3923,7 @@ Distance of halo to the icon outline.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4073,7 +3965,7 @@ Fade out the halo towards the outside.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4117,7 +4009,7 @@ left and up.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4166,7 +4058,7 @@ viewport
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4206,7 +4098,7 @@ The opacity at which the text will be drawn.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4248,7 +4140,7 @@ The color with which the text will be drawn.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4290,7 +4182,7 @@ The color of the text's halo, which helps it stand out from backgrounds.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4333,7 +4225,7 @@ font-size.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4375,7 +4267,7 @@ The halo's fadeout distance towards the outside.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4419,7 +4311,7 @@ left and up.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4468,7 +4360,7 @@ viewport
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4496,9 +4388,7 @@ viewport
 
 
 
-.. raw:: html
-
-   <div id="layers-raster" class="pad2 keyline-bottom">
+.
 
 `raster <#layers-raster>`__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4529,7 +4419,7 @@ none
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4573,7 +4463,7 @@ The opacity at which the image will be drawn.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4615,7 +4505,7 @@ Rotates hues around the color wheel.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4657,7 +4547,7 @@ brightness.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4699,7 +4589,7 @@ brightness.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4740,7 +4630,7 @@ Increase or reduce the saturation of the image.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4781,7 +4671,7 @@ Increase or reduce the contrast of the image.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4823,7 +4713,7 @@ Fade duration when a new tile is added.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4850,10 +4740,6 @@ Fade duration when a new tile is added.
      - Not yet supported
 
 
-
-.. raw:: html
-
-   <div id="layers-circle" class="pad2 keyline-bottom">
 
 `circle <#layers-circle>`__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4884,7 +4770,7 @@ none
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4923,7 +4809,7 @@ Circle radius.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -4965,7 +4851,7 @@ The fill color of the circle.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5007,7 +4893,7 @@ centerpoint is full opacity.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5048,7 +4934,7 @@ The opacity at which the circle will be drawn.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5090,7 +4976,7 @@ and up, respectively.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5139,7 +5025,7 @@ viewport
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5189,7 +5075,7 @@ viewport
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5232,7 +5118,7 @@ The width of the circle's stroke. Strokes are placed outside of the
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5273,7 +5159,7 @@ The stroke color of the circle.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5312,7 +5198,7 @@ The opacity of the circle's stroke.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5339,10 +5225,6 @@ The opacity of the circle's stroke.
      - >= 0.4.0
 
 
-
-.. raw:: html
-
-   <div id="layers-fill-extrusion" class="pad2 keyline-bottom">
 
 `fill-extrusion <#layers-fill-extrusion>`__
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5373,7 +5255,7 @@ none
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5414,7 +5296,7 @@ available.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5455,7 +5337,7 @@ component, the alpha component will be ignored; use
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5498,7 +5380,7 @@ and up (on the flat plane), respectively.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5547,7 +5429,7 @@ viewport
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5591,7 +5473,7 @@ seamless patterns, image width and height must be a factor of two (2, 4,
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5632,7 +5514,7 @@ The height with which to extrude this layer.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5675,7 +5557,7 @@ than or equal to ``fill-extrusion-height``.
    :header-rows: 1
 
    * - Mapbox
-     - GeoServer
+     - GeoTools
      - OpenLayers
    * - 0.27.0
      - 18.0
@@ -5703,9 +5585,7 @@ than or equal to ``fill-extrusion-height``.
 
 
 
-.. raw:: html
 
-   <div class="pad2 prose">
 
 `Types <#types>`__
 ------------------
@@ -5713,13 +5593,6 @@ than or equal to ``fill-extrusion-height``.
 A Mapbox style contains values of various types, most commonly as values
 for the style properties of a layer.
 
-.. raw:: html
-
-   <div class="keyline-all fill-white">
-
-.. raw:: html
-
-   <div class="pad2 keyline-bottom">
 
 .. _types-color:
 
@@ -5746,9 +5619,6 @@ Especially of note is the support for hsl, which can be `easier to
 reason about than rgb() <http://mothereffinghsl.com/>`__.
 
 
-.. raw:: html
-
-   <div class="pad2 keyline-bottom">
 
 .. _types-enum:
 
@@ -5763,10 +5633,6 @@ One of a fixed list of string values. Use quotes around values.
       "text-transform": "uppercase"
     }
 
-
-.. raw:: html
-
-   <div class="pad2 keyline-bottom">
 
 .. _types-string:
 
@@ -5785,9 +5651,6 @@ to by putting them in curly braces, as seen in the example below.
     }
 
 
-.. raw:: html
-
-   <div class="pad2 keyline-bottom">
 
 .. _types-boolean:
 
@@ -5803,9 +5666,6 @@ Boolean means yes or no, so it accepts the values ``true`` or ``false``.
     }
 
 
-.. raw:: html
-
-   <div class="pad2 keyline-bottom">
 
 .. _types-number:
 
@@ -5822,9 +5682,6 @@ Written without quotes.
     }
 
 
-.. raw:: html
-
-   <div class="pad2 keyline-bottom">
 
 .. _types-array:
 
@@ -5842,9 +5699,6 @@ numbers specify intervals of line, break, and line again.
     }
 
 
-.. raw:: html
-
-   <div class="pad2 keyline-bottom">
 
 .. _types-function:
 
@@ -5854,15 +5708,6 @@ Function
 The value for any layout or paint property may be specified as a
 *function*. Functions allow you to make the appearance of a map feature
 change with the current zoom level and/or the feature's properties.
-
-.. raw:: html
-
-   <div class="col12 pad1x">
-
-.. raw:: html
-
-   <div class="col12 clearfix pad0y pad2x space-bottom2">
-
 
 
 .. _stops:
@@ -5878,10 +5723,6 @@ Functions are defined in terms of input and output values. A set of one
 input value and one output value is known as a "stop."
 
 
-
-.. raw:: html
-
-   <div class="col12 clearfix pad0y pad2x space-bottom2">
 
 .. _property:
 
@@ -5899,16 +5740,11 @@ Functions <#types-function-zoom-property>`__ for more information.
 
 
 
-.. raw:: html
-
-   <div class="col12 clearfix pad0y pad2x space-bottom2">
 
 .. _base:
 
 base
-.. raw:: html
-
-   <i>Optional <a href="#number">number</a>. Default is</i> 1.
+*Optional* :ref:`types-number`. *Default is* 1.
 
 
 
@@ -5921,17 +5757,11 @@ the output increases linearly.
 
 
 
-.. raw:: html
-
-   <div class="col12 clearfix pad0y pad2x space-bottom2">
-
 .. _type:
 
 type
 
-.. raw:: html
-
-   <i>Optional <a href="#enum">enum</a>. One of</i> identity, exponential, interval, categorical.
+*Optional* :ref:`types-enum`. *One of* identity, exponential, interval, categorical.
 
 
 
@@ -5951,9 +5781,6 @@ categorical
     input.
 
 
-.. raw:: html
-
-   <div class="col12 clearfix pad0y pad2x space-bottom2">
 
 .. _function-default:
 
@@ -5984,17 +5811,12 @@ circumstances.
 
 
 
-.. raw:: html
-
-   <div class="col12 clearfix pad0y pad2x space-bottom2">
-
 .. _function-colorspace:
 
 colorSpace
 
-.. raw:: html
 
-   <i>Optional <a href="#enum">enum</a>. One of</i> rgb, lab, hcl.
+*Optional* :ref:`types-enum`. *One of* rgb, lab, hcl.
 
 
 
@@ -6074,9 +5896,6 @@ map’s zoom level. Zoom functions can be used to create the illusion of
 depth and control data density. Each stop is an array with two elements:
 the first is a zoom level and the second is a function output value.
 
-.. raw:: html
-
-   <div class="col12 space-bottom">
 
 ::
 
@@ -6126,9 +5945,6 @@ property input value and the second is a function output value. Note
 that support for property functions is not available across all
 properties and platforms at this time.
 
-.. raw:: html
-
-   <div class="col12 space-bottom">
 
 ::
 
@@ -6155,9 +5971,6 @@ with two elements, the first is an object with a property input value
 and a zoom, and the second is a function output value. Note that support
 for property functions is not yet complete.
 
-.. raw:: html
-
-   <div class="col12 space-bottom">
 
 ::
 
@@ -6184,11 +5997,6 @@ for property functions is not yet complete.
 
 
 
-
-.. raw:: html
-
-   <div class="pad2">
-
 .. _types-filter:
 
 Filter
@@ -6197,9 +6005,6 @@ Filter
 A filter selects specific features from a layer. A filter is an array of
 one of the following forms:
 
-.. raw:: html
-
-   <div class="col12 clearfix space-bottom2">
 
 Existential Filters
 ^^^^^^^^^^^^^^^^^^^
@@ -6326,4 +6131,3 @@ are Polygons, but have a different ``class`` value, and so on.
      - >= 4.1.0
      - >= 3.3.0
      - >= 0.1.0
-

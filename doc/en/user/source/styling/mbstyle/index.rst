@@ -14,4 +14,5 @@ MBStyle is not a part of GeoServer by default, but is available as an optional i
 
    installing
    reference/index
+   reference/spec
    cookbook/index

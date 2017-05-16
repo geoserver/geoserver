@@ -120,41 +120,6 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", doc);
         XMLAssert.assertXpathEvaluatesTo("MissingParameterValue", "//ogc:ServiceException/@code", doc);
     }
-
-    //[GEOS-8117] Tests a number of known cases where excluding service can cause an error
-    @Test
-    public void testGetMissingVersion() throws Exception {
-        getWithServiceVersionQuery("&service=wfs");
-    }
-    @Test
-    public void testGetMissingService() throws Exception {
-        getWithServiceVersionQuery("&version=2.0.0");
-    }
-    @Test
-    public void testGetMissingServiceVersion() throws Exception {
-        getWithServiceVersionQuery("");
-    }
-    public void getWithServiceVersionQuery(String query) throws Exception {
-        //All properties (no filter)
-        Document doc = getAsDOM("wfs?request=GetFeature&typename=cite:NamedPlaces" + query);
-        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
-
-        //All properties (empty filter)
-        doc = getAsDOM("wfs?request=GetFeature&typename=cite:NamedPlaces" + query + "&propertyname=*");
-        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
-
-        //All properties (with filter)
-        doc = getAsDOM("wfs?request=GetFeature&typename=cite:NamedPlaces" + query + "&propertyname=*");
-        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
-
-        //One property
-        doc = getAsDOM("wfs?request=GetFeature&typename=cite:NamedPlaces" + query + "&propertyname=NAME");
-        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
-
-        //Two properties
-        doc = getAsDOM("wfs?request=GetFeature&typename=cite:NamedPlaces" + query + "&propertyname=NAME,FID");
-        assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
-    }
     
     @Test
     public void testAlienNamespace() throws Exception {

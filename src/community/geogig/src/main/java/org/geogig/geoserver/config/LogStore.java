@@ -12,13 +12,9 @@ import static org.geogig.geoserver.config.LogStoreInitializer.newDataSource;
 import static org.geogig.geoserver.config.LogStoreInitializer.runScript;
 import static org.geogig.geoserver.config.LogStoreInitializer.saveConfig;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -80,7 +76,7 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
 
     private Logger LOGBACKLOGGER;
 
-    private File configFile;
+    private Resource configResource;
 
     private DataSource dataSource;
 
@@ -138,37 +134,37 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
             DataSource dataSource = this.dataSource;
             this.dataSource = null;
             this.LOGBACKLOGGER = null;
-            this.configFile = null;
+            this.configResource = null;
             LogStoreInitializer.dispose(dataSource);
         }
     }
 
     private void init() {
         try {
-            this.configFile = findOrCreateConfigFile();
+            this.configResource = findOrCreateConfigResource();
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
         Properties properties = new Properties();
-        try (InputStream in = new FileInputStream(configFile)) {
+        try (InputStream in = configResource.in()) {
             properties.load(in);
         } catch (FileNotFoundException e) {
-            throw new IllegalArgumentException("properties file does not exist: " + configFile);
+            throw new IllegalArgumentException("properties file does not exist: " + configResource.path());
         } catch (IOException e) {
-            throw new RuntimeException("Error loading properties file " + configFile, e);
+            throw new RuntimeException("Error loading properties file " + configResource.path(), e);
         }
 
         boolean enabled = Boolean.valueOf(properties.getProperty(PROP_ENABLED));
         if (enabled) {
-            dataSource = newDataSource(properties, configFile);
+            dataSource = newDataSource(properties, configResource);
             boolean runScript = Boolean.valueOf(properties.getProperty(PROP_RUN_SCRIPT));
             if (runScript) {
                 String scriptProp = properties.getProperty(PROP_SCRIPT);
-                URL script = resolveScript(scriptProp, configFile);
+                Resource script = resolveScript(scriptProp, configResource);
                 runScript(dataSource, script);
                 // all good, lets disable the script for the next runs
                 properties.setProperty(PROP_RUN_SCRIPT, "false");
-                saveConfig(properties, configFile);
+                saveConfig(properties, configResource);
             }
 
             LOGBACKLOGGER = createLogger(dataSource);
@@ -176,21 +172,16 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
         this.enabled = enabled;
     }
 
-    private URL resolveScript(String scriptProp, File configFile) {
-        File scriptFile = new File(scriptProp);
-        if (scriptFile.isAbsolute()) {
-            checkArgument(scriptFile.exists(), "Script file %s does not exist", scriptFile);
+    private Resource resolveScript(String scriptProp, Resource configResource) {
+    	Resource scriptResource = resourceStore.get(scriptProp);
+    	
+        if (scriptResource.getType().equals(Resource.Type.UNDEFINED)) {
+            scriptResource = configResource.parent().get(scriptProp);
+            checkArgument(scriptResource.getType().equals(Resource.Type.RESOURCE), "Script file %s does not exist",
+                scriptResource.path());
         }
-        // find it relative to config file
-        scriptFile = new File(configFile.getParentFile(), scriptProp);
-        checkArgument(scriptFile.exists(), "Script file %s does not exist",
-                scriptFile.getAbsolutePath());
 
-        try {
-            return scriptFile.toURI().toURL();
-        } catch (MalformedURLException e) {
-            throw Throwables.propagate(e);
-        }
+        return scriptResource;
     }
 
     public void debug(@Nullable String repoUrl, @Nullable CharSequence message) {
@@ -344,22 +335,21 @@ public class LogStore implements GeoServerLifecycleHandler, InitializingBean {
         return name;
     }
 
-    private File findOrCreateConfigFile() throws IOException {
+    private Resource findOrCreateConfigResource() throws IOException {
         Resource dirResource = resourceStore.get(CONFIG_DIR_NAME);
-        File dir = dirResource.dir();
-        File configFile = new File(dir, CONFIG_FILE_NAME);
+        Resource configResource = dirResource.get(CONFIG_FILE_NAME);
 
-        copySampleInitSript(dir, "mysql.sql");
-        copySampleInitSript(dir, "postgresql.sql");
-        copySampleInitSript(dir, "postgresql.properties");
-        copySampleInitSript(dir, "sqlite.sql");
-        copySampleInitSript(dir, "hsqldb.sql");
-        copySampleInitSript(dir, "hsqldb.properties");
+        copySampleInitSript(dirResource, "mysql.sql");
+        copySampleInitSript(dirResource, "postgresql.sql");
+        copySampleInitSript(dirResource, "postgresql.properties");
+        copySampleInitSript(dirResource, "sqlite.sql");
+        copySampleInitSript(dirResource, "hsqldb.sql");
+        copySampleInitSript(dirResource, "hsqldb.properties");
 
-        if (!configFile.exists()) {
-            createDefaultConfig(configFile);
+        if (configResource.getType().equals(Resource.Type.UNDEFINED)) {
+            createDefaultConfig(configResource);
         }
-        return configFile;
+        return configResource;
     }
 
     private static Logger createLogger(DataSource dataSource) {

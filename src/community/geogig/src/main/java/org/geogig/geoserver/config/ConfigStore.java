@@ -11,7 +11,6 @@ import static com.google.common.collect.Iterators.filter;
 import static com.google.common.collect.Iterators.transform;
 import static com.google.common.collect.Lists.newArrayList;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,7 +31,6 @@ import java.util.regex.Pattern;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
-import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
 import com.google.common.base.Charsets;
@@ -94,7 +92,7 @@ public class ConfigStore {
     public ConfigStore(ResourceStore resourceLoader) {
         checkNotNull(resourceLoader, "resourceLoader");
         this.resourceLoader = resourceLoader;
-        if (null == Resources.directory(resourceLoader.get(CONFIG_DIR_NAME), true)) {
+        if (resourceLoader.get(CONFIG_DIR_NAME) == null) {
             throw new IllegalStateException("Unable to create config directory " + CONFIG_DIR_NAME);
         }
         this.lock = new ReentrantReadWriteLock();
@@ -204,9 +202,8 @@ public class ConfigStore {
     }
 
     private static List<WhitelistRule> loadWhitelist(Resource input) throws IOException {
-        File parent = input.parent().dir();
-        File f = new File(parent, input.name());
-        if (!(parent.exists() && f.exists())) {
+        Resource parent = input.parent();
+        if (!(parent.getType().equals(Resource.Type.DIRECTORY) && input.getType().equals(Resource.Type.RESOURCE))) {
             return newArrayList();
         }
         try (Reader reader = new InputStreamReader(input.in(), Charsets.UTF_8)) {
@@ -260,11 +257,9 @@ public class ConfigStore {
     }
 
     private static RepositoryInfo load(Resource input) throws IOException {
-        // make an explicit check here because FileSystemResource.file() creates an empty file
-        File parent = input.parent().dir();
-        File f = new File(parent, input.name());
-        if (!(parent.exists() && f.exists())) {
-            throw new FileNotFoundException("File not found: " + f.getAbsolutePath());
+        Resource parent = input.parent();
+        if (!(parent.getType().equals(Resource.Type.DIRECTORY) && input.getType().equals(Resource.Type.RESOURCE))) {
+            throw new FileNotFoundException("File not found: " + input.path());
         }
         RepositoryInfo info;
         try (Reader reader = new InputStreamReader(input.in(), Charsets.UTF_8)) {

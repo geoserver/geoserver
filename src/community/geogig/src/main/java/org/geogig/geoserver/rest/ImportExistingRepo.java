@@ -16,9 +16,9 @@ import java.net.URI;
 
 public class ImportExistingRepo extends AbstractWebAPICommand {
 
-	@Override
-	protected void setParametersInternal(ParameterSet options) {
-	}
+    @Override
+    protected void setParametersInternal(ParameterSet options) {
+    }
 
     @Override
     public boolean supports(final Method method) {
@@ -46,27 +46,17 @@ public class ImportExistingRepo extends AbstractWebAPICommand {
     protected void runInternal(CommandContext context) {
 
         final Context geogig = this.getRepositoryContext(context);
-        Optional<URI> repoUri = geogig.command(ResolveGeogigURI.class).call();
-        Preconditions.checkState(repoUri.isPresent(),
-                "Unable to resolve URI of imported repository.");
-
-        try {
-            final String repositoryName = RepositoryResolver.load(repoUri.get())
-                    .command(ResolveRepositoryName.class).call();
-            context.setResponseContent(new CommandResponse() {
-                @Override
-                public void write(ResponseWriter out) throws Exception {
-                    out.start();
-                    out.writeRepoInitResponse(repositoryName, context.getBaseURL(),
-                            RepositoryProvider.BASE_REPOSITORY_ROUTE + "/" + repositoryName);
-                    out.finish();
-                }
-            });
-            // repo was created successfully
-            setStatus(Status.SUCCESS_OK);
-        } catch (RepositoryConnectionException e) {
-            throw new CommandSpecException(
-                    "Repository was imported, but was unable to connect to it immediately.");
-        }
+        final String repositoryName = geogig.command(ResolveRepositoryName.class).call();
+        context.setResponseContent(new CommandResponse() {
+            @Override
+            public void write(ResponseWriter out) throws Exception {
+                out.start();
+                out.writeRepoInitResponse(repositoryName, context.getBaseURL(),
+                        RepositoryProvider.BASE_REPOSITORY_ROUTE + "/" + repositoryName);
+                out.finish();
+            }
+        });
+        // repo was created successfully
+        setStatus(Status.SUCCESS_OK);
     }
 }

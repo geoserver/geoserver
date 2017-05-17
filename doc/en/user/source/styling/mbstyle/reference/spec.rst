@@ -1260,7 +1260,7 @@ none
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - Not yet supported
+     - >= 17.1
      - 
 
 Paint Properties
@@ -1289,7 +1289,7 @@ Whether or not the fill should be antialiased.
      - Not yet supported
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 fill-opacity
@@ -1392,11 +1392,11 @@ and up, respectively.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 fill-translate-anchor
@@ -1422,7 +1422,7 @@ viewport
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
@@ -1559,11 +1559,11 @@ angles.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 line-round-limit
@@ -1586,11 +1586,11 @@ angles.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -1703,11 +1703,11 @@ and up, respectively.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 line-translate-anchor
@@ -1735,11 +1735,11 @@ viewport
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -1789,11 +1789,11 @@ width of the inner gap.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - >= 0.29.0
-     - >= 17.1
+     - Not yet supported
      - 
 
 line-offset
@@ -1842,11 +1842,11 @@ Blur applied to the line, in pixels.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - >= 0.29.0
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -1964,7 +1964,7 @@ Distance between two symbol anchors.
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -1989,11 +1989,11 @@ placed after a line symbol layer.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -2016,11 +2016,11 @@ previously drawn symbols.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 icon-ignore-placement
@@ -2042,11 +2042,11 @@ icon.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -2070,11 +2070,11 @@ icon collides with other symbols and the text does not.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 icon-rotation-alignment
@@ -2110,15 +2110,15 @@ auto
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - ``auto`` value
      - >= 0.25.0
-     - >= 17.1
+     - Not yet supported
      -
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      -
 
 icon-size
@@ -2138,11 +2138,11 @@ Scale factor for icon. 1 is original size, 3 triples the size.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - >= 0.35.0
-     - >= 17.1
+     - Not yet supported
      - 
 
 icon-text-fit
@@ -2181,7 +2181,7 @@ both
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 icon-text-fit-padding
@@ -2207,7 +2207,7 @@ Size of the additional area added to dimensions determined by
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -2286,11 +2286,11 @@ detecting symbol collisions.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 icon-keep-upright
@@ -2313,11 +2313,11 @@ upside-down.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 icon-offset
@@ -2340,11 +2340,11 @@ and down, while negative values indicate left and up. When combined with
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - >= Not yet supported
      - 
    * - data-driven styling
      - >= 0.29.0
-     - >= 17.1
+     - >= Not yet supported
      - 
 
 
@@ -2375,15 +2375,15 @@ auto
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - >= Not yet supported
      - 
    * - ``auto`` value
      - >= 0.25.0
-     - >= 17.1
+     - >= Not yet supported
      -
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - >= Not yet supported
      - 
 
 
@@ -2420,15 +2420,15 @@ auto
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - ``auto`` value
      - >= 0.25.0
-     - >= 17.1
+     - Not yet supported
      -
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-field
@@ -2481,7 +2481,7 @@ Font stack to use for displaying text.
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-size
@@ -2532,11 +2532,11 @@ The maximum line width for text wrapping.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-line-height
@@ -2559,11 +2559,11 @@ Text leading value for multi-line text.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -2587,11 +2587,11 @@ Text tracking amount.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-justify
@@ -2623,11 +2623,11 @@ right
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-anchor
@@ -2679,11 +2679,11 @@ bottom-right
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -2706,11 +2706,11 @@ Maximum angle change between adjacent characters.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-rotate
@@ -2733,11 +2733,11 @@ Rotates the text clockwise.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - >= 0.35.0
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-padding
@@ -2761,11 +2761,11 @@ detecting symbol collisions.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -2790,11 +2790,11 @@ rendered upside-down.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-transform
@@ -2826,11 +2826,11 @@ lowercase
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-offset
@@ -2852,11 +2852,11 @@ and down, while negative values indicate left and up.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - >= 0.35.0
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-allow-overlap
@@ -2884,7 +2884,7 @@ previously drawn symbols.
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-ignore-placement
@@ -2908,11 +2908,11 @@ text.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-optional
@@ -2936,11 +2936,11 @@ text collides with other symbols and the icon does not.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -3028,11 +3028,11 @@ The color of the icon. This can only be used with sdf icons.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 17.1
+     - Not yet supported
      - 
 
 icon-halo-color
@@ -3056,11 +3056,11 @@ icons.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 17.1
+     - Not yet supported
      - 
 
 icon-halo-width
@@ -3083,11 +3083,11 @@ Distance of halo to the icon outline.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 17.1
+     - Not yet supported
      - 
 
 icon-halo-blur
@@ -3110,11 +3110,11 @@ Fade out the halo towards the outside.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 17.1
+     - Not yet supported
      - 
 
 icon-translate
@@ -3140,11 +3140,11 @@ left and up.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 icon-translate-anchor
@@ -3173,11 +3173,11 @@ viewport
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -3315,11 +3315,11 @@ The halo's fadeout distance towards the outside.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-translate
@@ -3345,11 +3345,11 @@ left and up.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 text-translate-anchor
@@ -3378,11 +3378,11 @@ viewport
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -3476,11 +3476,11 @@ Rotates hues around the color wheel.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -3503,11 +3503,11 @@ brightness.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -3530,11 +3530,11 @@ brightness.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 raster-saturation
@@ -3555,11 +3555,11 @@ Increase or reduce the saturation of the image.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 raster-contrast
@@ -3580,11 +3580,11 @@ Increase or reduce the contrast of the image.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -3608,11 +3608,11 @@ Fade duration when a new tile is added.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -3730,11 +3730,11 @@ centerpoint is full opacity.
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - >= 0.20.0
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -3819,11 +3819,11 @@ viewport
      - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 
@@ -3854,11 +3854,11 @@ viewport
      - OpenLayers
    * - basic functionality
      - >= 0.21.0
-     - >= 17.1
+     - Not yet supported
      - 
    * - data-driven styling
      - Not yet supported
-     - >= 17.1
+     - Not yet supported
      - 
 
 

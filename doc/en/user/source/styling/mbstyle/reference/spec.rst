@@ -11,7 +11,7 @@ The intended audience of this quick reference includes:
 - Feature support is provided for the `Mapbox GL JS <https://www.mapbox.com/mapbox-gl-js/api/>`__, `Open Layers <http://openlayers.org>`__ and the GeoTools mbstyle module.
 - Where appropriate examples have been changed to reference `GeoWebCache <http://geowebcache.org/>`__.
 
-:info:
+.. note::
       The `Mapbox Style Specification <https://www.mapbox.com/mapbox-gl-style-spec>`__ is generated from the BSD `Mapbox GL JS <https://github.com/mapbox/mapbox-gl-js>`__ github repository, reproduced here with details on this GeoTools implementation.
 
 
@@ -32,8 +32,8 @@ Root level properties of a Mapbox style specify the map's layers, tile sources a
     }
 
 
-`version <#root-version>`__
-
+version
+~~~~~~~
 
 *Required* :ref:`types-enum`.
 
@@ -44,7 +44,8 @@ Style specification version number. Must be 8.
     "version": 8
 
 
-`name <#root-name>`__
+name
+~~~~
 
 *Optional* :ref:`types-string`.
 
@@ -54,16 +55,17 @@ A human-readable name for the style.
 
     "name": "Bright"
 
-`metadata <#root-metadata>`__
+metadata
+~~~~~~~~
 
 *Optional*
 
 Arbitrary properties useful to track with the stylesheet, but do not influence rendering. Properties should be prefixed to avoid collisions.
 
-:note: unsupported
+.. note:: *unsupported.*
 
-`center <#root-center>`__
-
+center
+~~~~~~
 
 *Optional* :ref:`types-array`.
 
@@ -76,9 +78,10 @@ Default map center in longitude and latitude. The style center will be used only
       -73.9749, 40.7736
     ]
 
-:note: unsupported
+.. note:: *unsupported*
 
-`zoom <#root-zoom>`__
+zoom
+~~~~
 
 *Optional* :ref:`types-number`.
 
@@ -90,7 +93,8 @@ been positioned by other means (e.g. map options or user interaction).
 
     "zoom": 12.5
 
-`bearing <#root-bearing>`__
+bearing
+~~~~~~~
 
 *Optional* :ref:`types-number`. *Units in degrees. Defaults to* 0.
 
@@ -102,9 +106,10 @@ will be used only if the map has not been positioned by other means
 
     "bearing": 29
 
-:note: unsupported
+.. note:: *unsupported*
 
-`pitch <#root-pitch>`__
+pitch
+~~~~~
 
 *Optional* :ref:`types-number`. *Units in degrees. Defaults to* 0.
 
@@ -118,12 +123,8 @@ interaction).
 
     "pitch": 50
 
-
-
-Light
-
-*Optional* :ref:`light`.
-
+light
+~~~~~
 
 The global light source.
 
@@ -135,7 +136,8 @@ The global light source.
       "intensity": 0.4
     }
 
-`sources <#root-sources>`__
+sources
+~~~~~~~
 
 *Required* :ref:`sources`.
 
@@ -151,7 +153,8 @@ Data source specifications.
       }
     }
 
-`sprite <#root-sprite>`__
+sprite
+~~~~~~
 
 *Optional* :ref:`types-string`.
 
@@ -167,7 +170,8 @@ appended. This property is required if any layer uses the
 
     "sprite" : "/geoserver/styles/mark"
 
-`glyphs <#root-glyphs>`__
+glyphs
+~~~~~~
 
 *Optional* :ref:`types-string`.
 
@@ -182,7 +186,8 @@ property.
 
     "glyphs": "{fontstack}/{range}.pbf"
 
-`transition <#root-transition>`__
+transition
+~~~~~~~~~~
 
 *Required* :ref:`transition`.
 
@@ -197,7 +202,8 @@ A global transition definition to use as a default across properties.
       "delay": 0
     }
 
-`layers <#root-layers>`__
+layers
+~~~~~~
 
 *Required* :ref:`types-array`.
 
@@ -219,20 +225,11 @@ Layers will be drawn in the order of this array.
       }
     ]
 
-
-
-
-
-
-.. _light:
-
 Light
-------------------
+-----
 
 A style's ``light`` property provides global light source for that
 style.
-
-
 
 ::
 
@@ -243,9 +240,8 @@ style.
     }
 
 
-
-
-`anchor <#light-anchor>`__
+anchor
+~~~~~~
 
 *Optional* :ref:`types-enum`. *One of* map, viewport. *Defaults to* viewport.
 
@@ -266,19 +262,20 @@ viewport
     "anchor": "map"
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.27.0
-     - not yet supported
-     - not yet supported
+   * - basic functionality
+     - >= 0.27.0
+     - Not yet supported
+     - 
 
-`position <#light-position>`__
+position
+~~~~~~~~
 
 *Optional* :ref:`types-array`. *Defaults to* 1.15,210,30.
 
@@ -302,19 +299,20 @@ the light (from 0°, directly above, to 180°, directly below).
 
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.27.0
-     - not yet supported
-     - not yet supported
+   * - basic functionality
+     - >= 0.27.0
+     - Not yet supported
+     - 
 
-`color <#light-color>`__
+color
+~~~~~
 
 *Optional* :ref:`types-color`. *Defaults to* #ffffff.
 
@@ -323,19 +321,20 @@ Color tint for lighting extruded geometries.
 
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.27.0
-     - not yet supported
-     - not yet supported
+   * - basic functionality
+     - >= 0.27.0
+     - Not yet supported
+     - 
 
-`intensity <#light-intensity>`__
+intensity
+~~~~~~~~~
 
 *Optional* :ref:`types-number`. *Defaults to* 0.5.
 
@@ -345,22 +344,22 @@ present as more extreme contrast.
 
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.27.0
-     - not yet supported
-     - not yet supported
+   * - basic functionality
+     - >= 0.27.0
+     - Not yet supported
+     - 
 
 .. _sources:
 
 Sources
---------
+-------
 
 Sources supply data to be shown on the map. The type of source is
 specified by the ``"type"`` property, and must be one of vector, raster,
@@ -379,7 +378,6 @@ done in several ways:
 -  By supplying TileJSON properties such as ``"tiles"``, ``"minzoom"``,
    and ``"maxzoom"`` directly in the source:
 
-
    ::
 
        "mapbox-streets": {
@@ -391,8 +389,6 @@ done in several ways:
          "maxzoom": 14
        }
 
-
-
 -  By providing a ``"url"`` to a TileJSON resource:
 
 
@@ -402,7 +398,6 @@ done in several ways:
          "type": "vector",
          "url": "http://api.example.com/tilejson.json"
        }
-
 
 -  By providing a url to a WMS server that supports EPSG:3857 (or
    EPSG:900913) as a source of tiled data. The server url should contain
@@ -418,8 +413,6 @@ done in several ways:
          ],
          "tileSize": 256
        }
-
-.. _sources-vector:
 
 vector
 ~~~~~~
@@ -437,7 +430,8 @@ Mapbox, the ``"url"`` value should be of the form ``mapbox://mapid``.
       "url": "mapbox://mapbox.mapbox-streets-v6"
     }
 
-`url <#sources-vector-url>`__
+url
+^^^
 
 *Optional* :ref:`types-string`.
 
@@ -446,7 +440,8 @@ Mapbox, the ``"url"`` value should be of the form ``mapbox://mapid``.
 A URL to a TileJSON resource. Supported protocols are ``http:``,
 ``https:``, and ``mapbox://<mapid>``.
 
-`tiles <#sources-vector-tiles>`__
+tiles
+^^^^^
 
 *Optional* :ref:`types-array`.
 
@@ -454,7 +449,8 @@ A URL to a TileJSON resource. Supported protocols are ``http:``,
 
 An array of one or more tile source URLs, as in the TileJSON spec.
 
-`minzoom <#sources-vector-minzoom>`__
+minzoom
+^^^^^^^
 
 *Optional* :ref:`types-number`. *Defaults to* 0.
 
@@ -462,7 +458,8 @@ An array of one or more tile source URLs, as in the TileJSON spec.
 Minimum zoom level for which tiles are available, as in the TileJSON
 spec.
 
-`maxzoom <#sources-vector-maxzoom>`__
+maxzoom
+^^^^^^^
 
 *Optional* :ref:`types-number`. *Defaults to* 22.
 
@@ -473,23 +470,17 @@ higher zoom levels.
 
 
 .. list-table::
-   :widths: 20, 30, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
+   * - Support
+     - Mapbox
+     - GeoTools
+     - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
-
-
-
-.. _sources-raster:
+     - Not yet supported
+     -
 
 raster
 ~~~~~~
@@ -505,7 +496,8 @@ value should be of the form ``mapbox://mapid``.
       "tileSize": 256
     }
 
-`url <#sources-raster-url>`__
+url
+^^^
 
 *Optional* :ref:`types-string`.
 
@@ -513,7 +505,8 @@ value should be of the form ``mapbox://mapid``.
 A URL to a TileJSON resource. Supported protocols are ``http:``,
 ``https:``, and ``mapbox://<mapid>``.
 
-`tiles <#sources-raster-tiles>`__
+tiles
+^^^^^
 
 *Optional* :ref:`types-array`.
 
@@ -521,7 +514,8 @@ A URL to a TileJSON resource. Supported protocols are ``http:``,
 
 An array of one or more tile source URLs, as in the TileJSON spec.
 
-`minzoom <#sources-raster-minzoom>`__
+minzoom
+^^^^^^^
 
 *Optional* :ref:`types-number`. *Defaults to* 0.
 
@@ -529,7 +523,8 @@ An array of one or more tile source URLs, as in the TileJSON spec.
 Minimum zoom level for which tiles are available, as in the TileJSON
 spec.
 
-`maxzoom <#sources-raster-maxzoom>`__
+maxzoom
+^^^^^^^
 
 *Optional* :ref:`types-number`. *Defaults to* 22.
 
@@ -538,7 +533,8 @@ Maximum zoom level for which tiles are available, as in the TileJSON
 spec. Data from tiles at the maxzoom are used when displaying the map at
 higher zoom levels.
 
-`tileSize <#sources-raster-tileSize>`__
+tileSize
+^^^^^^^^
 
 *Optional* :ref:`types-number`. *Defaults to* 512.
 
@@ -547,26 +543,20 @@ The minimum visual size to display tiles for this layer. Only
 configurable for raster layers.
 
 .. list-table::
-   :widths: 20, 30, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
+   * - Support
+     - Mapbox
+     - GeoTools
+     - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
-
-
-
-.. _sources-geojson:
+     - Not yet supported
+     -
 
 geojson
-~~~~~~~~
+~~~~~~~
 
 A `GeoJSON <http://geojson.org/>`__ source. Data must be provided via a
 ``"data"`` property, whose value can be a URL or inline GeoJSON.
@@ -598,14 +588,16 @@ accessible using `CORS <http://enable-cors.org/>`__.
       "data": "./lines.geojson"
     }
 
-`data <#sources-geojson-data>`__
+data
+^^^^
 
 *Optional*
 
 
 A URL to a GeoJSON file, or inline GeoJSON.
 
-`maxzoom <#sources-geojson-maxzoom>`__
+maxzoom
+^^^^^^^
 
 *Optional* :ref:`types-number`. *Defaults to* 18.
 
@@ -613,7 +605,8 @@ A URL to a GeoJSON file, or inline GeoJSON.
 Maximum zoom level at which to create vector tiles (higher means greater
 detail at high zoom levels).
 
-`buffer <#sources-geojson-buffer>`__
+buffer
+^^^^^^
 
 *Optional* :ref:`types-number`. *Defaults to* 128.
 
@@ -623,7 +616,8 @@ value of 512 produces a buffer as wide as the tile itself. Larger values
 produce fewer rendering artifacts near tile edges and slower
 performance.
 
-`tolerance <#sources-geojson-tolerance>`__
+tolerance
+^^^^^^^^^
 
 *Optional* :ref:`types-number`. *Defaults to* 0.375.
 
@@ -631,7 +625,8 @@ performance.
 Douglas-Peucker simplification tolerance (higher means simpler
 geometries and faster performance).
 
-`cluster <#sources-geojson-cluster>`__
+cluster
+^^^^^^^
 
 *Optional* :ref:`types-boolean`. *Defaults to* false.
 
@@ -639,7 +634,8 @@ geometries and faster performance).
 If the data is a collection of point features, setting this to true
 clusters the points by radius into groups.
 
-`clusterRadius <#sources-geojson-clusterRadius>`__
+clusterRadius
+^^^^^^^^^^^^^
 
 *Optional* :ref:`types-number`. *Defaults to* 50.
 
@@ -648,10 +644,10 @@ clusters the points by radius into groups.
 Radius of each cluster if clustering is enabled. A value of 512
 indicates a radius equal to the width of a tile.
 
-`clusterMaxZoom <#sources-geojson-clusterMaxZoom>`__
+clusterMaxZoom
+^^^^^^^^^^^^^^
 
 *Optional* :ref:`types-number`.
-
 
 
 Max zoom on which to cluster points if clustering is enabled. Defaults
@@ -659,27 +655,21 @@ to one zoom less than maxzoom (so that last zoom features are not
 clustered).
 
 .. list-table::
-   :widths: 20, 30, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
+   * - Support
+     - Mapbox
+     - GeoTools
+     - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - Not yet supported
+     -
    * - clustering
      - >= 0.14.0
-     - >= 4.2.0
-     - >= 3.4.0
-     - >= 0.3.0
-
-
-.. _sources-image:
+     - Not yet supported
+     -
 
 image
 ~~~~~
@@ -702,41 +692,32 @@ right, bottom left.
       ]
     }
 
-
-`url <#sources-image-url>`__
+url
+^^^
 
 *Required* :ref:`types-string`.
 
-
-
 URL that points to an image.
 
-`coordinates <#sources-image-coordinates>`__
+coordinates
+^^^^^^^^^^^
 
 *Required* :ref:`types-array`.
-
 
 Corners of image specified in longitude, latitude pairs.
 
 .. list-table::
-   :widths: 20, 30, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
+   * - Support
+     - Mapbox
+     - GeoTools
+     - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - `Not yet supported <https://github.com/mapbox/mapbox-gl-native/issues/1350>`__
-     - `Not yet supported <https://github.com/mapbox/mapbox-gl-native/issues/1350>`__
-     - `Not yet supported <https://github.com/mapbox/mapbox-gl-native/issues/1350>`__
-
-
-
-
-.. _sources-video:
+     - Not yet supported
+     -
 
 video
 ~~~~~
@@ -766,8 +747,8 @@ right, bottom left.
       ]
     }
 
-`urls <#sources-video-urls>`__
-
+urls
+^^^^
 
 *Required* :ref:`types-array`.
 
@@ -775,34 +756,29 @@ right, bottom left.
 
 URLs to video content in order of preferred format.
 
-`coordinates <#sources-video-coordinates>`__
+coordinates
+^^^^^^^^^^^
 
 *Required* :ref:`types-array`.
-
 
 
 Corners of video specified in longitude, latitude pairs.
 
 .. list-table::
-   :widths: 20, 30, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
+   * - Support
+     - Mapbox
+     - GeoTools
+     - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - `Not yet supported <https://github.com/mapbox/mapbox-gl-native/issues/1350>`__
-     - `Not yet supported <https://github.com/mapbox/mapbox-gl-native/issues/1350>`__
-     - `Not yet supported <https://github.com/mapbox/mapbox-gl-native/issues/1350>`__
-
-
-.. _sources-canvas:
+     - Not yet supported
+     -
 
 canvas
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~
 
 A canvas source. The ``"canvas"`` value is the ID of the canvas element
 in the document.
@@ -819,8 +795,6 @@ If an HTML document contains a canvas such as this:
 
 the corresponding canvas source would be specified as follows:
 
-
-
 ::
 
     "canvas": {
@@ -834,8 +808,8 @@ the corresponding canvas source would be specified as follows:
       ]
     }
 
-`coordinates <#sources-canvas-coordinates>`__
-
+coordinates
+^^^^^^^^^^^
 
 *Required* :ref:`types-array`.
 
@@ -843,51 +817,41 @@ the corresponding canvas source would be specified as follows:
 
 Corners of canvas specified in longitude, latitude pairs.
 
-`animate <#sources-canvas-animate>`__
-
-*Optional* :ref:`types-boolean`. *Defaults to* true.
-
-
+animate
+^^^^^^^
 
 Whether the canvas source is animated. If the canvas is static,
 ``animate`` should be set to ``false`` to improve performance.
 
-`canvas <#sources-canvas-canvas>`__
+canvas
+^^^^^^
 
 *Required* :ref:`types-string`.
-
-
 
 HTML ID of the canvas from which to read pixels.
 
 
 .. list-table::
-   :widths: 20, 30, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
+   * - Support
+     - Mapbox
+     - GeoTools
+     - OpenLayers
    * - basic functionality
      - >= 0.32.0
-     - Not supported
-     - Not supported
-     - Not supported
-
-
+     - Not yet supported
+     -
 
 .. _sprite:
 
 Sprite
---------------------
+------
 
 A style's ``sprite`` property supplies a URL template for loading small
 images to use in rendering ``background-pattern``, ``fill-pattern``,
 ``line-pattern``, and ``icon-image`` style properties.
-
-
 
 ::
 
@@ -905,8 +869,6 @@ A valid sprite source must supply two types of files:
    (``x`` and ``y``). For example, a sprite containing a single image
    might have the following index file contents:
 
-
-
    ::
 
        {
@@ -918,7 +880,6 @@ A valid sprite source must supply two types of files:
            "pixelRatio": 1
          }
        }
-
 
    Then the style could refer to this sprite image by creating a symbol
    layer with the layout property ``"icon-image": "poi"``, or with the
@@ -946,18 +907,13 @@ files, you can use
 line utility that builds Mapbox GL compatible sprite PNGs and index
 files from a directory of SVGs.
 
-
-
-
 .. _glyphs:
 
 Glyphs
---------------------
+------
 
 A style's ``glyphs`` property provides a URL template for loading
 signed-distance-field glyph sets in PBF format.
-
-
 
 ::
 
@@ -977,18 +933,13 @@ This URL template should include two tokens:
    would be ``0-255``. The actual ranges that are loaded are determined
    at runtime based on what text needs to be displayed.
 
-
-
-
 .. _transition:
 
 Transition
-----------------------------
+----------
 
 A style's ``transition`` property provides global transition defaults
 for that style.
-
-
 
 ::
 
@@ -997,34 +948,25 @@ for that style.
       "delay": 0
     }
 
-
-
-
-`duration <#transition-duration>`__
+duration
+~~~~~~~~
 
 *Optional* :ref:`types-number`. *Units in milliseconds. Defaults to* 300.
 
 
 Time allotted for transitions to complete.
 
-`delay <#transition-delay>`__
+delay
+~~~~~
 
 *Optional* :ref:`types-number`. *Units in milliseconds. Defaults to* 0.
 
-
-
 Length of time before a transition begins.
-
-
-
-
-
-
 
 .. _layers:
 
 Layers
---------------------
+------
 
 A style's ``layers`` property lists all of the layers available in that
 style. The type of layer is specified by the ``"type"`` property, and
@@ -1034,8 +976,6 @@ fill-extrusion.
 Except for layers of the background type, each layer needs to refer to a
 source. Layers take the data that they get from a source, optionally
 filter features, and then define how those features are styled.
-
-
 
 ::
 
@@ -1051,22 +991,19 @@ filter features, and then define how those features are styled.
       }
     ]
 
+Layer Properties
+~~~~~~~~~~~~~~~~
 
-
-
-.. _layer_id:
-
-``id``
+id
+^^
 
 *Required* :ref:`types-string`.
 
 
 Unique layer name.
 
-.. _layer-type:
-
-``type``
-
+type
+^^^^
 
 *Optional* :ref:`types-enum`. *One of fill, line, symbol, circle, fill-extrusion, raster, background.*
 
@@ -1095,7 +1032,8 @@ Rendering type of this layer.
 *background*
     The background color or pattern of the map.
 
-``metadata``
+metadata
+^^^^^^^^
 
 *Optional*
 
@@ -1104,7 +1042,8 @@ Arbitrary properties useful to track with the layer, but do not
 influence rendering. Properties should be prefixed to avoid collisions,
 like 'mapbox:'.
 
-``ref``
+ref
+^^^
 
 *Optional* :ref:`types-string`.
 
@@ -1114,7 +1053,8 @@ References another layer to copy ``type``, ``source``, ``source-layer``,
 ``minzoom``, ``maxzoom``, ``filter``, and ``layout`` properties from.
 This allows the layers to share processing and be more efficient.
 
-``source``
+source
+^^^^^^
 
 *Optional* :ref:`types-string`.
 
@@ -1122,7 +1062,8 @@ This allows the layers to share processing and be more efficient.
 
 Name of a source description to be used for this layer.
 
-``source-layer``
+source-layer
+^^^^^^^^^^^^
 
 *Optional* :ref:`types-string`.
 
@@ -1131,7 +1072,8 @@ Name of a source description to be used for this layer.
 Layer to use from a vector tile source. Required if the source supports
 multiple layers.
 
-``minzoom``
+minzoom
+^^^^^^^
 
 *Optional* :ref:`types-number`.
 
@@ -1139,7 +1081,8 @@ multiple layers.
 
 The minimum zoom level on which the layer gets parsed and appears on.
 
-``maxzoom``
+maxzoom
+^^^^^^^
 
 *Optional* :ref:`types-number`.
 
@@ -1147,7 +1090,8 @@ The minimum zoom level on which the layer gets parsed and appears on.
 
 The maximum zoom level on which the layer gets parsed and appears on.
 
-``filter``
+filter
+^^^^^^
 
 *Optional* :ref:`types-filter`.
 
@@ -1156,16 +1100,15 @@ The maximum zoom level on which the layer gets parsed and appears on.
 A expression specifying conditions on source features. Only features
 that match the filter are displayed.
 
-``layout``
+layout
+^^^^^^
 
 layout properties for the layer
 
-``paint``
+paint
+^^^^^
 
 *Optional* paint properties for the layer
-
-
-
 
 Layers have two sub-properties that determine how data from that layer
 is rendered: ``layout`` and ``paint`` properties.
@@ -1183,20 +1126,14 @@ that shares layout properties with another layer can have independent
 paint properties. Paint properties appear in the layer's ``"paint"``
 object.
 
-Key: `supports interpolated functions <#function>`__ `supports piecewise
-constant functions <#function>`__ transitionable
+background
+~~~~~~~~~~
 
+Layout Properties
+^^^^^^^^^^^^^^^^^
 
-
-`background <#layers-background>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-`Layout Properties <#layout_background>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-`visibility <#layout-background-visibility>`__
+visibility
+""""""""""
 
 *Optional* :ref:`types-enum`. *One of* visible, none, *Defaults to* visible.
 
@@ -1211,23 +1148,23 @@ none
     The layer is not shown.
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - not yet supported
-     - not yet supported
+   * - basic functionality
+     - >= 0.10.0
+     - Not yet supported
+     - 
 
-`Paint Properties <#paint_background>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Paint Properties
+^^^^^^^^^^^^^^^^
 
-`background-color <#paint-background-color>`__
-
+background-color
+""""""""""""""""
 
 *Optional* :ref:`types-color`. *Defaults to* #000000. *Disabled by* background-pattern.
 
@@ -1236,19 +1173,20 @@ The color with which the background will be drawn.
 
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - not yet supported
-     - not yet supported
+   * - basic functionality
+     - >= 0.10.0
+     - Not yet supported
+     - 
 
-`background-pattern <#paint-background-pattern>`__
+background-pattern
+""""""""""""""""""
 
 *Optional* :ref:`types-string`.
 
@@ -1260,45 +1198,46 @@ seamless patterns, image width and height must be a factor of two (2, 4,
 
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - not yet supported
-     - not yet supported
+   * - basic functionality
+     - >= 0.10.0
+     - Not yet supported
+     - 
 
-`background-opacity <#paint-background-opacity>`__
+background-opacity
+""""""""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 1.
 
 The opacity at which the background will be drawn.
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - not yet supported
-     - not yet supported
+   * - basic functionality
+     - >= 0.10.0
+     - Not yet supported
+     - 
 
+fill
+~~~~
 
-`fill <#layers-fill>`__
-~~~~~~~~~~~~~~~~~~~~~~~
+Layout Properties
+^^^^^^^^^^^^^^^^^
 
-`Layout Properties <#layout_fill>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-`visibility <#layout-fill-visibility>`__
+visibility
+""""""""""
 
 
 *Optional* :ref:`types-enum`. *One of* visible, none. *Defaults to* visible.
@@ -1312,49 +1251,49 @@ none
     The layer is not shown.
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - not yet supported
-     - not yet supported
+   * - basic functionality
+     - >= 0.10.0
+     - Not yet supported
+     - 
 
-`Paint Properties <#paint_fill>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Paint Properties
+^^^^^^^^^^^^^^^^
 
-`fill-antialias <#paint-fill-antialias>`__
+fill-antialias
+""""""""""""""
 
 *Optional* :ref:`types-boolean`. *Defaults to* true.
-
-
 
 
 Whether or not the fill should be antialiased.
 
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - not yet supported
-     - not yet supported
-   * - Data
-     - not yet supported
-     - 18.0
-     - not yet supported
+   * - basic functionality
+     - >= 0.10.0
+     - Not yet supported
+     - Not yet supported
+   * - data-driven styling
+     - Not yet supported
+     - >= 17.1
+     - 
 
-`fill-opacity <#paint-fill-opacity>`__
+fill-opacity
+""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 1.
 
@@ -1364,24 +1303,24 @@ this value will also affect the 1px stroke around the fill, if the
 stroke is used.
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - 18.0
-     - 4.1.1
-   * - Data
-     - 0.21.0
-     - 18.0
-     - 4.1.1
+   * - basic functionality
+     - >= 0.10.0
+     - >= 17.1
+     - 
+   * - data-driven styling
+     - >= 0.21.0
+     - >= 17.1
+     - 
 
-`fill-color <#paint-fill-color>`__
-
+fill-color
+""""""""""
 
 *Optional* :ref:`types-color`. *Defaults to* #000000. *Disabled by* fill-pattern.
 
@@ -1392,24 +1331,24 @@ affect the opacity of the 1px stroke, if it is used.
 
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - 18.0
-     - 4.1.1
-   * - Data
-     - 0.19.0
-     - 18.0
-     - 4.1.1
+   * - basic functionality
+     - >= 0.10.0
+     - >= 17.1
+     - 
+   * - data-driven styling
+     - >= 0.19.0
+     - >= 17.1
+     - 
 
-`fill-outline-color <#paint-fill-outline-color>`__
-
+fill-outline-color
+""""""""""""""""""
 
 *Optional* :ref:`types-color`. *Disabled by* fill-pattern. *Requires* fill-antialias = true.
 
@@ -1418,23 +1357,24 @@ The outline color of the fill. Matches the value of ``fill-color`` if
 unspecified.
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - 18.0
-     - 4.1.1
-   * - Data
-     - 0.19.0
-     - 18.0
-     - 4.1.1
+   * - basic functionality
+     - >= 0.10.0
+     - >= 17.1
+     - 
+   * - data-driven styling
+     - >= 0.19.0
+     - >= 17.1
+     - 
 
-`fill-translate <#paint-fill-translate>`__
+fill-translate
+""""""""""""""
 
 *Optional* :ref:`types-array`. *Units in* pixels. *Defaults to* 0.0.
 
@@ -1443,24 +1383,24 @@ The geometry's offset. Values are [x, y] where negatives indicate left
 and up, respectively.
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - 18.0
-     - 4.1.1
-   * - Data
-     - not yet supported
-     - 18.0
-     - not yet supported
+   * - basic functionality
+     - >= 0.10.0
+     - >= 17.1
+     - 
+   * - data-driven styling
+     - Not yet supported
+     - >= 17.1
+     - 
 
-`fill-translate-anchor <#paint-fill-translate-anchor>`__
-
+fill-translate-anchor
+"""""""""""""""""""""
 
 *Optional* :ref:`types-enum`. *One of* map, viewport. *Defaults to* map. *Requires* fill-translate.
 
@@ -1473,23 +1413,24 @@ viewport
     The fill is translated relative to the viewport.
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - 18.0
-     - 4.1.1
-   * - Data
-     - not yet supported
-     - not yet supported
-     - not yet supported
+   * - basic functionality
+     - >= 0.10.0
+     - >= 17.1
+     - 
+   * - data-driven styling
+     - Not yet supported
+     - Not yet supported
+     - 
 
-`fill-pattern <#paint-fill-pattern>`__
+fill-pattern
+""""""""""""
 
 *Optional* :ref:`types-string`.
 
@@ -1499,31 +1440,30 @@ patterns, image width and height must be a factor of two (2, 4, 8, ...,
 512).
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - 18.0
-     - 4.1.1
-   * - Data
-     - not yet supported
-     - 18.0
-     - not yet supported
+   * - basic functionality
+     - >= 0.10.0
+     - >= 17.1
+     - 
+   * - data-driven styling
+     - Not yet supported
+     - >= 17.1
+     - 
 
+line
+~~~~
 
-`line <#layers-line>`__
-~~~~~~~~~~~~~~~~~~~~~~~
+Layout Properties
+^^^^^^^^^^^^^^^^^
 
-`Layout Properties <#layout_line>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-`line-cap <#layout-line-line-cap>`__
-
+line-cap
+""""""""
 
 *Optional* :ref:`types-enum`. *One of* butt, round, square. *Defaults to* butt.
 
@@ -1545,47 +1485,24 @@ square
 
 
 .. list-table::
-   :widths: 10, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
    * - Support
      - Mapbox
      - GeoTools
      - OpenLayers
-   * - Basic
-     - 0.10.0
-     - 18.0
-     - 4.1.1
-   * - Data
-     - not yet supported
-     - 18.0
-     - not yet supported
-
-
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-`line-join <#layout-line-line-join>`__
-
+line-join
+"""""""""
 
 *Optional* :ref:`types-enum`. *One of* bevel, round, miter. *Defaults to* miter.
 
@@ -1607,39 +1524,24 @@ miter
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-`line-miter-limit <#layout-line-line-miter-limit>`__
-
+line-miter-limit
+""""""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 2. *Requires* line-join = miter.
 
@@ -1648,38 +1550,24 @@ angles.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-`line-round-limit <#layout-line-line-round-limit>`__
+line-round-limit
+""""""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 1.05. *Requires* line-join = round.
 
@@ -1689,39 +1577,25 @@ angles.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-`visibility <#layout-line-visibility>`__
-
+visibility
+""""""""""
 
 *Optional* :ref:`types-enum`. *One of* visible, none. *Defaults to* visible.
 
@@ -1736,41 +1610,28 @@ none
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-`Paint Properties <#paint_line>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Paint Properties
+^^^^^^^^^^^^^^^^
 
-`line-opacity <#paint-line-opacity>`__
+line-opacity
+""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 1.
 
@@ -1779,39 +1640,25 @@ The opacity at which the line will be drawn.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.29.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
 
-`line-color <#paint-line-color>`__
-
+line-color
+""""""""""
 
 *Optional* :ref:`types-color`. *Defaults to* #000000. *Disabled by* line-pattern.
 
@@ -1819,38 +1666,25 @@ The color with which the line will be drawn.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.23.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
 
-`line-translate <#paint-line-translate>`__
+line-translate
+""""""""""""""
 
 *Optional* :ref:`types-array`. *Units in* pixels. *Defaults to* 0.0.
 
@@ -1860,41 +1694,24 @@ and up, respectively.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`line-translate-anchor <#paint-line-translate-anchor>`__
-
-
+line-translate-anchor
+"""""""""""""""""""""
 
 *Optional* :ref:`types-enum`. *One of* map, viewport. *Defaults to* map. *Requires* line-translate.
 
@@ -1909,38 +1726,25 @@ viewport
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-`line-width <#paint-line-width>`__
+line-width
+""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 1.
 
@@ -1948,38 +1752,24 @@ Stroke thickness.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-`line-gap-width <#paint-line-gap-width>`__
+line-gap-width
+""""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 0.
 
@@ -1990,37 +1780,24 @@ width of the inner gap.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.29.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-`line-offset <#paint-line-offset>`__
+line-offset
+"""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 0.
 
@@ -2030,81 +1807,51 @@ line to the right, relative to the direction of the line, and a negative
 value to the left. For polygon features, a positive value results in an
 inset, and a negative value results in an outset.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.12.1
-     - >= 3.0.0
-     - >= 3.1.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.29.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-`line-blur <#paint-line-blur>`__
+line-blur
+"""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 0.
 
 
 Blur applied to the line, in pixels.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.29.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
 
-`line-dasharray <#paint-line-dasharray>`__
-
+line-dasharray
+""""""""""""""
 
 *Optional* :ref:`types-array`. *Units in* line widths. *Disabled by* line-pattern.
 
@@ -2112,39 +1859,25 @@ Specifies the lengths of the alternating dashes and gaps that form the
 dash pattern. The lengths are later scaled by the line width. To convert
 a dash length to pixels, multiply the length by the current line width.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-`line-pattern <#paint-line-pattern>`__
+line-pattern
+""""""""""""
 
 *Optional* :ref:`types-string`.
 
@@ -2153,50 +1886,31 @@ a dash length to pixels, multiply the length by the current line width.
 Name of image in sprite to use for drawing image lines. For seamless
 patterns, image width must be a factor of two (2, 4, 8, ..., 512).
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
+symbol
+~~~~~~
 
+Layout Properties
+^^^^^^^^^^^^^^^^^
 
-
-`symbol <#layers-symbol>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-`Layout Properties <#layout_symbol>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-`symbol-placement <#layout-symbol-symbol-placement>`__
+symbol-placement
+""""""""""""""""
 
 
 *Optional* :ref:`types-enum`. *One of* point, line. *Defaults to* point.
@@ -2211,81 +1925,51 @@ line
     The label is placed along the line of the geometry. Can only be used
     on ``LineString`` and ``Polygon`` geometries.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-`symbol-spacing <#layout-symbol-symbol-spacing>`__
-
-
+symbol-spacing
+""""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 250. *Requires* symbol-placement = line.
 
 Distance between two symbol anchors.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-`symbol-avoid-edges <#layout-symbol-symbol-avoid-edges>`__
+symbol-avoid-edges
+""""""""""""""""""
 
 *Optional* :ref:`types-boolean`. *Defaults to* false.
 
@@ -2295,40 +1979,26 @@ collisions. Recommended in layers that don't have enough padding in the
 vector tile to prevent collisions, or if it is a point symbol layer
 placed after a line symbol layer.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-`icon-allow-overlap <#layout-symbol-icon-allow-overlap>`__
+icon-allow-overlap
+""""""""""""""""""
 
 *Optional* :ref:`types-boolean`. *Defaults to* false. *Requires* icon-image.
 
@@ -2336,40 +2006,25 @@ placed after a line symbol layer.
 If true, the icon will be visible even if it collides with other
 previously drawn symbols.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-`icon-ignore-placement <#layout-symbol-icon-ignore-placement>`__
+icon-ignore-placement
+"""""""""""""""""""""
 
 *Optional* :ref:`types-boolean`. *Defaults to* false. *Requires* icon-image.
 
@@ -2377,40 +2032,26 @@ previously drawn symbols.
 If true, other symbols can be visible even if they collide with the
 icon.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-`icon-optional <#layout-symbol-icon-optional>`__
+icon-optional
+"""""""""""""
 
 *Optional* :ref:`types-boolean`. *Defaults to* false. *<Requires* icon-image, text-field.
 
@@ -2419,41 +2060,25 @@ icon.
 If true, text will display without their corresponding icons when the
 icon collides with other symbols and the text does not.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-`icon-rotation-alignment <#layout-symbol-icon-rotation-alignment>`__
-
+icon-rotation-alignment
+"""""""""""""""""""""""
 
 *Optional* :ref:`types-enum`. *One of* map, viewport, auto. *Defaults to* auto. *Requires* icon-image.
 
@@ -2475,86 +2100,53 @@ auto
     ``viewport``. When ``symbol-placement`` is set to ``line``, this is
     equivalent to ``map``.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - ``auto`` value
      - >= 0.25.0
-     - >= 4.2.0
-     - >= 3.4.0
-     - >= 0.3.0
+     - >= 17.1
+     -
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     -
 
-
-`icon-size <#layout-symbol-icon-size>`__
-
+icon-size
+"""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 1. *Requires* icon-image.
 Scale factor for icon. 1 is original size, 3 triples the size.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.35.0
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`icon-text-fit <#layout-symbol-icon-text-fit>`__
-
+icon-text-fit
+"""""""""""""
 
 *Optional* :ref:`types-enum`. *One of* none, width, height, both. *Defaults to* none. *Requires* icon-image, text-field.
 
@@ -2576,39 +2168,24 @@ both
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.21.0
-     - >= 4.2.0
-     - >= 3.4.0
-     - >= 0.2.1
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-`icon-text-fit-padding <#layout-symbol-icon-text-fit-padding>`__
-
+icon-text-fit-padding
+"""""""""""""""""""""
 
 *Optional :ref:`types-array`. *Units in* pixels. *Defaults to* 0,0,0,0. *Requires* icon-image, text-field, icon-text-fit = one of both, width, height.
 
@@ -2617,38 +2194,25 @@ Size of the additional area added to dimensions determined by
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.21.0
-     - >= 4.2.0
-     - >= 3.4.0
-     - >= 0.2.1
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-`icon-image <#layout-symbol-icon-image>`__
+icon-image
+""""""""""
 
 *Optional* :ref:`types-string`.
 
@@ -2658,80 +2222,52 @@ Name of image in sprite to use for drawing an image background. A string
 with {tokens} replaced, referencing the data property to pull from.
 
 
+
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
-     - >= 0.35.0
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-`icon-rotate <#layout-symbol-icon-rotate>`__
-
+icon-rotate
+"""""""""""
 
 *Optional* :ref:`types-number`. *Units in* degrees. *Defaults to* 0. *Requires* icon-image.
 
 Rotates the icon clockwise.
 
 
+
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.21.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-`icon-padding <#layout-symbol-icon-padding>`__
-
+icon-padding
+""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 2. *Requires* icon-image.
 
@@ -2741,39 +2277,24 @@ detecting symbol collisions.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`icon-keep-upright <#layout-symbol-icon-keep-upright>`__
+icon-keep-upright
+"""""""""""""""""
 
 *Optional* :ref:`types-boolean`. *Defaults to* false. *Requires* icon-image, icon-rotation-alignment = map, symbol-placement = line.
 
@@ -2783,39 +2304,24 @@ upside-down.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-`icon-offset <#layout-symbol-icon-offset>`__
-
+icon-offset
+"""""""""""
 
 *Optional* :ref:`types-array`. *Defaults to* 0,0. *Requires* icon-image.
 
@@ -2825,39 +2331,25 @@ and down, while negative values indicate left and up. When combined with
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.29.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
 
-`text-pitch-alignment <#layout-symbol-text-pitch-alignment>`__
-
+text-pitch-alignment
+""""""""""""""""""""
 
 *Optional* :ref:`types-enum` *One of* map, viewport, auto. *Defaults to* auto. *Requires* text-field.
 
@@ -2873,46 +2365,30 @@ viewport
 auto
     Automatically matches the value of ``text-rotation-alignment``.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - ``auto`` value
      - >= 0.25.0
-     - >= 4.2.0
-     - >= 3.4.0
-     - >= 0.3.0
+     - >= 17.1
+     -
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-
-`text-rotation-alignment <#layout-symbol-text-rotation-alignment>`__
+text-rotation-alignment
+"""""""""""""""""""""""
 
 *Optional* :ref:`types-enum`. *One of* map, viewport, auto. *Defaults to* auto. *Requires* text-field.
 
@@ -2934,46 +2410,29 @@ auto
     ``viewport``. When ``symbol-placement`` is set to ``line``, this is
     equivalent to ``map``.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - ``auto`` value
      - >= 0.25.0
-     - >= 4.2.0
-     - >= 3.4.0
-     - >= 0.3.0
+     - >= 17.1
+     -
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`text-field <#layout-symbol-text-field>`__
+text-field
+""""""""""
 
 *Optional* :ref:`types-string`.
 
@@ -2985,79 +2444,48 @@ literal ``text-field`` values--not for property functions.)
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-`text-font <#layout-symbol-text-font>`__
-
+text-font
+"""""""""
 
 *Optional* :ref:`types-array`. *Defaults to* Open Sans Regular,Arial Unicode MS Regular. *Requires* text-field.
 
 Font stack to use for displaying text.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`text-size <#layout-symbol-text-size>`__
+text-size
+"""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 16. *Requires* text-field.
 
@@ -3066,40 +2494,26 @@ Font stack to use for displaying text.
 Font size.
 
 
+
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.35.0
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`text-max-width <#layout-symbol-text-max-width>`__
+text-max-width
+""""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 10. *Requires* text-field.
 
@@ -3109,38 +2523,24 @@ The maximum line width for text wrapping.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-`text-line-height <#layout-symbol-text-line-height>`__
+text-line-height
+""""""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* ems. *Defaults to* 1.2. *Requires* text-field.
 
@@ -3150,38 +2550,25 @@ Text leading value for multi-line text.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-`text-letter-spacing <#layout-symbol-text-letter-spacing>`__
+text-letter-spacing
+"""""""""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* ems. *Defaults to* 0. *Requires* text-field.
 
@@ -3191,39 +2578,24 @@ Text tracking amount.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`text-justify <#layout-symbol-text-justify>`__
+text-justify
+""""""""""""
 
 *Optional* :ref:`types-enum`. *One of* left, center, right. *Defaults to* center. *Requires* text-field.
 
@@ -3242,38 +2614,24 @@ right
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-`text-anchor <#layout-symbol-text-anchor>`__
+text-anchor
+"""""""""""
 
 *Optional* :ref:`types-enum`. *One of* center, left, right, top, bottom, top-left, top-right, bottom-left, bottom-right.
 *Defaults to* center. *Requires* text-field.
@@ -3312,38 +2670,25 @@ bottom-right
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-`text-max-angle <#layout-symbol-text-max-angle>`__
+text-max-angle
+""""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* degrees. *Defaults to* 45. *Requires* text-field, symbol-placement = line.
 
@@ -3352,38 +2697,24 @@ Maximum angle change between adjacent characters.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-`text-rotate <#layout-symbol-text-rotate>`__
+text-rotate
+"""""""""""
 
 *Optional* :ref:`types-number`. *Units in* degrees. *Defaults to* 0. *Requires* text-field.
 
@@ -3393,39 +2724,24 @@ Rotates the text clockwise.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.35.0
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`text-padding <#layout-symbol-text-padding>`__
+text-padding
+""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 2. *Requires* text-field.
 
@@ -3436,39 +2752,25 @@ detecting symbol collisions.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-
-`text-keep-upright <#layout-symbol-text-keep-upright>`__
+text-keep-upright
+"""""""""""""""""
 
 *Optional* :ref:`types-boolean`. *Defaults to* true. *Requires* text-field, text-rotation-alignment = true, symbol-placement = true.
 
@@ -3479,40 +2781,24 @@ rendered upside-down.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`text-transform <#layout-symbol-text-transform>`__
-
+text-transform
+""""""""""""""
 
 *Optional* :ref:`types-enum`. *One of* none, uppercase, lowercase. *Defaults to* none. *Requires* text-field.
 
@@ -3531,39 +2817,24 @@ lowercase
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-
-`text-offset <#layout-symbol-text-offset>`__
+text-offset
+"""""""""""
 
 *Optional* :ref:`types-array`. *Units in* pixels. *Defaults to* 0,0. *Requires* icon-image.
 
@@ -3572,39 +2843,24 @@ and down, while negative values indicate left and up.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.35.0
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`text-allow-overlap <#layout-symbol-text-allow-overlap>`__
+text-allow-overlap
+""""""""""""""""""
 
 *Optional* :ref:`types-boolean`. *Defaults to* false. *Requires* text-field.
 
@@ -3615,39 +2871,24 @@ previously drawn symbols.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`text-ignore-placement <#layout-symbol-text-ignore-placement>`__
+text-ignore-placement
+"""""""""""""""""""""
 
 *Optional* :ref:`types-boolean`. *Defaults to* false. *Requires* text-field
 
@@ -3658,39 +2899,24 @@ text.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`text-optional <#layout-symbol-text-optional>`__
+text-optional
+"""""""""""""
 
 *Optional* :ref:`types-boolean`. *Defaults to* false. *Requires* text-field, icon-image.
 
@@ -3701,39 +2927,25 @@ text collides with other symbols and the icon does not.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-
-`visibility <#layout-symbol-visibility>`__
+visibility
+""""""""""
 
 *Optional* :ref:`types-enum`. *One of* visible, none. *Defaults to* visible.
 
@@ -3750,42 +2962,27 @@ none
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
+Paint Properties
+^^^^^^^^^^^^^^^^
 
-
-`Paint Properties <#paint_symbol>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-`icon-opacity <#paint-icon-opacity>`__
+icon-opacity
+""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 1. <i>Requires </i>icon-image.
 
@@ -3794,38 +2991,25 @@ The opacity at which the icon will be drawn.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
 
-`icon-color <#paint-icon-color>`__
+icon-color
+""""""""""
 
 *Optional* :ref:`types-color`. *Defaults to* #000000. *Requires* icon-image.
 
@@ -3835,39 +3019,24 @@ The color of the icon. This can only be used with sdf icons.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-
-`icon-halo-color <#paint-icon-halo-color>`__
+icon-halo-color
+"""""""""""""""
 
 *Optional* :ref:`types-color`. *Defaults to* rgba(0, 0, 0, 0). *Requires* icon-image.
 
@@ -3878,38 +3047,24 @@ icons.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-`icon-halo-width <#paint-icon-halo-width>`__
+icon-halo-width
+"""""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 0. *Requires* icon-image.
 
@@ -3919,39 +3074,24 @@ Distance of halo to the icon outline.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-
-`icon-halo-blur <#paint-icon-halo-blur>`__
+icon-halo-blur
+""""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 0. *Requires* icon-image.
 
@@ -3961,39 +3101,24 @@ Fade out the halo towards the outside.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-
-`icon-translate <#paint-icon-translate>`__
+icon-translate
+""""""""""""""
 
 *Optional* :ref:`types-array`. *Units in* pixels. *Defaults to* 0,0. *Requires* icon-image.
 
@@ -4004,40 +3129,26 @@ Positive values indicate right and down, while negative values indicate
 left and up.
 
 
+
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`icon-translate-anchor <#paint-icon-translate-anchor>`__
+icon-translate-anchor
+"""""""""""""""""""""
 
 *Optional* :ref:`types-enum` *One of* map, viewport. *Defaults to* map. *Requires* icon-image, icon-translate.
 
@@ -4052,40 +3163,26 @@ map
 viewport
     Icons are translated relative to the viewport.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-`text-opacity <#paint-text-opacity>`__
+text-opacity
+""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 1. <i>Requires </i>text-field.
 
@@ -4093,40 +3190,27 @@ viewport
 The opacity at which the text will be drawn.
 
 
+
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
 
-
-`text-color <#paint-text-color>`__
+text-color
+""""""""""
 
 *Optional* :ref:`types-color`. *Defaults to* #000000. *Requires* text-field.
 
@@ -4135,40 +3219,27 @@ The opacity at which the text will be drawn.
 The color with which the text will be drawn.
 
 
+
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
 
-
-`text-halo-color <#paint-text-halo-color>`__
+text-halo-color
+"""""""""""""""
 
 *Optional* :ref:`types-color`. *Defaults to* rgba(0, 0, 0, 0). *Requires* text-field.
 
@@ -4177,40 +3248,26 @@ The color with which the text will be drawn.
 The color of the text's halo, which helps it stand out from backgrounds.
 
 
+
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-
-`text-halo-width <#paint-text-halo-width>`__
+text-halo-width
+"""""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 0. *Requires* text-field.
 
@@ -4220,40 +3277,26 @@ Distance of halo to the font outline. Max text halo width is 1/4 of the
 font-size.
 
 
+
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-
-`text-halo-blur <#paint-text-halo-blur>`__
+text-halo-blur
+""""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 0. *Requires* text-field.
 
@@ -4263,39 +3306,24 @@ The halo's fadeout distance towards the outside.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.33.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-
-`text-translate <#paint-text-translate>`__
+text-translate
+""""""""""""""
 
 *Optional* :ref:`types-array`. *Units in* pixels. *Defaults to* 0,0. *Requires* text-field.
 
@@ -4306,40 +3334,26 @@ Positive values indicate right and down, while negative values indicate
 left and up.
 
 
+
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`text-translate-anchor <#paint-text-translate-anchor>`__
+text-translate-anchor
+"""""""""""""""""""""
 
 *Optional* :ref:`types-enum` *One of* map, viewport. *Defaults to* map. *Requires* text-field, text-translate.
 
@@ -4354,51 +3368,32 @@ map
 viewport
     The text is translated relative to the viewport.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
+raster
+~~~~~~
 
-.
+Layout Properties
+^^^^^^^^^^^^^^^^^
 
-`raster <#layers-raster>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-`Layout Properties <#layout_raster>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-`visibility <#layout-raster-visibility>`__
+visibility
+""""""""""
 
 *Optional* :ref:`types-enum`. *One of* visible, none. *Defaults to* visible.
 
@@ -4415,42 +3410,27 @@ none
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
+Paint Properties
+^^^^^^^^^^^^^^^^
 
-
-`Paint Properties <#paint_raster>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-`raster-opacity <#paint-raster-opacity>`__
+raster-opacity
+""""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 1.
 
@@ -4458,38 +3438,23 @@ none
 The opacity at which the image will be drawn.
 
 
+
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
-
-
+     - >= 17.1
+     - 
 
 `raster-hue-rotate <#paint-raster-hue-rotate>`__
 
@@ -4500,40 +3465,27 @@ The opacity at which the image will be drawn.
 Rotates hues around the color wheel.
 
 
+
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-
-`raster-brightness-min <#paint-raster-brightness-min>`__
+raster-brightness-min
+"""""""""""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 0.
 
@@ -4541,41 +3493,26 @@ Rotates hues around the color wheel.
 Increase or reduce the brightness of the image. The value is the minimum
 brightness.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-
-`raster-brightness-max <#paint-raster-brightness-max>`__
+raster-brightness-max
+"""""""""""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 1.
 
@@ -4583,123 +3520,76 @@ brightness.
 Increase or reduce the brightness of the image. The value is the maximum
 brightness.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`raster-saturation <#paint-raster-saturation>`__
+raster-saturation
+"""""""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 0.
 
 
 Increase or reduce the saturation of the image.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`raster-contrast <#paint-raster-contrast>`__
+raster-contrast
+"""""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 0.
 
 
 Increase or reduce the contrast of the image.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-
-`raster-fade-duration <#paint-raster-fade-duration>`__
+raster-fade-duration
+""""""""""""""""""""
 
 *Optional* :ref:`types-number` *Units in* milliseconds. *Defaults to* 300.
 
@@ -4709,47 +3599,31 @@ Fade duration when a new tile is added.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
+circle
+~~~~~~
 
-`circle <#layers-circle>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Layout Properties
+^^^^^^^^^^^^^^^^^
 
-
-
-`Layout Properties <#layout_circle>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-`visibility <#layout-circle-visibility>`__
+visibility
+""""""""""
 
 *Optional* :ref:`types-enum`. *One of* visible, none. *Defaults to* visible.
 
@@ -4764,38 +3638,25 @@ visible
 none
     The layer is not shown.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
 
 
-`Paint Properties <#paint_circle>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Paint Properties
+^^^^^^^^^^^^^^^^
 
-`circle-radius <#paint-circle-radius>`__
+circle-radius
+"""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 5.
 
@@ -4805,39 +3666,24 @@ Circle radius.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.18.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-
-`circle-color <#paint-circle-color>`__
+circle-color
+""""""""""""
 
 *Optional* :ref:`types-color`. *Defaults to* #000000.
 
@@ -4847,39 +3693,25 @@ The fill color of the circle.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.18.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
 
-
-`circle-blur <#paint-circle-blur>`__
+circle-blur
+"""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 0.
 
@@ -4889,39 +3721,25 @@ centerpoint is full opacity.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.20.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
 
-
-`circle-opacity <#paint-circle-opacity>`__
+circle-opacity
+""""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 1.
 
@@ -4930,38 +3748,24 @@ The opacity at which the circle will be drawn.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.20.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-`circle-translate <#paint-circle-translate>`__
+circle-translate
+""""""""""""""""
 
 *Optional* :ref:`types-array`. *Units in* pixels. *Defaults to* 0,0.
 
@@ -4972,39 +3776,25 @@ and up, respectively.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-
-`circle-translate-anchor <#paint-circle-translate-anchor>`__
+circle-translate-anchor
+"""""""""""""""""""""""
 
 *Optional* :ref:`types-enum` *One of* map, viewport. *Defaults to* map. *Requires* circle-translate.
 
@@ -5019,41 +3809,26 @@ map
 viewport
     The circle is translated relative to the viewport.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-
-`circle-pitch-scale <#paint-circle-pitch-scale>`__
+circle-pitch-scale
+""""""""""""""""""
 
 *Optional* :ref:`types-enum` *One of* map, viewport. *Defaults to* map.
 
@@ -5069,41 +3844,26 @@ map
 viewport
     Circles are not scaled.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.21.0
-     - >= 4.2.0
-     - >= 3.4.0
-     - >= 0.2.1
+     - >= 17.1
+     - 
    * - data-driven styling
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
-
-`circle-stroke-width <#paint-circle-stroke-width>`__
+circle-stroke-width
+"""""""""""""""""""
 
 *Optional* :ref:`types-number`. *Units in* pixels. *Defaults to* 5.
 
@@ -5114,38 +3874,24 @@ The width of the circle's stroke. Strokes are placed outside of the
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.29.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.29.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-
-`circle-stroke-color <#paint-circle-stroke-color>`__
+circle-stroke-color
+"""""""""""""""""""
 
 *Optional* :ref:`types-color`. *Defaults to* #000000.
 
@@ -5155,37 +3901,24 @@ The stroke color of the circle.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.29.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.29.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
-`circle-stroke-opacity <#paint-circle-stroke-opacity>`__
+circle-stroke-opacity
+"""""""""""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 1.
 
@@ -5194,47 +3927,30 @@ The opacity of the circle's stroke.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.29.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
    * - data-driven styling
      - >= 0.29.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
 
+fill-extrusion
+~~~~~~~~~~~~~~
 
+Layout Properties
+^^^^^^^^^^^^^^^^^
 
-`fill-extrusion <#layers-fill-extrusion>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
-`Layout Properties <#layout_fill-extrusion>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-`visibility <#layout-fill-extrusion-visibility>`__
+visibility
+""""""""""
 
 *Optional* :ref:`types-enum`. *One of* visible, none. *Defaults to* visible.
 
@@ -5249,39 +3965,25 @@ visible
 none
     The layer is not shown.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.27.0
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
 
+Paint Properties
+^^^^^^^^^^^^^^^^
 
-`Paint Properties <#paint_fill-extrusion>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-`fill-extrusion-opacity <#paint-fill-extrusion-opacity>`__
+fill-extrusion-opacity
+""""""""""""""""""""""
 
 *Optional* :ref:`types-number`. *Defaults to* 1.
 
@@ -5291,38 +3993,24 @@ per-layer, not per-feature, basis, and data-driven styling is not
 available.
 
 
+
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.27.0
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`fill-extrusion-color <#paint-fill-extrusion-color>`__
+fill-extrusion-color
+""""""""""""""""""""
 
 *Optional* :ref:`types-color`. *Defaults to* #000000. *Disabled by* fill-extrusion-pattern.
-
 
 
 The base color of the extruded fill. The extrusion's surfaces will be
@@ -5333,39 +4021,20 @@ component, the alpha component will be ignored; use
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.27.0
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
-   * - data-driven styling
-     - >= 0.27.0
-     - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - >= 17.1
+     - 
 
-
-
-`fill-extrusion-translate <#paint-fill-extrusion-translate>`__
+fill-extrusion-translate
+""""""""""""""""""""""""
 
 *Optional* :ref:`types-array`. *Units in* pixels. *Defaults to* 0,0.
 
@@ -5376,39 +4045,22 @@ and up (on the flat plane), respectively.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - 
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - 
 
-
-
-`fill-extrusion-translate-anchor <#paint-fill-extrusion-translate-anchor>`__
 
 *Optional* :ref:`types-enum` *One of* map, viewport. *Defaults to* map. *Requires* fill-extrusion-translate.
 
@@ -5423,41 +4075,26 @@ map
 viewport
     The fill extrusion is translated relative to the viewport.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - 
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - 
 
 
-
-`fill-extrusion-pattern <#paint-fill-extrusion-pattern>`__
+fill-extrusion-pattern
+""""""""""""""""""""""
 
 *Optional* :ref:`types-string`.
 
@@ -5467,41 +4104,25 @@ Name of image in sprite to use for drawing images on extruded fills. For
 seamless patterns, image width and height must be a factor of two (2, 4,
 8, ..., 512).
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - 
    * - data-driven styling
      - Not yet supported
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - 
 
-
-
-`fill-extrusion-height <#paint-fill-extrusion-height>`__
+fill-extrusion-height
+"""""""""""""""""""""
 
 *Optional* :ref:`types-number` *Units in* meters. *Defaults to* 0.
 
@@ -5510,39 +4131,25 @@ The height with which to extrude this layer.
 
 
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - 
    * - data-driven styling
      - >= 0.27.0
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - 
 
 
-
-`fill-extrusion-base <#paint-fill-extrusion-base>`__
+fill-extrusion-base
+"""""""""""""""""""
 
 *Optional* :ref:`types-number` *Units in* meters. *Defaults to* 0. *Requires* fill-extrusion-height.
 
@@ -5551,53 +4158,34 @@ The height with which to extrude this layer.
 The height with which to extrude the base of this layer. Must be less
 than or equal to ``fill-extrusion-height``.
 
-
 .. list-table::
-   :widths: 10, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - Mapbox
+   * - Support
+     - Mapbox
      - GeoTools
      - OpenLayers
-   * - 0.27.0
-     - 18.0
-     - 4.1.1
-
-.. list-table::
-   :widths: 30, 30, 30, 30, 30
-   :header-rows: 1
-
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
    * - basic functionality
      - >= 0.27.0
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - 
    * - data-driven styling
      - >= 0.27.0
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - 
 
 
-
-
-
-`Types <#types>`__
-------------------
+Types
+-----
 
 A Mapbox style contains values of various types, most commonly as values
 for the style properties of a layer.
 
-
 .. _types-color:
 
 Color
-~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
 
 Colors are written as JSON strings in a variety of permitted formats:
 HTML-style hex values, rgb, rgba, hsl, and hsla. Predefined HTML colors
@@ -5618,8 +4206,6 @@ names, like ``yellow`` and ``blue``, are also permitted.
 Especially of note is the support for hsl, which can be `easier to
 reason about than rgb() <http://mothereffinghsl.com/>`__.
 
-
-
 .. _types-enum:
 
 Enum
@@ -5632,7 +4218,6 @@ One of a fixed list of string values. Use quotes around values.
     {
       "text-transform": "uppercase"
     }
-
 
 .. _types-string:
 
@@ -5651,7 +4236,6 @@ to by putting them in curly braces, as seen in the example below.
     }
 
 
-
 .. _types-boolean:
 
 Boolean
@@ -5664,8 +4248,6 @@ Boolean means yes or no, so it accepts the values ``true`` or ``false``.
     {
       "fill-enabled": true
     }
-
-
 
 .. _types-number:
 
@@ -5680,8 +4262,6 @@ Written without quotes.
     {
       "text-size": 24
     }
-
-
 
 .. _types-array:
 
@@ -5698,8 +4278,6 @@ numbers specify intervals of line, break, and line again.
       "line-dasharray": [2, 4]
     }
 
-
-
 .. _types-function:
 
 Function
@@ -5713,8 +4291,9 @@ change with the current zoom level and/or the feature's properties.
 .. _stops:
 
 stops
+^^^^^
 
-*Required (except for identity functions) `array <#types-array>`__.*
+*Required (except for identity functions) :ref:`types-array`.*
 
 
 
@@ -5722,11 +4301,10 @@ stops
 Functions are defined in terms of input and output values. A set of one
 input value and one output value is known as a "stop."
 
-
-
 .. _property:
 
 property
+^^^^^^^^
 
 *Optional* :ref:`types-string`.
 
@@ -5738,16 +4316,12 @@ If specified, the function will take the specified feature property as
 an input. See `Zoom Functions and Property
 Functions <#types-function-zoom-property>`__ for more information.
 
-
-
-
 .. _base:
 
 base
+^^^^
+
 *Optional* :ref:`types-number`. *Default is* 1.
-
-
-
 
 
 The exponential base of the interpolation curve. It controls the rate at
@@ -5755,15 +4329,12 @@ which the function output increases. Higher values make the output
 increase more towards the high end of the range. With values close to 1
 the output increases linearly.
 
-
-
 .. _type:
 
 type
+^^^^
 
 *Optional* :ref:`types-enum`. *One of* identity, exponential, interval, categorical.
-
-
 
 identity
     functions return their input as their output.
@@ -5780,14 +4351,10 @@ categorical
     functions return the output value of the stop equal to the function
     input.
 
-
-
 .. _function-default:
 
 default
-
-
-
+^^^^^^^
 
 A value to serve as a fallback function result when a value isn't
 otherwise available. It is used in the following circumstances:
@@ -5805,20 +4372,15 @@ otherwise available. It is used in the following circumstances:
    when the feature value is not numeric.
 
 
-
 If no default is provided, the style property's default is used in these
 circumstances.
-
-
 
 .. _function-colorspace:
 
 colorSpace
-
+^^^^^^^^^^
 
 *Optional* :ref:`types-enum`. *One of* rgb, lab, hcl.
-
-
 
 The color space in which colors interpolated. Interpolating colors in
 perceptual color spaces like LAB and HCL tend to produce color ramps
@@ -5836,66 +4398,55 @@ hcl
 
 
 .. list-table::
-   :widths: 30, 30, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
+   * - Support
+     - Mapbox
+     - GeoTools
+     - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - ``property``
      - >= 0.18.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
    * - ``type``
      - >= 0.18.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
    * - ``exponential`` type
      - >= 0.18.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
    * - ``interval`` type
      - >= 0.18.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
    * - ``categorical`` type
      - >= 0.18.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
    * - ``identity`` type
      - >= 0.18.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
    * - ``default`` type
      - >= 0.18.0
-     - >= 5.0.0
-     - >= 3.5.0
-     - >= 0.4.0
+     - >= 17.1
+     - 
    * - ``colorSpace`` type
      - >= 0.26.0
      - Not yet supported
-     - Not yet supported
-     - Not yet supported
+     - 
 
 
 **Zoom functions** allow the appearance of a map feature to change with
 map’s zoom level. Zoom functions can be used to create the illusion of
 depth and control data density. Each stop is an array with two elements:
 the first is a zoom level and the second is a function output value.
-
 
 ::
 
@@ -5913,12 +4464,10 @@ the first is a zoom level and the second is a function output value.
       }
     }
 
-
-
-The rendered values of `color <#types-color>`__,
-`number <#types-number>`__, and `array <#types-array>`__ properties are
-intepolated between stops. `Enum <#types-enum>`__,
-`boolean <#types-boolean>`__, and `string <#types-string>`__ property
+The rendered values of :ref:`types-color`,
+:ref:`types-number`, and :ref:`types-array` properties are
+intepolated between stops. :ref:`types-enum`,
+:ref:`types-boolean`, and :ref:`types-string` property
 values cannot be intepolated, so their rendered values only change at
 the specified stops.
 
@@ -5945,7 +4494,6 @@ property input value and the second is a function output value. Note
 that support for property functions is not available across all
 properties and platforms at this time.
 
-
 ::
 
     {
@@ -5965,12 +4513,11 @@ properties and platforms at this time.
 
 
 
-\ **Zoom-and-property functions** allow the appearance of a map feature
+**Zoom-and-property functions** allow the appearance of a map feature
 to change with both its properties *and* zoom. Each stop is an array
 with two elements, the first is an object with a property input value
 and a zoom, and the second is a function output value. Note that support
 for property functions is not yet complete.
-
 
 ::
 
@@ -5995,8 +4542,6 @@ for property functions is not yet complete.
       }
     }
 
-
-
 .. _types-filter:
 
 Filter
@@ -6004,7 +4549,6 @@ Filter
 
 A filter selects specific features from a layer. A filter is an array of
 one of the following forms:
-
 
 Existential Filters
 ^^^^^^^^^^^^^^^^^^^
@@ -6070,7 +4614,7 @@ following special keys:
    operators.
 
 A value (and v0, ..., vn for set operators) must be a
-`string <#string>`__, `number <#number>`__, or `boolean <#boolean>`__ to
+:ref:`types-string`, :ref:`types-number`, or :ref:`types-boolean` to
 compare the property value against.
 
 Set membership filters are a compact and efficient way to test whether a
@@ -6111,23 +4655,19 @@ are Polygons, but have a different ``class`` value, and so on.
       ["!in", "$type", "Polygon"]
     ]
 
-
 .. list-table::
-   :widths: 30, 30, 30, 30, 30
+   :widths: 19, 27, 27, 27
    :header-rows: 1
 
-   * - SDK Support
-     - Mapbox GL JS
-     - Android SDK
-     - iOS SDK
-     - macOS SDK
+   * - Support
+     - Mapbox
+     - GeoTools
+     - OpenLayers
    * - basic functionality
      - >= 0.10.0
-     - >= 2.0.1
-     - >= 2.0.0
-     - >= 0.1.0
+     - >= 17.1
+     - 
    * - ``has``/``!has``
      - >= 0.19.0
-     - >= 4.1.0
-     - >= 3.3.0
-     - >= 0.1.0
+     - >= 17.1
+     - 

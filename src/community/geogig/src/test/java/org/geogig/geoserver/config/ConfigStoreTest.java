@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.HashSet;
@@ -135,7 +136,7 @@ public class ConfigStoreTest {
             store.get(dummyId);
             fail("Expected FileNotFoundException");
         } catch (FileNotFoundException e) {
-            assertTrue(e.getMessage().startsWith("File not found: "));
+            assertTrue(e.getMessage().startsWith("Repository not found: "));
         }
 
         String path = ConfigStore.path(dummyId);
@@ -154,7 +155,9 @@ public class ConfigStoreTest {
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
-        resource.out().write(expected.getBytes(Charsets.UTF_8));
+        try (OutputStream out = resource.out()) {
+        	out.write(expected.getBytes(Charsets.UTF_8));
+        }
 
         RepositoryInfo info = store.get(dummyId);
         assertNotNull(info);
@@ -173,7 +176,9 @@ public class ConfigStoreTest {
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
-        resource.out().write(expected.getBytes(Charsets.UTF_8));
+        try (OutputStream out = resource.out()) {
+        	out.write(expected.getBytes(Charsets.UTF_8));
+        }
 
         RepositoryInfo info = store.get(dummyId);
         assertNotNull(info);
@@ -193,9 +198,11 @@ public class ConfigStoreTest {
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
-        resource.out().write(expected.getBytes(Charsets.UTF_8));
-        thrown.expect(IOException.class);
-        thrown.expectMessage("Unable to load");
+        try (OutputStream out = resource.out()) {
+        	out.write(expected.getBytes(Charsets.UTF_8));
+        }
+        thrown.expect(FileNotFoundException.class);
+        thrown.expectMessage("Repository not found: " + dummyId);
         store.get(dummyId);
     }
 
@@ -230,7 +237,9 @@ public class ConfigStoreTest {
         byte[] bytes = IOUtils.toByteArray(breakIt.in());
         byte[] from = new byte[bytes.length - 5];
         System.arraycopy(bytes, 0, from, 0, from.length);
-        breakIt.out().write(from);
+        try (OutputStream out = breakIt.out()) {
+        	out.write(from);
+        }
 
         List<RepositoryInfo> all = store.getRepositories();
         assertNotNull(all);
@@ -250,7 +259,9 @@ public class ConfigStoreTest {
 
         String path = ConfigStore.path(dummyId);
         Resource resource = dataDir.get(path);
-        resource.out().write(expected.getBytes(Charsets.UTF_8));
+        try (OutputStream out = resource.out()) {
+        	out.write(expected.getBytes(Charsets.UTF_8));
+        }
 
         assertNotNull(store.get(dummyId));
         assertTrue(store.delete(dummyId));

@@ -3,18 +3,28 @@ package org.geogig.geoserver;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.geoserver.platform.resource.LockProvider;
+import org.geoserver.platform.resource.NullLockProvider;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
+import org.geoserver.platform.resource.ResourceNotification;
+import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 import org.geoserver.platform.resource.ResourceStore;
+import org.geoserver.platform.resource.SimpleResourceNotificationDispatcher;
 
 import com.google.common.collect.Lists;
 
@@ -26,9 +36,14 @@ public class HeapResourceStore implements ResourceStore {
 	
 	HeapResource root;
 	
+	HeapResourceNotificationDispatcher dispatcher;
+	
+    protected LockProvider lockProvider = new NullLockProvider();
+	
 	public HeapResourceStore() {
 		this.resources = new HashMap<String, HeapResource>();
 		root = new HeapResource(this);
+		dispatcher = new HeapResourceNotificationDispatcher();
 	}
 
 	@Override
@@ -57,7 +72,79 @@ public class HeapResourceStore implements ResourceStore {
 
 	@Override
 	public ResourceNotificationDispatcher getResourceNotificationDispatcher() {
-		throw new UnsupportedOperationException();
+		return dispatcher;
+	}
+	
+	class HeapResourceNotificationDispatcher implements ResourceNotificationDispatcher {
+		
+		Map<String, List<ResourceListener>> listeners = new HashMap<String, List<ResourceListener>>();
+
+		@Override
+		public void addListener(String resource, ResourceListener listener) {
+			List<ResourceListener> resourceListeners = listeners.get(resource);
+			if (resourceListeners == null) {
+				resourceListeners = new ArrayList<ResourceListener>();
+				listeners.put(resource, resourceListeners);
+			}
+			resourceListeners.add(listener);
+		}
+
+		@Override
+		public boolean removeListener(String resource, ResourceListener listener) {
+			List<ResourceListener> resourceListeners = listeners.get(resource);
+			if (resourceListeners != null) {
+				return resourceListeners.remove(listener);
+			}
+			return true;
+		}
+
+		@Override
+		public void changed(ResourceNotification notification) {
+	        List<ResourceListener> originalListeners = listeners.get(notification.getPath());
+	        //Copy list, since some handlers try to remove themselves on notifications
+	        if (originalListeners != null) {
+	            List<ResourceListener> listeners = new ArrayList<>(originalListeners);
+
+	            for (ResourceListener listener : listeners) {
+	                listener.changed(notification);
+	            }
+	        }
+
+	        //if delete, propagate delete notifications to children, which can be found in the events (see {@link createEvents})
+	        if (notification.getKind() == ResourceNotification.Kind.ENTRY_DELETE) {
+	            for (ResourceNotification.Event event : notification.events()) {
+	                if (!notification.getPath().equals(event.getPath())) {
+	                    this.changed(new ResourceNotification(event.getPath(), ResourceNotification.Kind.ENTRY_DELETE,
+	                            notification.getTimestamp(), Collections.emptyList()));
+	                }
+	            }
+	        }
+
+	        //if create, propagate CREATE events to its created parents, which can be found in the events (see {@link createEvents})
+	        Set<String> createdParents = new HashSet<String>();
+	        if (notification.getKind() == ResourceNotification.Kind.ENTRY_CREATE) {
+	            for (ResourceNotification.Event event : notification.events()) {
+	                if (!notification.getPath().equals(event.getPath())) {
+	                    createdParents.add(event.getPath());
+	                }
+	            }
+	        }
+
+	        //propagate any event to its direct parent (as MODIFY if not a created parent)
+	        List<String> paths = Lists.newArrayList(Paths.names(notification.getPath()));
+	        paths.remove(paths.size() - 1);
+	        while (paths.size() > 0) {
+	        	String path = Paths.path(paths.toArray(new String[0]));
+	            boolean isCreate = createdParents.contains(path);
+	            this.changed(new ResourceNotification(path,
+	                    isCreate ? ResourceNotification.Kind.ENTRY_CREATE : ResourceNotification.Kind.ENTRY_MODIFY,
+	                    notification.getTimestamp(), notification.events()));
+
+	            //stop propagating after first modify
+	            paths.remove(paths.size() - 1);
+	        }
+		}
+		
 	}
 	
 	class HeapResource implements Resource {
@@ -72,7 +159,7 @@ public class HeapResourceStore implements ResourceStore {
 		
 		private Type type;
 		
-		private ByteArrayOutputStream bytes = null;
+		private byte[] bytes;
 		
 		final private HeapResourceStore store;
 		
@@ -92,6 +179,7 @@ public class HeapResourceStore implements ResourceStore {
 				this.parent = parent;
 				this.path = buildPath();
 			}
+			this.bytes = null;
 			this.children = new LinkedList<HeapResource>();
 		}
 		
@@ -119,7 +207,7 @@ public class HeapResourceStore implements ResourceStore {
 
 		@Override
 		public Lock lock() {
-			return null;
+			return lockProvider.acquire(toString());
 		}
 
 		@Override
@@ -137,18 +225,61 @@ public class HeapResourceStore implements ResourceStore {
 			if (getType().equals(Type.UNDEFINED) || getType().equals(Type.DIRECTORY)) {
 				throw new UnsupportedOperationException();
 			}
-			return new ByteArrayInputStream(bytes.toByteArray());
+			return new ByteArrayInputStream(bytes);
 		}
 
 		@Override
 		public OutputStream out() {
 			if (bytes == null && getType().equals(Type.UNDEFINED)) {
+				List<Event> events = SimpleResourceNotificationDispatcher.createEvents(this,
+	                    ResourceNotification.Kind.ENTRY_CREATE);
+				dispatcher.changed(new ResourceNotification(path, ResourceNotification.Kind.ENTRY_CREATE,
+						System.currentTimeMillis(), events));
 				this.type = Type.RESOURCE;
 			}
-			if (getType().equals(Type.RESOURCE)) {
-				bytes = new ByteArrayOutputStream();
+			if (getType().equals(Type.DIRECTORY)) {
+				throw new UnsupportedOperationException();
 			}
-			return bytes;
+			return new OutputStream() {
+                ByteArrayOutputStream delegate = new ByteArrayOutputStream();
+
+                @Override
+                public void close() throws IOException {
+                	final Lock lock = lock();
+                	try {
+	                	List<ResourceNotification.Event> events = SimpleResourceNotificationDispatcher.createEvents(HeapResource.this,
+	                            ResourceNotification.Kind.ENTRY_MODIFY);
+
+	                    bytes = delegate.toByteArray();
+
+	                    dispatcher.changed(new ResourceNotification(path(), ResourceNotification.Kind.ENTRY_MODIFY,
+	                            System.currentTimeMillis(), events));
+	                    delegate.close();
+                	} finally {
+                		lock.release();
+                	}
+                }
+
+                @Override
+                public void write(byte[] b, int off, int len) throws IOException {
+                    delegate.write(b, off, len);
+                }
+
+                @Override
+                public void flush() throws IOException {
+                    delegate.flush();
+                }
+
+                @Override
+                public void write(byte[] b) throws IOException {
+                    delegate.write(b);
+                }
+
+                @Override
+                public void write(int b) throws IOException {
+                    delegate.write(b);
+                }
+            };
 		}
 
 		@Override
@@ -215,10 +346,17 @@ public class HeapResourceStore implements ResourceStore {
 		public boolean delete() {
 			boolean deleted = false;
 			if (!getType().equals(Type.UNDEFINED)) {
+				if (parent != null) {
+					parent.children.remove(this);
+				}
 				type = Type.UNDEFINED;
 				children.clear();
 				bytes = null;
 				deleted = true;
+				List<Event> events = SimpleResourceNotificationDispatcher.createEvents(this,
+	                    ResourceNotification.Kind.ENTRY_DELETE);
+				dispatcher.changed(new ResourceNotification(path, ResourceNotification.Kind.ENTRY_DELETE,
+						System.currentTimeMillis(), events));
 			}
 			return deleted;
 		}
@@ -228,12 +366,18 @@ public class HeapResourceStore implements ResourceStore {
 			if (dest == this) {
 				return false;
 			}
+	       	List<ResourceNotification.Event> eventsDelete = SimpleResourceNotificationDispatcher.createEvents(this,
+                    ResourceNotification.Kind.ENTRY_DELETE);
+            List<ResourceNotification.Event> eventsRename = SimpleResourceNotificationDispatcher.createRenameEvents(this, dest);
 			this.path = dest.path();
 			this.name = dest.name();
 			this.parent = (HeapResource) dest.parent();
 			this.parent.children.remove(dest);
 			this.parent.children.add(this);
-			
+			dispatcher.changed(new ResourceNotification(path(), ResourceNotification.Kind.ENTRY_DELETE, 
+                    System.currentTimeMillis(), eventsDelete));
+			dispatcher.changed(new ResourceNotification(path(), eventsRename.get(0).getKind(), 
+                    System.currentTimeMillis(), eventsRename));
 			return true;
 		}
 		

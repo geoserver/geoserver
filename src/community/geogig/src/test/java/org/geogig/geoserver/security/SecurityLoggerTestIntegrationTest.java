@@ -26,10 +26,13 @@ import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+// SecurityLogger has been disabled in the plugin, ignore.
+@Ignore
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class SecurityLoggerTestIntegrationTest extends GeoServerSystemTestSupport {
 

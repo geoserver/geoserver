@@ -172,11 +172,9 @@ public class RepositoryManager implements GeoServerInitializer {
     }
 
     public RepositoryInfo getByRepoName(final String name) {
-        List<RepositoryInfo> all = getAll();
-        for (RepositoryInfo info : all) {
-            if (info.getRepoName().equals(name)) {
-                return info;
-            }
+    	RepositoryInfo info = configStore.getByName(name);
+        if (info != null) {
+        	return info;
         }
         // didn't find it
         throw new NoSuchElementException("No repository with ID " + name + " exists");
@@ -347,13 +345,11 @@ public class RepositoryManager implements GeoServerInitializer {
     }
 
     RepositoryInfo findOrCreateByLocation(final URI repositoryURI) {
-        List<RepositoryInfo> repos = getAll();
-        for (RepositoryInfo info : repos) {
-            if (Objects.equal(info.getLocation(), repositoryURI)) {
-                return info;
-            }
-        }
-        RepositoryInfo info = new RepositoryInfo();
+    	RepositoryInfo info = configStore.getByLocation(repositoryURI);
+    	if (info != null) {
+    		return info;
+    	}
+        info = new RepositoryInfo();
         info.setLocation(repositoryURI);
         return save(info);
     }

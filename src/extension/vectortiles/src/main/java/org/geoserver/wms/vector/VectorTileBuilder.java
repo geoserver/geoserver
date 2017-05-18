@@ -12,11 +12,28 @@ import org.geoserver.wms.WebMap;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+/**
+ * Collects features into a vector tile 
+ */
 public interface VectorTileBuilder {
 
+    /**
+     * Add a feature to the tile
+     * @param layerName The name of the feature set
+     * @param featureId The identifier of the feature within the feature set
+     * @param geometryName The name of the geometry property
+     * @param geometry The geometry value
+     * @param properties The non-geometry attributes of the feature
+     */
     void addFeature(String layerName, String featureId, String geometryName, Geometry geometry,
             Map<String, Object> properties);
-
+    
+    /**
+     * Build the tile
+     * @param mapContent The context for building the tile.
+     * @return A WebMap containing the completed tile
+     * @throws IOException
+     */
     WebMap build(WMSMapContent mapContent) throws IOException;
 
 }

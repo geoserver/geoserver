@@ -53,6 +53,14 @@ public class VectorMapRenderUtils {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
+    /**
+     * Creates a query selecting those features relevant to the style and extent of the given map, 
+     * for the given layer.
+     * @param layer
+     * @param mapContent
+     * @return
+     * @throws IOException
+     */
     public static Query getStyleQuery(Layer layer, WMSMapContent mapContent) throws IOException {
 
         final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();

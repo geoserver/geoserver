@@ -1,11 +1,11 @@
-GeoServer @VER@
+GeoServer 2.11.1
 -------------------
 
-This release was built on @DATE@. The changelog for this release can be found:
+This release was built on May 18, 2017. The changelog for this release can be found:
 
-  http://jira.codehaus.org/browse/GEOS/fixforversion/@JIRA_VER@
+  http://jira.codehaus.org/browse/GEOS/fixforversion/15800
 
 This release is based on:
 
-  GeoTools @GT_VER@
-  GeoWebCache @GWC_VER@
+  GeoTools 17.1
+  GeoWebCache 1.11.0

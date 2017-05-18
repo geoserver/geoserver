@@ -32,7 +32,6 @@ import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
-import org.locationtech.geogig.cli.CLIContextBuilder;
 import org.locationtech.geogig.geotools.data.GeoGigDataStoreFactory;
 import org.locationtech.geogig.model.Ref;
 import org.locationtech.geogig.porcelain.BranchListOp;
@@ -63,7 +62,7 @@ public class RepositoryManager implements GeoServerInitializer {
     static {
         if (GlobalContextBuilder.builder() == null
                 || GlobalContextBuilder.builder().getClass().equals(ContextBuilder.class)) {
-            GlobalContextBuilder.builder(new CLIContextBuilder());
+            GlobalContextBuilder.builder(new GeoServerContextBuilder());
         }
     }
 

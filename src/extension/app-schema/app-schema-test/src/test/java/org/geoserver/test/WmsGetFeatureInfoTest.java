@@ -7,6 +7,8 @@ package org.geoserver.test;
 
 import static org.junit.Assert.*;
 
+import org.geoserver.wms.WMSInfo;
+import org.junit.Before;
 import org.junit.Test;
 
 import org.geoserver.test.NamespaceTestData;
@@ -16,6 +18,14 @@ public class WmsGetFeatureInfoTest extends AbstractAppSchemaTestSupport {
 
     public WmsGetFeatureInfoTest() throws Exception {
         super();
+    }
+
+    @Before
+    public void setupAdvancedProjectionHandling() {
+        // make sure GetFeatureInfo is not deactivated (this will only update the global service)
+        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
+        wms.setFeaturesReprojectionDisabled(false);
+        getGeoServer().save(wms);
     }
 
     @Override
@@ -69,7 +79,21 @@ public class WmsGetFeatureInfoTest extends AbstractAppSchemaTestSupport {
                 "gu.25678",
                 "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/@gml:id",
                 doc);
+        // check that features coordinates where reprojected to EPSG:3857
+        assertXpathMatches(".*3857",
+                "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature[@gml:id='mf2']/gsml:shape/gml:Polygon/@srsName",
+                doc);
         validateGet(request);
+        // disable features reprojection
+        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
+        wms.setFeaturesReprojectionDisabled(true);
+        getGeoServer().save(wms);
+        // execute the request
+        doc = getAsDOM(request);
+        // check that features were not reprojected and still in EPSG:4326
+        assertXpathMatches(".*4326",
+                "/wfs:FeatureCollection/gml:featureMember/gsml:MappedFeature[@gml:id='mf2']/gsml:shape/gml:Polygon/@srsName",
+                doc);
     }
     
     @Test

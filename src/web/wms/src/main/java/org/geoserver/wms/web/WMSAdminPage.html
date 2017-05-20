@@ -227,6 +227,21 @@
         </ul>
       </fieldset>
     </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="disableFeaturesReprojectTitle"></wicket:message></span></legend>
+        <ul class="choiceList">
+          <li>
+            <input type="checkbox" wicket:id="disableFeaturesReproject"></input>
+            <label for="disableFeaturesReproject">
+              <wicket:message key="disableFeaturesReproject">
+                Reproject GetFeatureInfo request results to the map coordinate reference system
+              </wicket:message>
+            </label>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
     <div wicket:id="modal"></div>
   </wicket:extend>
 </body>

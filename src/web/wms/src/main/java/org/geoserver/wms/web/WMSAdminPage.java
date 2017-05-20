@@ -232,7 +232,9 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
 
         //dynamicStylingDisabled
         form.add(new CheckBox("dynamicStyling.disabled",new PropertyModel<Boolean>(info, WMS.DYNAMIC_STYLING_DISABLED)));
-        
+
+        // disable the reprojection of GetFeatureInfo results
+        form.add(new CheckBox("disableFeaturesReproject", new PropertyModel<>(info, WMS.FEATURES_REPROJECTION_DISABLED)));
     }
     
     @Override

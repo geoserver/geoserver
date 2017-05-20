@@ -793,26 +793,6 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
     }
 
     /**
-     * Check that a number represent by a string is similar to the expected number
-     * A number is considered similar to another if the difference between them is
-     * inferior or equal to the provided precision.
-     */
-    private void checkNumberSimilar(String rawValue, double expected, double precision) {
-        // try to extract a double value
-        assertThat(rawValue, is(notNullValue()));
-        assertThat(rawValue.trim().isEmpty(), is(false));
-        double value = 0;
-        try {
-            value = Double.parseDouble(rawValue);
-        } catch (NumberFormatException exception) {
-            fail(String.format("Value '%s' is not a number.", rawValue));
-        }
-        // compare the parsed double value with the expected one
-        double difference = Math.abs(expected - value);
-        assertThat(difference <= precision, is(true));
-    }
-
-    /**
      * Helper method that unwraps a layer group making him suitable to be added
      * to the catalog. If proxyfied the proxy will also be removed.
      */

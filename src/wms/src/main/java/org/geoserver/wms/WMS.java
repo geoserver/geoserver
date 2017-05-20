@@ -133,6 +133,8 @@ public class WMS implements ApplicationContextAware {
     
     public static final String DYNAMIC_STYLING_DISABLED = "dynamicStylingDisabled";
 
+    public static final String FEATURES_REPROJECTION_DISABLED = "featuresReprojectionDisabled";
+
     static final Logger LOGGER = Logging.getLogger(WMS.class);
 
     public static final String WEB_CONTAINER_KEY = "WMS";
@@ -357,6 +359,16 @@ public class WMS implements ApplicationContextAware {
 
     public boolean isDynamicStylingDisabled() {
         return getServiceInfo().isDynamicStylingDisabled();
+    }
+
+    /**
+     * If TRUE is returned GetFeatureInfo results should NOT be reproject
+     * to the map coordinate reference system.
+     *
+     * @return GetFeatureInfo results reprojection allowance
+     */
+    public boolean isFeaturesReprojectionDisabled() {
+        return getServiceInfo().isFeaturesReprojectionDisabled();
     }
 
     public JAIInfo.PngEncoderType getPNGEncoderType() {

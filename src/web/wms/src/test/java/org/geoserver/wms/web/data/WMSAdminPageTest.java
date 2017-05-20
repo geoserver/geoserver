@@ -16,6 +16,7 @@ import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.web.WMSAdminPage;
 import org.junit.Before;
@@ -88,5 +89,15 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("dynamicStyling.disabled", true);
         ft.submit("submit");
         assertTrue(wms.isDynamicStylingDisabled());
+    }
+
+    @Test
+    public void testFeaturesReprojectionDisabled() throws Exception {
+        assertFalse(wms.isFeaturesReprojectionDisabled());
+        tester.startPage(WMSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("disableFeaturesReproject", true);
+        ft.submit("submit");
+        assertTrue(wms.isFeaturesReprojectionDisabled());
     }
 }

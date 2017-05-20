@@ -349,8 +349,8 @@ public class RulesBuilder {
 
 	private Expression normalizeProperty(PropertyName property,
 			Class<?> propertyType, boolean normalize) {
-		if(normalize && Integer.class.isAssignableFrom(propertyType) || Long.class.isAssignableFrom(propertyType)) {
-			return ff.function("convert", property, ff.literal("java.lang.Double"));
+		if(normalize && (Integer.class.isAssignableFrom(propertyType) || Long.class.isAssignableFrom(propertyType))) {
+			return ff.function("parseDouble", property);
 		}
 		return property;
 	}

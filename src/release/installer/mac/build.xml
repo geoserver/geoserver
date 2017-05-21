@@ -110,6 +110,10 @@
       <option value="-Xmx512m"/>
       <option value="-Dapple.laf.useScreenMenuBar=true"/>
 
+      <!-- enable marlin renderer -->
+      <option value="-Xbootclasspath/a:$APP_ROOT/Contents/Java/webapps/geoserver/WEB-INF/lib/${marlin_jar}"/>
+      <option value="-Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine"/>
+
       <!-- Workaround since the icon parameter for bundleapp doesn't work -->
       <option value="-Xdock:icon=Contents/Resources/GeoServer.icns"/>
 

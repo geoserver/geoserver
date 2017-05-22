@@ -15,8 +15,12 @@ import java.util.logging.Logger;
 import net.opengis.wfs.FeatureCollectionType;
 
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.WMS;
+import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.store.ReTypingFeatureCollection;
@@ -25,7 +29,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.WMSLayer;
-import org.geoserver.util.EntityResolverProvider;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v1_0.WFSConfiguration;
 import org.geotools.xml.Parser;
@@ -43,8 +47,17 @@ public class WMSLayerIdentifier implements LayerIdentifier {
 
     private EntityResolverProvider resolverProvider;
 
+    // WMS service configuration facade, maybe be NULL use method getWms()
+    private WMS wms;
+
+    @Deprecated
     public WMSLayerIdentifier(EntityResolverProvider resolverProvider) {
+        this(resolverProvider, null);
+    }
+
+    public WMSLayerIdentifier(EntityResolverProvider resolverProvider, WMS wms) {
         this.resolverProvider = resolverProvider;
+        this.wms = wms;
     }
 
     public List<FeatureCollection> identify(FeatureInfoRequestParameters params, int maxFeatures) throws IOException {
@@ -106,8 +119,9 @@ public class WMSLayerIdentifier implements LayerIdentifier {
                    
                     SimpleFeatureType targetFeatureType = builder.buildFeatureType();
                     FeatureCollection rfc = new ReTypingFeatureCollection(fc, targetFeatureType);
-                    
-                    results.add(rfc);
+
+                    // if possible force a CRS to be defined
+                    results.add(forceCrs(rfc));
                 }
             }
         } catch (Throwable t) {
@@ -115,6 +129,14 @@ public class WMSLayerIdentifier implements LayerIdentifier {
         } finally {
             is.close();
         }
+
+        // let's see if we need to reproject
+        if (!getWms().isFeaturesReprojectionDisabled()) {
+            // try to reproject to target CRS
+            return LayerIdentifierUtils.reproject(results, params.getRequestedCRS());
+        }
+
+        // reprojection no allowed
         return results;
     }
 
@@ -122,4 +144,42 @@ public class WMSLayerIdentifier implements LayerIdentifier {
         return layer.getType() == MapLayerInfo.TYPE_WMS;
     }
 
+    /**
+     * Helper method that tries to force a CRS to be defined. If no CRS is defined
+     * buf if all the feature collection geometries use the same CRS that CRS will
+     * be forced. This only work for simple features.
+     */
+    private FeatureCollection forceCrs(FeatureCollection featureCollection) {
+        if (featureCollection.getSchema().getCoordinateReferenceSystem() != null) {
+            // a CRS is already defined
+            return featureCollection;
+        }
+        // try to extract a CRS from the feature collection features
+        CoordinateReferenceSystem crs = LayerIdentifierUtils.getCrs(featureCollection);
+        if (crs == null) {
+            // there is nothing more we can do
+            return featureCollection;
+        }
+        try {
+            // force the CRS
+            return new ForceCoordinateSystemFeatureResults(featureCollection, crs);
+        } catch (Exception exception) {
+            throw new RuntimeException(String.format(
+                    "Error forcing feature collection to use SRS '%s'.",
+                    CRS.toSRS(crs)), exception);
+        }
+    }
+
+    /**
+     * Does a lookup on the application context if needed.
+     *
+     * @return WMS service configuration facade
+     */
+    private WMS getWms() {
+        if (wms == null) {
+            // no need for synchronization here
+            wms = GeoServerExtensions.bean(WMS.class);
+        }
+        return wms;
+    }
 }
